@@ -27,12 +27,16 @@ class WebStateList;
 @protocol AssistantContainerCommands;
 @protocol BWGGatewayProtocol;
 @protocol GeminiCommands;
+@protocol GeminiSharedTabsDelegate;
 @protocol GeminiZeroStateConsumer;
 
 // Mediator for the Gemini container.
 @interface GeminiContainerMediator : NSObject <AssistantContainerDelegate,
                                                GeminiViewStateDelegate,
                                                GeminiZeroStateMutator>
+
+// Delegate for shared tabs in a Gemini session.
+@property(nonatomic, weak) id<GeminiSharedTabsDelegate> sharedTabsDelegate;
 
 // Delegate for handling events from the mediator. Temporarily used by
 // `GeminiBrowserAgent` to support pre-migration logic.
@@ -114,6 +118,17 @@ class WebStateList;
 // Disconnects raw pointers owned by the mediator and dismisses handlers.
 // Handles all the cleanup that needs to happen before mediator dealloc.
 - (void)disconnect;
+
+// Propagates active page context and shared tabs from `sharedTabsDelegate` to
+// the provider.
+- (void)propagatePageContext:(GeminiPageContext*)pageContext;
+
+// Requests full page context generation for the active web state and propagates
+// it to the provider upon completion.
+- (void)requestActivePageContextGeneration;
+
+// Updates the provider with partial page context for the active web state.
+- (void)updateFloatyWithPartialPageContext;
 
 @end
 

@@ -53,6 +53,7 @@ class ScopedFullscreenDisabler;
 @class GeminiCameraHandler;
 @class GeminiTabPickerHandler;
 @class GeminiConsentProviderHandler;
+@class GeminiSharedTabsDelegateBridge;
 @class GeminiPageContext;
 @class GeminiViewStateChangeHandler;
 @class GeminiScrollObserver;
@@ -200,6 +201,14 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Returns the entry point that triggered the current Gemini flow.
   gemini::EntryPoint GetEntryPoint() const;
 
+  // Saves `active_page_context` to `shared_tabs_`.
+  void SaveActivePageContextToSharedTabs(
+      GeminiPageContext* active_page_context);
+
+  // Returns the array of page contexts for all currently attached
+  // inactive shared tabs.
+  NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const;
+
  private:
   explicit GeminiBrowserAgent(Browser* browser);
   friend class BrowserUserData<GeminiBrowserAgent>;
@@ -207,29 +216,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   friend class AppBarMediatorTest;
   friend class ToolbarMediatorTest;
   friend class LocationBarBadgeMediatorTest;
-
-  // Fetches the full context of the active page and feeds it to Gemini.
-  void RequestPageContextGeneration();
-
-  // Updates the active page context and passes it to the Gemini provider, along
-  // with any shared tabs.
-  void PropagatePageContext(GeminiPageContext* page_context);
-
-  // Updates `page_context`'s computation and attachment states based on
-  // active page eligibility and user preferences.
-  void UpdatePageContextState(GeminiPageContext* page_context);
-
-  // Saves `active_page_context` to `shared_tabs_`.
-  void SaveActivePageContextToSharedTabs(
-      GeminiPageContext* active_page_context);
-
-  // Updates the floaty with partial page context synchronously if the tab
-  // helper is available.
-  void UpdateFloatyWithPartialPageContext();
-
-  // Returns the array of page contexts for all currently attached
-  // inactive shared tabs.
-  NSArray<GeminiPageContext*>* GetInactiveSharedTabs() const;
 
   // Returns whether there is at least one inactive shared tab attached.
   bool HasInactiveSharedTabs() const;
@@ -243,10 +229,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Starts the Gemini session (prepares context and shows overlay).
   void PresentFloaty(UIViewController* base_view_controller,
                      GeminiStartupState* startup_state);
-
-  // Adjusts the configuration around the Gemini page context based on user
-  // prefs.
-  void ApplyUserPrefsToPageContext(GeminiPageContext* gemini_page_context);
 
   // Records the page type when Gemini is invoked.
   void RecordInvocationPageType();
@@ -378,9 +360,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Called when the application enters the foreground.
   void OnAppWillEnterForeground();
-
-  // Handles an generated page context by updating the floaty.
-  void OnPageContextGenerated(GeminiPageContext* gemini_page_context);
 
   // Called when a request for APC for a list of tabs has completed.
   void OnPersistTabContextLookupComplete(
@@ -569,6 +548,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Observers for GeminiBrowserAgent.
   base::ObserverList<Observer> observers_;
+
+  // Bridge for GeminiSharedTabsDelegate.
+  __strong GeminiSharedTabsDelegateBridge* shared_tabs_delegate_bridge_ = nil;
 
   // Weak pointer factory.
   base::WeakPtrFactory<GeminiBrowserAgent> weak_factory_{this};

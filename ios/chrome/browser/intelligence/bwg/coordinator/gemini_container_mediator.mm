@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
@@ -98,13 +99,7 @@ using ios::provider::GeminiViewState;
     _startupState = startupState;
   }
 
-  web::WebState* webState =
-      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
-  if (!webState) {
-    return nil;
-  }
-
-  GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
+  GeminiTabHelper* geminiTabHelper = [self activeTabHelper];
   if (!geminiTabHelper) {
     return nil;
   }
@@ -138,12 +133,7 @@ using ios::provider::GeminiViewState;
     return NO;
   }
 
-  web::WebState* webState = _webStateList->GetActiveWebState();
-  if (!webState) {
-    return NO;
-  }
-
-  GeminiTabHelper* geminiTabHelper = GeminiTabHelper::FromWebState(webState);
+  GeminiTabHelper* geminiTabHelper = [self activeTabHelper];
   if (!geminiTabHelper) {
     return NO;
   }
@@ -161,14 +151,7 @@ using ios::provider::GeminiViewState;
     return;
   }
 
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  if (!activeWebState) {
-    [self.zeroStateConsumer setZeroStateSuggestions:@[]];
-    return;
-  }
-
-  GeminiTabHelper* geminiTabHelper =
-      GeminiTabHelper::FromWebState(activeWebState);
+  GeminiTabHelper* geminiTabHelper = [self activeTabHelper];
   if (!geminiTabHelper ||
       ![self shouldShowSuggestionChipsForEntryPoint:startupState.entryPoint]) {
     [self.zeroStateConsumer setZeroStateSuggestions:@[]];
@@ -208,6 +191,8 @@ using ios::provider::GeminiViewState;
       _hasTriggeredGeminiLiveNewBadge = NO;
     }
   }
+
+  [self cancelPageContextGeneration];
 }
 
 - (void)setConsumer:(id<GeminiContainerConsumer>)consumer {
@@ -226,6 +211,7 @@ using ios::provider::GeminiViewState;
   _eventHandler = nullptr;
   _containerHandler = nil;
   _geminiHandler = nil;
+  _sharedTabsDelegate = nil;
   _consumer = nil;
   _webStateList = nullptr;
   _profile = nullptr;
@@ -466,6 +452,89 @@ using ios::provider::GeminiViewState;
 
   // In initial zero state the view shouldn't be focused for input.
   [self.consumer dismissKeyboard];
+}
+
+- (GeminiTabHelper*)activeTabHelper {
+  web::WebState* activeWebState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+  return activeWebState ? GeminiTabHelper::FromWebState(activeWebState)
+                        : nullptr;
+}
+
+// Updates `page_context`'s computation and attachment states based on active
+// page eligibility and user preferences.
+- (void)updatePageContextState:(GeminiPageContext*)pageContext {
+  GeminiTabHelper* tabHelper = [self activeTabHelper];
+  bool isEligible = tabHelper && tabHelper->IsGeminiChatAvailableForWebState();
+
+  // Handle programmatic blocking/detachment for ineligible or hidden pages.
+  if (!isEligible) {
+    pageContext.geminiPageContextComputationState =
+        ios::provider::GeminiPageContextComputationState::kBlocked;
+    pageContext.geminiPageContextAttachmentState =
+        ios::provider::GetCurrentPageContextAttachmentState();
+    pageContext.uniquePageContext = nullptr;
+    return;
+  }
+
+  // Apply user settings.
+  [self applyUserPrefsToPageContext:pageContext];
+
+  // Persists manual detachment across navigations. If the user explicitly
+  // detached the context via the paperclip UI, respect that choice over the
+  // default attached state.
+  if (pageContext.geminiPageContextAttachmentState ==
+          ios::provider::GeminiPageContextAttachmentState::kAttached &&
+      ios::provider::GetCurrentPageContextAttachmentState() ==
+          ios::provider::GeminiPageContextAttachmentState::kDetached) {
+    pageContext.geminiPageContextAttachmentState =
+        ios::provider::GeminiPageContextAttachmentState::kDetached;
+  }
+}
+
+- (void)cancelPageContextGeneration {
+  GeminiTabHelper* tabHelper = [self activeTabHelper];
+  if (tabHelper) {
+    tabHelper->CancelPageContextGeneration();
+  }
+}
+
+#pragma mark - Page Context
+
+- (void)requestActivePageContextGeneration {
+  GeminiTabHelper* tabHelper = [self activeTabHelper];
+  if (!tabHelper) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  tabHelper->GeneratePageContext(
+      base::BindRepeating(^(GeminiPageContext* activePageContext) {
+        [weakSelf propagatePageContext:activePageContext];
+      }));
+
+  // Show page attachment UI chip every time full page context generation is
+  // requested.
+  ios::provider::RequestUIChange(
+      ios::provider::GeminiUIElementType::kContextAttachment);
+}
+
+- (void)propagatePageContext:(GeminiPageContext*)pageContext {
+  [self updatePageContextState:pageContext];
+  [self.sharedTabsDelegate saveActivePageContextToSharedTabs:pageContext];
+
+  ios::provider::UpdateActivePageContext(
+      pageContext, [self.sharedTabsDelegate inactiveSharedTabs]);
+}
+
+- (void)updateFloatyWithPartialPageContext {
+  GeminiTabHelper* tabHelper = [self activeTabHelper];
+  if (!tabHelper) {
+    return;
+  }
+
+  GeminiPageContext* activePageContext = tabHelper->GetPartialPageContext();
+  [self propagatePageContext:activePageContext];
 }
 
 @end

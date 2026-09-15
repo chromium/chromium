@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/fullscreen/coordinator/fullscreen_coordinator.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
@@ -264,9 +265,10 @@ class GeminiBrowserAgentTest : public PlatformTest {
     gemini_browser_agent_->floaty_hidden_timestamp_ = timestamp;
   }
 
-  // Triggers `RequestPageContextGeneration()` in the browser agent.
-  void RequestPageContextGeneration() {
-    gemini_browser_agent_->RequestPageContextGeneration();
+  // Triggers `requestActivePageContextGeneration` on the mediator.
+  void RequestActivePageContextGeneration() {
+    [gemini_browser_agent_
+            ->gemini_container_mediator_ requestActivePageContextGeneration];
   }
 
   // Triggers `OnPersistTabContextLookupComplete()` in the browser agent.
@@ -553,8 +555,9 @@ TEST_F(GeminiBrowserAgentTest, TestFloatyTabSwitchMetrics) {
   histogram_tester.ExpectUniqueSample(kSessionTabSwitchCountHistogram, 1, 1);
 }
 
-// Tests that RequestPageContextGeneration triggers page context generation.
-TEST_F(GeminiBrowserAgentTest, TestRequestPageContextGeneration) {
+// Tests that RequestActivePageContextGeneration triggers page context
+// generation.
+TEST_F(GeminiBrowserAgentTest, TestRequestActivePageContextGeneration) {
   // Set a valid URL.
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
@@ -585,7 +588,7 @@ TEST_F(GeminiBrowserAgentTest, TestRequestPageContextGeneration) {
   // Ensure the WebState is visible so PageContextWrapper attempts a snapshot.
   web_state_->WasShown();
 
-  RequestPageContextGeneration();
+  RequestActivePageContextGeneration();
 
   // Wait for the delegate method to be called.
   ASSERT_TRUE(
