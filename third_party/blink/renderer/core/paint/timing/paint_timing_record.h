@@ -140,10 +140,16 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
   }
   const gfx::RectF& ElementTimingRect() const { return element_timing_rect_; }
 
+  bool WasPreviouslyReported() const { return was_previously_reported_; }
+  void SetWasPreviouslyReported(bool value) {
+    was_previously_reported_ = value;
+  }
+
  private:
   const uint64_t effective_visual_size_;
   const gfx::RectF element_timing_rect_;
   bool is_needed_for_element_timing_ = false;
+  bool was_previously_reported_ = false;
 };
 
 // TODO(yoav): Rename all mentions of "image" to "media"

@@ -79,14 +79,12 @@ class CORE_EXPORT SoftNavigationHeuristics
   // TODO(crbug.com/454082771): This should also override `OnFirstPaint()` and
   // update the underlying LCP calculator's "largest pending image" like we do
   // for hard navs.
-  void OnElementLastContentfulPaint(ImageRecord*) override;
-  void OnElementLastContentfulPaint(TextRecord*,
-                                    bool was_previously_reported) override;
+  void OnPaintFinished(const HeapVector<Member<ImageRecord>>&,
+                       const HeapVector<Member<TextRecord>>&) override;
   void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
                         const HeapVector<Member<TextRecord>>&,
                         const HeapVector<Member<ElementTimingInfo>>&,
                         const DOMPaintTimingInfo&) override;
-  void OnPaintFinished() override;
   void OnInputOrScroll() override;
 
   void Trace(Visitor*) const override;
@@ -113,6 +111,8 @@ class CORE_EXPORT SoftNavigationHeuristics
   SoftNavigationPaintAttributionTracker* GetPaintAttributionTracker() {
     return paint_attribution_tracker_.Get();
   }
+
+  void SetContextForTest(SoftNavigationContext* context, Node* node);
 
   bool IsTrackingSoftNavigationsForTest() const {
     return !interaction_id_to_context_.empty();

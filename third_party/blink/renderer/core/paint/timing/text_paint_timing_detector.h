@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_TEXT_PAINT_TIMING_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_TEXT_PAINT_TIMING_DETECTOR_H_
 
-#include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -21,7 +20,6 @@
 namespace blink {
 class LargestContentfulPaintManager;
 class LayoutBoxModelObject;
-class PaintTimingClient;
 class PaintTimingDetector;
 class PropertyTreeStateOrAlias;
 
@@ -65,7 +63,6 @@ class CORE_EXPORT TextPaintTimingDetector final
   void Trace(Visitor*) const;
 
  private:
-  void SendRectsToHud();
   friend class LargestContentfulPaintCalculatorTest;
 
   // The state of `LayoutObject`s being tracked in the `recorded_set_`.
@@ -77,8 +74,6 @@ class CORE_EXPORT TextPaintTimingDetector final
       const PropertyTreeStateOrAlias& property_tree_state,
       const gfx::Rect& frame_visual_rect,
       const gfx::RectF& root_visual_rect);
-
-  void ForEachPaintTimingClient(base::FunctionRef<void(PaintTimingClient*)>);
 
   LargestContentfulPaintManager* GetLargestContentfulPaintManager() const;
 

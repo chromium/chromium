@@ -1535,11 +1535,10 @@ TEST_P(ImagePaintTimingDetectorAnimatedImageTest, ImageRenderingSequence) {
   // Simulate a paint with the first frame painted.
   timing->SetIsPaintedFirstFrame();
   SimulateImagePaint(target, timing, 100, 100);
-  // The image should be pending, recorded, and queued for paint time for the
-  // first image frame (regardless of the feature), and queued for paint time
-  // for being sufficiently loaded (with the feature).
-  EXPECT_EQ(ContainerTotalSize(),
-            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 4u : 3u);
+  // The image should be recorded, queued for paint time for the first image
+  // frame (regardless of the feature), and either pending (without the feature)
+  // or queued for paint time for being sufficiently loaded (with the feature).
+  EXPECT_EQ(ContainerTotalSize(), 3u);
   SimulateRendering();
 
   // Simulate presentation time. This should set the first animated frame time
@@ -1569,10 +1568,10 @@ TEST_P(ImagePaintTimingDetectorAnimatedImageTest, ImageRenderingSequence) {
   // record to be reported without.
   timing->SetIsSufficientContentLoadedForPaint();
   SimulateImagePaint(target, timing, 100, 100);
-  // There should be 1 entry if the feature is enabled (recorded) and 3 if not
-  // (recorded, pending, and queued for paint time).
+  // There should be 1 entry if the feature is enabled (recorded) and 2 if not
+  // (recorded and queued for paint time).
   EXPECT_EQ(ContainerTotalSize(),
-            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 1u : 3u);
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 1u : 2u);
   SimulateRenderingAndPresentationTime();
   EXPECT_EQ(ContainerTotalSize(), 1u);
   record = LargestImage();
@@ -1597,11 +1596,10 @@ TEST_P(ImagePaintTimingDetectorAnimatedImageTest, DelayedPresentationFeedback) {
 
   // Simulate a paint with the first animated frame painted.
   SimulateImagePaint(target, timing, 100, 100);
-  // The image should be pending, recorded, and queued for paint time for the
-  // first image frame (regardless of the feature), and queued for paint time
-  // for being sufficiently loaded (with the feature).
-  EXPECT_EQ(ContainerTotalSize(),
-            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 4u : 3u);
+  // The image should be recorded, queued for paint time for the first image
+  // frame (regardless of the feature), and either pending (without the feature)
+  // or queued for paint time for being sufficiently loaded (with the feature).
+  EXPECT_EQ(ContainerTotalSize(), 3u);
   SimulateRendering();
   // For LCP, the largest pending should be set, but the largest should not be.
   EXPECT_TRUE(LargestImage());
@@ -1618,10 +1616,10 @@ TEST_P(ImagePaintTimingDetectorAnimatedImageTest, DelayedPresentationFeedback) {
   SimulateImagePaint(target, timing, 100, 100);
   // With the feature enabled, the count should stay the same, but without the
   // feature, there's a second entry queued for first frame since the other is
-  // still pending, an entry queued for sufficiently loaded (also counted by the
-  // client observer), less one since it's removed from pending.
+  // still pending, and an entry queued for sufficiently loaded, less one since
+  // it's removed from pending.
   EXPECT_EQ(ContainerTotalSize(),
-            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 2u : 4u);
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 2u : 3u);
   SimulateRendering();
 
   // Rendering will take the image records queued for paint time, so the count

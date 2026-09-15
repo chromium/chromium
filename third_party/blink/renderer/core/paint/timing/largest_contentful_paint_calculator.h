@@ -153,10 +153,17 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
   // true as long as the candidate has non-zero size.
   bool IsEligibleForLcp(const TextRecord&) const;
 
-  // Returns true iff the given `ImageRecord` should be tracked for paint
-  // timing. This takes into account whether the record is an eligible candidate
-  // and if it's potentially larger than
-  bool ShouldTrackForPaintTiming(const ImageRecord&) const;
+  // Returns true iff the given `ImageRecord` is larger than the current
+  // largest image candidate.
+  bool IsNewLargestCandidate(const ImageRecord& record) const {
+    return record.IsEffectiveSizeLargerThan(largest_painted_image_);
+  }
+
+  // Returns true iff the given `TextRecord` is larger than the current
+  // largest text candidate.
+  bool IsNewLargestCandidate(const TextRecord& record) const {
+    return record.IsEffectiveSizeLargerThan(largest_text_);
+  }
 
   // Called when an image is painted for the first time, regardless of whether
   // or not it's sufficiently loaded enough to be considered for paint timing.

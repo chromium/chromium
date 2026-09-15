@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
+#include "third_party/blink/renderer/core/paint/timing/web_vitals_hud_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
@@ -109,8 +110,8 @@ void LargestContentfulPaintManager::Trace(Visitor* visitor) const {
 void LargestContentfulPaintManager::OnElementFirstContentfulPaint(
     ImageRecord* record) {
   CHECK(largest_contentful_paint_calculator_);
-  if (!largest_contentful_paint_calculator_->ShouldTrackForPaintTiming(
-          *record)) {
+  if (!largest_contentful_paint_calculator_->IsEligibleForLcp(*record) ||
+      !largest_contentful_paint_calculator_->IsNewLargestCandidate(*record)) {
     return;
   }
   // Inform the `largest_contentful_paint_calculator_` so it can update the
@@ -118,25 +119,38 @@ void LargestContentfulPaintManager::OnElementFirstContentfulPaint(
   largest_contentful_paint_calculator_->OnImageFirstPaint(record);
 }
 
-void LargestContentfulPaintManager::OnElementLastContentfulPaint(
-    ImageRecord* record) {
-  contains_full_viewport_image_ |=
-      record->GetEffectiveVisualSizeResult().is_viewport_covered;
+void LargestContentfulPaintManager::OnPaintFinished(
+    const HeapVector<Member<ImageRecord>>& image_records,
+    const HeapVector<Member<TextRecord>>& text_records) {
   CHECK(largest_contentful_paint_calculator_);
-  record->SetIsNeededForLargestContentfulPaint(
-      largest_contentful_paint_calculator_->ShouldTrackForPaintTiming(*record));
-}
 
-void LargestContentfulPaintManager::OnElementLastContentfulPaint(
-    TextRecord* record,
-    bool was_previously_reported) {
-  CHECK(largest_contentful_paint_calculator_);
-  // Note: unlike images, this tracks any records that are eligible for LCP,
-  // even if they're not larger than the current candidate. This affects the
-  // HUD, but doesn't affect LCP.
-  record->SetIsNeededForLargestContentfulPaint(
-      !was_previously_reported &&
-      largest_contentful_paint_calculator_->IsEligibleForLcp(*record));
+  LocalFrame* frame = window_->GetFrame();
+  CHECK(frame);
+  WebVitalsHudHelper hud_helper(
+      cc::WebVitalMetricType::kNavigationContentfulPaint, frame->View());
+
+  for (const auto& record : image_records) {
+    contains_full_viewport_image_ |=
+        record->GetEffectiveVisualSizeResult().is_viewport_covered;
+    if (!largest_contentful_paint_calculator_->IsEligibleForLcp(*record)) {
+      continue;
+    }
+    hud_helper.AddWebVitalsDebugRect(*record);
+    if (largest_contentful_paint_calculator_->IsNewLargestCandidate(*record)) {
+      record->SetIsNeededForLargestContentfulPaint(true);
+    }
+  }
+
+  for (const auto& record : text_records) {
+    if (record->WasPreviouslyReported() ||
+        !largest_contentful_paint_calculator_->IsEligibleForLcp(*record)) {
+      continue;
+    }
+    hud_helper.AddWebVitalsDebugRect(*record);
+    if (largest_contentful_paint_calculator_->IsNewLargestCandidate(*record)) {
+      record->SetIsNeededForLargestContentfulPaint(true);
+    }
+  }
 }
 
 void LargestContentfulPaintManager::OnImageRemoved(const LayoutObject& object,

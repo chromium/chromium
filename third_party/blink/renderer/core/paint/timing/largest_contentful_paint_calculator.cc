@@ -551,19 +551,6 @@ void LargestContentfulPaintCalculator::ReportNoMetricsImageCandidateToTrace() {
                std::move(value), "frame", GetFrameIdForTracing(frame));
 }
 
-bool LargestContentfulPaintCalculator::ShouldTrackForPaintTiming(
-    const ImageRecord& record) const {
-  if (!IsEligibleForLcp(record)) {
-    return false;
-  }
-  // TODO(crbug.com/454067883): The `largest_painted_image_` isn't updated until
-  // presentation time for hard navs, so we end up getting more timings than
-  // needed. This probably isn't a big deal, but it's some extra work. Instead,
-  // we may want to track the size of the current largest candidate, and work
-  // off that. We may need that anyway when emitting candidates more frequently.
-  return record.IsEffectiveSizeLargerThan(largest_painted_image_);
-}
-
 void LargestContentfulPaintCalculator::OnImageFirstPaint(ImageRecord* record) {
   if (record->IsEffectiveSizeLargerThan(largest_pending_image_)) {
     largest_pending_image_ = record;

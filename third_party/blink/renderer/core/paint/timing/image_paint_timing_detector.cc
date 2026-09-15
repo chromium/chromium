@@ -8,9 +8,6 @@
 
 #include "base/check_deref.h"
 #include "base/feature_list.h"
-#include "cc/layers/heads_up_display_layer.h"
-#include "cc/layers/layer.h"
-#include "cc/trees/layer_tree_host.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -59,40 +56,6 @@ bool IsSufficientlyLoadedForReporting(const MediaTiming& media_timing) {
 ImagePaintTimingDetector::ImagePaintTimingDetector(
     PaintTimingDetector* detector)
     : paint_timing_detector_(detector) {}
-
-void ImagePaintTimingDetector::SendRectsToHud() {
-  LocalFrameView* frame_view =
-      paint_timing_detector_->GetPaintTiming().GetDocument()->View();
-  CHECK(frame_view);
-  auto* hud_layer =
-      paint_timing::GetHUDLayerIfContentfulPaintRectsEnabled(frame_view);
-
-  if (!hud_layer) {
-    return;
-  }
-
-  LocalFrame& main_frame = frame_view->GetFrame().LocalFrameRoot();
-  FrameWidget* widget = main_frame.GetWidgetForLocalRoot();
-  if (!widget) {
-    return;
-  }
-
-  for (ImageRecord* record : images_queued_for_paint_time_) {
-    cc::WebVitalMetricType type;
-
-    if (record->GetSoftNavigationContext()) {
-      type = cc::WebVitalMetricType::kInteractionContentfulPaint;
-    } else if (record->IsNeededForLargestContentfulPaint()) {
-      type = cc::WebVitalMetricType::kNavigationContentfulPaint;
-    } else {
-      continue;
-    }
-
-    hud_layer->AddWebVitalsDebugRect(
-        {type, gfx::ToEnclosedRect(
-                   widget->DIPsToBlinkSpace(record->RootVisualRect()))});
-  }
-}
 
 void ImagePaintTimingDetector::NotifyImageRemoved(
     const LayoutObject& object,
@@ -272,23 +235,11 @@ void ImagePaintTimingDetector::RecordImage(
                                     : LoadTime(record_id_hash));
   }
 
-  // Inform clients about the contentful paint and set up for measuring
-  // presentation time if any clients need the `record`.
-  ForEachPaintTimingClient([&](PaintTimingClient* client) {
-    client->OnElementLastContentfulPaint(record);
-  });
-
   // Erase the record from `pending_images_` whether or not it's needed by
   // clients since the record is now sufficiently loaded.
   pending_images_.erase(record->Hash());
 
-  // No client needs this `record`, so no need to process any further.
-  if (!record->IsNeededForPaintTiming()) {
-    return;
-  }
-
-  // Queue the record for presentation time processing since at least one client
-  // needs this `record`.
+  // Queue the record for presentation time processing.
   images_queued_for_paint_time_.push_back(record);
 }
 
@@ -328,11 +279,10 @@ void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
   // Trigger FCP if it's not already set.
   paint_timing_detector_->GetPaintTiming().MarkFirstImagePaint();
 
-  // Notify clients of the first and contentful paints and set up presentation
+  // Notify clients of the first contentful paint and set up presentation
   // feedback.
   ForEachPaintTimingClient([&](PaintTimingClient* client) {
     client->OnElementFirstContentfulPaint(record);
-    client->OnElementLastContentfulPaint(record);
   });
   recorded_images_.insert(record->Hash());
 
@@ -427,9 +377,6 @@ void ImagePaintTimingDetector::ForEachPaintTimingClient(
 
 HeapVector<Member<ImageRecord>>
 ImagePaintTimingDetector::TakeImageRecordsOnPaintFinished() {
-  if (!images_queued_for_paint_time_.empty()) {
-    SendRectsToHud();
-  }
   return std::move(images_queued_for_paint_time_);
 }
 

@@ -885,9 +885,12 @@ class TestClient : public GarbageCollected<TestClient>,
  public:
   void Trace(Visitor*) const override {}
 
-  void OnElementLastContentfulPaint(TextRecord* record,
-                                    bool was_previously_reported) override {
-    record->SetIsNeededForLargestContentfulPaint(true);
+  void OnPaintFinished(
+      const HeapVector<Member<ImageRecord>>&,
+      const HeapVector<Member<TextRecord>>& text_records) override {
+    for (auto& record : text_records) {
+      record->SetIsNeededForLargestContentfulPaint(true);
+    }
   }
 };
 

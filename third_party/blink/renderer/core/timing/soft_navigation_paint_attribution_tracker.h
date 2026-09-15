@@ -111,6 +111,8 @@ class CORE_EXPORT SoftNavigationPaintAttributionTracker
     return false;
   }
 
+  void SetContextForTest(SoftNavigationContext* context, Node* node);
+
   // Called during the pre-paint phase to propagate the `SoftNavigationContext`
   // associated with task attributable modified DOM nodes to descendant nodes.
   // Returns a `PrePaintUpdateResult` indicating whether the current

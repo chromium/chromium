@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
+#include "third_party/blink/renderer/core/paint/timing/web_vitals_hud_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
@@ -466,15 +467,36 @@ void SoftNavigationHeuristics::EmitSoftNavigation(
   UpdateSoftLcpMetricsForContext(context);
 }
 
-void SoftNavigationHeuristics::OnElementLastContentfulPaint(
-    ImageRecord* record) {
-  OnContentfulPaintImpl(record);
-}
+void SoftNavigationHeuristics::OnPaintFinished(
+    const HeapVector<Member<ImageRecord>>& image_records,
+    const HeapVector<Member<TextRecord>>& text_records) {
+  LocalFrame* frame = window_->GetFrame();
+  CHECK(frame);
+  WebVitalsHudHelper hud_helper(
+      cc::WebVitalMetricType::kInteractionContentfulPaint, frame->View());
 
-void SoftNavigationHeuristics::OnElementLastContentfulPaint(
-    TextRecord* record,
-    bool was_previously_reported) {
-  OnContentfulPaintImpl(record);
+  // First, process all painted elements for this frame, assigning the relevant
+  // context and updating context bookkeeping.
+  for (const auto& record : image_records) {
+    OnContentfulPaintImpl(record.Get());
+    if (record->GetSoftNavigationContext()) {
+      hud_helper.AddWebVitalsDebugRect(*record);
+    }
+  }
+  for (const auto& record : text_records) {
+    OnContentfulPaintImpl(record.Get());
+    if (record->GetSoftNavigationContext()) {
+      hud_helper.AddWebVitalsDebugRect(*record);
+    }
+  }
+
+  // Next, see if any contexts are now eligible for soft navigation commit due
+  // to FCP.
+  for (const auto& context : interaction_id_to_context_.Values()) {
+    if (context->OnPaintFinished()) {
+      MaybeCommitNavigationOrEmitSoftNavigation(context);
+    }
+  }
 }
 
 template <IsDerivedFromPaintTimingRecord T>
@@ -494,14 +516,6 @@ void SoftNavigationHeuristics::OnContentfulPaintImpl(T* record) const {
   }
   record->SetSoftNavigationContext(context);
   context->AddPaintedArea(record);
-}
-
-void SoftNavigationHeuristics::OnPaintFinished() {
-  for (const auto& context : interaction_id_to_context_.Values()) {
-    if (context->OnPaintFinished()) {
-      MaybeCommitNavigationOrEmitSoftNavigation(context);
-    }
-  }
 }
 
 void SoftNavigationHeuristics::OnInputOrScroll() {
@@ -792,6 +806,11 @@ void SoftNavigationHeuristics::OnVideoSrcChanged(HTMLVideoElement* element) {
       PaintTimingDetector::NotifyInteractionTriggeredVideoSrcChange(*object);
     }
   }
+}
+
+void SoftNavigationHeuristics::SetContextForTest(SoftNavigationContext* context,
+                                                 Node* node) {
+  paint_attribution_tracker_->SetContextForTest(context, node);
 }
 
 }  // namespace blink

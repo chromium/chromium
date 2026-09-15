@@ -285,6 +285,22 @@ void PaintTiming::MarkPaintTimingInternal() {
       paint_timing_detector_->GetTextPaintTimingDetector()
           .TakeTextRecordsOnPaintFinished();
 
+  // Notify clients of all image and text elements painted in this frame and
+  // filter the records lists based to just those needed by clients.
+  //
+  // TODO(crbug.com/454082773): Currently, clients set the relevant flag/state
+  // for their use case and we filter records based on that, passing the
+  // filtered lists to the presentation callback. Instead, clients should return
+  // a PaintTimingCallback that they can use to assign the timestamps to
+  // performance entries or pending metrics entries.
+  ForEachClient([&](PaintTimingClient* client) {
+    client->OnPaintFinished(image_records, text_records);
+  });
+  EraseIf(image_records,
+          [](const auto& record) { return !record->IsNeededForPaintTiming(); });
+  EraseIf(text_records,
+          [](const auto& record) { return !record->IsNeededForPaintTiming(); });
+
   // 7. Let reportedPaints be the document’s set of previously reported paints.
   PendingPaintTimingRecord paint_timing_record{
       .paint_events = pending_paint_events_,
@@ -953,8 +969,6 @@ void PaintTiming::NotifyPaintFinished() {
   DOMWindowPerformance::performance(CHECK_DEREF(GetDocument()->domWindow()))
       ->OnPaintFinished();
   paint_timing_detector_->NotifyPaintFinished();
-
-  ForEachClient([](PaintTimingClient* client) { client->OnPaintFinished(); });
 
   MarkPaintTimingInternal();
 }
