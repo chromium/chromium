@@ -8,9 +8,7 @@
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/google/browser/google_url_util.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 
 namespace {
@@ -22,10 +20,12 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
       page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
           navigation_handle);
   const ChromeInitiatorLocation initiator_location = [&]() {
-    if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
-                                     ui::PAGE_TRANSITION_RELOAD)) {
-      return ChromeInitiatorLocation::kReload;
-    }
+    // Back/forward navigation and BFCache restore must be checked before reload
+    // because back/forward navigations to an entry that was previously reloaded
+    // have a transition type of `PAGE_TRANSITION_RELOAD |
+    // PAGE_TRANSITION_FORWARD_BACK`. `PageTransitionCoreTypeIs()` strips
+    // qualifiers like `PAGE_TRANSITION_FORWARD_BACK`, so checking for reload
+    // first would misclassify back/forward navigations as `kReload`.
     if ((navigation_handle.GetPageTransition() &
          ui::PAGE_TRANSITION_FORWARD_BACK) ||
         navigation_handle.IsServedFromBackForwardCache()) {
@@ -36,6 +36,10 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
       } else if (history_offset > 0) {
         return ChromeInitiatorLocation::kForward;
       }
+    }
+    if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
+                                     ui::PAGE_TRANSITION_RELOAD)) {
+      return ChromeInitiatorLocation::kReload;
     }
     if (navigation_handle_user_data) {
       return GetChromeInitiatorLocation(

@@ -1506,3 +1506,216 @@ IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
   preload_histogram_tester.ExpectBucketCount("PreloadServingMetrics.Reload.SRP",
                                              0 /* kNoPreload */, 1);
 }
+
+// Tests that navigating back to an entry that was previously reloaded records
+// `Navigation.InitiatorType.All` as `kBackward` (not `kReload`), and that
+// `PreloadServingMetrics.Reload.All` does not record `kBFCache`.
+//
+// Scenario:
+// 1. Navigate to Page A (url_a).
+// 2. Reload Page A (url_a).
+// 3. Navigate away to Page B (url_b).
+// 4. Navigate back to Page A (url_a).
+// 5. Verify `Navigation.InitiatorType.All` records `kBackward`.
+// 6. Navigate away to flush `PreloadServingMetrics` and verify
+//    `PreloadServingMetrics.Backward.All` records the expected BFCache bucket
+//    and `PreloadServingMetrics.Reload.All` does not record `kBFCache`.
+IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
+                       BackAfterReload) {
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/empty.html");
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/empty.html");
+
+  base::HistogramTester preload_histogram_tester;
+
+  // 1. Navigate to url_a.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        1);
+  }
+
+  // 2. Reload url_a.
+  {
+    base::HistogramTester histogram_tester;
+    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kReload)), 1);
+  }
+  content::RenderFrameHostWrapper rfh_a(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  // 3. Navigate to url_b.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+    if (IsBfcacheEnabled()) {
+      EXPECT_EQ(rfh_a->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+    } else {
+      EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        1);
+  }
+  content::RenderFrameHostWrapper rfh_b(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  // 4. Navigate back to url_a.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(content::HistoryGoBack(GetActiveWebContents()));
+    if (IsBfcacheEnabled()) {
+      EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
+      EXPECT_EQ(rfh_b->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+    } else {
+      EXPECT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kBackward)),
+        1);
+  }
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  int expected_bfcache_bucket =
+      IsBfcacheEnabled() ? 3 /* kBFCache */ : 0 /* kNoInstantLoad */;
+  preload_histogram_tester.ExpectBucketCount(
+      "PreloadServingMetrics.Backward.All", expected_bfcache_bucket, 1);
+  preload_histogram_tester.ExpectBucketCount("PreloadServingMetrics.Reload.All",
+                                             0 /* kNoInstantLoad */, 1);
+  preload_histogram_tester.ExpectBucketCount("PreloadServingMetrics.Reload.All",
+                                             3 /* kBFCache */, 0);
+}
+
+// Tests that navigating forward to an entry that was previously reloaded
+// records `Navigation.InitiatorType.All` as `kForward` (not `kReload`), and
+// that `PreloadServingMetrics.Reload.All` does not record `kBFCache`.
+//
+// Scenario:
+// 1. Navigate to Page A (url_a).
+// 2. Navigate to Page B (url_b).
+// 3. Reload Page B (url_b).
+// 4. Navigate back to Page A (url_a).
+// 5. Navigate forward to Page B (url_b).
+// 6. Verify `Navigation.InitiatorType.All` records `kForward`.
+// 7. Navigate away to flush `PreloadServingMetrics` and verify
+//    `PreloadServingMetrics.Forward.All` records the expected BFCache bucket
+//    and `PreloadServingMetrics.Reload.All` does not record `kBFCache`.
+IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
+                       ForwardAfterReload) {
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/empty.html");
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/empty.html");
+
+  base::HistogramTester preload_histogram_tester;
+
+  // 1. Navigate to url_a.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        1);
+  }
+  content::RenderFrameHostWrapper rfh_a(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  // 2. Navigate to url_b.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+    if (IsBfcacheEnabled()) {
+      EXPECT_EQ(rfh_a->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+    } else {
+      EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(page_load_metrics::NavigationHandleUserData::
+                        kInitiatorLocationOther),
+        1);
+  }
+
+  // 3. Reload url_b.
+  {
+    base::HistogramTester histogram_tester;
+    chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+    EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kReload)), 1);
+  }
+  content::RenderFrameHostWrapper rfh_b(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  // 4. Navigate back to url_a.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(content::HistoryGoBack(GetActiveWebContents()));
+    if (IsBfcacheEnabled()) {
+      EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
+      EXPECT_EQ(rfh_b->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+    } else {
+      EXPECT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kBackward)),
+        1);
+  }
+  content::RenderFrameHostWrapper rfh_a2(
+      GetActiveWebContents()->GetPrimaryMainFrame());
+
+  // 5. Navigate forward to url_b.
+  {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(content::HistoryGoForward(GetActiveWebContents()));
+    if (IsBfcacheEnabled()) {
+      EXPECT_TRUE(rfh_b->IsInPrimaryMainFrame());
+      EXPECT_EQ(rfh_a2->GetLifecycleState(),
+                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+    } else {
+      EXPECT_TRUE(rfh_a2.WaitUntilRenderFrameDeleted());
+    }
+
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.InitiatorType.All",
+        MetricValue(GetInitiatorLocation(ChromeInitiatorLocation::kForward)),
+        1);
+  }
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  int expected_bfcache_bucket =
+      IsBfcacheEnabled() ? 3 /* kBFCache */ : 0 /* kNoInstantLoad */;
+  preload_histogram_tester.ExpectBucketCount(
+      "PreloadServingMetrics.Forward.All", expected_bfcache_bucket, 1);
+  preload_histogram_tester.ExpectBucketCount("PreloadServingMetrics.Reload.All",
+                                             0 /* kNoInstantLoad */, 1);
+  preload_histogram_tester.ExpectBucketCount("PreloadServingMetrics.Reload.All",
+                                             3 /* kBFCache */, 0);
+}
