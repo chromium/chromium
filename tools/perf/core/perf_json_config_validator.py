@@ -141,11 +141,8 @@ def _ValidateBrowserType(builder_name, test_config):
       'android-chromium',
       'android-chrome',
       'android-chrome-bundle',
+      'android-chromium-bundle',
       'android-chrome-64-bundle',
-      'android-trichrome-chrome-bundle',
-      'android-trichrome-chrome-google-bundle',
-      'android-trichrome-chrome-64-32-bundle',
-      'android-trichrome-chrome-google-64-32-bundle',
       'exact',
     )
     if browser_options.browser not in android_browsers:

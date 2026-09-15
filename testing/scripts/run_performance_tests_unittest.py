@@ -499,7 +499,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
   @mock.patch.object(run_performance_tests.browser_finder, 'FindBrowser')
   def testCrossbenchFindBrowserFromEmbedder(self, _):
     fake_args = _create_crossbench_args(
-      'android-webview-trichrome-google-bundle'
+      'android-webview-standalone-google-bundle'
     ) + ['--embedder=org.foo.bar']
     options = run_performance_tests.parse_arguments(fake_args)
 

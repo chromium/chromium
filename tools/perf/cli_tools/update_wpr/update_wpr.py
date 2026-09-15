@@ -765,7 +765,7 @@ class WprUpdater(object):
 class CrossbenchWprUpdater(object):
   """This class helps to update WPR archive files for the Crossbench tool.
 
-  Currently it supports `android-trichrome-chrome-google-64-32-bundle` browser
+  Currently it supports `android-chrome-bundle` browser
   type only. The assumption is a single Android device is attached to the
   machine, and the device is connected to the network.
   """
@@ -773,7 +773,7 @@ class CrossbenchWprUpdater(object):
   _CB_TOOL = os.path.join(SRC_ROOT, 'third_party', 'crossbench', 'cb.py')
   _BUCKET = cloud_storage.PARTNER_BUCKET
   _CHROME_BROWSER = '--browser=%s'
-  _DEFAULT_BROWSER = 'android-trichrome-chrome-google-64-32-bundle'
+  _DEFAULT_BROWSER = 'android-chrome-bundle'
 
   def __init__(self, args):
     self.story = args.story

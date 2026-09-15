@@ -52,8 +52,7 @@ environment:
 When using [Pinpoint] to test start-up changes, make sure to:
 
 * Use bundles rather than APKs.
-  * For 32-bit: `--browser=android-trichrome-chrome-google-bundle`
-  * For 64-bit: `--browser=android-trichrome-chrome-google-64-32-bundle`
+  * `--browser=android-chrome-bundle`
 * Compile DEX: `--compile-apk=speed`
 
 Some start-up changes can improve start-up for high-end devices but degrade
