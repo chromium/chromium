@@ -518,6 +518,7 @@ bool IsAndroidAnimatedProgressBarInBrowserEnabled() {
 // cannot be put into production in its current state. Do not enable.
 // crbug.com/502801064
 BASE_FEATURE(kAiOverlayDialog, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAiOverlayDialogDev, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
                    kAiOverlayDialogApiKey,
                    &kAiOverlayDialog,
