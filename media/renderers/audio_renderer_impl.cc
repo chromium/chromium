@@ -49,6 +49,160 @@ perfetto::NamedTrack GetTracingTrack(const AudioRendererImpl* renderer) {
   return perfetto::NamedTrack::FromPointer("media::AudioRendererImpl",
                                            renderer);
 }
+
+// Helper struct which holds the final parameters used to initialize
+// AudioRendererImpl's components. This aggregates the parameters chosen by the
+// complex decision flow in `OnDeviceInfoReceived()` where we might prefer the
+// stream's (e.g., the media's) or the hardware's (e.g., the physical output
+// device) parameters in various circumstances.
+struct OutputConfig {
+  AudioParameters params;
+
+  ChannelLayoutConfig target_output_layout;
+  SampleFormat target_output_sample_format = kUnknownSampleFormat;
+};
+
+ChannelLayoutConfig DefaultDecoderTargetLayout(
+    const AudioParameters& hw_params) {
+  return hw_params.IsValid()
+             ? hw_params.channel_layout_config()
+             : ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_NONE>();
+}
+
+OutputConfig ComputeBitstreamOutputConfig(
+    const AudioDecoderConfig& stream_config,
+    const AudioParameters& hw_params) {
+  OutputConfig result;
+  result.target_output_layout = DefaultDecoderTargetLayout(hw_params);
+
+  const AudioCodec codec = stream_config.codec();
+  ChannelLayout channel_layout = stream_config.channel_layout();
+  int channels = stream_config.channels();
+  int bytes_per_frame = stream_config.bytes_per_frame();
+  AudioParameters::Format format = AudioParameters::AUDIO_FAKE;
+
+  // For DTS and Dolby formats, set target_output_sample_format to the
+  // respective bit-stream format so that passthrough decoder will be selected
+  // by MediaCodecAudioRenderer if this is running on Android.
+  if (codec == AudioCodec::kAC3) {
+    format = AudioParameters::AUDIO_BITSTREAM_AC3;
+    result.target_output_sample_format = kSampleFormatAc3;
+  } else if (codec == AudioCodec::kEAC3) {
+    format = AudioParameters::AUDIO_BITSTREAM_EAC3;
+    result.target_output_sample_format = kSampleFormatEac3;
+  } else if (codec == AudioCodec::kDTS) {
+    format = AudioParameters::AUDIO_BITSTREAM_DTS;
+    result.target_output_sample_format = kSampleFormatDts;
+    if (hw_params.RequireEncapsulation()) {
+      bytes_per_frame = 1;
+      channel_layout = CHANNEL_LAYOUT_MONO;
+      channels = 1;
+    }
+  } else {
+    NOTREACHED();
+  }
+
+  // If we want the precise PCM frame count here, we have to somehow peek the
+  // audio bitstream and parse the header ahead of time. Instead, we ensure
+  // audio bus being large enough to accommodate
+  // kMaxFramesPerCompressedAudioBuffer frames. The real data size and frame
+  // count for bitstream formats will be carried in additional fields of
+  // AudioBus.
+  const int buffer_size =
+      AudioParameters::kMaxFramesPerCompressedAudioBuffer * bytes_per_frame;
+
+  result.params =
+      AudioParameters(format, {channel_layout, channels},
+                      stream_config.samples_per_second(), buffer_size);
+  return result;
+}
+
+OutputConfig ComputeStreamOutputConfig(const AudioDecoderConfig& stream_config,
+                                       const AudioParameters& hw_params,
+                                       int preferred_buffer_size) {
+  OutputConfig result;
+  result.target_output_layout = DefaultDecoderTargetLayout(hw_params);
+  result.params = AudioParameters(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      {stream_config.channel_layout(), stream_config.channels()},
+      stream_config.samples_per_second(), preferred_buffer_size);
+  return result;
+}
+
+OutputConfig ComputeHardwareOutputConfig(
+    const AudioDecoderConfig& stream_config,
+    const AudioParameters& hw_params,
+    int preferred_buffer_size) {
+  OutputConfig result;
+
+  // To allow for seamless sample rate adaptations (i.e. changes from say
+  // 16kHz to 48kHz), always resample to the hardware rate.
+  int sample_rate = hw_params.sample_rate();
+
+  // If supported by the OS and the initial sample rate is not too low, let
+  // the OS level resampler handle resampling for power efficiency.
+  if (AudioLatency::IsResamplingPassthroughSupported(
+          AudioLatency::Type::kPlayback) &&
+      stream_config.samples_per_second() >= 44100) {
+    sample_rate = stream_config.samples_per_second();
+  }
+
+  bool try_supported_channel_layouts = false;
+#if BUILDFLAG(IS_WIN)
+  try_supported_channel_layouts =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kTrySupportedChannelLayouts);
+#endif
+
+  // We don't know how to up-mix for DISCRETE layouts (fancy multichannel
+  // hardware with non-standard speaker arrangement). Instead, pretend the
+  // hardware layout is stereo and let the OS take care of further up-mixing
+  // to the discrete layout (http://crbug.com/266674). Additionally, pretend
+  // hardware is stereo whenever kTrySupportedChannelLayouts is set. This flag
+  // is for savvy users who want stereo content to output in all surround
+  // speakers. Using the actual layout (likely 5.1 or higher) will mean our
+  // mixer will attempt to up-mix stereo source streams to just the left/right
+  // speaker of the 5.1 setup, nulling out the other channels
+  // (http://crbug.com/177872).
+  ChannelLayoutConfig hw_channel_layout;
+  if (hw_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
+      try_supported_channel_layouts) {
+    hw_channel_layout = ChannelLayoutConfig::Stereo();
+  } else {
+    hw_channel_layout = hw_params.channel_layout_config();
+  }
+  result.target_output_layout = hw_channel_layout;
+
+  // The layout we pass to `result.params` will be used for the lifetime of this
+  // renderer, regardless of changes to hardware and/or stream properties. Below
+  // we choose the max of stream layout vs. hardware layout to leave room for
+  // changes to the hardware and/or stream (i.e. avoid premature down-mixing -
+  // http://crbug.com/379288).
+  // If stream_channels < hw_channels:
+  //   Taking max means we up-mix to hardware layout. If stream later changes
+  //   to have more channels, we aren't locked into down-mixing to the
+  //   initial stream layout.
+  // If stream_channels > hw_channels:
+  //   We choose to output stream's layout, meaning mixing is a no-op for the
+  //   renderer. Browser-side will down-mix to the hardware config. If the
+  //   hardware later changes to equal stream channels, browser-side will stop
+  //   down-mixing and use the data from all stream channels.
+
+  ChannelLayoutConfig stream_layout_config =
+      stream_config.channel_layout_config();
+  const bool use_stream_channel_layout =
+      hw_channel_layout.channels() <= stream_layout_config.channels();
+
+  ChannelLayoutConfig renderer_channel_layout_config =
+      use_stream_channel_layout ? stream_layout_config : hw_channel_layout;
+
+  result.params = AudioParameters(hw_params.format(),
+                                  renderer_channel_layout_config, sample_rate,
+                                  AudioLatency::GetHighLatencyBufferSize(
+                                      sample_rate, preferred_buffer_size));
+  return result;
+}
+
 }  // namespace
 
 AudioRendererImpl::AudioRendererImpl(
@@ -492,10 +646,6 @@ void AudioRendererImpl::OnDeviceInfoReceived(
   DCHECK(current_decoder_config_.IsValidConfig());
 
   const AudioParameters& hw_params = output_device_info.output_params();
-  ChannelLayoutConfig hw_channel_layout =
-      hw_params.IsValid()
-          ? hw_params.channel_layout_config()
-          : ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_NONE>();
 
   DVLOG(1) << __func__ << ": " << hw_params.AsHumanReadableString();
 
@@ -511,7 +661,7 @@ void AudioRendererImpl::OnDeviceInfoReceived(
   // AC3/EAC3 windows decoder supports input channel count in the range 1 (mono)
   // to 8 (7.1 channel configuration), but output channel config are stereo, 5.1
   // and 7.1. There will be channel config changes, so here force
-  // 'expecting_config_changes_' to true to use 'hw_channel_layout'.
+  // 'expecting_config_changes_' to true to use the hardware output config.
   // Refer to
   // https://learn.microsoft.com/en-us/windows/win32/medfound/dolby-audio-decoder
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO) && BUILDFLAG(IS_WIN)
@@ -545,119 +695,24 @@ void AudioRendererImpl::OnDeviceInfoReceived(
       std::max(2 * stream->audio_decoder_config().samples_per_second() / 100,
                hw_params.IsValid() ? hw_params.frames_per_buffer() : 0);
 
-  SampleFormat target_output_sample_format = kUnknownSampleFormat;
+  OutputConfig output_config;
   if (is_passthrough_) {
-    ChannelLayout channel_layout =
-        stream->audio_decoder_config().channel_layout();
-    int channels = stream->audio_decoder_config().channels();
-    int bytes_per_frame = stream->audio_decoder_config().bytes_per_frame();
-    AudioParameters::Format format = AudioParameters::AUDIO_FAKE;
-    // For DTS and Dolby formats, set target_output_sample_format to the
-    // respective bit-stream format so that passthrough decoder will be selected
-    // by MediaCodecAudioRenderer if this is running on Android.
-    if (codec == AudioCodec::kAC3) {
-      format = AudioParameters::AUDIO_BITSTREAM_AC3;
-      target_output_sample_format = kSampleFormatAc3;
-    } else if (codec == AudioCodec::kEAC3) {
-      format = AudioParameters::AUDIO_BITSTREAM_EAC3;
-      target_output_sample_format = kSampleFormatEac3;
-    } else if (codec == AudioCodec::kDTS) {
-      format = AudioParameters::AUDIO_BITSTREAM_DTS;
-      target_output_sample_format = kSampleFormatDts;
-      if (hw_params.RequireEncapsulation()) {
-        bytes_per_frame = 1;
-        channel_layout = CHANNEL_LAYOUT_MONO;
-        channels = 1;
-      }
-    } else {
-      NOTREACHED();
-    }
-
-    // If we want the precise PCM frame count here, we have to somehow peek the
-    // audio bitstream and parse the header ahead of time. Instead, we ensure
-    // audio bus being large enough to accommodate
-    // kMaxFramesPerCompressedAudioBuffer frames. The real data size and frame
-    // count for bitstream formats will be carried in additional fields of
-    // AudioBus.
-    const int buffer_size =
-        AudioParameters::kMaxFramesPerCompressedAudioBuffer * bytes_per_frame;
-
-    audio_parameters_.Reset(format, {channel_layout, channels},
-                            stream->audio_decoder_config().samples_per_second(),
-                            buffer_size);
+    output_config =
+        ComputeBitstreamOutputConfig(stream->audio_decoder_config(), hw_params);
     buffer_converter_.reset();
   } else if (use_stream_params) {
-    audio_parameters_.Reset(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                            {stream->audio_decoder_config().channel_layout(),
-                             stream->audio_decoder_config().channels()},
-                            stream->audio_decoder_config().samples_per_second(),
-                            preferred_buffer_size);
+    output_config = ComputeStreamOutputConfig(stream->audio_decoder_config(),
+                                              hw_params, preferred_buffer_size);
     buffer_converter_.reset();
   } else {
-    // To allow for seamless sample rate adaptations (i.e. changes from say
-    // 16kHz to 48kHz), always resample to the hardware rate.
-    int sample_rate = hw_params.sample_rate();
-
-    // If supported by the OS and the initial sample rate is not too low, let
-    // the OS level resampler handle resampling for power efficiency.
-    if (AudioLatency::IsResamplingPassthroughSupported(
-            AudioLatency::Type::kPlayback) &&
-        stream->audio_decoder_config().samples_per_second() >= 44100) {
-      sample_rate = stream->audio_decoder_config().samples_per_second();
-    }
-
-    bool try_supported_channel_layouts = false;
-#if BUILDFLAG(IS_WIN)
-    try_supported_channel_layouts =
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kTrySupportedChannelLayouts);
-#endif
-
-    // We don't know how to up-mix for DISCRETE layouts (fancy multichannel
-    // hardware with non-standard speaker arrangement). Instead, pretend the
-    // hardware layout is stereo and let the OS take care of further up-mixing
-    // to the discrete layout (http://crbug.com/266674). Additionally, pretend
-    // hardware is stereo whenever kTrySupportedChannelLayouts is set. This flag
-    // is for savvy users who want stereo content to output in all surround
-    // speakers. Using the actual layout (likely 5.1 or higher) will mean our
-    // mixer will attempt to up-mix stereo source streams to just the left/right
-    // speaker of the 5.1 setup, nulling out the other channels
-    // (http://crbug.com/177872).
-    if (hw_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
-        try_supported_channel_layouts) {
-      hw_channel_layout = ChannelLayoutConfig::Stereo();
-    } else {
-      hw_channel_layout = hw_params.channel_layout_config();
-    }
-
-    // The layout we pass to |audio_parameters_| will be used for the lifetime
-    // of this audio renderer, regardless of changes to hardware and/or stream
-    // properties. Below we choose the max of stream layout vs. hardware layout
-    // to leave room for changes to the hardware and/or stream (i.e. avoid
-    // premature down-mixing - http://crbug.com/379288).
-    // If stream_channels < hw_channels:
-    //   Taking max means we up-mix to hardware layout. If stream later changes
-    //   to have more channels, we aren't locked into down-mixing to the
-    //   initial stream layout.
-    // If stream_channels > hw_channels:
-    //   We choose to output stream's layout, meaning mixing is a no-op for the
-    //   renderer. Browser-side will down-mix to the hardware config. If the
-    //   hardware later changes to equal stream channels, browser-side will stop
-    //   down-mixing and use the data from all stream channels.
-
-    ChannelLayoutConfig stream_layout_config =
-        stream->audio_decoder_config().channel_layout_config();
-    bool use_stream_channel_layout =
-        hw_channel_layout.channels() <= stream_layout_config.channels();
-
-    ChannelLayoutConfig renderer_channel_layout_config =
-        use_stream_channel_layout ? stream_layout_config : hw_channel_layout;
-
-    audio_parameters_.Reset(hw_params.format(), renderer_channel_layout_config,
-                            sample_rate,
-                            AudioLatency::GetHighLatencyBufferSize(
-                                sample_rate, preferred_buffer_size));
+    output_config = ComputeHardwareOutputConfig(
+        stream->audio_decoder_config(), hw_params, preferred_buffer_size);
   }
+
+  audio_parameters_.Reset(output_config.params.format(),
+                          output_config.params.channel_layout_config(),
+                          output_config.params.sample_rate(),
+                          output_config.params.frames_per_buffer());
 
   audio_parameters_.set_effects(audio_parameters_.effects() |
                                 AudioParameters::MULTIZONE);
@@ -671,7 +726,8 @@ void AudioRendererImpl::OnDeviceInfoReceived(
 
   audio_decoder_stream_ = std::make_unique<AudioDecoderStream>(
       std::make_unique<AudioDecoderStream::StreamTraits>(
-          media_log_, hw_channel_layout, target_output_sample_format),
+          media_log_, output_config.target_output_layout,
+          output_config.target_output_sample_format),
       task_runner_, create_audio_decoders_cb_, media_log_);
 
   audio_decoder_stream_->set_config_change_observer(base::BindRepeating(
