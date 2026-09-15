@@ -85,6 +85,7 @@ public class PostMessageHandlerTest {
     @Before
     public void setUp() {
         lenient().when(mWebContents.getMainFrame()).thenReturn(mMainFrame);
+        lenient().when(mSecondWebContents.getMainFrame()).thenReturn(mMainFrame);
         lenient()
                 .when(mMainFrame.getLastCommittedURL())
                 .thenReturn(new GURL("https://www.example.com/page"));
@@ -94,7 +95,7 @@ public class PostMessageHandlerTest {
                 .thenReturn(new MessagePort[] {mSecondLocalPort, mSecondRemotePort});
         lenient()
                 .when(mSecondWebContents.createMessageChannel())
-                .thenReturn(new MessagePort[] {mFirstLocalPort, mFirstRemotePort});
+                .thenReturn(new MessagePort[] {mSecondLocalPort, mSecondRemotePort});
         lenient().when(mNavigation.hasCommitted()).thenReturn(true);
         lenient().when(mNavigation.isSameDocument()).thenReturn(false);
         GURLUtilsJni.setInstanceForTesting(mGURLUtilsJni);
@@ -315,6 +316,9 @@ public class PostMessageHandlerTest {
 
         verify(mWebContents).createMessageChannel();
         verify(mPostMessageBackend).onNotifyMessageChannelReady(null);
+        assertEquals(
+                CustomTabsService.RESULT_SUCCESS,
+                mHandler.postMessageFromClientApp("message after document loaded"));
     }
 
     @Test
@@ -633,6 +637,106 @@ public class PostMessageHandlerTest {
         ShadowLooper.runUiThreadTasks();
 
         verify(mFirstLocalPort, never()).postMessage(any(), any());
+    }
+
+    @Test
+    public void testResetWithNewWebContentsClosesPreviousChannelAndDetachesObserver() {
+        WebContentsObserver observer = resetAndFinishInitialNavigation();
+        mHandler.initializeWithPostMessageUri(SOURCE_URI, TARGET_URI);
+        verify(mPostMessageBackend).onNotifyMessageChannelReady(null);
+
+        mHandler.reset(mSecondWebContents);
+
+        verify(mFirstLocalPort).close();
+        verify(mPostMessageBackend).onDisconnectChannel(any());
+        verify((WebContentsObserver.Observable) mWebContents).removeObserver(observer);
+        verify((WebContentsObserver.Observable) mSecondWebContents).addObserver(any());
+        assertNull(mHandler.getPostMessageUriForTesting());
+        assertNull(mHandler.getPostMessageTargetUriForTesting());
+        assertEquals(
+                CustomTabsService.RESULT_FAILURE_MESSAGING_ERROR,
+                mHandler.postMessageFromClientApp("message to swapped web contents"));
+
+        mHandler.initializeWithPostMessageUri(SOURCE_URI, TARGET_URI);
+        verify(mSecondWebContents).createMessageChannel();
+        assertEquals(
+                CustomTabsService.RESULT_SUCCESS,
+                mHandler.postMessageFromClientApp("message to second web contents"));
+    }
+
+    @Test
+    public void testResetWithNullClosesChannelAndDetachesObserver() {
+        WebContentsObserver observer = resetAndFinishInitialNavigation();
+        mHandler.initializeWithPostMessageUri(SOURCE_URI, TARGET_URI);
+        verify(mPostMessageBackend).onNotifyMessageChannelReady(null);
+
+        mHandler.reset(null);
+
+        verify(mFirstLocalPort).close();
+        verify(mPostMessageBackend).onDisconnectChannel(any());
+        verify((WebContentsObserver.Observable) mWebContents).removeObserver(observer);
+        assertNull(mHandler.getPostMessageUriForTesting());
+        assertNull(mHandler.getPostMessageTargetUriForTesting());
+        assertEquals(
+                CustomTabsService.RESULT_FAILURE_MESSAGING_ERROR,
+                mHandler.postMessageFromClientApp("message after null reset"));
+    }
+
+    @Test
+    public void testResetWithDestroyedWebContentsClosesChannelAndDetachesObserver() {
+        WebContentsObserver observer = resetAndFinishInitialNavigation();
+        mHandler.initializeWithPostMessageUri(SOURCE_URI, TARGET_URI);
+        verify(mPostMessageBackend).onNotifyMessageChannelReady(null);
+
+        WebContents destroyedWebContents = org.mockito.Mockito.mock(WebContents.class);
+        when(destroyedWebContents.isDestroyed()).thenReturn(true);
+
+        mHandler.reset(destroyedWebContents);
+
+        verify(mFirstLocalPort).close();
+        verify(mPostMessageBackend).onDisconnectChannel(any());
+        verify((WebContentsObserver.Observable) mWebContents).removeObserver(observer);
+        assertNull(mHandler.getPostMessageUriForTesting());
+        assertNull(mHandler.getPostMessageTargetUriForTesting());
+        assertEquals(
+                CustomTabsService.RESULT_FAILURE_MESSAGING_ERROR,
+                mHandler.postMessageFromClientApp("message after destroyed reset"));
+    }
+
+    @Test
+    public void testWebContentsDestroyedEventClosesChannelAndDetachesObserver() {
+        WebContentsObserver observer = resetAndFinishInitialNavigation();
+        mHandler.initializeWithPostMessageUri(SOURCE_URI, TARGET_URI);
+        verify(mPostMessageBackend).onNotifyMessageChannelReady(null);
+
+        observer.webContentsDestroyed();
+
+        verify(mFirstLocalPort).close();
+        verify(mPostMessageBackend).onDisconnectChannel(any());
+        verify((WebContentsObserver.Observable) mWebContents).removeObserver(observer);
+        assertNull(mHandler.getPostMessageUriForTesting());
+        assertNull(mHandler.getPostMessageTargetUriForTesting());
+        assertEquals(
+                CustomTabsService.RESULT_FAILURE_MESSAGING_ERROR,
+                mHandler.postMessageFromClientApp("message after webContentsDestroyed"));
+    }
+
+    @Test
+    public void testPrimaryMainFrameRenderProcessGoneClosesChannelAndDetachesObserver() {
+        WebContentsObserver observer = resetAndFinishInitialNavigation();
+        mHandler.initializeWithPostMessageUri(SOURCE_URI, TARGET_URI);
+        verify(mPostMessageBackend).onNotifyMessageChannelReady(null);
+
+        observer.primaryMainFrameRenderProcessGone(TerminationStatus.PROCESS_WAS_KILLED);
+
+        verify(mFirstLocalPort).close();
+        verify(mPostMessageBackend).onDisconnectChannel(any());
+        verify((WebContentsObserver.Observable) mWebContents).removeObserver(observer);
+        assertNull(mHandler.getPostMessageUriForTesting());
+        assertNull(mHandler.getPostMessageTargetUriForTesting());
+        assertEquals(
+                CustomTabsService.RESULT_FAILURE_MESSAGING_ERROR,
+                mHandler.postMessageFromClientApp("message after render process gone"));
     }
 
     /** Builds an opaque {@link org.chromium.url.Origin}, as a sandboxed frame would have. */
