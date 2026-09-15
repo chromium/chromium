@@ -309,6 +309,8 @@ TEST_F(OmniboxPopupHandlerTest, OnPasteUpdatesEditModel) {
       std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
           omnibox_controller.get());
   auto* mock_edit_model_ptr = mock_edit_model.get();
+  TestOmniboxView test_view(omnibox_controller.get());
+  mock_edit_model_ptr->set_view(&test_view);
   omnibox_controller->SetEditModelForTesting(std::move(mock_edit_model));
 
   testing::NiceMock<MockOmniboxPopupPage> local_page;
@@ -344,7 +346,10 @@ TEST_F(OmniboxPopupHandlerTest, OnPasteUpdatesEditModel) {
   handler_->OnPaste("https://example.com", gfx::Range(19, 19),
                     /*sequence_number=*/1);
   histogram_tester.ExpectBucketCount("Omnibox.Paste", 1, 1);
+  EXPECT_EQ(test_view.GetText(), u"https://example.com");
+  EXPECT_EQ(test_view.GetSelectionBounds(), gfx::Range(19, 19));
 
+  mock_edit_model_ptr->set_view(nullptr);
   // Reset the handler to avoid dangling raw_ptr to the local
   // omnibox_controller.
   handler_.reset();
@@ -384,6 +389,8 @@ TEST_F(OmniboxPopupHandlerTest, OnCutUpdatesEditModel) {
       std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
           omnibox_controller.get());
   auto* mock_edit_model_ptr = mock_edit_model.get();
+  TestOmniboxView test_view(omnibox_controller.get());
+  mock_edit_model_ptr->set_view(&test_view);
   omnibox_controller->SetEditModelForTesting(std::move(mock_edit_model));
 
   testing::NiceMock<MockOmniboxPopupPage> local_page;
@@ -420,6 +427,10 @@ TEST_F(OmniboxPopupHandlerTest, OnCutUpdatesEditModel) {
                         "https://example.com/",
                         /*selection=*/gfx::Range(8, 15));
 
+  EXPECT_EQ(test_view.GetText(), expected_new_text);
+  EXPECT_EQ(test_view.GetSelectionBounds(), gfx::Range(8, 8));
+
+  mock_edit_model_ptr->set_view(nullptr);
   handler_.reset();
 }
 

@@ -809,11 +809,19 @@ export class OmniboxPopupSearchboxElement extends
         this.currentSequenceNum_, isCut, oldValue, {start, end});
 
     if (isCut) {
-      const newValue = oldValue.substring(0, start) + oldValue.substring(end);
+      this.textfieldModel_.selectRange({start, end});
+      this.textfieldModel_.cut();
+      this.lastInputText_ = this.textfieldModel_.text;
+      this.lastInputSelection_ = this.textfieldModel_.selection;
+      this.updateEditHistoryState_();
+
+      const newValue = this.textfieldModel_.text;
+      const cursorPos = this.lastInputSelection_.end;
+
       this.userInputInProgress_ = true;
       this.hasUserInput_ = !!newValue.trim();
       this.getInputElement().setInput({text: newValue, inline: ''});
-      this.getInputElement().setSelectionRange(start, start);
+      this.getInputElement().setSelectionRange(cursorPos, cursorPos);
 
       if (newValue.trim()) {
         this.queryAutocomplete(
