@@ -6,6 +6,8 @@ found in the LICENSE file.
 
 <!--
 
+        You DON'T need an OWNER review to submit changes to this file.
+
 This file describes the enumerations referenced by entries in histograms.xml for
 this directory. Some enums may instead be listed in the central enums.xml file
 at src/tools/metrics/histograms/enums.xml when multiple files use them.
