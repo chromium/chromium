@@ -114,6 +114,15 @@ bool UsesPaintOffset(const LayoutObject& clip_path_owner) {
   return !clip_path_owner.IsSVGChild();
 }
 
+gfx::RectF UnzoomedReferenceBox(const gfx::RectF& reference_box,
+                                const LayoutObject& reference_box_object) {
+  if (!ClipPathClipper::UsesZoomedReferenceBox(reference_box_object)) {
+    return reference_box;
+  }
+  return gfx::ScaleRect(reference_box,
+                        1.f / reference_box_object.StyleRef().EffectiveZoom());
+}
+
 CompositedPaintStatus CompositeClipPathStatus(Node* node) {
   Element* element = DynamicTo<Element>(node);
   if (!element) {
@@ -444,15 +453,17 @@ std::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
   if (!clipper)
     return std::nullopt;
 
-  gfx::RectF bounding_box = clipper->ResourceBoundingBox(reference_box);
-  if (UsesZoomedReferenceBox(object) &&
-      clipper->ClipPathUnits() == SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
+  // Must stay in sync with MaskToContentTransform() below.
+  gfx::RectF bounding_box =
+      clipper->ResourceBoundingBox(UnzoomedReferenceBox(reference_box, object));
+  if (UsesZoomedReferenceBox(object)) {
     bounding_box.Scale(object.StyleRef().EffectiveZoom());
     // With kSvgUnitTypeUserspaceonuse, the clip path layout is relative to
     // the current transform space, and the reference box is unused.
     // While SVG object has no concept of paint offset, HTML object's
     // local space is shifted by paint offset.
-    if (UsesPaintOffset(object)) {
+    if (clipper->ClipPathUnits() == SVGUnitTypes::kSvgUnitTypeUserspaceonuse &&
+        UsesPaintOffset(object)) {
       bounding_box.Offset(reference_box.OffsetFromOrigin());
     }
   }
@@ -510,14 +521,9 @@ bool ClipPathClipper::HitTest(const LayoutObject& clip_path_owner,
   const TransformedHitTestLocation unzoomed_location(
       location, UserSpaceToClipPathTransform(*clipper, reference_box,
                                              reference_box_object));
-  const float zoom = reference_box_object.StyleRef().EffectiveZoom();
-  const bool uses_zoomed_reference_box =
-      UsesZoomedReferenceBox(reference_box_object);
-  const gfx::RectF unzoomed_reference_box =
-      uses_zoomed_reference_box ? gfx::ScaleRect(reference_box, 1.f / zoom)
-                                : reference_box;
-  return clipper->HitTestClipContent(unzoomed_reference_box,
-                                     reference_box_object, *unzoomed_location);
+  return clipper->HitTestClipContent(
+      UnzoomedReferenceBox(reference_box, reference_box_object),
+      reference_box_object, *unzoomed_location);
 }
 
 static AffineTransform MaskToContentTransform(
@@ -525,18 +531,17 @@ static AffineTransform MaskToContentTransform(
     const gfx::RectF& reference_box,
     const LayoutObject& reference_box_object) {
   AffineTransform mask_to_content;
-  if (resource_clipper.ClipPathUnits() ==
-      SVGUnitTypes::kSvgUnitTypeUserspaceonuse) {
-    if (ClipPathClipper::UsesZoomedReferenceBox(reference_box_object)) {
-      if (UsesPaintOffset(reference_box_object)) {
-        mask_to_content.Translate(reference_box.x(), reference_box.y());
-      }
-      mask_to_content.Scale(reference_box_object.StyleRef().EffectiveZoom());
+  if (ClipPathClipper::UsesZoomedReferenceBox(reference_box_object)) {
+    if (resource_clipper.ClipPathUnits() ==
+            SVGUnitTypes::kSvgUnitTypeUserspaceonuse &&
+        UsesPaintOffset(reference_box_object)) {
+      mask_to_content.Translate(reference_box.x(), reference_box.y());
     }
+    mask_to_content.Scale(reference_box_object.StyleRef().EffectiveZoom());
   }
 
-  mask_to_content.PreConcat(
-      resource_clipper.CalculateClipTransform(reference_box));
+  mask_to_content.PreConcat(resource_clipper.CalculateClipTransform(
+      UnzoomedReferenceBox(reference_box, reference_box_object)));
   return mask_to_content;
 }
 
