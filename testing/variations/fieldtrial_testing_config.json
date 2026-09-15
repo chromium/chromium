@@ -4052,7 +4052,8 @@
                         "MigratedPageInfo": "true",
                         "MigratedPdf": "true",
                         "MigratedPinInfoBar": "true",
-                        "MigratedSessionRestore": "true"
+                        "MigratedSessionRestore": "true",
+                        "MigratedWebAuthFlow": "true"
                     },
                     "enable_features": [
                         "CentralizedInfoBarFramework"
