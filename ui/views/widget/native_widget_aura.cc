@@ -743,14 +743,17 @@ void NativeWidgetAura::Close() {
   DCHECK(window_ ||
          ownership_ == Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET ||
          ownership_ == Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto weak_this = weak_factory.GetWeakPtr();
   if (window_) {
     Hide();
+    if (!weak_this || !window_) {
+      return;
+    }
     window_->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kNone);
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NativeWidgetAura::CloseNow, weak_factory.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&NativeWidgetAura::CloseNow, weak_this));
 }
 
 void NativeWidgetAura::CloseNow() {
