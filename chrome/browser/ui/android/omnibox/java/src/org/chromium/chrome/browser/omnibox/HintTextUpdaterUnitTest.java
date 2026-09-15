@@ -381,6 +381,41 @@ public class HintTextUpdaterUnitTest {
     }
 
     @Test
+    public void testAimActivationHint_FuseboxDisabled_showsHint() {
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.AIM_ACTIVATION_HINT)).thenReturn(true);
+        mFuseboxStateSupplier.set(FuseboxState.DISABLED);
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mActivationChipVisibilitySupplier.set(true);
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mAutocompleteInput.setUserText("");
+
+        clearInvocations(mUpdateHintTextCallback);
+        mUpdater.onTitleChanged();
+
+        verify(mUpdateHintTextCallback).onResult(mHintTextCaptor.capture());
+        assertTrue(
+                mHintTextCaptor
+                        .getValue()
+                        .toString()
+                        .contains("Press tab then enter to ask AI Mode"));
+    }
+
+    @Test
+    public void testAimActivationHint_FuseboxDisabled_showsEmptyHintWhenTrackerSaysNo() {
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.AIM_ACTIVATION_HINT)).thenReturn(false);
+        mFuseboxStateSupplier.set(FuseboxState.DISABLED);
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mActivationChipVisibilitySupplier.set(true);
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mAutocompleteInput.setUserText("");
+
+        clearInvocations(mUpdateHintTextCallback);
+        mUpdater.onTitleChanged();
+
+        verify(mUpdateHintTextCallback).onResult(eq(""));
+    }
+
+    @Test
     public void testAimActivationHint_ResetsShownFlagOnEndInput() {
         when(mTracker.shouldTriggerHelpUi(FeatureConstants.AIM_ACTIVATION_HINT)).thenReturn(true);
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);

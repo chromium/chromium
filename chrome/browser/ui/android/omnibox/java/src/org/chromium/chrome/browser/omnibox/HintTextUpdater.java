@@ -290,9 +290,7 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
     }
 
     private boolean useAimActivationOrEmptyHint() {
-        return mFuseboxCoordinator.getFuseboxStateSupplier().get() != FuseboxState.DISABLED
-                && isSuggestionsPopover()
-                && mActivationChipVisibilitySupplier.get();
+        return isSuggestionsPopover() && mActivationChipVisibilitySupplier.get();
     }
 
     private boolean isSuggestionsPopover() {
