@@ -43,26 +43,26 @@ struct MEDIA_EXPORT HEVCDecoderConfigurationRecord : Box {
   bool Parse(base::span<const uint8_t> data);
   bool Serialize(std::vector<uint8_t>& output) const;
 
-  uint8_t configurationVersion;
-  uint8_t general_profile_space;
-  uint8_t general_tier_flag;
-  uint8_t general_profile_idc;
-  uint32_t general_profile_compatibility_flags;
-  uint64_t general_constraint_indicator_flags;
-  uint8_t general_level_idc;
-  uint16_t min_spatial_segmentation_idc;
-  uint8_t parallelismType;
-  uint8_t chromaFormat;
-  uint8_t bitDepthLumaMinus8;
-  uint8_t bitDepthChromaMinus8;
-  uint16_t avgFrameRate;
-  uint8_t constantFrameRate;
-  uint8_t numTemporalLayers;
-  uint8_t temporalIdNested;
-  uint8_t lengthSizeMinusOne;
-  uint8_t numOfArrays;
+  uint8_t configuration_version = 0;
+  uint8_t general_profile_space = 0;
+  uint8_t general_tier_flag = 0;
+  uint8_t general_profile_idc = 0;
+  uint32_t general_profile_compatibility_flags = 0;
+  uint64_t general_constraint_indicator_flags = 0;
+  uint8_t general_level_idc = 0;
+  uint16_t min_spatial_segmentation_idc = 0;
+  uint8_t parallelism_type = 0;
+  uint8_t chroma_format = 0;
+  uint8_t bit_depth_luma_minus8 = 0;
+  uint8_t bit_depth_chroma_minus8 = 0;
+  uint16_t avg_frame_rate = 0;
+  uint8_t constant_frame_rate = 0;
+  uint8_t num_temporal_layers = 0;
+  uint8_t temporal_id_nested = 0;
+  uint8_t length_size_minus_one = 0;
+  uint8_t num_of_arrays = 0;
 
-  typedef std::vector<uint8_t> HVCCNALUnit;
+  using HVCCNALUnit = std::vector<uint8_t>;
   struct HVCCNALArray {
     HVCCNALArray();
     HVCCNALArray(const HVCCNALArray& other);
@@ -75,18 +75,19 @@ struct MEDIA_EXPORT HEVCDecoderConfigurationRecord : Box {
 
   VideoCodecProfile GetVideoProfile() const;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  VideoColorSpace GetColorSpace();
-  VideoChromaSampling GetChromaSampling();
-  gfx::HDRMetadata GetHDRMetadata();
-  VideoDecoderConfig::AlphaMode GetAlphaMode();
+  VideoColorSpace GetColorSpace() const;
+  VideoChromaSampling GetChromaSampling() const;
+  gfx::HDRMetadata GetHDRMetadata() const;
+  VideoDecoderConfig::AlphaMode GetAlphaMode() const;
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
  private:
   bool ParseInternal(BufferReader* reader, MediaLog* media_log);
-  VideoColorSpace color_space;
-  VideoChromaSampling chroma_sampling;
-  gfx::HDRMetadata hdr_metadata;
-  VideoDecoderConfig::AlphaMode alpha_mode;
+  VideoColorSpace color_space_;
+  VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
+  gfx::HDRMetadata hdr_metadata_;
+  VideoDecoderConfig::AlphaMode alpha_mode_ =
+      VideoDecoderConfig::AlphaMode::kIsOpaque;
 };
 
 class MEDIA_EXPORT HEVC {

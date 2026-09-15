@@ -116,6 +116,26 @@ TEST(HEVCAnalyzeAnnexBTest, HEVCDecoderConfigurationRecordTakenFromStream) {
 
 TEST(HEVCAnalyzeAnnexBTest, HEVCDecoderConfigurationRecordDefaultValues) {
   HEVCDecoderConfigurationRecord record;
+  EXPECT_EQ(record.configuration_version, 0);
+  EXPECT_EQ(record.general_profile_space, 0);
+  EXPECT_EQ(record.general_tier_flag, 0);
+  EXPECT_EQ(record.general_profile_idc, 0);
+  EXPECT_EQ(record.general_profile_compatibility_flags, 0u);
+  EXPECT_EQ(record.general_constraint_indicator_flags, 0u);
+  EXPECT_EQ(record.general_level_idc, 0);
+  EXPECT_EQ(record.min_spatial_segmentation_idc, 0);
+  EXPECT_EQ(record.parallelism_type, 0);
+  EXPECT_EQ(record.chroma_format, 0);
+  EXPECT_EQ(record.bit_depth_luma_minus8, 0);
+  EXPECT_EQ(record.bit_depth_chroma_minus8, 0);
+  EXPECT_EQ(record.avg_frame_rate, 0);
+  EXPECT_EQ(record.constant_frame_rate, 0);
+  EXPECT_EQ(record.num_temporal_layers, 0);
+  EXPECT_EQ(record.temporal_id_nested, 0);
+  EXPECT_EQ(record.length_size_minus_one, 0);
+  EXPECT_EQ(record.num_of_arrays, 0);
+  EXPECT_TRUE(record.arrays.empty());
+
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   EXPECT_FALSE(record.GetColorSpace().IsSpecified());
   EXPECT_EQ(record.GetChromaSampling(), VideoChromaSampling::kUnknown);

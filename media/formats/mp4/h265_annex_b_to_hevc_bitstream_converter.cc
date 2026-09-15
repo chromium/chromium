@@ -19,8 +19,8 @@ H265AnnexBToHevcBitstreamConverter::H265AnnexBToHevcBitstreamConverter(
     bool add_parameter_sets_in_bitstream)
     : add_parameter_sets_in_bitstream_(add_parameter_sets_in_bitstream) {
   // These configuration items never change.
-  config_.configurationVersion = 1;
-  config_.lengthSizeMinusOne = 3;
+  config_.configuration_version = 1;
+  config_.length_size_minus_one = 3;
 }
 
 H265AnnexBToHevcBitstreamConverter::~H265AnnexBToHevcBitstreamConverter() =
@@ -143,7 +143,7 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
           hdr_sei_to_include.emplace_back(nalu.data.begin(), nalu.data.end());
         }
         slice_units.emplace_back(nalu.data);
-        data_size += config_.lengthSizeMinusOne + 1 + nalu.data.size();
+        data_size += config_.length_size_minus_one + 1 + nalu.data.size();
         break;
       }
 
@@ -204,7 +204,7 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
         [[fallthrough]];
       default:
         slice_units.emplace_back(nalu.data);
-        data_size += config_.lengthSizeMinusOne + 1 + nalu.data.size();
+        data_size += config_.length_size_minus_one + 1 + nalu.data.size();
         break;
     }
   }
@@ -226,7 +226,7 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
         return MP4Status::Codes::kFailedToLookupPPS;
       }
       slice_units.insert(slice_units.begin(), it->second);
-      data_size += config_.lengthSizeMinusOne + 1 + it->second.size();
+      data_size += config_.length_size_minus_one + 1 + it->second.size();
     }
     for (auto& id : sps_to_include) {
       auto it = id2sps_.find(id);
@@ -234,7 +234,7 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
         return MP4Status::Codes::kFailedToLookupSPS;
       }
       slice_units.insert(slice_units.begin(), it->second);
-      data_size += config_.lengthSizeMinusOne + 1 + it->second.size();
+      data_size += config_.length_size_minus_one + 1 + it->second.size();
     }
     for (auto& id : vps_to_include) {
       auto it = id2vps_.find(id);
@@ -242,7 +242,7 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
         return MP4Status::Codes::kFailedToLookupVPS;
       }
       slice_units.insert(slice_units.begin(), it->second);
-      data_size += config_.lengthSizeMinusOne + 1 + it->second.size();
+      data_size += config_.length_size_minus_one + 1 + it->second.size();
     }
   }
 
@@ -321,32 +321,32 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
     config_.min_spatial_segmentation_idc =
         active_sps->vui_parameters.min_spatial_segmentation_idc;
     if (active_sps->vui_parameters.min_spatial_segmentation_idc == 0) {
-      config_.parallelismType =
+      config_.parallelism_type =
           mp4::HEVCDecoderConfigurationRecord::kMixedParallel;
     } else if (active_pps->entropy_coding_sync_enabled_flag &&
                active_pps->tiles_enabled_flag) {
-      config_.parallelismType =
+      config_.parallelism_type =
           mp4::HEVCDecoderConfigurationRecord::kMixedParallel;
     } else if (active_pps->entropy_coding_sync_enabled_flag) {
-      config_.parallelismType =
+      config_.parallelism_type =
           mp4::HEVCDecoderConfigurationRecord::kWaveFrontParallel;
     } else if (active_pps->tiles_enabled_flag) {
-      config_.parallelismType =
+      config_.parallelism_type =
           mp4::HEVCDecoderConfigurationRecord::kTileParallel;
     } else {
-      config_.parallelismType =
+      config_.parallelism_type =
           mp4::HEVCDecoderConfigurationRecord::kSliceParallel;
     }
-    config_.chromaFormat = active_sps->chroma_format_idc;
-    config_.bitDepthLumaMinus8 = active_sps->bit_depth_luma_minus8;
-    config_.bitDepthChromaMinus8 = active_sps->bit_depth_chroma_minus8;
+    config_.chroma_format = active_sps->chroma_format_idc;
+    config_.bit_depth_luma_minus8 = active_sps->bit_depth_luma_minus8;
+    config_.bit_depth_chroma_minus8 = active_sps->bit_depth_chroma_minus8;
     // Gives the average frame rate in units of frames per 256 seconds.
     // A value of 0 indicates an unspecified average frame rate.
-    config_.avgFrameRate = 0;
+    config_.avg_frame_rate = 0;
     // Set to 0 to indicate it may or may not be of constant frame rate.
-    config_.constantFrameRate = 0;
-    config_.numTemporalLayers = active_sps->sps_max_sub_layers_minus1 + 1;
-    config_.temporalIdNested = active_sps->sps_temporal_id_nesting_flag;
+    config_.constant_frame_rate = 0;
+    config_.num_temporal_layers = active_sps->sps_max_sub_layers_minus1 + 1;
+    config_.temporal_id_nested = active_sps->sps_temporal_id_nesting_flag;
 
     // Arrays are written in the order mandated by ISO/IEC 14496-15 8.3.3.1.2:
     // VPS, SPS, PPS and then prefix SEI.
@@ -412,7 +412,7 @@ MP4Status H265AnnexBToHevcBitstreamConverter::ConvertChunk(
       hvcc_array_idx++;
     }
 
-    config_.numOfArrays = hvcc_array_idx;
+    config_.num_of_arrays = hvcc_array_idx;
   }
 
   if (config_changed_out) {

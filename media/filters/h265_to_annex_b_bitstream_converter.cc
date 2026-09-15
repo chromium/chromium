@@ -56,7 +56,7 @@ bool H265ToAnnexBBitstreamConverter::ParseConfiguration(
     return false;
   }
 
-  nal_unit_length_field_width_ = hevc_config->lengthSizeMinusOne + 1;
+  nal_unit_length_field_width_ = hevc_config->length_size_minus_one + 1;
   CHECK_LE(nal_unit_length_field_width_, 4u);
 
   configuration_processed_ = true;
