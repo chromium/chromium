@@ -218,13 +218,14 @@ bool EventListenerMap::RemoveListener(const EventListener* listener) {
       }
       event_filter_.RemoveEventMatchers(matcher_ids_to_remove);
       CleanupListener(it.get());
-      // Popping from the back should be cheaper than erase(it).
+      // Keep the listener alive until after OnListenerRemoved has completed.
+      std::unique_ptr<EventListener> listener_removed = std::move(it);
       std::swap(it, listeners.back());
       listeners.pop_back();
       if (listeners.empty()) {
         listeners_.erase(listener_itr);
       }
-      delegate_->OnListenerRemoved(listener);
+      delegate_->OnListenerRemoved(listener_removed.get());
       return true;
     }
   }

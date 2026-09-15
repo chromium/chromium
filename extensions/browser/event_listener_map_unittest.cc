@@ -882,6 +882,38 @@ TEST_F(EventListenerMapTest, AddListenerWithMalformedFilter) {
   EXPECT_FALSE(listeners_->HasListenerForEvent(kEvent1Name));
 }
 
+// Tests that removing a listener using a pointer to the stored listener does
+// not destroy the listener before OnListenerRemoved callback completes.
+// Regression test for crbug.com/560698316.
+TEST_F(EventListenerMapTest,
+       RemoveListenerStoredPointerValidDuringOnListenerRemoved) {
+  class ListenerAccessingDelegate : public EventListenerMap::Delegate {
+   public:
+    void OnListenerAdded(const EventListener* listener) override {}
+    void OnListenerRemoved(const EventListener* listener) override {
+      EXPECT_EQ(kEvent1Name, listener->event_name());
+      EXPECT_EQ(kExt1Id, listener->extension_id());
+      removed_called_ = true;
+    }
+    void OnListenerUpdated(const EventListener* listener) override {}
+    bool removed_called() const { return removed_called_; }
+
+   private:
+    bool removed_called_ = false;
+  };
+
+  ListenerAccessingDelegate delegate;
+  EventListenerMap listeners(&delegate);
+
+  listeners.AddListener(EventListener::ForExtension(
+      kEvent1Name, kExt1Id, process_.get(), std::nullopt));
+
+  const EventListener* stored_listener =
+      listeners.GetEventListenersByName(kEvent1Name)[0].get();
+  EXPECT_TRUE(listeners.RemoveListener(stored_listener));
+  EXPECT_TRUE(delegate.removed_called());
+}
+
 }  // namespace
 
 }  // namespace extensions
