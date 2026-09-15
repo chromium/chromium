@@ -250,13 +250,21 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationDeviceMoveTest,
       UpdateView::kScreenId);
 }
 
+class OobeConfigurationDeviceMoveChromeboxTest
+    : public OobeConfigurationDeviceMoveTest {
+ public:
+  OobeConfigurationDeviceMoveChromeboxTest() = default;
+  ~OobeConfigurationDeviceMoveChromeboxTest() override = default;
+
+ private:
+  base::test::ScopedChromeOSVersionInfo version_{"DEVICETYPE=CHROMEBOX",
+                                                 base::Time::Now()};
+};
+
 // Check that when welcome, network and skip HID screen options are passed via
 // OOBE configuration on a Chromebox, the HID detection screen is skipped and
 // we proceed to the update screen.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationDeviceMoveTest, TestSkipHID) {
-  base::test::ScopedChromeOSVersionInfo version{"DEVICETYPE=CHROMEBOX",
-                                                base::Time::Now()};
-
+IN_PROC_BROWSER_TEST_F(OobeConfigurationDeviceMoveChromeboxTest, TestSkipHID) {
   LoadConfiguration();
   OobeScreenWaiter(UpdateView::kScreenId).Wait();
 }
@@ -264,10 +272,8 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationDeviceMoveTest, TestSkipHID) {
 // Check that when skip HID screen option is passed via OOBE configuration on a
 // Chromebox, the HID detection screen is skipped and we proceed to the welcome
 // screen.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationDeviceMoveTest, TestSkipHIDScreen) {
-  base::test::ScopedChromeOSVersionInfo version{"DEVICETYPE=CHROMEBOX",
-                                                base::Time::Now()};
-
+IN_PROC_BROWSER_TEST_F(OobeConfigurationDeviceMoveChromeboxTest,
+                       TestSkipHIDScreen) {
   LoadConfiguration();
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 }
