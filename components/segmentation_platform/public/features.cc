@@ -163,7 +163,12 @@ constexpr base::FeatureParam<int> kMaxAuxiliarySearchCardImpressions{
     &kAndroidAppIntegrationModule, "max_auxiliary_search_card_impressions",
     /*default_value=*/3};
 
-BASE_FEATURE(kSegmentationPlatformFedCmUser, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSegmentationPlatformFedCmUser,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kDefaultBrowserPromoPropensityModel,
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -8890,7 +8890,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"fedcm-segmentation-platform",
      flag_descriptions::kFedCmSegmentationPlatformName,
-     flag_descriptions::kFedCmSegmentationPlatformDescription, kOsAll,
+     flag_descriptions::kFedCmSegmentationPlatformDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kSegmentationPlatformFedCmUser)},
 
