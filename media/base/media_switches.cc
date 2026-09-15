@@ -1090,8 +1090,6 @@ BASE_FEATURE(kWebRTCLogColorSpace, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebRtcAudioNeuralResidualEchoEstimation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebRtcVoiceIsolationDenoiser, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Used to set a few tunable parameters for the WebRTC Media Capabilities
 // implementation.
 BASE_FEATURE(kWebrtcMediaCapabilitiesParameters,
@@ -1157,6 +1155,10 @@ BASE_FEATURE(kVideoPipForceTrustedForMediaPlaybackForTesting,
 // If echo cancellation for a mic signal is requested, mix and cancel all audio
 // playback going to a specific output device in the audio service.
 BASE_FEATURE(kChromeWideEchoCancellation, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, input audio processing in the audio process may use an ML-based
+// voice isolation denoiser.
+BASE_FEATURE(kWebRtcVoiceIsolationDenoiser, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
@@ -1814,9 +1816,12 @@ bool IsAudioProcessMlModelUsageEnabled() {
     // model.
     return false;
   }
-  return base::FeatureList::IsEnabled(
-             kWebRtcAudioNeuralResidualEchoEstimation) ||
-         base::FeatureList::IsEnabled(kWebRtcVoiceIsolationDenoiser);
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (base::FeatureList::IsEnabled(kWebRtcVoiceIsolationDenoiser)) {
+    return true;
+  }
+#endif
+  return base::FeatureList::IsEnabled(kWebRtcAudioNeuralResidualEchoEstimation);
 }
 
 bool IsChromeWideEchoCancellationEnabled() {

@@ -23,6 +23,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -114,8 +115,10 @@ std::string ModelForwarderTestParamsToString(
   std::string result;
   if (info.param.feature == &media::kWebRtcAudioNeuralResidualEchoEstimation) {
     result += "ResidualEchoEstimation";
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   } else if (info.param.feature == &media::kWebRtcVoiceIsolationDenoiser) {
     result += "VoiceIsolationDenoiser";
+#endif
   } else {
     result += "UnknownFeature";
   }
@@ -139,6 +142,7 @@ class AudioProcessMlModelForwarderParameterizedTest
       disabled_features.push_back(*GetParam().feature);
     }
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
     const base::Feature* other_feature =
         (GetParam().feature == &media::kWebRtcAudioNeuralResidualEchoEstimation)
             ? &media::kWebRtcVoiceIsolationDenoiser
@@ -149,6 +153,7 @@ class AudioProcessMlModelForwarderParameterizedTest
     } else {
       disabled_features.push_back(*other_feature);
     }
+#endif
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -492,6 +497,7 @@ TEST_P(AudioProcessMlModelForwarderParameterizedTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     AudioProcessMlModelForwarderParameterizedTest,
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
     testing::Values(
         // ResidualEchoEstimation
         ModelForwarderTestParams{
@@ -551,6 +557,23 @@ INSTANTIATE_TEST_SUITE_P(
             optimization_guide::proto::
                 OPTIMIZATION_TARGET_WEBRTC_VOICE_ISOLATION_DENOISER,
             /*other_features_enabled=*/false}),
+#else
+    testing::Values(
+        ModelForwarderTestParams{
+            &media::kWebRtcAudioNeuralResidualEchoEstimation,
+            /*feature_enabled=*/true,
+            audio::mojom::MlModelType::kResidualEchoEstimation,
+            optimization_guide::proto::
+                OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR,
+            /*other_features_enabled=*/false},
+        ModelForwarderTestParams{
+            &media::kWebRtcAudioNeuralResidualEchoEstimation,
+            /*feature_enabled=*/false,
+            audio::mojom::MlModelType::kResidualEchoEstimation,
+            optimization_guide::proto::
+                OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR,
+            /*other_features_enabled=*/false}),
+#endif
     ModelForwarderTestParamsToString);
 
 }  // namespace

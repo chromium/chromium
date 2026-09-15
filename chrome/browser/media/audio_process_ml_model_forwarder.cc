@@ -29,6 +29,7 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
 #include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
 
 namespace {
@@ -182,6 +183,7 @@ AudioProcessMlModelForwarder::AudioProcessMlModelForwarder(
                 OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR,
             audio::mojom::MlModelType::kResidualEchoEstimation, /*owner=*/this);
   }
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (base::FeatureList::IsEnabled(media::kWebRtcVoiceIsolationDenoiser)) {
     model_forwarders_[audio::mojom::MlModelType::kVoiceIsolationDenoiser] =
         std::make_unique<SingleModelForwarder>(
@@ -189,6 +191,7 @@ AudioProcessMlModelForwarder::AudioProcessMlModelForwarder(
                 OPTIMIZATION_TARGET_WEBRTC_VOICE_ISOLATION_DENOISER,
             audio::mojom::MlModelType::kVoiceIsolationDenoiser, /*owner=*/this);
   }
+#endif
 }
 
 AudioProcessMlModelForwarder::~AudioProcessMlModelForwarder() {
