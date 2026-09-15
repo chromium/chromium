@@ -607,7 +607,7 @@ class alignas(internal::kPartitionCachelineSize)
   GetSlotUsableSize(const SlotSpanMetadata* slot_span) const;
   PA_ALWAYS_INLINE size_t
   GetSlotUsableSize(const internal::BucketSizeDetails& size_details,
-                    SlotSpanMetadata* slot_span) const;
+                    const SlotSpanMetadata* slot_span) const;
 
   // Note: this static method is the most friendly to external callers.
   // It always defaults to checking for Checked Span's "smuggled
@@ -674,11 +674,11 @@ class alignas(internal::kPartitionCachelineSize)
                                     BucketDistribution bucket_distribution);
 
   PA_ALWAYS_INLINE internal::BucketSizeDetails SlotSpanToBucketSizeDetails(
-      SlotSpanMetadata* slot_span) const;
+      const SlotSpanMetadata* slot_span) const;
 
   PA_ALWAYS_INLINE internal::BucketSizeDetails SizeToBucketSizeDetails(
       size_t requested_size,
-      SlotSpanMetadata* slot_span) const;
+      const SlotSpanMetadata* slot_span) const;
 
   PA_ALWAYS_INLINE void FreeInSlotSpan(UntaggedSlotStart slot_start,
                                        SlotSpanMetadata* slot_span)
