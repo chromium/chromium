@@ -84,6 +84,10 @@ enum InfoBarType {
   // Theme installed infobar.
   [EnableIf=enable_extensions]
   kThemeInstalled,
+
+  // Web authentication flow infobar.
+  [EnableIf=enable_extensions]
+  kWebAuthFlow,
 };
 
 // Metadata describing an individual infobar that can be triggered.

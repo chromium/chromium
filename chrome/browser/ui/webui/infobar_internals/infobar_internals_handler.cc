@@ -28,6 +28,7 @@
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
@@ -68,6 +69,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
+#include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability.h"
 #include "chrome/browser/extensions/api/messaging/incognito_connectability_infobar_delegate.h"
 #include "chrome/browser/extensions/theme_installed_infobar_delegate.h"
@@ -76,6 +78,7 @@
 #include "chrome/browser/ui/extensions/installation_error_infobar_delegate.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install/crx_install_error.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #endif
@@ -137,6 +140,7 @@ TriggerRequirements RequirementsFor(InfoBarType type) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     case InfoBarType::kIncognitoConnectability:
     case InfoBarType::kInstallationError:
+    case InfoBarType::kWebAuthFlow:
       return {.profile = true, .web_contents = true};
 #endif
     case InfoBarType::kExtensionDevTools:
@@ -305,6 +309,9 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
             "The Theme Installed infobar is shown when a user installs a "
             "theme. This trigger shows the infobar for the current theme, "
             "allowing you to 'undo' to the state before this trigger.");
+  add_entry(InfoBarType::kWebAuthFlow, "Web Authentication Flow",
+            "The Web Authentication Flow infobar is shown when an extension "
+            "starts an interactive web authentication flow.");
 #endif
 
   std::move(callback).Run(std::move(infobar_list));
@@ -760,6 +767,39 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
             theme_service->BuildReinstallerForCurrentTheme());
       }
       return true;
+    }
+    case InfoBarType::kWebAuthFlow: {
+      extensions::ExtensionRegistry* registry =
+          extensions::ExtensionRegistry::Get(profile);
+      const extensions::ExtensionSet& extensions =
+          registry->enabled_extensions();
+
+      std::string extension_name = "Dummy Extension";
+      if (!extensions.empty()) {
+        const extensions::Extension* extension = extensions.begin()->get();
+        extension_name = extension->name();
+      }
+
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::
+                  EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE)) {
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        infobars::InfoBarShowParams params;
+        params.substitutions = {MessageSubstitution(
+            extensions::ui_util::GetFixupExtensionNameForUIDisplay(
+                extension_name),
+            /*is_link=*/false, /*accessible_name=*/std::nullopt)};
+        return browser_infobar_manager->Show(
+                   active_tab,
+                   infobars::InfoBarDelegate::
+                       EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE,
+                   std::move(params)) != nullptr;
+      } else {
+        return extensions::WebAuthFlowInfoBarDelegate::Create(
+                   web_contents, extension_name) != nullptr;
+      }
     }
 #endif
   }
