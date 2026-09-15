@@ -68,6 +68,9 @@ class DashboardKombuchaInteractiveUITest : public InteractiveBrowserTest {
     // in the original url.
     std::u16string url_override(u"https://www.test.com/");
     OverrideVisibleUrlInLocationBar(url_override);
+
+    GetDashboardController()->SetSuppressionThresholdForTesting(
+        base::TimeDelta());
   }
 
   void TearDownOnMainThread() override {
