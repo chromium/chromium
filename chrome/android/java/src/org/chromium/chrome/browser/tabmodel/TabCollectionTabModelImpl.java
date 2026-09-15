@@ -843,7 +843,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 .getTabStripCollection(mNativeTabCollectionTabModelImplPtr);
     }
 
-    // TabCloser overrides.
+    // TabModelInternal overrides.
 
     @Override
     public boolean closeTabs(TabClosureParams params) {
@@ -852,8 +852,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             return closeTabsInternal(params);
         }
     }
-
-    // TabModelInternal overrides.
 
     @Override
     public void completeInitialization() {
