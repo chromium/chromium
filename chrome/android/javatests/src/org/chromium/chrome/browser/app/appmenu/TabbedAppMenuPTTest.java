@@ -168,6 +168,7 @@ public class TabbedAppMenuPTTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562155107
     public void testNewTabPageIncognitoAppMenuItems() throws IOException {
         IncognitoNewTabPageStation incognitoNewTabPage =
                 mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
