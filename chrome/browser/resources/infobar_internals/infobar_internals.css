@@ -2,8 +2,9 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+html,
 body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  background-color: #f4f4f9;
+  color-scheme: light dark;
+  height: 100%;
+  margin: 0;
 }
