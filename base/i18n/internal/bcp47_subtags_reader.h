@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <optional>
 #include <string_view>
 
 #include "base/notreached.h"
@@ -26,6 +27,20 @@ constexpr bool VerifyAsciiNumeric(std::string_view str) {
 constexpr bool VerifyAsciiAlpha(std::string_view str) {
   return std::ranges::all_of(str, [](char c) { return base::IsAsciiAlpha(c); });
 }
+
+// Identifies the type of subtags as per the BCP47 standard.
+// The order of the types within the enum here is important and we use it
+// during parsing (please, do not change it).
+enum class SubtagType {
+  kLanguage,
+  kScript,
+  kRegion,
+  kVariant,
+  kExtensionSingleton,
+  kExtensionSubtag,
+  kPrivateUseSingleton,
+  kPrivateUseSubtag,
+};
 
 // Primary language subtag: 2-3 alpha characters.
 // RFC 5646 Section 2.2.1.
@@ -106,12 +121,14 @@ constexpr bool IsPrivateUseSubtag(std::string_view subtag) {
 //    tag.
 //  - IsDone(): Returns whether the reader is done (either completely parsed or
 //    encountered an error).
-//  - Read(Type type): Returns the current subtag if its type equals `type`
+//  - Read(SubtagType type): Returns the current subtag if its type equals
+//  `type`
 //    and then advances to the next subtag in the underlying BCP47 tag.
 //    If the type does not match, returns an empty string without advancing.
-//  - ReadSubtags(Type type): Reads and returns all contiguous subtags matching
+//  - ReadSubtags(SubtagType type): Reads and returns all contiguous subtags
+//  matching
 //    `type`, advancing the reader past them.
-//  - Seek(Type type): Advances the reader until the current subtag's type
+//  - Seek(SubtagType type): Advances the reader until the current subtag's type
 //  matches `type` or becomes unreachable based on subtag ordering rules.
 //
 // Handling errors:
@@ -130,22 +147,6 @@ constexpr bool IsPrivateUseSubtag(std::string_view subtag) {
 // is false.
 class SubtagsReader {
  public:
-  // Identifies the type of subtags as per the BCP47 standard.
-  // The order of the types within the enum here is important and we use it
-  // during parsing (please, do not change it).
-  enum class Type {
-    kLanguage,
-    kScript,
-    kRegion,
-    kVariant,
-    kExtensionSingleton,
-    kExtensionSubtag,
-    kPrivateUseSingleton,
-    kPrivateUseSubtag,
-    kEmpty,
-    kError,
-  };
-
   // Constructs a SubtagsReader from a raw BCP47 string view.
   // Splits off the first subtag (which must be a valid primary language subtag)
   // and saves the rest as `remaining_`.
@@ -155,9 +156,7 @@ class SubtagsReader {
                                                : tag.substr(front_.size() + 1)),
         // Checks if front_ is a language subtag and the remaining does not
         // end with a "-".
-        type_(remaining_.ends_with("-") || !IsLanguageSubtag(front_)
-                  ? Type::kError
-                  : Type::kLanguage) {}
+        has_error_(remaining_.ends_with("-") || !IsLanguageSubtag(front_)) {}
 
   // The Read method will return the current subtag if its type equals `type`
   // and then advance to the next subtag in the underlying BCP47 tag. If the
@@ -183,7 +182,7 @@ class SubtagsReader {
   //  Call: Read(kRegion) -> type_ (kScript) != kRegion
   //  1. Do NOT advance (cursor stays on "Latn").
   //  2. Return "" (empty string).
-  constexpr std::string_view Read(Type type) {
+  constexpr std::string_view Read(SubtagType type) {
     if (type_ != type) {
       return std::string_view();
     }
@@ -195,7 +194,7 @@ class SubtagsReader {
   // Reads and returns all contiguous subtags of the given `type` starting
   // from the current position, advancing the reader past them.
   // Returns an empty vector if the current subtag does not match `type`.
-  constexpr std::vector<std::string_view> ReadSubtags(Type type) {
+  constexpr std::vector<std::string_view> ReadSubtags(SubtagType type) {
     std::vector<std::string_view> result;
     std::string_view read_subtag;
     while (!(read_subtag = Read(type)).empty()) {
@@ -208,122 +207,132 @@ class SubtagsReader {
   // no longer reachable (meaning a subtag of `type` cannot follow the current
   // subtag type according to BCP47 subtag ordering rules).
   // Returns a reference to this reader to allow method chaining.
-  constexpr SubtagsReader& Seek(Type type) {
-    while (type_ != type && !IsDone() && IsReachable(type_, type)) {
+  constexpr SubtagsReader& Seek(SubtagType type) {
+    while (type_ && type_ != type && !IsDone() && IsReachable(*type_, type)) {
       Advance();
     }
     return *this;
   }
 
   // Returns whether there is an error with the underlying BCP47 tag.
-  constexpr bool HasError() const { return type_ == Type::kError; }
+  constexpr bool HasError() const { return has_error_; }
   // Returns whether the reader is done. This is true if the underlying tag has
   // been read completely or an error was found.
-  constexpr bool IsDone() const {
-    return type_ == Type::kError || type_ == Type::kEmpty;
-  }
+  constexpr bool IsDone() const { return has_error_ || !type_.has_value(); }
 
  private:
-  static constexpr bool IsReachable(Type lhs, Type rhs) {
+  static constexpr bool IsReachable(SubtagType lhs, SubtagType rhs) {
     // Extension subtag to extension singleton is the only valid type-loop.
-    return lhs < rhs ||
-           (lhs == Type::kExtensionSubtag && rhs == Type::kExtensionSingleton);
+    return lhs < rhs || (lhs == SubtagType::kExtensionSubtag &&
+                         rhs == SubtagType::kExtensionSingleton);
   }
   // Advances the current subtag to the next one.
   constexpr void Advance() {
+    if (IsDone()) {
+      return;
+    }
     size_t next = remaining_.find('-');
     front_ = remaining_.substr(0, next);
     remaining_.remove_prefix(next == std::string_view::npos ? remaining_.size()
                                                             : next + 1);
-    type_ = GetNextSubtagType();
+    SubtagType current_type = *type_;
+    type_ = GetNextSubtagType(front_, current_type);
+    // This means that a next subtag could not be found, this could be either
+    // because the whole input has been parsed or an error was found.
+    if (!type_.has_value()) {
+      // If a singleton was seen, there must be a least a subtag following it.
+      if (current_type == SubtagType::kExtensionSingleton ||
+          current_type == SubtagType::kPrivateUseSingleton) {
+        has_error_ = true;
+        return;
+      }
+      // That is the "--" case.
+      if (!remaining_.empty()) {
+        has_error_ = true;
+        return;
+      }
+    }
   }
   // Returns whether `subtag` is of type `type`.
-  static constexpr bool IsSubtagType(Type type, std::string_view subtag) {
+  static constexpr bool IsSubtagType(SubtagType type, std::string_view subtag) {
     switch (type) {
-      case Type::kLanguage:
+      case SubtagType::kLanguage:
         return IsLanguageSubtag(subtag);
-      case Type::kScript:
+      case SubtagType::kScript:
         return IsScriptSubtag(subtag);
-      case Type::kRegion:
+      case SubtagType::kRegion:
         return IsRegionSubtag(subtag);
-      case Type::kVariant:
+      case SubtagType::kVariant:
         return IsVariantSubtag(subtag);
-      case Type::kExtensionSingleton:
+      case SubtagType::kExtensionSingleton:
         return IsExtensionSingleton(subtag);
-      case Type::kExtensionSubtag:
+      case SubtagType::kExtensionSubtag:
         return IsExtensionSubtag(subtag);
-      case Type::kPrivateUseSingleton:
+      case SubtagType::kPrivateUseSingleton:
         return IsPrivateUseSingleton(subtag);
-      case Type::kPrivateUseSubtag:
+      case SubtagType::kPrivateUseSubtag:
         return IsPrivateUseSubtag(subtag);
-      case Type::kEmpty:
-      case Type::kError:
-        return false;
     }
   }
 
   // Finds the first type in `next_types` such that `subtag` satisfies
-  // `IsSubtagType(next_type, subtag)`. If no type is found, Type::kError is
-  // returned.
-  // Note: std::initializer_list is used to avoid heap allocations.
-  static constexpr Type FindNextType(std::string_view subtag,
-                                     std::initializer_list<Type> next_types) {
-    for (Type next_type : next_types) {
+  // `IsSubtagType(next_type, subtag)`. If no type is found,
+  // std::nullopt is returned. Note: std::initializer_list is used to
+  // avoid heap allocations.
+  static constexpr std::optional<SubtagType> FindNextSubtagType(
+      std::string_view subtag,
+      std::initializer_list<SubtagType> next_types) {
+    for (SubtagType next_type : next_types) {
       if (IsSubtagType(next_type, subtag)) {
         return next_type;
       }
     }
-    return Type::kError;
+    return std::nullopt;
   }
 
   // Returns the next type given a `current_type` and a `front_`. The current
   // type is assumed to be `type_` and that the `front_` and `remaining_` have
-  // already been Advanceed to the next subtag and `type_` is yet to be
+  // already been advanceed to the next subtag and `type_` is yet to be
   // determined.
-  constexpr Type GetNextSubtagType() const {
-    if (front_.empty()) {
-      // If a singleton was seen, there must be a least a subtag following it.
-      // If the `front_` is empty, and the remaining is not, it means we got an
-      // empty subtag in the middle of the tag ("--" case).
-      if (!remaining_.empty() || type_ == Type::kExtensionSingleton ||
-          type_ == Type::kPrivateUseSingleton) {
-        return Type::kError;
-      }
-      return Type::kEmpty;
+  static constexpr std::optional<SubtagType> GetNextSubtagType(
+      std::string_view front,
+      SubtagType current_type) {
+    if (front.empty()) {
+      return std::nullopt;
     }
     // Each switch-case statement here determines what are the types of subtags
-    // that can follow the `type_`. For example, for Type::kLanguage,
+    // that can follow the `type_`. For example, for SubtagType::kLanguage,
     // anything can follow it besides extension subtags or another language
     // subtag.
-    switch (type_) {
-      case Type::kLanguage:
-        return FindNextType(
-            front_, {Type::kScript, Type::kRegion, Type::kVariant,
-                     Type::kPrivateUseSingleton, Type::kExtensionSingleton});
-      case Type::kScript:
-        return FindNextType(
-            front_, {Type::kRegion, Type::kVariant, Type::kPrivateUseSingleton,
-                     Type::kExtensionSingleton});
-      case Type::kRegion:
-        return FindNextType(front_, {Type::kVariant, Type::kPrivateUseSingleton,
-                                     Type::kExtensionSingleton});
-      case Type::kVariant:
-        return FindNextType(front_, {Type::kVariant, Type::kPrivateUseSingleton,
-                                     Type::kExtensionSingleton});
-      case Type::kExtensionSingleton:
-        return FindNextType(front_, {Type::kExtensionSubtag});
-      case Type::kExtensionSubtag:
-        return FindNextType(front_,
-                            {Type::kExtensionSubtag, Type::kExtensionSingleton,
-                             Type::kPrivateUseSingleton});
-      case Type::kPrivateUseSingleton:
-        return FindNextType(front_, {Type::kPrivateUseSubtag});
-      case Type::kPrivateUseSubtag:
-        return FindNextType(front_, {Type::kPrivateUseSubtag});
-      case Type::kEmpty:
-        return Type::kEmpty;
-      case Type::kError:
-        return Type::kError;
+    switch (current_type) {
+      case SubtagType::kLanguage:
+        return FindNextSubtagType(
+            front, {SubtagType::kScript, SubtagType::kRegion,
+                    SubtagType::kVariant, SubtagType::kPrivateUseSingleton,
+                    SubtagType::kExtensionSingleton});
+      case SubtagType::kScript:
+        return FindNextSubtagType(front,
+                                  {SubtagType::kRegion, SubtagType::kVariant,
+                                   SubtagType::kPrivateUseSingleton,
+                                   SubtagType::kExtensionSingleton});
+      case SubtagType::kRegion:
+        return FindNextSubtagType(
+            front, {SubtagType::kVariant, SubtagType::kPrivateUseSingleton,
+                    SubtagType::kExtensionSingleton});
+      case SubtagType::kVariant:
+        return FindNextSubtagType(
+            front, {SubtagType::kVariant, SubtagType::kPrivateUseSingleton,
+                    SubtagType::kExtensionSingleton});
+      case SubtagType::kExtensionSingleton:
+        return FindNextSubtagType(front, {SubtagType::kExtensionSubtag});
+      case SubtagType::kExtensionSubtag:
+        return FindNextSubtagType(front, {SubtagType::kExtensionSubtag,
+                                          SubtagType::kExtensionSingleton,
+                                          SubtagType::kPrivateUseSingleton});
+      case SubtagType::kPrivateUseSingleton:
+        return FindNextSubtagType(front, {SubtagType::kPrivateUseSubtag});
+      case SubtagType::kPrivateUseSubtag:
+        return FindNextSubtagType(front, {SubtagType::kPrivateUseSubtag});
     }
   }
 
@@ -331,8 +340,12 @@ class SubtagsReader {
   std::string_view remaining_;
   // The first subtag is always the language while we do not enable
   // private-use-only tags.
-  // T0DO(crbug.com/537806159): support private-use-only  language tags.
-  Type type_ = Type::kLanguage;
+  // A std::nullopt `type_` could mean error or that there is not more subtags
+  // to be read.
+  // TODO(crbug.com/537806159): support private-use-only  language
+  // tags.
+  std::optional<SubtagType> type_ = SubtagType::kLanguage;
+  bool has_error_ = false;
 };
 
 }  // namespace base::i18n_internal

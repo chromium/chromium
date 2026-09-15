@@ -99,7 +99,7 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   // of them need their region, script and variant to be properly represented.
   constexpr std::string_view language_subtag() const LIFETIME_BOUND {
     return i18n_internal::SubtagsReader(tag_string())
-        .Read(i18n_internal::SubtagsReader::Type::kLanguage);
+        .Read(i18n_internal::SubtagType::kLanguage);
   }
   // Creates a new `LanguageTag` containing only the language subtag.
   LanguageTag WithLanguageSubtagOnly() const;
@@ -112,8 +112,8 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   // - "zh-Hans" -> "Hans"
   constexpr std::string_view script_subtag() const LIFETIME_BOUND {
     return i18n_internal::SubtagsReader(tag_string())
-        .Seek(i18n_internal::SubtagsReader::Type::kScript)
-        .Read(i18n_internal::SubtagsReader::Type::kScript);
+        .Seek(i18n_internal::SubtagType::kScript)
+        .Read(i18n_internal::SubtagType::kScript);
   }
   // Returns the region subtag in the language tag if present.
   // Examples:
@@ -123,8 +123,8 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   // - "sr-Latn" -> ""
   constexpr std::string_view region_subtag() const LIFETIME_BOUND {
     return i18n_internal::SubtagsReader(tag_string())
-        .Seek(i18n_internal::SubtagsReader::Type::kRegion)
-        .Read(i18n_internal::SubtagsReader::Type::kRegion);
+        .Seek(i18n_internal::SubtagType::kRegion)
+        .Read(i18n_internal::SubtagType::kRegion);
   }
 
   // Returns the variant subtags in the language tag if present.
@@ -135,8 +135,8 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   constexpr std::vector<std::string_view> variant_subtags() const
       LIFETIME_BOUND {
     return i18n_internal::SubtagsReader(tag_string())
-        .Seek(i18n_internal::SubtagsReader::Type::kVariant)
-        .ReadSubtags(i18n_internal::SubtagsReader::Type::kVariant);
+        .Seek(i18n_internal::SubtagType::kVariant)
+        .ReadSubtags(i18n_internal::SubtagType::kVariant);
   }
 
   // Returns the parent language tag of this language tag by stripping the most

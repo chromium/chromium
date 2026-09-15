@@ -42,15 +42,14 @@ constexpr std::optional<base::flat_map<char, std::vector<std::string_view>>>
 ParseBcp47Extensions(SubtagsReader& subtags) {
   base::flat_map<char, std::vector<std::string_view>> result;
   std::string_view singleton;
-  while (!(singleton = subtags.Read(SubtagsReader::Type::kExtensionSingleton))
-              .empty()) {
+  while (!(singleton = subtags.Read(SubtagType::kExtensionSingleton)).empty()) {
     char normalized_singleton = base::ToLowerASCII(singleton.front());
     auto [it, inserted] = result.try_emplace(normalized_singleton);
     // There cannot be two extensions with the same singleton in a language tag.
     if (!inserted) {
       return std::nullopt;
     }
-    it->second = subtags.ReadSubtags(SubtagsReader::Type::kExtensionSubtag);
+    it->second = subtags.ReadSubtags(SubtagType::kExtensionSubtag);
   }
 
   return result;
@@ -63,11 +62,11 @@ ParseBcp47Extensions(SubtagsReader& subtags) {
 // this is not allowed by the BCP47 standard.
 constexpr std::vector<std::string_view> ParseBcp47PrivateUse(
     SubtagsReader& subtags) {
-  if (subtags.Read(SubtagsReader::Type::kPrivateUseSingleton).empty()) {
+  if (subtags.Read(SubtagType::kPrivateUseSingleton).empty()) {
     return std::vector<std::string_view>();
   }
 
-  return subtags.ReadSubtags(SubtagsReader::Type::kPrivateUseSubtag);
+  return subtags.ReadSubtags(SubtagType::kPrivateUseSubtag);
 }
 
 // The parsed BCP47 tag. It is a view on the actual input string.
@@ -110,14 +109,14 @@ constexpr bool AreSubtagsKnown(const ParsedBcp47Tag& parsed_tag) {
 //   language["-"script]["-"region]*("-"variant)*["-"extensions]["-"private_use]
 constexpr std::optional<ParsedBcp47Tag> ParseBcp47Tag(SubtagsReader subtags) {
   ParsedBcp47Tag parsed_tag;
-  parsed_tag.language = subtags.Read(SubtagsReader::Type::kLanguage);
+  parsed_tag.language = subtags.Read(SubtagType::kLanguage);
   if (parsed_tag.language.empty()) {
     return std::nullopt;
   }
 
-  parsed_tag.script = subtags.Read(SubtagsReader::Type::kScript);
-  parsed_tag.region = subtags.Read(SubtagsReader::Type::kRegion);
-  parsed_tag.variants = subtags.ReadSubtags(SubtagsReader::Type::kVariant);
+  parsed_tag.script = subtags.Read(SubtagType::kScript);
+  parsed_tag.region = subtags.Read(SubtagType::kRegion);
+  parsed_tag.variants = subtags.ReadSubtags(SubtagType::kVariant);
 
   std::optional<base::flat_map<char, std::vector<std::string_view>>>
       extensions = ParseBcp47Extensions(subtags);

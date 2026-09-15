@@ -89,10 +89,9 @@ LanguageTag::LanguageTag(ImmutableStringType tag) : tag_(std::move(tag)) {
 std::vector<std::string_view> LanguageTag::GetExtensionSubtagsInternal(
     char key) const {
   char normalized_key = base::ToLowerASCII(key);
-  i18n_internal::SubtagsReader::Type singleton_type =
-      normalized_key == 'x'
-          ? i18n_internal::SubtagsReader::Type::kPrivateUseSingleton
-          : i18n_internal::SubtagsReader::Type::kExtensionSingleton;
+  i18n_internal::SubtagType singleton_type =
+      normalized_key == 'x' ? i18n_internal::SubtagType::kPrivateUseSingleton
+                            : i18n_internal::SubtagType::kExtensionSingleton;
 
   std::string_view singleton;
   i18n_internal::SubtagsReader reader(tag_string());
@@ -100,9 +99,8 @@ std::vector<std::string_view> LanguageTag::GetExtensionSubtagsInternal(
       !(singleton = reader.Seek(singleton_type).Read(singleton_type)).empty()) {
     if (ToLowerASCII(singleton.front()) == normalized_key) {
       return reader.ReadSubtags(
-          normalized_key == 'x'
-              ? i18n_internal::SubtagsReader::Type::kPrivateUseSubtag
-              : i18n_internal::SubtagsReader::Type::kExtensionSubtag);
+          normalized_key == 'x' ? i18n_internal::SubtagType::kPrivateUseSubtag
+                                : i18n_internal::SubtagType::kExtensionSubtag);
     }
   }
 
