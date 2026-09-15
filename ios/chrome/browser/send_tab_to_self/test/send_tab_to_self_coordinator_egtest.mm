@@ -942,7 +942,7 @@ void DismissSendTabToSelfModal() {
 
   [ChromeEarlGrey addFakeSyncServerSendTabToSelfEntryWithURL:kExampleURL
                                                        title:@"AutoOpen Page"
-                                                  deviceName:@"remote_device"
+                                                  deviceName:kRemoteDeviceName
                                             targetDeviceGUID:@""];
 
   // Verify that a background tab was opened automatically (tab count increased
@@ -1004,7 +1004,7 @@ void DismissSendTabToSelfModal() {
   // Receive a shared tab while there is no active WebState.
   [ChromeEarlGrey addFakeSyncServerSendTabToSelfEntryWithURL:kExampleURL
                                                        title:@"AutoOpen Page"
-                                                  deviceName:@"remote_device"
+                                                  deviceName:kRemoteDeviceName
                                             targetDeviceGUID:@""];
 
   // While there is no active WebState, the tab should be queued as pending and
@@ -1030,8 +1030,9 @@ void DismissSendTabToSelfModal() {
   // background tab.
   OpenTabGridAndWaitTillVisible();
 
-  NSString* labelText = l10n_util::GetNSStringF(
-      IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
+  NSString* labelText =
+      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE,
+                              base::SysNSStringToUTF16(kRemoteDeviceName));
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
                                           grey_sufficientlyVisible(), nil)]
@@ -1054,7 +1055,7 @@ void DismissSendTabToSelfModal() {
   // Receive a shared tab.
   [ChromeEarlGrey addFakeSyncServerSendTabToSelfEntryWithURL:kExampleURL
                                                        title:@"AutoOpen Page"
-                                                  deviceName:@"remote_device"
+                                                  deviceName:kRemoteDeviceName
                                             targetDeviceGUID:@""];
 
   // Wait for the background tab to open.
@@ -1063,8 +1064,9 @@ void DismissSendTabToSelfModal() {
   // Enter the Tab Grid.
   OpenTabGridAndWaitTillVisible();
 
-  NSString* labelText = l10n_util::GetNSStringF(
-      IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
+  NSString* labelText =
+      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE,
+                              base::SysNSStringToUTF16(kRemoteDeviceName));
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
                                           grey_sufficientlyVisible(), nil)]
@@ -1098,7 +1100,7 @@ void DismissSendTabToSelfModal() {
   // Receive a shared tab.
   [ChromeEarlGrey addFakeSyncServerSendTabToSelfEntryWithURL:kExampleURL
                                                        title:@"AutoOpen Page"
-                                                  deviceName:@"remote_device"
+                                                  deviceName:kRemoteDeviceName
                                             targetDeviceGUID:@""];
 
   // Wait for the background tab to open.
@@ -1107,8 +1109,9 @@ void DismissSendTabToSelfModal() {
   // Enter the Tab Grid.
   OpenTabGridAndWaitTillVisible();
 
-  NSString* labelText = l10n_util::GetNSStringF(
-      IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
+  NSString* labelText =
+      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE,
+                              base::SysNSStringToUTF16(kRemoteDeviceName));
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
                                           grey_sufficientlyVisible(), nil)]
@@ -1160,7 +1163,7 @@ void DismissSendTabToSelfModal() {
   // Receive a shared tab.
   [ChromeEarlGrey addFakeSyncServerSendTabToSelfEntryWithURL:kExampleURL
                                                        title:@"AutoOpen Page"
-                                                  deviceName:@"remote_device"
+                                                  deviceName:kRemoteDeviceName
                                             targetDeviceGUID:@""];
 
   // Wait for the background tab to open.
@@ -1263,7 +1266,7 @@ void DismissSendTabToSelfModal() {
       addFakeSyncServerSendTabToSelfEntryWithURL:base::SysUTF8ToNSString(
                                                      tab3URL.spec())
                                            title:@"AutoOpen Page"
-                                      deviceName:@"remote_device"
+                                      deviceName:kRemoteDeviceName
                                 targetDeviceGUID:@""];
 
   // While in the Tab Grid, the tab should be opened immediately in the
