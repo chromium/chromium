@@ -1,0 +1,36 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("web_package_rust") {
+  crate_name = "web_package_rust"
+  crate_root = "lib.rs"
+  sources = [
+    "constants.rs",
+    "parser.rs",
+    "types.rs",
+    crate_root,
+  ]
+
+  cpp_api_from_rust = {
+    target_name = "web_package_rust_bindings"
+    cpp_namespace = "web_package::rust"
+    h_out = "${target_gen_dir}/web_package_rust.h"
+  }
+}
+
+rust_static_library("web_package_rust_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "web_package_rust_unittests.rs"
+  sources = [
+    "parser_unittest.rs",
+    crate_root,
+  ]
+  deps = [
+    ":web_package_rust",
+    "//testing/rust_gtest_interop",
+  ]
+}

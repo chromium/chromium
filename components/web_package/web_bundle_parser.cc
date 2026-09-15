@@ -18,12 +18,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/cbor/reader.h"
 #include "components/web_package/input_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/rust/web_package_rust.h"
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -32,10 +34,6 @@
 namespace web_package {
 
 namespace {
-
-// The number of bytes used to specify the length of the web bundle.
-// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-trailing-length
-constexpr uint64_t kTrailingLengthNumBytes = 8;
 
 // The maximum size of the section-lengths CBOR item.
 constexpr uint64_t kMaxSectionLengthsCBORSize = 8192;
@@ -270,7 +268,9 @@ class WebBundleParser::MetadataParser
       RunErrorCallback("Error reading bundle length.");
       return;
     }
-    if (static_cast<uint64_t>(file_length) < kTrailingLengthNumBytes) {
+    const uint64_t unsigned_file_length =
+        base::checked_cast<uint64_t>(file_length);
+    if (unsigned_file_length < rust::TRAILING_LENGTH_NUM_BYTES) {
       RunErrorCallback("Error reading bundle length.");
       return;
     }
@@ -278,9 +278,10 @@ class WebBundleParser::MetadataParser
     // Read the last 8 bytes of the file that correspond to the trailing length
     // field of the web bundle.
     data_source_->get()->Read(
-        file_length - kTrailingLengthNumBytes, kTrailingLengthNumBytes,
+        unsigned_file_length - rust::TRAILING_LENGTH_NUM_BYTES,
+        rust::TRAILING_LENGTH_NUM_BYTES,
         base::BindOnce(&MetadataParser::ParseWebBundleLength,
-                       weak_factory_.GetWeakPtr(), file_length));
+                       weak_factory_.GetWeakPtr(), unsigned_file_length));
   }
 
   void ParseWebBundleLength(const uint64_t file_length,
@@ -295,20 +296,13 @@ class WebBundleParser::MetadataParser
     // the start of the bundle, instead of assuming that the start of the file
     // is also the start of the bundle. This allows the bundle to be appended to
     // another format such as a generic self-extracting executable."
-    // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#section-4.1.1-3
-    InputReader input(*data);
-    uint64_t web_bundle_length;
-    if (!input.ReadBigEndian(&web_bundle_length)) {
-      RunErrorCallback("Error reading bundle length.");
+    // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-trailing-length
+    auto bundle_offset = rust::parse_trailing_length(*data, file_length);
+    if (!bundle_offset.has_value()) {
+      RunErrorCallback(bundle_offset.error().message);
       return;
     }
-
-    if (web_bundle_length > file_length) {
-      RunErrorCallback("Invalid bundle length.");
-      return;
-    }
-    const uint64_t web_bundle_offset = file_length - web_bundle_length;
-    ReadMagicBytes(web_bundle_offset);
+    ReadMagicBytes(*bundle_offset);
   }
 
   void ReadMagicBytes(const uint64_t offset_in_stream) {
@@ -694,12 +688,14 @@ class WebBundleParser::MetadataParser
                             nullptr));
   }
 
-  void RunErrorCallback(const std::string& message,
+  void RunErrorCallback(std::string_view message,
                         mojom::BundleParseErrorType error_type =
                             mojom::BundleParseErrorType::kFormatError) {
     DLOG(ERROR) << "Parsing web bundle error: " << message;
-    mojom::BundleMetadataParseErrorPtr err =
-        mojom::BundleMetadataParseError::New(error_type, message);
+    // Avoids an extra temporary std::string allocation in Mojo's New().
+    auto err = mojom::BundleMetadataParseError::New();
+    err->type = error_type;
+    err->message = message;
     std::move(complete_callback_)
         .Run(base::BindOnce(std::move(result_callback_), nullptr,
                             std::move(err)));
