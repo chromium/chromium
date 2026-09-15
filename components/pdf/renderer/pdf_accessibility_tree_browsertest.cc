@@ -5,6 +5,7 @@
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 
 #include <algorithm>
+#include <array>
 #include <iterator>
 #include <map>
 #include <memory>
@@ -348,11 +349,15 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
   //   the page text.
   // - `bounds`: If specified, layout bounds for the text runs. Like
   //   `styles`, it can have fewer elements than `font_sizes`.
+  // - `char_counts`: If specified, the number of characters in the text run at
+  //   index i. Defaults to `kCharsPerWord` per run. Use this to give runs
+  //   different weights when the amount of text per run matters.
   void SetUpHeuristicAccessibilityTreeDetailed(
       const std::vector<float>& font_sizes,
       const std::vector<chrome_pdf::AccessibilityTextStyleInfo>& styles,
       const std::vector<chrome_pdf::AccessibilityCharInfo>& custom_chars,
-      const std::vector<gfx::RectF>& bounds = {}) {
+      const std::vector<gfx::RectF>& bounds = {},
+      const std::vector<uint32_t>& char_counts = {}) {
     CreatePdfAccessibilityTree();
     CHECK(text_runs_.empty());
     for (size_t i = 0; i < font_sizes.size(); ++i) {
@@ -368,17 +373,27 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
       if (i < bounds.size()) {
         run.bounds = bounds[i];
       }
+      if (i < char_counts.size()) {
+        run.len = char_counts[i];
+      }
       text_runs_.push_back(run);
     }
 
     CHECK(chars_.empty());
     if (custom_chars.empty()) {
-      size_t total_chars = text_runs_.size() * kCharsPerWord;
+      size_t total_chars = 0;
+      for (const chrome_pdf::AccessibilityTextRunInfo& run : text_runs_) {
+        total_chars += run.len;
+      }
       while (chars_.size() < total_chars) {
         std::ranges::copy(kDummyCharsData, std::back_inserter(chars_));
       }
       chars_.resize(total_chars);
     } else {
+      // `custom_chars` fixes the size of the character array, so per run
+      // lengths must stay at the default that `MakeCharVector()` produces.
+      CHECK(char_counts.empty())
+          << "custom_chars and char_counts cannot both be specified";
       chars_ = custom_chars;
     }
 
@@ -864,6 +879,81 @@ TEST_F(PdfAccessibilityTreeTest, MultipleHeadingsDetectedByHeuristic) {
     const ui::AXNode* para = page->GetChildAtIndex(i);
     ASSERT_NE(nullptr, para);
     EXPECT_EQ(ax::mojom::Role::kParagraph, para->GetRole());
+  }
+}
+
+// A page whose short runs outnumber its body text runs must still resolve a
+// median matching the body text, so that body text is not promoted to
+// headings. Without character weighting the median would be 6.0f, putting the
+// heading threshold at 7.2f and turning every 10.0f body run into a heading.
+TEST_F(PdfAccessibilityTreeTest, HeuristicShortRunsDoNotLowerMedianFontSize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  // 3 body runs of 100 characters at 10.0f, interleaved with 4 single
+  // character runs at 6.0f. The 6.0f runs are the numeric majority, but the
+  // 10.0f runs hold 300 of the page's 304 characters.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 6.0f, 10.0f, 6.0f, 10.0f, 6.0f, 6.0f},
+      /*styles=*/{}, /*custom_chars=*/{}, /*bounds=*/{},
+      /*char_counts=*/{100, 1, 100, 1, 100, 1, 1});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(pdf_root, page_count_,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(7u, page->GetChildCount());
+
+  // The median is 10.0f, so nothing on the page clears the 12.0f heading
+  // threshold and the 6.0f runs fall below the median.
+  for (size_t i = 0; i < page->GetChildCount(); ++i) {
+    SCOPED_TRACE(::testing::Message() << "child index " << i);
+    const ui::AXNode* node = page->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, node);
+    EXPECT_EQ(ax::mojom::Role::kParagraph, node->GetRole());
+  }
+}
+
+// With the heuristic enhancements disabled the median stays unweighted, so the
+// same page keeps its previous behavior of promoting body text to headings.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicDisabledShortRunsStillLowerMedianFontSize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {::features::kPdfAccessibilityHeuristicEnhancements,
+           chrome_pdf::features::kPdfTags});
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 6.0f, 10.0f, 6.0f, 10.0f, 6.0f, 6.0f},
+      /*styles=*/{}, /*custom_chars=*/{}, /*bounds=*/{},
+      /*char_counts=*/{100, 1, 100, 1, 100, 1, 1});
+
+  // Median 6.0f puts the heading threshold at 7.2f, so the three 100 character
+  // runs at 10.0f are wrongly promoted to headings. The single character 6.0f
+  // runs stay paragraphs.
+  constexpr std::array<ax::mojom::Role, 7> kExpectedRoles = {
+      ax::mojom::Role::kHeading,  ax::mojom::Role::kParagraph,
+      ax::mojom::Role::kHeading,  ax::mojom::Role::kParagraph,
+      ax::mojom::Role::kHeading,  ax::mojom::Role::kParagraph,
+      ax::mojom::Role::kParagraph};
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(kExpectedRoles.size(), page->GetChildCount());
+
+  for (size_t i = 0; i < kExpectedRoles.size(); ++i) {
+    SCOPED_TRACE(::testing::Message() << "child index " << i);
+    const ui::AXNode* node = page->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, node);
+    EXPECT_EQ(kExpectedRoles[i], node->GetRole());
   }
 }
 
