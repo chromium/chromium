@@ -48,8 +48,19 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   overflow: hidden;
   width: 100%;
+}
+
+#composeboxInput {
+  flex-shrink: 0;
+}
+
+#context {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 #contextEntrypoint::part(entrypoint-button) {

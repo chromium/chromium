@@ -142,24 +142,24 @@ export function getHtml(this: NtpComposeboxElement) {
             ${this.shouldShowDivider() ? html`
             <div class="carousel-divider" part="carousel-divider"></div>
             ` : ''}
-            <cr-composebox-dropdown
-                id="matches"
-                part="dropdown"
-                exportparts="match-text-container"
-                role="listbox"
-                .result="${this.result}"
-                .selectedMatchIndex="${this.selectedMatchIndex}"
-                .maxSuggestions="${this.maxSuggestions}"
-                .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
-                .richImageSuggestionsEnabled="${
-                    this.richImageSuggestionsEnabled}"
-                @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
-                @match-focusin="${this.onMatchFocusin}"
-                @match-click="${this.onMatchClick}"
-                ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
-                .lastQueriedInput="${this.lastQueriedInput}">
-            </cr-composebox-dropdown>
           </cr-composebox-file-inputs>
+          <cr-composebox-dropdown
+              id="matches"
+              part="dropdown"
+              exportparts="match-text-container"
+              role="listbox"
+              .result="${this.result}"
+              .selectedMatchIndex="${this.selectedMatchIndex}"
+              .maxSuggestions="${this.maxSuggestions}"
+              .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
+              .richImageSuggestionsEnabled="${
+                  this.richImageSuggestionsEnabled}"
+              @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
+              @match-focusin="${this.onMatchFocusin}"
+              @match-click="${this.onMatchClick}"
+              ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
+              .lastQueriedInput="${this.lastQueriedInput}">
+          </cr-composebox-dropdown>
         </div>
       </div>
     </div>
