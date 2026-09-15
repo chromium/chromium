@@ -7,12 +7,12 @@
 
 #import <tuple>
 
-#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/core/browser/filling/field_filling_util.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -126,17 +126,11 @@ constexpr std::string_view kVehicleOverrideParam =
     "3343056218385819478_3849212670_177";
 
 NSString* PassportSuggestionAccessibilityLabel() {
-  constexpr std::u16string_view kDots = u"\u2022\u2060\u2006\u2060";
-
-  NSString* last_four =
-      [kPassportNumber substringFromIndex:[kPassportNumber length] - 4];
-  std::u16string last_four_u16 = base::SysNSStringToUTF16(last_four);
-
   std::u16string obfuscated_number =
-      base::StrCat({kDots, kDots, kDots, kDots, kDots, last_four_u16});
-  NSString* obfuscated_number_ns = base::SysUTF16ToNSString(obfuscated_number);
-
-  return [NSString stringWithFormat:@"%@, %@ · %@", obfuscated_number_ns,
+      autofill::GetObfuscatedValue(base::SysNSStringToUTF16(kPassportNumber),
+                                   /*visible_suffix_length=*/4);
+  return [NSString stringWithFormat:@"%@, %@ · %@",
+                                    base::SysUTF16ToNSString(obfuscated_number),
                                     kPassportEntityType, kPassportOwnerName];
 }
 

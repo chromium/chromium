@@ -5,8 +5,8 @@
 #import <TargetConditionals.h>
 
 #import "base/ios/ios_util.h"
-#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/filling/field_filling_util.h"
 #import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
@@ -37,17 +37,11 @@ NSString* const kPassportNumber = @"LR1234567";
 NSString* const kPassportEntityType = @"Passport";
 
 NSString* PassportSuggestionAccessibilityLabel() {
-  constexpr std::u16string_view kDots = u"\u2022\u2060\u2006\u2060";
-
-  NSString* last_four =
-      [kPassportNumber substringFromIndex:[kPassportNumber length] - 4];
-  std::u16string last_four_u16 = base::SysNSStringToUTF16(last_four);
-
   std::u16string obfuscated_number =
-      base::StrCat({kDots, kDots, kDots, kDots, last_four_u16});
-  NSString* obfuscated_number_ns = base::SysUTF16ToNSString(obfuscated_number);
-
-  return [NSString stringWithFormat:@"%@, %@ · %@", obfuscated_number_ns,
+      autofill::GetObfuscatedValue(base::SysNSStringToUTF16(kPassportNumber),
+                                   /*visible_suffix_length=*/4);
+  return [NSString stringWithFormat:@"%@, %@ · %@",
+                                    base::SysUTF16ToNSString(obfuscated_number),
                                     kPassportEntityType, kPassportOwnerName];
 }
 
