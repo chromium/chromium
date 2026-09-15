@@ -5,8 +5,10 @@
 import './composebox_match.js';
 
 import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {RenderType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {getCss} from './composebox_dropdown.css.js';
@@ -57,6 +59,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
         type: Number,
       },
       overrideClampLineNum: {type: Number},
+      richImageSuggestionsEnabled: {type: Boolean},
     };
   }
 
@@ -70,6 +73,9 @@ export class ComposeboxDropdownElement extends CrLitElement {
   accessor maxSuggestions: number|null = null;
   accessor toolMode: ToolMode = ToolMode.kUnspecified;
   accessor overrideClampLineNum: number = -1;
+  accessor richImageSuggestionsEnabled: boolean =
+      loadTimeData.valueExists('composeboxRichImageSuggestionsEnabled') &&
+      loadTimeData.getBoolean('composeboxRichImageSuggestionsEnabled');
 
   //============================================================================
   // Public methods
@@ -162,8 +168,8 @@ export class ComposeboxDropdownElement extends CrLitElement {
     return this.result?.matches.indexOf(match) ?? -1;
   }
 
-  protected isSelected_(match: AutocompleteMatch): boolean {
-    return this.matchIndex_(match) === this.selectedMatchIndex;
+  protected isSelected_(index: number): boolean {
+    return index === this.selectedMatchIndex;
   }
 
   /** Returns the maximum index of the visible matches. */
@@ -225,6 +231,53 @@ export class ComposeboxDropdownElement extends CrLitElement {
 
   protected computeAriaLabel_(match: AutocompleteMatch): string {
     return match.a11yLabel;
+  }
+
+  /**
+   * @returns Unique suggestion group IDs in natural order of appearance in
+   *     matches.
+   */
+  protected groupIds_(): number[] {
+    return [...new Set<number>(
+        this.result?.matches.map(match => match.suggestionGroupId) ?? [])];
+  }
+
+  protected matchesForGroup_(groupId: number):
+      Array<{match: AutocompleteMatch, index: number}> {
+    if (!this.result) {
+      return [];
+    }
+    const result: Array<{match: AutocompleteMatch, index: number}> = [];
+    this.result.matches.forEach((match, index) => {
+      if (match.suggestionGroupId === groupId) {
+        result.push({match, index});
+      }
+    });
+    return result;
+  }
+
+  protected hasHeaderForGroup_(groupId: number): boolean {
+    return !!this.headerForGroup_(groupId);
+  }
+
+  protected headerForGroup_(groupId: number): string {
+    return this.result?.suggestionGroupsMap[groupId]?.header ?? '';
+  }
+
+  protected renderTypeClassForGroup_(groupId: number): string {
+    return this.result?.suggestionGroupsMap[groupId]?.renderType ===
+            RenderType.kGrid ?
+        'grid' :
+        'vertical';
+  }
+
+  protected onHeaderMousedown_(e: MouseEvent) {
+    // Prevent default mousedown behavior to keep focus in the composebox input.
+    e.preventDefault();
+  }
+
+  protected isMatchHidden_(index: number): boolean {
+    return this.hideVerbatimMatch_(index) || index > this.getMaxVisibleIndex_();
   }
 }
 
