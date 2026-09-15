@@ -549,6 +549,21 @@ std::vector<uint32_t> GetIndexOfSortedValue(base::span<const uint32_t> axes) {
   return sorted_indices;
 }
 
+// TFLite's `TRANSPOSE` specifies an int32 permutation tensor, but WebNN axis
+// indices are uint32 because the IDL type is `sequence<unsigned long>`. Every
+// element is an axis index bounded by the input rank, so narrowing cannot
+// overflow.
+std::vector<int32_t> ToSignedPermutation(
+    base::span<const uint32_t> permutation) {
+  std::vector<int32_t> signed_permutation;
+  signed_permutation.reserve(permutation.size());
+  std::ranges::transform(permutation, std::back_inserter(signed_permutation),
+                         [](uint32_t axis) {
+                           return base::checked_cast<int32_t>(axis);
+                         });
+  return signed_permutation;
+}
+
 // An element in row `i` and column `j` of a matrix is in the upper-triangular
 // portion if `j >= i + diagonal`. It is in the lower-triangular portion if
 // `j <= i + diagonal`.
@@ -3994,18 +4009,19 @@ auto GraphBuilderTflite::SerializeTransposeOperation(
     TensorIndex input_tensor_index,
     TensorIndex output_tensor_index,
     base::span<const int32_t> input_shape,
-    base::span<const uint32_t> permutation)
+    base::span<const int32_t> permutation)
     -> base::expected<OperatorOffset, std::string> {
   if (input_shape.empty()) {
     CHECK(permutation.empty());
     return SerializeReshapeOperation(input_tensor_index, output_tensor_index,
                                      input_shape);
   }
+  // TFLite's `TRANSPOSE` specifies an int32 permutation tensor.
   const std::array<int32_t, 1> permutation_shape = {
       base::checked_cast<int32_t>(permutation.size())};
   ASSIGN_OR_RETURN(
       const TensorIndex permutation_tensor_index,
-      SerializeTensorWithBuffer<uint32_t>(permutation, permutation_shape));
+      SerializeTensorWithBuffer<int32_t>(permutation, permutation_shape));
 
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(::tflite::BuiltinOperator_TRANSPOSE);
@@ -4220,7 +4236,7 @@ auto GraphBuilderTflite::SerializeTransposedConstant2D(OperandId operand_id)
 
 auto GraphBuilderTflite::InsertTransposeOperation(
     const TensorInfo& input_tensor_info,
-    base::span<const uint32_t> permutation)
+    base::span<const int32_t> permutation)
     -> base::expected<TensorIndex, std::string> {
   // Create `tflite::Tensor` for the output operand of Transpose operator with
   // the dimensions and tensor data type.
@@ -6437,7 +6453,7 @@ auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
   }
 
   // The permutation transpose first or second 2-D tensor.
-  static constexpr std::array<uint32_t, 2> permutation = {1u, 0u};
+  static constexpr std::array<int32_t, 2> permutation = {1, 0};
   if (gemm.a_transpose) {
     ASSIGN_OR_RETURN(a_tensor_index,
                      InsertTransposeOperation(a_tensor_info, permutation));
@@ -6560,7 +6576,7 @@ auto GraphBuilderTflite::SerializeSubGraphSliceTranspose(
   ASSIGN_OR_RETURN(const TensorIndex output_tensor_index,
                    SerializeTemporaryTensorWithByteSizeCheck(
                        slice_sizes, input_tensor_type));
-  std::vector<uint32_t> permutation(slice_sizes.size());
+  std::vector<int32_t> permutation(slice_sizes.size());
   std::iota(permutation.rbegin(), permutation.rend(), 0);
   ASSIGN_OR_RETURN(operator_offset,
                    SerializeTransposeOperation(output_tensor_index_of_slice,
@@ -7661,7 +7677,8 @@ auto GraphBuilderTflite::TransposeAndReshapeLayerNormalizationScaleBias(
   if (!std::ranges::is_sorted(sorted_indices)) {
     ASSIGN_OR_RETURN(
         transpose_tensor_index,
-        InsertTransposeOperation(scale_or_bias_tensor_info, sorted_indices));
+        InsertTransposeOperation(scale_or_bias_tensor_info,
+                                 ToSignedPermutation(sorted_indices)));
   }
 
   ASSIGN_OR_RETURN(const TensorIndex reshape_tensor_index,
@@ -9913,7 +9930,7 @@ auto GraphBuilderTflite::SerializeSoftmax(const mojom::Softmax& softmax)
                                    softmax_options.Union());
   }
   // Transpose the input tensor to make the axis to be the last dimension.
-  std::vector<uint32_t> permutation(input_rank);
+  std::vector<int32_t> permutation(input_rank);
   std::iota(permutation.begin(), permutation.end(), 0);
   std::swap(permutation[softmax.axis], permutation[input_rank - 1]);
   std::vector<int32_t> transpose_dimensions = input_tensor_info.dimensions;
@@ -10301,7 +10318,7 @@ auto GraphBuilderTflite::SerializeTranspose(const mojom::Transpose& transpose)
 
   return SerializeTransposeOperation(
       input_tensor_info.index, output_tensor_index,
-      input_tensor_info.dimensions, transpose.permutation);
+      input_tensor_info.dimensions, ToSignedPermutation(transpose.permutation));
 }
 
 auto GraphBuilderTflite::SerializeWhere(const mojom::Where& where)

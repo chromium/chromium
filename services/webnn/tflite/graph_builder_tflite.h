@@ -532,7 +532,7 @@ class GraphBuilderTflite final {
       TensorIndex input_tensor_index,
       TensorIndex output_tensor_index,
       base::span<const int32_t> input_shape,
-      base::span<const uint32_t> permutation);
+      base::span<const int32_t> permutation);
 
   // This function is called by SerializeScatterND or SerializeScatterElements
   // to serialize WebNN scatterND or scatterElements operation.
@@ -575,7 +575,7 @@ class GraphBuilderTflite final {
   // `SerializeTransposeOperation`.
   base::expected<TensorIndex, std::string> InsertTransposeOperation(
       const TensorInfo& input_tensor_info,
-      base::span<const uint32_t> permutation);
+      base::span<const int32_t> permutation);
 
   // Serializes the rank-2 constant `operand_id` with its two axes
   // exchanged, so that no TRANSPOSE operator is emitted for it. A
