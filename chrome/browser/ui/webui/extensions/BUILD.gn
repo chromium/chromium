@@ -96,6 +96,7 @@ if (enable_extensions_core) {
       "//chrome/browser/profiles:profile",
       "//chrome/common:constants",
       "//chrome/test:test_support",
+      "//chrome/test/base:web_ui_mocha_browser_test",
       "//extensions:test_support",
       "//extensions/browser",
       "//extensions/buildflags",

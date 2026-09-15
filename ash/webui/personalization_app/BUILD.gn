@@ -73,6 +73,7 @@ source_set("test_support") {
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
     "//chrome/test:test_support_ui",
+    "//chrome/test/base:web_ui_mocha_browser_test",
   ]
 
   data = []

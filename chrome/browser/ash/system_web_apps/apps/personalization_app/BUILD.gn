@@ -164,6 +164,7 @@ static_library("test_support") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/wallpaper",
+    "//chrome/test/base:web_ui_mocha_browser_test",
     "//components/manta",
   ]
 }

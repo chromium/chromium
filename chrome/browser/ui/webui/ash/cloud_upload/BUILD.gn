@@ -156,6 +156,7 @@ source_set("browser_tests") {
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/test:test_support_ui",
+    "//chrome/test/base:web_ui_mocha_browser_test",
     "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/experiences/system_web_apps/types",

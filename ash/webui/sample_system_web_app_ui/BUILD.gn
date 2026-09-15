@@ -69,6 +69,7 @@ source_set("browser_tests") {
     "//build/config/coverage:buildflags",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chrome/test/base:web_ui_mocha_browser_test",
     "//content/test:test_support",
   ]
 
