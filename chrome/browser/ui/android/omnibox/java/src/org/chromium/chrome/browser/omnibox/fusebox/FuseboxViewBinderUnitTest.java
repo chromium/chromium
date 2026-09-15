@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
@@ -26,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
@@ -57,6 +59,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
+import org.chromium.components.omnibox.IconResourceIdsProtoIntDef;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.TestActivity;
@@ -186,18 +189,23 @@ public class FuseboxViewBinderUnitTest {
 
     private PropertyModel createBottomSheetModel() {
         return new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
-                .with(FuseboxProperties.POPUP_IS_BOTTOM_SHEET, true)
-                .with(FuseboxProperties.PLUS_BUTTON_VISIBLE, true)
-                .with(FuseboxProperties.FUSEBOX_STATE, FuseboxState.EXPANDED)
-                .with(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.SEARCH)
-                .with(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, "test label")
-                .with(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, false)
+                .with(FuseboxProperties.ANCHORING_MODE, AnchoringMode.TOOLBAR_MULTI_LINE)
                 .with(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT)
                 .with(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.TOOLBAR)
-                .with(FuseboxProperties.ANCHORING_MODE, AnchoringMode.TOOLBAR_MULTI_LINE)
+                .with(FuseboxProperties.FUSEBOX_STATE, FuseboxState.EXPANDED)
+                .with(FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION, "test a11y text")
                 .with(
                         FuseboxProperties.PLUS_BUTTON_BACKGROUND_STYLE,
                         BackgroundStyle.INTERACT_ONLY_SMALL)
+                .with(FuseboxProperties.PLUS_BUTTON_VISIBLE, true)
+                .with(FuseboxProperties.POPUP_IS_BOTTOM_SHEET, true)
+                .with(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.SEARCH)
+                .with(
+                        FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
+                        IconResourceIdsProtoIntDef.IconResourceIds.PLACE_WHITE)
+                .with(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON, false)
+                .with(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, "test label")
+                .with(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, false)
                 .build();
     }
 
@@ -231,6 +239,12 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(FuseboxProperties.REQUEST_TYPE, requestType);
         mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, "test label");
         mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, false);
+    }
+
+    private void assertStartDrawable(@DrawableRes int expectedResId) {
+        Drawable startDrawable = mViewHolder.requestType.getCompoundDrawablesRelative()[0];
+        assertNotNull(startDrawable);
+        assertEquals(expectedResId, shadowOf(startDrawable).getCreatedFromResId());
     }
 
     @Test
@@ -320,12 +334,11 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
-    public void updateRequestTypeButton_nonAimRequest_doesNotShowButton() {
-        mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.SEARCH);
-        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, true);
+    public void updateRequestTypeButton_visibility() {
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, false);
         assertEquals(View.GONE, mViewHolder.requestType.getVisibility());
 
-        mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, true);
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
     }
 
@@ -494,25 +507,53 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void requestTypeDrawable() {
-        mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.IMAGE_GENERATION);
-        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
+        mModel.set(
+                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
+                IconResourceIdsProtoIntDef.IconResourceIds.BANANA);
+        assertStartDrawable(R.drawable.create_image_24dp);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
 
-        mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
-        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
+        mModel.set(
+                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
+                IconResourceIdsProtoIntDef.IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE);
+        assertStartDrawable(R.drawable.search_spark_black_24dp);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
 
-        mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.DEEP_SEARCH);
-        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
+        mModel.set(
+                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
+                IconResourceIdsProtoIntDef.IconResourceIds.TRAVEL_EXPLORE);
+        assertStartDrawable(R.drawable.travel_explore_24dp);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
 
-        mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.CANVAS);
-        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
+        mModel.set(
+                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
+                IconResourceIdsProtoIntDef.IconResourceIds.DRAFT_SPARK);
+        assertStartDrawable(R.drawable.draft_spark_24dp);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
+
+        mModel.set(
+                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
+                IconResourceIdsProtoIntDef.IconResourceIds.PLACE_WHITE);
+        assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
+        assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
+    }
+
+    @Test
+    public void requestTypeDrawable_tintToggleKeepsStartIcon() {
+        mModel.set(
+                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
+                IconResourceIdsProtoIntDef.IconResourceIds.BANANA);
+        assertStartDrawable(R.drawable.create_image_24dp);
+
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON, true);
+        assertStartDrawable(R.drawable.create_image_24dp);
+
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON, false);
+        assertStartDrawable(R.drawable.create_image_24dp);
     }
 
     @Test
@@ -598,32 +639,8 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void sendButtonA11y_setsContentDescription() {
-        var res = mActivityController.get().getResources();
-
-        mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
-        assertEquals(
-                res.getString(R.string.acc_send_button_send_to_ai),
-                mViewHolder.navigateButton.getContentDescription());
-
-        mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.IMAGE_GENERATION);
-        assertEquals(
-                res.getString(R.string.acc_send_button_create_image),
-                mViewHolder.navigateButton.getContentDescription());
-
-        mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.DEEP_SEARCH);
-        assertEquals(
-                res.getString(R.string.ntp_compose_deep_search),
-                mViewHolder.navigateButton.getContentDescription());
-
-        mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.CANVAS);
-        assertEquals(
-                res.getString(R.string.ntp_compose_canvas),
-                mViewHolder.navigateButton.getContentDescription());
-
-        mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.SEARCH);
-        assertEquals(
-                res.getString(R.string.acc_send_button_search_or_navigate),
-                mViewHolder.navigateButton.getContentDescription());
+        mModel.set(FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION, "test a11y text");
+        assertEquals("test a11y text", mViewHolder.navigateButton.getContentDescription());
     }
 
     @Test

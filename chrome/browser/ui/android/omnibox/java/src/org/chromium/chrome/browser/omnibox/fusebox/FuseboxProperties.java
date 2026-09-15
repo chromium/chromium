@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxSta
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.IconResourceIdsProtoIntDef.IconResourceIds;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -147,6 +148,10 @@ class FuseboxProperties {
     /** The state of the UI of the fusebox should currently be in. */
     public static final WritableIntDefPropertyKey<FuseboxState> FUSEBOX_STATE =
             new WritableIntDefPropertyKey<>(FuseboxState.DISABLED);
+
+    /** The content description for the navigate button. */
+    public static final WritableObjectPropertyKey<String> NAVIGATE_BUTTON_CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
 
     /** The style of the background for the plus button. */
     public static final WritableIntDefPropertyKey<BackgroundStyle> PLUS_BUTTON_BACKGROUND_STYLE =
@@ -322,6 +327,14 @@ class FuseboxProperties {
     public static final WritableObjectPropertyKey<Runnable> REQUEST_TYPE_BUTTON_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** The start icon, an {@link IconResourceIds} value, for the request type button. */
+    public static final WritableIntDefPropertyKey<IconResourceIds> REQUEST_TYPE_BUTTON_ICON_ID =
+            new WritableIntDefPropertyKey<>(IconResourceIds.PLACE_WHITE);
+
+    /** Whether to tint the start icon of the request type button. */
+    public static final WritableBooleanPropertyKey REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON =
+            new WritableBooleanPropertyKey();
+
     /** The text for the request type button. */
     public static final WritableObjectPropertyKey<String> REQUEST_TYPE_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
@@ -338,6 +351,7 @@ class FuseboxProperties {
         COLOR_SCHEME,
         FUSEBOX_LAYOUT_MODE,
         FUSEBOX_STATE,
+        NAVIGATE_BUTTON_CONTENT_DESCRIPTION,
         PLUS_BUTTON_BACKGROUND_STYLE,
         PLUS_BUTTON_CLICKED,
         PLUS_BUTTON_VISIBLE,
@@ -380,6 +394,8 @@ class FuseboxProperties {
         POPUP_USE_CAROUSEL,
         REQUEST_TYPE,
         REQUEST_TYPE_BUTTON_CLICKED,
+        REQUEST_TYPE_BUTTON_ICON_ID,
+        REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON,
         REQUEST_TYPE_BUTTON_TEXT,
         REQUEST_TYPE_BUTTON_VISIBLE
         // go/keep-sorted end

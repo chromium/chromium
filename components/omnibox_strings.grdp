@@ -419,9 +419,6 @@
   <message name="IDS_ACC_SEND_BUTTON_SEND_TO_AI" desc="Accessibility text for the Omnibox `Send` button, announced when the user is in the AI Mode context" formatter_data="android_java">
     Send
   </message>
-  <message name="IDS_ACC_SEND_BUTTON_CREATE_IMAGE" desc="Accessibility text for the Omnibox `Send` button, announced when the user is in the Create Image context" formatter_data="android_java">
-    Create image
-  </message>
   <message name="IDS_ACC_REMOVE_IMAGE_ATTACHMENT" desc="Accessibility text for the remove button of image attachment, announced when the user selects an image as an attachment" formatter_data="android_java">
     Remove image attachment
   </message>

@@ -73,14 +73,14 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
+import org.chromium.components.omnibox.IconResourceIdsProtoIntDef.IconResourceIds;
 import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
-import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.KeyNavigationUtil;
@@ -197,6 +197,9 @@ import java.util.function.Supplier;
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_FUSEBOX_UPLOAD_FAILED);
 
+        mModel.set(
+                FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION,
+                context.getString(R.string.acc_send_button_search_or_navigate));
         mModel.set(FuseboxProperties.PLUS_BUTTON_CLICKED, this::onPlusButtonClicked);
         mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED, this::onRequestTypeButtonClicked);
 
@@ -978,18 +981,6 @@ import java.util.function.Supplier;
         }
     }
 
-    private String getRequestTypeButtonText(InputState inputState) {
-        if (inputState.activeTool == ToolMode.TOOL_MODE_UNSPECIFIED_VALUE) {
-            return mContext.getString(R.string.ai_mode_entrypoint_label);
-        }
-        for (ToolConfig toolConfig : inputState.getToolConfigs()) {
-            if (toolConfig.getToolValue() == inputState.activeTool) {
-                return toolConfig.getChipLabel();
-            }
-        }
-        return "";
-    }
-
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType Integer type) {
         updateFuseboxState();
         mModel.set(FuseboxProperties.REQUEST_TYPE, type);
@@ -1009,6 +1000,12 @@ import java.util.function.Supplier;
                         : null;
         if (inputState != null) {
             onInputStateChange(inputState);
+        } else {
+            // Client controlled mode, or an input state that never arrived. Derive the tool from
+            // the request type so the chip and send button are still described correctly.
+            updateRequestTypeButtonProperties(
+                    ToolModeUtils.getToolModeForRequestType(type, mHasAttachmentsSupplier.get()),
+                    /* toolConfig= */ null);
         }
 
         updatePlusButtonBackgroundStyle();
@@ -1020,11 +1017,11 @@ import java.util.function.Supplier;
         return new PopupButtonData(
                 this::onDynamicButtonClicked,
                 mContext.getString(R.string.ai_mode_entrypoint_label),
-                IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE_VALUE,
+                IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE,
                 /* enabled= */ true,
                 selected,
                 PopupButtonType.TOOL,
-                ToolMode.TOOL_MODE_UNSPECIFIED_VALUE,
+                ToolMode.TOOL_MODE_UNSPECIFIED,
                 /* hasColor= */ false,
                 /* tooltip= */ "");
     }
@@ -1250,12 +1247,32 @@ import java.util.function.Supplier;
         // Note that some of the time that this method is called in the middle of beginInput(), so
         // checking avoid checking isInInputSession() or using mModelList.
 
-        mModel.set(
-                FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, getRequestTypeButtonText(inputState));
+        updateRequestTypeButtonProperties(inputState.activeTool, getActiveToolConfig(inputState));
 
         if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
             updateModelForPopupInputState(inputState);
         }
+    }
+
+    /**
+     * Populates the request type button and send button properties. {@code toolConfig} is the
+     * server description of {@code activeTool}, and is null in client controlled mode or whenever
+     * the server shipped no config for the tool.
+     */
+    private void updateRequestTypeButtonProperties(
+            @ToolMode int activeTool, @Nullable ToolConfig toolConfig) {
+        mModel.set(
+                FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION,
+                getNavigateButtonContentDescription(toolConfig));
+        mModel.set(
+                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
+                getRequestTypeButtonIconId(activeTool, toolConfig));
+        mModel.set(
+                FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON,
+                shouldTintRequestTypeButtonIcon(activeTool));
+        mModel.set(
+                FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT,
+                getRequestTypeButtonText(activeTool, toolConfig));
     }
 
     private void updateModelForPopupInputState(InputState inputState) {
@@ -1309,7 +1326,7 @@ import java.util.function.Supplier;
             int iconId =
                     toolConfig.hasIcon() && toolConfig.getIcon().hasIconId()
                             ? toolConfig.getIcon().getIconIdValue()
-                            : IconResourceIds.PLACE_WHITE_VALUE;
+                            : IconResourceIds.PLACE_WHITE;
             boolean selected =
                     mInput != null
                             && ToolModeUtils.getRequestTypeForToolMode(toolMode)
@@ -1318,10 +1335,8 @@ import java.util.function.Supplier;
                     inputState.isToolEnabled(toolMode)
                             && (!disableTabsForCanvas
                                     || !hasAttachedTabs
-                                    || toolMode != ToolMode.TOOL_MODE_CANVAS_VALUE);
-            boolean hasColor =
-                    toolMode == ToolMode.TOOL_MODE_IMAGE_GEN_VALUE
-                            || toolMode == ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE;
+                                    || toolMode != ToolMode.TOOL_MODE_CANVAS);
+            boolean hasColor = ToolModeUtils.isImageGenTool(toolMode);
 
             toolButtonDataList.add(
                     new PopupButtonData(
@@ -1359,7 +1374,7 @@ import java.util.function.Supplier;
                 int iconId =
                         modelConfig.hasIcon() && modelConfig.getIcon().hasIconId()
                                 ? modelConfig.getIcon().getIconIdValue()
-                                : IconResourceIds.PLACE_WHITE_VALUE;
+                                : IconResourceIds.PLACE_WHITE;
                 modelButtonDataList.add(
                         new PopupButtonData(
                                 this::onDynamicButtonClicked,
@@ -1384,6 +1399,72 @@ import java.util.function.Supplier;
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
                 showModelPicker ? modelButtonDataList : List.of());
+    }
+
+    /**
+     * Returns the {@link ToolConfig} describing {@code inputState.activeTool}, or null when the
+     * server shipped none. An exact tool match always wins. Any image generation config is accepted
+     * as a fallback for an image generation tool, since the server may describe the family with a
+     * single config.
+     */
+    private static @Nullable ToolConfig getActiveToolConfig(InputState inputState) {
+        if (inputState.activeTool == ToolMode.TOOL_MODE_UNSPECIFIED) {
+            return null;
+        }
+        boolean activeIsImageGen = ToolModeUtils.isImageGenTool(inputState.activeTool);
+        @Nullable ToolConfig imageGenFallback = null;
+        for (ToolConfig toolConfig : inputState.getToolConfigs()) {
+            if (toolConfig.getToolValue() == inputState.activeTool) {
+                return toolConfig;
+            }
+            if (imageGenFallback == null
+                    && activeIsImageGen
+                    && ToolModeUtils.isImageGenTool(toolConfig.getToolValue())) {
+                imageGenFallback = toolConfig;
+            }
+        }
+        return imageGenFallback;
+    }
+
+    private String getNavigateButtonContentDescription(@Nullable ToolConfig toolConfig) {
+        if (ToolModeUtils.isConventionalRequest(mModel.get(FuseboxProperties.REQUEST_TYPE))) {
+            return mContext.getString(R.string.acc_send_button_search_or_navigate);
+        }
+        if (toolConfig != null) {
+            String chipLabel = toolConfig.getChipLabel().trim();
+            if (!chipLabel.isEmpty()) {
+                return chipLabel;
+            }
+        }
+        return mContext.getString(R.string.acc_send_button_send_to_ai);
+    }
+
+    private static @IconResourceIds int getRequestTypeButtonIconId(
+            @ToolMode int activeTool, @Nullable ToolConfig toolConfig) {
+        if (activeTool == ToolMode.TOOL_MODE_UNSPECIFIED) {
+            return IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE;
+        }
+        if (toolConfig != null && toolConfig.getIcon().hasIconId()) {
+            return toolConfig.getIcon().getIconIdValue();
+        }
+        return IconResourceIds.PLACE_WHITE;
+    }
+
+    private String getRequestTypeButtonText(
+            @ToolMode int activeTool, @Nullable ToolConfig toolConfig) {
+        if (activeTool == ToolMode.TOOL_MODE_UNSPECIFIED) {
+            return mContext.getString(R.string.ai_mode_entrypoint_label);
+        }
+        return toolConfig != null ? toolConfig.getChipLabel() : "";
+    }
+
+    /**
+     * Returns whether the request type button's start icon should be tinted to match the
+     * surrounding text color. Image generation icons are multicolored by design, so they are left
+     * untinted.
+     */
+    private static boolean shouldTintRequestTypeButtonIcon(@ToolMode int activeTool) {
+        return !ToolModeUtils.isImageGenTool(activeTool);
     }
 
     private boolean trySetRequestType(@AutocompleteRequestType int requestType) {
