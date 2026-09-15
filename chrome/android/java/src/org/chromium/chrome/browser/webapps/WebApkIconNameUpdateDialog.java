@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.ui.LayoutInflaterUtils;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -155,6 +156,10 @@ public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Control
                                 resources,
                                 R.string.webapp_update_negative_button)
                         .with(ModalDialogProperties.TITLE_SCROLLABLE, true)
+                        .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true)
+                        .with(
+                                ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
+                                UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
                         .build();
 
         mModalDialogManager = manager;

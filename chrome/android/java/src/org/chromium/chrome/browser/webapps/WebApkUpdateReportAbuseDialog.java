@@ -19,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.ui.LayoutInflaterUtils;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -95,7 +96,11 @@ public class WebApkUpdateReportAbuseDialog implements ModalDialogProperties.Cont
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 resources,
-                                R.string.webapk_report_abuse_cancel);
+                                R.string.webapk_report_abuse_cancel)
+                        .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true)
+                        .with(
+                                ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
+                                UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS);
         if (mShowAbuseCheckbox) {
             View dialogCustomView =
                     LayoutInflaterUtils.inflate(

@@ -27,6 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -219,6 +220,13 @@ public class WebApkIconNameUpdateDialogTest {
                         : null,
                 getUpdateDialogBitmap(R.id.app_icon_new));
 
+        PropertyModel dialogModel = mDialogManager.getCurrentDialogModel();
+        Assert.assertNotNull(dialogModel);
+        Assert.assertTrue(dialogModel.get(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY));
+        Assert.assertEquals(
+                UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS,
+                (long) dialogModel.get(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));
+
         mDialogManager.dismissCurrentDialog(
                 clickAccept
                         ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
@@ -257,6 +265,13 @@ public class WebApkIconNameUpdateDialogTest {
         dialog.show();
 
         Assert.assertEquals(expectedTitle, getDialogTitle());
+
+        PropertyModel abuseDialogModel = mDialogManager.getCurrentDialogModel();
+        Assert.assertNotNull(abuseDialogModel);
+        Assert.assertTrue(abuseDialogModel.get(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY));
+        Assert.assertEquals(
+                UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS,
+                (long) abuseDialogModel.get(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));
 
         mDialogManager.dismissCurrentDialog(
                 clickAccept
@@ -374,5 +389,45 @@ public class WebApkIconNameUpdateDialogTest {
 
         // Make sure Canceling the dialog does the right thing.
         verifyReportAbuseValues(/* clickAccept= */ false, "short", "Uninstall 'short'?");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Webapps"})
+    public void testDialogInputProtection() {
+        DialogParams dialogParams = DialogParams.createDefault();
+        dialogParams.iconChanged = true;
+        dialogParams.bitmapBefore = generateTestBitmap(Color.BLUE);
+        dialogParams.bitmapAfter = generateTestBitmap(Color.RED);
+
+        WebApkIconNameUpdateDialog dialog = new WebApkIconNameUpdateDialog();
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+
+        dialog.show(
+                context,
+                mDialogManager,
+                /* packageName= */ "",
+                dialogParams.iconChanged,
+                dialogParams.shortNameChanged,
+                dialogParams.nameChanged,
+                dialogParams.shortNameBefore,
+                dialogParams.shortNameAfter,
+                dialogParams.nameBefore,
+                dialogParams.nameAfter,
+                dialogParams.bitmapBefore,
+                dialogParams.bitmapAfter,
+                false,
+                false,
+                this::onUpdateDialogResult);
+
+        PropertyModel model = mDialogManager.getCurrentDialogModel();
+        Assert.assertNotNull(model);
+        Assert.assertTrue(model.get(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY));
+        Assert.assertEquals(
+                UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS,
+                (long) model.get(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));
     }
 }
