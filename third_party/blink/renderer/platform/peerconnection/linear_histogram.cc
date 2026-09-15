@@ -4,10 +4,11 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/linear_histogram.h"
 
+#include <algorithm>
 #include <cmath>
 
-#include "base/check.h"
 #include "base/check_op.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 

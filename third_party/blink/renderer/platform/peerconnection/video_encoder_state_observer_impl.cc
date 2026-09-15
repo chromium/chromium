@@ -4,12 +4,31 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer_impl.h"
 
+#include <atomic>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
 #include <queue>
+#include <utility>
 
-#include "base/atomic_ref_count.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
-#include "third_party/webrtc/api/video/encoded_image.h"
+#include "base/time/time.h"
+#include "media/base/video_codecs.h"
+#include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc/api/video/video_codec_constants.h"
+#include "third_party/webrtc/api/video/video_codec_type.h"
+#include "third_party/webrtc/api/video_codecs/simulcast_stream.h"
+#include "third_party/webrtc/api/video_codecs/spatial_layer.h"
+#include "third_party/webrtc/api/video_codecs/video_codec.h"
 
 namespace blink {
 namespace {

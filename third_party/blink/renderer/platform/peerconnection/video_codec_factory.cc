@@ -4,13 +4,17 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 
-#include "base/feature_list.h"
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
+#include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "media/base/media_switches.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -18,10 +22,17 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collecting_encoder.h"
+#include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
+#include "third_party/webrtc/api/environment/environment.h"
+#include "third_party/webrtc/api/video/resolution.h"
+#include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
+#include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder_software_fallback_wrapper.h"
-#include "third_party/webrtc/api/video_codecs/video_encoder_software_fallback_wrapper.h"
-#include "third_party/webrtc/media/base/codec.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
+#include "third_party/webrtc/media/base/media_constants.h"
 #include "third_party/webrtc/media/engine/internal_decoder_factory.h"
 #include "third_party/webrtc/media/engine/internal_encoder_factory.h"
 #include "third_party/webrtc/media/engine/simulcast_encoder_adapter.h"

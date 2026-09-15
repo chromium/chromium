@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_VSYNC_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_VSYNC_PROVIDER_H_
 
+#include <cstdint>
+
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
-#include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace blink {
 

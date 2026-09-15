@@ -4,12 +4,16 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/gpu_codec_support_waiter.h"
 
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "third_party/blink/public/common/features.h"
+#include "base/time/time.h"
+#include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {

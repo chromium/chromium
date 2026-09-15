@@ -5,17 +5,28 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_VIDEO_TRACK_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_VIDEO_TRACK_SOURCE_H_
 
+#include <cstdint>
+#include <optional>
+
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
-#include "media/base/video_frame_pool.h"
+#include "media/base/video_frame.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
+#include "third_party/webrtc/api/media_stream_interface.h"
+#include "third_party/webrtc/api/units/timestamp.h"
 #include "third_party/webrtc/api/video/adapted_video_track_source.h"
+#include "third_party/webrtc/api/video/video_source_interface.h"
 #include "third_party/webrtc/rtc_base/timestamp_aligner.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 class GpuVideoAcceleratorFactories;

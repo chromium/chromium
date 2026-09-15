@@ -5,16 +5,20 @@
 #include "third_party/blink/renderer/platform/peerconnection/vsync_tick_provider.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "metronome_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/peerconnection/vsync_provider.h"
+#include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace blink {
 namespace {

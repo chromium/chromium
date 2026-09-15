@@ -6,6 +6,11 @@
 
 #include <stdint.h>
 
+#include <optional>
+#include <utility>
+#include <vector>
+
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
@@ -14,13 +19,20 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
+#include "media/video/video_encode_accelerator.h"
 #include "media/webrtc/webrtc_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
+#include "third_party/webrtc/api/video/resolution.h"
 #include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
+#include "third_party/webrtc/api/video_codecs/scalability_mode.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
+#include "ui/gfx/geometry/size.h"
 
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;

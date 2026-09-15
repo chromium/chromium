@@ -6,20 +6,18 @@
 
 #include <cstddef>
 #include <memory>
-#include <set>
-#include <string>
+#include <utility>
 
-#include "base/check_op.h"
-#include "base/numerics/safe_conversions.h"
+#include "base/check.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/time.h"
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/peerconnection/rtc_scoped_refptr_cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/stats/rtc_stats.h"
-#include "third_party/webrtc/api/stats/rtcstats_objects.h"
+#include "third_party/webrtc/api/stats/rtc_stats_report.h"
+#include "third_party/webrtc/api/units/timestamp.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace blink {

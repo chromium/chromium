@@ -4,13 +4,23 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
 
-#include <algorithm>
 #include <atomic>
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "media/base/video_codecs.h"
+#include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
+#include "base/time/time.h"
+#include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
+#include "third_party/webrtc/api/video/encoded_image.h"
+#include "third_party/webrtc/api/video/video_frame.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
+#include "third_party/webrtc/api/video_codecs/video_decoder.h"
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 
 namespace blink {

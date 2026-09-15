@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_decoding_info_handler.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -12,12 +13,17 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/peerconnection/audio_codec_factory.h"
 #include "third_party/webrtc/api/audio_codecs/audio_decoder_factory.h"
 #include "third_party/webrtc/api/audio_codecs/audio_format.h"
+#include "third_party/webrtc/api/environment/environment.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/video/resolution.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"

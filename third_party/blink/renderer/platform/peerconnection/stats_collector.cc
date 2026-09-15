@@ -4,11 +4,16 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 
-#include <algorithm>
+#include <cstddef>
+#include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "media/base/video_codecs.h"
+#include "third_party/blink/renderer/platform/peerconnection/linear_histogram.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 namespace {

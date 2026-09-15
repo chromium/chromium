@@ -4,16 +4,34 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/instrumented_video_encoder_wrapper.h"
 
-#include "base/memory/scoped_refptr.h"
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <utility>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc/api/fec_controller_override.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/video/encoded_image.h"
+#include "third_party/webrtc/api/video/video_bitrate_allocation.h"
+#include "third_party/webrtc/api/video/video_codec_type.h"
+#include "third_party/webrtc/api/video/video_frame.h"
+#include "third_party/webrtc/api/video/video_frame_buffer.h"
+#include "third_party/webrtc/api/video/video_frame_type.h"
+#include "third_party/webrtc/api/video/video_rotation.h"
 #include "third_party/webrtc/api/video_codecs/video_codec.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
+#include "third_party/webrtc/rtc_base/ref_counted_object.h"
+#include "ui/gfx/geometry/size.h"
 
 using ::testing::_;
 using ::testing::AllOf;

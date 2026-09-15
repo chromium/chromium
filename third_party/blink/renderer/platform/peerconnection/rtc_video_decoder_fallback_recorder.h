@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_DECODER_FALLBACK_RECORDER_H_
 
 #include "media/base/video_codecs.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 

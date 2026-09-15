@@ -4,15 +4,18 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/h265_parameter_sets_tracker.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <memory>
 #include <optional>
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "third_party/webrtc/api/video/encoded_image.h"
 #include "third_party/webrtc/common_video/h265/h265_common.h"
 #include "third_party/webrtc/common_video/h265/h265_pps_parser.h"
 #include "third_party/webrtc/common_video/h265/h265_sps_parser.h"

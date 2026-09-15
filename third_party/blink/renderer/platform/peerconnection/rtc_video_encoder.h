@@ -9,6 +9,8 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -17,6 +19,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
+#include "media/base/svc_scalability_mode.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/media_buildflags.h"
 #include "media/video/video_encode_accelerator.h"
@@ -24,6 +29,11 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/video/video_bitrate_allocation.h"
+#include "third_party/webrtc/api/video/video_frame.h"
+#include "third_party/webrtc/api/video/video_frame_buffer.h"
+#include "third_party/webrtc/api/video/video_frame_type.h"
+#include "third_party/webrtc/api/video_codecs/video_codec.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 #include "third_party/webrtc/modules/video_coding/svc/simulcast_to_svc_converter.h"
 #include "ui/gfx/geometry/size.h"

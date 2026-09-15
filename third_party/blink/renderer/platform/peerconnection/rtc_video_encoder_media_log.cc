@@ -4,10 +4,11 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder_media_log.h"
 
-#include <string>
+#include <memory>
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "media/base/media_log_record.h"
 
 namespace blink {
 

@@ -5,12 +5,19 @@
 #include "third_party/blink/renderer/platform/peerconnection/audio_codec_factory.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "third_party/webrtc/api/audio_codecs/L16/audio_decoder_L16.h"
 #include "third_party/webrtc/api/audio_codecs/L16/audio_encoder_L16.h"
+#include "third_party/webrtc/api/audio_codecs/audio_codec_pair_id.h"
+#include "third_party/webrtc/api/audio_codecs/audio_decoder.h"
+#include "third_party/webrtc/api/audio_codecs/audio_decoder_factory.h"
 #include "third_party/webrtc/api/audio_codecs/audio_decoder_factory_template.h"
+#include "third_party/webrtc/api/audio_codecs/audio_encoder.h"
+#include "third_party/webrtc/api/audio_codecs/audio_encoder_factory.h"
 #include "third_party/webrtc/api/audio_codecs/audio_encoder_factory_template.h"
+#include "third_party/webrtc/api/audio_codecs/audio_format.h"
 #include "third_party/webrtc/api/audio_codecs/g711/audio_decoder_g711.h"
 #include "third_party/webrtc/api/audio_codecs/g711/audio_encoder_g711.h"
 #include "third_party/webrtc/api/audio_codecs/g722/audio_decoder_g722.h"
@@ -19,6 +26,7 @@
 #include "third_party/webrtc/api/audio_codecs/opus/audio_decoder_opus.h"
 #include "third_party/webrtc/api/audio_codecs/opus/audio_encoder_multi_channel_opus.h"
 #include "third_party/webrtc/api/audio_codecs/opus/audio_encoder_opus.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace blink {
 

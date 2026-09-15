@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_session_description_platform.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
 namespace blink {
 
 RTCSessionDescriptionPlatform::RTCSessionDescriptionPlatform(const String& type,

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_TWO_KEYS_ADAPTER_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_TWO_KEYS_ADAPTER_MAP_H_
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <utility>

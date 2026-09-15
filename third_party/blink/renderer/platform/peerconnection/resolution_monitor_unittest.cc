@@ -4,13 +4,20 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
 
-#include "base/compiler_specific.h"
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
+#include "media/base/video_codecs.h"
 #include "media/parsers/ivf_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 

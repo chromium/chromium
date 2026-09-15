@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_event_log_output_sink_proxy.h"
 
+#include <cstdint>
 #include <string_view>
 
 #include "base/check.h"

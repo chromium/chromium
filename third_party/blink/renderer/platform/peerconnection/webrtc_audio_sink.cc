@@ -5,24 +5,39 @@
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_audio_sink.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <limits>
+#include <string>
+#include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
+#include "base/memory/aligned_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_level_calculator.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/webrtc/api/media_stream_interface.h"
+#include "third_party/webrtc/api/media_stream_track.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
-#include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace {
 

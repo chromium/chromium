@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <optional>
 #include <ostream>
 #include <vector>
 

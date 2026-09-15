@@ -5,15 +5,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_INSTRUMENTED_VIDEO_ENCODER_WRAPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_INSTRUMENTED_VIDEO_ENCODER_WRAPPER_H_
 
+#include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/webrtc/api/fec_controller_override.h"
+#include "third_party/webrtc/api/video/encoded_image.h"
+#include "third_party/webrtc/api/video/video_frame.h"
+#include "third_party/webrtc/api/video/video_frame_type.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 
 namespace blink {

@@ -4,12 +4,16 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/instrumented_simulcast_adapter.h"
 
+#include <memory>
 #include <queue>
+#include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "media/base/mock_filters.h"
+#include "media/base/video_codecs.h"
 #include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider_factory.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"

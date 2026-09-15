@@ -4,12 +4,23 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/instrumented_simulcast_adapter.h"
 
-#include "base/numerics/safe_conversions.h"
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/renderer/platform/peerconnection/instrumented_video_encoder_wrapper.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer.h"
+#include "third_party/webrtc/api/environment/environment.h"
+#include "third_party/webrtc/api/video/resolution.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
+#include "third_party/webrtc/media/engine/simulcast_encoder_adapter.h"
 
 namespace blink {
 class InstrumentedSimulcastAdapter::EncoderFactoryAdapter

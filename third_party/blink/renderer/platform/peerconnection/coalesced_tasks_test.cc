@@ -4,9 +4,11 @@
 
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

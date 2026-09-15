@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_RTP_RECEIVER_PLATFORM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_RTP_RECEIVER_PLATFORM_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 
@@ -14,7 +15,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
 #include "third_party/webrtc/api/rtp_parameters.h"
-#include "third_party/webrtc/api/stats/rtc_stats.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace blink {
 

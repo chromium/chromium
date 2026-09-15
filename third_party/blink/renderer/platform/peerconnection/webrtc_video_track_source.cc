@@ -4,26 +4,50 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_video_track_source.h"
 
+#include <cstdint>
 #include <optional>
+#include <utility>
 
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame_converter.h"
+#include "media/base/video_transformation.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.h"
+#include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/webrtc/api/media_stream_interface.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/units/timestamp.h"
+#include "third_party/webrtc/api/video/adapted_video_track_source.h"
+#include "third_party/webrtc/api/video/video_frame.h"
+#include "third_party/webrtc/api/video/video_frame_buffer.h"
+#include "third_party/webrtc/api/video/video_rotation.h"
+#include "third_party/webrtc/api/video/video_source_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace {
 

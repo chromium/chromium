@@ -3,22 +3,17 @@
 // found in the LICENSE file.
 
 #include "third_party/webrtc_overrides/metronome_source.h"
-#include <memory>
 
-#include "base/functional/bind.h"
-#include "base/logging.h"
+#include <memory>
+#include <utility>
+
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/thread_pool.h"
-#include "base/test/bind.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/webrtc/api/task_queue/task_queue_base.h"
-#include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace blink {
 namespace {

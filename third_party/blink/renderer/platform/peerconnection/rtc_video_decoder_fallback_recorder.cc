@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_fallback_recorder.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "media/base/video_codecs.h"
 
 namespace blink {
 

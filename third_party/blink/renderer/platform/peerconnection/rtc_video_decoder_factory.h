@@ -5,12 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_DECODER_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_DECODER_FACTORY_H_
 
+#include <memory>
+#include <optional>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/platform/peerconnection/gpu_codec_support_waiter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/webrtc/api/environment/environment.h"
+#include "third_party/webrtc/api/video/resolution.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
-#include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 #include "ui/gfx/color_space.h"
 
 namespace webrtc {

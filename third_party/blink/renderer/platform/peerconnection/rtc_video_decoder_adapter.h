@@ -6,21 +6,23 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_DECODER_ADAPTER_H_
 
 #include <atomic>
+#include <cstdint>
 #include <memory>
-#include <vector>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "media/base/decoder.h"
 #include "media/base/video_decoder_config.h"
 #include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/webrtc/api/video/encoded_image.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder.h"
-#include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {

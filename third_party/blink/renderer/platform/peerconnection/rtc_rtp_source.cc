@@ -5,11 +5,14 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_source.h"
 
 #include <cmath>
+#include <cstdint>
+#include <optional>
 
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/transport/rtp/rtp_source.h"
 #include "third_party/webrtc/system_wrappers/include/ntp_time.h"
 
 namespace blink {

@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/linear_histogram.h"
 
+#include <utility>
 #include <vector>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 

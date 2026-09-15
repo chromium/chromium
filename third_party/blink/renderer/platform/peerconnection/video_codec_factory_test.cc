@@ -4,11 +4,15 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 
+#include <memory>
+#include <optional>
+#include <vector>
+
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "media/base/mock_filters.h"
-#include "media/base/video_encoder_metrics_provider.h"
+#include "media/base/video_codecs.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider_factory.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
@@ -18,9 +22,13 @@
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/environment/environment_factory.h"
+#include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
+#include "third_party/webrtc/api/video_codecs/video_decoder_factory.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 #include "third_party/webrtc/media/engine/internal_encoder_factory.h"
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
+#include "ui/gfx/geometry/size.h"
 
 using ::testing::Return;
 using ::testing::ValuesIn;

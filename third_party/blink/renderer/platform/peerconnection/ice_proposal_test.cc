@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/peerconnection/fake_connection_test_base.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_connection_matchers.h"
+#include "third_party/webrtc/p2p/base/connection.h"
+#include "third_party/webrtc/p2p/base/ice_controller_interface.h"
+#include "third_party/webrtc/p2p/base/ice_switch_reason.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_ping_proposal.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_prune_proposal.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_switch_proposal.h"
-
-#include <vector>
-
-#include "testing/gtest/include/gtest/gtest.h"
-
-#include "third_party/blink/renderer/platform/peerconnection/fake_connection_test_base.h"
-#include "third_party/blink/renderer/platform/peerconnection/webrtc_connection_matchers.h"
-
-#include "third_party/webrtc/p2p/base/ice_controller_interface.h"
-#include "third_party/webrtc/p2p/base/ice_switch_reason.h"
 
 namespace {
 

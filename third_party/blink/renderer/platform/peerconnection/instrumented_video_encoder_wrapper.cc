@@ -4,8 +4,28 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/instrumented_video_encoder_wrapper.h"
 
+#include <cstdint>
+#include <memory>
+#include <utility>
+#include <vector>
+
+#include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "third_party/webrtc/api/fec_controller_override.h"
+#include "third_party/webrtc/api/video/encoded_image.h"
+#include "third_party/webrtc/api/video/video_codec_constants.h"
+#include "third_party/webrtc/api/video/video_frame.h"
+#include "third_party/webrtc/api/video/video_frame_type.h"
+#include "third_party/webrtc/api/video_codecs/video_codec.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder.h"
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 
 namespace blink {

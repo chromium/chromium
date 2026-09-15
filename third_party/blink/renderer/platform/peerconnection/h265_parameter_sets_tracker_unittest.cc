@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "third_party/blink/renderer/platform/peerconnection/h265_parameter_sets_tracker.h"
 
-#include <string.h>
-
 #include <array>
+#include <cstdint>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

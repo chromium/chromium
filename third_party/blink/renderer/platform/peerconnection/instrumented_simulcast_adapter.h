@@ -5,8 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_INSTRUMENTED_SIMULCAST_ADAPTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_INSTRUMENTED_SIMULCAST_ADAPTER_H_
 
+#include <memory>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/webrtc/api/video_codecs/video_encoder.h"
+#include "third_party/webrtc/api/environment/environment.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/media/engine/simulcast_encoder_adapter.h"
 
 namespace webrtc {

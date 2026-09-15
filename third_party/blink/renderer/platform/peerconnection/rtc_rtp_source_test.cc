@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_source.h"
 
+#include <cstdint>
+
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"

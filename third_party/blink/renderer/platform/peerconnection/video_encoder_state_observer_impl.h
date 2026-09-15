@@ -5,13 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_VIDEO_ENCODER_STATE_OBSERVER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_VIDEO_ENCODER_STATE_OBSERVER_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 
-#include "base/atomic_ref_count.h"
 #include "base/containers/flat_map.h"
 #include "base/location.h"
 #include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "base/time/time.h"
+#include "media/base/video_codecs.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

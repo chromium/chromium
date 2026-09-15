@@ -5,16 +5,17 @@
 #include "third_party/webrtc_overrides/p2p/base/fake_connection_factory.h"
 
 #include <memory>
+#include <string>
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "components/webrtc/thread_wrapper.h"
-
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
+#include "third_party/webrtc/api/candidate.h"
+#include "third_party/webrtc/p2p/base/connection.h"
+#include "third_party/webrtc/p2p/base/port_allocator.h"
 #include "third_party/webrtc/rtc_base/net_test_helpers.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
 

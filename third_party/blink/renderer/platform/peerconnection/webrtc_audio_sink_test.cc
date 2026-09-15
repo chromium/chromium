@@ -4,11 +4,20 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_audio_sink.h"
 
-#include "base/memory/raw_ptr.h"
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
+
+#include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "media/base/audio_bus.h"
+#include "media/base/channel_layout.h"
 #include "media/base/fake_single_thread_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
+#include "third_party/webrtc/api/media_stream_interface.h"
 
 using testing::_;
 

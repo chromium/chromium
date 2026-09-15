@@ -4,6 +4,9 @@
 
 #include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
+#include <optional>
+
+#include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

@@ -4,12 +4,18 @@
 
 #include "third_party/webrtc_overrides/low_precision_timer.h"
 
+#include <cstddef>
+
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/webrtc_overrides/metronome_source.h"
 #include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
 namespace blink {

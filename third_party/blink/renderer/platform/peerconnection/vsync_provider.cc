@@ -3,9 +3,16 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/peerconnection/vsync_provider.h"
-#include <memory>
 
-#include "base/logging.h"
+#include <cstdint>
+#include <memory>
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"

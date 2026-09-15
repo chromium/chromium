@@ -11,11 +11,11 @@
 
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/video/encoded_image.h"
 #include "third_party/webrtc/common_video/h265/h265_bitstream_parser.h"
-#include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 
 namespace blink {
 

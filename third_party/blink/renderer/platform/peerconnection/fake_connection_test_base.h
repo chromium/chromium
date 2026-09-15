@@ -5,12 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_FAKE_CONNECTION_TEST_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_FAKE_CONNECTION_TEST_BASE_H_
 
+#include <memory>
 #include <string_view>
 
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/p2p/base/connection.h"
 #include "third_party/webrtc_overrides/p2p/base/fake_connection_factory.h"
 

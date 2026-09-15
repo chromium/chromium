@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_SCOPED_REFPTR_CROSS_THREAD_COPIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_SCOPED_REFPTR_CROSS_THREAD_COPIER_H_
 
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
-#include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace blink {
 

@@ -5,20 +5,34 @@
 #include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer_impl.h"
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
 #include <queue>
+#include <tuple>
+#include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_encoder_state_observer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/webrtc/api/video/encoded_image.h"
-#include "third_party/webrtc/api/video/video_content_type.h"
-#include "third_party/webrtc/api/video/video_frame_type.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "third_party/webrtc/api/video/video_codec_type.h"
+#include "third_party/webrtc/api/video_codecs/scalability_mode.h"
+#include "third_party/webrtc/api/video_codecs/simulcast_stream.h"
+#include "third_party/webrtc/api/video_codecs/spatial_layer.h"
+#include "third_party/webrtc/api/video_codecs/video_codec.h"
 #include "third_party/webrtc/modules/video_coding/svc/scalability_mode_util.h"
 
 namespace blink {

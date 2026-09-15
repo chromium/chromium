@@ -3,23 +3,36 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
 
+#include <cstdint>
+#include <memory>
 #include <optional>
-#include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
+#include "media/base/video_codecs.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 #include "third_party/webrtc/api/make_ref_counted.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/units/time_delta.h"
+#include "third_party/webrtc/api/units/timestamp.h"
+#include "third_party/webrtc/api/video/encoded_image.h"
 #include "third_party/webrtc/api/video/i420_buffer.h"
 #include "third_party/webrtc/api/video/video_frame.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
+#include "third_party/webrtc/api/video/video_frame_type.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder.h"
 #include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 

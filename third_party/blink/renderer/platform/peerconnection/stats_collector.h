@@ -5,8 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_STATS_COLLECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_STATS_COLLECTOR_H_
 
+#include <cstddef>
+#include <memory>
 #include <optional>
 
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"

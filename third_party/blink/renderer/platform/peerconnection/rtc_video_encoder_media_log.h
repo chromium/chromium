@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_ENCODER_MEDIA_LOG_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_VIDEO_ENCODER_MEDIA_LOG_H_
 
+#include <memory>
+
 #include "media/base/media_log.h"
+#include "media/base/media_log_record.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {

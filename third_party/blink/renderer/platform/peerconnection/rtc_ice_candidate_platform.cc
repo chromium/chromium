@@ -4,7 +4,14 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
 
+#include <cstdint>
+#include <optional>
+#include <utility>
+
+#include "base/check.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/candidate.h"
+#include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/p2p/base/p2p_constants.h"
 
 namespace blink {
