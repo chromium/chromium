@@ -44,7 +44,13 @@ class LicensesIntegrationTest(unittest.TestCase):
       ['git', 'init'], cwd=str(cls._mock_root_dir), stdout=subprocess.DEVNULL
     )
     subprocess.check_call(
-      ['git', 'remote', 'add', 'origin', 'https://chromium.googlesource.com'],
+      [
+        'git',
+        'remote',
+        'add',
+        'origin',
+        'https://chromium.googlesource.com/chromium/src.git',
+      ],
       cwd=str(cls._mock_root_dir),
       stdout=subprocess.DEVNULL,
     )
