@@ -79,53 +79,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
       "Glic.Instance.InputSubmitted.SelectionCount", 3);
 }
 
-namespace {
-
-class TestSuggestedActionsListener
-    : public selection::SuggestedActionsListener {
- public:
-  TestSuggestedActionsListener() = default;
-  ~TestSuggestedActionsListener() override = default;
-
-  mojo::PendingRemote<selection::SuggestedActionsListener>
-  BindNewPipeAndPassRemote() {
-    return receiver_.BindNewPipeAndPassRemote();
-  }
-
-  void OnSuggestedActionsAvailable(
-      std::vector<selection::SuggestedActionPtr> actions) override {
-    for (auto& action : actions) {
-      actions_.push_back(std::move(action));
-    }
-    batches_received_++;
-    if (run_loop_ && batches_received_ >= expected_batches_) {
-      run_loop_->Quit();
-    }
-  }
-
-  void WaitForBatches(size_t expected_batches) {
-    if (batches_received_ >= expected_batches) {
-      return;
-    }
-    expected_batches_ = expected_batches;
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-
-  const std::vector<selection::SuggestedActionPtr>& actions() const {
-    return actions_;
-  }
-
- private:
-  mojo::Receiver<selection::SuggestedActionsListener> receiver_{this};
-  std::vector<selection::SuggestedActionPtr> actions_;
-  size_t batches_received_ = 0;
-  size_t expected_batches_ = 0;
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
-
-}  // namespace
-
 IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
                        SuggestedActionsDisabledByDefault) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
@@ -135,11 +88,11 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   ASSERT_TRUE(controller);
   controller->Show(/*options=*/nullptr);
 
-  TestSuggestedActionsListener listener;
+  base::test::TestFuture<std::vector<selection::SuggestedActionPtr>> future;
   static_cast<selection::SelectionOverlayPageHandler*>(controller)
-      ->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
-  listener.WaitForBatches(1);
-  EXPECT_TRUE(listener.actions().empty());
+      ->GetSuggestedActions(future.GetCallback());
+  auto actions = future.Take();
+  EXPECT_TRUE(actions.empty());
 }
 
 class SelectionOverlayPromptBrowserTest : public GlicBrowserTest {
@@ -165,11 +118,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   ASSERT_TRUE(controller);
   controller->Show(/*options=*/nullptr);
 
-  TestSuggestedActionsListener listener;
+  base::test::TestFuture<std::vector<selection::SuggestedActionPtr>> future;
   static_cast<selection::SelectionOverlayPageHandler*>(controller)
-      ->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
-  listener.WaitForBatches(1);
-  const auto& actions = listener.actions();
+      ->GetSuggestedActions(future.GetCallback());
+  auto actions = future.Take();
   ASSERT_EQ(actions.size(), 3u);
   EXPECT_FALSE(actions[0]->id.is_empty());
   EXPECT_EQ(actions[0]->title, "Explain");

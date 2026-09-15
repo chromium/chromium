@@ -9,7 +9,7 @@ import {RegionSource, SelectionOverlayBaseHandler} from '/lens/selection_overlay
 import {calculateCenterRotatedBox} from '/lens/selection_utils.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {SelectedRegionMojoType, SuggestedActionsListenerRemote} from './selection_overlay.mojom-webui.js';
+import type {SelectedRegionMojoType, SuggestedAction} from './selection_overlay.mojom-webui.js';
 
 function generateRandomHexId(): string {
   return Array
@@ -157,8 +157,10 @@ export class SelectionOverlayBaseHandlerImpl extends
     proxy.handler.submitPrompt(prompt);
   }
 
-  getSuggestedActions(listener: SuggestedActionsListenerRemote): void {
-    BrowserProxyImpl.getInstance().handler.getSuggestedActions(listener);
+  async getSuggestedActions(): Promise<SuggestedAction[]> {
+    const {actions} =
+        await BrowserProxyImpl.getInstance().handler.getSuggestedActions();
+    return actions;
   }
 
   executeSuggestedAction(actionId: UnguessableToken): void {

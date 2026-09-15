@@ -140,9 +140,7 @@ class SelectionOverlayController
   void AddBackgroundBlur() override;
   void SetLiveBlur(bool enabled) override;
   void SubmitPrompt(const std::string& prompt) override;
-  void GetSuggestedActions(
-      mojo::PendingRemote<selection::SuggestedActionsListener> listener)
-      override;
+  void GetSuggestedActions(GetSuggestedActionsCallback callback) override;
   void ExecuteSuggestedAction(const base::UnguessableToken& action_id) override;
 
  private:
@@ -159,7 +157,6 @@ class SelectionOverlayController
   void RenderRegions(bool should_focus_panel);
 
   void Reset();
-  std::vector<selection::SuggestedActionPtr> GetDefaultSuggestedActions();
   glic::mojom::AdditionalContextPtr CreateAdditionalContext(
       std::vector<std::pair<base::UnguessableToken,
                             glic::mojom::CapturedRegionPtr>> regions);
@@ -187,7 +184,6 @@ class SelectionOverlayController
       selected_regions_;
   // Maps suggested action IDs to prompt strings.
   base::flat_map<base::UnguessableToken, std::string> suggested_actions_;
-  mojo::Remote<selection::SuggestedActionsListener> suggested_actions_listener_;
 
   ui::ScopedUnownedUserData<SelectionOverlayController>
       scoped_unowned_user_data_;

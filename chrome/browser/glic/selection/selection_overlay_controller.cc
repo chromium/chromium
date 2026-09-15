@@ -641,39 +641,30 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
   }
 }
 
-std::vector<selection::SuggestedActionPtr>
-SelectionOverlayController::GetDefaultSuggestedActions() {
-  std::vector<selection::SuggestedActionPtr> actions;
-  auto explain_id = base::UnguessableToken::Create();
-  suggested_actions_[explain_id] = "Explain the selection in a few sentences.";
-  actions.push_back(selection::SuggestedAction::New(explain_id, "Explain"));
-
-  auto summarize_id = base::UnguessableToken::Create();
-  suggested_actions_[summarize_id] =
-      "Summarize the selection in a few sentences.";
-  actions.push_back(selection::SuggestedAction::New(summarize_id, "Summarize"));
-
-  auto create_image_id = base::UnguessableToken::Create();
-  suggested_actions_[create_image_id] =
-      "Create a cartoon styled image from the selection.";
-  actions.push_back(
-      selection::SuggestedAction::New(create_image_id, "Create Image"));
-  return actions;
-}
-
 void SelectionOverlayController::GetSuggestedActions(
-    mojo::PendingRemote<selection::SuggestedActionsListener> listener) {
+    GetSuggestedActionsCallback callback) {
+  std::vector<selection::SuggestedActionPtr> actions;
   suggested_actions_.clear();
-  suggested_actions_listener_.reset();
-  suggested_actions_listener_.Bind(std::move(listener));
+  if (base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
+    // TODO(dtapuska): These are placeholders for now.
+    auto explain_id = base::UnguessableToken::Create();
+    suggested_actions_[explain_id] =
+        "Explain the selection in a few sentences.";
+    actions.push_back(selection::SuggestedAction::New(explain_id, "Explain"));
 
-  if (!base::FeatureList::IsEnabled(features::kGlicSelectionOverlayPrompt)) {
-    suggested_actions_listener_->OnSuggestedActionsAvailable({});
-    return;
+    auto summarize_id = base::UnguessableToken::Create();
+    suggested_actions_[summarize_id] =
+        "Summarize the selection in a few sentences.";
+    actions.push_back(
+        selection::SuggestedAction::New(summarize_id, "Summarize"));
+
+    auto create_image_id = base::UnguessableToken::Create();
+    suggested_actions_[create_image_id] =
+        "Create a cartoon styled image from the selection.";
+    actions.push_back(
+        selection::SuggestedAction::New(create_image_id, "Create Image"));
   }
-
-  suggested_actions_listener_->OnSuggestedActionsAvailable(
-      GetDefaultSuggestedActions());
+  std::move(callback).Run(std::move(actions));
 }
 
 void SelectionOverlayController::ExecuteSuggestedAction(
@@ -697,7 +688,6 @@ void SelectionOverlayController::Reset() {
   screenshot_available_ = false;
   selected_regions_.clear();
   suggested_actions_.clear();
-  suggested_actions_listener_.reset();
   tab_context_.reset();
   capture_region_observer_.reset();
   options_.reset();
