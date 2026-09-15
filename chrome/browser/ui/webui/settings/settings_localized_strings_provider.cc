@@ -1991,9 +1991,22 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
     html_source->AddString(
         "manageCreditCardsLabel",
         l10n_util::GetStringFUTF16(
-            IDS_SETTINGS_PAYMENTS_MANAGE_WALLET_DATA,
+            base::FeatureList::IsEnabled(
+                autofill::features::kAutofillEnableWalletDirectOffers)
+                ? IDS_SETTINGS_PAYMENTS_MANAGE_WALLET_DATA_WITH_OFFERS
+                : IDS_SETTINGS_PAYMENTS_MANAGE_WALLET_DATA,
             base::UTF8ToUTF16(
                 autofill::payments::GetManageSettingsUrl().spec()),
+            base::UTF8ToUTF16(
+                autofill::payments::GetManageInstrumentsUrl().spec()),
+            base::UTF8ToUTF16(
+                autofill::payments::GetManagePassesUrl().spec())));
+  } else if (base::FeatureList::IsEnabled(
+                 autofill::features::kAutofillEnableWalletDirectOffers)) {
+    html_source->AddString(
+        "manageCreditCardsLabel",
+        l10n_util::GetStringFUTF16(
+            IDS_SETTINGS_PAYMENTS_MANAGE_LOYALTY_CARDS_AND_PAYMENT_METHODS_WITH_OFFERS,
             base::UTF8ToUTF16(
                 autofill::payments::GetManageInstrumentsUrl().spec()),
             base::UTF8ToUTF16(
