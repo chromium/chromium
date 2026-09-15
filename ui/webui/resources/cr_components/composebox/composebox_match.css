@@ -13,21 +13,28 @@
   --tab-select-color_: rgba(23, 112, 216, 1);
   --input-inline-spacing: 12px;
   outline: none;
-  height: var(--cr-composebox-match-height, 44px);
-  display: block;
 }
 
 :host([hidden]) {
-  display: none;
+  display: none !important;
 }
 
-:host(:not([is-last])) {
+/* ==========================================================================
+ * Default vertical text suggestions
+ * ========================================================================== */
+
+:host([suggest-style='default']) {
+  display: block;
+  height: var(--cr-composebox-match-height, 44px);
+}
+
+:host([suggest-style='default']:not([is-last])) {
   padding-bottom: var(--cr-composebox-match-match-padding-bottom, 2px);
 }
 
-.container {
-  border-start-end-radius: 24px;
+:host([suggest-style='default']) .container {
   border-end-end-radius: 24px;
+  border-start-end-radius: 24px;
   color: var(--color-composebox-font);
   cursor: default;
   display: flex;
@@ -37,11 +44,11 @@
   position: relative;
 }
 
-.container:hover {
+:host([suggest-style='default']) .container:hover {
   background-color: var(--color-searchbox-results-background-hovered);
 }
 
-:host(:is(:focus-visible, [selected])) .container {
+:host([suggest-style='default']:is(:focus-visible, [selected])) .container {
   background-color: var(--color-searchbox-results-background-selected,
       var(--color-searchbox-results-background-hovered));
 
@@ -52,34 +59,40 @@
 }
 
 @media (forced-colors: active) {
-  .container:hover,
-  :host(:is(:focus-visible, [selected])) .container {
+  :host([suggest-style='default']) .container:hover,
+  :host([suggest-style='default']:is(:focus-visible, [selected])) .container {
     --color-searchbox-results-background-hovered: Highlight;
   }
 }
 
-#focusIndicator {
+:host([suggest-style='default']) #image {
+  display: none;
+}
+
+:host([suggest-style='default']) #focusIndicator {
   background-color: var(--color-searchbox-results-focus-indicator);
   border-radius: 4px;
   display: none;
-  margin-inline-start: -4px;
   height: 100%;
+  margin-inline-start: -4px;
   position: absolute;
   width: 8px;
 }
 
-:host(:is(:focus-visible, [selected])) #focusIndicator {
+:host([suggest-style='default']:is(:focus-visible, [selected]))
+    #focusIndicator {
   display: block;
 }
 
-#iconContainer {
+:host([suggest-style='default']) #iconContainer {
   align-items: center;
   display: flex;
-  padding-inline-start: var(--cr-composebox-match-icon-container-padding-inline-start, 18px);
   justify-content: center;
+  padding-inline-start:
+      var(--cr-composebox-match-icon-container-padding-inline-start, 18px);
 }
 
-#icon {
+:host([suggest-style='default']) #icon {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: cover;
@@ -88,27 +101,29 @@
   width: var(--cr-composebox-match-icon-size, 20px);
 }
 
-#textContainer {
+:host([suggest-style='default']) #textContainer {
   align-content: center;
   color: var(--color-composebox-font-light);
-  font-size: var(--cr-composebox-match-text-container-font-size, 16px);
   flex-grow: 1;
+  font-size: var(--cr-composebox-match-text-container-font-size, 16px);
   overflow: hidden;
   padding-inline: var(--cr-searchbox-match-text-padding-inline-start, 12px) 4px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-:host(:is(:focus-visible, [selected])) #textContainer {
+:host([suggest-style='default']:is(:focus-visible, [selected]))
+    #textContainer {
   color: var(--color-searchbox-results-foreground-selected,
       var(--color-composebox-font-light));
 }
 
-.container:hover:has(#remove:not([hidden])) #textContainer {
+:host([suggest-style='default'])
+    .container:hover:has(#remove:not([hidden])) #textContainer {
   padding-inline-end: var(--cr-composebox-match-text-padding-inline-end, 4px);
 }
 
-#remove {
+:host([suggest-style='default']) #remove {
   --cr-icon-button-fill-color:
       var(--color-searchbox-results-icon-selected);
   --cr-icon-button-icon-size:
@@ -123,14 +138,16 @@
   top: var(--cr-composebox-match-remove-button-top, 6px);
 }
 
-.container:hover #remove:not([hidden]),
-:host-context(cr-composebox-match:-webkit-any(:focus-within, [selected])) #remove:not([hidden]) {
+:host([suggest-style='default']) .container:hover #remove:not([hidden]),
+:host([suggest-style='default']):-webkit-any(:focus-within, [selected])
+    #remove:not([hidden]) {
   display: inline-flex;
 }
 
 /* Enum 1 is deepSearch. */
-:host([tool-mode='1']) #textContainer,
-:host(:not([override-clamp-line-num='-1'])) #textContainer {
+:host([suggest-style='default'][tool-mode='1']) #textContainer,
+:host([suggest-style='default']:not([override-clamp-line-num='-1']))
+    #textContainer {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: var(--clamp-line-num);
@@ -138,26 +155,26 @@
   white-space: normal;
 }
 
-:host([tool-mode='1']) #focusIndicator {
-  top: 0;
+:host([suggest-style='default'][tool-mode='1']) #focusIndicator {
   bottom: 0;
   height: auto;
+  top: 0;
 }
 
 /* Enum 1 is deepSearch. */
-:host([tool-mode='1']) {
+:host([suggest-style='default'][tool-mode='1']) {
   height: auto;
   min-height: var(--cr-composebox-match-height, 44px);
   white-space: nowrap;
 }
 
 /* Enum 1 is deepSearch. */
-:host([tool-mode='1']) .container {
+:host([suggest-style='default'][tool-mode='1']) .container {
+  border-end-end-radius: 24px;
+  border-start-end-radius: 24px;
   height: auto;
   min-height: 24px;
   padding-block: 10px;
-  border-start-end-radius: 24px;
-  border-end-end-radius: 24px;
 }
 
 /* For co-browsing. Must be defined here since cannot be injected via ::part. */
@@ -173,4 +190,52 @@
   100% {
     background-color: var(--color-composebox-loading-start);
   }
+}
+
+/* ==========================================================================
+ * Rich image suggestions (grid)
+ * ========================================================================== */
+
+:host([suggest-style='rich-image']) {
+  cursor: default;
+  display: block;
+}
+
+:host([suggest-style='rich-image']) .container {
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+:host([suggest-style='rich-image']) #focusIndicator,
+:host([suggest-style='rich-image']) #iconContainer,
+:host([suggest-style='rich-image']) #remove {
+  display: none;
+}
+
+/* Image card styles. */
+:host([suggest-style='rich-image']) #image {
+  aspect-ratio: var(--cr-composebox-image-card-aspect-ratio, 5 / 3);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: var(--cr-composebox-image-card-border-radius, 24px);
+  cursor: pointer;
+  display: block;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+:host([suggest-style='rich-image']) #textContainer {
+  color: var(--cr-composebox-image-card-text-color, #1f1f1f);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  margin-top: 8px;
+  overflow: hidden;
+  padding-inline: 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

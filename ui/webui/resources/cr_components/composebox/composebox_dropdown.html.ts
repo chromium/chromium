@@ -34,6 +34,8 @@ export function getHtml(this: ComposeboxDropdownElement) {
                   .matchIndex="${index}"
                   .toolMode="${this.toolMode}"
                   .overrideClampLineNum="${this.overrideClampLineNum}"
+                  .richImageSuggestionsEnabled="${
+                      this.richImageSuggestionsEnabled}"
                   ?selected="${this.isSelected_(index)}"
                   ?is-last="${this.isLastMatch_(index)}"
                   ?hidden="${this.isMatchHidden_(index)}">
