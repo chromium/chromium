@@ -29,19 +29,19 @@
 #include "chrome/browser/ash/login/screens/split_modifier_keyboard_info_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/login/localized_values_builder.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/mojom/input_service.mojom.h"
@@ -49,7 +49,8 @@
 
 namespace ash {
 
-OobeTestAPIHandler::OobeTestAPIHandler() = default;
+OobeTestAPIHandler::OobeTestAPIHandler(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
 OobeTestAPIHandler::~OobeTestAPIHandler() = default;
 
 void OobeTestAPIHandler::DeclareLocalizedValues(
@@ -88,16 +89,13 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
 }
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::DictValue* dict) {
-  // TODO(crbug.com/489929275): Avoid using g_browser_process.
-  PrefService* local_state = g_browser_process->local_state();
-
   login::NetworkStateHelper helper_;
   dict->Set("testapi_shouldSkipNetworkFirstShow",
             !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
                 helper_.IsConnectedToEthernet());
 
   dict->Set("testapi_shouldSkipGuestTos",
-            StartupUtils::IsEulaAccepted(CHECK_DEREF(local_state)) ||
+            StartupUtils::IsEulaAccepted(local_state_.get()) ||
                 !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 
   dict->Set("testapi_isFingerprintSupported",
@@ -139,10 +137,8 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::DictValue* dict) {
   // `user_manager->GetPersistedUsers().size()` would return 0.
   // If it's launched in the login screen to test the add person flow, then
   // the number of existing users before the new user logs-in should be > 0.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   auto* user_manager = user_manager::UserManager::Get();
-  bool is_owner = !connector->IsDeviceEnterpriseManaged() &&
+  bool is_owner = !ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
                   user_manager->GetPersistedUsers().size() == 0;
   dict->Set("testapi_shouldSkipHwDataCollection",
             !is_owner || !switches::IsRevenBranding());
@@ -192,10 +188,8 @@ void OobeTestAPIHandler::HandleCompleteLogin(const std::string& gaia_id,
   DCHECK(!gaia_id.empty());
   const std::string sanitized_email = gaia::SanitizeEmail(typed_email);
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
-  // TODO(crbug.com/489929275): Avoid using g_browser_process.
-  const AccountId account_id =
-      login::GetAccountId(CHECK_DEREF(g_browser_process->local_state()),
-                          typed_email, gaia_id, AccountType::GOOGLE);
+  const AccountId account_id = login::GetAccountId(
+      local_state_.get(), typed_email, gaia_id, AccountType::GOOGLE);
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
 
@@ -274,6 +268,7 @@ void OobeTestAPIHandler::HandleGetShouldSkipTouchpadScroll(
 void OobeTestAPIHandler::HandleGetMetricsClientID(
     const std::string& callback_id) {
   std::string client_id;
+  // TODO(crbug.com/489929275): Avoid using g_browser_process.
   if (g_browser_process->metrics_service()) {
     client_id = g_browser_process->metrics_service()->GetClientId();
   }
@@ -282,8 +277,8 @@ void OobeTestAPIHandler::HandleGetMetricsClientID(
   // string. If that's the case look for the client ID in the preference
   // `kMetricsProvisionalClientID`.
   if (client_id.empty()) {
-    client_id = g_browser_process->local_state()->GetString(
-        metrics::prefs::kMetricsProvisionalClientID);
+    client_id =
+        local_state_->GetString(metrics::prefs::kMetricsProvisionalClientID);
   }
   ResolveJavascriptCallback(base::Value(callback_id), client_id);
 }
