@@ -15186,16 +15186,21 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "enable_features": [
+                        "IPH_PageZoom"
+                    ]
+                },
+                {
+                    "name": "Enabled_IPHTrackingOnly",
                     "params": {
-                        "availability": "any",
-                        "event_trigger": "name:page_zoom_iph_trigger;comparator:==0;window:1440;storage:1440",
-                        "event_used": "name:page_zoom_opened;comparator:==0;window:1440;storage:1440",
-                        "session_rate": "==0"
+                        "IPH_PageZoom_availability": "any",
+                        "IPH_PageZoom_event_trigger": "name:page_zoom_iph_trigger;comparator:==0;window:1440;storage:1440",
+                        "IPH_PageZoom_event_used": "name:page_zoom_opened;comparator:==0;window:1440;storage:1440",
+                        "IPH_PageZoom_session_rate": "==0"
                     },
                     "enable_features": [
                         "IPH_PageZoom"
-                    ],
-                    "disable_features": []
+                    ]
                 }
             ]
         }
