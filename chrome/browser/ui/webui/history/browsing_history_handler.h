@@ -201,6 +201,11 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   // results are processed.
   std::optional<base::ElapsedTimer> query_timer_;
 
+  // The hostname suffix from the current query. Used as `results_info->term`
+  // for host-only queries where `search_text` is empty, as the frontend
+  // requires a non-empty term to detect search mode.
+  std::string query_hostname_suffix_;
+
   std::queue<RemoveVisitsCallback> remove_visits_callbacks_;
 
   base::WeakPtrFactory<BrowsingHistoryHandler> weak_factory_{this};

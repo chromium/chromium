@@ -417,9 +417,9 @@ struct QueryOptions {
   // query_parser::MatchingAlgorithm::DEFAULT;
   std::optional<query_parser::MatchingAlgorithm> matching_algorithm;
 
-  // Whether the history query should only search through hostnames.
-  // When this is true, the matching_algorithm field is ignored.
-  bool host_only = false;
+  // If not empty, restricts results to visits whose URL hostname matches
+  // or is a subdomain of this suffix.
+  std::string hostname_suffix;
 
   enum VisitOrder {
     RECENT_FIRST,

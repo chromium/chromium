@@ -975,6 +975,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Performs a brute force search over the database to find any host names that
   // match the `host_name` string. Returns any matches.
+  // TODO(crbug.com/561877893): Switch the `host_name` parameter to UTF-8.
   URLRows GetMatchesForHost(const std::u16string& host_name);
 
   // Committing ----------------------------------------------------------------

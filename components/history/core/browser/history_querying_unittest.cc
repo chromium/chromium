@@ -492,7 +492,6 @@ TEST_F(HistoryQueryTest, HostnameSuffixMatching) {
   // title (including path and title matches).
   {
     QueryOptions options;
-    options.host_only = false;
     QueryResults results;
     QueryHistory("example.test", options, &results);
     EXPECT_EQ(7U, results.size());
@@ -505,26 +504,36 @@ TEST_F(HistoryQueryTest, HostnameSuffixMatching) {
     EXPECT_TRUE(NthResultIs(results, 6, 14));
   }
 
-  QueryOptions options;
-  options.host_only = true;
-
-  // With host_only = true, only actual host matches (including HTTP, HTTPS,
+  // With hostname_suffix set, only actual host matches (including HTTP, HTTPS,
   // and non-standard ports) are returned.
   {
+    QueryOptions options;
+    options.hostname_suffix = "example.test";
     QueryResults results;
-    QueryHistory("example.test", options, &results);
+    QueryHistory("", options, &results);
     EXPECT_EQ(4U, results.size());
     EXPECT_TRUE(NthResultIs(results, 0, 8));
     EXPECT_TRUE(NthResultIs(results, 1, 9));
     EXPECT_TRUE(NthResultIs(results, 2, 10));
     EXPECT_TRUE(NthResultIs(results, 3, 11));
+
+    // Combined text and host search.
+    QueryHistory("page_1", options, &results);
+    EXPECT_EQ(1U, results.size());
+    EXPECT_TRUE(NthResultIs(results, 0, 9));
+
+    // Text matching URL on different host should not be returned.
+    QueryHistory("Evil", options, &results);
+    EXPECT_EQ(0U, results.size());
   }
 
   // host:example.com matches example.com, www.example.com, and
   // subdomain.example.com.
   {
+    QueryOptions options;
+    options.hostname_suffix = "example.com";
     QueryResults results;
-    QueryHistory("example.com", options, &results);
+    QueryHistory("", options, &results);
     EXPECT_THAT(
         results,
         testing::UnorderedElementsAre(
@@ -536,8 +545,10 @@ TEST_F(HistoryQueryTest, HostnameSuffixMatching) {
 
   // host:www.example.com matches www.example.com.
   {
+    QueryOptions options;
+    options.hostname_suffix = "www.example.com";
     QueryResults results;
-    QueryHistory("www.example.com", options, &results);
+    QueryHistory("", options, &results);
     EXPECT_EQ(1U, results.size());
     EXPECT_EQ(GURL("http://www.example.com/"), results[0].url());
   }
@@ -546,18 +557,38 @@ TEST_F(HistoryQueryTest, HostnameSuffixMatching) {
   // somesite.com.someothersite.com, and also not some.site/somesite.com, and
   // also not mysomesite.com.
   {
+    QueryOptions options;
+    options.hostname_suffix = "somesite.com";
     QueryResults results;
-    QueryHistory("somesite.com", options, &results);
+    QueryHistory("", options, &results);
     EXPECT_EQ(1U, results.size());
     EXPECT_EQ(GURL("http://www.somesite.com/"), results[0].url());
   }
 
-  // With kBrowsingHistoryImprovedHostnameSuffixMatching enabled, matching is
-  // case-insensitive.
+  // Combined text and host search:
+  // "Subdomain" with hostname_suffix "example.com" should match only
+  // subdomain.example.com.
   {
+    QueryOptions options;
+    options.hostname_suffix = "example.com";
     QueryResults results;
-    QueryHistory("ExAmPlE.cOm", options, &results);
+    QueryHistory("Subdomain", options, &results);
+    EXPECT_EQ(1U, results.size());
+    EXPECT_EQ(GURL("http://subdomain.example.com/"), results[0].url());
+  }
+
+  // With kBrowsingHistoryImprovedHostnameSuffixMatching enabled, matching is
+  // case-insensitive for both host-only and combined queries.
+  {
+    QueryOptions options;
+    options.hostname_suffix = "ExAmPlE.cOm";
+    QueryResults results;
+    QueryHistory("", options, &results);
     EXPECT_EQ(3U, results.size());
+
+    QueryHistory("Subdomain", options, &results);
+    EXPECT_EQ(1U, results.size());
+    EXPECT_EQ(GURL("http://subdomain.example.com/"), results[0].url());
   }
 }
 
@@ -578,24 +609,39 @@ TEST_F(HistoryQueryTest, HostnameSuffixMatchingImprovementsDisabled) {
     AddEntryToHistory(entry);
   }
 
-  QueryOptions options;
-  options.host_only = true;
-
   // With feature disabled, exact host matching is used instead of suffix.
   // "example.com" only matches example.com (from SetUp), not www.example.com.
   {
+    QueryOptions options;
+    options.hostname_suffix = "example.com";
     QueryResults results;
-    QueryHistory("example.com", options, &results);
+    QueryHistory("", options, &results);
     EXPECT_THAT(results, testing::UnorderedElementsAre(testing::Property(
                              &URLResult::url, GURL("http://example.com/"))));
   }
 
-  // With feature disabled, host matching is case-sensitive.
+  // Combined text and host search with feature disabled:
+  // Text search for "Other" with hostname_suffix "example.com" matches only
+  // exact host, and matching is case-sensitive.
   {
+    QueryOptions options;
+    options.hostname_suffix = "example.com";
     QueryResults results;
-    QueryHistory("ExAmPlE.cOm", options, &results);
+    QueryHistory("Other", options, &results);
+    EXPECT_EQ(1U, results.size());
+    EXPECT_EQ(GURL("http://example.com/"), results[0].url());
+
+    QueryHistory("Subdomain", options, &results);
     EXPECT_EQ(0U, results.size());
-    QueryHistory("ExAmPlE.tEsT", options, &results);
+
+    options.hostname_suffix = "ExAmPlE.cOm";
+    QueryHistory("", options, &results);
+    EXPECT_EQ(0U, results.size());
+    QueryHistory("Other", options, &results);
+    EXPECT_EQ(0U, results.size());
+
+    options.hostname_suffix = "ExAmPlE.tEsT";
+    QueryHistory("", options, &results);
     EXPECT_EQ(0U, results.size());
   }
 }

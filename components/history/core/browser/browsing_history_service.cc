@@ -324,8 +324,14 @@ void BrowsingHistoryService::QueryHistoryInternal(
       // If no remote results were needed, ShouldQueryRemote() should have
       // returned false and control flow wouldn't reach here.
       CHECK(options.max_count > 0);
+      // TODO(b:549736398): Update this to support remote history matching using
+      // both hostname_suffix and text_query at the same time.
+      const std::u16string remote_query =
+          !state->search_text.empty()
+              ? state->search_text
+              : base::UTF8ToUTF16(state->original_options.hostname_suffix);
       web_history_request_ = web_history->QueryHistory(
-          state->search_text, options,
+          remote_query, options,
           base::BindOnce(&BrowsingHistoryService::WebHistoryQueryComplete,
                          weak_factory_.GetWeakPtr(), state, clock_->Now()),
           partial_traffic_annotation);
@@ -965,18 +971,18 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
                                   query_history_result->visits.size());
     const bool improved_suffix_matching = base::FeatureList::IsEnabled(
         kBrowsingHistoryImprovedHostnameSuffixMatching);
-    std::string host_name_utf8 = base::UTF16ToUTF8(state->search_text);
+    std::string hostname_suffix = state->original_options.hostname_suffix;
     if (improved_suffix_matching) {
-      host_name_utf8 = base::ToLowerASCII(host_name_utf8);
+      hostname_suffix = base::ToLowerASCII(hostname_suffix);
     }
     for (const WebHistoryService::QueryHistoryResult::Visit& visit :
          query_history_result->visits) {
-      if (state->original_options.host_only) {
+      if (!hostname_suffix.empty()) {
         // Do post filtering to skip entries that do not have the correct
         // hostname.
-        const bool matches_host = improved_suffix_matching
-                                      ? visit.url.DomainIs(host_name_utf8)
-                                      : (visit.url.GetHost() == host_name_utf8);
+        const bool matches_host =
+            improved_suffix_matching ? visit.url.DomainIs(hostname_suffix)
+                                     : (visit.url.GetHost() == hostname_suffix);
         if (!matches_host) {
           continue;
         }

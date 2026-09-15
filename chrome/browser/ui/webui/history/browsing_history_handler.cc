@@ -20,6 +20,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -557,21 +559,43 @@ void BrowsingHistoryHandler::SendHistoryQuery(
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
   options.include_actor_visits = include_actor_visits;
   options.include_user_visits = include_user_visits;
-  std::string query_without_prefix = query;
-
+  std::string text_query;
   const std::string kHostPrefix = "host:";
-  if (query.rfind(kHostPrefix, 0) == 0) {
-    options.host_only = true;
-    query_without_prefix = query.substr(kHostPrefix.length());
+
+  if (base::FeatureList::IsEnabled(
+          history::kBrowsingHistoryImprovedHostnameSuffixMatching)) {
+    // New logic: Tokenize, extract any "host:<domain>" token, rejoin remainder.
+    std::vector<std::string_view> tokens = base::SplitStringPiece(
+        query, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::string_view> other_tokens;
+    for (std::string_view token : tokens) {
+      if (options.hostname_suffix.empty() && token.starts_with(kHostPrefix)) {
+        options.hostname_suffix =
+            std::string(token.substr(kHostPrefix.length()));
+      } else {
+        other_tokens.push_back(token);
+      }
+    }
+    text_query = base::JoinString(other_tokens, " ");
+  } else {
+    // Legacy logic: Only match "host:" at index 0; treat entire rest as host.
+    if (query.starts_with(kHostPrefix)) {
+      options.hostname_suffix = query.substr(kHostPrefix.length());
+      text_query.clear();
+    } else {
+      text_query = query;
+    }
   }
+
+  query_hostname_suffix_ = options.hostname_suffix;
 
   if (begin_timestamp.has_value()) {
     options.begin_time =
         base::Time::FromMillisecondsSinceUnixEpoch(begin_timestamp.value());
   }
 
-  browsing_history_service_->QueryHistory(
-      base::UTF8ToUTF16(query_without_prefix), options);
+  browsing_history_service_->QueryHistory(base::UTF8ToUTF16(text_query),
+                                          options);
 }
 
 void BrowsingHistoryHandler::QueryHistoryContinuation(
@@ -915,7 +939,11 @@ void BrowsingHistoryHandler::HandleQueryResults(
   auto results_info = history::mojom::HistoryQuery::New();
   // The items which are to be written into results_info_ are also
   // described in ui/webui/resources/cr_components/history/history.mojom.
-  results_info->term = base::UTF16ToUTF8(query_results_info.search_text);
+  // For host-only queries (`search_text` empty), fall back to
+  // `query_hostname_suffix_` so the frontend detects search mode.
+  results_info->term = !query_results_info.search_text.empty()
+                           ? base::UTF16ToUTF8(query_results_info.search_text)
+                           : query_hostname_suffix_;
   results_info->finished = query_results_info.reached_beginning;
 
   auto final_results = history::mojom::QueryResult::New();

@@ -36,7 +36,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
                     const JavaRef<jobject>& j_result_obj,
                     const std::u16string& query,
                     const std::optional<std::string>& app_id,
-                    bool j_host_only);
+                    const std::optional<std::string>& hostname_suffix);
 
   void QueryHistoryContinuation(JNIEnv* env,
                                 const JavaRef<jobject>& j_result_obj);

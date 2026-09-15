@@ -47,13 +47,13 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     @Override
     public void queryHistory(String query, @Nullable String appId) {
         BrowsingHistoryBridgeJni.get()
-                .queryHistory(mNativeHistoryBridge, new ArrayList<>(), query, appId, false);
+                .queryHistory(mNativeHistoryBridge, new ArrayList<>(), query, appId, null);
     }
 
     @Override
     public void queryHistoryForHost(String hostName) {
         BrowsingHistoryBridgeJni.get()
-                .queryHistory(mNativeHistoryBridge, new ArrayList<>(), hostName, null, true);
+                .queryHistory(mNativeHistoryBridge, new ArrayList<>(), "", null, hostName);
     }
 
     @Override
@@ -178,7 +178,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 List<HistoryItem> historyItems,
                 @JniType("std::u16string") String query,
                 @JniType("std::optional<std::string>") @Nullable String appId,
-                boolean hostOnly);
+                @JniType("std::optional<std::string>") @Nullable String hostnameSuffix);
 
         void queryHistoryContinuation(
                 long nativeBrowsingHistoryBridge, List<HistoryItem> historyItems);

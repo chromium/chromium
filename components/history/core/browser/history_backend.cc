@@ -2876,7 +2876,7 @@ QueryResults HistoryBackend::QueryHistory(const std::u16string& text_query,
                                           const QueryOptions& options) {
   QueryResults query_results;
   if (db_) {
-    if (text_query.empty()) {
+    if (text_query.empty() && options.hostname_suffix.empty()) {
       // Basic history query for the main database.
       QueryHistoryBasic(options, &query_results);
     } else {
@@ -2953,12 +2953,29 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
 void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
                                       const QueryOptions& options,
                                       QueryResults* result) {
-  URLRows text_matches =
-      options.host_only
-          ? GetMatchesForHost(text_query)
-          : db_->GetTextMatchesWithAlgorithm(
-                text_query, options.matching_algorithm.value_or(
-                                query_parser::MatchingAlgorithm::DEFAULT));
+  URLRows text_matches;
+  if (text_query.empty()) {
+    // Host-only search.
+    text_matches =
+        GetMatchesForHost(base::UTF8ToUTF16(options.hostname_suffix));
+  } else {
+    // Text search or combined text + host search.
+    text_matches = db_->GetTextMatchesWithAlgorithm(
+        text_query, options.matching_algorithm.value_or(
+                        query_parser::MatchingAlgorithm::DEFAULT));
+
+    if (!options.hostname_suffix.empty()) {
+      const bool use_improved_matching = base::FeatureList::IsEnabled(
+          kBrowsingHistoryImprovedHostnameSuffixMatching);
+      const std::string hostname_suffix =
+          use_improved_matching ? base::ToLowerASCII(options.hostname_suffix)
+                                : options.hostname_suffix;
+      std::erase_if(text_matches, [&](const URLRow& row) {
+        return use_improved_matching ? !row.url().DomainIs(hostname_suffix)
+                                     : (row.url().GetHost() != hostname_suffix);
+      });
+    }
+  }
 
   std::vector<URLResult> matching_visits;
   for (const auto& text_match : text_matches) {
