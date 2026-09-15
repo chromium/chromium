@@ -41,11 +41,8 @@ Element* CommandEvent::source() const {
 }
 
 DispatchEventResult CommandEvent::DispatchEvent(EventDispatcher& dispatcher) {
-  if (RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
-          dispatcher.GetNode().GetExecutionContext())) {
-    GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(),
+  GetEventPath().AdjustForReferenceTarget(dispatcher.GetNode(),
                                           relatedTarget());
-  }
   return dispatcher.Dispatch();
 }
 

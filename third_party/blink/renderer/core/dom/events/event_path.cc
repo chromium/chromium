@@ -286,6 +286,23 @@ void EventPath::AdjustForRelatedTarget(Node& target,
   ShrinkForRelatedTarget(target, *related_target_node);
 }
 
+void EventPath::AdjustForReferenceTarget(Node& target, EventTarget* source) {
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          target.GetExecutionContext())) {
+    return;
+  }
+  EventTarget* path_related_target = source;
+  if (Node* source_node = source ? source->ToNode() : nullptr;
+      source_node && target.GetTreeScope().Retarget(*source_node) == target) {
+    // If the source retargeted against target is equal to target (for example,
+    // when a shadow-internal button targets its own host),
+    // AdjustForRelatedTarget would remove the entire event path. Use target as
+    // the related target so the event is still dispatched at target.
+    path_related_target = &target;
+  }
+  AdjustForRelatedTarget(target, path_related_target);
+}
+
 void EventPath::RetargetRelatedTarget(const Node& related_target_node) {
   RelatedTargetMap related_node_map;
   BuildRelatedNodeMap(related_target_node, related_node_map);

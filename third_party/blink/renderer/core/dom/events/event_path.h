@@ -101,6 +101,7 @@ class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
   wtf_size_t size() const { return node_event_contexts_.size(); }
 
   void AdjustForRelatedTarget(Node&, EventTarget* related_target);
+  void AdjustForReferenceTarget(Node&, EventTarget* source);
   void AdjustForTouchEvent(const TouchEvent&);
   // AdjustForDisabledFormControl will shrink this event path if there is a
   // disabled form control in it so that the disabled form control and its
