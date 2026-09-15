@@ -17,6 +17,10 @@ standard. Instead, once Chromium supports the toolchain to a certain extent
 with new language/library features banned pending discussion but not yet
 allowed.
 
+Unless explicitly listed as banned or TBD below, member functions added in a
+new C++ standard for already allowed standard library types are implicitly
+allowed.
+
 You can propose changing the status of a feature by sending an email to
 [cxx@chromium.org](https://groups.google.com/a/chromium.org/forum/#!forum/cxx).
 Include a short blurb on what the feature is and why you think it should or
@@ -33,7 +37,7 @@ The current status of existing standards and Abseil features is:
 *   **C++11:** _Default allowed; see banned features below_
 *   **C++14:** _Default allowed_
 *   **C++17:** _Default allowed; see banned features below_
-*   **C++20:** _Initially supported November 13, 2023; see allowed/banned/TBD
+*   **C++20:** _Default allowed; see banned features below_
     features below_
 *   **C++23:** _Initially supported January 2026; see allowed/banned/TBD
     features below_
