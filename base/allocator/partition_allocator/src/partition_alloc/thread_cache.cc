@@ -48,6 +48,7 @@ uintptr_t kThreadCacheNeedleArray[kThreadCacheNeedleArraySize] = {
 
 namespace internal {
 
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTlsKey g_thread_cache_key;
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 thread_local ThreadCache* g_thread_caches[kMaxThreadCacheIndex];
@@ -56,7 +57,7 @@ thread_local ThreadCache* g_thread_caches[kMaxThreadCacheIndex];
 }  // namespace internal
 
 namespace {
-// Since |g_tls_key| is shared, make sure that no more than one
+// Since |g_thread_cache_key| is shared, make sure that no more than one
 // PartitionRoot can use it.
 static std::array<std::atomic<PartitionRoot*>, internal::kMaxThreadCacheIndex>
     g_thread_cache_roots;
@@ -79,6 +80,7 @@ void OnDllProcessDetach() {
 }
 #endif
 
+static bool g_thread_cache_key_created = false;
 }  // namespace
 
 namespace internal {
@@ -338,24 +340,21 @@ void ThreadCacheRegistry::ResetForTesting() {
 
 // static
 void ThreadCache::EnsureThreadSpecificDataInitialized() {
-  internal::EnsureThreadSpecificDataInitialized();
+  // Using the registry lock to protect from concurrent initialization without
+  // adding a special-pupose lock.
+  internal::ScopedGuard scoped_locker(ThreadCacheRegistry::GetLock());
+  if (g_thread_cache_key_created) {
+    return;
+  }
+
+  bool ok = internal::PartitionTlsCreate(&internal::g_thread_cache_key, Delete);
+  PA_CHECK(ok);
+  g_thread_cache_key_created = true;
 }
 
 // static
 void ThreadCache::DeleteForTesting() {
-  auto* tls = internal::GetTls();
-  if (tls) {
-    for (size_t i = 0; i < internal::kMaxThreadCacheIndex; i++) {
-      auto* tcache = tls->GetThreadCache(i);
-      if (ThreadCache::IsValid(tcache)) {
-#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
-        PA_UNSAFE_TODO(internal::g_thread_caches[i]) = nullptr;
-#endif
-        tcache->~ThreadCache();
-        tls->ClearThreadCache(i);
-      }
-    }
-  }
+  ThreadCache::Delete(internal::PartitionTlsGet(internal::g_thread_cache_key));
 }
 
 // static
@@ -379,11 +378,13 @@ void ThreadCache::SwapForTesting(PartitionRoot* root, size_t index) {
 
 // static
 void ThreadCache::RemoveTombstoneForTesting() {
-  internal::RemoveTombstoneForTesting();
+  PA_CHECK(ThreadCache::IsTombstone());
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)
   PA_UNSAFE_TODO(
       internal::g_thread_caches[internal::kThreadCacheTombstoneIndex]) =
       nullptr;
+#else
+  internal::PartitionTlsSet(internal::g_thread_cache_key, nullptr);
 #endif
 }
 
@@ -494,15 +495,31 @@ ThreadCache* ThreadCache::Create(PartitionRoot* root, size_t index) {
   // kThreadCacheNeedleArray is kept in the final binary.
   PA_CHECK(tools::kThreadCacheNeedleArray[0] == tools::kNeedle1);
 
-  EnsureThreadSpecificDataInitialized();
-
-  auto* tls = internal::GetTls();
-  if (!tls) [[unlikely]] {
-    return nullptr;
+  auto* tcaches = reinterpret_cast<ThreadCache*>(
+      internal::PartitionTlsGet(internal::g_thread_cache_key));
+  if (!IsValidPtr(tcaches)) {
+    constexpr size_t array_size =
+        sizeof(ThreadCache) * internal::kMaxThreadCacheIndex;
+    // The memory is allocated from the internal allocator to avoid reentrancy
+    // issues.
+    //
+    // To avoid -Wnontrivial-memcall, the memory initialization must happen over
+    // a uint8_t[] instead of a ThreadCache[]. Indeed, ThreadCache has a
+    // non-trivial constructor. This is safe because we will use placement new
+    // to construct tcaches[index] right after. The other ThreadCaches in the
+    // array are not used until they are initialized, and they are just reserved
+    // as raw memory until then.
+    void* tcaches_memory = operator new(array_size);
+    // SAFETY: The span size matches the allocation.
+    auto storage_span = PA_UNSAFE_BUFFERS(
+        base::span<uint8_t>(static_cast<uint8_t*>(tcaches_memory), array_size));
+    std::ranges::fill(storage_span, 0);
+    tcaches = static_cast<ThreadCache*>(tcaches_memory);
+    // This may allocate.
+    internal::PartitionTlsSet(internal::g_thread_cache_key, tcaches);
   }
-
-  auto* tcache = tls->GetThreadCache(index);
-  ::new (tcache) ThreadCache(root);
+  ThreadCache* tcache =
+      ::new (PA_UNSAFE_TODO(tcaches + index)) ThreadCache(root);
 
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)
   // |thread_local| variables with destructors cause issues on some platforms.
@@ -566,25 +583,52 @@ ThreadCache::~ThreadCache() {
 }
 
 // static
-void ThreadCache::Delete(void* tcache_ptr) {
-  auto* t = reinterpret_cast<ThreadCache*>(tcache_ptr);
-  if (!ThreadCache::IsValid(t)) {
+void ThreadCache::Delete(void* thread_caches_ptr) {
+  auto* tcaches = static_cast<ThreadCache*>(thread_caches_ptr);
+  if (!IsValidPtr(tcaches)) {
     return;
   }
-  auto* tls = internal::GetTls();
-  if (tls) {
-    for (size_t i = 0; i < internal::kMaxThreadCacheIndex; i++) {
-      auto* tc = tls->GetThreadCache(i);
-      if (tc == t) {
+  internal::PartitionTlsSet(internal::g_thread_cache_key, nullptr);
+
+  for (size_t i = 0; i < internal::kMaxThreadCacheIndex; i++) {
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)
-        PA_UNSAFE_TODO(internal::g_thread_caches[i]) = nullptr;
+    PA_UNSAFE_TODO(internal::g_thread_caches[i]) = nullptr;
 #endif
-        tc->~ThreadCache();
-        tls->ClearThreadCache(i);
-        break;
-      }
+    ThreadCache* tcache = PA_UNSAFE_TODO(tcaches + i);
+    if (tcache->root_) {
+      tcache->~ThreadCache();
     }
   }
+  // Operator new is overloaded to route to internal partition.
+  operator delete(tcaches);
+
+#if PA_BUILDFLAG(IS_WIN)
+  // On Windows, allocations do occur during thread/process teardown, make sure
+  // they don't resurrect the thread cache.
+  //
+  // Don't MTE-tag, as it'd mess with the sentinel value.
+  //
+  // TODO(lizeb): Investigate whether this is needed on POSIX as well.
+  internal::PartitionTlsSet(internal::g_thread_cache_key,
+                            reinterpret_cast<void*>(kTombstone));
+#if PA_CONFIG(THREAD_CACHE_FAST_TLS)
+  // This is sufficient to prevent re-creation, because IsTombstone() is called
+  // before Create() and IsTombstone() only checks this index.
+  PA_UNSAFE_TODO(
+      internal::g_thread_caches[internal::kThreadCacheTombstoneIndex]) =
+      reinterpret_cast<ThreadCache*>(kTombstone);
+#endif
+
+#endif  // PA_BUILDFLAG(IS_WIN)
+}
+
+// static
+void* ThreadCache::operator new(size_t count) {
+  return internal::InternalAllocatorRoot().Alloc<AllocFlags::kNoHooks>(count);
+}
+// static
+void ThreadCache::operator delete(void* ptr) {
+  internal::InternalAllocatorRoot().Free<FreeFlags::kNoHooks>(ptr);
 }
 
 ThreadCache::Bucket::Bucket() {
