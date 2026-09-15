@@ -22,7 +22,6 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "skia/ext/legacy_display_globals.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -52,10 +51,6 @@ Canvas2DBitmapProvider::Canvas2DBitmapProvider(
       hdr_metadata_(hdr_metadata),
       delegate_(delegate),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
-  max_recorded_op_bytes_ =
-      static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024;
-  max_pinned_image_bytes_ =
-      static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024;
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 

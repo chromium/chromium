@@ -281,6 +281,8 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
   if (shared_image_provider_ || bitmap_provider_) {
     recorder_ =
         std::make_unique<MemoryManagedPaintRecorder>(host->Size(), this);
+    UpdateRecordingLimits(shared_image_provider_ &&
+                          shared_image_provider_->IsGraphite());
   }
 
   Host()->UpdateMemoryUsage();
@@ -474,22 +476,12 @@ void OffscreenCanvasRenderingContext2D::FlushIfRecordingLimitExceeded() {
   if (Host()->IsPrinting() && clear_frame()) {
     return;
   }
-  if (shared_image_provider_) {
+  if (shared_image_provider_ || bitmap_provider_) {
     const MemoryManagedPaintRecorder* recorder = Recorder();
     CHECK(recorder);
-    if (recorder->ReleasableOpBytesUsed() >
-            shared_image_provider_->max_recorded_op_bytes() ||
-        recorder->ReleasableImageBytesUsed() >
-            shared_image_provider_->max_pinned_image_bytes()) [[unlikely]] {
-      FlushCanvas(FlushReason::kOther);
-    }
-  } else if (bitmap_provider_) {
-    const MemoryManagedPaintRecorder* recorder = Recorder();
-    CHECK(recorder);
-    if (recorder->ReleasableOpBytesUsed() >
-            bitmap_provider_->max_recorded_op_bytes() ||
-        recorder->ReleasableImageBytesUsed() >
-            bitmap_provider_->max_pinned_image_bytes()) [[unlikely]] {
+    if (recorder->ReleasableOpBytesUsed() > max_recorded_op_bytes() ||
+        recorder->ReleasableImageBytesUsed() > max_pinned_image_bytes())
+        [[unlikely]] {
       FlushCanvas(FlushReason::kOther);
     }
   }
@@ -503,6 +495,7 @@ void OffscreenCanvasRenderingContext2D::ResetResourceProvider() {
   shared_image_provider_.reset();
   bitmap_provider_.reset();
   recorder_.reset();
+  UpdateRecordingLimits(/*is_graphite=*/false);
 }
 
 void OffscreenCanvasRenderingContext2D::Dispose() {

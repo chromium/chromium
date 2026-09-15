@@ -209,8 +209,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   SkAlphaType GetAlphaType() const { return alpha_type_; }
   gfx::Size Size() const { return size_; }
 
-  size_t max_recorded_op_bytes() const { return max_recorded_op_bytes_; }
-  size_t max_pinned_image_bytes() const { return max_pinned_image_bytes_; }
 
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const;
@@ -379,8 +377,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
 
-  size_t max_recorded_op_bytes_;
-  size_t max_pinned_image_bytes_;
   raw_ptr<CanvasResourceProviderDelegate> delegate_ = nullptr;
   mutable sk_sp<SkSurface> surface_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;

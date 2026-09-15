@@ -29,6 +29,7 @@
 #include "cc/paint/record_paint_canvas.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
@@ -152,7 +153,18 @@ BaseRenderingContext2D::BaseRenderingContext2D(
       color_params_(attrs.color_space,
                     attrs.hdr_metadata,
                     attrs.pixel_format,
-                    attrs.alpha) {}
+                    attrs.alpha) {
+  UpdateRecordingLimits(/*is_graphite=*/false);
+}
+
+void BaseRenderingContext2D::UpdateRecordingLimits(bool is_graphite) {
+  max_recorded_op_bytes_ =
+      static_cast<size_t>(is_graphite ? features::kMaxRecordedOpGraphiteKB.Get()
+                                      : features::kMaxRecordedOpKB.Get()) *
+      1024;
+  max_pinned_image_bytes_ =
+      static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024;
+}
 
 void BaseRenderingContext2D::ResetInternal() {
   Canvas2DRecorderContext::ResetInternal();

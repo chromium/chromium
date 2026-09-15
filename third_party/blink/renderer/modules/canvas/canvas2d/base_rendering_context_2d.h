@@ -87,6 +87,10 @@ class MODULES_EXPORT BaseRenderingContext2D
   bool clear_frame() const { return clear_frame_; }
   void set_clear_frame(bool clear_frame) { clear_frame_ = clear_frame; }
 
+  size_t max_recorded_op_bytes() const { return max_recorded_op_bytes_; }
+  size_t max_pinned_image_bytes() const { return max_pinned_image_bytes_; }
+  void UpdateRecordingLimits(bool is_graphite);
+
   static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
 
   // Try to restore context 4 times in the event that the context is lost. If
@@ -355,6 +359,8 @@ class MODULES_EXPORT BaseRenderingContext2D
   void WillUseCurrentFont() const;
 
   bool clear_frame_ = true;
+  size_t max_recorded_op_bytes_ = 0;
+  size_t max_pinned_image_bytes_ = 0;
   int num_readbacks_performed_ = 0;
   unsigned read_count_ = 0;
   base::RepeatingClosure on_restore_failed_callback_for_testing_;

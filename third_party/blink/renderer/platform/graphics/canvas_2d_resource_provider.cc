@@ -882,19 +882,10 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       hdr_metadata_(hdr_metadata),
       delegate_(delegate),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
-  max_recorded_op_bytes_ =
-      static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024;
-  max_pinned_image_bytes_ =
-      static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024;
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
     raster_context_provider_ = base::WrapRefCounted(
         context_provider_wrapper_->ContextProvider().RasterContextProvider());
-    // Graphite can handle a large buffer size.
-    if (IsGraphite()) {
-      max_recorded_op_bytes_ =
-          static_cast<size_t>(features::kMaxRecordedOpGraphiteKB.Get()) * 1024;
-    }
   }
 
   if (raster_context_provider_) {
@@ -1022,10 +1013,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       hdr_metadata_(hdr_metadata),
       delegate_(delegate),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
-  max_recorded_op_bytes_ =
-      static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024;
-  max_pinned_image_bytes_ =
-      static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024;
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);
     if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {

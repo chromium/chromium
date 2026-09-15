@@ -16,6 +16,7 @@
 #include "cc/test/paint_op_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
@@ -258,6 +259,27 @@ TEST(BaseRenderingContextLayersCSSTests,
   EXPECT_THAT(context->FlushRecorder(),
               RecordedOpsAre(DrawRecordOpEq(PaintOpEq<SaveLayerOp>(flags),
                                             PaintOpEq<RestoreOp>())));
+}
+
+TEST(BaseRenderingContext2DTest, RecordingLimits) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  EXPECT_EQ(context->max_recorded_op_bytes(),
+            static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024);
+  EXPECT_EQ(context->max_pinned_image_bytes(),
+            static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024);
+
+  context->UpdateRecordingLimits(/*is_graphite=*/true);
+  EXPECT_EQ(
+      context->max_recorded_op_bytes(),
+      static_cast<size_t>(features::kMaxRecordedOpGraphiteKB.Get()) * 1024);
+  EXPECT_EQ(context->max_pinned_image_bytes(),
+            static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024);
+
+  context->UpdateRecordingLimits(/*is_graphite=*/false);
+  EXPECT_EQ(context->max_recorded_op_bytes(),
+            static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024);
 }
 
 }  // namespace
