@@ -61,8 +61,9 @@ class TestChildFrameNavigationFilteringThrottle
 
  private:
   bool ShouldDeferNavigation() const override {
-    return parent_frame_filter_->activation_state().activation_level ==
-           mojom::ActivationLevel::kEnabled;
+    return parent_frame_filter_ &&
+           parent_frame_filter_->activation_state().activation_level ==
+               mojom::ActivationLevel::kEnabled;
   }
 
   void OnCalculatedLoadPolicyFinished() override {
@@ -118,6 +119,9 @@ class ChildFrameNavigationFilteringThrottleTest
                                 OnThrottleFinished,
                             base::Unretained(this)));
                 EXPECT_NE(nullptr, throttle->GetNameForLogging());
+                if (destroy_parent_filter_after_throttle_creation_) {
+                  parent_filter_.reset();
+                }
                 registry.AddThrottle(std::move(throttle));
               }
             }));
@@ -144,10 +148,64 @@ class ChildFrameNavigationFilteringThrottleTest
   }
 
   bool alias_check_enabled_ = false;
+  bool destroy_parent_filter_after_throttle_creation_ = false;
   std::optional<bool> last_matched_subdomain_disallow_rule_;
   base::OnceClosure quit_closure_;
   std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
 };
+
+TEST_F(ChildFrameNavigationFilteringThrottleTest,
+       ParentFilterDestroyedBeforeStartProceeds) {
+  InitializeDocumentSubresourceFilter(GURL("https://example.test"));
+  destroy_parent_filter_after_throttle_creation_ = true;
+  CreateTestSubframeAndInitNavigation(
+      GURL("https://example.test/disallowed.html"), main_rfh());
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+}
+
+TEST_F(ChildFrameNavigationFilteringThrottleTest,
+       ParentFilterDestroyedWhileStartDeferredResumes) {
+  InitializeDocumentSubresourceFilter(GURL("https://example.test"));
+  CreateTestSubframeAndInitNavigation(
+      GURL("https://example.test/disallowed.html"), main_rfh());
+  navigation_simulator()->SetAutoAdvance(false);
+
+  navigation_simulator()->Start();
+  EXPECT_TRUE(navigation_simulator()->IsDeferred());
+
+  parent_filter_.reset();
+  navigation_simulator()->Wait();
+
+  EXPECT_FALSE(navigation_simulator()->IsDeferred());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            navigation_simulator()->GetLastThrottleCheckResult());
+}
+
+TEST_F(ChildFrameNavigationFilteringThrottleTest,
+       ParentFilterDestroyedWhileRedirectDeferredResumes) {
+  InitializeDocumentSubresourceFilter(GURL("https://example.test"));
+  CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
+                                      main_rfh());
+  navigation_simulator()->SetAutoAdvance(false);
+
+  navigation_simulator()->Start();
+  EXPECT_TRUE(navigation_simulator()->IsDeferred());
+  navigation_simulator()->Wait();
+  EXPECT_FALSE(navigation_simulator()->IsDeferred());
+
+  navigation_simulator()->Redirect(
+      GURL("https://example.test/disallowed.html"));
+  EXPECT_TRUE(navigation_simulator()->IsDeferred());
+
+  parent_filter_.reset();
+  navigation_simulator()->Wait();
+
+  EXPECT_FALSE(navigation_simulator()->IsDeferred());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            navigation_simulator()->GetLastThrottleCheckResult());
+}
 
 TEST_F(ChildFrameNavigationFilteringThrottleTest, FilterOnStart) {
   InitializeDocumentSubresourceFilter(GURL("https://example.test"));
@@ -326,6 +384,32 @@ TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
             SimulateCommitAndGetResult(navigation_simulator()));
   EXPECT_TRUE(std::ranges::contains(GetConsoleMessages(),
                                     GetFilterConsoleMessage(url)));
+}
+
+TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
+       ParentFilterDestroyedWithPendingAliasChecksResumes) {
+  InitializeDocumentSubresourceFilterWithSubstringRules(
+      GURL("https://example.test"), {"disallowed.com"},
+      mojom::ActivationLevel::kDryRun);
+  CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
+                                      main_rfh());
+  navigation_simulator()->SetAutoAdvance(false);
+
+  navigation_simulator()->Start();
+  EXPECT_FALSE(navigation_simulator()->IsDeferred());
+  navigation_simulator()->Redirect(GURL("https://example.test/allowed2.html"));
+  EXPECT_FALSE(navigation_simulator()->IsDeferred());
+
+  SetResponseDnsAliasesForNavigation({"disallowed.com"});
+  navigation_simulator()->ReadyToCommit();
+  EXPECT_TRUE(navigation_simulator()->IsDeferred());
+
+  parent_filter_.reset();
+  navigation_simulator()->Wait();
+
+  EXPECT_FALSE(navigation_simulator()->IsDeferred());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            navigation_simulator()->GetLastThrottleCheckResult());
 }
 
 TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,

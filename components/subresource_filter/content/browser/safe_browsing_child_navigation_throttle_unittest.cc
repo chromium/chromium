@@ -112,6 +112,22 @@ TEST_F(SafeBrowsingChildNavigationThrottleTest, DelayMetrics) {
   histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
 }
 
+TEST_F(SafeBrowsingChildNavigationThrottleTest,
+       ParentFilterDestroyedBeforeRedirectProceeds) {
+  InitializeDocumentSubresourceFilter(GURL("https://example.test"));
+  CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
+                                      main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+
+  parent_filter_.reset();
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateRedirectAndGetResult(
+                navigation_simulator(),
+                GURL("https://example.test/disallowed.html")));
+}
+
 TEST_F(SafeBrowsingChildNavigationThrottleTest, DelayMetricsDryRun) {
   base::HistogramTester histogram_tester;
   InitializeDocumentSubresourceFilter(GURL("https://example.test"),

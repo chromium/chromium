@@ -37,11 +37,11 @@ ChildFrameNavigationFilteringThrottle::ChildFrameNavigationFilteringThrottle(
     base::RepeatingCallback<std::string(const GURL& url)>
         disallow_message_callback)
     : content::NavigationThrottle(registry),
-      parent_frame_filter_(parent_frame_filter),
       alias_check_enabled_(alias_check_enabled),
       disallow_message_callback_(std::move(disallow_message_callback)) {
   CHECK(!IsInSubresourceFilterRoot(&registry.GetNavigationHandle()));
-  CHECK(parent_frame_filter_);
+  CHECK(parent_frame_filter);
+  parent_frame_filter_ = parent_frame_filter->GetWeakPtr();
 }
 
 ChildFrameNavigationFilteringThrottle::
@@ -60,6 +60,13 @@ ChildFrameNavigationFilteringThrottle::WillRedirectRequest() {
 content::NavigationThrottle::ThrottleCheckResult
 ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
   CHECK_NE(load_policy_, LoadPolicy::DISALLOW);
+
+  if (!parent_frame_filter_) {
+    load_policy_ = LoadPolicy::EXPLICITLY_ALLOW;
+    matched_subdomain_disallow_rule_ = false;
+    NotifyLoadPolicy();
+    return PROCEED;
+  }
 
   if (alias_check_enabled_) {
     std::vector<GURL> alias_urls;
@@ -106,6 +113,10 @@ ChildFrameNavigationFilteringThrottle::WillProcessResponse() {
 }
 
 void ChildFrameNavigationFilteringThrottle::HandleDisallowedLoad() {
+  if (!parent_frame_filter_) {
+    return;
+  }
+
   if (parent_frame_filter_->activation_state().enable_logging) {
     std::string console_message =
         disallow_message_callback_.Run(navigation_handle()->GetURL());
@@ -127,6 +138,12 @@ void ChildFrameNavigationFilteringThrottle::HandleDisallowedLoad() {
 content::NavigationThrottle::ThrottleCheckResult
 ChildFrameNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
   CHECK_NE(load_policy_, LoadPolicy::DISALLOW);
+
+  if (!parent_frame_filter_) {
+    load_policy_ = LoadPolicy::EXPLICITLY_ALLOW;
+    matched_subdomain_disallow_rule_ = false;
+    return PROCEED;
+  }
 
   // Even if `load_policy_` is already WOULD_DISALLOW from an earlier redirect
   // hop in dry-run mode, we still need to perform the filter list check for
@@ -151,11 +168,23 @@ ChildFrameNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
 
 void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
     LoadPolicy policy) {
+  CHECK_GT(pending_load_policy_calculations_, 0);
+  pending_load_policy_calculations_ -= 1;
+
+  if (!parent_frame_filter_) {
+    load_policy_ = LoadPolicy::EXPLICITLY_ALLOW;
+    matched_subdomain_disallow_rule_ = false;
+    if (pending_load_policy_calculations_ == 0 &&
+        defer_stage_ != DeferStage::kNotDeferring) {
+      ResumeNavigation();
+    }
+    return;
+  }
+
   // TODO(https://crbug.com/40116607): Modify this call in cases where the new
   // |policy| matches an explicitly allowed rule, rather than using the most
   // restrictive policy for the redirect chain.
   load_policy_ = MoreRestrictiveLoadPolicy(policy, load_policy_);
-  pending_load_policy_calculations_ -= 1;
 
   if (pending_load_policy_calculations_ == 0) {
     OnCalculatedLoadPolicyFinished();
