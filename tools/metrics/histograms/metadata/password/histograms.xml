@@ -3760,7 +3760,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.RemoteActorCredentialSharing.Result"
-    enum="RemoteActorCredentialSharingResult" expires_after="2026-10-28">
+    enum="RemoteActorCredentialSharingResult" expires_after="2027-04-28">
   <owner>derinel@google.com</owner>
   <owner>anki-team@google.com</owner>
   <summary>
