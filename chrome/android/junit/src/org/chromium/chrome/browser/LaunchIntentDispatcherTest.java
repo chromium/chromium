@@ -6,12 +6,14 @@ package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -1079,5 +1081,49 @@ public class LaunchIntentDispatcherTest {
 
         assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
         verifyNoInteractions(mForegroundServiceUtils);
+    }
+
+    @Test
+    public void testDispatchToCustomTabActivity_DoesNotLaunchJavaScriptUrls() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("javascript: alert('Hello');"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        Activity spyActivity = spy(mActivity);
+
+        int result = LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        assertEquals(LaunchIntentDispatcher.Action.CONTINUE, result);
+        verify(spyActivity, never()).startActivity(any(), any());
+    }
+
+    @Test
+    public void testDispatchToCustomTabActivity_CallingActivityExtra() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "spoofed");
+        Activity spyActivity = spy(mActivity);
+        doReturn("com.foo.bar").when(spyActivity).getCallingPackage();
+
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(captor.capture(), any());
+        assertEquals(
+                "com.foo.bar",
+                captor.getValue().getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
+    }
+
+    @Test
+    public void testDispatchToCustomTabActivity_CallingActivityExtra_NotSet() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        intent.putExtra(CustomTabsIntent.EXTRA_SESSION, (IBinder) null);
+        intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, "spoofed");
+        Activity spyActivity = spy(mActivity);
+        doReturn(null).when(spyActivity).getCallingPackage();
+
+        LaunchIntentDispatcher.dispatchToCustomTabActivity(spyActivity, intent);
+
+        ArgumentCaptor<Intent> captor = ArgumentCaptor.forClass(Intent.class);
+        verify(spyActivity).startActivity(captor.capture(), any());
+        assertNull(captor.getValue().getStringExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE));
     }
 }
