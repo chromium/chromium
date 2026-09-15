@@ -163,6 +163,29 @@ bool ShouldForgetOpenersForTransition(ui::PageTransition transition) {
                                       ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 }
 
+void RecordToggleFocusGroupMetrics(bool is_unfocus,
+                                   bool is_non_group,
+                                   size_t non_group_tabs_count = 0) {
+  if (is_unfocus) {
+    base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
+                                  TabGroupFocusExitReason::kTabContextMenu);
+    base::RecordAction(UserMetricsAction("TabContextMenu_UnfocusTabGroup"));
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "TabGroups.Focus.EntryPoint",
+      is_non_group ? TabGroupFocusEntryPoint::kTabContextMenuNonGroup
+                   : TabGroupFocusEntryPoint::kTabContextMenu);
+  base::RecordAction(UserMetricsAction(is_non_group
+                                           ? "TabContextMenu_FocusNonGroupTabs"
+                                           : "TabContextMenu_FocusTabGroup"));
+  if (is_non_group) {
+    base::UmaHistogramCounts1000("TabGroups.Focus.NonGroupTabsCount",
+                                 non_group_tabs_count);
+  }
+}
+
 }  // namespace
 
 TabGroupModelFactory::TabGroupModelFactory() {
@@ -260,7 +283,8 @@ TabStripModel::TabStripModel(TabStripModelDelegate* delegate,
 
 void TabStripModel::SetFocusedGroup(
     std::optional<tab_groups::TabGroupId> group) {
-  CHECK(base::FeatureList::IsEnabled(features::kTabGroupsFocusing));
+  CHECK(base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ||
+        base::FeatureList::IsEnabled(features::kNonGroupFocus));
 
   CHECK(group_model_);
   CHECK(!group.has_value() || group_model_->ContainsTabGroup(group.value()));
@@ -324,7 +348,8 @@ void TabStripModel::SetFocusedGroup(
 }
 
 void TabStripModel::RotateFocusedGroup(bool forward) {
-  CHECK(base::FeatureList::IsEnabled(features::kTabGroupsFocusing));
+  CHECK(base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ||
+        base::FeatureList::IsEnabled(features::kNonGroupFocus));
   if (!group_model_) {
     return;
   }
@@ -2264,7 +2289,8 @@ void TabStripModel::RemoveSplit(split_tabs::SplitTabId split_id) {
 // Returns the ID of the group that is focused. If no group is focused,
 // returns nullopt.
 std::optional<tab_groups::TabGroupId> TabStripModel::GetFocusedGroup() const {
-  if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+  if (!base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
+      !base::FeatureList::IsEnabled(features::kNonGroupFocus)) {
     return std::nullopt;
   }
   return selection_model_.focused_group();
@@ -2651,10 +2677,30 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandRemoveFromGroup:
       return SupportsTabGroups();
 
-    case CommandToggleFocusGroup:
-      return SupportsTabGroups() &&
-             base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
-             GetTabGroupForTab(context_index).has_value();
+    case CommandToggleFocusGroup: {
+      if (!SupportsTabGroups() ||
+          !base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+        return false;
+      }
+
+      std::vector<int> indices = GetIndicesForCommand(context_index);
+      if (indices.empty()) {
+        return false;
+      }
+
+      for (int index : indices) {
+        if (IsTabPinned(index)) {
+          return false;
+        }
+      }
+
+      if (GetCommonGroupForIndices(indices).has_value()) {
+        return true;
+      }
+
+      return base::FeatureList::IsEnabled(features::kNonGroupFocus) &&
+             AreAllUngrouped(indices);
+    }
 
     case CommandMoveToExistingWindow:
       return true;
@@ -2990,20 +3036,30 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       if (!group_model_) {
         break;
       }
+      if (!IsContextMenuCommandEnabled(context_index,
+                                       CommandToggleFocusGroup)) {
+        break;
+      }
       std::optional<tab_groups::TabGroupId> group_id =
           GetTabGroupForTab(context_index);
       if (!group_id.has_value()) {
+        // For non-group tab focus, we create a new tab group
+        // for the selected tabs and immediately focus it. This allows it to
+        // leverage the existing tab group infrastructure.
+        std::vector<int> indices = GetIndicesForCommand(context_index);
+        tab_groups::TabGroupId new_group_id = AddToNewGroup(indices);
+        RecordToggleFocusGroupMetrics(/*is_unfocus=*/false,
+                                      /*is_non_group=*/true, indices.size());
+        SetFocusedGroup(new_group_id);
         break;
       }
       if (GetFocusedGroup() == group_id) {
-        base::UmaHistogramEnumeration("TabGroups.Focus.ExitReason",
-                                      TabGroupFocusExitReason::kTabContextMenu);
-        base::RecordAction(UserMetricsAction("TabContextMenu_UnfocusTabGroup"));
+        RecordToggleFocusGroupMetrics(/*is_unfocus=*/true,
+                                      /*is_non_group=*/false);
         SetFocusedGroup(std::nullopt);
       } else {
-        base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint",
-                                      TabGroupFocusEntryPoint::kTabContextMenu);
-        base::RecordAction(UserMetricsAction("TabContextMenu_FocusTabGroup"));
+        RecordToggleFocusGroupMetrics(/*is_unfocus=*/false,
+                                      /*is_non_group=*/false);
         SetFocusedGroup(group_id);
       }
       break;
@@ -3401,6 +3457,36 @@ bool TabStripModel::WillContextMenuGroup(int index) {
     }
   }
   return false;
+}
+
+std::optional<tab_groups::TabGroupId> TabStripModel::GetCommonGroupForIndices(
+    const std::vector<int>& indices) const {
+  if (indices.empty()) {
+    return std::nullopt;
+  }
+  std::optional<tab_groups::TabGroupId> first_group =
+      GetTabGroupForTab(indices[0]);
+  if (!first_group.has_value()) {
+    return std::nullopt;
+  }
+  for (size_t i = 1; i < indices.size(); ++i) {
+    if (GetTabGroupForTab(indices[i]) != first_group) {
+      return std::nullopt;
+    }
+  }
+  return first_group;
+}
+
+bool TabStripModel::AreAllUngrouped(const std::vector<int>& indices) const {
+  if (indices.empty()) {
+    return false;
+  }
+  for (int index : indices) {
+    if (GetTabGroupForTab(index).has_value()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // static

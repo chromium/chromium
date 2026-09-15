@@ -932,6 +932,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Focus.NonGroupTabsCount" units="tabs"
+    expires_after="2027-02-04">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when non-grouped tabs are focused via the tab context menu, logging
+    the number of tabs included in the focused selection.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.Focus.PinnedTabActivatedInSession" enum="Boolean"
     expires_after="2027-02-06">
   <owner>kunaldaftari@google.com</owner>

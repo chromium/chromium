@@ -389,6 +389,8 @@ bool IsTabGroupsFocusFreezingEnabled();
 BASE_DECLARE_FEATURE(kTabGroupRibbon);
 bool IsTabGroupRibbonEnabled();
 
+BASE_DECLARE_FEATURE(kNonGroupFocus);
+
 BASE_DECLARE_FEATURE(kOmniboxResizingPrioritization);
 
 BASE_DECLARE_FEATURE(kToolbarAppMenuLabelResizing);

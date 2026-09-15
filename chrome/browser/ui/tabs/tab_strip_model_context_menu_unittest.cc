@@ -255,3 +255,110 @@ TEST_F(TabStripModelContextMenuTest, CommandToggleFocusGroupLogsMetrics) {
   EXPECT_EQ(user_action_tester.GetActionCount("TabContextMenu_FocusTabGroup"),
             2);
 }
+
+TEST_F(TabStripModelContextMenuTest, NonGroupFocusEnabledSingleTab) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), true);
+
+  // Tab 0 is not in a group, but kNonGroupFocus is enabled -> command enabled.
+  EXPECT_TRUE(tab_strip_model()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleFocusGroup));
+
+  // Executing the command creates a group and focuses it.
+  tab_strip_model()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandToggleFocusGroup);
+  std::optional<tab_groups::TabGroupId> focused_group =
+      tab_strip_model()->GetFocusedGroup();
+  EXPECT_TRUE(focused_group.has_value());
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), focused_group);
+
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.EntryPoint",
+      TabGroupFocusEntryPoint::kTabContextMenuNonGroup, 1);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.NonGroupTabsCount", 1,
+                                      1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("TabContextMenu_FocusNonGroupTabs"), 1);
+}
+
+TEST_F(TabStripModelContextMenuTest, NonGroupFocusEnabledMultipleTabs) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), true);
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), false);
+
+  ui::ListSelectionModel selection;
+  selection.SetSelectedIndex(0);
+  selection.AddIndexToSelection(1);
+  tab_strip_model()->SetSelectionFromModel(selection);
+
+  // Both tabs are non-grouped -> command enabled.
+  EXPECT_TRUE(tab_strip_model()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleFocusGroup));
+
+  tab_strip_model()->ExecuteContextMenuCommand(
+      0, TabStripModel::CommandToggleFocusGroup);
+  std::optional<tab_groups::TabGroupId> focused_group =
+      tab_strip_model()->GetFocusedGroup();
+  EXPECT_TRUE(focused_group.has_value());
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), focused_group);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), focused_group);
+
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.EntryPoint",
+      TabGroupFocusEntryPoint::kTabContextMenuNonGroup, 1);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.NonGroupTabsCount", 2,
+                                      1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("TabContextMenu_FocusNonGroupTabs"), 1);
+}
+
+TEST_F(TabStripModelContextMenuTest, NonGroupFocusGreyedOutWhenMixture) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), true);
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), false);
+  tab_strip_model()->AppendWebContents(CreateTestWebContents(), false);
+
+  // Mixture of grouped and non-grouped tabs.
+  tab_strip_model()->AddToNewGroup({0});
+  ui::ListSelectionModel selection_grouped_and_ungrouped;
+  selection_grouped_and_ungrouped.SetSelectedIndex(0);
+  selection_grouped_and_ungrouped.AddIndexToSelection(1);
+  tab_strip_model()->SetSelectionFromModel(selection_grouped_and_ungrouped);
+
+  EXPECT_FALSE(tab_strip_model()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleFocusGroup));
+
+  // Mixture of different tab groups.
+  tab_strip_model()->AddToNewGroup({1});
+  ui::ListSelectionModel selection_different_groups;
+  selection_different_groups.SetSelectedIndex(0);
+  selection_different_groups.AddIndexToSelection(1);
+  tab_strip_model()->SetSelectionFromModel(selection_different_groups);
+
+  EXPECT_FALSE(tab_strip_model()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleFocusGroup));
+
+  // Mixture of pinned and non-pinned tabs.
+  tab_strip_model()->RemoveFromGroup({0, 1});
+  tab_strip_model()->SetTabPinned(0, true);
+  ui::ListSelectionModel selection_pinned_and_unpinned;
+  selection_pinned_and_unpinned.SetSelectedIndex(0);
+  selection_pinned_and_unpinned.AddIndexToSelection(1);
+  tab_strip_model()->SetSelectionFromModel(selection_pinned_and_unpinned);
+
+  EXPECT_FALSE(tab_strip_model()->IsContextMenuCommandEnabled(
+      0, TabStripModel::CommandToggleFocusGroup));
+}

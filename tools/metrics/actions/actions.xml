@@ -38024,6 +38024,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabContextMenu_FocusNonGroupTabs">
+  <owner>kunaldaftari@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User selected Focus Tab or Focus Tabs from the tab context menu for
+    non-grouped tabs.
+  </description>
+</action>
+
 <action name="TabContextMenu_FocusTabGroup">
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>

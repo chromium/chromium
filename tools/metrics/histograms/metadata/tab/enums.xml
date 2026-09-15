@@ -435,6 +435,7 @@ chromium-metrics-reviews@google.com.
 <enum name="TabGroupFocusEntryPoint">
   <int value="0" label="Editor bubble ('Focus group')"/>
   <int value="1" label="Tab context menu ('Focus tab group')"/>
+  <int value="2" label="Tab context menu ('Focus tab(s)')"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_enums.h:TabGroupFocusEntryPoint) -->

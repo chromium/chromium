@@ -51,7 +51,7 @@ class TabMenuModel : public ui::SimpleMenuModel {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddNewTabAdjacentMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddToNewGroupItemIdentifier);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDuplicateMenuItem);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFocusTabGroupMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFocusSelectionMenuItem);
 
   TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                TabMenuModelDelegate* tab_menu_model_delegate,

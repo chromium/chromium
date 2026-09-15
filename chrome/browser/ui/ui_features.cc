@@ -557,6 +557,8 @@ bool IsTabGroupRibbonEnabled() {
          base::FeatureList::IsEnabled(kTabGroupRibbon);
 }
 
+BASE_FEATURE(kNonGroupFocus, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOmniboxResizingPrioritization, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarAppMenuLabelResizing, base::FEATURE_ENABLED_BY_DEFAULT);

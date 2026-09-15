@@ -835,6 +835,14 @@ class TabStripModel {
   // supplied to `ExecuteContextMenuCommand`.
   bool WillContextMenuGroup(int index);
 
+  // Returns the group ID if all tabs at `indices` belong to the same group,
+  // or std::nullopt if they belong to different groups or any are ungrouped.
+  std::optional<tab_groups::TabGroupId> GetCommonGroupForIndices(
+      const std::vector<int>& indices) const;
+
+  // Returns true if none of the tabs at `indices` belong to any tab group.
+  bool AreAllUngrouped(const std::vector<int>& indices) const;
+
   // Convert a ContextMenuCommand into a browser command. Returns true if a
   // corresponding browser command exists, false otherwise.
   static bool ContextMenuCommandToBrowserCommand(int cmd_id, int* browser_cmd);
