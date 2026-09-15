@@ -18,7 +18,7 @@ export function getHtml(this: OrganizerListSectionItemDescriptionElement) {
       ` : ''}
       <div class="description-text ${
           descriptionPart.elideFromStart ? 'elide-from-start' : ''}">
-        <bdi>${descriptionPart.text}</bdi>
+        <bdi>${this.renderDescriptionPart_(descriptionPart.text, index)}</bdi>
       </div>
     </div>
   `)}

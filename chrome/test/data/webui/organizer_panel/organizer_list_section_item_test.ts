@@ -294,35 +294,50 @@ suite('OrganizerListSectionItemTest', () => {
         assertEquals(TEST_URL_1, listItem.$.crUrlListItem.url);
       });
 
-  test('forwards sliced highlight ranges to title element', async () => {
-    listItem.item = {
-      title: ['Google Search', 'YouTube'],
-      highlightRanges: {
-        // "Google Search YouTube" -> "Google": [0, 6), "Search": [7, 13),
-        // "YouTube": [14, 21)
-        title: [
-          {start: 0, length: 6},
-          {start: 14, length: 3},
-        ],
-      },
-    };
-    await microtasksFinished();
+  test(
+      'forwards sliced highlight ranges to title and description elements',
+      async () => {
+        listItem.item = {
+          title: ['Google Search', 'YouTube'],
+          description: [{text: 'google.com'}, {text: '5 mins ago'}],
+          highlightRanges: {
+            // "Google Search YouTube" -> "Google": [0, 6), "Search": [7, 13),
+            // "YouTube": [14, 21)
+            title: [
+              {start: 0, length: 6},
+              {start: 14, length: 3},
+            ],
+            // "google.com 5 mins ago" -> "google.com": [0, 10), "5 mins ago":
+            // [11, 21)
+            description: [
+              {start: 0, length: 6},
+            ],
+          },
+        };
+        await microtasksFinished();
 
-    const titleElement = listItem.$.title;
-    assertTrue(!!titleElement);
-    assertDeepEquals(
-        [[{start: 0, length: 6}], [{start: 0, length: 3}]],
-        titleElement.highlightRanges);
-  });
+        const titleElement = listItem.$.title;
+        assertTrue(!!titleElement);
+        assertDeepEquals(
+            [[{start: 0, length: 6}], [{start: 0, length: 3}]],
+            titleElement.highlightRanges);
+
+        const descriptionElement = listItem.$.description;
+        assertTrue(!!descriptionElement);
+        assertDeepEquals(
+            [[{start: 0, length: 6}], []], descriptionElement.highlightRanges);
+      });
 
   test(
       'provides empty highlight ranges when highlight ranges are absent',
       async () => {
         listItem.item = {
           title: ['Google Search'],
+          description: [{text: 'google.com'}],
         };
         await microtasksFinished();
 
         assertDeepEquals([[]], listItem.$.title.highlightRanges);
+        assertDeepEquals([[]], listItem.$.description.highlightRanges);
       });
 });

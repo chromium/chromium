@@ -255,7 +255,7 @@ suite('OrganizerListSectionTest', () => {
     assertEquals(2, listItems.length);
   });
 
-  test('highlights search match in title', async () => {
+  test('highlights matching text when searching', async () => {
     const delegateItems = [
       {
         title: ['Google Search'],
@@ -278,6 +278,9 @@ suite('OrganizerListSectionTest', () => {
     assertDeepEquals(
         [[{start: 8, length: 5}]], listItems[0]!.$.title.highlightRanges);
 
+    assertDeepEquals(
+        [[{start: 0, length: 5}]], listItems[0]!.$.description.highlightRanges);
+
     listSection.searchQuery = '';
     await microtasksFinished();
 
@@ -286,5 +289,7 @@ suite('OrganizerListSectionTest', () => {
     assertEquals(2, clearedItems.length);
     assertDeepEquals([[]], clearedItems[0]!.$.title.highlightRanges);
     assertDeepEquals([[]], clearedItems[1]!.$.title.highlightRanges);
+    assertDeepEquals([[]], clearedItems[0]!.$.description.highlightRanges);
+    assertDeepEquals([[]], clearedItems[1]!.$.description.highlightRanges);
   });
 });

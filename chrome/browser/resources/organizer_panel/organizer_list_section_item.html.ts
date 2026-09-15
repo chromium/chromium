@@ -22,7 +22,8 @@ export function getHtml(this: OrganizerListSectionItemElement) {
     </organizer-list-section-item-title>
     <organizer-list-section-item-description id="description"
         ?hidden="${!this.hasDescription_()}"
-        .descriptionParts="${this.item.description || []}">
+        .descriptionParts="${this.item.description || []}"
+        .highlightRanges="${this.descriptionHighlightRanges_()}">
     </organizer-list-section-item-description>
   </div>
   ${this.item.prefixIcon?.element ? html`

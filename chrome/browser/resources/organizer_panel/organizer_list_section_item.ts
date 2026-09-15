@@ -164,6 +164,12 @@ export class OrganizerListSectionItemElement extends
     return sliceRangesForParts(
         this.item.title, this.item.highlightRanges?.title);
   }
+
+  protected descriptionHighlightRanges_(): Range[][] {
+    return sliceRangesForParts(
+        this.item.description?.map(d => d.text) || [],
+        this.item.highlightRanges?.description);
+  }
 }
 
 declare global {

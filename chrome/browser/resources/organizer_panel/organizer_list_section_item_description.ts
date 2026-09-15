@@ -4,9 +4,11 @@
 
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {Range} from '/tab_search/shared/search.js';
 
 import {getCss} from './organizer_list_section_item_description.css.js';
 import {getHtml} from './organizer_list_section_item_description.html.js';
+import {renderHighlightedText} from './search_utils.js';
 
 // Single description segment for an organizer list section item.
 export interface OrganizerListSectionItemDescriptionPart {
@@ -43,10 +45,17 @@ export class OrganizerListSectionItemDescriptionElement extends CrLitElement {
   static override get properties() {
     return {
       descriptionParts: {type: Array},
+      highlightRanges: {type: Array},
     };
   }
 
   accessor descriptionParts: OrganizerListSectionItemDescriptionPart[] = [];
+  accessor highlightRanges: Range[][] = [];
+
+  protected renderDescriptionPart_(text: string, index: number): TemplateResult
+      |string {
+    return renderHighlightedText(text, this.highlightRanges[index]);
+  }
 }
 
 declare global {
