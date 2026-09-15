@@ -69,7 +69,8 @@ class BrowserStatusMonitor : public ash::BrowserController::Observer,
                      content::WebContents* new_contents) override;
   void OnActiveWebContentsChanged(ash::BrowserDelegate* browser,
                                   content::WebContents* old_contents,
-                                  content::WebContents* new_contents) override;
+                                  content::WebContents* new_contents,
+                                  bool selection_only) override;
 
  private:
   // Add a windowed browser-based app to the shelf.

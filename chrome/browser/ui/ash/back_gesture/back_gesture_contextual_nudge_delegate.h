@@ -49,7 +49,8 @@ class BackGestureContextualNudgeDelegate
   // ash::BrowserController::TabObserver:
   void OnActiveWebContentsChanged(ash::BrowserDelegate* browser,
                                   content::WebContents* old_contents,
-                                  content::WebContents* new_contents) override;
+                                  content::WebContents* new_contents,
+                                  bool selection_only) override;
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;

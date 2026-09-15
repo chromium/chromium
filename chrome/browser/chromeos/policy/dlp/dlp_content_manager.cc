@@ -26,9 +26,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
@@ -519,18 +516,8 @@ DlpContentManager::GetWebContentsInfo() const {
 }
 
 DlpContentManager::DlpContentManager() {
-  // Start observing tab strip models for all browsers.
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this](BrowserWindowInterface* browser_window_interface) {
-        // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
-        TabStripModel* tab_strip_model =
-            browser_window_interface->GetTabStripModel();
-        CHECK(observed_tab_strip_models_.insert(tab_strip_model).second);
-        tab_strip_model->AddObserver(this);
-        return true;
-      });
   if (auto* browser_controller = ash::BrowserController::GetInstance()) {
-    browser_controller_observation_.Observe(browser_controller);
+    tab_observation_.Observe(browser_controller);
   } else {
     CHECK_IS_TEST();
   }
@@ -608,33 +595,16 @@ void DlpContentManager::OnWebContentsDestroyed(
   RemoveFromConfidential(web_contents);
 }
 
-void DlpContentManager::OnBrowserCreated(ash::BrowserDelegate* browser) {
-  // DlpContentManager is a singleton that outlives any browser instance. When a
-  // browser gets destroyed, its tab strip model gets destroyed too, so there's
-  // no need to unregister the observer. However, it gets lazily created, which
-  // can happen inside BrowserController's OnBrowserCreated notification loop.
-  // Hence we must guard against trying to observe the same tab strip model
-  // twice.
-  TabStripModel* tab_strip_model = browser->GetBrowser().GetTabStripModel();
-  if (observed_tab_strip_models_.insert(tab_strip_model).second) {
-    tab_strip_model->AddObserver(this);
-  }
-}
-
-void DlpContentManager::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
+void DlpContentManager::OnActiveWebContentsChanged(
+    ash::BrowserDelegate* browser,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents,
+    bool selection_only) {
   // Checking only after selecting the possible moved tab as in this case it
   // already was added to the new window.
-  if (change.type() == TabStripModelChange::kSelectionOnly) {
-    TabLocationMaybeChanged(selection.new_contents);
+  if (selection_only) {
+    TabLocationMaybeChanged(new_contents);
   }
-}
-
-void DlpContentManager::OnTabStripModelDestroyed(
-    TabStripModel* tab_strip_model) {
-  observed_tab_strip_models_.erase(tab_strip_model);
 }
 
 void DlpContentManager::RemoveFromConfidential(

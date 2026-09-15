@@ -61,7 +61,6 @@ static_library("dlp") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chromeos/ash/components/browser_delegate",
   ]
 
@@ -81,9 +80,7 @@ static_library("dlp") {
     "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/navigator",
-    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/constants",

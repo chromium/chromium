@@ -284,7 +284,8 @@ void BrowserStatusMonitor::OnTabReplaced(ash::BrowserDelegate* browser,
 void BrowserStatusMonitor::OnActiveWebContentsChanged(
     ash::BrowserDelegate* browser,
     content::WebContents* old_contents,
-    content::WebContents* new_contents) {
+    content::WebContents* new_contents,
+    bool selection_only) {
   // Use |new_contents|. |old_contents| could be nullptr.
   DCHECK(new_contents);
 

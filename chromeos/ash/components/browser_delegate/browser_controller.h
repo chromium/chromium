@@ -111,10 +111,12 @@ class BrowserController {
     // Called when the active tab in `browser` changes.
     // `browser` and `new_contents` are never nullptr.
     // `old_contents` is the previously active WebContents (can be nullptr).
-    virtual void OnActiveWebContentsChanged(
-        BrowserDelegate* browser,
-        content::WebContents* old_contents,
-        content::WebContents* new_contents) {}
+    // `selection_only` is true if the active selection changed, but not as a
+    // result of any tab being inserted, removed, or replaced.
+    virtual void OnActiveWebContentsChanged(BrowserDelegate* browser,
+                                            content::WebContents* old_contents,
+                                            content::WebContents* new_contents,
+                                            bool selection_only) {}
   };
 
   // See CreateWebApp below.

@@ -126,7 +126,8 @@ void WebTimeActivityProvider::OnTabReplaced(
 void WebTimeActivityProvider::OnActiveWebContentsChanged(
     ash::BrowserDelegate* browser,
     content::WebContents* old_contents,
-    content::WebContents* new_contents) {
+    content::WebContents* new_contents,
+    bool selection_only) {
   if (active_browsers_.contains(browser)) {
     MaybeNotifyStateChange(base::Time::Now());
   }

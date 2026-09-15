@@ -373,7 +373,8 @@ void LockedSessionWindowTracker::OnTabRemoved(ash::BrowserDelegate* browser,
 void LockedSessionWindowTracker::OnActiveWebContentsChanged(
     ash::BrowserDelegate* browser,
     content::WebContents* old_contents,
-    content::WebContents* new_contents) {
+    content::WebContents* new_contents,
+    bool selection_only) {
   if (browser != browser_) {
     return;
   }

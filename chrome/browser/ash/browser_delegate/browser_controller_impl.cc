@@ -409,9 +409,12 @@ void BrowserControllerImpl::OnTabStripModelChanged(
   }
 
   if (selection.active_tab_changed() && !tab_strip_model->empty()) {
+    const bool selection_only =
+        change.type() == TabStripModelChange::kSelectionOnly;
     for (auto& observer : tab_observers_) {
       observer.OnActiveWebContentsChanged(browser, selection.old_contents,
-                                          selection.new_contents);
+                                          selection.new_contents,
+                                          selection_only);
     }
   }
 }

@@ -63,7 +63,8 @@ void BackGestureContextualNudgeDelegate::DidFinishNavigation(
 void BackGestureContextualNudgeDelegate::OnActiveWebContentsChanged(
     ash::BrowserDelegate* browser,
     content::WebContents* /*old_contents*/,
-    content::WebContents* new_contents) {
+    content::WebContents* new_contents,
+    bool selection_only) {
   if (window_ && browser->GetNativeWindow() == window_) {
     controller_->NavigationEntryChanged(window_);
     Observe(new_contents);

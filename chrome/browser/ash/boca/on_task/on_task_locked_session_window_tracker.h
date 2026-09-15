@@ -133,7 +133,8 @@ class LockedSessionWindowTracker : public KeyedService,
                     bool will_delete) override;
   void OnActiveWebContentsChanged(ash::BrowserDelegate* browser,
                                   content::WebContents* old_contents,
-                                  content::WebContents* new_contents) override;
+                                  content::WebContents* new_contents,
+                                  bool selection_only) override;
 
   // ash::BrowserController::Observer:
   void OnBrowserCreated(ash::BrowserDelegate* browser) override;
