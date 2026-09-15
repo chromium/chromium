@@ -67,22 +67,18 @@ namespace {
 namespace test_default {
 // TODO(crbug.com/497882860): Remove pins includes from this file.
 #include "net/http/transport_security_state_static_pins_unittest_default.h"
-// Must be included after the pins:
 #include "net/http/transport_security_state_static_unittest_default.h"
 }
 namespace test1 {
 #include "net/http/transport_security_state_static_unittest1_pins.h"
-// Must be included after the pins:
 #include "net/http/transport_security_state_static_unittest1.h"
 }
 namespace test2 {
 #include "net/http/transport_security_state_static_unittest2_pins.h"
-// Must be included after the pins:
 #include "net/http/transport_security_state_static_unittest2.h"
 }
 namespace test3 {
 #include "net/http/transport_security_state_static_unittest3_pins.h"
-// Must be included after the pins:
 #include "net/http/transport_security_state_static_unittest3.h"
 }
 
@@ -152,12 +148,14 @@ class TransportSecurityStateTest : public ::testing::Test,
       : WithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
+    SetTransportSecurityStatePinsSourceForTesting(&test_default::kPinsSource);
     // Need mocked out time for pruning tests. Don't start with a
     // time of 0, as code doesn't generally expect it.
     FastForwardBy(base::Days(1));
   }
 
   ~TransportSecurityStateTest() override {
+    SetTransportSecurityStatePinsSourceForTesting(nullptr);
     SetTransportSecurityStateSourceForTesting(nullptr);
   }
 
@@ -761,6 +759,7 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedSingle) {
   AddScopedFeatureList().InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
   SetTransportSecurityStateSourceForTesting(&test1::kHSTSSource);
+  SetTransportSecurityStatePinsSourceForTesting(&test1::kPinsSource);
 
   TransportSecurityState state;
   TransportSecurityStateTest::EnableStaticPins(&state);
@@ -788,6 +787,7 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedMultiplePrefix) {
   AddScopedFeatureList().InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
   SetTransportSecurityStateSourceForTesting(&test2::kHSTSSource);
+  SetTransportSecurityStatePinsSourceForTesting(&test2::kPinsSource);
 
   TransportSecurityState state;
   TransportSecurityStateTest::EnableStaticPins(&state);
@@ -837,6 +837,7 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedMultipleMix) {
   AddScopedFeatureList().InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
   SetTransportSecurityStateSourceForTesting(&test3::kHSTSSource);
+  SetTransportSecurityStatePinsSourceForTesting(&test3::kPinsSource);
 
   TransportSecurityState state;
   TransportSecurityStateTest::EnableStaticPins(&state);
@@ -1092,6 +1093,7 @@ class TransportSecurityStateStaticTest : public TransportSecurityStateTest {
  public:
   TransportSecurityStateStaticTest() {
     SetTransportSecurityStateSourceForTesting(nullptr);
+    SetTransportSecurityStatePinsSourceForTesting(nullptr);
   }
 };
 

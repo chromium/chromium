@@ -48,9 +48,6 @@ namespace net {
 namespace {
 
 #if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
-// TODO(crbug.com/497882860): Remove pins include from this file.
-#include "net/http/transport_security_state_static_pins.h"  // nogncheck
-// Must be included after the pins:
 #include "net/http/transport_security_state_static.h"  // nogncheck
 // Points to the active transport security state source.
 const TransportSecurityStateSource* const kDefaultHSTSSource = &kHSTSSource;
@@ -59,6 +56,17 @@ const TransportSecurityStateSource* const kDefaultHSTSSource = nullptr;
 #endif
 
 const TransportSecurityStateSource* g_hsts_source = kDefaultHSTSSource;
+
+#if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
+// TODO(crbug.com/497882860): Remove pins include from this file.
+#include "net/http/transport_security_state_static_pins.h"  // nogncheck
+// Points to the pins source.
+const TransportSecurityStatePinsSource* const kDefaultPinsSource = &kPinsSource;
+#else
+const TransportSecurityStatePinsSource* const kDefaultPinsSource = nullptr;
+#endif
+
+const TransportSecurityStatePinsSource* g_pins_source = kDefaultPinsSource;
 
 TransportSecurityState::HashedHost HashHost(
     base::span<const uint8_t> canonicalized_host) {
@@ -217,6 +225,11 @@ bool DecodeHSTSPreload(std::string_view search_hostname, PreloadResult* out) {
 void SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source) {
   g_hsts_source = source ? source : kDefaultHSTSSource;
+}
+
+void SetTransportSecurityStatePinsSourceForTesting(
+    const TransportSecurityStatePinsSource* source) {
+  g_pins_source = source ? source : kDefaultPinsSource;
 }
 
 TransportSecurityState::TransportSecurityState()
@@ -693,8 +706,8 @@ bool TransportSecurityState::GetStaticPKPState(std::string_view host,
   // logic from the above while loop but operating on a different type. Think
   // about if there is a better way to structure this.
   while (true) {
-    const TransportSecurityStateSource::HostPin* pin =
-        g_hsts_source->find_host_pin(search_hostname);
+    const TransportSecurityStatePinsSource::HostPin* pin =
+        g_pins_source->find_host_pin(search_hostname);
     // Only consider this a match if either include_subdomains is set, or
     // this is an exact match of the full hostname.
     if (pin &&

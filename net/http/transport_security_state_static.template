@@ -29,8 +29,4 @@ static constexpr net::TransportSecurityStateSource kHSTSSource = {
   kPreloadedHSTSData,
   kPreloadedHSTSBits,
   kHSTSRootPosition,
-  // This requires the generated transport_security_state_static_pins.h to have
-  // already been included in the same namespace before including this file.
-  // TODO(crbug.com/497882860): Remove this from TransportSecurityStateSource.
-  kFindHostPin,
 };

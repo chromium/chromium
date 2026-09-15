@@ -261,7 +261,7 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
 
     base::StrAppend(
         &pinsets_output,
-        {"static constexpr net::TransportSecurityStateSource::Pinset ",
+        {"static constexpr net::TransportSecurityStatePinsSource::Pinset ",
          FormatPinsetName(uppercased_name), " = {", accepted_pins_names, ", ",
          rejected_pins_names, "};", kNewLine});
   }
@@ -277,7 +277,7 @@ void PreloadedStateGenerator::ProcessPinEntries(const PinEntries& pin_entries,
                                                 std::string* tpl) {
   std::string output =
       base::StrCat({"base::MakeFixedFlatMap<std::string_view, "
-                    "net::TransportSecurityStateSource::HostPin>({",
+                    "net::TransportSecurityStatePinsSource::HostPin>({",
                     kNewLine});
 
   for (const auto& pin_entry : pin_entries) {

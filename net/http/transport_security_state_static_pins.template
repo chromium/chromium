@@ -12,8 +12,9 @@
 // included directly by any unittest using them, in a nested namespace.
 
 // Note that the consumer must include
-// "net/http/transport_security_state_source.h", as this file cannot include
-// any headers itself, since it's always included in a nested namespace.
+// "net/http/transport_security_state_pins_source.h", as this file cannot
+// include any headers itself, since it's always included in a nested
+// namespace.
 
 // This is the time at which the key pins list was last updated.
 constexpr base::Time kPinsListTimestamp = base::Time::FromTimeT([[PINS_LIST_TIMESTAMP]]);
@@ -26,10 +27,14 @@ constexpr base::Time kPinsListTimestamp = base::Time::FromTimeT([[PINS_LIST_TIME
 
 [[PINSETS]]
 
-// Map from hostname to TransportSecurityStateSource::HostPin.
+// Map from hostname to TransportSecurityStatePinsSource::HostPin.
 static constexpr auto kHostPins = [[HOST_PINS]];
 
-// Function to look up a TransportSecurityStateSource::HostPin* from a hostname.
-// Returns nullptr if the hostname is not present in the pins list.
+// Function to look up a TransportSecurityStatePinsSource::HostPin* from a
+// hostname. Returns nullptr if the hostname is not present in the pins list.
 static constexpr auto kFindHostPin =
   [](std::string_view hostname) { return base::FindOrNull(kHostPins, hostname); };
+
+static constexpr net::TransportSecurityStatePinsSource kPinsSource = {
+  kFindHostPin,
+};

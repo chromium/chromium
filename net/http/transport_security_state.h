@@ -30,6 +30,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/cert/require_ct_delegate.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "net/http/transport_security_state_pins_source.h"
 #include "net/http/transport_security_state_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
@@ -45,6 +46,8 @@ class X509Certificate;
 
 void NET_EXPORT_PRIVATE SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source);
+void NET_EXPORT_PRIVATE SetTransportSecurityStatePinsSourceForTesting(
+    const TransportSecurityStatePinsSource* source);
 
 // Whether an insecure connection should be upgraded to use SSL. For metrics
 // this includes whether the decision came from static or dynamic state.

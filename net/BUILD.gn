@@ -744,6 +744,7 @@ component("net") {
     "http/transport_security_persister.cc",
     "http/transport_security_persister.h",
     "http/transport_security_state.h",
+    "http/transport_security_state_pins_source.h",
     "http/transport_security_state_source.h",
     "http/url_security_manager.cc",
     "http/url_security_manager.h",
