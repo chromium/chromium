@@ -3558,6 +3558,10 @@ group("browser_generated_files") {
       "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
       "//chrome/browser/ui/webui/notifications_internals:mojo_bindings",
     ]
+    if (enable_webui_history) {
+      public_deps +=
+          [ "//ui/webui/resources/cr_components/history:mojo_bindings" ]
+    }
   } else {
     public_deps += [
       "//chrome/browser/indigo/resources:indigo_strings",

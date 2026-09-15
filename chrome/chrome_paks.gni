@@ -223,7 +223,6 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/gaia_auth_host_resources.pak",
         "$root_gen_dir/chrome/geic_resources.pak",
         "$root_gen_dir/chrome/glic_untrusted_resources.pak",
-        "$root_gen_dir/chrome/history_resources.pak",
         "$root_gen_dir/chrome/indigo_resources.pak",
         "$root_gen_dir/chrome/inspect_resources.pak",
         "$root_gen_dir/chrome/iwa_dev_resources.pak",
@@ -554,6 +553,11 @@ template("chrome_extra_paks") {
     if (enable_webui_certificate_viewer) {
       sources += [ "$root_gen_dir/chrome/certificate_viewer_resources.pak" ]
       deps += [ "//chrome/browser/resources/certificate_viewer:resources" ]
+    }
+
+    if (enable_webui_history) {
+      sources += [ "$root_gen_dir/chrome/history_resources.pak" ]
+      deps += [ "//chrome/browser/resources/history:resources" ]
     }
 
     if (enable_compose) {

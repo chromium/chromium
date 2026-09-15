@@ -67,7 +67,6 @@ group("resources") {
       "gaia_auth_host:resources",
       "geic:resources",
       "glic/selection_overlay:resources",
-      "history:resources",
       "indigo:resources",
       "inspect:resources",
       "iwa_dev:resources",
@@ -208,6 +207,10 @@ group("resources") {
 
   if (enable_webui_certificate_viewer) {
     public_deps += [ "certificate_viewer:resources" ]
+  }
+
+  if (enable_webui_history) {
+    public_deps += [ "history:resources" ]
   }
 
   if (enable_compose) {

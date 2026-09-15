@@ -83,6 +83,7 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "ENABLE_WEBUI_GENERATE_CODE_CACHE=$enable_webui_generate_code_cache",
+    "ENABLE_WEBUI_HISTORY=$enable_webui_history",
     "ENABLE_WEBUI_NTP=$enable_webui_ntp",
     "ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX=$enable_webui_contextual_tasks_composebox",
   ]
