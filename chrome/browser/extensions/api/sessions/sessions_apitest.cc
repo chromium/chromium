@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/command_line.h"
@@ -14,7 +15,9 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -47,6 +50,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sessions/core/tab_restore_service.h"
+#include "components/sessions/core/tab_restore_service_observer.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -58,6 +63,7 @@
 #include "components/sync/test/mock_data_type_worker.h"
 #include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api_test_utils.h"
@@ -65,8 +71,10 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -593,6 +601,92 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
   EXPECT_TRUE(
       base::MatchPattern(error, ExtensionTabUtil::kTabStripNotEditableError))
       << error;
+}
+
+namespace {
+
+// Closes all tabs created by an in-progress restore as soon as the tab restore
+// service reports a change, i.e. before the restore operation returns.
+class ClosingTabRestoreServiceObserver
+    : public sessions::TabRestoreServiceObserver {
+ public:
+  ClosingTabRestoreServiceObserver(sessions::TabRestoreService* service,
+                                   BrowserWindowInterface* browser)
+      : browser_(browser) {
+    observation_.Observe(service);
+    for (tabs::TabInterface* tab :
+         TabListInterface::From(browser_)->GetAllTabs()) {
+      initial_tab_handles_.insert(tab->GetHandle());
+    }
+  }
+
+  ~ClosingTabRestoreServiceObserver() override = default;
+
+  size_t num_closed_tabs() const { return num_closed_tabs_; }
+
+  // sessions::TabRestoreServiceObserver:
+  void TabRestoreServiceChanged(sessions::TabRestoreService* service) override {
+    if (!service->IsRestoring() || num_closed_tabs_ > 0) {
+      return;
+    }
+    TabListInterface* tab_list = TabListInterface::From(browser_);
+    for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+      if (!initial_tab_handles_.contains(tab->GetHandle())) {
+        ++num_closed_tabs_;
+        tab_list->CloseTab(tab->GetHandle());
+      }
+    }
+  }
+
+  void TabRestoreServiceDestroyed(
+      sessions::TabRestoreService* service) override {
+    observation_.Reset();
+  }
+
+ private:
+  raw_ptr<BrowserWindowInterface> browser_;
+  base::ScopedObservation<sessions::TabRestoreService,
+                          sessions::TabRestoreServiceObserver>
+      observation_{this};
+  absl::flat_hash_set<tabs::TabInterface::Handle> initial_tab_handles_;
+  size_t num_closed_tabs_ = 0;
+};
+
+}  // namespace
+
+// Tests that chrome.sessions.restore() returns an error rather than stale tab
+// information when the restored tab is closed again before the restore
+// operation finishes.
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest,
+                       RestoreErrorWhenTabClosedDuringRestore) {
+  BrowserWindowInterface* browser = browser_window_interface();
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  ASSERT_TRUE(tab_list);
+
+  // Open a tab, navigate it, and close it to create a recently closed tab
+  // entry. The navigation is needed for the closed tab to be persisted in the
+  // tab restore service.
+  tabs::TabInterface* tab = tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  ASSERT_TRUE(tab);
+  ASSERT_TRUE(NavigateToURL(tab->GetContents(), GURL("chrome://version/")));
+  tab_list->CloseTab(tab->GetHandle());
+
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(GetProfile());
+  ASSERT_TRUE(tab_restore_service);
+  ASSERT_EQ(1u, tab_restore_service->entries().size());
+  const int tab_count = tab_list->GetTabCount();
+
+  // Close the restored tab while the restore is still in progress.
+  ClosingTabRestoreServiceObserver closing_observer(tab_restore_service,
+                                                    browser);
+  std::string error = utils::RunFunctionAndReturnError(
+      CreateFunction<SessionsRestoreFunction>(true).get(), /*args=*/"[]",
+      GetProfile());
+
+  EXPECT_EQ(closing_observer.num_closed_tabs(), 1u);
+  EXPECT_EQ("No active tab.", error);
+  EXPECT_EQ(tab_count, tab_list->GetTabCount());
 }
 
 // Tests chrome.sessions.getRecentlyClosed() for windows. Opens a second browser

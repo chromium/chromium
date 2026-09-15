@@ -8,6 +8,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <set>
 #include <string_view>
@@ -783,11 +784,13 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
     if (tab.navigations[0].virtual_url() == url2) {
       timestamp = tab.navigations[0].timestamp();
       http_status_code = tab.navigations[0].http_status_code();
-      std::vector<sessions::LiveTab*> content = service->RestoreEntryById(
-          nullptr, tab.id, WindowOpenDisposition::UNKNOWN);
-      ASSERT_EQ(1U, content.size());
+      std::optional<std::vector<sessions::LiveTab*>> content =
+          service->RestoreEntryById(nullptr, tab.id,
+                                    WindowOpenDisposition::UNKNOWN);
+      ASSERT_TRUE(content.has_value());
+      ASSERT_EQ(1U, content->size());
       sessions::ContentLiveTab* live_tab =
-          static_cast<sessions::ContentLiveTab*>(content[0]);
+          static_cast<sessions::ContentLiveTab*>((*content)[0]);
       ASSERT_TRUE(live_tab);
       EXPECT_EQ(url2, live_tab->GetWebContents().GetURL());
       break;

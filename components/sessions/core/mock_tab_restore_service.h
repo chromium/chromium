@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SESSIONS_CORE_MOCK_TAB_RESTORE_SERVICE_H_
 #define COMPONENTS_SESSIONS_CORE_MOCK_TAB_RESTORE_SERVICE_H_
 
+#include <optional>
 #include <vector>
 
 #include "components/sessions/core/tab_restore_service.h"
@@ -109,7 +110,7 @@ class MockTabRestoreService : public sessions::TabRestoreService {
               (int num_to_remove),
               (override));
 
-  MOCK_METHOD(std::vector<sessions::LiveTab*>,
+  MOCK_METHOD(std::optional<std::vector<sessions::LiveTab*>>,
               RestoreEntryById,
               (sessions::LiveTabContext * context,
                SessionID id,

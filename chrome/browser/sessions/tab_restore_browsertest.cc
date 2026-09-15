@@ -2368,7 +2368,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
 
   // Restore the window.
   browser_created_observer.emplace();
-  std::vector<sessions::LiveTab*> restored_window_tabs =
+  std::optional<std::vector<sessions::LiveTab*>> restored_window_tabs =
       service->RestoreEntryById(BrowserLiveTabContext::From(second_browser),
                                 entries.front()->id,
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB);
@@ -2379,7 +2379,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
   // We will opt to open the saved group instead of individually restoring all
   // of the tabs in the group one at a time. Because of this, RestoreEntryById
   // will only return one tab as being restored.
-  ASSERT_EQ(1u, restored_window_tabs.size());
+  ASSERT_TRUE(restored_window_tabs.has_value());
+  ASSERT_EQ(1u, restored_window_tabs->size());
 
   ASSERT_NE(second_browser, third_browser);
   ASSERT_EQ(3, third_browser->GetTabStripModel()->count());

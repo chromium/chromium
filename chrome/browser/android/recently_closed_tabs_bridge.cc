@@ -4,6 +4,9 @@
 
 #include "chrome/browser/android/recently_closed_tabs_bridge.h"
 
+#include <optional>
+#include <vector>
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
@@ -333,11 +336,11 @@ bool RecentlyClosedTabsBridge::OpenRecentlyClosedTab(JNIEnv* env,
   }
 
   AndroidLiveTabContextRestoreWrapper restore_context(model);
-  std::vector<sessions::LiveTab*> restored_tabs =
+  std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
       tab_restore_service_->RestoreEntryById(
           &restore_context, entry_id,
           static_cast<WindowOpenDisposition>(j_disposition));
-  return !restored_tabs.empty();
+  return !restored_tabs.value_or({}).empty();
 }
 
 bool RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
@@ -355,12 +358,12 @@ bool RecentlyClosedTabsBridge::OpenRecentlyClosedEntry(
   }
 
   AndroidLiveTabContextRestoreWrapper restore_context(model);
-  std::vector<sessions::LiveTab*> restored_tabs =
+  std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
       tab_restore_service_->RestoreEntryById(
           &restore_context, SessionID::FromSerializedValue(entry_session_id),
           WindowOpenDisposition::NEW_BACKGROUND_TAB);
   RestoreAndroidTabGroups(env, model, restore_context.GetTabGroups());
-  return !restored_tabs.empty();
+  return !restored_tabs.value_or({}).empty();
 }
 
 bool RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(JNIEnv* env,
@@ -381,12 +384,12 @@ bool RecentlyClosedTabsBridge::OpenMostRecentlyClosedEntry(JNIEnv* env,
   // AndroidLiveTabContext. `restore_context` is required to rebuild groups
   // information. To avoid this just use the first entry in entries when
   // restoring.
-  std::vector<sessions::LiveTab*> restored_tabs =
+  std::optional<std::vector<sessions::LiveTab*>> restored_tabs =
       tab_restore_service_->RestoreEntryById(
           &restore_context, tab_restore_service_->entries().front()->id,
           WindowOpenDisposition::NEW_BACKGROUND_TAB);
   RestoreAndroidTabGroups(env, model, restore_context.GetTabGroups());
-  return !restored_tabs.empty();
+  return !restored_tabs.value_or({}).empty();
 }
 
 void RecentlyClosedTabsBridge::ClearRecentlyClosedEntries(JNIEnv* env) {
