@@ -385,9 +385,10 @@ bool IsDefaultANGLEVulkan() {
     return false;
   }
 
-  // Encountered bugs with older Imagination drivers.  New drivers seem fixed,
-  // but disabled for the sake of experiment for now. crbug.com/371512561
-  if (active_gpu.driverId == VK_DRIVER_ID_IMAGINATION_PROPRIETARY) {
+  // Encountered bugs with older Imagination drivers. crbug.com/371512561
+  if (active_gpu.driverId == VK_DRIVER_ID_IMAGINATION_PROPRIETARY &&
+      (active_gpu.detailedDriverVersion.major < 1 ||
+       active_gpu.detailedDriverVersion.minor < 662)) {
     return false;
   }
 
