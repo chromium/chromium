@@ -441,9 +441,37 @@ template("generate_jni_impl") {
       _srcjar_output = "$target_gen_dir/$_target_name.srcjar"
       _placeholder_srcjar_output =
           "$target_gen_dir/${_target_name}_placeholder.srcjar"
+      _type_catalog_output = "$target_gen_dir/${_target_name}.type_catalog.json"
+      _type_catalogs_file =
+          "$target_gen_dir/${_target_name}__type_catalogs.json"
+
+      # Must not match java_target_patterns (e.g. "*:*_java_*"), same reason as
+      # _jni_zero_action_target_name above.
+      _type_catalogs_target =
+          "${_target_name_without_java_or_junit}__type_catalogs"
+      _type_catalog_depfile = "$target_gen_dir/${_target_name}.type_catalog.d"
+    }
+
+    if (_from_source) {
+      # Aggregates the type catalogs published by all dependency targets.
+      generated_file(_type_catalogs_target) {
+        forward_variables_from(invoker, [ "testonly" ])
+        visibility = [ ":*" ]
+        outputs = [ _type_catalogs_file ]
+        data_keys = [ "jni_type_catalogs" ]
+        output_conversion = "json"
+        deps = []
+        if (defined(invoker.deps)) {
+          deps += invoker.deps
+        }
+        if (defined(invoker.public_deps)) {
+          deps += invoker.public_deps
+        }
+      }
     }
 
     _invoke_jni_zero(_jni_zero_action_target_name) {
+      forward_variables_from(invoker, [ "testonly" ])
       _subdir = rebase_path(target_gen_dir, root_gen_dir)
       _jni_output_dir = "$jni_headers_dir/$_subdir/$_target_name"
 
@@ -452,15 +480,35 @@ template("generate_jni_impl") {
       forward_variables_from(invoker,
                              [
                                "deps",
-                               "metadata",
                                "public_deps",
                              ])
       if (!defined(public_deps)) {
         public_deps = []
       }
+      if (_from_source) {
+        if (!defined(deps)) {
+          deps = []
+        }
+        deps += [ ":$_type_catalogs_target" ]
+      }
+      _metadata = {
+      }
+      if (defined(invoker.metadata)) {
+        _metadata = invoker.metadata
+      }
+      if (_from_source) {
+        assert(!defined(_metadata.jni_type_catalogs),
+               "jni_type_catalogs metadata is reserved for JNI Zero")
+        _metadata.jni_type_catalogs =
+            [ rebase_path(_type_catalog_output, root_build_dir) ]
+      }
+      metadata = _metadata
       public_configs += [ "//third_party/jni_zero:jni_include_dir" ]
 
       inputs = []
+      if (_from_source) {
+        inputs += [ _type_catalogs_file ]
+      }
       outputs = []
       args = []
       if (_from_source) {
@@ -476,7 +524,6 @@ template("generate_jni_impl") {
           invoker.enable_resolved_types_validation) {
         _resolved_types_path =
             "$target_gen_dir/$_target_name.resolved_types.txt"
-        outputs += [ _resolved_types_path ]
         args += [
           "--resolved-types-path",
           rebase_path(_resolved_types_path, root_build_dir),
@@ -486,15 +533,24 @@ template("generate_jni_impl") {
       if (_from_source) {
         assert(defined(invoker.sources))
 
+        depfile = _type_catalog_depfile
         args += [
+          "--enable-safe-pointers",
+          "--type-catalogs-file",
+          rebase_path(_type_catalogs_file, root_build_dir),
           "--srcjar-path",
           rebase_path(_srcjar_output, root_build_dir),
           "--placeholder-srcjar-path",
           rebase_path(_placeholder_srcjar_output, root_build_dir),
+          "--output-type-catalog",
+          rebase_path(_type_catalog_output, root_build_dir),
+          "--depfile",
+          rebase_path(_type_catalog_depfile, root_build_dir),
         ]
         outputs += [
           _srcjar_output,
           _placeholder_srcjar_output,
+          _type_catalog_output,
         ]
         inputs += invoker.sources
         _input_args = rebase_path(invoker.sources, root_build_dir)
@@ -553,6 +609,13 @@ template("generate_jni_impl") {
             invoker.unchecked_exceptions) {
           args += [ "--unchecked-exceptions" ]
         }
+      }
+
+      # Appended after the from-source outputs so that outputs[0] stays
+      # _srcjar_output, which must match the depfile target that
+      # jni_generator.py writes.
+      if (defined(_resolved_types_path)) {
+        outputs += [ _resolved_types_path ]
       }
 
       if (defined(invoker.split_name)) {

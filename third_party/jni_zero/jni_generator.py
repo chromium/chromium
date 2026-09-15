@@ -4,6 +4,7 @@
 """Entry point for "from-source" and "from-jar" commands."""
 
 import collections
+import json
 import logging
 import os
 import pathlib
@@ -588,12 +589,13 @@ def _RemoveStaleHeaders(path, shared_header_names, unshared_header_names):
           os.remove(file_path)
 
 
-def _CheckNotEmpty(jni_objs):
+def _CheckNotEmpty(parsed_files):
   has_empty = False
-  for jni_obj in jni_objs:
-    if not jni_obj.natives and not jni_obj.jni_classes:
+  for pf in parsed_files:
+    if not (pf.proxy_methods or pf.classes_with_jni
+            or pf.outer_class.non_proxy_methods or pf.type_tokens):
       has_empty = True
-      sys.stderr.write(f'No native methods found in {jni_obj.filename}.\n')
+      sys.stderr.write(f'No native methods found in {pf.filename}.\n')
   if has_empty:
     sys.exit(1)
 
@@ -740,6 +742,9 @@ def _WriteResolvedTypes(resolved_types_path, jni_objs):
 
 
 def GenerateFromSource(parser, args, jni_mode):
+  if args.depfile and not (args.srcjar_path or args.output_type_catalog):
+    parser.error('--depfile requires --srcjar-path or --output-type-catalog')
+
   # Remove existing headers so that moving .java source files but not updating
   # the corresponding C++ include will be a compile failure (otherwise
   # incremental builds will usually not catch this).
@@ -749,6 +754,10 @@ def GenerateFromSource(parser, args, jni_mode):
   try:
     errors = []
     parsed_files = []
+    type_catalog, loaded_type_catalogs = common.load_type_catalogs(
+        type_catalogs_file=args.type_catalogs_file,
+        type_catalogs=args.type_catalogs)
+
     for f in args.input_files:
       try:
         parsed_files.append(
@@ -757,7 +766,9 @@ def GenerateFromSource(parser, args, jni_mode):
                 package_prefix=args.package_prefix,
                 package_prefix_filter=args.package_prefix_filter,
                 allow_private_called_by_natives=args.
-                allow_private_called_by_natives))
+                allow_private_called_by_natives,
+                type_catalog=type_catalog,
+                enable_safe_pointers=args.enable_safe_pointers))
       except parse.ParseError as e:
         errors.append(e)
 
@@ -765,6 +776,16 @@ def GenerateFromSource(parser, args, jni_mode):
       for e in errors:
         sys.stderr.write(f'\n--- JNI Parsing Error ---\n{e}\n')
       sys.exit(1)
+
+    _CheckNotEmpty(parsed_files)
+
+    if args.output_type_catalog:
+      local_type_catalog = {}
+      for parsed_file in parsed_files:
+        common.merge_type_catalogs(local_type_catalog, parsed_file.type_tokens,
+                                   parsed_file.filename)
+      with common.atomic_output(args.output_type_catalog, 'w') as f:
+        json.dump(local_type_catalog, f, indent=2, sort_keys=True)
 
     jni_objs = [
         JniObject(x,
@@ -774,7 +795,9 @@ def GenerateFromSource(parser, args, jni_mode):
                   use_weak_called_by_natives=args.weak_called_by_natives)
         for x in parsed_files
     ]
-    _CheckNotEmpty(jni_objs)
+    if args.depfile:
+      first_out = args.srcjar_path or args.output_type_catalog
+      common.write_depfile(args.depfile, first_out, loaded_type_catalogs)
     if args.resolved_types_path:
       _WriteResolvedTypes(args.resolved_types_path, jni_objs)
   except parse.ParseError as e:

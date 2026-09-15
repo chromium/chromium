@@ -35,6 +35,7 @@ _IGNORED_SUFFIXES = (
     '.rsp',
     '-tsconfig.json',
     '-tsconfig.ref.json',
+    '__type_catalogs.json',
     'typemap_config',
 )
 

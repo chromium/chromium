@@ -1,0 +1,4 @@
+{
+  "org/jni_zero/SampleTypeDefine": "::my::cpp::Define",
+  "org/jni_zero/SampleTypeDefine$Nested": "::my::cpp::Nested"
+}

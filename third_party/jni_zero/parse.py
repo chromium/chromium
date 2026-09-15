@@ -344,6 +344,17 @@ def _validate_safe_pointer(type_resolver, value, parsed_value, java_class,
         f'the type catalog): {value}')
 
 
+def _resolve_token(type_resolver, java_type):
+  """Fills in a JniTypeToken's C++ type from the type catalog."""
+  if java_type.converted_type or not java_type.java_class:
+    return java_type
+  fqn = java_type.java_class.class_without_prefix.full_name_with_slashes
+  converted_type = type_resolver.type_catalog.get(fqn)
+  if not converted_type:
+    return java_type
+  return dataclasses.replace(java_type, converted_type=converted_type)
+
+
 def _parse_type(type_resolver, value):
   """Parses a string into a JavaType."""
   # E.g. List<?>, List<? extends Foo>
@@ -384,15 +395,14 @@ def _parse_type(type_resolver, value):
 
     primitive_name = None
     if java_class.is_safe_pointer():
+      if generics and len(generics) == 1:
+        generics = (_resolve_token(type_resolver, generics[0]), )
       _validate_safe_pointer(type_resolver, value, parsed_value, java_class,
                              generics, array_dimensions)
     elif java_class == java_types.CLASS_CLASS:
       generics = None
 
   converted_type = annotations.get('JniType', None)
-  if not converted_type and java_class:
-    fqn = java_class.class_without_prefix.full_name_with_slashes
-    converted_type = type_resolver.type_catalog.get(fqn, None)
   if converted_type == 'std::vector':
     # Allow "std::vector" as shorthand for types that can be inferred:
     if array_dimensions == 1 and primitive_name:

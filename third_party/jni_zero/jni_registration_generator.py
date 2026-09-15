@@ -10,9 +10,7 @@ import itertools
 import json
 import multiprocessing
 import os
-import pathlib
 import pickle
-import posixpath
 import re
 import sys
 import zipfile
@@ -460,28 +458,6 @@ def _ParseMetadataJson(path):
   return sources_by_module, use_weaks_by_path
 
 
-def _write_depfile(depfile_path, first_gn_output, inputs):
-  def _process_path(path):
-    assert not os.path.isabs(path), f'Found abs path in depfile: {path}'
-    if os.path.sep != posixpath.sep:
-      path = str(pathlib.Path(path).as_posix())
-    assert '\\' not in path, f'Found \\ in depfile: {path}'
-    return path.replace(' ', '\\ ')
-
-  sb = []
-  sb.append(_process_path(first_gn_output))
-  if inputs:
-    # Sort and uniquify to ensure file is hermetic.
-    # One path per line to keep it human readable.
-    sb.append(': \\\n ')
-    sb.append(' \\\n '.join(sorted(_process_path(p) for p in set(inputs))))
-  else:
-    sb.append(': ')
-  sb.append('\n')
-
-  pathlib.Path(depfile_path).write_text(''.join(sb))
-
-
 def main(parser, args, jni_mode):
   if args.header_path and not args.manual_jni_registration:
     parser.error('--header-path requires --manual-jni-registration.')
@@ -544,4 +520,4 @@ def main(parser, args, jni_mode):
     all_inputs.append(args.java_sources_file)
     if args.native_sources_file:
       all_inputs.append(args.native_sources_file)
-    _write_depfile(args.depfile, args.srcjar_path, all_inputs)
+    common.write_depfile(args.depfile, args.srcjar_path, all_inputs)

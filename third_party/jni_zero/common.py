@@ -6,8 +6,10 @@
 import contextlib
 import dataclasses
 import filecmp
+import json
 import os
 import pathlib
+import posixpath
 import shutil
 import tempfile
 import zipfile
@@ -241,6 +243,60 @@ def atomic_output(path, mode='w+b'):
       shutil.move(f.name, path)
     if os.path.exists(f.name):
       os.unlink(f.name)
+
+
+def write_depfile(depfile_path, first_gn_output, inputs):
+
+  def _process_path(path):
+    assert not os.path.isabs(path), f'Found abs path in depfile: {path}'
+    if os.path.sep != posixpath.sep:
+      path = str(pathlib.Path(path).as_posix())
+    assert '\\' not in path, f'Found \\ in depfile: {path}'
+    return path.replace(' ', '\\ ')
+
+  sb = []
+  sb.append(_process_path(first_gn_output))
+  if inputs:
+    # Sort and uniquify to ensure file is hermetic.
+    # One path per line to keep it human readable.
+    sb.append(': \\\n ')
+    sb.append(' \\\n '.join(sorted(_process_path(p) for p in set(inputs))))
+  else:
+    sb.append(': ')
+  sb.append('\n')
+
+  pathlib.Path(depfile_path).write_text(''.join(sb))
+
+
+def merge_type_catalogs(target_catalog, new_tokens, source_desc):
+  """Merges new_tokens into target_catalog, checking for conflicts."""
+  for key, value in new_tokens.items():
+    prev = target_catalog.get(key)
+    if prev is not None and prev != value:
+      raise Exception(
+          f'Conflicting @JniType for {key}: {prev!r} (already loaded) vs '
+          f'{value!r} (from {source_desc})')
+    target_catalog[key] = value
+
+
+def load_type_catalogs(type_catalogs_file=None, type_catalogs=None):
+  """Returns (type_catalog, paths) merged from all catalog inputs."""
+  paths = []
+  if type_catalogs_file:
+    contents = pathlib.Path(type_catalogs_file).read_text().strip()
+    if contents:
+      paths.extend(json.loads(contents))
+  if type_catalogs:
+    paths.extend(type_catalogs)
+  paths = list(dict.fromkeys(paths))
+
+  type_catalog = {}
+  for path in paths:
+    loaded = json.loads(pathlib.Path(path).read_text())
+    if not isinstance(loaded, dict):
+      raise Exception(f'Type catalog is not a dict: {path}')
+    merge_type_catalogs(type_catalog, loaded, path)
+  return type_catalog, paths
 
 
 def add_to_zip_hermetic(zip_file, zip_path, data=None):

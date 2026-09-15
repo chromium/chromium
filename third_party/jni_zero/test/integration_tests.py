@@ -68,6 +68,10 @@ class CliOptions:
     self.register_natives_name = None
     self.class_blocklist = None
     self.enable_jni_multiplexing = False
+    self.enable_safe_pointers = False
+    self.output_type_catalog = None
+    self.type_catalogs = None
+    self.type_catalogs_file = None
     self.weak_called_by_natives = False
     self.package_prefix = None
     self.package_prefix_filter = None
@@ -138,6 +142,15 @@ class CliOptions:
       ret += ['--module-name', self.module_name]
     if self.remove_uncalled_methods:
       ret.append('--remove-uncalled-methods')
+    if self.enable_safe_pointers:
+      ret.append('--enable-safe-pointers')
+    if self.output_type_catalog:
+      ret += ['--output-type-catalog', self.output_type_catalog]
+    if self.type_catalogs:
+      for cat in self.type_catalogs:
+        ret += ['--type-catalog', cat]
+    if self.type_catalogs_file:
+      ret += ['--type-catalogs-file', self.type_catalogs_file]
     if self.action == 'gen-register-natives':
       ret += self.jar_files
     if self.needs_javap:
@@ -735,6 +748,101 @@ class MyFile {
 }
 """
     self._TestParseError('@JniType not allowed within generics', data)
+
+
+  def testTypeCatalog(self):
+    with tempfile.TemporaryDirectory() as tdir:
+      options_def = CliOptions(
+          input_files=[os.path.join(_JAVA_SRC_DIR, "SampleTypeDefine.java")],
+          output_dir=tdir,
+          shared_header_files=["SampleTypeDefine_shared_jni.h"],
+          unshared_header_files=["SampleTypeDefine_jni.h"],
+          output_type_catalog=os.path.join(tdir, "catalog.json"),
+          enable_safe_pointers=True)
+      cmd_def = options_def.to_args()
+      subprocess.check_call(cmd_def)
+
+      catalog_path = os.path.join(tdir, "catalog.json")
+      self.assertTrue(os.path.exists(catalog_path))
+      self.AssertGoldenTextEquals(
+          pathlib.Path(catalog_path).read_text(),
+          'testTypeCatalog-catalog.json.golden')
+
+      options_use = CliOptions(
+          input_files=[os.path.join(_JAVA_SRC_DIR, "SampleTypeUse.java")],
+          output_dir=tdir,
+          shared_header_files=["SampleTypeUse_shared_jni.h"],
+          unshared_header_files=["SampleTypeUse_jni.h"],
+          type_catalogs=[catalog_path],
+          enable_safe_pointers=True)
+      cmd_use = options_use.to_args()
+      subprocess.check_call(cmd_use)
+
+      header_path = os.path.join(tdir, "SampleTypeUse_jni.h")
+      self.assertTrue(os.path.exists(header_path))
+      self.AssertGoldenTextEquals(
+          pathlib.Path(header_path).read_text(),
+          'testTypeCatalog-SampleTypeUse_jni.h.golden')
+
+  def testTypeCatalog_MissingCatalogFails(self):
+    with tempfile.TemporaryDirectory() as tdir:
+      options_no_catalog = CliOptions(
+          input_files=[os.path.join(_JAVA_SRC_DIR, "SampleTypeUse.java")],
+          output_dir=tdir,
+          shared_header_files=["SampleTypeUse_shared_jni.h"],
+          unshared_header_files=["SampleTypeUse_jni.h"],
+          enable_safe_pointers=True)
+      with self.assertRaises(subprocess.CalledProcessError):
+        subprocess.check_call(options_no_catalog.to_args(),
+                              stderr=subprocess.DEVNULL)
+
+  def testTypeCatalogAggregation(self):
+    with tempfile.TemporaryDirectory() as tdir:
+      catalog1_path = os.path.join(tdir, "catalog1.json")
+      catalog2_path = os.path.join(tdir, "catalog2.json")
+      with open(catalog1_path, "w") as f:
+        # Not referenced by SampleTypeUse.java: exercises merging of
+        # unrelated catalogs.
+        json.dump({"org/jni_zero/SampleTypeUnused": "::my::cpp::Unused"}, f)
+      with open(catalog2_path, "w") as f:
+        # Only present in the second catalog, so resolution succeeds only if
+        # both catalogs merged.
+        json.dump(
+            {
+                "org/jni_zero/SampleTypeDefine": "::my::cpp::Define",
+                "org/jni_zero/SampleTypeDefine$Nested": "::my::cpp::Nested",
+            }, f)
+
+      options_multi = CliOptions(
+          input_files=[os.path.join(_JAVA_SRC_DIR, "SampleTypeUse.java")],
+          output_dir=tdir,
+          shared_header_files=["SampleTypeUse_shared_jni.h"],
+          unshared_header_files=["SampleTypeUse_jni.h"],
+          type_catalogs=[catalog1_path, catalog2_path],
+          enable_safe_pointers=True)
+      subprocess.check_call(options_multi.to_args())
+
+      header_path = os.path.join(tdir, "SampleTypeUse_jni.h")
+      self.assertTrue(os.path.exists(header_path))
+      self.AssertGoldenTextEquals(
+          pathlib.Path(header_path).read_text(),
+          'testTypeCatalog-SampleTypeUse_jni.h.golden')
+
+  def testTypeCatalogAggregation_PartialCatalogFails(self):
+    with tempfile.TemporaryDirectory() as tdir:
+      catalog1_path = os.path.join(tdir, "catalog1.json")
+      with open(catalog1_path, "w") as f:
+        json.dump({"org/jni_zero/SampleTypeUnused": "::my::cpp::Unused"}, f)
+      options_partial = CliOptions(
+          input_files=[os.path.join(_JAVA_SRC_DIR, "SampleTypeUse.java")],
+          output_dir=tdir,
+          shared_header_files=["SampleTypeUse_shared_jni.h"],
+          unshared_header_files=["SampleTypeUse_jni.h"],
+          type_catalogs=[catalog1_path],
+          enable_safe_pointers=True)
+      with self.assertRaises(subprocess.CalledProcessError):
+        subprocess.check_call(options_partial.to_args(),
+                              stderr=subprocess.DEVNULL)
 
 
 def main():
