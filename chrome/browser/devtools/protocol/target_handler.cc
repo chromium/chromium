@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -170,6 +171,16 @@ protocol::Response TargetHandler::CreateTarget(
                        inner_url.SchemeIs(content::kChromeDevToolsScheme))) {
     return protocol::Response::ServerError(
         "Navigating to a URL with a privileged scheme is not allowed");
+  }
+
+  // Isolated Web Apps must be opened at their start_url with the requested URL
+  // routed via launchQueue. `windows.create` enforces this and
+  // `tabs.create`/`tabs.update`/`tabs.duplicate` reject `isolated-app://`
+  // outright; do the same here so an untrusted `chrome.debugger` client cannot
+  // deep-link an installed IWA to an arbitrary path.
+  if (!is_trusted_ && inner_url.SchemeIs(webapps::kIsolatedAppScheme)) {
+    return protocol::Response::ServerError(
+        "Navigating to an isolated-app:// URL is not allowed");
   }
 
   if (!may_read_local_files_ && inner_url.SchemeIsFile()) {
