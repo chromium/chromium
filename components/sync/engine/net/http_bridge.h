@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -89,7 +90,8 @@ class HttpBridge : public HttpPostProvider {
   void OnURLLoadCompleteInternal(int http_status_code,
                                  int net_error_code,
                                  const GURL& final_url,
-                                 std::optional<std::string> response_body);
+                                 std::optional<std::string> response_body)
+      EXCLUSIVE_LOCKS_REQUIRED(fetch_state_lock_);
 
   // Helper method to abort the request if we timed out.
   void OnURLLoadTimedOut();
@@ -155,7 +157,7 @@ class HttpBridge : public HttpPostProvider {
   // TODO(crbug.com/41390139): Check whether we can get rid of
   // `fetch_state_lock_` altogether after the migration to SimpleURLLoader.
   mutable base::Lock fetch_state_lock_;
-  URLFetchState fetch_state_;
+  URLFetchState fetch_state_ GUARDED_BY(fetch_state_lock_);
 
   std::unique_ptr<network::PendingSharedURLLoaderFactory>
       pending_url_loader_factory_;

@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/net/server_connection_manager.h"
@@ -186,9 +187,15 @@ class FakeConnectionManager : public ServerConnectionManager {
     store_birthday_ = new_birthday;
   }
 
-  void set_throttling(bool value) { throttling_ = value; }
+  void set_throttling(bool value) {
+    base::AutoLock lock(response_code_override_lock_);
+    throttling_ = value;
+  }
 
-  void set_partial_failure(bool value) { partial_failure_ = value; }
+  void set_partial_failure(bool value) {
+    base::AutoLock lock(response_code_override_lock_);
+    partial_failure_ = value;
+  }
 
   // Retrieve the number of GetUpdates requests that the mock server has
   // seen since the last time this function was called.  Can be used to
@@ -208,6 +215,7 @@ class FakeConnectionManager : public ServerConnectionManager {
 
   // Set partial failure date types.
   void SetPartialFailureTypes(DataTypeSet types) {
+    base::AutoLock lock(response_code_override_lock_);
     partial_failure_type_ = types;
   }
 
@@ -307,9 +315,9 @@ class FakeConnectionManager : public ServerConnectionManager {
   // The next id the mock will return to a commit.
   int next_new_id_ = 10000;
 
-  // The store birthday we send to the client.
-  std::string store_birthday_ = "Store BDay!";
   base::Lock store_birthday_lock_;
+  // The store birthday we send to the client.
+  std::string store_birthday_ GUARDED_BY(store_birthday_lock_) = "Store BDay!";
   bool store_birthday_sent_ = false;
 
   // On each PostBufferToPath() call, we decrement this counter.  The call fails
@@ -324,16 +332,14 @@ class FakeConnectionManager : public ServerConnectionManager {
   // The keystore key we return for a GetUpdates with need_encryption_key set.
   std::string keystore_key_;
 
+  base::Lock response_code_override_lock_;
+
   // Whether we are faking a server mandating clients to throttle requests.
-  // Protected by `response_code_override_lock_`.
-  bool throttling_ = false;
+  bool throttling_ GUARDED_BY(response_code_override_lock_) = false;
 
   // Whether we are faking a server mandating clients to partial failure
   // requests.
-  // Protected by `response_code_override_lock_`.
-  bool partial_failure_ = false;
-
-  base::Lock response_code_override_lock_;
+  bool partial_failure_ GUARDED_BY(response_code_override_lock_) = false;
 
   // True if we are only accepting GetUpdatesCallerInfo::PERIODIC requests.
   bool fail_non_periodic_get_updates_ = false;
@@ -343,7 +349,8 @@ class FakeConnectionManager : public ServerConnectionManager {
 
   DataTypeSet expected_filter_;
 
-  DataTypeSet partial_failure_type_;
+  DataTypeSet partial_failure_type_
+      GUARDED_BY(response_code_override_lock_);
 
   int num_get_updates_requests_ = 0;
 

@@ -146,6 +146,7 @@ class ShuntedHttpBridge : public HttpBridge {
   void CallOnURLFetchComplete() {
     ASSERT_TRUE(test_->GetIOThreadTaskRunner()->BelongsToCurrentThread());
 
+    base::AutoLock lock(fetch_state_lock_);
     // Set up a fake content response.
     OnURLLoadCompleteInternal(200, net::OK, GURL("http://www.google.com"),
                               "success!");
