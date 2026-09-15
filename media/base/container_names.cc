@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/numerics/byte_conversions.h"
 #include "media/base/bit_reader.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -202,60 +203,82 @@ static bool CheckEac3(base::span<const uint8_t> buffer) {
 // Additional checks for a BINK container.
 static bool CheckBink(base::span<const uint8_t> buffer) {
   // Reference: http://wiki.multimedia.cx/index.php?title=Bink_Container
-  RCHECK(buffer.size() >= 44);
+  base::SpanReader reader(buffer);
+
+  // Skip signature (4 bytes) and file size (4 bytes).
+  RCHECK(reader.Skip(8u));
 
   // Verify number of frames specified.
-  RCHECK(base::U32FromLittleEndian(buffer.subspan<8u, 4u>()) > 0);
+  uint32_t num_frames = 0;
+  RCHECK(reader.ReadU32LittleEndian(num_frames) && num_frames > 0);
+
+  // Skip to width at offset 20 (skip largest frame size, etc. - 8 bytes).
+  RCHECK(reader.Skip(8u));
 
   // Verify width in range.
-  uint32_t width = base::U32FromLittleEndian(buffer.subspan<20u, 4u>());
-  RCHECK(width > 0 && width <= 32767);
+  uint32_t width = 0;
+  RCHECK(reader.ReadU32LittleEndian(width) && width > 0 && width <= 32767);
 
   // Verify height in range.
-  uint32_t height = base::U32FromLittleEndian(buffer.subspan<24u, 4u>());
-  RCHECK(height > 0 && height <= 32767);
+  uint32_t height = 0;
+  RCHECK(reader.ReadU32LittleEndian(height) && height > 0 && height <= 32767);
 
   // Verify frames per second specified.
-  RCHECK(base::U32FromLittleEndian(buffer.subspan<28u, 4u>()) > 0);
+  uint32_t fps_div = 0;
+  RCHECK(reader.ReadU32LittleEndian(fps_div) && fps_div > 0);
 
   // Verify video frames per second specified.
-  RCHECK(base::U32FromLittleEndian(buffer.subspan<32u, 4u>()) > 0);
+  uint32_t fps_scale = 0;
+  RCHECK(reader.ReadU32LittleEndian(fps_scale) && fps_scale > 0);
+
+  // Skip flags (4 bytes).
+  RCHECK(reader.Skip(4u));
 
   // Number of audio tracks must be 256 or less.
-  return (base::U32FromLittleEndian(buffer.subspan<40u, 4u>()) <= 256);
+  uint32_t audio_tracks = 0;
+  return reader.ReadU32LittleEndian(audio_tracks) && audio_tracks <= 256;
 }
 
 // Additional checks for a CAF container.
 static bool CheckCaf(base::span<const uint8_t> buffer) {
   // Reference: Apple Core Audio Format Specification 1.0
   // (https://developer.apple.com/library/mac/#documentation/MusicAudio/Reference/CAFSpec/CAF_spec/CAF_spec.html)
-  RCHECK(buffer.size() >= 52);
-  BitReader reader(buffer);
+  base::SpanReader reader(buffer);
 
   // mFileType should be "caff".
-  RCHECK(ReadBits(&reader, 32) == TAG('c', 'a', 'f', 'f'));
+  uint32_t file_type = 0;
+  RCHECK(reader.ReadU32BigEndian(file_type) &&
+         file_type == TAG('c', 'a', 'f', 'f'));
 
   // mFileVersion should be 1.
-  RCHECK(ReadBits(&reader, 16) == 1);
+  uint16_t file_version = 0;
+  RCHECK(reader.ReadU16BigEndian(file_version) && file_version == 1);
 
   // Skip mFileFlags.
-  reader.SkipBits(16);
+  RCHECK(reader.Skip(2u));
 
   // First chunk should be Audio Description chunk, size 32l.
-  RCHECK(ReadBits(&reader, 32) == TAG('d', 'e', 's', 'c'));
-  RCHECK(ReadBits(&reader, 64) == 32);
+  uint32_t chunk_type = 0;
+  RCHECK(reader.ReadU32BigEndian(chunk_type) &&
+         chunk_type == TAG('d', 'e', 's', 'c'));
+  uint64_t chunk_size = 0;
+  RCHECK(reader.ReadU64BigEndian(chunk_size) && chunk_size == 32);
 
   // CAFAudioFormat.mSampleRate(float64) not 0
-  RCHECK(ReadBits(&reader, 64) != 0);
+  uint64_t sample_rate = 0;
+  RCHECK(reader.ReadU64BigEndian(sample_rate) && sample_rate != 0);
 
   // CAFAudioFormat.mFormatID not 0
-  RCHECK(ReadBits(&reader, 32) != 0);
+  uint32_t format_id = 0;
+  RCHECK(reader.ReadU32BigEndian(format_id) && format_id != 0);
 
   // Skip CAFAudioFormat.mBytesPerPacket and mFramesPerPacket.
-  reader.SkipBits(32 + 32);
+  RCHECK(reader.Skip(8u));
 
   // CAFAudioFormat.mChannelsPerFrame not 0
-  RCHECK(ReadBits(&reader, 32) != 0);
+  uint32_t channels_per_frame = 0;
+  RCHECK(reader.ReadU32BigEndian(channels_per_frame) &&
+         channels_per_frame != 0);
   return true;
 }
 
@@ -963,15 +986,15 @@ static bool CheckMpeg4BitStream(base::span<const uint8_t> buffer) {
 static bool CheckMov(base::span<const uint8_t> buffer) {
   // Reference: ISO/IEC 14496-12:2005(E).
   // (http://standards.iso.org/ittf/PubliclyAvailableStandards/c061988_ISO_IEC_14496-12_2012.zip)
-  RCHECK(buffer.size() > 8);
-
-  size_t offset = 0;
+  base::SpanReader reader(buffer);
   int valid_top_level_boxes = 0;
-  while (offset + 8 < buffer.size()) {
-    uint32_t atomsize =
-        base::U32FromBigEndian(buffer.subspan(offset).first<4u>());
-    uint32_t atomtype =
-        base::U32FromBigEndian(buffer.subspan(offset + 4u).first<4u>());
+  while (reader.remaining() >= 8) {
+    uint32_t atomsize = 0;
+    uint32_t atomtype = 0;
+    if (!reader.ReadU32BigEndian(atomsize) ||
+        !reader.ReadU32BigEndian(atomtype)) {
+      break;
+    }
 
     // Only need to check for atoms that are valid at the top level. However,
     // "Boxes with an unrecognized type shall be ignored and skipped." So
@@ -998,22 +1021,25 @@ static bool CheckMov(base::span<const uint8_t> buffer) {
         ++valid_top_level_boxes;
         break;
     }
+
+    size_t header_size = 8;
     if (atomsize == 1) {
       // Indicates that the length is the next 64bits.
-      if (offset + 16 > buffer.size()) {
-        break;
-      }
-      if (base::U32FromBigEndian(buffer.subspan(offset + 8u).first<4u>()) !=
-          0) {
+      uint32_t high_size = 0;
+      if (!reader.ReadU32BigEndian(high_size) || high_size != 0) {
         break;  // Offset is way past buffer size.
       }
-      atomsize =
-          base::U32FromBigEndian(buffer.subspan(offset + 12u).first<4u>());
+      if (!reader.ReadU32BigEndian(atomsize)) {
+        break;
+      }
+      header_size = 16;
     }
-    if (atomsize == 0 || atomsize > buffer.size()) {
+    if (atomsize < header_size || atomsize > buffer.size()) {
       break;  // Indicates the last atom or length too big.
     }
-    offset += atomsize;
+    if (!reader.Skip(atomsize - header_size)) {
+      break;
+    }
   }
   return valid_top_level_boxes >= 2;
 }
