@@ -239,6 +239,7 @@ class VerticalTabStripRegionView final
 
   void OnActiveTabChanged(const tabs::TabInterface* active_tab) override;
 
+  raw_ptr<views::View> content_area_view_ = nullptr;
   raw_ptr<VerticalTabStripTopContainer> top_button_container_ = nullptr;
   raw_ptr<views::Separator> top_button_separator_ = nullptr;
   raw_ptr<VerticalTabStripBottomContainer> bottom_button_container_ = nullptr;

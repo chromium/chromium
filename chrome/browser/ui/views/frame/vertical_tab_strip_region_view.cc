@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/shared/drop_arrow.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
@@ -73,6 +74,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -114,14 +116,15 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   const int region_horizontal_padding =
       GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
 
+  const auto default_flex =
+      views::FlexSpecification(views::LayoutOrientation::kVertical,
+                               views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kPreferred);
+
   flex_layout_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCollapseMargins(true)
-      .SetDefault(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::LayoutOrientation::kVertical,
-                                   views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kPreferred));
+      .SetDefault(views::kFlexBehaviorKey, default_flex);
   flex_layout_->SetInteriorMargin(gfx::Insets::TLBR(
       0, 0,
       GetLayoutConstant(
@@ -135,14 +138,31 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   top_button_container_->SetProperty(
       views::kMarginsKey, gfx::Insets::VH(0, region_horizontal_padding));
 
-  top_button_separator_ = AddChildView(std::make_unique<views::Separator>());
+  views::View* content_parent = this;
+  if (organizer_panel::ShouldShowOrganizerPanelInVerticalTabStrip()) {
+    auto content_area_view = std::make_unique<views::FlexLayoutView>();
+    content_area_view->SetOrientation(views::LayoutOrientation::kVertical);
+    content_area_view->SetCollapseMargins(true);
+    content_area_view->SetDefault(views::kFlexBehaviorKey, default_flex);
+    content_area_view->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(content_area_view->GetDefaultFlexRule()));
+    content_area_view_ = AddChildView(std::move(content_area_view));
+    content_parent = content_area_view_;
+  }
+
+  // --------------
+  // Views that go into the content parent below
+
+  top_button_separator_ =
+      content_parent->AddChildView(std::make_unique<views::Separator>());
   // The TopContainer handles the padding distance to the separator so that we
   // can control how far it is in the various states.
   top_button_separator_->SetProperty(
       views::kMarginsKey, gfx::Insets::VH(0, region_horizontal_padding));
 
-  bottom_button_container_ =
-      AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
+  bottom_button_container_ = content_parent->AddChildView(
+      std::make_unique<VerticalTabStripBottomContainer>(
           state_controller_, root_action_item, browser_view->browser(),
           base::BindRepeating(
               &VerticalTabStripRegionView::RecordNewTabButtonPressed,
@@ -158,7 +178,11 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
               LayoutConstant::kVerticalTabStripCollapsedVerticalPadding),
           region_horizontal_padding, 0, region_horizontal_padding));
 
-  gemini_button_ = AddChildView(std::make_unique<views::View>());
+  gemini_button_ =
+      content_parent->AddChildView(std::make_unique<views::View>());
+
+  // Views that go into the content parent above
+  // --------------
 
   resize_area_ = AddChildView(std::make_unique<views::ResizeArea>(this));
   resize_area_->SetProperty(views::kViewIgnoredByLayoutKey, true);
@@ -297,18 +321,18 @@ bool VerticalTabStripRegionView::IsPositionInWindowCaption(
 
   // For any of the other children, absorb the click as non window caption.
   for (views::View* child : children()) {
-    if (!child->GetVisible()) {
-      continue;
-    }
-
-    gfx::Point point_in_child = point;
-    views::View::ConvertPointToTarget(this, child, &point_in_child);
-    if (child->HitTestPoint(point_in_child)) {
+    if (child == content_area_view_) {
+      for (views::View* grandchild : child->children()) {
+        if (grandchild->GetVisible() && IsHitInView(grandchild, point)) {
+          return false;
+        }
+      }
+    } else if (child->GetVisible() && IsHitInView(child, point)) {
       return false;
     }
   }
 
-  // If the click doesnt fall under any view,then it counts as window caption.
+  // If the click doesn't fall under any view,then it counts as window caption.
   return true;
 }
 
@@ -722,9 +746,12 @@ void VerticalTabStripRegionView::AddTabStripView(
               LayoutConstant::kVerticalTabStripCollapsedVerticalPadding),
           0));
 
-  std::optional<size_t> separator_index = GetIndexOf(top_button_separator_);
+  views::View* const content_parent =
+      content_area_view_ ? content_area_view_.get() : this;
+  std::optional<size_t> separator_index =
+      content_parent->GetIndexOf(top_button_separator_);
   CHECK(separator_index.has_value());
-  AddChildViewAt(std::move(view), separator_index.value() + 1);
+  content_parent->AddChildViewAt(std::move(view), separator_index.value() + 1);
 
   // Pre-set the animation values to the appropriate state.
   auto* const animation_controller =
@@ -755,7 +782,7 @@ std::unique_ptr<views::View> VerticalTabStripRegionView::RemoveTabStripView(
   omnibox_tab_helper_observation_.Reset();
   ResetExpandOnHoverTimers();
   is_expanded_on_hover_ = false;
-  return RemoveChildViewT(view);
+  return BaseTabStripRegionView::RemoveTabStripView(view);
 }
 
 void VerticalTabStripRegionView::OnCollapseStateChanged(

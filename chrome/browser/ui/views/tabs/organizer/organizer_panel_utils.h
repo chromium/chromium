@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_UTILS_H_
 
+#include "base/feature.h"
 #include "base/feature_list.h"
 
 namespace organizer_panel {
 
 BASE_DECLARE_FEATURE(kOrganizerPanel);
+BASE_DECLARE_FEATURE_PARAM(bool, kOrganizerPanelInVerticalTabStrip);
 BASE_DECLARE_FEATURE(kShowExtensionsSidePanelUiInOrganizerPanel);
 
 // Returns whether the Organizer Panel feature is enabled.
@@ -18,6 +20,10 @@ bool IsOrganizerPanelFeatureEnabled();
 // Returns whether the Show Extensions Side Panel UI In Organizer Panel feature
 // is enabled.
 bool IsShowExtensionsSidePanelUiInOrganizerPanelEnabled();
+
+// Returns whether the organizer panel should be shown in the vertical tab
+// strip.
+bool ShouldShowOrganizerPanelInVerticalTabStrip();
 
 }  // namespace organizer_panel
 
