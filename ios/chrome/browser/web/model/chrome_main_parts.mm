@@ -29,6 +29,7 @@
 #import "build/blink_buildflags.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/crash/core/common/crash_key.h"
+#import "components/crash/core/common/crash_keys.h"
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/memory_system/initializer.h"
 #import "components/memory_system/parameters.h"
@@ -180,7 +181,11 @@ void IOSChromeMainParts::ApplyFeatureList() {
 
   flags_ui::PrefServiceFlagsStorage flags_storage(
       application_context_->GetLocalState());
-  ConvertFlagsToSwitches(&flags_storage, command_line);
+  // Record command line switches and features in crash keys after flags are
+  // converted to switches, before field trials are initialized.
+  crash_keys::SetFeaturesFromCommandLine(*command_line);
+  crash_keys::SetSwitchesFromCommandLine(*command_line,
+                                         &crash_keys::IsDefaultBoringSwitch);
 
   // Now that the command line has been mutated based on about:flags, we can
   // initialize field trials. The field trials are needed by IOThread's

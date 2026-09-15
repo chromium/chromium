@@ -10,17 +10,14 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/format_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/crash/core/common/crash_keys.h"
-#include "components/webui/flags/flags_ui_switches.h"
 #include "content/public/common/content_switches.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -39,84 +36,15 @@ namespace {
 
 constexpr std::string_view kStringAnnotationsSwitch = "string-annotations";
 
-// A convenient wrapper around a crash key and its name.
-//
-// The CrashKey contract requires that CrashKeyStrings are never
-// moved, copied, or deleted (see
-// third_party/crashpad/crashpad/client/annotation.h); since this class holds
-// a CrashKeyString, it likewise cannot be moved, copied, or deleted.
-class CrashKeyWithName {
- public:
-  explicit CrashKeyWithName(std::string name)
-      : name_(std::move(name)), crash_key_(name_.c_str()) {}
-  CrashKeyWithName(const CrashKeyWithName&) = delete;
-  CrashKeyWithName& operator=(const CrashKeyWithName&) = delete;
-  CrashKeyWithName(CrashKeyWithName&&) = delete;
-  CrashKeyWithName& operator=(CrashKeyWithName&&) = delete;
-  ~CrashKeyWithName() = delete;
-
-  std::string_view Name() const { return name_; }
-  std::string_view Value() const { return crash_key_.value(); }
-  void Clear() { crash_key_.Clear(); }
-  void Set(std::string_view value) { crash_key_.Set(value); }
-
- private:
-  std::string name_;
-  crash_reporter::CrashKeyString<64> crash_key_;
-};
-
-void SplitAndPopulateCrashKeys(std::deque<CrashKeyWithName>& crash_keys,
-                               std::string_view comma_separated_feature_list,
-                               std::string crash_key_name_prefix) {
-  // Crash keys are indestructable so we can not simply empty the deque.
-  // Instead we must keep the previous crash keys alive and clear their values.
-  for (CrashKeyWithName& crash_key : crash_keys)
-    crash_key.Clear();
-
-  auto features =
-      base::SplitString(comma_separated_feature_list, ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  for (size_t i = 0; i < features.size(); i++) {
-    if (crash_keys.size() <= i) {
-      crash_keys.emplace_back(base::StringPrintf(
-          "%s-%" PRIuS, crash_key_name_prefix.c_str(), i + 1));
-    }
-
-    CrashKeyWithName& crash_key = crash_keys[i];
-    crash_key.Set(features[i]);
-  }
-}
-
-// --enable-features and --disable-features often contain a long list not
-// fitting into 64 bytes, hiding important information when analysing crashes.
-// Therefore they are separated out in a list of CrashKeys, one for each enabled
-// or disabled feature.
-// They are also excluded from the default "switches".
-void HandleEnableDisableFeatures(const base::CommandLine& command_line) {
-  static base::NoDestructor<std::deque<CrashKeyWithName>>
-      enabled_features_crash_keys;
-  static base::NoDestructor<std::deque<CrashKeyWithName>>
-      disabled_features_crash_keys;
-
-  SplitAndPopulateCrashKeys(
-      *enabled_features_crash_keys,
-      command_line.GetSwitchValueASCII(switches::kEnableFeatures),
-      "commandline-enabled-feature");
-
-  SplitAndPopulateCrashKeys(
-      *disabled_features_crash_keys,
-      command_line.GetSwitchValueASCII(switches::kDisableFeatures),
-      "commandline-disabled-feature");
-}
-
 // Return true if we DON'T want to upload this flag to the crash server.
 bool IsBoringSwitch(const std::string& flag) {
+  if (crash_keys::IsDefaultBoringSwitch(flag)) {
+    return true;
+  }
+
   static const auto kIgnoreSwitches = std::to_array<std::string_view>({
       kStringAnnotationsSwitch,
       switches::kEnableLogging,
-      switches::kFlagSwitchesBegin,
-      switches::kFlagSwitchesEnd,
       switches::kLoggingLevel,
       switches::kProcessType,
       switches::kV,
@@ -125,8 +53,6 @@ bool IsBoringSwitch(const std::string& flag) {
       // anyways. Should be switches::kGpuPreferences but we run into linking
       // errors on Windows if we try to use that directly.
       "gpu-preferences",
-      switches::kEnableFeatures,
-      switches::kDisableFeatures,
 #if BUILDFLAG(IS_MAC)
       switches::kMetricsClientID,
 #elif BUILDFLAG(IS_CHROMEOS)
@@ -217,7 +143,7 @@ void AppendStringAnnotationsCommandLineSwitch(base::CommandLine* command_line) {
 
 void SetCrashKeysFromCommandLine(const base::CommandLine& command_line) {
   SetStringAnnotations(command_line);
-  HandleEnableDisableFeatures(command_line);
+  SetFeaturesFromCommandLine(command_line);
   SetSwitchesFromCommandLine(command_line, &IsBoringSwitch);
 
 #if BUILDFLAG(IS_WIN)

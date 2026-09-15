@@ -4,16 +4,19 @@
 
 #include "components/crash/core/common/crash_keys.h"
 
+#include <algorithm>
 #include <array>
 #include <deque>
 #include <string_view>
 #include <vector>
 
+#include "base/base_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -99,13 +102,98 @@ void SetSwitchesFromCommandLine(const base::CommandLine& command_line,
   }
 
   // Clear any remaining switches.
-  for (; key_i < GetSwitchesCrashKeys().size(); ++key_i)
+  for (; key_i < GetSwitchesCrashKeys().size(); ++key_i) {
     GetSwitchesCrashKeys()[key_i].Clear();
+  }
+}
+
+CrashKeyWithName::CrashKeyWithName(std::string name)
+    : name_(std::move(name)), crash_key_(name_.c_str()) {}
+
+// --enable-features and --disable-features often contain a long list not
+// fitting into 64 bytes, hiding important information when analysing crashes.
+// Therefore they are separated out in a list of CrashKeys, one for each
+// enabled or disabled feature.
+// They are also excluded from the default "switches".
+namespace {
+
+using FeaturesCrashKeys = std::deque<CrashKeyWithName>;
+
+FeaturesCrashKeys& GetEnabledFeaturesCrashKeys() {
+  static base::NoDestructor<FeaturesCrashKeys> enabled_features_keys;
+  return *enabled_features_keys;
+}
+
+FeaturesCrashKeys& GetDisabledFeaturesCrashKeys() {
+  static base::NoDestructor<FeaturesCrashKeys> disabled_features_keys;
+  return *disabled_features_keys;
+}
+
+void SplitAndPopulateFeatureCrashKeys(
+    FeaturesCrashKeys& crash_keys,
+    std::string_view comma_separated_feature_list,
+    std::string_view crash_key_name_prefix) {
+  // Crash keys are indestructible so we cannot simply empty the deque.
+  // Instead we must keep the previous crash keys alive and clear their values.
+  for (CrashKeyWithName& crash_key : crash_keys) {
+    crash_key.Clear();
+  }
+
+  std::vector<std::string_view> features =
+      base::SplitStringPiece(comma_separated_feature_list, ",",
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (size_t i = 0; i < features.size(); ++i) {
+    if (crash_keys.size() <= i) {
+      crash_keys.emplace_back(base::StrCat(
+          {crash_key_name_prefix, "-", base::NumberToString(i + 1)}));
+    }
+    crash_keys[i].Set(features[i]);
+  }
+}
+
+}  // namespace
+
+void SetFeaturesFromCommandLine(const base::CommandLine& command_line) {
+  SplitAndPopulateFeatureCrashKeys(
+      GetEnabledFeaturesCrashKeys(),
+      command_line.GetSwitchValueASCII(switches::kEnableFeatures),
+      "commandline-enabled-feature");
+
+  SplitAndPopulateFeatureCrashKeys(
+      GetDisabledFeaturesCrashKeys(),
+      command_line.GetSwitchValueASCII(switches::kDisableFeatures),
+      "commandline-disabled-feature");
+}
+
+bool IsDefaultBoringSwitch(const std::string& flag) {
+  static const auto kIgnoreSwitches = std::to_array<std::string_view>({
+      switches::kEnableFeatures,
+      switches::kDisableFeatures,
+      // Specified as raw strings to avoid a dependency on
+      // //components/webui/flags.
+      "flag-switches-begin",
+      "flag-switches-end",
+  });
+
+  if (!base::StartsWith(flag, "--", base::CompareCase::SENSITIVE)) {
+    return false;
+  }
+  size_t end = flag.find('=');
+  std::string_view switch_name = std::string_view(flag).substr(
+      2, end == std::string::npos ? std::string::npos : end - 2);
+  return std::ranges::contains(kIgnoreSwitches, switch_name);
 }
 
 void ResetCommandLineForTesting() {
   num_switches_key.Clear();
   for (auto& key : GetSwitchesCrashKeys()) {
+    key.Clear();
+  }
+  for (auto& key : GetEnabledFeaturesCrashKeys()) {
+    key.Clear();
+  }
+  for (auto& key : GetDisabledFeaturesCrashKeys()) {
     key.Clear();
   }
 }

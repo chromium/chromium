@@ -126,10 +126,12 @@ static_library("crash_key_utils") {
     "crash_keys.h",
   ]
 
-  deps = [
+  public_deps = [
+    ":crash_buildflags",
     ":crash_key",
-    "//base",
   ]
+
+  deps = [ "//base" ]
 }
 
 if (is_apple) {
