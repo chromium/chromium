@@ -260,7 +260,8 @@
   }
 }
 
-- (void)toggleProgressUpdates {
+- (BOOL)toggleProgressUpdates {
+  CHECK(_prefService);
   BOOL oldValue = _prefService->GetBoolean(prefs::kLevelUpUIEnabled);
   BOOL newValue = !oldValue;
   _prefService->SetBoolean(prefs::kLevelUpUIEnabled, newValue);
@@ -268,6 +269,7 @@
           respondsToSelector:@selector(setProgressUpdatesEnabled:)]) {
     [self.consumer setProgressUpdatesEnabled:newValue];
   }
+  return newValue;
 }
 
 - (void)turnOffLevelUp {

@@ -137,7 +137,14 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 }
 
 - (void)didTapToggleProgressUpdates:(LevelUpViewController*)controller {
-  [self.mediator toggleProgressUpdates];
+  BOOL enabled = [self.mediator toggleProgressUpdates];
+  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  int messageId = enabled ? IDS_IOS_LEVEL_UP_PROGRESS_UPDATES_ENABLED_SNACKBAR
+                          : IDS_IOS_LEVEL_UP_PROGRESS_UPDATES_DISABLED_SNACKBAR;
+  SnackbarMessage* snackbarMessage =
+      [[SnackbarMessage alloc] initWithTitle:l10n_util::GetNSString(messageId)];
+  [snackbarHandler showSnackbarMessage:snackbarMessage];
 }
 
 - (void)didTapTurnOffLevelUp:(LevelUpViewController*)controller {

@@ -4699,6 +4699,12 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_PRODUCTIVITY_TITLE" desc="Title for the Level Up productivity category card in the Magic Stack. [iOS only]">
         Explore more ways to get organized and save time
       </message>
+      <message name="IDS_IOS_LEVEL_UP_PROGRESS_UPDATES_DISABLED_SNACKBAR" desc="Snackbar message displayed when the user turns off Level Up progress updates. [iOS only]">
+        You won't receive updates when you progress in Level Up
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_PROGRESS_UPDATES_ENABLED_SNACKBAR" desc="Snackbar message displayed when the user turns on Level Up progress updates. [iOS only]">
+        You'll receive updates when you progress in Level Up
+      </message>
       <message name="IDS_IOS_LEVEL_UP_PROMO_CONTENT_1" desc="Text for the Level Up promo content checklist item 1. [iOS only]">
         Get organized and save time
       </message>
