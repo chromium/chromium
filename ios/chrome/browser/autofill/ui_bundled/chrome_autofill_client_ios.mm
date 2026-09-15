@@ -61,6 +61,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autofill/atmemory/model/ios_at_memory_query_service_factory.h"
+#import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/model/address_normalizer_factory.h"
@@ -555,6 +556,13 @@ void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
 void ChromeAutofillClientIOS::HideSuggestions(
     SuggestionHidingReason reason,
     std::optional<FillingProduct> product) {
+  if (!product || product == FillingProduct::kAtMemory) {
+    [at_memory_handler_ dismissAtMemory];
+    if (product == FillingProduct::kAtMemory) {
+      return;
+    }
+  }
+
   // If a `product` filter is specified, only hide if it matches the active
   // popup.
   if (product && active_suggestion_delegate_ &&

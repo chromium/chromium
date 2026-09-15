@@ -358,10 +358,10 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
   [self stopManualFillAllPasswordCoordinator];
 
   [self dismissAlertCoordinator];
-  [self dismissAtMemory];
 }
 
 - (void)stopChildren {
+  [self dismissAtMemory];
   _formInputAccessoryMediator.formInputInteractionDelegate = nil;
   for (ChromeCoordinator* coordinator in self.childCoordinators) {
     [coordinator stop];

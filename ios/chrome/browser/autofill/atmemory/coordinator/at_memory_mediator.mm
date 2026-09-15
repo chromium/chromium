@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/at_memory/at_memory_manager.h"
+#import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
@@ -20,6 +21,8 @@ using autofill::AtMemoryManager;
 using autofill::BrowserAutofillManager;
 using autofill::FieldGlobalId;
 using autofill::FormGlobalId;
+using autofill::FormStructure;
+using autofill::IsAsync;
 using autofill::IsSpiiMemoryDataType;
 using autofill::Suggestion;
 
@@ -76,10 +79,10 @@ using autofill::Suggestion;
 - (void)fillWithSuggestion:(const Suggestion&)suggestion {
   const Suggestion::AtMemoryPayload* payload =
       std::get_if<Suggestion::AtMemoryPayload>(&suggestion.payload);
-  bool is_obfuscated =
+  bool isObfuscated =
       payload && IsSpiiMemoryDataType(payload->memory_data_type);
 
-  if (is_obfuscated) {
+  if (isObfuscated) {
     [self fillObfuscatedSuggestion:suggestion];
   } else {
     NSString* value = nil;
@@ -98,13 +101,19 @@ using autofill::Suggestion;
   if (!_atMemoryManager || !_autofillManager) {
     return;
   }
-  _atMemoryManager->FillSearchResult(
+
+  const FormStructure* form = _autofillManager->FindCachedFormById(_fieldId);
+  FormGlobalId formId = form ? form->global_id() : FormGlobalId();
+
+  IsAsync isAsync = _atMemoryManager->FillSearchResult(
       /*bam=*/*_autofillManager,
-      /*form_id=*/FormGlobalId(),
+      /*form_id=*/formId,
       /*field_id=*/_fieldId,
       /*suggestion=*/suggestion,
       /*metadata=*/{});
-  [self.atMemoryHandler dismissAtMemory];
+  if (!isAsync.value()) {
+    [self.atMemoryHandler dismissAtMemory];
+  }
 }
 
 @end

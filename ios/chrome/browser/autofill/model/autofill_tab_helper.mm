@@ -36,6 +36,7 @@ void AutofillTabHelper::SetCommandHandlers(
     id<AtMemoryCommands> at_memory_handler) {
   snackbar_handler_ = snackbar_handler;
   at_memory_handler_ = at_memory_handler;
+  autofill_client_->set_at_memory_handler(at_memory_handler);
   UpdateAutofillAgentDelegate();
 }
 
