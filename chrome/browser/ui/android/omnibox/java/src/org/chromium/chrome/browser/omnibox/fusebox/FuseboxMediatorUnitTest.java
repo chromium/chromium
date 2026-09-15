@@ -3025,10 +3025,18 @@ public class FuseboxMediatorUnitTest {
         recreateMediator();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
 
+        var watcher1 =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AccordionToggled", true);
         mModel.get(FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
+        watcher1.assertExpected();
 
+        var watcher2 =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AccordionToggled", false);
         mModel.get(FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED).run();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED));
+        watcher2.assertExpected();
     }
 }

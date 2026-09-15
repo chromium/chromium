@@ -2764,6 +2764,28 @@ Keep consistent with active providers. Doesn't need to include every provider in
       variants="OmniboxAutocompleteUpdateSlice"/>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.AccordionExpandedInSession"
+    enum="Boolean" expires_after="2027-10-01">
+  <owner>peterkang@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whether the accordion in the Fusebox popup was expanded at least
+    once during an omnibox session. Recorded when the omnibox session ends only
+    if the accordion was shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.AccordionToggled" enum="Boolean"
+    expires_after="2027-10-01">
+  <owner>peterkang@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whether the accordion in the Fusebox popup was expanded (true) or
+    collapsed (false). Recorded when the user clicks the 'More Options' chevron
+    button.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.AiModeActivationSource"
     enum="AiModeActivationSource" expires_after="2027-10-01">
   <owner>pnoland@google.com</owner>

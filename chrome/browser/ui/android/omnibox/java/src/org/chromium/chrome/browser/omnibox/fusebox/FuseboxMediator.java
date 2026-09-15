@@ -1423,8 +1423,10 @@ import java.util.function.Supplier;
 
     private void onMoreOptionsClicked() {
         if (!isInInputSession()) return;
-        boolean expanded = mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED);
-        mModel.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, !expanded);
+        boolean wasExpanded = mModel.get(FuseboxProperties.POPUP_ACCORDION_EXPANDED);
+        boolean expanded = !wasExpanded;
+        mModel.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, expanded);
+        mMetrics.notifyAccordionToggled(expanded);
     }
 
     void selectFirstAttachment() {
