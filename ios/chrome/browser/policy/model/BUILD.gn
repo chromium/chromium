@@ -259,27 +259,40 @@ source_set("test_support") {
     "enterprise_policy_test_helper.h",
     "profile_policy_connector_mock.h",
     "profile_policy_connector_mock.mm",
+    "reporting/real_time_event_uploader_ios_test_base.h",
+    "reporting/real_time_event_uploader_ios_test_base.mm",
     "test_platform_policy_provider.cc",
     "test_platform_policy_provider.h",
   ]
 
   deps = [
     "//base",
+    "//components/enterprise",
+    "//components/enterprise:test_support",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
+    "//components/policy/proto",
     "//components/pref_registry",
     "//components/prefs",
     "//components/sync_preferences",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy_url_blocking/model",
     "//ios/chrome/browser/prefs/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//services/network:test_support",
   ]
 
   public_deps = [
     "//components/policy/core/common:test_support",
     "//testing/gmock",
+    "//testing/gtest",
   ]
 }
 
