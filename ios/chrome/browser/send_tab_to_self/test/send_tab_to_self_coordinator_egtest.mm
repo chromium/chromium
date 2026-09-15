@@ -46,11 +46,15 @@ ElementSelector* UsernameElement() {
   return [ElementSelector selectorWithElementID:"username"];
 }
 
+// Dismisses the snackbar and waits for it to disappear to prevent animations
+// from bleeding into subsequent tests.
 void DismissSnackbar() {
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       chrome_test_util::SnackbarViewMatcher()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
       performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::SnackbarViewMatcher()];
 }
 
 // Returns a matcher for a snackbar displaying `message`.
@@ -311,6 +315,8 @@ void DismissSendTabToSelfModal() {
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       SnackbarWithMessageAndSubtext(snackbarMessage,
                                                     fakeIdentity.userEmail)];
+
+  DismissSnackbar();
 }
 
 // Tests that sending a tab to a target device captures the text fragment
@@ -386,6 +392,8 @@ void DismissSendTabToSelfModal() {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:SnackbarWithMessage(
                                                        errorSnackbarMessage)];
+
+  DismissSnackbar();
 }
 
 // Tests that a text fragment is correctly consumed and scrolls the page
@@ -875,6 +883,8 @@ void DismissSendTabToSelfModal() {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:SnackbarWithMessage(
                                                        snackbarMessage)];
+
+  DismissSnackbar();
 }
 
 @end
