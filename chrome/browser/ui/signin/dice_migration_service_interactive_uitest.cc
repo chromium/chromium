@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/signin/dice_migration_service.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -10,11 +12,11 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/signin/dice_migration_service_factory.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -54,6 +56,11 @@ class DiceMigrationServiceForcedMigrationInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   Profile* GetProfile() { return browser()->GetProfile(); }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    WaitForInitialWebUIToolbar(browser());
+  }
 
   DiceMigrationService* GetDiceMigrationService() {
     DiceMigrationService* service =
@@ -178,10 +185,9 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
 
       // Navigate to another page.
       NavigateWebContents(kActiveTab, GURL(chrome::kChromeUIVersionURL)),
-      FocusWebContents(kActiveTab),
 
       // The toast should still be visible.
-      EnsurePresent(toasts::ToastView::kToastViewId));
+      WaitForShow(toasts::ToastView::kToastViewId));
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
