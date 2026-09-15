@@ -8,6 +8,8 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
+import("//build/win/basic_api_shim.gni")
+import("//build/win/redirect_imports.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//components/vrp_flags/features.gni")
@@ -1852,6 +1854,11 @@ test("content_browsertests") {
 
   if (is_win) {
     sources += [ "../browser/network/sandboxed_socket_broker_browsertest.cc" ]
+    if (is_basic_api_shim) {
+      sources += [
+        "../browser/service_host/basic_process_echo_service_browsertest_win.cc",
+      ]
+    }
   }
 
   if (enable_reporting) {
@@ -2182,6 +2189,13 @@ test("content_browsertests") {
       "//third_party/isimpledom",
       "//ui/strings:auto_image_annotation_strings",
     ]
+    if (is_basic_api_shim) {
+      deps += [
+        "//sandbox/policy",
+        "//sandbox/policy/mojom",
+      ]
+      data_deps += [ ":basic_process_echo_service_fixture" ]
+    }
 
     data_deps += [ "//services/test/echo:echo_preload_library" ]
 
@@ -2477,6 +2491,33 @@ test("content_browsertests") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (is_win && is_basic_api_shim) {
+  # BasicProcessEchoServiceBrowserTest audits a single unsandboxed utility
+  # child. The child is a copy of content_shell.exe whose imports are bound to
+  # the logging shim; content_shell already registers EchoService for utility
+  # processes, so no test-only child entry point is needed. The rewrite fails
+  # if the shim does not export every redirected import.
+  redirect_imports("redirect_basic_process_echo_service") {
+    testonly = true
+    input = "$root_out_dir/content_shell.exe"
+    output = "$root_out_dir/basic_process_echo_service.exe"
+    import_dll_name = "apifw"
+    deps = [
+      "//content/shell:content_shell",
+      "//sandbox/win/tests/basic_process:apifw",
+    ]
+  }
+
+  group("basic_process_echo_service_fixture") {
+    testonly = true
+    data = [ "$root_out_dir/basic_process_echo_service.exe" ]
+    deps = [
+      ":redirect_basic_process_echo_service",
+      "//sandbox/win/tests/basic_process:apifw",
+    ]
+  }
 }
 
 grit("web_ui_mojo_test_resources") {

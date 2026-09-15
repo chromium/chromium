@@ -2684,6 +2684,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/fuchsia/starview/run_cuttlefish_test.pydeps',
     'build/fuchsia/test/component_storage_test.pydeps',
     'build/protoc_java.pydeps',
+    'build/win/redirect_imports.pydeps',
     'chrome/browser/resources/glic/glic_api_impl/generate_impl/parse.pydeps',
     'chrome/test/chromedriver/log_replay/client_replay_unittest.pydeps',
     'chrome/test/chromedriver/test/run_py_tests.pydeps',

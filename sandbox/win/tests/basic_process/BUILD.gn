@@ -1,0 +1,112 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/win/basic_api_shim.gni")
+
+if (is_win && is_basic_api_shim) {
+  # Test-only apifw.dll used by the Basic Process EchoService fixture.
+  shared_library("apifw") {
+    testonly = true
+    output_name = "apifw"
+    no_default_deps = true
+    configs -= [
+      "//build/config:default_libs",
+      "//build/config/clang:find_bad_constructs",
+      "//build/config/coverage:default_coverage",
+      "//build/config/sanitizers:default_sanitizer_flags",
+    ]
+    ldflags = [
+      "/ENTRY:DllEntryPoint",
+      "/NODEFAULTLIB:shell32.lib",
+      "/NODEFAULTLIB:dbghelp.lib",
+      "/NODEFAULTLIB:winmm.lib",
+      "/NODEFAULTLIB:advapi32.lib",
+      "/NODEFAULTLIB:kernel32.lib",
+      "/errorlimit:100",
+    ]
+    cflags = [ "/GS-" ]
+    sources = [
+      "nocrt.cc",
+      "nocrt.h",
+      "shim/bcryptprimitives_declarations.h",
+      "shim/dll_main.cc",
+      "shim/dwrite_declarations.h",
+      "shim/exports_logging.def",
+      "shim/logging.cc",
+      "shim/logging.h",
+      "shim/ntdll_declarations.h",
+      "shim/shim_runtime.h",
+      "shim/thunks_loader.cc",
+      "shim/thunks_modified.cc",
+      "shim/thunks_notreached.cc",
+      "shim/thunks_unsupported.cc",
+    ]
+    public_deps = [ ":kernel32" ]
+    deps = [
+      ":audit_allowlist_coverage",
+      ":check_thunk_exports",
+    ]
+  }
+
+  # Defines the import library for the Basic Process-compatible kernel32
+  # surface. The DLL output is unused by the test fixture.
+  shared_library("kernel32") {
+    testonly = true
+    output_name = "kernel32_shim"
+    sources = [ "shim/kernel32_importlib.def" ]
+  }
+
+  action("audit_allowlist_coverage") {
+    testonly = true
+    script = "tools/audit_allowlist_coverage.py"
+    inputs = [
+      "basic_sandbox.def",
+      "shim/exports_logging.def",
+      "tools/def_parser.py",
+    ]
+    _stamp = "$target_gen_dir/allowlist_coverage.stamp"
+    outputs = [ _stamp ]
+    args = [
+      "--allowlist",
+      rebase_path("basic_sandbox.def", root_build_dir),
+      "--logging-def",
+      rebase_path("shim/exports_logging.def", root_build_dir),
+      "--stamp",
+      rebase_path(_stamp, root_build_dir),
+    ]
+  }
+
+  action("check_thunk_exports") {
+    testonly = true
+    script = "tools/check_thunk_exports.py"
+    inputs = [
+      "shim/exports_logging.def",
+      "shim/thunks_loader.cc",
+      "shim/thunks_modified.cc",
+      "shim/thunks_notreached.cc",
+      "shim/thunks_unsupported.cc",
+      "tools/def_parser.py",
+    ]
+    _stamp = "$target_gen_dir/thunk_exports.stamp"
+    outputs = [ _stamp ]
+    args = [
+      "--logging-def",
+      rebase_path("shim/exports_logging.def", root_build_dir),
+    ]
+    foreach(_source,
+            inputs - [
+                  "shim/exports_logging.def",
+                  "tools/def_parser.py",
+                ]) {
+      args += [
+        "--source",
+        rebase_path(_source, root_build_dir),
+      ]
+    }
+    args += [
+      "--stamp",
+      rebase_path(_stamp, root_build_dir),
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+
+# Rewrites a PE image's imports through a forwarding DLL.
+#
+# The forwarding DLL is read from "$root_out_dir/<import_dll_name>.dll", and
+# every redirected import must resolve against its export table. List both the
+# target that builds the input image and the one that builds the forwarding
+# DLL in `deps`.
+#
+# Parameters:
+#   input: Input PE image.
+#   output: Rewritten PE image.
+#   import_dll_name: Forwarding DLL basename without its extension.
+#   deps: Targets that build the input image and the forwarding DLL.
+#   skip_list (optional): List of DLL names to preserve.
+#   related_file (optional): Explicit sidecar input to copy unchanged.
+template("redirect_imports") {
+  action_with_pydeps(target_name) {
+    if (defined(invoker.testonly)) {
+      testonly = invoker.testonly
+    }
+
+    _import_dll = "$root_out_dir/${invoker.import_dll_name}.dll"
+
+    script = "//build/win/redirect_imports.py"
+    inputs = [
+      invoker.input,
+      _import_dll,
+    ]
+    outputs = [ invoker.output ]
+    args = [
+      "--input-image",
+      rebase_path(invoker.input, root_build_dir),
+      "--output-image",
+      rebase_path(invoker.output, root_build_dir),
+      "--architecture",
+      current_cpu,
+      "--import-dll",
+      rebase_path(_import_dll, root_build_dir),
+    ]
+
+    if (defined(invoker.related_file)) {
+      _related_name = get_path_info(invoker.related_file, "file")
+      _output_dir = get_path_info(invoker.output, "dir")
+      inputs += [ invoker.related_file ]
+      outputs += [ "$_output_dir/$_related_name" ]
+      args += [
+        "--related-file",
+        rebase_path(invoker.related_file, root_build_dir),
+      ]
+    }
+
+    if (defined(invoker.skip_list)) {
+      foreach(_skip, invoker.skip_list) {
+        args += [
+          "--skip",
+          _skip,
+        ]
+      }
+    }
+
+    deps = invoker.deps
+  }
+}

@@ -1,0 +1,313 @@
+; Copyright 2026 The Chromium Authors
+; Use of this source code is governed by a BSD-style license that can be
+; found in the LICENSE file.
+;
+; Basic-process API allowlist.
+;
+; This is the in-repo source of truth for the set of Windows APIs that are
+; reachable inside the basic process. It drives two generated/audited outputs
+; (see sandbox/win/tests/basic_process/tools/):
+;
+;   * audit_allowlist_coverage.py verifies at build time that the routing in
+;     shim/exports_logging.def agrees with this allowlist: every name that is
+;     direct-forwarded there (silently, unlogged) must appear below, and no
+;     name below may be routed to the ApifwNotReached crash-sink. The build
+;     fails if the two files drift. (The allowlist is a superset: a name may
+;     appear below without being exported by apifw.dll if chrome.dll never
+;     imports it.)
+
+;
+; Error
+;
+    GetLastError
+    SetLastError
+
+;
+; Vectored exception handling
+;
+    AddVectoredContinueHandler
+    AddVectoredExceptionHandler
+    RemoveVectoredContinueHandler
+    RemoveVectoredExceptionHandler
+    SetUnhandledExceptionFilter
+    UnhandledExceptionFilter
+
+;
+; Heap lifecycle
+;
+    HeapCreate
+    HeapDestroy
+    GetProcessHeap
+
+;
+; Heap allocation
+;
+    HeapAlloc
+    HeapFree
+    HeapReAlloc
+    HeapSize
+    HeapQueryInformation
+    HeapSetInformation
+
+;
+; Process
+;
+    GetCurrentProcess
+    GetCurrentProcessId
+    TerminateProcess
+    IsProcessorFeaturePresent
+    ExitProcess
+    GetCurrentProcessorNumber
+    GetCurrentProcessorNumberEx
+    GetCurrentThreadStackLimits
+
+;
+; String encoding
+;
+    WideCharToMultiByte
+    MultiByteToWideChar
+
+;
+; Thread
+;
+    GetCurrentThread
+    GetCurrentThreadId
+    ExitThread
+    CreateThread
+    CreateRemoteThread
+    CreateRemoteThreadEx
+    TerminateThread
+    InitializeProcThreadAttributeList
+    UpdateProcThreadAttribute
+    DeleteProcThreadAttributeList
+
+;
+; SRW locks
+;
+    InitializeSRWLock
+    AcquireSRWLockExclusive
+    AcquireSRWLockShared
+    ReleaseSRWLockExclusive
+    ReleaseSRWLockShared
+    TryAcquireSRWLockExclusive
+    TryAcquireSRWLockShared
+
+;
+; Critical sections
+;
+    InitializeCriticalSection
+    InitializeCriticalSectionAndSpinCount
+    DeleteCriticalSection
+    EnterCriticalSection
+    LeaveCriticalSection
+    TryEnterCriticalSection
+    SetCriticalSectionSpinCount
+
+;
+; Wait / Wake / Sleep
+;
+    WaitOnAddress
+    WakeByAddressAll
+    WakeByAddressSingle
+    WaitForSingleObject
+    WaitForSingleObjectEx
+    WaitForMultipleObjects
+    WaitForMultipleObjectsEx
+    Sleep
+    SleepEx
+
+;
+; Condition variables
+;
+    InitializeConditionVariable
+    SleepConditionVariableCS
+    SleepConditionVariableSRW
+    WakeAllConditionVariable
+    WakeConditionVariable
+
+;
+; Synchronization barriers
+;
+    InitializeSynchronizationBarrier
+    EnterSynchronizationBarrier
+    DeleteSynchronizationBarrier
+
+;
+; One-time initialization
+;
+    InitOnceInitialize
+    InitOnceExecuteOnce
+    InitOnceBeginInitialize
+    InitOnceComplete
+
+;
+; Events
+;
+    SetEvent
+    ResetEvent
+
+;
+; Interlocked SList
+;
+    InitializeSListHead
+    InterlockedFlushSList
+    InterlockedPopEntrySList
+    InterlockedPushEntrySList
+    QueryDepthSList
+    InterlockedPushListSList
+    InterlockedPushListSListEx
+
+;
+; Performance counters
+;
+    QueryPerformanceCounter
+    QueryPerformanceFrequency
+
+;
+; Debug
+;
+    DebugBreak
+    OutputDebugStringW
+
+;
+; Miscellaneous
+;
+    RaiseException
+    RaiseFailFastException
+    GetStdHandle
+    GetTickCount64
+    GetEnabledXStateFeatures
+    GetXStateFeaturesMask
+    LocateXStateFeature
+
+;
+; Virtual memory
+;
+    VirtualAlloc
+    VirtualAllocEx
+    VirtualAllocExNuma
+    VirtualFree
+    VirtualFreeEx
+    VirtualProtect
+    VirtualProtectEx
+    VirtualQuery
+    VirtualQueryEx
+    MapViewOfFile
+    MapViewOfFileEx
+    UnmapViewOfFile
+    UnmapViewOfFileEx
+
+;
+; Module
+;
+    DisableThreadLibraryCalls
+    GetModuleHandleExW
+    GetProcAddress
+    LoadLibraryExW
+    LoadLibraryW
+    FreeLibrary
+
+;
+; I/O
+;
+    CloseHandle
+    ReadFile
+    WriteFile
+    ReadFileEx
+    WriteFileEx
+    GetOverlappedResult
+    GetOverlappedResultEx
+    FlushFileBuffers
+
+;
+; System time / tick count
+;
+    GetSystemTimeAsFileTime
+    GetSystemTimePreciseAsFileTime
+    GetSystemTime
+    SystemTimeToFileTime
+    FileTimeToSystemTime
+    GetTickCount
+    timeGetTime
+    timeGetSystemTime
+
+;
+; Exception handling
+;
+    RtlRaiseException
+    RtlUnwind
+    RtlUnwindEx
+
+;
+; Thread-Local Storage (TLS)
+;
+    TlsAlloc
+    TlsFree
+    TlsGetValue
+    TlsSetValue
+
+;
+; Critical section extended init
+;
+    InitializeCriticalSectionEx
+
+;
+; Pointer encoding
+;
+    EncodePointer
+    DecodePointer
+
+;
+;   Other
+;
+    RtlPcToFileHeader
+    RtlLookupFunctionEntry
+    RtlCaptureContext
+    RtlUnhandledExceptionFilter
+    RtlVirtualUnwind
+
+;
+;   Startup/Module Info
+;
+
+    GetCommandLineW
+    GetModuleHandleW
+    IsDebuggerPresent
+    GetStartupInfoW
+    GetModuleFileNameW
+
+;
+; Fiber-Local Storage (FLS)
+;
+    FlsAlloc
+    FlsFree
+    FlsGetValue
+    FlsSetValue
+
+;
+; Environment
+;
+    GetEnvironmentStringsW
+    FreeEnvironmentStringsW
+    GetEnvironmentVariableW
+
+;
+; Stack trace
+;
+    CaptureStackBackTrace
+    RtlCaptureStackBackTrace
+
+;
+; Dynamic function tables
+;
+    RtlAddFunctionTable
+    RtlAddGrowableFunctionTable
+    RtlGrowFunctionTable
+    RtlDeleteGrowableFunctionTable
+    RtlDeleteFunctionTable
+    RtlInstallFunctionTableCallback
+
+;
+; Flush
+;
+    FlushInstructionCache
