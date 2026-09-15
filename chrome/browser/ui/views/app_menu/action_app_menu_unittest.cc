@@ -1330,33 +1330,33 @@ TEST_F(ActionAppMenuTest, BlockSectionAndMenuHostWidth) {
   ASSERT_TRUE(submenu);
 
   // 1. Verify SubmenuView (the menu host content) preferred width and laid-out
-  // width is 366dp.
-  EXPECT_EQ(submenu->GetPreferredSize({}).width(), 366);
-  EXPECT_EQ(submenu->width(), 366);
+  // width is 330dp.
+  EXPECT_EQ(submenu->GetPreferredSize({}).width(), 330);
+  EXPECT_EQ(submenu->width(), 330);
 
-  // 2. Verify block container row MenuItemView width is 366dp.
+  // 2. Verify block container row MenuItemView width is 330dp.
   views::MenuItemView* block_item = submenu->GetMenuItemAt(0);
   ASSERT_NE(block_item, nullptr);
-  EXPECT_EQ(block_item->GetDimensions().children_width, 366);
-  EXPECT_EQ(block_item->width(), 366);
+  EXPECT_EQ(block_item->GetDimensions().children_width, 330);
+  EXPECT_EQ(block_item->width(), 330);
 
-  // 3. Verify AppMenuBlockView preferred width (334dp = 3 * 106dp + 2 *
-  // 8dp) and laid-out width (366dp - 32dp margins = 334dp).
+  // 3. Verify AppMenuBlockView preferred width (298dp = 3 * 94dp + 2 *
+  // 8dp) and laid-out width (330dp - 32dp margins = 298dp).
   ASSERT_EQ(block_item->children().size(), 1u);
   auto* block_view =
       views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
   ASSERT_TRUE(block_view);
-  EXPECT_EQ(block_view->GetPreferredSize({}).width(), 334);
-  EXPECT_EQ(block_view->width(), 334);
+  EXPECT_EQ(block_view->GetPreferredSize({}).width(), 298);
+  EXPECT_EQ(block_view->width(), 298);
 
   // 4. Verify each of the 3 block buttons has preferred width and laid-out
-  // width of 106dp.
+  // width of 94dp.
   ASSERT_EQ(block_view->children().size(), 3u);
   for (views::View* child : block_view->children()) {
     auto* button = views::AsViewClass<AppMenuBlockButton>(child);
     ASSERT_TRUE(button);
-    EXPECT_EQ(button->GetPreferredSize({}).width(), 106);
-    EXPECT_EQ(button->width(), 106);
+    EXPECT_EQ(button->GetPreferredSize({}).width(), 94);
+    EXPECT_EQ(button->width(), 94);
   }
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);

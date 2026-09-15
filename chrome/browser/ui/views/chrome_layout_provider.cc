@@ -277,7 +277,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT:
       return 48;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_WIDTH:
-      return 106;
+      return 94;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT:
       return 56;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE:
