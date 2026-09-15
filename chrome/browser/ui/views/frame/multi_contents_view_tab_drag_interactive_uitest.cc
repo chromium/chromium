@@ -147,8 +147,15 @@ class MultiContentsViewTabDragEntrypointsUiParamTest
   ~MultiContentsViewTabDragEntrypointsUiParamTest() override = default;
 };
 
+// Flaky on Linux; other platforms running this test are green.
+// TODO(crbug.com/493612000): Deflake and re-enable.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DragAndDrop DISABLED_DragAndDrop
+#else
+#define MAYBE_DragAndDrop DragAndDrop
+#endif
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
-                       DragAndDrop) {
+                       MAYBE_DragAndDrop) {
   // TODO(crbug.com/448651072): Remove when Weston support is added.
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
@@ -188,8 +195,15 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
           true));
 }
 
+// Flaky on Linux; other platforms running this test are green.
+// TODO(crbug.com/493612000): Deflake and re-enable.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ShowAndHideDropTarget DISABLED_ShowAndHideDropTarget
+#else
+#define MAYBE_ShowAndHideDropTarget ShowAndHideDropTarget
+#endif
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
-                       ShowAndHideDropTarget) {
+                       MAYBE_ShowAndHideDropTarget) {
   // TODO(crbug.com/448651072): Remove when Weston support is added.
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
@@ -270,8 +284,15 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
           false));
 }
 
+// Flaky on Linux; other platforms running this test are green.
+// TODO(crbug.com/493612000): Deflake and re-enable.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DragAndDropDisabled DISABLED_DragAndDropDisabled
+#else
+#define MAYBE_DragAndDropDisabled DragAndDropDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
-                       DragAndDropDisabled) {
+                       MAYBE_DragAndDropDisabled) {
   // TODO(crbug.com/448651072): Remove when Weston support is added.
 #if BUILDFLAG(IS_LINUX)
   if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
