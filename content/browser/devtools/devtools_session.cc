@@ -786,6 +786,12 @@ bool DevToolsSession::ValidateMessage(const std::string& expected_session_id,
     return false;
   }
   if (!is_cbor) {
+    // '\0' is definitely not allowed unescaped in JSON and is of particular
+    // concern since it is used as a framing character for sending JSON via
+    // the remote debugging pipe.
+    if (std::ranges::find(span_message, '\0') != span_message.end()) {
+      return false;
+    }
     if (!crdtp::json::ConvertJSONToCBOR(span_message, &cbor_message).ok()) {
       return false;  // Safely terminate renderer on malformed JSON
     }
