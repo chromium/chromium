@@ -60,16 +60,7 @@ export function getHtml(this: SelectionOverlayElementElement) {
           style="${this.floatingPromptStyle}">
         <div class="searchbox-pill">
           <div class="sparkle-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z" fill="url(#sparkle-grad)"/>
-              <defs>
-                <linearGradient id="sparkle-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#1B6EF3"/>
-                  <stop offset="0.5" stop-color="#7C52FF"/>
-                  <stop offset="1" stop-color="#E255F2"/>
-                </linearGradient>
-              </defs>
-            </svg>
+            <img src="/spark.svg" width="20" height="20">
           </div>
           <input id="promptInput"
               type="text"

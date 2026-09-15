@@ -466,9 +466,7 @@ export class SelectionOverlayElementElement extends
           </svg>`;
       default:
         return html`
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z"/>
-          </svg>`;
+          <img src="/spark.svg" width="16" height="16">`;
     }
   }
 

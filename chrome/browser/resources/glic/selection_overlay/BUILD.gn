@@ -7,7 +7,10 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "glic_untrusted"
 
-  static_files = [ "selection_overlay.html" ]
+  static_files = [
+    "selection_overlay.html",
+    "spark.svg",
+  ]
 
   ts_files = [
     "browser_proxy.ts",
