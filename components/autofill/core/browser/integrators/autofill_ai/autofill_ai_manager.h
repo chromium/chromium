@@ -11,7 +11,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
@@ -19,7 +18,6 @@
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
@@ -28,6 +26,7 @@
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_update_strike_database.h"
+#include "components/autofill/core/browser/studies/hats_surveys_util.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -110,13 +109,6 @@ class AutofillAiManager
 
  private:
   friend class AutofillAiManagerTestApi;
-  struct UserSuggestionInteractionDetails {
-    std::optional<EntityType> entity_type_accepted;
-    std::optional<EntityInstance::RecordType> accepted_entity_record_type;
-    // The types of the field where the suggestion was shown or accepted.
-    FieldTypeSet autofill_ai_field_types;
-  };
-  const size_t kSuggestionInteractionCacheMaxSize = 5;
 
   // Strike database related methods:
   void AddOrClearImportPromptStrikes(
@@ -254,11 +246,8 @@ class AutofillAiManager
   // is to be updated.
   std::unique_ptr<AutofillAiUpdateStrikeDatabase> update_strike_db_;
 
-  // Keeps suggestions details about the five most recent forms the user has
-  // interacted with.
-  base::LRUCache<FormGlobalId, UserSuggestionInteractionDetails>
-      user_suggestion_interactions_per_form_{
-          kSuggestionInteractionCacheMaxSize};
+  RecentUserAutofillAiInteractionsForHats
+      user_suggestion_interactions_per_form_;
 
   // Tracks the UKM source ID for which the suggestions shown timing metric was
   // last logged, ensuring it is logged at most once per page.

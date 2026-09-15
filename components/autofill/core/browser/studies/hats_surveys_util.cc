@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -105,6 +106,76 @@ void MaybeTriggerFormSubmissionHatsSurveys(
     client.TriggerUserPerceptionOfAutofillSurvey(FillingProduct::kCreditCard,
                                                  *survey_data);
     return;
+  }
+}
+
+RecentUserAutofillAiInteractionsForHats::
+    RecentUserAutofillAiInteractionsForHats() = default;
+RecentUserAutofillAiInteractionsForHats::
+    ~RecentUserAutofillAiInteractionsForHats() = default;
+
+void RecentUserAutofillAiInteractionsForHats::SuggestionsShown(
+    const FormStructure& form,
+    const AutofillField& field) {
+  auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
+  // Do not overwrite cases in which a suggestion was previously accepted.
+  if (it == user_suggestion_interactions_per_form_.end() ||
+      !it->second.entity_type_accepted) {
+    user_suggestion_interactions_per_form_.Put(
+        form.global_id(),
+        InteractionDetails{
+            .entity_type_accepted = std::nullopt,
+            .accepted_entity_record_type = std::nullopt,
+            .autofill_ai_field_types = field.Type().GetAutofillAiTypes(),
+        });
+  }
+}
+
+void RecentUserAutofillAiInteractionsForHats::SuggestionAccepted(
+    const FormStructure& form,
+    const EntityInstance& entity) {
+  auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
+  if (it != user_suggestion_interactions_per_form_.end()) {
+    it->second.entity_type_accepted = entity.type();
+    it->second.accepted_entity_record_type = entity.record_type();
+  }
+}
+
+std::optional<RecentUserAutofillAiInteractionsForHats::InteractionDetails>
+RecentUserAutofillAiInteractionsForHats::GetRecentUserInteraction(
+    FormGlobalId form_id) const {
+  if (auto it = user_suggestion_interactions_per_form_.Peek(form_id);
+      it != user_suggestion_interactions_per_form_.end()) {
+    return it->second;
+  }
+  return std::nullopt;
+}
+
+void MaybeTriggerAutofillAiSubmissionHatsSurveys(
+    AutofillClient& client,
+    const FormStructure& submitted_form,
+    const RecentUserAutofillAiInteractionsForHats& suggestion_interactions) {
+  std::optional<RecentUserAutofillAiInteractionsForHats::InteractionDetails>
+      interaction_details = suggestion_interactions.GetRecentUserInteraction(
+          submitted_form.global_id());
+  if (!interaction_details) {
+    return;
+  }
+  const EntityDataManager* entity_manager = client.GetEntityDataManager();
+  if (!entity_manager) {
+    return;
+  }
+  if (interaction_details->entity_type_accepted &&
+      interaction_details->accepted_entity_record_type ==
+          EntityInstance::RecordType::kPersonalContext) {
+    auto saved_entity_type_names = base::MakeFlatSet<EntityTypeName>(
+        entity_manager->GetEntityInstances(), std::less(),
+        [](const EntityInstance& entity) { return entity.type().name(); });
+
+    client.TriggerAutofillAiFillingJourneySurvey(
+        /*suggestion_accepted=*/true,
+        *interaction_details->entity_type_accepted, saved_entity_type_names,
+        interaction_details->autofill_ai_field_types);
   }
 }
 

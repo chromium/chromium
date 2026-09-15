@@ -59,6 +59,7 @@
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_update_strike_database.h"
+#include "components/autofill/core/browser/studies/hats_surveys_util.h"
 #include "components/autofill/core/browser/suggestions/autofill_ai/autofill_ai_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
@@ -118,15 +119,6 @@ std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
   };
 
   return base::ToVector(entity.type().strike_keys(), value_for_strike_key);
-}
-
-base::flat_set<EntityTypeName> GetSaveEntitiesTypesNames(
-    base::span<const EntityInstance> saved_entities) {
-  base::flat_set<EntityTypeName> entity_types;
-  for (const EntityInstance& entity : saved_entities) {
-    entity_types.insert(entity.type().name());
-  }
-  return entity_types;
 }
 
 EntityInstance GetMergedEntity(
@@ -286,16 +278,7 @@ void AutofillAiManager::OnAutofillAiSuggestionsShown(
   }
   logger_.OnSuggestionsShown(form, field, entities_suggested, ukm_source_id);
 
-  auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
-  // Do not overwrite cases in which a suggestion was previously accepted.
-  if (it == user_suggestion_interactions_per_form_.end() ||
-      !it->second.entity_type_accepted) {
-    user_suggestion_interactions_per_form_.Put(
-        {form.global_id(),
-         {.entity_type_accepted = std::nullopt,
-          .accepted_entity_record_type = std::nullopt,
-          .autofill_ai_field_types = field.Type().GetAutofillAiTypes()}});
-  }
+  user_suggestion_interactions_per_form_.SuggestionsShown(form, field);
 
   if (std::ranges::contains(shown_suggestions,
                             SuggestionType::kAutofillAiPrivateInferenceNotice,
@@ -383,11 +366,7 @@ void AutofillAiManager::OnDidFillSuggestion(
     return;
   }
   entity_manager->RecordEntityUsed(entity.guid(), base::Time::Now());
-  auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
-  if (it != user_suggestion_interactions_per_form_.end()) {
-    it->second.entity_type_accepted = entity.type();
-    it->second.accepted_entity_record_type = entity.record_type();
-  }
+  user_suggestion_interactions_per_form_.SuggestionAccepted(form, entity);
 }
 
 void AutofillAiManager::OnEditedAutofilledField(const FormStructure& form,
@@ -454,24 +433,8 @@ bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
   //    duplicate of data saved in Wallet, a save prompt to Wallet is shown. On
   //    acceptance, the local entity is removed.
   const bool form_imported = MaybeImportForm(form, ukm_source_id);
-  auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
-  if (it != user_suggestion_interactions_per_form_.end()) {
-    const EntityDataManager* entity_manager = client_->GetEntityDataManager();
-    if (!entity_manager) {
-      LOG_AF(GetCurrentLogManager())
-          << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
-          << "Entity data manager is not available";
-      return form_imported;
-    }
-    if (it->second.entity_type_accepted &&
-        it->second.accepted_entity_record_type ==
-            EntityInstance::RecordType::kPersonalContext) {
-      client_->TriggerAutofillAiFillingJourneySurvey(
-          /*suggestion_accepted=*/true, it->second.entity_type_accepted.value(),
-          GetSaveEntitiesTypesNames(entity_manager->GetEntityInstances()),
-          it->second.autofill_ai_field_types);
-    }
-  }
+  MaybeTriggerAutofillAiSubmissionHatsSurveys(
+      *client_, form, user_suggestion_interactions_per_form_);
   return form_imported;
 }
 
