@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_DOCUMENT_PIP_WIDGET_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -46,6 +47,7 @@ class DocumentPipWidgetDelegate : public views::WidgetDelegate {
   DocumentPipContentsView* GetDocumentPipContentsView();
 
   // views::WidgetDelegate:
+  std::u16string GetWindowTitle() const override;
   std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
 

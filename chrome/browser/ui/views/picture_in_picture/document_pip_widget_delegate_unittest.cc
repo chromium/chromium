@@ -66,6 +66,36 @@ TEST_F(DocumentPipWidgetDelegateTest, ChildWebContentsHostedInWebView) {
   EXPECT_EQ(child_raw, contents_view->web_contents());
 }
 
+TEST_F(DocumentPipWidgetDelegateTest, WindowTitleUsesOpenerTitle) {
+  content::WebContentsTester::For(opener())->SetTitle(u"Opener title");
+  auto child = CreateChildWebContents();
+  content::WebContentsTester::For(child.get())->SetTitle(u"Child title");
+  DocumentPipWidgetDelegate delegate(host(), std::move(child));
+
+  EXPECT_EQ(u"Opener title", delegate.GetWindowTitle());
+}
+
+TEST_F(DocumentPipWidgetDelegateTest, WindowTitleRemovesLineFeeds) {
+  content::WebContentsTester::For(opener())->SetTitle(
+      u"\nOpener\n\ntitle\r\t\n");
+  DocumentPipWidgetDelegate delegate(host(), CreateChildWebContents());
+
+  EXPECT_EQ(u"Openertitle\r\t", delegate.GetWindowTitle());
+}
+
+TEST_F(DocumentPipWidgetDelegateTest, WindowTitleTracksOpenerChanges) {
+  auto* opener_tester = content::WebContentsTester::For(opener());
+  opener_tester->SetTitle(u"Original title");
+  DocumentPipWidgetDelegate delegate(host(), CreateChildWebContents());
+  EXPECT_EQ(u"Original title", delegate.GetWindowTitle());
+
+  opener_tester->SetTitle(u"Updated title");
+  EXPECT_EQ(u"Updated title", delegate.GetWindowTitle());
+
+  opener_tester->SetTitle(u"");
+  EXPECT_EQ(u"", delegate.GetWindowTitle());
+}
+
 // Widget capability flags are locked in by the constructor: resizable but not
 // maximizable, minimizable, or fullscreen-capable.
 TEST_F(DocumentPipWidgetDelegateTest, WidgetCapabilities) {

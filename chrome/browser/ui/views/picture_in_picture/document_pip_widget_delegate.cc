@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
@@ -36,6 +37,14 @@ DocumentPipWidgetDelegate::~DocumentPipWidgetDelegate() = default;
 DocumentPipContentsView*
 DocumentPipWidgetDelegate::GetDocumentPipContentsView() {
   return views::AsViewClass<DocumentPipContentsView>(GetContentsView());
+}
+
+std::u16string DocumentPipWidgetDelegate::GetWindowTitle() const {
+  std::u16string title = host_->GetOpenerWebContents()->GetTitle();
+  // Match WindowMetadataController::FormatTitleForDisplay without depending on
+  // the Browser-backed window metadata controller.
+  base::RemoveChars(title, u"\n", &title);
+  return title;
 }
 
 std::unique_ptr<views::FrameView> DocumentPipWidgetDelegate::CreateFrameView(

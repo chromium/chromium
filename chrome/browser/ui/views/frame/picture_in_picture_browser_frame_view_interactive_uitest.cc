@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/i18n/rtl.h"
@@ -58,6 +59,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/non_client_view.h"
@@ -1349,17 +1351,37 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+class PictureInPictureWindowTitleTest
+    : public PictureInPictureBrowserFrameViewTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool UseStandaloneDocumentPip() const override { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PictureInPictureWindowTitleTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+IN_PROC_BROWSER_TEST_P(PictureInPictureWindowTitleTest,
                        WindowTitleUsesOpenersTitle) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
+  std::u16string window_title;
+  if (UseStandaloneDocumentPip()) {
+    window_title = GetPipWidget()->widget_delegate()->GetWindowTitle();
+  } else {
+    window_title =
+        WindowMetadataController::From(
+            pip_frame_view()->GetBrowserView()->browser())
+            ->GetWindowTitleForCurrentTab(/*include_app_name=*/false);
+  }
+
   // The window title for the document picture-in-picture window should use the
   // title from the opener page.
-  EXPECT_EQ(u"Document Picture-in-Picture",
-            WindowMetadataController::From(
-                pip_frame_view()->GetBrowserView()->browser())
-                ->GetWindowTitleForCurrentTab(
-                    /*include_app_name=*/false));
+  EXPECT_EQ(u"Document Picture-in-Picture", window_title);
 }
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,

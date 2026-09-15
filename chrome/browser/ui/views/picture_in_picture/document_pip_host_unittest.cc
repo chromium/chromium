@@ -20,6 +20,7 @@
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/window_container_type.mojom.h"
@@ -34,8 +35,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/non_client_view.h"
@@ -279,6 +282,35 @@ TEST_F(DocumentPipHostTest, WidgetIsCreated) {
   views::Widget* w = host->GetWidget();
   ASSERT_TRUE(w);
   EXPECT_FALSE(w->IsClosed());
+}
+
+TEST_F(DocumentPipHostTest, WindowTitleUpdatesWithOpener) {
+  content::WebContentsTester::For(opener())->NavigateAndCommit(
+      GURL("https://example.com/"));
+  auto* entry = opener()->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(entry);
+  opener()->UpdateTitleForEntry(entry, u"Original\ntitle");
+
+  auto* host = CreateHostAndOpenPipWindow();
+  auto* widget = host->GetWidget();
+  ASSERT_TRUE(widget);
+  auto& root_accessibility = widget->GetRootView()->GetViewAccessibility();
+  EXPECT_EQ(u"Originaltitle", widget->widget_delegate()->GetWindowTitle());
+  EXPECT_EQ(u"Originaltitle", root_accessibility.GetCachedName());
+
+  opener()->UpdateTitleForEntry(entry, u"Updated\ntitle");
+  EXPECT_EQ(u"Updatedtitle", widget->widget_delegate()->GetWindowTitle());
+  EXPECT_EQ(u"Updatedtitle", root_accessibility.GetCachedName());
+
+  content::WebContentsTester::For(host->GetChildWebContents())
+      ->SetTitle(u"Child title");
+  host->NavigationStateChanged(host->GetChildWebContents(),
+                               content::INVALIDATE_TYPE_TITLE);
+  EXPECT_EQ(u"Updatedtitle", root_accessibility.GetCachedName());
+
+  host->Close();
+  opener()->UpdateTitleForEntry(entry, u"Title after PiP closes");
+  EXPECT_FALSE(host->GetWidget());
 }
 
 // Regression test for crbug.com/519833771: opening the PiP window builds the

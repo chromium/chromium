@@ -273,6 +273,12 @@ void DocumentPipHost::PrimaryPageChanged(content::Page& page) {
   ClosePipWindow();
 }
 
+void DocumentPipHost::TitleWasSet(content::NavigationEntry* entry) {
+  if (widget_) {
+    widget_->UpdateWindowTitle();
+  }
+}
+
 // =============================================================================
 // WebContentsDelegate - Navigation & State
 // =============================================================================
@@ -291,7 +297,7 @@ void DocumentPipHost::CloseContents(content::WebContents* source) {
 void DocumentPipHost::NavigationStateChanged(
     content::WebContents* source,
     content::InvalidateTypes changed_flags) {
-  // Update the frame view's title when the page title changes.
+  // Refresh window metadata without using the child page's title.
   if (widget_ && (changed_flags & content::INVALIDATE_TYPE_TITLE)) {
     widget_->UpdateWindowTitle();
   }

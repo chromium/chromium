@@ -32,6 +32,7 @@ class PictureInPictureTucker;
 class Profile;
 
 namespace content {
+class NavigationEntry;
 class WebContents;
 }  // namespace content
 
@@ -40,8 +41,9 @@ class WebContents;
 //   - Owns the child WebContents for the PiP window.
 //   - Owns the floating views::Widget that renders that child.
 //   - Acts as WebContentsDelegate for the child WebContents.
-//   - Observes the opener WebContents to close the PiP window when the opener
-//     is destroyed or navigates to a new primary page.
+//   - Observes the opener WebContents to update the window title and close the
+//     PiP window when the opener is destroyed or navigates to a new primary
+//     page.
 //   - Implements PictureInPictureWindow for tucking and Mac fullscreen.
 class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
                         public content::WebContentsObserver,
@@ -103,6 +105,7 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   // WebContentsDelegate::BeforeUnloadFired() override below does not hide it.
   using content::WebContentsObserver::BeforeUnloadFired;
   void PrimaryPageChanged(content::Page& page) override;
+  void TitleWasSet(content::NavigationEntry* entry) override;
 
   // content::WebContentsDelegate - Navigation & State:
   blink::mojom::DisplayMode GetDisplayMode(
