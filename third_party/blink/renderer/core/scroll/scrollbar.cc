@@ -359,28 +359,31 @@ void Scrollbar::SetHoveredPart(ScrollbarPart part) {
   if (part == hovered_part_)
     return;
 
+  auto invalid_parts = static_cast<ScrollbarPart>(hovered_part_ | part);
+  hovered_part_ = part;
   // When there's a pressed part, we don't draw a hovered state, so there's no
   // reason to invalidate.
   if (pressed_part_ == kNoPart) {
-    SetNeedsPaintInvalidation(static_cast<ScrollbarPart>(hovered_part_ | part));
+    SetNeedsPaintInvalidation(invalid_parts);
   }
-
-  hovered_part_ = part;
 }
 
 void Scrollbar::SetPressedPart(ScrollbarPart part, WebInputEvent::Type type) {
-  if (pressed_part_ != kNoPart
+  if (part == pressed_part_) {
+    return;
+  }
+
+  ScrollbarPart old_pressed_part = pressed_part_;
+  pressed_part_ = part;
+  SetNeedsPaintInvalidation(static_cast<ScrollbarPart>(
+      old_pressed_part |
       // When we no longer have a pressed part, we can start drawing a hovered
       // state on the hovered part.
-      || hovered_part_ != kNoPart)
-    SetNeedsPaintInvalidation(
-        static_cast<ScrollbarPart>(pressed_part_ | hovered_part_ | part));
+      hovered_part_ | pressed_part_));
 
   if (scrollable_area_ && part != kNoPart) {
     scrollable_area_->DidScrollWithScrollbar(part, Orientation(), type);
   }
-
-  pressed_part_ = part;
 }
 
 bool Scrollbar::HandlePointerEvent(const WebPointerEvent& event) {
