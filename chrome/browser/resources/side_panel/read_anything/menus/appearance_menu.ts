@@ -111,24 +111,26 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
     },
   ];
 
-  protected accessor groups_: Array<MenuGroup<number>> = [
-     {
-      header: {
-        title: loadTimeData.getString('viewLabel'),
-        separator: false,
-      },
-      items: this.viewOptions_,
-      eventName: ToolbarEvent.PRESENTATION_CHANGE,
+  private viewGroup_: MenuGroup<number> = {
+    header: {
+      title: loadTimeData.getString('viewLabel'),
+      separator: false,
     },
-    {
-      header: {
-        title: loadTimeData.getString('themeTitle'),
-        separator: true,
-      },
-      items: this.colorOptions_,
-      eventName: ToolbarEvent.THEME,
+    items: this.viewOptions_,
+    eventName: ToolbarEvent.PRESENTATION_CHANGE,
+  };
+
+  private themeGroup_: MenuGroup<number> = {
+    header: {
+      title: loadTimeData.getString('themeTitle'),
+      separator: true,
     },
-  ];
+    items: this.colorOptions_,
+    eventName: ToolbarEvent.THEME,
+  };
+
+  protected accessor groups_: Array<MenuGroup<number>> = this.computeGroups_();
+
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -142,11 +144,22 @@ export class AppearanceMenuElement extends AppearanceMenuElementBase implements
     }
     if (changedProperties.has('settingsPrefs') ||
         changedProperties.has('presentationState')) {
-      this.groups_ = [...this.groups_];
+      this.groups_ = this.computeGroups_();
     }
   }
 
+  // The theme options are not shown in high contrast mode because reading mode
+  // doesn't override system forced colors.
+  private computeGroups_(): Array<MenuGroup<number>> {
+    return window.matchMedia('(forced-colors: active)').matches ?
+        [this.viewGroup_] :
+        [this.viewGroup_, this.themeGroup_];
+  }
+
   open(anchor: HTMLElement, showAtConfig?: ShowAtConfigPrefs) {
+    // Recompute here in case the system forced colors setting changed since
+    // this menu was last shown.
+    this.groups_ = this.computeGroups_();
     this.$.menu.open(anchor, showAtConfig);
   }
 

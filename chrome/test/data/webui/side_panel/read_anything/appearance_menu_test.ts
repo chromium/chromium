@@ -18,6 +18,8 @@ suite('AppearanceMenuElement', () => {
   let metrics: TestMetricsBrowserProxy;
   let visualBrowserProxy: TestVisualBrowserProxy;
 
+  const originalMatchMedia = window.matchMedia;
+
   suiteSetup(() => {
     assertTestSettingsAreNotDefaultSettings();
   });
@@ -29,6 +31,10 @@ suite('AppearanceMenuElement', () => {
 
     appearanceMenu = document.createElement('appearance-menu');
     document.body.appendChild(appearanceMenu);
+  });
+
+  teardown(() => {
+    window.matchMedia = originalMatchMedia;
   });
 
   test('has checkmarks', () => {
@@ -170,5 +176,41 @@ suite('AppearanceMenuElement', () => {
     assertTrue(appearanceMenu.$.menu.$.lazyMenu.get().open);
     appearanceMenu.close();
     assertFalse(appearanceMenu.$.menu.$.lazyMenu.get().open);
+  });
+
+  test('hides theme submenu when forced-colors is active', async () => {
+    stubAnimationFrame();
+
+    // When forced-colors is disabled (default), the theme submenu is visible.
+    assertEquals(2, appearanceMenu.$.menu.menuGroups.length);
+    assertTrue(appearanceMenu.$.menu.menuGroups.some(
+        group => group.eventName === ToolbarEvent.THEME));
+
+    // When forced-colors is enabled, the theme submenu is hidden.
+    window.matchMedia = (query: string) => ({
+      matches: query === '(forced-colors: active)',
+    } as MediaQueryList);
+
+    appearanceMenu.open(document.body);
+    await microtasksFinished();
+
+    assertEquals(1, appearanceMenu.$.menu.menuGroups.length);
+    assertEquals(
+        ToolbarEvent.PRESENTATION_CHANGE,
+        appearanceMenu.$.menu.menuGroups[0]!.eventName);
+    assertFalse(appearanceMenu.$.menu.menuGroups.some(
+        group => group.eventName === ToolbarEvent.THEME));
+
+    // When forced-colors is disabled again, the theme submenu is visible again.
+    window.matchMedia = () => ({
+      matches: false,
+    } as MediaQueryList);
+
+    appearanceMenu.open(document.body);
+    await microtasksFinished();
+
+    assertEquals(2, appearanceMenu.$.menu.menuGroups.length);
+    assertTrue(appearanceMenu.$.menu.menuGroups.some(
+        group => group.eventName === ToolbarEvent.THEME));
   });
 });
