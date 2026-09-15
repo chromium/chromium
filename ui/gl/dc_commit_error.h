@@ -27,6 +27,7 @@ struct CommitError {
     kSolidColorTexturePoolCreateDawnSharedTexture,
     kSolidColorTexturePoolBeginAccess,
     kIDCompositionDevice6PresentCompositionTextures,
+    kMaxValue = kIDCompositionDevice6PresentCompositionTextures,
   };
 
   Reason reason = Reason::kUnknown;

@@ -7,21 +7,74 @@
 #include <winerror.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/gl/dc_commit_error.h"
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/vsync_thread_win.h"
 
 namespace gl {
+
+namespace {
+
+constexpr std::string_view CommitErrorReasonToString(
+    CommitError::Reason reason) {
+  switch (reason) {
+    case CommitError::Reason::kUnknown:
+      return "Unknown";
+    case CommitError::Reason::kIDCompositionDeviceCommit:
+      return "IDCompositionDeviceCommit";
+    case CommitError::Reason::kPresentToSwapChain:
+      return "PresentToSwapChain";
+    case CommitError::Reason::kSolidColorSurfacePoolCreateSurface:
+      return "SolidColorSurfacePoolCreateSurface";
+    case CommitError::Reason::kSolidColorSurfaceBeginDraw:
+      return "SolidColorSurfaceBeginDraw";
+    case CommitError::Reason::kSolidColorSurfaceEndDraw:
+      return "SolidColorSurfaceEndDraw";
+    case CommitError::Reason::kSolidColorSurfaceCreateRenderTargetView:
+      return "SolidColorSurfaceCreateRenderTargetView";
+    case CommitError::Reason::kSolidColorTexturePoolCreateD3D12Resource:
+      return "SolidColorTexturePoolCreateD3D12Resource";
+    case CommitError::Reason::kSolidColorTexturePoolCreateSharedTextureMemory:
+      return "SolidColorTexturePoolCreateSharedTextureMemory";
+    case CommitError::Reason::kSolidColorTexturePoolCreateDawnSharedTexture:
+      return "SolidColorTexturePoolCreateDawnSharedTexture";
+    case CommitError::Reason::kSolidColorTexturePoolBeginAccess:
+      return "SolidColorTexturePoolBeginAccess";
+    case CommitError::Reason::kIDCompositionDevice6PresentCompositionTextures:
+      return "IDCompositionDevice6PresentCompositionTextures";
+  }
+}
+
+constexpr bool CommitErrorReasonStringsFitInCrashKey() {
+  // Leave room for the NUL byte in the crash key value.
+  constexpr size_t kMaxLength =
+      static_cast<size_t>(base::debug::CrashKeySize::Size64) - 1;
+  for (int i = 0; i <= static_cast<int>(CommitError::Reason::kMaxValue); i++) {
+    if (CommitErrorReasonToString(static_cast<CommitError::Reason>(i)).size() >
+        kMaxLength) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static_assert(CommitErrorReasonStringsFitInCrashKey(),
+              "Commit error reason strings must fit in a Size64 crash key.");
+
+}  // namespace
 
 DCompPresenter::PendingFrame::PendingFrame(PresentationCallback callback)
     : callback(std::move(callback)), creation_time(base::TimeTicks::Now()) {}
@@ -123,11 +176,14 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
         gl::GetDirectCompositionD3D11Device()->GetDeviceRemovedReason();
     const bool not_device_removed = SUCCEEDED(device_removed_reason);
     if (not_device_removed && result.error().hr != PRESENTATION_ERROR_LOST) {
-      SCOPED_CRASH_KEY_NUMBER("gpu", "DCompPresenter.SWAP_FAILED.reason",
-                              static_cast<int>(result.error().reason));
-      SCOPED_CRASH_KEY_NUMBER(
+      SCOPED_CRASH_KEY_STRING64(
+          "gpu", "DCompPresenter.SWAP_FAILED.reason",
+          CommitErrorReasonToString(result.error().reason));
+      SCOPED_CRASH_KEY_STRING32(
           "gpu", "DCompPresenter.SWAP_FAILED.hr?",
-          static_cast<int>(result.error().hr.value_or(S_OK)));
+          result.error()
+              .hr.transform([](HRESULT hr) { return base::NumberToString(hr); })
+              .value_or("nullopt"));
       base::debug::DumpWithoutCrashing();
     } else {
       // Ignore device removed cases as they don't usually indicate a problem
