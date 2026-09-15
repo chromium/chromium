@@ -566,6 +566,10 @@ should be able to be added at any place in this file.
       summary="For iOSGeminiFullscreenPromoFeature feature"/>
   <variant name="_iOSGeminiImageRemix"
       summary="For iOSGeminiImageRemix IPH feature"/>
+  <variant name="_iOSGeminiLiveIPHFeature"
+      summary="For Gemini Live IPH tooltip feature."/>
+  <variant name="_iOSGeminiLiveNewBadgeFeature"
+      summary="For Gemini Live New badge feature."/>
   <variant name="_iOSHistoryOnOverflowMenuFeature"
       summary="For iOSHistoryOnOverflowMenuFeature feature"/>
   <variant name="_iOSHomepageCustomizationNewBadge"

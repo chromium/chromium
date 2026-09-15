@@ -375,6 +375,10 @@ chromium-metrics-reviews@google.com.
       summary="showing the fullscreen Gemini promo on iOS"/>
   <variant name="IPH_iOSGeminiImageRemix"
       summary="showing the Gemini Image Remix IPH on iOS"/>
+  <variant name="IPH_iOSGeminiLiveIPHFeature"
+      summary="showing the Gemini Live tooltip IPH on iOS"/>
+  <variant name="IPH_iOSGeminiLiveNewBadgeFeature"
+      summary="showing the Gemini Live New badge on iOS"/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
       summary="history item on the overflow menu on iOS"/>
   <variant name="IPH_iOSHomepageCustomizationNewBadge"
