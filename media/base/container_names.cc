@@ -5,17 +5,13 @@
 #include "media/base/container_names.h"
 
 #include <stddef.h>
-#include <string.h>
 
 #include <array>
-#include <limits>
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
-#include "base/numerics/safe_conversions.h"
 #include "media/base/bit_reader.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
@@ -31,47 +27,31 @@ namespace container_names {
 
 #define RCHECK(x)   \
   do {              \
-    if (!(x)) {     \
+    if (!(x))       \
       return false; \
-    }               \
   } while (0)
 
 #define UTF8_BYTE_ORDER_MARK "\xef\xbb\xbf"
 
-// Helper function to read 2 bytes (16 bits, big endian) from a buffer.
-static int Read16(base::span<const uint8_t, 2u> p) {
-  return base::U16FromBigEndian(p);
-}
-
 // Helper function to read 3 bytes (24 bits, big endian) from a buffer.
 static uint32_t Read24(base::span<const uint8_t, 3u> p) {
-  return p[0] << 16 | p[1] << 8 | p[2];
-}
-
-// Helper function to read 4 bytes (32 bits, big endian) from a buffer.
-static uint32_t Read32(base::span<const uint8_t, 4u> p) {
-  return base::U32FromBigEndian(p);
-}
-
-// Helper function to read 4 bytes (32 bits, little endian) from a buffer.
-static uint32_t Read32LE(base::span<const uint8_t, 4u> p) {
-  return base::U32FromLittleEndian(p);
-}
-
-// Helper function to do buffer comparisons with a string without going off the
-// end of the buffer.
-static bool StartsWith(base::span<const uint8_t> buffer,
-                       std::string_view prefix) {
-  return (prefix.size() <= buffer.size() &&
-          buffer.first(prefix.size()) == base::as_byte_span(prefix));
+  return (static_cast<uint32_t>(p[0]) << 16) |
+         (static_cast<uint32_t>(p[1]) << 8) | static_cast<uint32_t>(p[2]);
 }
 
 // Helper function to do buffer comparisons with another buffer (to allow for
 // embedded \0 in the comparison) without going off the end of the buffer.
 static bool StartsWith(base::span<const uint8_t> buffer,
                        base::span<const uint8_t> prefix) {
-  return (prefix.size() <= buffer.size() &&
-          buffer.first(prefix.size()) == prefix);
+  return buffer.size() >= prefix.size() &&
+         buffer.first(prefix.size()) == prefix;
+}
+
+// Helper function to do buffer comparisons with a string without going off the
+// end of the buffer.
+static bool StartsWith(base::span<const uint8_t> buffer,
+                       std::string_view prefix) {
+  return StartsWith(buffer, base::as_byte_span(prefix));
 }
 
 // Helper function to read up to 64 bits from a bit stream.
@@ -122,7 +102,7 @@ static bool CheckAac(base::span<const uint8_t> buffer) {
     // Get frame length (includes header).
     int size = ReadBits(&reader, 13);
     RCHECK(size > 0);
-    offset += size;
+    offset += static_cast<size_t>(size);
   }
   return true;
 }
@@ -175,7 +155,8 @@ static bool CheckAc3(base::span<const uint8_t> buffer) {
     // Verify bsid.
     RCHECK(ReadBits(&reader, 5) < 10);  // Normally 8 or 6, 16 used by EAC3.
 
-    offset += kAc3FrameSizeTable[frame_size_code][sample_rate_code];
+    offset += static_cast<size_t>(
+        kAc3FrameSizeTable[frame_size_code][sample_rate_code]);
   }
   return true;
 }
@@ -213,7 +194,7 @@ static bool CheckEac3(base::span<const uint8_t> buffer) {
     int bit_stream_id = ReadBits(&reader, 5);
     RCHECK(bit_stream_id >= 11 && bit_stream_id <= 16);
 
-    offset += frame_size;
+    offset += static_cast<size_t>(frame_size);
   }
   return true;
 }
@@ -224,24 +205,24 @@ static bool CheckBink(base::span<const uint8_t> buffer) {
   RCHECK(buffer.size() >= 44);
 
   // Verify number of frames specified.
-  RCHECK(Read32LE(buffer.subspan(8u).first<4>()) > 0);
+  RCHECK(base::U32FromLittleEndian(buffer.subspan<8u, 4u>()) > 0);
 
   // Verify width in range.
-  int width = Read32LE(buffer.subspan(20u).first<4>());
+  uint32_t width = base::U32FromLittleEndian(buffer.subspan<20u, 4u>());
   RCHECK(width > 0 && width <= 32767);
 
   // Verify height in range.
-  int height = Read32LE(buffer.subspan(24u).first<4>());
+  uint32_t height = base::U32FromLittleEndian(buffer.subspan<24u, 4u>());
   RCHECK(height > 0 && height <= 32767);
 
   // Verify frames per second specified.
-  RCHECK(Read32LE(buffer.subspan(28u).first<4>()) > 0);
+  RCHECK(base::U32FromLittleEndian(buffer.subspan<28u, 4u>()) > 0);
 
   // Verify video frames per second specified.
-  RCHECK(Read32LE(buffer.subspan(32u).first<4>()) > 0);
+  RCHECK(base::U32FromLittleEndian(buffer.subspan<32u, 4u>()) > 0);
 
   // Number of audio tracks must be 256 or less.
-  return (Read32LE(buffer.subspan(40u).first<4>()) <= 256);
+  return (base::U32FromLittleEndian(buffer.subspan<40u, 4u>()) <= 256);
 }
 
 // Additional checks for a CAF container.
@@ -338,7 +319,7 @@ static bool CheckDts(base::span<const uint8_t> buffer) {
     // Verify low frequency effects flag is an allowed value.
     RCHECK(ReadBits(&reader, 2) != 3);
 
-    offset += frame_size + 1;
+    offset += static_cast<size_t>(frame_size) + 1;
   }
   return true;
 }
@@ -413,11 +394,9 @@ static bool CheckGsm(base::span<const uint8_t> buffer) {
   // GSM files have a 33 byte block, only first 4 bits are fixed.
   RCHECK(buffer.size() >= 1024);  // Need enough data to do a decent check.
 
-  size_t offset = 0;
-  while (offset < buffer.size()) {
+  for (size_t offset = 0; offset < buffer.size(); offset += 33) {
     // First 4 bits of each block are xD.
     RCHECK((buffer[offset] & 0xf0) == 0xd0);
-    offset += 33;
   }
   return true;
 }
@@ -429,17 +408,17 @@ static bool CheckGsm(base::span<const uint8_t> buffer) {
 // false otherwise.
 static bool AdvanceToStartCode(base::span<const uint8_t> buffer,
                                size_t* offset,
-                               int bytes_needed,
+                               size_t bytes_needed,
                                int num_bits,
                                uint32_t start_code) {
-  DCHECK_GE(bytes_needed, 3);
+  DCHECK_GE(bytes_needed, 3u);
   DCHECK_LE(num_bits, 24);  // Only supports up to 24 bits.
 
   // Create a mask to isolate |num_bits| bits, once shifted over.
   uint32_t bits_to_shift = 24 - num_bits;
   uint32_t mask = (1 << num_bits) - 1;
   while (*offset + bytes_needed < buffer.size()) {
-    uint32_t next = Read24(buffer.subspan(*offset).first<3>());
+    uint32_t next = Read24(buffer.subspan(*offset).first<3u>());
     if (((next >> bits_to_shift) & mask) == start_code) {
       return true;
     }
@@ -618,10 +597,10 @@ static bool CheckH264(base::span<const uint8_t> buffer) {
   }
 }
 
-static const char kHlsSignature[] = "#EXTM3U";
-static const char kHls1[] = "#EXT-X-STREAM-INF:";
-static const char kHls2[] = "#EXT-X-TARGETDURATION:";
-static const char kHls3[] = "#EXT-X-MEDIA-SEQUENCE:";
+static constexpr std::string_view kHlsSignature = "#EXTM3U";
+static constexpr std::string_view kHls1 = "#EXT-X-STREAM-INF:";
+static constexpr std::string_view kHls2 = "#EXT-X-TARGETDURATION:";
+static constexpr std::string_view kHls3 = "#EXT-X-MEDIA-SEQUENCE:";
 
 // Additional checks for a HLS container.
 static bool CheckHls(base::span<const uint8_t> buffer) {
@@ -634,12 +613,12 @@ static bool CheckHls(base::span<const uint8_t> buffer) {
     // "#EXT-X-MEDIA-SEQUENCE:" somewhere in the buffer. Other playlists (like
     // WinAmp) only have additional lines with #EXTINF
     // (http://en.wikipedia.org/wiki/M3U).
-    size_t offset = strlen(kHlsSignature);
+    size_t offset = kHlsSignature.size();
     while (offset < buffer.size()) {
       if (buffer[offset] == '#') {
-        if (StartsWith(buffer.subspan(offset), kHls1) ||
-            StartsWith(buffer.subspan(offset), kHls2) ||
-            StartsWith(buffer.subspan(offset), kHls3)) {
+        base::span<const uint8_t> remaining = buffer.subspan(offset);
+        if (StartsWith(remaining, kHls1) || StartsWith(remaining, kHls2) ||
+            StartsWith(remaining, kHls3)) {
           return true;
         }
       }
@@ -689,14 +668,16 @@ static bool CheckMJpeg(base::span<const uint8_t> buffer) {
       offset += 2;
     } else {
       // All remaining marker codes are followed by a length of the header.
-      int length = Read16(buffer.subspan(offset + 2).first<2>()) + 2;
+      size_t length = static_cast<size_t>(base::U16FromBigEndian(
+                          buffer.subspan(offset + 2u).first<2u>())) +
+                      2;
 
       // Special handling of SOS (start of scan) marker since the entropy
       // coded data follows the SOS. Any xFF byte in the data block must be
       // followed by x00 in the data.
       if (code == 0xda) {
         int number_components = buffer[offset + 4];
-        RCHECK(length == 8 + 2 * number_components);
+        RCHECK(length == static_cast<size_t>(8 + 2 * number_components));
 
         // Advance to the next marker.
         offset += length;
@@ -792,7 +773,7 @@ static bool CheckMpeg2ProgramStream(base::span<const uint8_t> buffer) {
 
     // Check for system headers and PES_packets.
     while (offset + 6 < buffer.size() &&
-           Read24(buffer.subspan(offset).first<3>()) == 1) {
+           Read24(buffer.subspan(offset).first<3u>()) == 1) {
       // Next 8 bits determine stream type.
       int stream_id = buffer[offset + 3];
 
@@ -811,9 +792,10 @@ static bool CheckMpeg2ProgramStream(base::span<const uint8_t> buffer) {
         return true;
       }
 
-      int pes_length = Read16(buffer.subspan(offset + 4).first<2>());
+      int pes_length =
+          base::U16FromBigEndian(buffer.subspan(offset + 4u).first<2u>());
       RCHECK(pes_length > 0);
-      offset = offset + 6 + pes_length;
+      offset = offset + 6 + static_cast<size_t>(pes_length);
     }
   }
   // Success as we are off the end of the buffer and liked everything
@@ -833,8 +815,8 @@ static bool CheckMpeg2TransportStream(base::span<const uint8_t> buffer) {
   RCHECK(buffer.size() >= 250);  // Want more than 1 packet to check.
 
   size_t offset = 0;
-  int packet_length = -1;
-  while (buffer[offset] != kMpeg2SyncWord && offset < 20) {
+  size_t packet_length = 0;
+  while (offset < 20 && buffer[offset] != kMpeg2SyncWord) {
     // Skip over any header in the first 20 bytes.
     ++offset;
   }
@@ -875,12 +857,15 @@ static bool CheckMpeg2TransportStream(base::span<const uint8_t> buffer) {
     }
 
     // Attempt to determine the packet length on the first packet.
-    if (packet_length < 0) {
-      if (buffer[offset + 188] == kMpeg2SyncWord) {
+    if (packet_length == 0) {
+      if (offset + 188 < buffer.size() &&
+          buffer[offset + 188] == kMpeg2SyncWord) {
         packet_length = 188;
-      } else if (buffer[offset + 192] == kMpeg2SyncWord) {
+      } else if (offset + 192 < buffer.size() &&
+                 buffer[offset + 192] == kMpeg2SyncWord) {
         packet_length = 192;
-      } else if (buffer[offset + 204] == kMpeg2SyncWord) {
+      } else if (offset + 204 < buffer.size() &&
+                 buffer[offset + 204] == kMpeg2SyncWord) {
         packet_length = 204;
       } else {
         packet_length = 208;
@@ -983,8 +968,10 @@ static bool CheckMov(base::span<const uint8_t> buffer) {
   size_t offset = 0;
   int valid_top_level_boxes = 0;
   while (offset + 8 < buffer.size()) {
-    uint32_t atomsize = Read32(buffer.subspan(offset).first<4>());
-    uint32_t atomtype = Read32(buffer.subspan(offset + 4).first<4>());
+    uint32_t atomsize =
+        base::U32FromBigEndian(buffer.subspan(offset).first<4u>());
+    uint32_t atomtype =
+        base::U32FromBigEndian(buffer.subspan(offset + 4u).first<4u>());
 
     // Only need to check for atoms that are valid at the top level. However,
     // "Boxes with an unrecognized type shall be ignored and skipped." So
@@ -1016,10 +1003,12 @@ static bool CheckMov(base::span<const uint8_t> buffer) {
       if (offset + 16 > buffer.size()) {
         break;
       }
-      if (Read32(buffer.subspan(offset + 8).first<4>()) != 0) {
+      if (base::U32FromBigEndian(buffer.subspan(offset + 8u).first<4u>()) !=
+          0) {
         break;  // Offset is way past buffer size.
       }
-      atomsize = Read32(buffer.subspan(offset + 12).first<4>());
+      atomsize =
+          base::U32FromBigEndian(buffer.subspan(offset + 12u).first<4u>());
     }
     if (atomsize == 0 || atomsize > buffer.size()) {
       break;  // Indicates the last atom or length too big.
@@ -1047,7 +1036,7 @@ static bool ValidMpegAudioFrameHeader(base::span<const uint8_t> header,
   // Reference: http://mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm.
   DCHECK_GE(header.size(), 4u);
   *framesize = 0;
-  BitReader reader(header.first(4u));  // Header can only be 4 bytes long.
+  BitReader reader(header.first<4u>());  // Header can only be 4 bytes long.
 
   // Verify frame sync (11 bits) are all set.
   RCHECK(ReadBits(&reader, 11) == 0x7ff);
@@ -1138,11 +1127,13 @@ static bool CheckMp3(base::span<const uint8_t> buffer) {
   while (offset + 3 < buffer.size()) {
     int framesize;
     RCHECK(ValidMpegAudioFrameHeader(buffer.subspan(offset), &framesize));
+    RCHECK(framesize > 0);
+
     // Have we seen enough valid headers?
     if (++numSeen > 10) {
       return true;
     }
-    offset += framesize;
+    offset += static_cast<size_t>(framesize);
   }
   // Off the end of the buffer, return success if a few valid headers seen.
   return numSeen > 2;
@@ -1313,9 +1304,9 @@ static bool CheckWebm(base::span<const uint8_t> buffer) {
         // Need to see "webm" or "matroska" next.
         RCHECK(reader.bits_available() >= 32);
         switch (ReadBits(&reader, 32)) {
-          case TAG('w', 'e', 'b', 'm') :
+          case TAG('w', 'e', 'b', 'm'):
             return true;
-          case TAG('m', 'a', 't', 'r') :
+          case TAG('m', 'a', 't', 'r'):
             RCHECK(reader.bits_available() >= 32);
             return (ReadBits(&reader, 32) == TAG('o', 's', 'k', 'a'));
         }
@@ -1345,8 +1336,9 @@ static bool CheckVC1(base::span<const uint8_t> buffer) {
   RCHECK(buffer.size() >= 24);
 
   // First check for Bitstream Metadata Serialization (Annex L)
-  if (buffer[0] == 0xc5 && Read32(buffer.subspan(4u).first<4>()) == 0x04 &&
-      Read32(buffer.subspan(20u).first<4>()) == 0x0c) {
+  if (buffer[0] == 0xc5 &&
+      base::U32FromBigEndian(buffer.subspan<4u, 4u>()) == 0x04 &&
+      base::U32FromBigEndian(buffer.subspan<20u, 4u>()) == 0x0c) {
     // Verify settings in STRUCT_C and STRUCT_A
     BitReader reader(buffer.subspan(8u, 12u));
 
@@ -1443,15 +1435,16 @@ static bool CheckVC1(base::span<const uint8_t> buffer) {
 // below. Note that the first 4 characters of the string may be used as a TAG
 // in LookupContainerByFirst4. For signatures that contain embedded \0, use
 // uint8_t[].
-static const char kAmrSignature[] = "#!AMR";
-static const uint8_t kAsfSignature[] = {0x30, 0x26, 0xb2, 0x75, 0x8e, 0x66,
-                                        0xcf, 0x11, 0xa6, 0xd9, 0x00, 0xaa,
-                                        0x00, 0x62, 0xce, 0x6c};
-static const char kAssSignature[] = "[Script Info]";
-static const char kAssBomSignature[] = UTF8_BYTE_ORDER_MARK "[Script Info]";
-static const uint8_t kWtvSignature[] = {0xb7, 0xd8, 0x00, 0x20, 0x37, 0x49,
-                                        0xda, 0x11, 0xa6, 0x4e, 0x00, 0x07,
-                                        0xe9, 0x5e, 0xad, 0x8d};
+static constexpr std::string_view kAmrSignature = "#!AMR";
+static constexpr auto kAsfSignature =
+    std::to_array<uint8_t>({0x30, 0x26, 0xb2, 0x75, 0x8e, 0x66, 0xcf, 0x11,
+                            0xa6, 0xd9, 0x00, 0xaa, 0x00, 0x62, 0xce, 0x6c});
+static constexpr std::string_view kAssSignature = "[Script Info]";
+static constexpr std::string_view kAssBomSignature =
+    UTF8_BYTE_ORDER_MARK "[Script Info]";
+static constexpr auto kWtvSignature =
+    std::to_array<uint8_t>({0xb7, 0xd8, 0x00, 0x20, 0x37, 0x49, 0xda, 0x11,
+                            0xa6, 0x4e, 0x00, 0x07, 0xe9, 0x5e, 0xad, 0x8d});
 
 // Attempt to determine the container type from the buffer provided. This is
 // a simple pass, that uses the first 4 bytes of the buffer as an index to get
@@ -1463,7 +1456,7 @@ static MediaContainerName LookupContainerByFirst4(
     return MediaContainerName::kContainerUnknown;
   }
 
-  uint32_t first4 = Read32(buffer.first<4>());
+  uint32_t first4 = base::U32FromBigEndian(buffer.first<4u>());
   switch (first4) {
     case 0x1a45dfa3:
       if (CheckWebm(buffer)) {
@@ -1477,54 +1470,55 @@ static MediaContainerName LookupContainerByFirst4(
       }
       break;
 
-    case TAG('#','!','A','M'):
+    case TAG('#', '!', 'A', 'M'):
       if (StartsWith(buffer, kAmrSignature)) {
         return MediaContainerName::kContainerAMR;
       }
       break;
 
-    case TAG('#','E','X','T'):
+    case TAG('#', 'E', 'X', 'T'):
       if (CheckHls(buffer)) {
         return MediaContainerName::kContainerHLS;
       }
       break;
 
-    case TAG('.','R','M','F'):
+    case TAG('.', 'R', 'M', 'F'):
       if (buffer[4] == 0 && buffer[5] == 0) {
         return MediaContainerName::kContainerRM;
       }
       break;
 
-    case TAG('.','r','a','\xfd'):
+    case TAG('.', 'r', 'a', '\xfd'):
       return MediaContainerName::kContainerRM;
 
-    case TAG('B','I','K','b'):
-    case TAG('B','I','K','d'):
-    case TAG('B','I','K','f'):
-    case TAG('B','I','K','g'):
-    case TAG('B','I','K','h'):
-    case TAG('B','I','K','i'):
+    case TAG('B', 'I', 'K', 'b'):
+    case TAG('B', 'I', 'K', 'd'):
+    case TAG('B', 'I', 'K', 'f'):
+    case TAG('B', 'I', 'K', 'g'):
+    case TAG('B', 'I', 'K', 'h'):
+    case TAG('B', 'I', 'K', 'i'):
       if (CheckBink(buffer)) {
         return MediaContainerName::kContainerBink;
       }
       break;
 
-    case TAG('c','a','f','f'):
+    case TAG('c', 'a', 'f', 'f'):
       if (CheckCaf(buffer)) {
         return MediaContainerName::kContainerCAF;
       }
       break;
 
-    case TAG('D','E','X','A'):
+    case TAG('D', 'E', 'X', 'A'):
       if (buffer.size() > 15 &&
-          Read16(buffer.subspan(11u).first<2>()) <= 2048 &&
-          Read16(buffer.subspan(13u).first<2>()) <= 2048) {
+          base::U16FromBigEndian(buffer.subspan<11u, 2u>()) <= 2048 &&
+          base::U16FromBigEndian(buffer.subspan<13u, 2u>()) <= 2048) {
         return MediaContainerName::kContainerDXA;
       }
       break;
 
-    case TAG('D','T','S','H'):
-      if (Read32(buffer.subspan(4u).first<4>()) == TAG('D', 'H', 'D', 'R')) {
+    case TAG('D', 'T', 'S', 'H'):
+      if (base::U32FromBigEndian(buffer.subspan<4u, 4u>()) ==
+          TAG('D', 'H', 'D', 'R')) {
         return MediaContainerName::kContainerDTSHD;
       }
       break;
@@ -1536,74 +1530,77 @@ static MediaContainerName LookupContainerByFirst4(
     case 0x0001a364:
     case 0x0002a364:
     case 0x0003a364:
-      if (Read32(buffer.subspan(4u).first<4>()) != 0 &&
-          Read32(buffer.subspan(8u).first<4>()) != 0) {
+      if (base::U32FromBigEndian(buffer.subspan<4u, 4u>()) != 0 &&
+          base::U32FromBigEndian(buffer.subspan<8u, 4u>()) != 0) {
         return MediaContainerName::kContainerIRCAM;
       }
       break;
 
-    case TAG('f','L','a','C'):
+    case TAG('f', 'L', 'a', 'C'):
       return MediaContainerName::kContainerFLAC;
 
-    case TAG('F','L','V',0):
-    case TAG('F','L','V',1):
-    case TAG('F','L','V',2):
-    case TAG('F','L','V',3):
-    case TAG('F','L','V',4):
-      if (buffer[5] == 0 && Read32(buffer.subspan(5u).first<4>()) > 8) {
+    case TAG('F', 'L', 'V', 0):
+    case TAG('F', 'L', 'V', 1):
+    case TAG('F', 'L', 'V', 2):
+    case TAG('F', 'L', 'V', 3):
+    case TAG('F', 'L', 'V', 4):
+      if (buffer[5] == 0 &&
+          base::U32FromBigEndian(buffer.subspan<5u, 4u>()) > 8) {
         return MediaContainerName::kContainerFLV;
       }
       break;
 
-    case TAG('F','O','R','M'):
-      switch (Read32(buffer.subspan(8u).first<4>())) {
-        case TAG('A','I','F','F'):
-        case TAG('A','I','F','C'):
+    case TAG('F', 'O', 'R', 'M'):
+      switch (base::U32FromBigEndian(buffer.subspan<8u, 4u>())) {
+        case TAG('A', 'I', 'F', 'F'):
+        case TAG('A', 'I', 'F', 'C'):
           return MediaContainerName::kContainerAIFF;
       }
       break;
 
-    case TAG('M','A','C',' '):
+    case TAG('M', 'A', 'C', ' '):
       return MediaContainerName::kContainerAPE;
 
-    case TAG('O','N','2',' '):
-      if (Read32(buffer.subspan(8u).first<4>()) == TAG('O', 'N', '2', 'f')) {
+    case TAG('O', 'N', '2', ' '):
+      if (base::U32FromBigEndian(buffer.subspan<8u, 4u>()) ==
+          TAG('O', 'N', '2', 'f')) {
         return MediaContainerName::kContainerAVI;
       }
       break;
 
-    case TAG('O','g','g','S'):
+    case TAG('O', 'g', 'g', 'S'):
       if (buffer[5] <= 7) {
         return MediaContainerName::kContainerOgg;
       }
       break;
 
-    case TAG('R','F','6','4'):
+    case TAG('R', 'F', '6', '4'):
       if (buffer.size() > 16 &&
-          Read32(buffer.subspan(12u).first<4>()) == TAG('d', 's', '6', '4')) {
+          base::U32FromBigEndian(buffer.subspan<12u, 4u>()) ==
+              TAG('d', 's', '6', '4')) {
         return MediaContainerName::kContainerWAV;
       }
       break;
 
-    case TAG('R','I','F','F'):
-      switch (Read32(buffer.subspan(8u).first<4>())) {
-        case TAG('A','V','I',' '):
-        case TAG('A','V','I','X'):
-        case TAG('A','V','I','\x19'):
-        case TAG('A','M','V',' '):
+    case TAG('R', 'I', 'F', 'F'):
+      switch (base::U32FromBigEndian(buffer.subspan<8u, 4u>())) {
+        case TAG('A', 'V', 'I', ' '):
+        case TAG('A', 'V', 'I', 'X'):
+        case TAG('A', 'V', 'I', '\x19'):
+        case TAG('A', 'M', 'V', ' '):
           return MediaContainerName::kContainerAVI;
-        case TAG('W','A','V','E'):
+        case TAG('W', 'A', 'V', 'E'):
           return MediaContainerName::kContainerWAV;
       }
       break;
 
-    case TAG('[','S','c','r'):
+    case TAG('[', 'S', 'c', 'r'):
       if (StartsWith(buffer, kAssSignature)) {
         return MediaContainerName::kContainerASS;
       }
       break;
 
-    case TAG('\xef','\xbb','\xbf','['):
+    case TAG('\xef', '\xbb', '\xbf', '['):
       if (StartsWith(buffer, kAssBomSignature)) {
         return MediaContainerName::kContainerASS;
       }
@@ -1629,16 +1626,16 @@ static MediaContainerName LookupContainerByFirst4(
   // than the first 4 bytes.
   uint32_t first3 = first4 & 0xffffff00;
   switch (first3) {
-    case TAG('C','W','S',0):
-    case TAG('F','W','S',0):
+    case TAG('C', 'W', 'S', 0):
+    case TAG('F', 'W', 'S', 0):
       return MediaContainerName::kContainerSWF;
 
-    case TAG('I','D','3',0):
+    case TAG('I', 'D', '3', 0):
       return MediaContainerName::kContainerMP3;
   }
 
   // Maybe the first 2 characters are something we can use.
-  uint32_t first2 = Read16(buffer.first<2>());
+  uint32_t first2 = base::U16FromBigEndian(buffer.first<2u>());
   switch (first2) {
     case kAc3SyncWord:
       if (CheckAc3(buffer)) {

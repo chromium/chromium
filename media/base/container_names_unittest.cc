@@ -6,9 +6,9 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -51,11 +51,11 @@ TEST(ContainerNamesTest, CheckSmallBuffer) {
 
   // Try a large buffer all zeros.
   char buffer3[4096];
-  UNSAFE_TODO(memset(buffer3, 0, sizeof(buffer3)));
+  std::ranges::fill(buffer3, 0);
   VERIFY(buffer3, MediaContainerName::kContainerUnknown);
 
   // Reuse buffer, but all \n this time.
-  UNSAFE_TODO(memset(buffer3, '\n', sizeof(buffer3)));
+  std::ranges::fill(buffer3, '\n');
   VERIFY(buffer3, MediaContainerName::kContainerUnknown);
 }
 
