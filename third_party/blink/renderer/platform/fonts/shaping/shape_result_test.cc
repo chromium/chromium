@@ -79,6 +79,10 @@ class ShapeResultTest : public FontTestBase {
     return false;
   }
 
+  static wtf_size_t PositionDataSize(const ShapeResult& result) {
+    return result.character_position_.size();
+  }
+
   ShapeResult* CreateShapeResult(TextDirection direction) const {
     return MakeGarbageCollected<ShapeResult>(0, 0, direction);
   }
@@ -361,6 +365,43 @@ TEST_F(ShapeResultTest, AddUnsafeToBreakRange) {
   for (const unsigned offset : offsets) {
     EXPECT_NE(result->NextSafeToBreakOffset(offset), offset);
     EXPECT_NE(result->CachedNextSafeToBreakOffset(offset), offset);
+  }
+}
+
+TEST_F(ShapeResultTest, UnsafeBreaksPreventPositionCompaction) {
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(0, 4, TextDirection::kLtr);
+  result->InsertRunForTesting(0, 4, TextDirection::kLtr, {0, 2});
+  result->EnsurePositionData(/*allow_compaction=*/true);
+  EXPECT_EQ(2u, result->CachedNextSafeToBreakOffset(1));
+  EXPECT_EQ(0u, result->CachedPreviousSafeToBreakOffset(1));
+
+  result = MakeGarbageCollected<ShapeResult>(0, 4, TextDirection::kLtr);
+  result->InsertRunForTesting(0, 4, TextDirection::kLtr, {1, 2, 3});
+  result->EnsurePositionData(/*allow_compaction=*/true);
+  EXPECT_EQ(1u, result->CachedNextSafeToBreakOffset(0));
+}
+
+TEST_F(ShapeResultTest, CompactPositionDataRebuildsFullTable) {
+  constexpr unsigned kNumCharacters = 8;
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(0, kNumCharacters, TextDirection::kLtr);
+  result->InsertRunForTesting(0, kNumCharacters, TextDirection::kLtr,
+                              {0, 1, 2, 3, 4, 5, 6, 7});
+
+  result->EnsurePositionData(/*allow_compaction=*/true);
+  ASSERT_EQ(1u, PositionDataSize(*result));
+  for (unsigned offset = 0; offset < kNumCharacters; ++offset) {
+    EXPECT_EQ(LayoutUnit(), result->CachedPositionForOffset(offset));
+  }
+
+  result->EnsurePositionData(/*allow_compaction=*/false);
+  ASSERT_EQ(kNumCharacters, PositionDataSize(*result));
+  for (unsigned offset = 0; offset < kNumCharacters; ++offset) {
+    const ShapeResultCharacterData& data = result->CharacterData(offset);
+    EXPECT_EQ(LayoutUnit(), data.x_position);
+    EXPECT_TRUE(data.is_cluster_base);
+    EXPECT_TRUE(data.safe_to_break_before);
   }
 }
 

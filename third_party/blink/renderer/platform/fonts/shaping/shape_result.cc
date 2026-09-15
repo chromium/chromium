@@ -1153,7 +1153,7 @@ void ShapeResult::ApplyTrailingExpansion(LayoutUnit expansion) {
 bool ShapeResult::HasAutoSpacingAfter(unsigned offset) const {
   if (!character_position_.empty() && offset >= StartIndex() &&
       offset < EndIndex()) {
-    if (character_position_.size() == 1 && NumCharacters() > 1) [[unlikely]] {
+    if (IsPositionDataCompacted()) [[unlikely]] {
       return false;
     }
     return CharacterData(offset).has_auto_spacing_after;
@@ -2207,30 +2207,34 @@ void ShapeResult::ComputePositionData(bool allow_compaction) const {
       }
 
       // Track whether this result is "monospace": every glyph maps 1:1 to a
-      // character in identity order (glyph N at character N) and all glyphs
-      // share a single advance. Only then can positions be reconstructed
-      // analytically as `advance * offset`. Ligatures, clusters, or characters
-      // without glyphs put glyph N at some other character, so they keep the
-      // full per-character table.
+      // character in identity order (glyph N at character N), all glyphs share
+      // a single advance, and every glyph boundary is safe to break. Only then
+      // can positions be reconstructed analytically as `advance * offset`.
+      // Ligatures, clusters, characters without glyphs, or unsafe boundaries
+      // keep the full per-character table.
       switch (advance_type) {
         case AdvanceType::kUnknown:
-          if (character_index == mono_glyph_count) {
+          if (character_index == mono_glyph_count &&
+              glyph_data.IsSafeToBreakBefore()) {
             mono_advance = glyph_data.advance;
             advance_type = AdvanceType::kMono;
+            ++mono_glyph_count;
           } else {
             advance_type = AdvanceType::kVariable;
           }
           break;
         case AdvanceType::kMono:
           if (mono_advance != glyph_data.advance ||
-              character_index != mono_glyph_count) {
+              character_index != mono_glyph_count ||
+              !glyph_data.IsSafeToBreakBefore()) {
             advance_type = AdvanceType::kVariable;
+          } else {
+            ++mono_glyph_count;
           }
           break;
         [[likely]] case AdvanceType::kVariable:
           break;
       }
-      ++mono_glyph_count;
 
       total_advance += glyph_data.advance;
       next_character_index = character_index + 1;
@@ -2249,11 +2253,11 @@ void ShapeResult::ComputePositionData(bool allow_compaction) const {
 
   if (allow_compaction && advance_type == AdvanceType::kMono && !kIsRtl &&
       NumCharacters() > 1 && mono_glyph_count == num_characters_) {
-    // Every glyph shares one advance and maps 1:1 to a character in identity
-    // order, so positions are `advance * offset`. Keep only that advance (in
-    // element 0's union slot) and drop the per-character table; read paths
-    // reconstruct positions analytically when `character_position_.size() == 1
-    // && NumCharacters() > 1`.
+    // Every glyph shares one advance, maps 1:1 to a character in identity
+    // order, and is safe to break before, so positions are `advance * offset`.
+    // Keep only that advance (in element 0's union slot) and drop the
+    // per-character table; read paths reconstruct positions analytically when
+    // `character_position_.size() == 1 && NumCharacters() > 1`.
     character_position_.front().advance = mono_advance;
     character_position_.Shrink(1);
     character_position_.shrink_to_fit();
@@ -2299,10 +2303,11 @@ unsigned ShapeResult::CachedOffsetForPosition(LayoutUnit x) const {
   const unsigned length = NumCharacters();
   if (x <= 0)
     return !rtl ? 0 : length;
-  if (x >= width_)
+  if (x >= width_) {
     return !rtl ? length : 0;
+  }
 
-  if (character_position_.size() == 1 && NumCharacters() > 1) [[unlikely]] {
+  if (IsPositionDataCompacted()) [[unlikely]] {
     // Monospace fast path: invert `position = advance * offset`. Estimate the
     // offset, then adjust by at most one step so the result matches what the
     // binary search below would return: the largest offset whose position
@@ -2363,7 +2368,7 @@ LayoutUnit ShapeResult::CachedPositionForOffset(unsigned offset) const {
   const unsigned length = NumCharacters();
   if (!rtl) {
     if (offset < length) {
-      if (character_position_.size() == 1 && NumCharacters() > 1) [[unlikely]] {
+      if (IsPositionDataCompacted()) [[unlikely]] {
         // Monospace fast path: positions were collapsed to a single shared
         // advance. `advance * offset` equals the accumulated table value (`+=`
         // accumulates raw values without intermediate rounding), so this is
@@ -2417,7 +2422,7 @@ unsigned ShapeResult::CachedNextSafeToBreakOffset(unsigned offset) const {
   const unsigned length = NumCharacters();
   DCHECK_LT(adjusted_offset, length);
 
-  if (character_position_.size() == 1 && NumCharacters() > 1) [[unlikely]] {
+  if (IsPositionDataCompacted()) [[unlikely]] {
     return start_index_ + adjusted_offset;
   }
 
@@ -2448,7 +2453,7 @@ unsigned ShapeResult::CachedPreviousSafeToBreakOffset(unsigned offset) const {
     return start_index_ + length;
   }
 
-  if (character_position_.size() == 1 && NumCharacters() > 1) [[unlikely]] {
+  if (IsPositionDataCompacted()) [[unlikely]] {
     return start_index_ + adjusted_offset;
   }
 

@@ -424,6 +424,9 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
 
   template <bool>
   void ComputePositionData(bool allow_compaction) const;
+  bool IsPositionDataCompacted() const {
+    return character_position_.size() == 1 && NumCharacters() > 1;
+  }
   void RecalcCharacterPositions(bool allow_compaction = true) const;
 
   // if `method` is std::nullopt, this handles letter-spacing/word-spacing.
