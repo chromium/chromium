@@ -65,6 +65,9 @@ class SidePanelDeferredEntryTracker {
   // Clears any deferred tab-scoped entry associated with `tab_handle`.
   void ClearTabScopedEntry(const tabs::TabHandle& tab_handle);
 
+  // Clears all deferred entries, both tab-scoped and window-scoped.
+  void ClearAllEntries();
+
  private:
   const raw_ptr<BrowserWindowInterface> browser_;
 

@@ -34,7 +34,7 @@ public final class SidePanelContainerCoordinatorIntegrationTestSupport {
      * @param suppressAnimations Whether to suppress animations.
      */
     public static void showSidePanel(Tab tab, boolean suppressAnimations) {
-        assert AndroidSidePanelEnabledFn.isTabScopedDevFeatureEnabled();
+        assertDevFeatureEnabled();
 
         SidePanelContainerCoordinatorIntegrationTestSupportJni.get()
                 .showSidePanel(tab, suppressAnimations);
@@ -47,10 +47,15 @@ public final class SidePanelContainerCoordinatorIntegrationTestSupport {
      * @param suppressAnimations Whether to suppress animations.
      */
     public static void closeSidePanel(Tab tab, boolean suppressAnimations) {
-        assert AndroidSidePanelEnabledFn.isTabScopedDevFeatureEnabled();
+        assertDevFeatureEnabled();
 
         SidePanelContainerCoordinatorIntegrationTestSupportJni.get()
                 .closeSidePanel(tab, suppressAnimations);
+    }
+
+    private static void assertDevFeatureEnabled() {
+        assert AndroidSidePanelEnabledFn.isTabScopedDevFeatureEnabled()
+                || AndroidSidePanelEnabledFn.isWindowScopedDevFeatureEnabled();
     }
 
     @NativeMethods

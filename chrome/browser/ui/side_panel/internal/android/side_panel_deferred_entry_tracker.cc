@@ -102,3 +102,8 @@ void SidePanelDeferredEntryTracker::ClearTabScopedEntry(
     const tabs::TabHandle& tab_handle) {
   tab_scoped_deferred_entries_.erase(tab_handle);
 }
+
+void SidePanelDeferredEntryTracker::ClearAllEntries() {
+  tab_scoped_deferred_entries_.clear();
+  window_scoped_deferred_entry_.reset();
+}

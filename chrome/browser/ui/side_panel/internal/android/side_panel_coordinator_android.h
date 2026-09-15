@@ -79,6 +79,12 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   //   Start of public functions for SidePanelTabModelObserver   //
   /////////////////////////////////////////////////////////////////
 
+  // Called when all tabs will be closed. The closure can be undone.
+  void OnAllTabsWillClose();
+
+  // Called right before all tabs are destroyed. This can't be undone.
+  void OnAllTabsWillBeDestroyed();
+
   // Called when a tab is closed, but the closure can be undone.
   void OnTabClosed(TabAndroid* tab);
 
@@ -88,6 +94,9 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
 
   // Called when the active tab changes.
   void OnTabSelected(TabAndroid* old_tab, TabAndroid* new_tab);
+
+  // Called right before a tab is destroyed. This can't be undone.
+  void OnTabWillBeDestroyed(TabAndroid* tab);
 
   /////////////////////////////////////////////////////////////////
   //    End of public functions for SidePanelTabModelObserver    //
