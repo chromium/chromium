@@ -973,7 +973,16 @@ export class TrackedElementManager {
       return {success: false};
     }
 
-    const element = trackedElement.element;
+    let element = trackedElement.element;
+    if (!(element instanceof HTMLInputElement ||
+          element instanceof HTMLTextAreaElement)) {
+      const input = element.shadowRoot?.querySelector('input, textarea');
+      if (input instanceof HTMLInputElement ||
+          input instanceof HTMLTextAreaElement) {
+        element = input as HTMLElement;
+      }
+    }
+
     element.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'Enter',
       code: 'Enter',

@@ -832,6 +832,53 @@ suite('TrackedElementTest', function() {
         assertEquals('mouse', (pointerUpEvent as PointerEvent).pointerType);
       });
 
+  test('confirm_ dispatches keydown Enter to element', async () => {
+    const input = document.createElement('input');
+    input.id = 'input';
+    document.body.appendChild(input);
+
+    let receivedEvent: KeyboardEvent|null = null;
+    input.addEventListener('keydown', (e: KeyboardEvent) => {
+      receivedEvent = e;
+    });
+
+    manager.startTracking(
+        input, ELEMENT_ID.nativeIdentifier,
+        {secondaryId: ELEMENT_ID.secondaryIdentifier});
+    await waitForVisibilityEvents();
+
+    const result = await managerRemote.confirm(ELEMENT_ID);
+    assertTrue(result.success);
+    assertTrue(!!receivedEvent);
+    assertEquals('Enter', (receivedEvent as KeyboardEvent).key);
+  });
+
+  test(
+      'confirm_ on custom element dispatches keydown Enter to inner input',
+      async () => {
+        const customEl = document.createElement('div');
+        const shadow = customEl.attachShadow({mode: 'open'});
+        const innerInput = document.createElement('input');
+        shadow.appendChild(innerInput);
+        document.body.appendChild(customEl);
+
+        let receivedEvent: KeyboardEvent|null = null;
+        innerInput.addEventListener('keydown', (e: KeyboardEvent) => {
+          receivedEvent = e;
+        });
+
+        manager.startTracking(
+            customEl, ELEMENT_ID.nativeIdentifier,
+            {secondaryId: ELEMENT_ID.secondaryIdentifier});
+        await waitForVisibilityEvents();
+
+        const result = await managerRemote.confirm(ELEMENT_ID);
+        assertTrue(result.success);
+        assertTrue(!!receivedEvent);
+        assertEquals('Enter', (receivedEvent as KeyboardEvent).key);
+      });
+
+
   // Tests for multiple elements with the same native identifier:
 
   test(
