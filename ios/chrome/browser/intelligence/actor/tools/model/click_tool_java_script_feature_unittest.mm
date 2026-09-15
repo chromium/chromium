@@ -83,7 +83,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
   MockClickJsFunctions(
       /*mock_return_value=*/base::StringPrintf(
           "{resultCode: %d, message: 'Custom JS Error'}",
-          static_cast<int>(ClickToolResultCode::kClickSuppressed)));
+          static_cast<int>(ClickToolResultCode::kElementDisabled)));
   ActionTarget click_by_coordinate = CreateTargetWithCoordinates();
   ActionTarget click_by_node_id = CreateTargetWithNodeId();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
@@ -98,16 +98,16 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsError) {
                    ClickAction::UNKNOWN_CLICK_COUNT,
                    node_id_future.GetCallback());
 
-  auto coordinate_result = coordinate_future.Get();
+  const auto& coordinate_result = coordinate_future.Get();
   EXPECT_FALSE(coordinate_result.IsOk());
   EXPECT_EQ(coordinate_result.code(),
-            mojom::ActionResultCode::kClickSuppressed);
+            mojom::ActionResultCode::kElementDisabled);
   EXPECT_EQ(GetToolExecutionResultMessage(coordinate_result),
             "Custom JS Error");
 
-  auto node_id_result = node_id_future.Get();
+  const auto& node_id_result = node_id_future.Get();
   EXPECT_FALSE(node_id_result.IsOk());
-  EXPECT_EQ(node_id_result.code(), mojom::ActionResultCode::kClickSuppressed);
+  EXPECT_EQ(node_id_result.code(), mojom::ActionResultCode::kElementDisabled);
   EXPECT_EQ(GetToolExecutionResultMessage(node_id_result), "Custom JS Error");
 }
 
@@ -138,7 +138,7 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsErrorWithoutMessage) {
   MockClickJsFunctions(
       /*mock_return_value=*/base::StringPrintf(
           "{resultCode: %d}",
-          static_cast<int>(ClickToolResultCode::kClickSuppressed)));
+          static_cast<int>(ClickToolResultCode::kElementDisabled)));
   ActionTarget click_by_coordinate = CreateTargetWithCoordinates();
   ActionTarget click_by_node_id = CreateTargetWithNodeId();
   base::test::TestFuture<ToolExecutionResult> coordinate_future;
@@ -153,15 +153,15 @@ TEST_F(ClickToolJavaScriptFeatureTest, JsReturnsErrorWithoutMessage) {
                    ClickAction::UNKNOWN_CLICK_COUNT,
                    node_id_future.GetCallback());
 
-  auto coordinate_result = coordinate_future.Get();
+  const auto& coordinate_result = coordinate_future.Get();
   EXPECT_FALSE(coordinate_result.IsOk());
   EXPECT_EQ(coordinate_result.code(),
-            mojom::ActionResultCode::kClickSuppressed);
+            mojom::ActionResultCode::kElementDisabled);
   EXPECT_FALSE(coordinate_result.message().has_value());
 
-  auto node_id_result = node_id_future.Get();
+  const auto& node_id_result = node_id_future.Get();
   EXPECT_FALSE(node_id_result.IsOk());
-  EXPECT_EQ(node_id_result.code(), mojom::ActionResultCode::kClickSuppressed);
+  EXPECT_EQ(node_id_result.code(), mojom::ActionResultCode::kElementDisabled);
   EXPECT_FALSE(node_id_result.message().has_value());
 }
 

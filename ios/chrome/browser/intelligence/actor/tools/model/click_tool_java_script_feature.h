@@ -28,8 +28,6 @@ enum class ClickToolResultCode {
   kInvalidDomNodeId = 2,
   // The targeted element is disabled.
   kElementDisabled = 3,
-  // The click event was not able to be dispatched.
-  kClickSuppressed = 4,
 };
 // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/resources/click_tool.ts:ClickToolResultCode)
 
@@ -38,7 +36,9 @@ class ClickToolJavaScriptFeature : public web::JavaScriptFeature {
  public:
   static ClickToolJavaScriptFeature* GetInstance();
 
-  // Executes a click action on the given WebFrame.
+  // Attempts to execute a click action on the given WebFrame. Events
+  // canceled by websites via `preventDefault()` are treated as successful
+  // execution, matching Desktop Chrome ClickDispatcher behavior.
   void Click(base::WeakPtr<web::WebFrame> target_frame,
              const ActionTarget& target,
              optimization_guide::proto::ClickAction_ClickType click_type,

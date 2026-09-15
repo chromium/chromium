@@ -70,24 +70,43 @@ class ClickToolJavascriptTest : public web::JavascriptTest {
         LoadUrl(GURL(test_server_.GetURL("/actor/click_tool_test.html"))));
   }
 
+  std::vector<EventInfo> ExpectedTouchEvents(int x, int y) {
+    return {
+        {"touchstart", x, y, /*bubbles=*/true, /*cancelable=*/true,
+         /*button=*/0, /*detail=*/0},
+        {"touchend", x, y, /*bubbles=*/true, /*cancelable=*/true,
+         /*button=*/0, /*detail=*/0},
+    };
+  }
+
   std::vector<EventInfo> ExpectedEventsOnClick(int x,
                                                int y,
                                                int button,
                                                int detail) {
-    std::vector<EventInfo> events;
+    std::vector<EventInfo> events = ExpectedTouchEvents(x, y);
+    events.push_back({"mousemove", x, y, /*bubbles=*/true, /*cancelable=*/true,
+                      button, detail});
+    events.push_back({"mousedown", x, y, /*bubbles=*/true, /*cancelable=*/true,
+                      button, detail});
+    events.push_back({"mouseup", x, y, /*bubbles=*/true, /*cancelable=*/true,
+                      button, detail});
     events.push_back(
-        {"touchstart", x, y, /*bubbles=*/true, /*cancelable=*/false, 0, 0});
-    events.push_back(
-        {"touchend", x, y, /*bubbles=*/true, /*cancelable=*/false, 0, 0});
-    events.push_back({"mousemove", x, y, /*bubbles=*/true, /*cancelable=*/false,
-                      button, detail});
-    events.push_back({"mousedown", x, y, /*bubbles=*/true, /*cancelable=*/false,
-                      button, detail});
-    events.push_back({"mouseup", x, y, /*bubbles=*/true, /*cancelable=*/false,
-                      button, detail});
-    events.push_back({"click", x, y, /*bubbles=*/true, /*cancelable=*/false,
-                      button, detail});
+        {"click", x, y, /*bubbles=*/true, /*cancelable=*/true, button, detail});
     return events;
+  }
+
+  NSDictionary* ExecuteClickAndVerifyEvents(
+      int click_count,
+      const std::vector<EventInfo>& expected_events) {
+    NSDictionary* result = ClickByCoordinate(
+        kButtonX, kButtonY, /*clickType=*/1, click_count, /*pixelType=*/1);
+    EXPECT_TRUE(result);
+    EXPECT_NE(result[@"resultCode"], nil);
+    EXPECT_EQ(static_cast<actor::ClickToolResultCode>(
+                  [result[@"resultCode"] intValue]),
+              actor::ClickToolResultCode::kOk);
+    EXPECT_EQ(GetCapturedEvents(), expected_events);
+    return result;
   }
 
   NSDictionary* ClickByCoordinate(int x,
@@ -178,7 +197,7 @@ TEST_F(ClickToolJavascriptTest,
       ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/2);
   expected.insert(expected.end(), second_click.begin(), second_click.end());
   expected.push_back({"dblclick", kButtonX, kButtonY, /*bubbles=*/true,
-                      /*cancelable=*/false, /*button=*/0, /*detail=*/2});
+                      /*cancelable=*/true, /*button=*/0, /*detail=*/2});
 
   std::vector<EventInfo> actual = GetCapturedEvents();
   EXPECT_EQ(expected, actual);
@@ -367,6 +386,136 @@ TEST_F(ClickToolJavascriptTest, ClickByNodeId_UnclickableNode_Fails) {
   NSString* expectedMessage =
       [NSString stringWithFormat:@"Node with id %d is not clickable.", nodeId];
   EXPECT_TRUE([result[@"message"] containsString:expectedMessage]);
+}
+
+// Tests that when a site calls preventDefault() on 'touchstart', touch events
+// finish but mouse and click events are suppressed per
+// https://w3c.github.io/touch-events/#mouse-events.
+TEST_F(
+    ClickToolJavascriptTest,
+    ClickByCoordinate_SingleClick_TouchStartPreventDefault_SuppressesMouseEvents_ReturnsOk) {
+  web::test::ExecuteJavaScriptInWebView(
+      web_view(), @"document.addEventListener('touchstart', (e) => "
+                  @"e.preventDefault(), {passive: false});");
+  ExecuteClickAndVerifyEvents(/*click_count=*/1,
+                              ExpectedTouchEvents(kButtonX, kButtonY));
+}
+
+// Tests that when a site calls preventDefault() on 'touchend', touch events
+// finish but mouse and click events are suppressed per
+// https://w3c.github.io/touch-events/#mouse-events.
+TEST_F(
+    ClickToolJavascriptTest,
+    ClickByCoordinate_SingleClick_TouchEndPreventDefault_SuppressesMouseEvents_ReturnsOk) {
+  web::test::ExecuteJavaScriptInWebView(
+      web_view(),
+      @"document.addEventListener('touchend', (e) => e.preventDefault());");
+  ExecuteClickAndVerifyEvents(/*click_count=*/1,
+                              ExpectedTouchEvents(kButtonX, kButtonY));
+}
+
+// Tests that when an event listener calls preventDefault() on a 'click' event,
+// the tool returns kOk.
+TEST_F(ClickToolJavascriptTest,
+       ClickByCoordinate_SingleClick_ClickPreventDefault_ReturnsOk) {
+  web::test::ExecuteJavaScriptInWebView(
+      web_view(),
+      @"document.addEventListener('click', (e) => e.preventDefault());");
+  ExecuteClickAndVerifyEvents(
+      /*click_count=*/1,
+      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1));
+}
+
+// Tests that when an event listener calls preventDefault() on a 'dblclick'
+// event, the tool returns kOk.
+TEST_F(ClickToolJavascriptTest,
+       ClickByCoordinate_DoubleClick_DblclickPreventDefault_ReturnsOk) {
+  web::test::ExecuteJavaScriptInWebView(
+      web_view(),
+      @"document.addEventListener('dblclick', (e) => e.preventDefault());");
+
+  std::vector<EventInfo> expected =
+      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
+  std::vector<EventInfo> second_click =
+      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/2);
+  expected.insert(expected.end(), second_click.begin(), second_click.end());
+  expected.push_back({"dblclick", kButtonX, kButtonY, /*bubbles=*/true,
+                      /*cancelable=*/true, /*button=*/0, /*detail=*/2});
+  ExecuteClickAndVerifyEvents(/*click_count=*/2, expected);
+}
+
+// Tests that when an event listener calls preventDefault() on 'touchstart'
+// during the first click of a double click, the second touch sequence still
+// dispatches touch and mouse events (with detail=1 since no prior click event
+// was dispatched), but 'dblclick' is suppressed.
+TEST_F(
+    ClickToolJavascriptTest,
+    ClickByCoordinate_DoubleClick_FirstClickTouchPreventDefault_DispatchesSecondTouchAndMouseEvents_ReturnsOk) {
+  web::test::ExecuteJavaScriptInWebView(
+      web_view(), @"(() => {"
+                  @"  let touchCount = 0;"
+                  @"  document.addEventListener('touchstart', (e) => {"
+                  @"    touchCount++;"
+                  @"    if (touchCount === 1) {"
+                  @"      e.preventDefault();"
+                  @"    }"
+                  @"  }, {passive: false});"
+                  @"})();");
+
+  // First click only generates touch events because touchstart was canceled.
+  std::vector<EventInfo> expected = ExpectedTouchEvents(kButtonX, kButtonY);
+  // Second click generates touch and mouse events with detail=1 because the
+  // first click generated no mouse events to increment the consecutive click
+  // count.
+  std::vector<EventInfo> second_click =
+      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
+  expected.insert(expected.end(), second_click.begin(), second_click.end());
+  ExecuteClickAndVerifyEvents(/*click_count=*/2, expected);
+}
+
+// Tests that when an event listener calls preventDefault() on 'touchstart'
+// during the second click of a double click, the second click's mouse events
+// and 'dblclick' are suppressed.
+TEST_F(
+    ClickToolJavascriptTest,
+    ClickByCoordinate_DoubleClick_SecondClickTouchPreventDefault_SuppressesSecondMouseEvents_ReturnsOk) {
+  web::test::ExecuteJavaScriptInWebView(
+      web_view(), @"(() => {"
+                  @"  let touchCount = 0;"
+                  @"  document.addEventListener('touchstart', (e) => {"
+                  @"    touchCount++;"
+                  @"    if (touchCount === 2) {"
+                  @"      e.preventDefault();"
+                  @"    }"
+                  @"  }, {passive: false});"
+                  @"})();");
+
+  // First click generates touch and mouse events (detail=1).
+  std::vector<EventInfo> expected =
+      ExpectedEventsOnClick(kButtonX, kButtonY, /*button=*/0, /*detail=*/1);
+  // Second click only generates touch events because its touchstart was
+  // canceled.
+  std::vector<EventInfo> second_touch = ExpectedTouchEvents(kButtonX, kButtonY);
+  expected.insert(expected.end(), second_touch.begin(), second_touch.end());
+  ExecuteClickAndVerifyEvents(/*click_count=*/2, expected);
+}
+
+// Tests that when event listeners call preventDefault() on 'touchstart' during
+// both clicks of a double click, all mouse events and 'dblclick' are
+// suppressed.
+TEST_F(
+    ClickToolJavascriptTest,
+    ClickByCoordinate_DoubleClick_BothClicksTouchPreventDefault_SuppressesAllMouseEvents_ReturnsOk) {
+  web::test::ExecuteJavaScriptInWebView(
+      web_view(),
+      @"document.addEventListener('touchstart', (e) => e.preventDefault(), "
+      @"{passive: false});");
+
+  // Both clicks generate touch events only.
+  std::vector<EventInfo> expected = ExpectedTouchEvents(kButtonX, kButtonY);
+  std::vector<EventInfo> second_touch = ExpectedTouchEvents(kButtonX, kButtonY);
+  expected.insert(expected.end(), second_touch.begin(), second_touch.end());
+  ExecuteClickAndVerifyEvents(/*click_count=*/2, expected);
 }
 
 }  // namespace

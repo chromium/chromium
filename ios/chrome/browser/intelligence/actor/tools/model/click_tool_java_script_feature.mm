@@ -33,8 +33,6 @@ mojom::ActionResultCode ToActionResultCode(int code) {
       return mojom::ActionResultCode::kInvalidDomNodeId;
     case ClickToolResultCode::kElementDisabled:
       return mojom::ActionResultCode::kElementDisabled;
-    case ClickToolResultCode::kClickSuppressed:
-      return mojom::ActionResultCode::kClickSuppressed;
   }
   NOTREACHED();
 }
