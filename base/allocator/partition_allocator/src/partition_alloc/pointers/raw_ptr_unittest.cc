@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <type_traits>
 #include <utility>
@@ -1140,11 +1141,11 @@ TEST_F(RawPtrTest, MinusDeltaOperator) {
 }
 
 TEST_F(RawPtrTest, AdvanceString) {
-  const char kChars[] = "Hello";
-  std::string str = kChars;
+  std::string str = "Hello";
   CountingRawPtr<const char> ptr = str.c_str();
-  for (size_t i = 0; i < str.size(); ++i, PA_UNSAFE_TODO(++ptr)) {
-    ASSERT_EQ(*ptr, PA_UNSAFE_TODO(kChars[i]));
+  // SAFETY: `ptr` is incremented only up to `str.size()` times.
+  for (size_t i = 0; i < str.size(); ++i, PA_UNSAFE_BUFFERS(++ptr)) {
+    ASSERT_EQ(*ptr, str[i]);
   }
   EXPECT_THAT((CountingRawPtrExpectations{
                   .get_for_dereference_cnt = 5,
