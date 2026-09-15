@@ -1972,7 +1972,7 @@
     {
         "name": "animal-sniffer-annotations",
         "group": "org.codehaus.mojo",
-        "version": "1.27"
+        "version": "1.28"
     },
     {
         "name": "conscrypt-openjdk-uber",

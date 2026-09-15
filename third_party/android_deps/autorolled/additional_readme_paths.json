@@ -120,7 +120,6 @@
     "committed/libs/org_robolectric_annotations",
     "committed/libs/org_robolectric_junit",
     "committed/libs/org_robolectric_nativeruntime",
-    "committed/libs/org_robolectric_nativeruntime_dist_compat",
     "committed/libs/org_robolectric_pluginapi",
     "committed/libs/org_robolectric_plugins_maven_dependency_resolver",
     "committed/libs/org_robolectric_resources",
