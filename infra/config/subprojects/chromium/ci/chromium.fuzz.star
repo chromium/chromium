@@ -835,6 +835,22 @@ browser_asan_mac_builder(
     max_concurrent_invocations = 1,
 )
 
+# TODO(516754681): Deprecate this builder once we confirm the builder is green
+# and works correctly on ClusterFuzz.
+browser_asan_mac_builder(
+    name = "Mac ASAN Release Schema v1",
+    description_html = "ASAN build of Chrome for Mac in archive schema v1",
+    builderless = True,
+    cores = None,
+    os = os.MAC_15,
+    gardener_rotations = args.ignore_default(None),
+    clusterfuzz_archive_path = "mac-release-schemav1/asan-mac-release",
+    clusterfuzz_archive_schema_version = 1,
+    console_short_name = "schemav1",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    max_concurrent_invocations = 1,
+)
+
 def browser_tsan_builder(**kwargs):
     return browser_builder(
         chromium_config_name = "chromium_clang",
@@ -895,6 +911,7 @@ browser_ubsan_builder(
 
 def browser_asan_win_builder(
         gn_extra_configs = [],
+        builderless = False,
         **kwargs):
     return browser_asan_builder(
         chromium_config_name = "chromium_win_clang_asan",
@@ -907,7 +924,7 @@ def browser_asan_win_builder(
             "v8_heap",
             "minimal_symbols",
         ] + gn_extra_configs,
-        builderless = False,
+        builderless = builderless,
         os = os.WINDOWS_DEFAULT,
         contact_team_email = "chrome-sanitizer-builder-owners@google.com",
         siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
@@ -927,7 +944,20 @@ browser_asan_win_builder(
     gn_extra_configs = [
         "chrome_with_codecs",
     ],
-    max_concurrent_invocations = 6,
+    max_concurrent_invocations = 5,
+)
+
+# TODO(516754681): Deprecate this builder once we confirm builds are green and
+# working correctly on ClusterFuzz.
+browser_asan_win_builder(
+    name = "Win ASan Release Schema v1",
+    description_html = "ASan build of Chrome for Windows in archive schema v1",
+    builderless = True,
+    gardener_rotations = args.ignore_default(None),
+    clusterfuzz_archive_path = "win32-release_x64-schemav1/asan-win32-release_x64",
+    clusterfuzz_archive_schema_version = 1,
+    console_short_name = "schemav1",
+    max_concurrent_invocations = 1,
 )
 
 libfuzzer_linux_builder(
@@ -1283,6 +1313,21 @@ libfuzzer_mac_asan_builder(
     test_builder_name = "mac-arm64-libfuzzer-asan-rel-tests",
 )
 
+# TODO(516753903): Deprecate this builder once we confirm builds are green and
+# working correctly on ClusterFuzz.
+libfuzzer_mac_asan_builder(
+    name = "Libfuzzer Upload Mac ASan Schema v1",
+    description_html = "Libfuzzer ASan for Chrome on Mac in archive schema v1",
+    builderless = True,
+    cores = None,
+    os = os.MAC_15,
+    gardener_rotations = args.ignore_default(None),
+    clusterfuzz_archive_path = "mac-release-asan-schemav1/libfuzzer-mac-release",
+    clusterfuzz_archive_schema_version = 1,
+    console_short_name = "mac-v1",
+    execution_timeout = 4 * time.hour,
+)
+
 libfuzzer_builder(
     name = "Libfuzzer Upload Windows ASan",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
@@ -1310,5 +1355,34 @@ libfuzzer_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
     swarming_mixins = ["win10-any"],
     test_builder_name = "win-x64-libfuzzer-asan-rel-tests",
+    use_component_build = False,
+)
+
+# TODO(516753903): Deprecate this builder once we confirm builds are green and
+# working correctly on ClusterFuzz.
+libfuzzer_builder(
+    name = "Libfuzzer Upload Windows ASan Schema v1",
+    description_html = "Libfuzzer ASan for Chrome on Windows in archive schema v1",
+    builderless = True,
+    os = os.WINDOWS_DEFAULT,
+    gardener_rotations = args.ignore_default(None),
+    build_config = builder_config.build_config.RELEASE,
+    target_bits = 64,
+    target_platform = builder_config.target_platform.WIN,
+    clusterfuzz_archive_path = "win32-release_x64-asan-schemav1/libfuzzer-win32-release_x64",
+    clusterfuzz_archive_schema_version = 1,
+    console_short_name = "win-v1",
+    execution_timeout = 8 * time.hour,
+    # NOTE: optimize_for_fuzzing is used by the other libFuzzer build configs
+    # but it does not work on Windows.
+    gn_extra_configs = [
+        "asan",
+        "chrome_with_codecs",
+        "minimal_symbols",
+        "mojo_fuzzer",
+        "pdf_xfa",
+    ],
+    sanitizer = "asan",
+    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
     use_component_build = False,
 )

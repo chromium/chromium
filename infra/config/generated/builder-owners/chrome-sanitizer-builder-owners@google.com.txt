@@ -19,6 +19,7 @@ ci/MSAN Release (chained origins)
 ci/MSAN Release (no origins)
 ci/Mac ARM64 ASAN Release
 ci/Mac ASAN Release
+ci/Mac ASAN Release Schema v1
 ci/Mac ASan 64 Builder
 ci/Mac ASan 64 Tests (1)
 ci/TSAN Debug
@@ -27,6 +28,7 @@ ci/UBSan Release
 ci/UBSan vptr Release
 ci/Win ASan Release
 ci/Win ASan Release Media
+ci/Win ASan Release Schema v1
 ci/chromeos-amd64-generic-asan-rel
 ci/ios-asan
 ci/linux-blink-asan-rel
