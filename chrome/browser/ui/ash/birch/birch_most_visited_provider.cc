@@ -7,6 +7,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -16,17 +17,11 @@ namespace ash {
 
 BirchMostVisitedProvider::BirchMostVisitedProvider(
     history::HistoryService* history_service)
-    : history_service_(history_service) {}
+    : history_service_(CHECK_DEREF(history_service)) {}
 
 BirchMostVisitedProvider::~BirchMostVisitedProvider() = default;
 
 void BirchMostVisitedProvider::RequestBirchDataFetch() {
-  // `history_service_` can be null in some tests, so check that here.
-  if (!history_service_) {
-    Shell::Get()->birch_model()->SetMostVisitedItems({});
-    return;
-  }
-
   // Get the most frequently accessed URL.
   history_service_->QueryMostVisitedURLs(
       /*result_count=*/1,

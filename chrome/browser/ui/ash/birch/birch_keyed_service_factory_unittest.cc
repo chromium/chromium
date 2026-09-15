@@ -8,6 +8,8 @@
 #include <string>
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -17,7 +19,16 @@
 
 namespace ash {
 
-using BirchKeyedServiceFactoryTest = BrowserWithTestWindowTest;
+class BirchKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
+ protected:
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    // Use the real HistoryServiceFactory so the history-backed providers get a
+    // genuine, initialized HistoryService.
+    return {TestingProfile::TestingFactory{
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory()}};
+  }
+};
 
 TEST_F(BirchKeyedServiceFactoryTest, SupportWhenFeatureIsEnabled) {
   EXPECT_TRUE(

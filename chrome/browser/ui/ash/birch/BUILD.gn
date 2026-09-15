@@ -102,6 +102,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/release_notes",
     "//chrome/browser/favicon",
+    "//chrome/browser/history",
     "//chrome/browser/prefs",
     "//chrome/browser/signin",
     "//chrome/browser/sync",

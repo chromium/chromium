@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
@@ -532,6 +533,9 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
         TestingProfile::TestingFactory{
             FaviconServiceFactory::GetInstance(),
             base::BindRepeating(&BuildFaviconServiceMock)},
+        TestingProfile::TestingFactory{
+            HistoryServiceFactory::GetInstance(),
+            HistoryServiceFactory::GetDefaultFactory()},
     };
   }
 

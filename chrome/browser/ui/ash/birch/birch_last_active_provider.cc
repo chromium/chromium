@@ -7,6 +7,7 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -17,17 +18,11 @@ namespace ash {
 
 BirchLastActiveProvider::BirchLastActiveProvider(
     history::HistoryService* history_service)
-    : history_service_(history_service) {}
+    : history_service_(CHECK_DEREF(history_service)) {}
 
 BirchLastActiveProvider::~BirchLastActiveProvider() = default;
 
 void BirchLastActiveProvider::RequestBirchDataFetch() {
-  // `history_service_` can be null in some tests, so check that here.
-  if (!history_service_) {
-    Shell::Get()->birch_model()->SetLastActiveItems({});
-    return;
-  }
-
   // Get the last active URL. The query results are sorted most-recent first, so
   // we only need to get the first entry to find the last active URL. We only
   // care about URLs in the last week.
