@@ -16,8 +16,3 @@ include_rules = [
   "+services/network/test",
 ]
 
-specific_include_rules = {
-  "content_translate_driver_unittest\\.cc": [
-    "+pdf/buildflags.h",
-  ],
-}

@@ -56,7 +56,4 @@ specific_include_rules = {
     "+components/policy/core/browser",
     "+components/user_prefs",
   ],
-  ".*unit_test\\.cc": [
-    "+components/autofill/core/browser/test_utils",
-  ],
 }

@@ -40,7 +40,6 @@ specific_include_rules = {
     "+components/subscription_eligibility",
     "+components/translate",
     "+components/variations",
-    "+components/sharing_message",
     "+components/sync_preferences/cross_device_pref_tracker",
   ]
 }

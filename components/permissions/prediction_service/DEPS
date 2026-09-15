@@ -13,8 +13,3 @@ include_rules = [
   "+third_party/tflite_support",
 ]
 
-specific_include_rules = {
-     "permissions_aiv4_handler_unittest.cc": [
-      "+components/optimization_guide/core",
-   ],
-}

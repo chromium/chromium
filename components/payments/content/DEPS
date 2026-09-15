@@ -49,9 +49,6 @@ specific_include_rules = {
   "mock_payment_manifest_web_data_service.cc": [
     "+components/os_crypt/async/browser/test_utils.h"
   ],
-  "mock_payment_manifest_web_data_service.cc": [
-    "+components/os_crypt/async/browser/test_utils.h"
-  ],
   ".*test.(cc|h)": [
     "+components/os_crypt/async/browser/test_utils.h"
   ]

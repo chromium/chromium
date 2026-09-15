@@ -17,13 +17,9 @@ specific_include_rules = {
   "instance\\.h": [
     "+ui/aura/window.h",
   ],
-  "icon_cache_unittest\\.cc": [
-    "+chrome/test/base/testing_profile.h",
-  ],
   "instance_registry_unittest\\.cc": [
     "+ui/aura/window.h",
     "+ui/aura/test/test_window_delegate.h",
-    "+chrome/test/base/testing_profile.h",
   ],
   "instance_unittest\\.cc": [
     "+chrome/test/base/testing_profile.h",
