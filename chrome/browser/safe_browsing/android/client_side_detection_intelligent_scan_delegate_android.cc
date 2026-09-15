@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/android/client_side_detection_intelligent_scan_delegate_android.h"
 
-#include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,7 +23,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 
 namespace safe_browsing {
 
@@ -291,12 +289,6 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::
           ClientSideDetectionType::IMAGE_EMBEDDING_MATCH &&
       verdict->is_phishing() &&
       kCsdImageEmbeddingMatchWithIntelligentScan.Get()) {
-    return true;
-  }
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kScamDetectionKeyboardLockTriggerAndroid) &&
-      verdict->client_side_detection_type() ==
-          ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED) {
     return true;
   }
   return verdict->client_side_detection_type() ==

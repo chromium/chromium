@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/android/client_side_detection_intelligent_scan_delegate_android.h"
 
-#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -190,28 +189,6 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
 
   verdict.set_client_side_detection_type(
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
-  EXPECT_FALSE(delegate_->ShouldRequestIntelligentScan(&verdict));
-}
-
-TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
-       ShouldRequestIntelligentScan_CommandLineEnablesKeyboardLockTrigger) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      "scam-detection-keyboard-lock-trigger-android");
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  ClientPhishingRequest verdict;
-  verdict.set_client_side_detection_type(
-      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
-  EXPECT_TRUE(delegate_->ShouldRequestIntelligentScan(&verdict));
-}
-
-TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
-       ShouldNotRequestIntelligentScan_CommandlineDoesNotEnableOtherTrigger) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      "scam-detection-keyboard-lock-trigger-android");
-  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
-  ClientPhishingRequest verdict;
-  verdict.set_client_side_detection_type(
-      ClientSideDetectionType::POINTER_LOCK_REQUESTED);
   EXPECT_FALSE(delegate_->ShouldRequestIntelligentScan(&verdict));
 }
 

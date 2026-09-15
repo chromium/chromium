@@ -8894,14 +8894,6 @@
     "expiry_milestone": 159
   },
   {
-    "name": "safe-browsing-scam-detection-keyboard-lock-trigger-android",
-    "owners": [
-      "xinghuilu@chromium.org",
-      "chrome-counter-abuse-alerts@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "safe-browsing-sync-checker-check-allowlist",
     "owners": [
       "xinghuilu@chromium.org",
