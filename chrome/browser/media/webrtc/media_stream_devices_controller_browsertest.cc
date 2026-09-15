@@ -1475,6 +1475,61 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2, prompt_factory()->TotalRequestCount());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    MediaStreamDevicesControllerTest,
+    RecentDismissalDoesNotRateLimitUserGestureFollowUpRequest) {
+  InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
+
+  content::MediaStreamRequest request1 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+  request1.user_gesture = true;
+
+  content::MediaStreamRequest request2 = CreateRequestWithType(
+      example_audio_id(), std::string(),
+      /*request_pan_tilt_zoom_permission=*/false, blink::MEDIA_GENERATE_STREAM);
+  request2.user_gesture = true;
+
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::DISMISS);
+
+  base::RunLoop run_loop1;
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request1,
+      base::BindOnce(
+          [](base::RepeatingClosure quit_closure,
+             const blink::mojom::StreamDevicesSet& stream_devices_set,
+             MediaStreamRequestResult result,
+             std::unique_ptr<content::MediaStreamUI> ui) {
+            EXPECT_EQ(MediaStreamRequestResult::PERMISSION_DISMISSED, result);
+            quit_closure.Run();
+          },
+          run_loop1.QuitClosure()),
+      nullptr);
+  run_loop1.Run();
+
+  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
+
+  base::RunLoop run_loop2;
+  permission_bubble_media_access_handler_->HandleRequest(
+      GetWebContents(), request2,
+      base::BindOnce(
+          [](base::RepeatingClosure quit_closure,
+             const blink::mojom::StreamDevicesSet& stream_devices_set,
+             MediaStreamRequestResult result,
+             std::unique_ptr<content::MediaStreamUI> ui) {
+            EXPECT_EQ(MediaStreamRequestResult::PERMISSION_DISMISSED, result);
+            quit_closure.Run();
+          },
+          run_loop2.QuitClosure()),
+      nullptr);
+  run_loop2.Run();
+
+  // Since `request2.user_gesture` is true, it should not be rate-limited by
+  // the recent dismissal. A new prompt should be shown.
+  EXPECT_EQ(2, prompt_factory()->TotalRequestCount());
+}
+
 IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
                        RecentDismissalRateLimitsNonUserGestureFollowUpRequest) {
   InitWithUrl(embedded_test_server()->GetURL("/simple.html"));
@@ -1526,7 +1581,7 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   run_loop2.Run();
 
   // Request 2 should be rate-limited by `recent_dismissals_` since
-  // `user_gesture` is false and sent within 1000ms of `request1`'s dismissal.
+  // `user_gesture` is false and sent within 500ms of `request1`'s dismissal.
   // Total prompt count remains 1.
   EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
 }

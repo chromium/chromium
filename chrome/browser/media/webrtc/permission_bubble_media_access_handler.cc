@@ -170,19 +170,22 @@ void PermissionBubbleMediaAccessHandler::HandleRequest(
   // Ensure we are observing the deletion of |web_contents|.
   web_contents_collection_.StartObserving(web_contents);
 
-  // Add 2 second cooldown rate limiter for permission prompts of current web
-  // contents without a user gesture to show again. This is to prevent
-  // duplicate permission prompts if speech API and mojo both send prompt
-  // requests. Only limit dismissals since dismissals lead to more prompts
-  // while acceptances mean no more permission prompts.
+  // Add 500 ms cooldown rate limiter for permission prompts of current web
+  // contents without a user gesture to show again (although not all
+  // user-initiated requests will be marked as `user_gestures`='true', so it is
+  // important to keep a quick rate limiter to block automatic requests only).
+  // This is to prevent duplicate permission prompts if speech API and mojo both
+  // send prompt requests. Only limit dismissals since dismissals lead to more
+  // prompts while acceptances mean no more permission prompts.
   auto dismissal_it = recent_dismissals_.find(web_contents);
   if (dismissal_it != recent_dismissals_.end()) {
     base::TimeTicks now = base::TimeTicks::Now();
     auto& records = dismissal_it->second;
     // Erase if not within rate limit window.
     std::erase_if(records, [now](const DismissalRecord& record) {
-      return now - record.timestamp >= base::Seconds(2);
+      return now - record.timestamp >= base::Milliseconds(500);
     });
+
     if (records.empty()) {
       recent_dismissals_.erase(dismissal_it);
     } else if (!request.user_gesture) {
