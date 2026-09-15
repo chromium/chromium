@@ -10,7 +10,7 @@ namespace features {
 
 // Enable the SurfaceEmbed mechanism for embedding WebContents via a WebPlugin.
 // https://docs.google.com/document/d/1ZubECnybyRJqfvB4mS4SRwlHiMvITVkHw9NchE0oXPw
-BASE_FEATURE(kSurfaceEmbed, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSurfaceEmbed, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 

@@ -189,10 +189,12 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, NavigatePage) {
   ASSERT_TRUE(web_contents);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
-  // Make sure that the web contents actually got converted to a guest before
-  // we navigate it again, so that WebContentsViewChildFrame gets involved.
+  // Make sure that the web contents actually got converted to a guest or
+  // embedded via SurfaceEmbed before we navigate it again, so that
+  // WebContentsViewChildFrame gets involved.
   EXPECT_TRUE(base::test::RunUntil([web_contents]() {
-    return web_contents->GetOuterWebContents() != nullptr;
+    return web_contents->GetOuterWebContents() != nullptr ||
+           web_contents->GetSurfaceEmbedConnector() != nullptr;
   }));
 
   GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
@@ -211,10 +213,11 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, EnumerateDevToolsTargets) {
   ASSERT_TRUE(web_contents);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
-  // Make sure that the web contents actually got converted to a guest and in
-  // DOM before enumerate DevTools targets.
+  // Make sure that the web contents actually got converted to a guest or
+  // embedded via SurfaceEmbed and in DOM before enumerate DevTools targets.
   EXPECT_TRUE(base::test::RunUntil([web_contents]() {
-    return web_contents->GetOuterWebContents() != nullptr;
+    return web_contents->GetOuterWebContents() != nullptr ||
+           web_contents->GetSurfaceEmbedConnector() != nullptr;
   }));
 
   // Verify DevTools target types.
