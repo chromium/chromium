@@ -196,6 +196,8 @@ void OmniboxEverywhereDebugPageHandler::ResetProfilePrefs(
     user_education_internals_page_handler_->ClearFeaturePromoData(
         feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
         base::DoNothing());
+    user_education_internals_page_handler_->RemoveGracePeriods(
+        base::DoNothing());
   }
   std::move(callback).Run(true);
 }
@@ -214,12 +216,15 @@ void OmniboxEverywhereDebugPageHandler::ResetAllPrefs(
       handler.ClearFeaturePromoData(
           feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
           base::DoNothing());
+      handler.RemoveGracePeriods(base::DoNothing());
     }
   } else if (profile_->IsRegularProfile()) {
     omnibox_everywhere::prefs::ResetProfilePrefs(profile_);
     if (user_education_internals_page_handler_) {
       user_education_internals_page_handler_->ClearFeaturePromoData(
           feature_engagement::kIPHOmniboxEverywhereLensPromoFeature.name,
+          base::DoNothing());
+      user_education_internals_page_handler_->RemoveGracePeriods(
           base::DoNothing());
     }
   }
