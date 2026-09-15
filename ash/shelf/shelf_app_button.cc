@@ -181,45 +181,6 @@ class ShelfAppButtonAnimation : public gfx::AnimationDelegate {
   base::ObserverList<Observer>::Unchecked observers_;
 };
 
-// Draws a circular background for a promise icon view.
-class PromiseIconBackground : public views::Background {
- public:
-  PromiseIconBackground(ui::ColorId color_id,
-                        const gfx::Rect& icon_bounds,
-                        const gfx::Insets& insets)
-      : icon_bounds_(icon_bounds), insets_(insets) {
-    set_color(color_id);
-  }
-
-  PromiseIconBackground(const PromiseIconBackground&) = delete;
-  PromiseIconBackground& operator=(const PromiseIconBackground&) = delete;
-
-  ~PromiseIconBackground() override = default;
-
-  // views::Background:
-  void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    gfx::Rect bounds = icon_bounds_;
-    bounds.Inset(insets_);
-
-    const float radius =
-        std::min(bounds.size().width(), bounds.size().height()) / 2.f;
-
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
-
-    canvas->DrawCircle(bounds.CenterPoint(), radius, flags);
-  }
-
-  void OnViewThemeChanged(views::View* view) override {
-    view->SchedulePaint();
-  }
-
- private:
-  const gfx::Rect icon_bounds_;
-  const gfx::Insets insets_;
-};
-
 }  // namespace
 
 namespace ash {
@@ -1407,9 +1368,13 @@ void ShelfAppButton::UpdateProgressRingBounds() {
   layer()->StackAtBottom(progress_indicator_->layer());
   progress_indicator_->InvalidateLayer();
 
-  SetBackground(std::make_unique<PromiseIconBackground>(
-      cros_tokens::kCrosSysSystemOnBase, progress_indicator_bounds,
-      progress_ring_padding));
+  // The promise icon background is a circle filling the progress ring, which is
+  // only a sub-rect of this view.
+  gfx::Rect background_bounds = progress_indicator_bounds;
+  background_bounds.Inset(progress_ring_padding);
+  SetBackground(views::CreatePillBackground(
+      cros_tokens::kCrosSysSystemOnBase,
+      GetLocalBounds().InsetsFrom(background_bounds)));
 }
 
 ProgressIndicator* ShelfAppButton::GetProgressIndicatorForTest() const {
