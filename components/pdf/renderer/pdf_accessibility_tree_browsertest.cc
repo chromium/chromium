@@ -79,6 +79,20 @@ constexpr int kBoldFontWeight = 700;
 constexpr char kRegularFontName[] = "Helvetica-Regular";
 constexpr char kBoldFontName[] = "Helvetica-Bold";
 
+// Returns a style with only the font weight set to a normal weight.
+chrome_pdf::AccessibilityTextStyleInfo CreateNormalStyle() {
+  chrome_pdf::AccessibilityTextStyleInfo style;
+  style.font_weight = kNormalFontWeight;
+  return style;
+}
+
+// Returns a style with only the font weight set to a bold weight.
+chrome_pdf::AccessibilityTextStyleInfo CreateBoldStyle() {
+  chrome_pdf::AccessibilityTextStyleInfo style;
+  style.font_weight = kBoldFontWeight;
+  return style;
+}
+
 const chrome_pdf::AccessibilityTextRunInfo kFirstTextRun = {
     /*start_index=*/0,
     /*len=*/15,
@@ -480,24 +494,24 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     chrome_pdf::AccessibilityTextRunInfo run1;
     run1.start_index = 0;
     run1.len = 5;
+    run1.style = CreateNormalStyle();
     run1.style.font_name = "Arial";
-    run1.style.font_weight = 400;
     run1.style.is_italic = false;
     run1.bounds = gfx::RectF(0.0f, 0.0f, 50.0f, 10.0f);
 
     chrome_pdf::AccessibilityTextRunInfo run2;
     run2.start_index = 5;
     run2.len = 5;
+    run2.style = CreateBoldStyle();
     run2.style.font_name = "Arial";
     run2.style.is_italic = false;
-    run2.style.font_weight = 700;
     run2.bounds = gfx::RectF(50.0f, 0.0f, 50.0f, 10.0f);
 
     chrome_pdf::AccessibilityTextRunInfo run3;
     run3.start_index = 10;
     run3.len = 5;
+    run3.style = CreateNormalStyle();
     run3.style.font_name = "Arial";
-    run3.style.font_weight = 400;
     run3.style.is_italic = false;
     run3.bounds = gfx::RectF(100.0f, 0.0f, 50.0f, 10.0f);
 
@@ -984,8 +998,7 @@ TEST_F(PdfAccessibilityTreeTest, HeadingClassifierMetrics_FontSize) {
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo style;
-  style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo style = CreateNormalStyle();
   style.font_name = kRegularFontName;
   style.fill_color = kBlack;
 
@@ -1008,8 +1021,7 @@ TEST_F(PdfAccessibilityTreeTest, HeadingClassifierMetrics_AllUppercase) {
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo style;
-  style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo style = CreateNormalStyle();
   style.font_name = kRegularFontName;
   style.fill_color = kBlack;
 
@@ -1032,13 +1044,11 @@ TEST_F(PdfAccessibilityTreeTest, HeadingClassifierMetrics_BoldStyle) {
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.font_weight = kBoldFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo bold_style = CreateBoldStyle();
   bold_style.font_name = kRegularFontName;
   bold_style.fill_color = kBlack;
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
   normal_style.font_name = kRegularFontName;
   normal_style.fill_color = kBlack;
 
@@ -1066,8 +1076,7 @@ TEST_F(PdfAccessibilityTreeTest, HeadingClassifierMetrics_SemiBoldWeight) {
   semi_bold_style.font_name = kRegularFontName;
   semi_bold_style.fill_color = kBlack;
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
   normal_style.font_name = kRegularFontName;
   normal_style.fill_color = kBlack;
 
@@ -1096,8 +1105,7 @@ TEST_F(PdfAccessibilityTreeTest, HeadingClassifierMetrics_FontName) {
   font_name_style.font_name = kBoldFontName;
   font_name_style.fill_color = kBlack;
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
   normal_style.font_name = kRegularFontName;
   normal_style.fill_color = kBlack;
 
@@ -1120,13 +1128,11 @@ TEST_F(PdfAccessibilityTreeTest, HeadingClassifierMetrics_TextColor) {
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo text_color_style;
-  text_color_style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo text_color_style = CreateNormalStyle();
   text_color_style.font_name = kRegularFontName;
   text_color_style.fill_color = kRed;
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
   normal_style.font_name = kRegularFontName;
   normal_style.fill_color = kBlack;
 
@@ -1241,10 +1247,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicBoldHeadingFollowedByNonBoldNewLine) {
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
-  chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo bold_style = CreateBoldStyle();
 
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f},
@@ -1277,10 +1281,8 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
-  chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo bold_style = CreateBoldStyle();
 
   // First two runs are on the same line (y = 0.0f), while the third run is on a
   // different line (y = 30.0f).
@@ -1313,16 +1315,13 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
   normal_style.font_name = "BodyFont";
 
-  chrome_pdf::AccessibilityTextStyleInfo bold_style1;
-  bold_style1.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo bold_style1 = CreateBoldStyle();
   bold_style1.font_name = "BoldFont1";
 
-  chrome_pdf::AccessibilityTextStyleInfo bold_style2;
-  bold_style2.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo bold_style2 = CreateBoldStyle();
   bold_style2.font_name = "BoldFont2";
 
   SetUpHeuristicAccessibilityTreeDetailed(
@@ -1353,8 +1352,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo bold_style = CreateBoldStyle();
 
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f},
@@ -1378,10 +1376,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicBoldRunSmallerThanMedianNotPromoted) {
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
-  chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo bold_style = CreateBoldStyle();
 
   // 5 runs: 1 bold run (size 8.0f), 4 normal runs (size 10.0f).
   // Median is 10.0f. Bold run font size 8.0f < median 10.0f.
@@ -1409,12 +1405,10 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
   normal_style.font_name = "BodyFont";
 
-  chrome_pdf::AccessibilityTextStyleInfo heading_style;
-  heading_style.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo heading_style = CreateBoldStyle();
   heading_style.font_name = "HeadingFont";
 
   SetUpHeuristicAccessibilityTreeDetailed(
@@ -1448,8 +1442,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
 
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f},
@@ -1474,8 +1467,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
 
   // First two runs are on the same line (y = 0.0f), while the third run is on a
   // different line (y = 30.0f).
@@ -1542,8 +1534,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
 
   // 5 runs: 1 all-caps run (size 8.0f), 4 normal runs (size 10.0f).
   // Median is 10.0f. All-caps run font size 8.0f < median 10.0f.
@@ -1570,10 +1561,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicStyledHeadingUsesMappedHeadingLevel) {
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
-  chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo bold_style = CreateBoldStyle();
 
   // Font sizes (median = 10.0f, heading threshold = 12.0f):
   // - 24.0f: font-size heading (> threshold 12.0f) -> Level 1 (H1)
@@ -1645,10 +1634,8 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = kNormalFontWeight;
-  chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.font_weight = kBoldFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo bold_style = CreateBoldStyle();
 
   // Small font size (1.33f <= kMinimumFontSize = 5.0f) means median font size
   // is not set (remains 0.0f), and heading_font_size_mapping is empty.
@@ -1683,10 +1670,8 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = kNormalFontWeight;
-  chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.font_weight = kBoldFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo bold_style = CreateBoldStyle();
 
   // With font sizes {2.0f, 3.0f, 3.0f, 3.0f, 3.0f}, the median is 3.0f.
   // Because median (3.0f) <= kMinimumFontSize (5.0f), ComputeFontSizes should
@@ -1728,8 +1713,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
 
   // Font sizes: candidate at 4.0f, body runs at 2.0f (median is 2.0f).
   // Although 4.0f is 2.0x the median (above the 1.2x heading font size ratio),
@@ -1764,10 +1748,8 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
-  chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  chrome_pdf::AccessibilityTextStyleInfo bold_style = CreateBoldStyle();
 
   // Font sizes:
   // - 24.0f: font-size heading (> threshold 12.0f) -> Level 1 (H1)
@@ -1813,13 +1795,13 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicTextColorHeading) {
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo colored_heading_style;
-  colored_heading_style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo colored_heading_style =
+      CreateNormalStyle();
   colored_heading_style.font_name = kRegularFontName;
   colored_heading_style.fill_color = kRed;
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_body_style;
-  normal_body_style.font_weight = kNormalFontWeight;
+  chrome_pdf::AccessibilityTextStyleInfo normal_body_style =
+      CreateNormalStyle();
   normal_body_style.font_name = kRegularFontName;
   normal_body_style.fill_color = kBlack;
 
@@ -1853,8 +1835,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicFontWeightHeading) {
   chrome_pdf::AccessibilityTextStyleInfo weight_style;
   weight_style.font_weight = 600;
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
 
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f},
@@ -1880,8 +1861,7 @@ TEST_F(PdfAccessibilityTreeTest,
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo valid_weight_style;
-  valid_weight_style.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo valid_weight_style = CreateBoldStyle();
 
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f},
@@ -1910,8 +1890,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicFontNameHeading) {
   bold_name_style.font_weight = 0;
   bold_name_style.font_name = "Helvetica-Bold";
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
   normal_style.font_name = "Helvetica-Regular";
 
   SetUpHeuristicAccessibilityTreeDetailed(
@@ -1943,16 +1922,13 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicHeadingBreakOnFontNameMismatch) {
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo bold_style_font1;
-  bold_style_font1.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo bold_style_font1 = CreateBoldStyle();
   bold_style_font1.font_name = "Arial";
 
-  chrome_pdf::AccessibilityTextStyleInfo bold_style_font2;
-  bold_style_font2.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo bold_style_font2 = CreateBoldStyle();
   bold_style_font2.font_name = "TimesNewRoman";
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
   normal_style.font_name = "Arial";
 
   SetUpHeuristicAccessibilityTreeDetailed(
@@ -2021,16 +1997,13 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicHeadingBreakOnItalicStyleMismatch) {
       {::features::kPdfAccessibilityHeuristicEnhancements},
       {chrome_pdf::features::kPdfTags});
 
-  chrome_pdf::AccessibilityTextStyleInfo bold_style;
-  bold_style.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo bold_style = CreateBoldStyle();
   bold_style.is_italic = false;
 
-  chrome_pdf::AccessibilityTextStyleInfo bold_italic_style;
-  bold_italic_style.font_weight = 700;
+  chrome_pdf::AccessibilityTextStyleInfo bold_italic_style = CreateBoldStyle();
   bold_italic_style.is_italic = true;
 
-  chrome_pdf::AccessibilityTextStyleInfo normal_style;
-  normal_style.font_weight = 400;
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
 
   SetUpHeuristicAccessibilityTreeDetailed(
       /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
