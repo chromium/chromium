@@ -128,7 +128,9 @@ ProgressWnd::ProgressWnd(MessageLoop* message_loop, HWND parent)
                   ICC_STANDARD_CLASSES | ICC_PROGRESS_CLASS,
                   message_loop,
                   parent,
-                  base::UTF8ToWide(GetTagLanguage())) {}
+                  base::UTF8ToWide(GetTagLanguage())),
+      applied_dark_mode_(is_dark_mode()),
+      applied_high_contrast_(is_high_contrast()) {}
 
 ProgressWnd::~ProgressWnd() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -592,14 +594,23 @@ void ProgressWnd::ResetThemeResources() {
   dark_error_illustration_bmp_.reset();
   UpdateAppLogo();
   UpdateErrorIllustration();
+  applied_dark_mode_ = is_dark_mode();
+  applied_high_contrast_ = is_high_contrast();
 }
 
-LRESULT ProgressWnd::OnSettingChange(UINT, WPARAM, LPARAM lparam) {
+LRESULT ProgressWnd::OnSettingChange(UINT, WPARAM wparam, LPARAM) {
   SetMsgHandled(FALSE);
-  if (!lparam || std::wstring_view(reinterpret_cast<LPCWSTR>(lparam)) ==
-                     L"ImmersiveColorSet") {
-    ResetThemeResources();
+  if (!CouldBeThemeSettingChange(wparam)) {
+    return 0;
   }
+
+  // Skip rebuilding resources if dark mode and high contrast are unchanged.
+  if (IsDarkModeOn() == applied_dark_mode_ &&
+      IsHighContrastOn() == applied_high_contrast_) {
+    return 0;
+  }
+
+  ResetThemeResources();
   return 0;
 }
 

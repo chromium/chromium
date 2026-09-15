@@ -101,12 +101,7 @@ LRESULT SplashWnd::OnPaint(UINT, WPARAM, LPARAM) {
 }
 
 LRESULT SplashWnd::OnDpiChanged(UINT, WPARAM wparam, LPARAM lparam) {
-  // Resize the window.
-  const RECT* new_window_rect = reinterpret_cast<RECT*>(lparam);
-  ::SetWindowPos(hwnd(), nullptr, new_window_rect->left, new_window_rect->top,
-                 new_window_rect->right - new_window_rect->left,
-                 new_window_rect->bottom - new_window_rect->top,
-                 SWP_NOZORDER | SWP_NOACTIVATE);
+  ApplySuggestedWindowRect(hwnd(), lparam);
 
   UpdateIcons(LOWORD(wparam));
 

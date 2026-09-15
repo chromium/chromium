@@ -26,6 +26,7 @@
 #include "chrome/updater/get_updater_scope.h"
 #include "chrome/updater/util/path_util.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
+#include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/ui/webview2ui.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -317,15 +318,7 @@ LRESULT WebView2ProgressWnd::OnSize(UINT, WPARAM, LPARAM) {
 }
 
 LRESULT WebView2ProgressWnd::OnDpiChanged(UINT, WPARAM, LPARAM lparam) {
-  // `lparam` is a pointer to a RECT containing the suggested new window bounds.
-  RECT* const suggested_rect = reinterpret_cast<RECT*>(lparam);
-
-  // Apply the suggested bounds.
-  ::SetWindowPos(hwnd(), nullptr, suggested_rect->left, suggested_rect->top,
-                 suggested_rect->right - suggested_rect->left,
-                 suggested_rect->bottom - suggested_rect->top,
-                 SWP_NOZORDER | SWP_NOACTIVATE);
-
+  ApplySuggestedWindowRect(hwnd(), lparam);
   return 0;
 }
 

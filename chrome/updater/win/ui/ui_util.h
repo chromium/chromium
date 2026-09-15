@@ -110,6 +110,18 @@ bool IsDarkModeOn();
 // Returns true if `color` has low perceived luminance (i.e. is dark).
 bool IsColorDark(COLORREF color);
 
+// Returns true if a WM_SETTINGCHANGE carrying `wparam` may have changed
+// anything the updater's dialogs paint from. The section name in `lparam` is
+// sender-controlled, so it is deliberately not a parameter.
+//
+// The accepted SPI_* actions are an allowlist of what these dialogs paint
+// from, so any future SPI-carried theme change must be added.
+bool CouldBeThemeSettingChange(WPARAM wparam);
+
+// Resizes and repositions `hwnd` to the suggested RECT in `lparam` (from
+// WM_DPICHANGED), if non-null.
+void ApplySuggestedWindowRect(HWND hwnd, LPARAM lparam);
+
 // Explicitly sets the arrow cursor if `wparam` matches `hwnd` (or a child
 // control without its own class cursor) and `lparam` represents a client-area
 // hit test (`HTCLIENT`), returning true if handled. Prevents Windows from

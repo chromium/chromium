@@ -9,7 +9,6 @@
 #include <uxtheme.h>
 
 #include <cstdint>
-#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -244,12 +243,7 @@ LRESULT OmahaWnd::OnNCDestroy(UINT, WPARAM, LPARAM) {
 }
 
 LRESULT OmahaWnd::OnDpiChanged(UINT, WPARAM wparam, LPARAM lparam) {
-  // Resize window to the OS-suggested rect.
-  const RECT* new_rect = reinterpret_cast<RECT*>(lparam);
-  ::SetWindowPos(hwnd(), nullptr, new_rect->left, new_rect->top,
-                 new_rect->right - new_rect->left,
-                 new_rect->bottom - new_rect->top,
-                 SWP_NOZORDER | SWP_NOACTIVATE);
+  ApplySuggestedWindowRect(hwnd(), lparam);
 
   // Re-render text/graphics for the new DPI.
   ApplyDpiScaling(/*new_dpi=*/LOWORD(wparam));
@@ -263,12 +257,12 @@ LRESULT OmahaWnd::OnDpiChanged(UINT, WPARAM wparam, LPARAM lparam) {
   return 0;
 }
 
-LRESULT OmahaWnd::OnSettingChange(UINT msg, WPARAM wparam, LPARAM lparam) {
-  SetMsgHandled(FALSE);
-  if (!lparam || std::wstring_view(reinterpret_cast<LPCWSTR>(lparam)) ==
-                     L"ImmersiveColorSet") {
+LRESULT OmahaWnd::OnSettingChange(UINT msg, WPARAM wparam, LPARAM /*lparam*/) {
+  if (CouldBeThemeSettingChange(wparam)) {
     UpdateThemeState();
-    SendMessageToDescendants(hwnd(), msg, wparam, lparam);
+    // `lparam` is sender-controlled and no descendant handler reads it, so
+    // zero is substituted rather than forwarded.
+    SendMessageToDescendants(hwnd(), msg, wparam, /*lparam=*/0);
     ::RedrawWindow(
         hwnd(), nullptr, nullptr,
         RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
@@ -280,6 +274,7 @@ LRESULT OmahaWnd::OnThemeChanged(UINT msg, WPARAM wparam, LPARAM lparam) {
   SetMsgHandled(FALSE);
   UpdateThemeState();
   if (msg != WM_THEMECHANGED) {
+    // Windows delivers WM_THEMECHANGED to every child itself.
     SendMessageToDescendants(hwnd(), msg, wparam, lparam);
   }
   ::RedrawWindow(hwnd(), nullptr, nullptr,

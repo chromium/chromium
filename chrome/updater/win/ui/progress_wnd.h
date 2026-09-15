@@ -199,6 +199,11 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   base::win::ScopedGDIObject<HBITMAP> light_error_illustration_bmp_;
   base::win::ScopedGDIObject<HBITMAP> dark_error_illustration_bmp_;
 
+  // The theme `ResetThemeResources()` last rebuilt the caches above for. Not
+  // read back from `CustomDlgColors`, whose state other handlers also refresh.
+  bool applied_dark_mode_;
+  bool applied_high_contrast_;
+
   // Cached original app logo bitmaps for light and dark themes received via
   // WM_SET_APP_LOGO.
   base::win::ScopedGDIObject<HBITMAP> light_app_logo_bmp_;

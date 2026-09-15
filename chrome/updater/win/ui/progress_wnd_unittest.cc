@@ -27,6 +27,7 @@
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/message_loop.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
+#include "chrome/updater/win/ui/ui_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -68,6 +69,20 @@ base::win::ScopedGDIObject<HBITMAP> CreateTestDIB24(HDC dc,
   void* bits = nullptr;
   return base::win::ScopedGDIObject<HBITMAP>(
       ::CreateDIBSection(dc, &bi, DIB_RGB_COLORS, &bits, nullptr, 0));
+}
+
+// Writes the setting `IsDarkModeOn()` reads. Requires an active
+// `RegistryOverrideManager` for HKEY_CURRENT_USER.
+void SetDarkMode(bool dark) {
+  base::win::RegKey key;
+  ASSERT_EQ(key.Create(HKEY_CURRENT_USER,
+                       L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes"
+                       L"\\Personalize",
+                       KEY_SET_VALUE),
+            ERROR_SUCCESS);
+  ASSERT_EQ(
+      key.WriteValue(L"AppsUseLightTheme", static_cast<DWORD>(dark ? 0 : 1)),
+      ERROR_SUCCESS);
 }
 
 }  // namespace
@@ -517,20 +532,8 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
   ASSERT_NO_FATAL_FAILURE(
       registry_override.OverrideRegistry(HKEY_CURRENT_USER));
 
-  auto set_dark_mode = [](bool dark) {
-    base::win::RegKey key;
-    EXPECT_EQ(key.Create(HKEY_CURRENT_USER,
-                         L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes"
-                         L"\\Personalize",
-                         KEY_SET_VALUE),
-              ERROR_SUCCESS);
-    EXPECT_EQ(
-        key.WriteValue(L"AppsUseLightTheme", static_cast<DWORD>(dark ? 0 : 1)),
-        ERROR_SUCCESS);
-  };
-
   // Start with light mode.
-  set_dark_mode(false);
+  SetDarkMode(false);
 
   MessageLoop ui_message_loop;
   std::unique_ptr<ProgressWnd> progress_wnd =
@@ -584,7 +587,7 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
             ::MulDiv(32, effective_dpi, USER_DEFAULT_SCREEN_DPI));
 
   // Switch to dark mode and notify the window via WM_SETTINGCHANGE.
-  set_dark_mode(true);
+  SetDarkMode(true);
   ::SendMessage(progress_wnd->hwnd(), WM_SETTINGCHANGE, 0,
                 reinterpret_cast<LPARAM>(L"ImmersiveColorSet"));
 
@@ -596,7 +599,7 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
             ::MulDiv(48, effective_dpi, USER_DEFAULT_SCREEN_DPI));
 
   // Switch back to light mode and notify via WM_SYSCOLORCHANGE.
-  set_dark_mode(false);
+  SetDarkMode(false);
   ::SendMessage(progress_wnd->hwnd(), WM_SYSCOLORCHANGE, 0, 0);
 
   EXPECT_EQ(progress_wnd->GetCurrentAppLogoBitmap(), light_hbitmap);
@@ -634,7 +637,7 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
             ::MulDiv(64, effective_dpi, USER_DEFAULT_SCREEN_DPI));
 
   // In dark mode with no dark logo provided, falls back to light logo.
-  set_dark_mode(true);
+  SetDarkMode(true);
   ::SendMessage(progress_wnd->hwnd(), WM_SETTINGCHANGE, 0,
                 reinterpret_cast<LPARAM>(L"ImmersiveColorSet"));
   EXPECT_EQ(progress_wnd->GetCurrentAppLogoBitmap(), fallback_hbitmap);
@@ -645,7 +648,7 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
             ::MulDiv(64, effective_dpi, USER_DEFAULT_SCREEN_DPI));
 
   // Switch back to light mode and verify fallback logo persists.
-  set_dark_mode(false);
+  SetDarkMode(false);
   ::SendMessage(progress_wnd->hwnd(), WM_SYSCOLORCHANGE, 0, 0);
   EXPECT_EQ(progress_wnd->GetCurrentAppLogoBitmap(), fallback_hbitmap);
   ctl_rect = progress_wnd->GetControlClientRect(app_bitmap_ctl);
@@ -674,6 +677,138 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
   EXPECT_NE(reinterpret_cast<HICON>(
                 ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_SMALL, 0)),
             nullptr);
+
+  progress_wnd->DestroyWindow();
+}
+
+// Verifies which WM_SETTINGCHANGE messages reach the theme refresh, and that
+// `lparam` is never dereferenced on either the accepted or the rejected path.
+// `is_dark_mode()` is the observable: it is the cached state the dialog and
+// every descendant control paint from, so it is exactly "UpdateThemeState()
+// ran".
+TEST_F(ProgressWndTest, SettingChangeFiltering) {
+  if (IsHighContrastOn()) {
+    // `IsDarkModeOn()` short-circuits to the system window color under high
+    // contrast and never reads the overridden key, so the observable below
+    // does not respond to `SetDarkMode()`.
+    GTEST_SKIP() << "Dark mode is not registry-driven under high contrast";
+  }
+
+  registry_util::RegistryOverrideManager registry_override;
+  ASSERT_NO_FATAL_FAILURE(
+      registry_override.OverrideRegistry(HKEY_CURRENT_USER));
+  SetDarkMode(false);
+
+  MessageLoop ui_message_loop;
+  std::unique_ptr<ProgressWnd> progress_wnd =
+      MakeProgressWindow(&ui_message_loop);
+  const HWND hwnd = progress_wnd->hwnd();
+  ASSERT_FALSE(progress_wnd->is_dark_mode());
+
+  // Flipped without notifying, so each send below has a transition to make.
+  SetDarkMode(true);
+
+  // Rejected: names an action the dialog does not paint from. Passing
+  // L"WindowMetrics" mirrors what SystemParametersInfo sends for this action.
+  ::SendMessage(hwnd, WM_SETTINGCHANGE, SPI_SETNONCLIENTMETRICS,
+                reinterpret_cast<LPARAM>(L"WindowMetrics"));
+  EXPECT_FALSE(progress_wnd->is_dark_mode());
+
+  // Accepted: zero wParam is what the shell broadcasts carry for theme changes.
+  ::SendMessage(hwnd, WM_SETTINGCHANGE, 0,
+                reinterpret_cast<LPARAM>(L"ImmersiveColorSet"));
+  EXPECT_TRUE(progress_wnd->is_dark_mode());
+
+  // Accepted: Windows sends the high contrast toggle with `lparam` naming
+  // L"HighContrast", which the predicate this CL replaces rejected outright.
+  SetDarkMode(false);
+  ::SendMessage(hwnd, WM_SETTINGCHANGE, SPI_SETHIGHCONTRAST,
+                reinterpret_cast<LPARAM>(L"HighContrast"));
+  EXPECT_FALSE(progress_wnd->is_dark_mode());
+
+  progress_wnd->DestroyWindow();
+}
+
+// An accepted WM_SETTINGCHANGE that did not change the theme must not rebuild
+// the cached bitmaps, while WM_THEMECHANGED must, since it is also the retry
+// path after a failed load.
+TEST_F(ProgressWndTest, SettingChangeWithoutThemeChangeSkipsReload) {
+  MessageLoop ui_message_loop;
+  std::unique_ptr<ProgressWnd> progress_wnd =
+      MakeProgressWindow(&ui_message_loop);
+  const HWND hwnd = progress_wnd->hwnd();
+  const HWND app_bitmap_ctl = ::GetDlgItem(hwnd, IDC_APP_BITMAP);
+  ASSERT_NE(app_bitmap_ctl, nullptr);
+
+  base::win::ScopedGetDC dc(hwnd);
+  base::win::ScopedGDIObject<HBITMAP> light_logo = CreateTestDIB24(dc, 32, 32);
+  base::win::ScopedGDIObject<HBITMAP> dark_logo = CreateTestDIB24(dc, 32, 32);
+  ASSERT_TRUE(light_logo.is_valid() && dark_logo.is_valid());
+  ::SendMessage(hwnd, WM_SET_APP_LOGO,
+                reinterpret_cast<WPARAM>(light_logo.release()),
+                reinterpret_cast<LPARAM>(dark_logo.release()));
+
+  // The scaled copy is rebuilt from scratch on every reload, so its handle
+  // identity is "the resources were rebuilt".
+  auto scaled_logo = [&] {
+    return reinterpret_cast<HBITMAP>(
+        ::SendMessage(app_bitmap_ctl, STM_GETIMAGE, IMAGE_BITMAP, 0));
+  };
+  const HBITMAP before = scaled_logo();
+  ASSERT_NE(before, nullptr);
+
+  // Accepted by the predicate, but the theme is whatever it already was.
+  ::SendMessage(hwnd, WM_SETTINGCHANGE, 0,
+                reinterpret_cast<LPARAM>(L"ImmersiveColorSet"));
+  EXPECT_EQ(scaled_logo(), before);
+
+  ::SendMessage(hwnd, WM_THEMECHANGED, 0, 0);
+  EXPECT_NE(scaled_logo(), before);
+
+  progress_wnd->DestroyWindow();
+}
+
+// A WM_DPICHANGED without the suggested rect must be tolerated rather than
+// dereferenced. The window keeps its bounds; the rescale still runs from
+// `wparam`.
+TEST_F(ProgressWndTest, DpiChangedWithoutSuggestedRect) {
+  MessageLoop ui_message_loop;
+  std::unique_ptr<ProgressWnd> progress_wnd =
+      MakeProgressWindow(&ui_message_loop);
+  const HWND hwnd = progress_wnd->hwnd();
+
+  base::win::ScopedGetDC dc(hwnd);
+  base::win::ScopedGDIObject<HBITMAP> logo = CreateTestDIB24(dc, 48, 48);
+  ASSERT_TRUE(logo.is_valid());
+  ::SendMessage(hwnd, WM_SET_APP_LOGO, reinterpret_cast<WPARAM>(logo.release()),
+                0);
+
+  const UINT window_dpi = ::GetDpiForWindow(hwnd);
+  const UINT target_dpi = (window_dpi == 192) ? 96 : 192;
+  ASSERT_NE(target_dpi, window_dpi);
+
+  RECT before = {};
+  ASSERT_TRUE(::GetWindowRect(hwnd, &before));
+
+  ::SendMessage(hwnd, WM_DPICHANGED, MAKEWPARAM(target_dpi, target_dpi), 0);
+
+  RECT after = {};
+  ASSERT_TRUE(::GetWindowRect(hwnd, &after));
+  EXPECT_TRUE(::EqualRect(&before, &after));
+
+  // The rescale ran despite the missing rect: the window icon is sized for
+  // the DPI in `wparam`.
+  const HICON big_icon =
+      reinterpret_cast<HICON>(::SendMessage(hwnd, WM_GETICON, ICON_BIG, 0));
+  ASSERT_NE(big_icon, nullptr);
+  ICONINFO big_info = {};
+  ASSERT_TRUE(::GetIconInfo(big_icon, &big_info));
+  base::win::ScopedGDIObject<HBITMAP> big_color(big_info.hbmColor);
+  base::win::ScopedGDIObject<HBITMAP> big_mask(big_info.hbmMask);
+  BITMAP bm_big = {};
+  ASSERT_NE(::GetObject(big_color.get(), sizeof(bm_big), &bm_big), 0);
+  EXPECT_EQ(bm_big.bmWidth, ::GetSystemMetricsForDpi(SM_CXICON, target_dpi));
+  EXPECT_NE(bm_big.bmWidth, ::GetSystemMetricsForDpi(SM_CXICON, window_dpi));
 
   progress_wnd->DestroyWindow();
 }
@@ -833,25 +968,13 @@ TEST_F(ProgressWndTest, ErrorIllustrationThemeSwitching) {
   ASSERT_NO_FATAL_FAILURE(
       registry_override.OverrideRegistry(HKEY_CURRENT_USER));
 
-  auto set_dark_mode = [](bool dark) {
-    base::win::RegKey key;
-    EXPECT_EQ(key.Create(HKEY_CURRENT_USER,
-                         L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes"
-                         L"\\Personalize",
-                         KEY_SET_VALUE),
-              ERROR_SUCCESS);
-    EXPECT_EQ(
-        key.WriteValue(L"AppsUseLightTheme", static_cast<DWORD>(dark ? 0 : 1)),
-        ERROR_SUCCESS);
-  };
-
   EXPECT_CALL(*mock_progress_wnd_events_, DoExit())
       .Times(::testing::AnyNumber());
 
   MessageLoop ui_message_loop;
 
   // 1. In light mode, verify the error illustration is not loaded while hidden.
-  set_dark_mode(false);
+  SetDarkMode(false);
   {
     std::unique_ptr<ProgressWnd> progress_wnd =
         MakeProgressWindow(&ui_message_loop);
@@ -875,7 +998,7 @@ TEST_F(ProgressWndTest, ErrorIllustrationThemeSwitching) {
 
     // 2. Switch to dark mode via WM_SETTINGCHANGE and verify it updates to the
     // dark bitmap.
-    set_dark_mode(true);
+    SetDarkMode(true);
     ::SendMessage(progress_wnd->hwnd(), WM_SETTINGCHANGE, 0,
                   reinterpret_cast<LPARAM>(L"ImmersiveColorSet"));
     current_bmp = reinterpret_cast<HBITMAP>(
@@ -887,7 +1010,7 @@ TEST_F(ProgressWndTest, ErrorIllustrationThemeSwitching) {
 
     // 3. Switch back to light mode via WM_THEMECHANGED and verify it updates
     // back.
-    set_dark_mode(false);
+    SetDarkMode(false);
     ::SendMessage(progress_wnd->hwnd(), WM_THEMECHANGED, 0, 0);
     current_bmp = reinterpret_cast<HBITMAP>(
         ::SendMessage(error_ctl, STM_GETIMAGE, IMAGE_BITMAP, 0));
@@ -898,7 +1021,7 @@ TEST_F(ProgressWndTest, ErrorIllustrationThemeSwitching) {
 
   // 4. Starting directly in dark mode should not load bitmap while hidden,
   // but set the dark bitmap when the error completion dialog is displayed.
-  set_dark_mode(true);
+  SetDarkMode(true);
   {
     std::unique_ptr<ProgressWnd> progress_wnd =
         MakeProgressWindow(&ui_message_loop);
@@ -923,7 +1046,7 @@ TEST_F(ProgressWndTest, ErrorIllustrationThemeSwitching) {
 
   // 5. Calling DisplayCompletionDialog before Show() (parent dialog not yet
   // visible) still initializes the error illustration bitmap.
-  set_dark_mode(false);
+  SetDarkMode(false);
   {
     auto progress_wnd =
         std::make_unique<ProgressWnd>(&ui_message_loop, nullptr);

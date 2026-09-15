@@ -728,6 +728,21 @@ bool IsDarkModeOn() {
          !is_light_theme;
 }
 
+bool CouldBeThemeSettingChange(WPARAM wparam) {
+  // Zero covers the shell broadcasts, "ImmersiveColorSet" among them, and any
+  // unattributed change.
+  return wparam == 0 || wparam == SPI_SETHIGHCONTRAST;
+}
+
+void ApplySuggestedWindowRect(HWND hwnd, LPARAM lparam) {
+  if (const RECT* new_window_rect = reinterpret_cast<const RECT*>(lparam)) {
+    ::SetWindowPos(hwnd, nullptr, new_window_rect->left, new_window_rect->top,
+                   new_window_rect->right - new_window_rect->left,
+                   new_window_rect->bottom - new_window_rect->top,
+                   SWP_NOZORDER | SWP_NOACTIVATE);
+  }
+}
+
 bool MaybeSetArrowCursor(HWND hwnd, WPARAM wparam, LPARAM lparam) {
   if (LOWORD(lparam) != HTCLIENT) {
     return false;

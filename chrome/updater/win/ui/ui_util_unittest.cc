@@ -1098,4 +1098,65 @@ TEST(UiUtilTest, SetWindowIcons) {
       raw_small2);
 }
 
+TEST(UiUtilTest, CouldBeThemeSettingChange) {
+  const struct {
+    const char* description;
+    WPARAM wparam;
+    bool expected;
+  } test_cases[] = {
+      // What the shell broadcasts carry, "ImmersiveColorSet" among them.
+      {"unattributed change", 0, true},
+      // A genuine theme change, even though it names an SPI_* action. The
+      // previous predicate rejected it: Windows sends it with lParam pointing
+      // at L"HighContrast", not L"ImmersiveColorSet".
+      {"high contrast", SPI_SETHIGHCONTRAST, true},
+
+      // The behavior change this CL makes. Deleting these rows is the
+      // deliberate act required to widen the filter again.
+      {"non-client metrics", SPI_SETNONCLIENTMETRICS, false},
+      {"work area", SPI_SETWORKAREA, false},
+      {"client area animation", SPI_SETCLIENTAREAANIMATION, false},
+      // Pins that the accepted set is an allowlist, not a denylist.
+      {"arbitrary non-zero wparam", 0xDEADBEEF, false},
+      // These would survive an IS_INTRESOURCE() screen: that macro tests the
+      // value against 0x10000 as unsigned, so a negative one has its high
+      // bits set and passes for a pointer. Rejecting from `wparam` does not
+      // care.
+      {"small negative value", static_cast<WPARAM>(-4096), false},
+      {"all bits set", static_cast<WPARAM>(-1), false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.description);
+    EXPECT_EQ(test_case.expected, CouldBeThemeSettingChange(test_case.wparam));
+  }
+}
+
+TEST(UiUtilTest, ApplySuggestedWindowRect) {
+  if (!base::win::IsUser32AndGdi32Available()) {
+    return;
+  }
+
+  HWND hwnd = ::CreateWindowEx(0, L"STATIC", L"Test", WS_POPUP, 10, 10, 100,
+                               100, nullptr, nullptr, nullptr, nullptr);
+  ASSERT_TRUE(hwnd);
+  const absl::Cleanup destroy = [&] { ::DestroyWindow(hwnd); };
+
+  RECT before = {};
+  ASSERT_TRUE(::GetWindowRect(hwnd, &before));
+
+  // Null lParam leaves window bounds unchanged.
+  ApplySuggestedWindowRect(hwnd, 0);
+  RECT after_null = {};
+  ASSERT_TRUE(::GetWindowRect(hwnd, &after_null));
+  EXPECT_TRUE(::EqualRect(&before, &after_null));
+
+  // Non-null lParam resizes and repositions the window to the suggested rect.
+  const RECT suggested = {50, 60, 200, 250};
+  ApplySuggestedWindowRect(hwnd, reinterpret_cast<LPARAM>(&suggested));
+  RECT after_suggested = {};
+  ASSERT_TRUE(::GetWindowRect(hwnd, &after_suggested));
+  EXPECT_TRUE(::EqualRect(&suggested, &after_suggested));
+}
+
 }  // namespace updater::ui
