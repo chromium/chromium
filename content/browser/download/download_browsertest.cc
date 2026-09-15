@@ -58,6 +58,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/webplugininfo.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -66,6 +67,7 @@
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/slow_download_http_response.h"
 #include "content/public/test/test_download_http_response.h"
 #include "content/public/test/test_file_error_injector.h"
@@ -5476,12 +5478,12 @@ IN_PROC_BROWSER_TEST_F(DownloadFencedFrameTest, DiscardNonNavigationDownload) {
       shell()->web_contents()->GetPrimaryMainFrame(), kFencedFrameUrl);
 
   // Do a download without navigation from the fenced frame RenderFrameHost.
-  // The download will be dropped.
+  // The download should not reach the download manager.
   auto* download_manager =
       fenced_frame_host->GetBrowserContext()->GetDownloadManager();
   MockDownloadManagerObserver dm_observer(download_manager);
   EXPECT_CALL(dm_observer, OnDownloadCreated(_, _)).Times(0);
-  EXPECT_CALL(dm_observer, OnDownloadDropped(_)).Times(1);
+  EXPECT_CALL(dm_observer, OnDownloadDropped(_)).Times(0);
 
   auto params = blink::mojom::DownloadURLParams::New();
   params->url = kDownloadUrl;
@@ -5511,12 +5513,12 @@ IN_PROC_BROWSER_TEST_F(DownloadFencedFrameTest,
       shell()->web_contents()->GetPrimaryMainFrame(), kFencedFrameUrl);
 
   // Do a context-menu-save download from the fenced frame RenderFrameHost.
-  // The download will be dropped.
+  // The download should not reach the download manager.
   auto* download_manager =
       fenced_frame_host->GetBrowserContext()->GetDownloadManager();
   MockDownloadManagerObserver dm_observer(download_manager);
   EXPECT_CALL(dm_observer, OnDownloadCreated(_, _)).Times(0);
-  EXPECT_CALL(dm_observer, OnDownloadDropped(_)).Times(1);
+  EXPECT_CALL(dm_observer, OnDownloadDropped(_)).Times(0);
 
   auto params = blink::mojom::DownloadURLParams::New();
   params->url = kDownloadUrl;
@@ -5529,6 +5531,57 @@ IN_PROC_BROWSER_TEST_F(DownloadFencedFrameTest,
   std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
   download_manager->GetAllDownloads(&downloads);
   EXPECT_TRUE(downloads.empty());
+}
+
+// Verify that a DownloadURL request with `is_context_menu_save` set is
+// discarded when initiated from a frame that is pending deletion.
+IN_PROC_BROWSER_TEST_F(DownloadContentTest,
+                       DiscardDownloadFromPendingDeletionFrame) {
+  const GURL kUrlA = embedded_test_server()->GetURL("a.test", "/empty.html");
+  const GURL kUrlB = embedded_test_server()->GetURL("b.test", "/empty.html");
+  const GURL kDownloadUrl =
+      embedded_test_server()->GetURL("a.test", "/download/download-test.lib");
+
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  // Navigate to A and force the RenderFrameHost to linger after being
+  // navigated away from.
+  EXPECT_TRUE(NavigateToURL(shell(), kUrlA));
+  auto* rfh_a = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  LeaveInPendingDeletionState(rfh_a);
+
+  // Navigate to B so that `rfh_a` enters the pending deletion state.
+  EXPECT_TRUE(NavigateToURL(shell(), kUrlB));
+  EXPECT_FALSE(rfh_a->IsActive());
+
+  auto* download_manager = DownloadManagerForShell(shell());
+  MockDownloadManagerObserver dm_observer(download_manager);
+  EXPECT_CALL(dm_observer, OnDownloadCreated(_, _)).Times(1);
+  EXPECT_CALL(dm_observer, OnDownloadDropped(_)).Times(0);
+
+  // Send a DownloadURL request from the pending deletion frame with
+  // `is_context_menu_save` set. It should not result in a download.
+  auto params = blink::mojom::DownloadURLParams::New();
+  params->url = kDownloadUrl;
+  params->should_prompt_for_save_location = true;
+  rfh_a->DownloadURL(std::move(params));
+
+  // Trigger a download from the primary main frame and wait for it to
+  // complete. This ensures any download from the request above would have
+  // been observed by now.
+  std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
+  auto barrier_parameters =
+      DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
+          shell()->web_contents(), kDownloadUrl, TRAFFIC_ANNOTATION_FOR_TESTS);
+  download_manager->DownloadUrl(std::move(barrier_parameters));
+  observer->WaitForFinished();
+
+  // Verify only the primary main frame download exists.
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+  download_manager->GetAllDownloads(&downloads);
+  EXPECT_EQ(1u, downloads.size());
 }
 
 // A download triggered by clicking on a link with a |download| attribute should

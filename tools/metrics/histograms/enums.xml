@@ -5952,6 +5952,9 @@ shown properly on the user-facing crash UI.
     A PictureInPictureService IPC arrived for a frame in BFCache or pending
     deletion.
   </int>
+  <int value="50" label="kDownloadUrl">
+    A DownloadURL IPC arrived for an inactive frame.
+  </int>
 </enum>
 
 <enum name="IncidentType">
