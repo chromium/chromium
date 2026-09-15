@@ -420,6 +420,7 @@ if (build_with_model_execution) {
       "model_execution/manifest_broker/override_manifest_asset_manager_delegate.h",
     ]
     deps = [
+      ":core_util",
       ":features",
       ":model_execution",
       ":ondevice",

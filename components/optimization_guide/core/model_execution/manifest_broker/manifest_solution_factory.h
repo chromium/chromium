@@ -144,6 +144,12 @@ class ManifestSolutionFactory {
   ModelBrokerImpl::MaybeSolution CreateSolutionForUseCase(
       const std::string& use_case_name);
 
+  // Logs the model's version, backend and cache configuration to the
+  // optimization guide internals page.
+  void LogBaseModelInitialization(const std::string& model_id,
+                                  const proto::BaseModelRecipe& recipe,
+                                  const BaseModelState& state) const;
+
   // Gets or loads the model.
   mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrLoadModel(
       const std::string& model_id);

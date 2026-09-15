@@ -202,6 +202,12 @@ class ModelBrokerClient final {
       const std::string& use_case,
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer);
 
+  // The logger for this client. Callers outside of //components should use
+  // this rather than OptimizationGuideLogger::GetInstance(): in component
+  // builds each shared library links its own copy of the singleton, and only
+  // the one owned by the browser layer is observed by the internals page.
+  base::WeakPtr<OptimizationGuideLogger> logger() const { return logger_; }
+
  private:
   mojo::Remote<mojom::ModelBroker> remote_;
   base::WeakPtr<OptimizationGuideLogger> logger_;

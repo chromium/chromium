@@ -14,15 +14,17 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "services/on_device_model/public/cpp/features.h"
@@ -615,6 +617,36 @@ ManifestSolutionFactory::CreateSolutionForUseCase(
                                     use_case_name, solution_id);
 }
 
+void ManifestSolutionFactory::LogBaseModelInitialization(
+    const std::string& model_id,
+    const proto::BaseModelRecipe& recipe,
+    const BaseModelState& state) const {
+  auto* logger = OptimizationGuideLogger::GetInstance();
+  if (!logger || !logger->ShouldEnableDebugLogs()) {
+    return;
+  }
+  OPTIMIZATION_GUIDE_LOGGER(
+      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION, logger)
+      << "Loading model [" << model_id << "] on backend ["
+      << (recipe.backend_type() == proto::BaseModelRecipe::BACKEND_TYPE_CPU
+              ? "CPU"
+              : "GPU")
+      << "], max tokens [" << base::NumberToString(recipe.max_tokens())
+      << "]; model cache files ["
+      << (state.has_caches ? "exist" : "do not exist")
+      << "], GPU weight cache ["
+      << (base::FeatureList::IsEnabled(
+              on_device_model::features::kOnDeviceModelGpuWeightCache)
+              ? "enabled"
+              : "disabled")
+      << "], GPU program cache ["
+      << (base::FeatureList::IsEnabled(
+              on_device_model::features::kOnDeviceModelGpuProgramCache)
+              ? "enabled"
+              : "disabled")
+      << "]";
+}
+
 mojo::Remote<on_device_model::mojom::OnDeviceModel>&
 ManifestSolutionFactory::GetOrLoadModel(const std::string& model_id) {
   if (auto it = base_models_.find(model_id); it != base_models_.end()) {
@@ -694,6 +726,8 @@ void ManifestSolutionFactory::LoadBaseModel(const std::string& model_id,
               "model_id", model_id);
   const auto& recipe = manifest_.GetRecipes().base_models().at(model_id);
   on_device_model::ModelAssetPaths paths = GetModelAssetPaths(recipe);
+
+  LogBaseModelInitialization(model_id, recipe, state);
 
   service_client_->AddPendingUsage();
   base::ThreadPool::PostTaskAndReplyWithResult(

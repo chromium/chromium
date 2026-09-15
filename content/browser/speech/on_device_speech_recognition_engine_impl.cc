@@ -8,9 +8,12 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -23,6 +26,7 @@
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/audio_data.mojom.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
+#include "services/on_device_model/public/cpp/features.h"
 
 namespace content {
 
@@ -31,6 +35,17 @@ constexpr char kWebSpeechTinyGemmaDuration[] =
     "Accessibility.WebSpeech.TinyGemma.Duration";
 constexpr char kWebSpeechGeminiNanoDuration[] =
     "Accessibility.WebSpeech.GeminiNano.Duration";
+
+std::string AsrFlagSnapshot() {
+  namespace f = on_device_model::features;
+  if (!base::FeatureList::IsEnabled(f::kOnDeviceModelAsrDecoderPrefill)) {
+    return "asr_decoder_prefill=disabled";
+  }
+  return base::StringPrintf(
+      "asr_decoder_prefill=enabled, asr_decoder_prefill_backoff=%d",
+      f::kOnDeviceModelAsrDecoderPrefillBackoff.Get());
+}
+
 }  // namespace
 
 OnDeviceSpeechRecognitionEngine::Core::Core(
@@ -69,6 +84,8 @@ void OnDeviceSpeechRecognitionEngine::EndRecognition() {
     base::UmaHistogramLongTimes100(kWebSpeechTinyGemmaDuration,
                                    audio_duration_);
   }
+
+  core_.AsyncCall(&Core::LogRecognitionEnded).WithArgs(audio_duration_);
 
   core_.Reset();
   asr_stream_.reset();
@@ -195,6 +212,7 @@ void OnDeviceSpeechRecognitionEngine::Core::CreateModelClient(
                 kOnDeviceSpeechRecognition;
 
   if (model_broker_client_) {
+    logger_ = model_broker_client_->logger();
     model_broker_client_->RequestAssetsFor(feature);
     model_broker_client_->GetSubscriber(feature).WaitForClient(base::BindOnce(
         &Core::OnModelClientAvailable, weak_factory_.GetWeakPtr()));
@@ -213,12 +231,35 @@ void OnDeviceSpeechRecognitionEngine::Core::SetAudioParameters(
   TryCreateSession();
 }
 
+void OnDeviceSpeechRecognitionEngine::Core::LogRecognitionEnded(
+    base::TimeDelta audio_duration) {
+  if (!logger_ || !logger_->ShouldEnableDebugLogs()) {
+    return;
+  }
+  OPTIMIZATION_GUIDE_LOGGER(
+      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+      logger_.get())
+      << "Terminated WebSpeech ASR stream after "
+      << base::NumberToString(audio_duration.InMilliseconds()) << "ms of audio";
+}
+
 void OnDeviceSpeechRecognitionEngine::Core::TryCreateSession() {
   if (!model_client_ || !sample_rate_hz_.has_value() || session_created_) {
     return;
   }
 
   session_created_ = true;
+
+  if (logger_ && logger_->ShouldEnableDebugLogs()) {
+    OPTIMIZATION_GUIDE_LOGGER(
+        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
+        logger_.get())
+        << "Starting WebSpeech ASR session: ("
+        << base::StringPrintf("sample_rate=%dHz, language=%s, %s)",
+                              *sample_rate_hz_,
+                              language_.empty() ? "default" : language_.c_str(),
+                              AsrFlagSnapshot().c_str());
+  }
 
   auto params = on_device_model::mojom::SessionParams::New();
   params->capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);

@@ -25,6 +25,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
+class OptimizationGuideLogger;
+
 namespace optimization_guide {
 class ModelBrokerClient;
 class ModelClient;
@@ -77,6 +79,8 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
                            const std::string& language);
     void SetAudioParameters(int sample_rate_hz);
 
+    void LogRecognitionEnded(base::TimeDelta audio_duration);
+
    private:
     friend class OnDeviceSpeechRecognitionEngineTest;
     FRIEND_TEST(OnDeviceSpeechRecognitionEngine, Reinitialization);
@@ -90,6 +94,7 @@ class CONTENT_EXPORT OnDeviceSpeechRecognitionEngine
     mojo::Remote<on_device_model::mojom::Session> session_;
     base::WeakPtr<optimization_guide::ModelClient> model_client_;
     std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
+    base::WeakPtr<OptimizationGuideLogger> logger_;
 
     std::optional<int> sample_rate_hz_;
     std::string language_;
