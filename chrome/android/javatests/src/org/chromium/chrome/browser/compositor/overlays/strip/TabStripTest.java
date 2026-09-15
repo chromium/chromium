@@ -23,16 +23,17 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
@@ -61,7 +62,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Test suite for the TabStrip and making sure it properly represents the TabModel backend. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "crbug.com/342984901")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
 @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
@@ -78,7 +79,6 @@ public class TabStripTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"TabStrip"})
-    @DisabledTest(message = "crbug.com/342984901")
     public void testInitialState() throws Exception {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         compareAllTabStripsWithModel();
@@ -514,6 +514,7 @@ public class TabStripTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
     })
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    @RequiresRestart("Spawns a second window and alters focused activity")
     public void testCloseLastIncognitoTab_OpenIncognitoAsNewWindow() {
         // Create a regular window and verify.
         Assert.assertFalse(
