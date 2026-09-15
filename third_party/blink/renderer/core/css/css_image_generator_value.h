@@ -28,6 +28,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
@@ -108,7 +109,8 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
   bool IsUsingCustomProperty(const AtomicString& custom_property_name,
                              const Document&) const;
   bool IsUsingCurrentColor() const;
-  bool IsUsingContainerRelativeUnits() const;
+  void AccumulateLengthUnitTypes(
+      CSSPrimitiveValue::LengthTypeFlags& types) const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

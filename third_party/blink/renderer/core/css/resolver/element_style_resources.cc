@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
@@ -126,8 +127,10 @@ StyleImage* StyleImageLoader::Load(
 
   if (auto* image_gradient_value =
           DynamicTo<cssvalue::CSSGradientValue>(value)) {
+    CSSPrimitiveValue::LengthTypeFlags types;
+    image_gradient_value->AccumulateLengthUnitTypes(types);
     const ContainerSizes& container_sizes =
-        image_gradient_value->IsUsingContainerRelativeUnits()
+        CSSPrimitiveValue::HasContainerRelativeUnits(types)
             ? pre_cached_container_sizes_.Get()
             : ContainerSizes();
     return MakeGarbageCollected<StyleGeneratedImage>(*image_gradient_value,
@@ -239,8 +242,10 @@ StyleImage* ElementStyleResources::CachedStyleImage(
   // Gradient functions are never pending (but don't cache StyleImages).
   if (auto* gradient_value = DynamicTo<cssvalue::CSSGradientValue>(value)) {
     using ContainerSizes = CSSToLengthConversionData::ContainerSizes;
+    CSSPrimitiveValue::LengthTypeFlags types;
+    gradient_value->AccumulateLengthUnitTypes(types);
     const ContainerSizes& container_sizes =
-        gradient_value->IsUsingContainerRelativeUnits()
+        CSSPrimitiveValue::HasContainerRelativeUnits(types)
             ? pre_cached_container_sizes_.Get()
             : ContainerSizes();
     return MakeGarbageCollected<StyleGeneratedImage>(*gradient_value,

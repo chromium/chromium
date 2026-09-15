@@ -183,16 +183,20 @@ bool CSSImageGeneratorValue::IsUsingCurrentColor() const {
   }
 }
 
-bool CSSImageGeneratorValue::IsUsingContainerRelativeUnits() const {
+void CSSImageGeneratorValue::AccumulateLengthUnitTypes(
+    CSSPrimitiveValue::LengthTypeFlags& types) const {
   switch (GetClassType()) {
     case kLinearGradientClass:
-      return To<CSSLinearGradientValue>(this)->IsUsingContainerRelativeUnits();
+      To<CSSLinearGradientValue>(this)->AccumulateLengthUnitTypes(types);
+      return;
     case kRadialGradientClass:
-      return To<CSSRadialGradientValue>(this)->IsUsingContainerRelativeUnits();
+      To<CSSRadialGradientValue>(this)->AccumulateLengthUnitTypes(types);
+      return;
     case kConicGradientClass:
-      return To<CSSConicGradientValue>(this)->IsUsingContainerRelativeUnits();
+      To<CSSConicGradientValue>(this)->AccumulateLengthUnitTypes(types);
+      return;
     default:
-      return false;
+      return;
   }
 }
 

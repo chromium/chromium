@@ -1614,27 +1614,29 @@ static bool IsUsingCurrentColor(
   return false;
 }
 
-static bool IsUsingContainerRelativeUnits(const CSSValue* value) {
-  const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
-  return primitive_value && primitive_value->HasContainerRelativeUnits();
+static void AccumulateLengthUnitTypes(
+    const CSSValue* value,
+    CSSPrimitiveValue::LengthTypeFlags& types) {
+  if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+    primitive_value->AccumulateLengthUnitTypes(types);
+  }
 }
 
-static bool IsUsingContainerRelativeUnits(
-    const HeapVector<CSSGradientColorStop, 2>& stops) {
+static void AccumulateLengthUnitTypes(
+    const HeapVector<CSSGradientColorStop, 2>& stops,
+    CSSPrimitiveValue::LengthTypeFlags& types) {
   for (const CSSGradientColorStop& stop : stops) {
-    if (IsUsingContainerRelativeUnits(stop.offset_.Get())) {
-      return true;
-    }
+    AccumulateLengthUnitTypes(stop.offset_.Get(), types);
   }
-  return false;
 }
 
 bool CSSLinearGradientValue::IsUsingCurrentColor() const {
   return blink::cssvalue::IsUsingCurrentColor(stops_);
 }
 
-bool CSSLinearGradientValue::IsUsingContainerRelativeUnits() const {
-  return blink::cssvalue::IsUsingContainerRelativeUnits(stops_);
+void CSSLinearGradientValue::AccumulateLengthUnitTypes(
+    CSSPrimitiveValue::LengthTypeFlags& types) const {
+  blink::cssvalue::AccumulateLengthUnitTypes(stops_, types);
 }
 
 void CSSLinearGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
@@ -2167,12 +2169,13 @@ bool CSSRadialGradientValue::IsUsingCurrentColor() const {
   return blink::cssvalue::IsUsingCurrentColor(stops_);
 }
 
-bool CSSRadialGradientValue::IsUsingContainerRelativeUnits() const {
-  return blink::cssvalue::IsUsingContainerRelativeUnits(stops_) ||
-         blink::cssvalue::IsUsingContainerRelativeUnits(first_x_) ||
-         blink::cssvalue::IsUsingContainerRelativeUnits(first_y_) ||
-         blink::cssvalue::IsUsingContainerRelativeUnits(end_horizontal_size_) ||
-         blink::cssvalue::IsUsingContainerRelativeUnits(end_vertical_size_);
+void CSSRadialGradientValue::AccumulateLengthUnitTypes(
+    CSSPrimitiveValue::LengthTypeFlags& types) const {
+  blink::cssvalue::AccumulateLengthUnitTypes(stops_, types);
+  blink::cssvalue::AccumulateLengthUnitTypes(first_x_, types);
+  blink::cssvalue::AccumulateLengthUnitTypes(first_y_, types);
+  blink::cssvalue::AccumulateLengthUnitTypes(end_horizontal_size_, types);
+  blink::cssvalue::AccumulateLengthUnitTypes(end_vertical_size_, types);
 }
 
 void CSSRadialGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
@@ -2352,10 +2355,11 @@ bool CSSConicGradientValue::IsUsingCurrentColor() const {
   return blink::cssvalue::IsUsingCurrentColor(stops_);
 }
 
-bool CSSConicGradientValue::IsUsingContainerRelativeUnits() const {
-  return blink::cssvalue::IsUsingContainerRelativeUnits(stops_) ||
-         blink::cssvalue::IsUsingContainerRelativeUnits(x_.Get()) ||
-         blink::cssvalue::IsUsingContainerRelativeUnits(y_.Get());
+void CSSConicGradientValue::AccumulateLengthUnitTypes(
+    CSSPrimitiveValue::LengthTypeFlags& types) const {
+  blink::cssvalue::AccumulateLengthUnitTypes(stops_, types);
+  blink::cssvalue::AccumulateLengthUnitTypes(x_.Get(), types);
+  blink::cssvalue::AccumulateLengthUnitTypes(y_.Get(), types);
 }
 
 void CSSConicGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {

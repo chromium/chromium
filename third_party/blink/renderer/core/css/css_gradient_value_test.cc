@@ -39,9 +39,15 @@ bool CompareGradients(const char* gradient1, const char* gradient2) {
   return *value1 == *value2;
 }
 
-bool IsUsingContainerRelativeUnits(const char* text) {
+CSSPrimitiveValue::LengthTypeFlags LengthUnitTypes(const char* text) {
   const CSSGradientValue* gradient = ParseSingleGradient(text);
-  return gradient->IsUsingContainerRelativeUnits();
+  CSSPrimitiveValue::LengthTypeFlags types;
+  gradient->AccumulateLengthUnitTypes(types);
+  return types;
+}
+
+bool IsUsingContainerRelativeUnits(const char* text) {
+  return CSSPrimitiveValue::HasContainerRelativeUnits(LengthUnitTypes(text));
 }
 
 TEST(CSSGradientValueTest, RadialGradient_Equals) {

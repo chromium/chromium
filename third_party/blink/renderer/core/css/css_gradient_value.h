@@ -212,7 +212,8 @@ class CSSLinearGradientValue final : public CSSGradientValue {
                                            CSSValuePhase value_phase) const;
 
   bool IsUsingCurrentColor() const;
-  bool IsUsingContainerRelativeUnits() const;
+  void AccumulateLengthUnitTypes(
+      CSSPrimitiveValue::LengthTypeFlags& types) const;
 
   bool HasRandomFunctions() const {
     return (first_x_ && first_x_->HasRandomFunctions()) ||
@@ -328,7 +329,8 @@ class CORE_EXPORT CSSRadialGradientValue final : public CSSGradientValue {
                                            CSSValuePhase value_phase) const;
 
   bool IsUsingCurrentColor() const;
-  bool IsUsingContainerRelativeUnits() const;
+  void AccumulateLengthUnitTypes(
+      CSSPrimitiveValue::LengthTypeFlags& types) const;
 
   bool HasRandomFunctions() const {
     return (first_x_ && first_x_->HasRandomFunctions()) ||
@@ -398,7 +400,8 @@ class CSSConicGradientValue final : public CSSGradientValue {
                                           CSSValuePhase value_phase) const;
 
   bool IsUsingCurrentColor() const;
-  bool IsUsingContainerRelativeUnits() const;
+  void AccumulateLengthUnitTypes(
+      CSSPrimitiveValue::LengthTypeFlags& types) const;
 
   bool HasRandomFunctions() const {
     return (x_ && x_->HasRandomFunctions()) ||
