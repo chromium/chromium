@@ -84,8 +84,7 @@ base::expected<DecodedWebFont, String> DecodeFont(SegmentedBuffer* buffer) {
     return base::unexpected("");
   }
   auto decode_start_time = base::TimeTicks::Now();
-  base::expected<DecodedWebFont, String> result =
-      DecodedWebFont::Create(buffer);
+  base::expected<DecodedWebFont, String> result = DecodeWebFont(buffer);
   base::UmaHistogramMicrosecondsTimes(
       "Blink.Fonts.BackgroundDecodeTime",
       base::TimeTicks::Now() - decode_start_time);

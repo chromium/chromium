@@ -328,8 +328,7 @@ FontCustomPlatformData* FontCustomPlatformData::Create(
     SharedBuffer* buffer,
     String& ots_parse_message) {
   DCHECK(buffer);
-  base::expected<DecodedWebFont, String> decode_result =
-      DecodedWebFont::Create(buffer);
+  base::expected<DecodedWebFont, String> decode_result = DecodeWebFont(buffer);
   if (!decode_result.has_value()) {
     ots_parse_message = std::move(decode_result).error();
     return nullptr;

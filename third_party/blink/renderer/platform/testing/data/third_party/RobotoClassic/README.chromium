@@ -18,6 +18,7 @@ The test fixture files reside in the parent directory (testing/data/) because th
 relative patch URLs ("00.1.ift_gk", "04.1.ift_gk") are embedded directly within
 the font binary:
 - third_party/blink/renderer/platform/testing/data/roboto-ift.ttf
+- third_party/blink/renderer/platform/testing/data/roboto-ift.woff2
 - third_party/blink/renderer/platform/testing/data/00.1.ift_gk
 - third_party/blink/renderer/platform/testing/data/04.1.ift_gk
 

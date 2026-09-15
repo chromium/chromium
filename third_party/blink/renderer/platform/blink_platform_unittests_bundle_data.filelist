@@ -881,6 +881,7 @@ testing/data/rgb-jpeg-red.jpg
 testing/data/roboto-a-different-cmap.ttf
 testing/data/roboto-a.ttf
 testing/data/roboto-ift.ttf
+testing/data/roboto-ift.woff2
 testing/data/third_party/Amiri/amiri_arabic.woff2
 testing/data/third_party/MEgalopolis/MEgalopolisExtra.woff
 testing/data/third_party/Noto/NotoNaskhArabic-regular.woff2

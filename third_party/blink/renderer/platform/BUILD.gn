@@ -253,6 +253,7 @@ group("blink_platform_public_deps") {
     "//third_party/boringssl",
     "//third_party/libwebp",
     "//third_party/ots",
+    "//third_party/woff2:woff2_dec",
     "//ui/gfx/animation/keyframe",
     "//url",
     "//v8",
