@@ -11,6 +11,7 @@ static_library("logging") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chrome/common",
     "//content/public/browser",

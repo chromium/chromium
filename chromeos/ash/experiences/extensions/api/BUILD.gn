@@ -46,7 +46,8 @@ generated_json_strings("generated_api_json_strings") {
 }
 
 generated_types("generated_api_types") {
-  sources = chromeos_extensions_api_schema_sources
+  sources = chromeos_extensions_api_schema_sources +
+            chromeos_extensions_manifest_only_schema_sources
   configs = [ "//build/config:precompiled_headers" ]
   schema_include_rules = chromeos_extensions_api_schema_include_rules
 

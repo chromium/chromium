@@ -16,7 +16,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
-#include "chrome/common/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace ash {

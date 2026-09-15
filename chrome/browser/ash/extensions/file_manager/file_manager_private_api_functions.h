@@ -7,7 +7,7 @@
 
 // This header file is included from the auto generated code by the extension
 // API scheme compiler.
-// See also chrome/common/extensions/api/file_manager_private.idl.
+// See also chromeos/ash/experiences/extensions/api/file_manager_private.idl.
 
 #include "chrome/browser/ash/extensions/file_manager/fmpi_get_volume_root_function.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_dialog.h"

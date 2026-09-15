@@ -15,14 +15,23 @@ function_registration("api_registration") {
   root_namespace = chromeos_extensions_api_root_namespace
   schema_include_rules = chromeos_extensions_api_schema_include_rules
 
-  custom_impl_schemas = [ "speech_recognition_private" ]
+  custom_impl_schemas = [
+    "file_manager_private",
+    "file_manager_private_internal",
+    "file_system_provider",
+    "file_system_provider_internal",
+    "speech_recognition_private",
+  ]
 
   inputs = [
+    "//chrome/browser/ash/extensions/file_manager/file_manager_private_api_functions.h",
+    "//chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h",
     "//chrome/browser/ash/extensions/speech/speech_recognition_private_api.h",
   ]
 
   deps = [
     "//base",
+    "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/extensions/speech",
   ]
 }

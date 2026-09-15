@@ -16,7 +16,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
 #include "extensions/browser/event_router.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/message_center/public/cpp/notification.h"

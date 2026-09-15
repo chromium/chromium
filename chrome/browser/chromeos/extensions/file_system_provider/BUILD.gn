@@ -19,6 +19,7 @@ static_library("file_system_provider") {
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common/extensions/api",
+    "//chromeos/ash/experiences/extensions/api",
     "//extensions/browser",
     "//storage/browser",
   ]

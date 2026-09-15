@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/fileapi/recent_model.h"
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"

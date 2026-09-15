@@ -5,7 +5,7 @@
 #include <utility>
 
 #include "chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h"
-#include "chrome/common/extensions/api/file_system_provider_internal.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider_internal.h"
 
 namespace {
 

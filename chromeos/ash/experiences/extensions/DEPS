@@ -1,3 +1,10 @@
 include_rules = [
+  "+components/version_info",
   "+extensions/common",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+extensions/test",
+  ],
+}

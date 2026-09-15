@@ -1,13 +1,14 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Definitions for chrome.fileManagerPrivate API
- * Generated from: chrome/common/extensions/api/file_manager_private.idl
- * run `tools/json_schema_compiler/compiler.py
- * chrome/common/extensions/api/file_manager_private.idl -g ts_definitions` to
- * regenerate.
+ * Generated from:
+ * chromeos/ash/experiences/extensions/api/file_manager_private.idl run
+ * `tools/json_schema_compiler/compiler.py
+ * chromeos/ash/experiences/extensions/api/file_manager_private.idl -g
+ * ts_definitions` to regenerate.
  */
 
 import type {ChromeEvent} from './chrome_event.js';
@@ -788,6 +789,10 @@ declare global {
         filesystem: FileSystemData;
       }
 
+      export interface GrantAccessOptions {
+        forThumbnailing?: boolean;
+      }
+
       export function cancelDialog(): void;
 
       export function executeTask(
@@ -823,8 +828,9 @@ declare global {
 
       export function enableExternalFileScheme(): void;
 
-      export function grantAccess(entryUrls: string[], callback: () => void):
-          void;
+      export function grantAccess(
+          entryUrls: string[], options?: GrantAccessOptions,
+          callback: () => void): void;
 
       export function selectFiles(
           selectedPaths: string[], shouldReturnLocalPath: boolean,

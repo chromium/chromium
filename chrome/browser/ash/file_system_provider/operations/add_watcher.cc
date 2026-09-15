@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "chrome/common/extensions/api/file_system_provider.h"
-#include "chrome/common/extensions/api/file_system_provider_internal.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider_internal.h"
 
 namespace ash::file_system_provider::operations {
 

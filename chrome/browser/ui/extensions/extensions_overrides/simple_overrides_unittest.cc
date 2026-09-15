@@ -114,11 +114,10 @@ constexpr const char* kDisallowedFeatures[] = {
     // populate availability messages if an extension requests them), so we
     // need to ensure they are included in this list.
     "action_handlers",
-    "file_system_provider_capabilities",
 
-// Unlike the keys above, chromeos_system_extension *is* only defined on
-// ChromeOS.
+// The following keys are only defined on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
+    "file_system_provider_capabilities",
     extensions::manifest_keys::kChromeOSSystemExtension,
 #endif
 

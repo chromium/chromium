@@ -8,7 +8,7 @@
 
 #include "base/check.h"
 #include "base/values.h"
-#include "chrome/common/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
 #include "components/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "net/base/mime_util.h"
 

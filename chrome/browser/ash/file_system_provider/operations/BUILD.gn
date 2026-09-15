@@ -51,6 +51,7 @@ static_library("operations") {
   deps = [
     "//base",
     "//chrome/common",
+    "//chromeos/ash/experiences/extensions/api",
     "//extensions/browser",
     "//storage/browser",
   ]
@@ -88,6 +89,8 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/ash/file_system_provider",
     "//chrome/common",
+    "//chromeos/ash/experiences/extensions",
+    "//chromeos/ash/experiences/extensions/api",
     "//extensions/browser",
     "//net",
     "//storage/browser",

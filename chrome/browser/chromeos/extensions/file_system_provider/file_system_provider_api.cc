@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/file_system_provider.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider.h"
 #include "storage/browser/file_system/watcher_manager.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 

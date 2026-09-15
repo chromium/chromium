@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/fileapi/file_accumulator.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_source.h"
-#include "chrome/common/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/file_system_url.h"
 

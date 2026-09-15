@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 
 class Profile;
 

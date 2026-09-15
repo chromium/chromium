@@ -24,7 +24,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
-#include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #endif
 
 namespace extensions {
@@ -45,8 +44,6 @@ void RegisterChromeManifestHandlers(ManifestHandlerRegistry* registry) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterHandler(std::make_unique<FileBrowserHandlerParser>());
-  registry->RegisterHandler(
-      std::make_unique<FileSystemProviderCapabilitiesHandler>());
 #endif
 }
 

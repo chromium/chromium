@@ -1,0 +1,50 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The type schemas for structured manifest items. Not actually a callable API.
+
+[
+  {
+    "namespace": "manifestTypes",
+    "description": "Schemas for structured manifest entries",
+    "compiler_options": {
+      "generate_error_messages": true
+    },
+    "types": [
+      {
+        "id": "FileSystemProviderSource",
+        "type": "string",
+        "description": "For <code>\"file\"</code> the source is a file passed via <code>onLaunched</code> event. For <code>\"device\"</code> contents are fetched from an external device (eg. plugged via USB), without using <code>file_handlers</code>. Finally, for <code>\"network\"</code> source, contents should be fetched via network.",
+        "enum": ["file", "device", "network"]
+      },
+      {
+        "id": "FileSystemProviderCapabilities",
+        "description": "Represents capabilities of a providing extension.",
+        "optional": true,
+        "type": "object",
+        "properties": {
+          "configurable": {
+            "type": "boolean",
+            "optional": true,
+            "description": "Whether configuring via <code>onConfigureRequested</code> is supported. By default: <code>false</code>."
+          },
+          "multiple_mounts": {
+            "type": "boolean",
+            "optional": true,
+            "description": "Whether multiple (more than one) mounted file systems are supported. By default: <code>false</code>."
+          },
+          "watchable": {
+            "type": "boolean",
+            "optional": true,
+            "description": "Whether setting watchers and notifying about changes is supported. By default: <code>false</code>."
+          },
+          "source": {
+            "$ref": "FileSystemProviderSource",
+            "description": "Source of data for mounted file systems."
+          }
+        }
+      }
+    ]
+  }
+]

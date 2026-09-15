@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
-#include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "extensions/common/extension_id.h"
 
 namespace ash::file_system_provider {

@@ -103,7 +103,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/common/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
 #include "url/gurl.h"
 
 class PrefService;

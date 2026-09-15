@@ -167,8 +167,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kEnterpriseReportingPrivate,
      "enterprise.reportingPrivate", APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kFileManagerPrivate, "fileManagerPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kImageLoaderPrivate, "imageLoaderPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kImageWriterPrivate, "imageWriterPrivate",
@@ -219,10 +217,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagImpliesFullURLAccess},
     {APIPermissionID::kTabCaptureForTab, "tabCaptureForTab",
      APIPermissionInfo::kFlagInternal},
-
-    // Platform-app permissions.
-    {APIPermissionID::kFileSystemProvider, "fileSystemProvider",
-     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
 
     // Settings override permissions.
     {APIPermissionID::kHomepage, "homepage",

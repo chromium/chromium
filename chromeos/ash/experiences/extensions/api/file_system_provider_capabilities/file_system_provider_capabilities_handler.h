@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_EXTENSIONS_API_FILE_SYSTEM_PROVIDER_CAPABILITIES_FILE_SYSTEM_PROVIDER_CAPABILITIES_HANDLER_H_
-#define CHROME_COMMON_EXTENSIONS_API_FILE_SYSTEM_PROVIDER_CAPABILITIES_FILE_SYSTEM_PROVIDER_CAPABILITIES_HANDLER_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_API_FILE_SYSTEM_PROVIDER_CAPABILITIES_FILE_SYSTEM_PROVIDER_CAPABILITIES_HANDLER_H_
+#define CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_API_FILE_SYSTEM_PROVIDER_CAPABILITIES_FILE_SYSTEM_PROVIDER_CAPABILITIES_HANDLER_H_
 
 #include <string>
 #include <vector>
 
-#include "chrome/common/extensions/api/file_system_provider.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -67,4 +67,4 @@ class FileSystemProviderCapabilitiesHandler : public ManifestHandler {
 
 }  // namespace extensions
 
-#endif  // CHROME_COMMON_EXTENSIONS_API_FILE_SYSTEM_PROVIDER_CAPABILITIES_FILE_SYSTEM_PROVIDER_CAPABILITIES_HANDLER_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_API_FILE_SYSTEM_PROVIDER_CAPABILITIES_FILE_SYSTEM_PROVIDER_CAPABILITIES_HANDLER_H_

@@ -12,7 +12,7 @@ Other relevant directories:
 * [//ash/webui/file_manager/](/ash/webui/file_manager/): C++ and HTML/JS for the SWA (System Web App) wrapper.
 * [//chrome/browser/ash/file_manager/](/chrome/browser/ash/file_manager/): Most of our C++ code running on the browser process.
 * [//chrome/browser/ash/extensions/file_manager/](/chrome/browser/ash/extensions/file_manager/): `fileManagerPrivate` Our private API and some other code running on the browser process.
-* [//chrome/common/extensions/api/file_manager_private.idl](/chrome/common/extensions/api/file_manager_private.idl) and [file_manager_private_internal.idl](/chrome/common/extensions/api/file_manager_private_internal.idl): The Private API definition.
+* [//chromeos/ash/experiences/extensions/api/file_manager_private.idl](/chromeos/ash/experiences/extensions/api/file_manager_private.idl) and [file_manager_private_internal.idl](/chromeos/ash/experiences/extensions/api/file_manager_private_internal.idl): The Private API definition.
 
 ## Other READMEs
 

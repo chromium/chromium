@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chrome/common/extensions/api/file_system_provider.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider.h"
 #include "extensions/browser/event_router.h"
 
 namespace ash::file_system_provider {

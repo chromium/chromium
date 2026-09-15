@@ -7,10 +7,19 @@ import("//extensions/buildflags/buildflags.gni")
 assert(is_chromeos)
 assert(enable_extensions_core)
 
-chromeos_schema_sources_ = [ "speech_recognition_private.idl" ]
+chromeos_schema_sources_ = [
+  "file_manager_private.idl",
+  "file_manager_private_internal.webidl",
+  "file_system_provider.webidl",
+  "file_system_provider_internal.idl",
+  "speech_recognition_private.idl",
+]
 
 chromeos_extensions_api_schema_sources =
     get_path_info(chromeos_schema_sources_, "abspath")
+
+chromeos_extensions_manifest_only_schema_sources =
+    get_path_info([ "manifest_types.json" ], "abspath")
 
 chromeos_extensions_api_root_namespace = "extensions::api::%(namespace)s"
 

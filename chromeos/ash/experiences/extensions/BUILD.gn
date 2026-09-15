@@ -8,6 +8,8 @@ assert(is_chromeos)
 
 static_library("extensions") {
   sources = [
+    "api/file_system_provider_capabilities/file_system_provider_capabilities_handler.cc",
+    "api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h",
     "chromeos_extensions_api_permissions.cc",
     "chromeos_extensions_api_permissions.h",
     "chromeos_extensions_api_provider.cc",
@@ -16,6 +18,7 @@ static_library("extensions") {
 
   deps = [
     ":resources",
+    "//ash/constants",
     "//chromeos/ash/experiences/extensions/api",
     "//chromeos/ash/experiences/extensions/api:extensions_features",
     "//extensions/common",
@@ -30,4 +33,21 @@ grit("resources") {
     "grit/chromeos_extensions_resources.h",
     "chromeos_extensions_resources.pak",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources =
+      [ "api/file_system_provider/file_system_provider_handler_unittest.cc" ]
+  deps = [
+    ":extensions",
+    "//base",
+    "//base/test:test_support",
+    "//components/version_info",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+  data = [ "test/data/" ]
 }

@@ -67,6 +67,7 @@ static_library("file_manager") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/notifications",
     "//chrome/browser/sharesheet",
+    "//chromeos/ash/experiences/extensions/api",
     "//third_party/ced",
   ]
 
@@ -132,6 +133,7 @@ static_library("file_manager") {
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/extensions/api",
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/components/disks:prefs",
     "//chromeos/components/sharesheet:constants",
@@ -201,6 +203,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/extensions/api",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
     "//storage/browser",
@@ -247,6 +250,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/experiences/extensions",
     "//chromeos/dbus/dlp",
     "//components/drive",
     "//components/prefs",

@@ -42,7 +42,7 @@
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/file_system_provider.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider.h"
 #include "extensions/browser/event_router.h"
 
 namespace net {

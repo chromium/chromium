@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/file_system_provider/operations/configure.h"
 
 #include "base/values.h"
-#include "chrome/common/extensions/api/file_system_provider.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider.h"
 
 namespace ash::file_system_provider::operations {
 

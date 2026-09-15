@@ -1,4 +1,5 @@
 # All APIs that have their externs generated.
 # TODO(crbug.com/40868715): Remove these as we migrate all consumers towards
 # typescript definitions.
+file_system_provider.webidl
 speech_recognition_private.idl

@@ -12,9 +12,9 @@
 #include "base/values.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
-#include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
+#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 
 namespace file_manager {

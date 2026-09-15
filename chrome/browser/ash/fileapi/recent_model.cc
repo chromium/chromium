@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/fileapi/recent_drive_source.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
-#include "chrome/common/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/file_system_context.h"
 

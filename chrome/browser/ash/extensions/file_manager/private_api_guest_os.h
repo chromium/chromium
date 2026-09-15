@@ -8,7 +8,7 @@
 #define CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_GUEST_OS_H_
 
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
-#include "chrome/common/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
 
 namespace extensions {
 

@@ -7,12 +7,14 @@
 #include <string_view>
 
 #include "chromeos/ash/experiences/extensions/api/api_features.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chromeos/ash/experiences/extensions/api/generated_schemas.h"
 #include "chromeos/ash/experiences/extensions/api/manifest_features.h"
 #include "chromeos/ash/experiences/extensions/api/permission_features.h"
 #include "chromeos/ash/experiences/extensions/chromeos_extensions_api_permissions.h"
 #include "chromeos/ash/experiences/extensions/grit/chromeos_extensions_resources.h"
 #include "extensions/common/features/json_feature_provider_source.h"
+#include "extensions/common/manifest_handler_registry.h"
 #include "extensions/common/permissions/permissions_info.h"
 
 namespace ash {
@@ -63,7 +65,8 @@ void ChromeOSExtensionsAPIProvider::RegisterPermissions(
 
 void ChromeOSExtensionsAPIProvider::RegisterManifestHandlers(
     extensions::ManifestHandlerRegistry* registry) {
-  // Do nothing.
+  registry->RegisterHandler(
+      std::make_unique<extensions::FileSystemProviderCapabilitiesHandler>());
 }
 
 }  // namespace ash

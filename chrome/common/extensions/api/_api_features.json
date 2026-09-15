@@ -586,54 +586,6 @@
     "contexts": ["privileged_extension"],
     "disallow_for_service_workers": true
   },
-  "fileManagerPrivate": [{
-    "dependencies": ["permission:fileManagerPrivate"],
-    "contexts": ["privileged_extension"]
-  }, {
-    "channel": "stable",
-    "contexts": ["webui"],
-    "matches": [
-      "chrome://file-manager/*",
-      "chrome://webui-test/*"
-    ]
-  }],
-  "fileManagerPrivateInternal": [{
-    "internal": true,
-    "dependencies": ["permission:fileManagerPrivate"],
-    "contexts": ["privileged_extension"]
-  }, {
-    "internal": true,
-    "channel": "stable",
-    "contexts": ["webui"],
-    "matches": [
-      "chrome://file-manager/*",
-      "chrome://webui-test/*"
-    ]
-  }],
-  "fileSystemProvider": [{
-    "dependencies": ["permission:fileSystemProvider"],
-    "contexts": ["privileged_extension"]
-  }, {
-    "channel": "stable",
-    "contexts": ["webui_untrusted"],
-    "matches": [
-      "chrome-untrusted://terminal/*"
-    ],
-    "platforms": ["chromeos"]
-  }],
-  "fileSystemProviderInternal": [{
-    "internal": true,
-    "dependencies": ["permission:fileSystemProvider"],
-    "contexts": ["privileged_extension"]
-  }, {
-    "internal": true,
-    "channel": "stable",
-    "contexts": ["webui_untrusted"],
-    "matches": [
-      "chrome-untrusted://terminal/*"
-    ],
-    "platforms": ["chromeos"]
-  }],
   "fontSettings": {
     "dependencies": ["permission:fontSettings"],
     "contexts": ["privileged_extension"]

@@ -11,8 +11,8 @@
 
 #include "base/files/safe_base_name.h"
 #include "chrome/browser/ash/file_system_provider/operations/get_metadata.h"
-#include "chrome/common/extensions/api/file_system_provider.h"
-#include "chrome/common/extensions/api/file_system_provider_internal.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider.h"
+#include "chromeos/ash/experiences/extensions/api/file_system_provider_internal.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 
 namespace ash::file_system_provider::operations {

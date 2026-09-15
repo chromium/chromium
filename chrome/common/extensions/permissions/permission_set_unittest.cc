@@ -868,7 +868,9 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kEchoPrivate);
   skip.insert(APIPermissionID::kEnterprisePlatformKeysPrivate);
   skip.insert(APIPermissionID::kFeedbackPrivate);
+#if BUILDFLAG(IS_CHROMEOS)
   skip.insert(APIPermissionID::kFileManagerPrivate);
+#endif
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
   skip.insert(APIPermissionID::kFirstRunPrivate);
 #endif
@@ -910,7 +912,9 @@ TEST(PermissionsTest, PermissionMessages) {
 #endif
   skip.insert(APIPermissionID::kHid);
   skip.insert(APIPermissionID::kFileSystem);
+#if BUILDFLAG(IS_CHROMEOS)
   skip.insert(APIPermissionID::kFileSystemProvider);
+#endif
   skip.insert(APIPermissionID::kFileSystemRequestFileSystem);
   skip.insert(APIPermissionID::kFileSystemRetainEntries);
   skip.insert(APIPermissionID::kFileSystemWrite);

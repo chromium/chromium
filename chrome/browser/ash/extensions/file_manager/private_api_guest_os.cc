@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/file_manager_private.h"
+#include "chromeos/ash/experiences/extensions/api/file_manager_private.h"
 #include "extensions/browser/extension_function.h"
 
 namespace {
