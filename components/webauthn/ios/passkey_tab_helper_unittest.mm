@@ -15,6 +15,7 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
+#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
@@ -161,6 +162,17 @@ class PasskeyTabHelperTest : public PlatformTest {
   sync_pb::WebauthnCredentialSpecifics GetPasskey(const std::string& cred_id) {
     return *passkey_model_->GetPasskey(
         kRpId, cred_id, PasskeyModel::ShadowedCredentials::kInclude);
+  }
+
+  // Creates and adds a valid passkey to the model with an encrypted EC private
+  // key, suitable for testing cryptographic assertions.
+  sync_pb::WebauthnCredentialSpecifics AddValidPasskey(
+      std::string_view rp_id = kRpId) {
+    return static_cast<TestPasskeyModel*>(passkey_model_.get())
+        ->CreatePasskey(rp_id, {{1, 2, 3}, "test_user", "Test User"},
+                        std::vector<uint8_t>(32u, 0),
+                        /*trusted_vault_key_version=*/0,
+                        /*public_key_spki_der_out=*/nullptr);
   }
 
   void MaybeShowInterstitialAndRegister(RegistrationRequestParams params) {
@@ -1708,6 +1720,89 @@ TEST_F(PasskeyTabHelperTest,
       origin, std::move(params));
 
   EXPECT_FALSE(GetPasskey(kCredentialId).hidden());
+}
+
+// Test that `PasswordManager.BrowserAssistedLogin.Type` is logged when a
+// passkey assertion succeeds.
+TEST_F(PasskeyTabHelperTest,
+       StartPasskeyAssertionSuccessLogsBrowserAssistedLogin) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
+  sync_pb::WebauthnCredentialSpecifics passkey = AddValidPasskey();
+
+  // Handle get request.
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kMainRemoteFrameId);
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+  EXPECT_TRUE(client_->DidShowSuggestionBottomSheet());
+
+  base::HistogramTester histogram_tester;
+
+  // Trigger start of assertion.
+  passkey_tab_helper()->StartPasskeyAssertion(kFakeRequestId,
+                                              passkey.credential_id(),
+                                              /*did_complete_uv=*/false);
+  EXPECT_TRUE(client_->DidFetchKeys());
+
+  // Verify that resolveAssertionRequest was called on the frame.
+  web::FakeWebFramesManager* frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_.GetWebFramesManager(
+              PasskeyJavaScriptFeature::GetInstance()
+                  ->GetSupportedContentWorld()));
+  web::FakeWebFrame* frame = static_cast<web::FakeWebFrame*>(
+      frames_manager->GetFrameWithId(web::kMainFakeFrameId));
+  std::u16string last_call = frame->GetLastJavaScriptCall();
+  EXPECT_NE(last_call.find(u"resolveAssertionRequest"), std::u16string::npos);
+
+  // Verify that PasswordManager.BrowserAssistedLogin.Type was logged.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BrowserAssistedLogin.Type",
+      password_manager::metrics_util::BrowserAssistedLoginType::
+          kPasskeyStoredInGPM,
+      1);
+}
+
+// Test that `PasswordManager.BrowserAssistedLogin.Type` is not logged when a
+// passkey assertion request fails.
+TEST_F(PasskeyTabHelperTest,
+       StartPasskeyAssertionFailureDoesNotLogBrowserAssistedLogin) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
+
+  // Handle get request.
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kMainRemoteFrameId);
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+  EXPECT_TRUE(client_->DidShowSuggestionBottomSheet());
+
+  base::HistogramTester histogram_tester;
+
+  // Trigger start of assertion with a non-existent credential ID.
+  passkey_tab_helper()->StartPasskeyAssertion(kFakeRequestId,
+                                              "non_existent_credential_id",
+                                              /*did_complete_uv=*/false);
+
+  // Request should defer to renderer.
+  web::FakeWebFramesManager* frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_.GetWebFramesManager(
+              PasskeyJavaScriptFeature::GetInstance()
+                  ->GetSupportedContentWorld()));
+  web::FakeWebFrame* frame = static_cast<web::FakeWebFrame*>(
+      frames_manager->GetFrameWithId(web::kMainFakeFrameId));
+  std::u16string last_call = frame->GetLastJavaScriptCall();
+  EXPECT_NE(last_call.find(kDeferToRendererJsCall), std::u16string::npos);
+
+  // Verify that PasswordManager.BrowserAssistedLogin.Type was NOT logged.
+  histogram_tester.ExpectTotalCount("PasswordManager.BrowserAssistedLogin.Type",
+                                    0);
 }
 
 }  // namespace webauthn

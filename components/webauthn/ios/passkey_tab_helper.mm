@@ -17,6 +17,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/uuid.h"
 #import "components/password_manager/core/browser/passkey_credential.h"
+#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/webauthn/core/browser/client_data_json.h"
 #import "components/webauthn/core/browser/common_utils.h"
@@ -1067,6 +1068,9 @@ void PasskeyTabHelper::CompletePasskeyAssertion(
     PasskeyJavaScriptFeature::GetInstance()->ResolveAssertionRequest(
         web_frame, passkey_request_id, credential_id,
         std::move(*assertion_data));
+    password_manager::metrics_util::RecordBrowserAssistedLogin(
+        password_manager::metrics_util::BrowserAssistedLoginType::
+            kPasskeyStoredInGPM);
   } else {
     DeferToRendererForFrame(web_frame, passkey_request_id, params.Type());
   }
