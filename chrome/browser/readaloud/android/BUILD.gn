@@ -441,6 +441,7 @@ static_library("native") {
     "//chrome/common:constants",
     "//components/pref_registry",
     "//components/prefs",
+    "//content/public/browser",
     "//url",
   ]
 

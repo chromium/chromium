@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_READALOUD_ANDROID_READ_ALOUD_BRIDGE_H_
 #define CHROME_BROWSER_READALOUD_ANDROID_READ_ALOUD_BRIDGE_H_
 
+#include <string>
 #include <string_view>
 #include <vector>
 

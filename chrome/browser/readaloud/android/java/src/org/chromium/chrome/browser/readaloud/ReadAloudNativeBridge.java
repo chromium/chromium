@@ -260,6 +260,14 @@ class ReadAloudNativeBridge {
     }
 
     @CalledByNative
+    void onTextChunked(@JniType("std::vector<std::u16string>") String[] chunks) {
+        ThreadUtils.assertOnUiThread();
+        if (mController != null) {
+            mController.onTextChunked(chunks);
+        }
+    }
+
+    @CalledByNative
     void onHighlightingSupported(boolean supported) {
         ThreadUtils.assertOnUiThread();
         if (mController != null) {

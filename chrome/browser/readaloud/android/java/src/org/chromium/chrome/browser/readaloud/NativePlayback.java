@@ -110,6 +110,50 @@ class NativePlayback implements Playback {
         notifyMetadataChanged();
     }
 
+    /**
+     * Called by {@link ReadAloudController} when the C++ service dispatches {@code OnTextChunked}
+     * via JNI with DOM article text segmented into paragraph chunks.
+     */
+    void onTextChunked(@Nullable String @Nullable [] chunks) {
+        ThreadUtils.assertOnUiThread();
+        if (chunks == null || chunks.length == 0) {
+            mMetadata.setFullText("");
+            mMetadata.setParagraphs(null);
+            notifyMetadataChanged();
+            return;
+        }
+
+        int estimatedSize = 0;
+        for (String chunk : chunks) {
+            if (chunk != null && !chunk.isEmpty()) {
+                estimatedSize += chunk.length() + 1;
+            }
+        }
+
+        StringBuilder fullText = new StringBuilder(estimatedSize);
+        Playback.PlaybackTextPart[] paragraphs = new Playback.PlaybackTextPart[chunks.length];
+        for (int i = 0; i < chunks.length; ++i) {
+            String chunk = chunks[i];
+            int offset = fullText.length();
+            int length = 0;
+            if (chunk != null && !chunk.isEmpty()) {
+                if (fullText.length() > 0) {
+                    fullText.append(" ");
+                }
+                offset = fullText.length();
+                fullText.append(chunk);
+                length = chunk.length();
+            }
+            paragraphs[i] =
+                    new NativeMetadata.TextPart(
+                            i, offset, length, Playback.PlaybackTextType.TEXT_TYPE_NORMAL);
+        }
+
+        mMetadata.setFullText(fullText.toString());
+        mMetadata.setParagraphs(paragraphs);
+        notifyMetadataChanged();
+    }
+
     @PlaybackListener.State
     int getState() {
         ThreadUtils.assertOnUiThread();

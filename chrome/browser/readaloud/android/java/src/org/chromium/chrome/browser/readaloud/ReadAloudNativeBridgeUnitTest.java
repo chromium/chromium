@@ -221,6 +221,10 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.onVoicesAvailable(ids, names, "id1");
         verify(mController).onVoicesAvailable(ids, names, "id1");
 
+        String[] chunks = new String[] {"Paragraph 1", "Paragraph 2"};
+        mBridge.onTextChunked(chunks);
+        verify(mController).onTextChunked(chunks);
+
         mBridge.onWordHighlightUpdated(10, 20);
         verify(mController).onWordHighlightUpdated(10, 20);
 
@@ -251,6 +255,7 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.onPlaybackProgressUpdated(100L, 500L);
         mBridge.onPlaybackStateChanged(1);
         mBridge.onVoicesAvailable(new String[0], new String[0], "");
+        mBridge.onTextChunked(new String[] {"Chunk"});
         mBridge.onWordHighlightUpdated(0, 5);
         mBridge.onHighlightingSupported(false);
         mBridge.onFallbackEngaged();
@@ -258,6 +263,18 @@ public class ReadAloudNativeBridgeUnitTest {
         mBridge.onVoicePreviewPlaybackStateChanged("voice", 0);
         mBridge.onReadabilityResult(TEST_GURL, false);
         mBridge.onNativeDestroyed();
+
+        verifyNoInteractions(mController);
+    }
+
+    @Test
+    public void testOnTextChunked_whenControllerIsNull_safeNoOp() {
+        String[] chunks = new String[] {"Chunk 1", "Chunk 2"};
+        mBridge.onTextChunked(chunks);
+
+        mBridge.initialize(mProfile, mController);
+        mBridge.destroy();
+        mBridge.onTextChunked(chunks);
 
         verifyNoInteractions(mController);
     }

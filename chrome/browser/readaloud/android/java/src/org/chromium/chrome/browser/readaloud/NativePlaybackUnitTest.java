@@ -27,6 +27,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.modules.readaloud.Feedback.FeedbackType;
 import org.chromium.chrome.modules.readaloud.Feedback.NegativeFeedbackReason;
+import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks.SendFeedbackCallback;
@@ -188,5 +190,97 @@ public class NativePlaybackUnitTest {
                 FeedbackType.POSITIVE, NegativeFeedbackReason.OTHER, mFeedbackCallback);
         verify(mBridgeMock).sendFeedback(FeedbackType.POSITIVE.getValue());
         verify(mFeedbackCallback).onSuccess();
+    }
+
+    @Test
+    public void testOnTextChunked_populatesMetadataAndNotifiesListeners() {
+        mPlayback.addListener(mListener);
+        reset(mListener);
+
+        String[] chunks = new String[] {"First chunk.", "Second chunk.", "Third chunk."};
+        mPlayback.onTextChunked(chunks);
+
+        Playback.Metadata metadata = mPlayback.getMetadata();
+        assertEquals("First chunk. Second chunk. Third chunk.", metadata.fullText());
+        assertEquals(3, metadata.paragraphs().length);
+
+        assertEquals(0, metadata.paragraphs()[0].getParagraphIndex());
+        assertEquals(0, metadata.paragraphs()[0].getOffset());
+        assertEquals(12, metadata.paragraphs()[0].getLength());
+        assertEquals(PlaybackTextType.TEXT_TYPE_NORMAL, metadata.paragraphs()[0].getType());
+
+        assertEquals(1, metadata.paragraphs()[1].getParagraphIndex());
+        assertEquals(13, metadata.paragraphs()[1].getOffset());
+        assertEquals(13, metadata.paragraphs()[1].getLength());
+        assertEquals(PlaybackTextType.TEXT_TYPE_NORMAL, metadata.paragraphs()[1].getType());
+
+        assertEquals(2, metadata.paragraphs()[2].getParagraphIndex());
+        assertEquals(27, metadata.paragraphs()[2].getOffset());
+        assertEquals(12, metadata.paragraphs()[2].getLength());
+        assertEquals(PlaybackTextType.TEXT_TYPE_NORMAL, metadata.paragraphs()[2].getType());
+
+        verify(mListener).onMetadataChanged(metadata);
+    }
+
+    @Test
+    public void testOnTextChunked_emptyArray() {
+        mPlayback.addListener(mListener);
+        reset(mListener);
+
+        mPlayback.onTextChunked(new String[0]);
+
+        Playback.Metadata metadata = mPlayback.getMetadata();
+        assertEquals("", metadata.fullText());
+        assertEquals(0, metadata.paragraphs().length);
+        verify(mListener).onMetadataChanged(metadata);
+    }
+
+    @Test
+    public void testOnTextChunked_sequentialCallsOverwriteCleanly() {
+        mPlayback.addListener(mListener);
+
+        mPlayback.onTextChunked(new String[] {"Initial", "content"});
+        assertEquals("Initial content", mPlayback.getMetadata().fullText());
+        assertEquals(2, mPlayback.getMetadata().paragraphs().length);
+        assertEquals(0, mPlayback.getMetadata().paragraphs()[0].getOffset());
+        assertEquals(7, mPlayback.getMetadata().paragraphs()[0].getLength());
+        assertEquals(8, mPlayback.getMetadata().paragraphs()[1].getOffset());
+        assertEquals(7, mPlayback.getMetadata().paragraphs()[1].getLength());
+
+        reset(mListener);
+        mPlayback.onTextChunked(new String[] {"Replacement"});
+        assertEquals("Replacement", mPlayback.getMetadata().fullText());
+        assertEquals(1, mPlayback.getMetadata().paragraphs().length);
+        assertEquals(0, mPlayback.getMetadata().paragraphs()[0].getParagraphIndex());
+        assertEquals(0, mPlayback.getMetadata().paragraphs()[0].getOffset());
+        assertEquals(11, mPlayback.getMetadata().paragraphs()[0].getLength());
+        verify(mListener).onMetadataChanged(mPlayback.getMetadata());
+    }
+
+    @Test
+    public void testOnTextChunked_withEmptyChunkStrings() {
+        mPlayback.addListener(mListener);
+        reset(mListener);
+
+        String[] chunks = new String[] {"First", "", "Third"};
+        mPlayback.onTextChunked(chunks);
+
+        Playback.Metadata metadata = mPlayback.getMetadata();
+        assertEquals("First Third", metadata.fullText());
+        assertEquals(3, metadata.paragraphs().length);
+
+        assertEquals(0, metadata.paragraphs()[0].getParagraphIndex());
+        assertEquals(0, metadata.paragraphs()[0].getOffset());
+        assertEquals(5, metadata.paragraphs()[0].getLength());
+
+        assertEquals(1, metadata.paragraphs()[1].getParagraphIndex());
+        assertEquals(5, metadata.paragraphs()[1].getOffset());
+        assertEquals(0, metadata.paragraphs()[1].getLength());
+
+        assertEquals(2, metadata.paragraphs()[2].getParagraphIndex());
+        assertEquals(6, metadata.paragraphs()[2].getOffset());
+        assertEquals(5, metadata.paragraphs()[2].getLength());
+
+        verify(mListener).onMetadataChanged(metadata);
     }
 }

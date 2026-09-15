@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.readaloud;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.modules.readaloud.Playback;
+import org.chromium.chrome.modules.readaloud.Playback.PlaybackTextType;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 
 /**
@@ -33,6 +34,8 @@ class NativeMetadata implements Playback.Metadata {
     private final PlaybackMode mPlaybackMode;
     private String mTitle = "";
     private String mPublisher = "";
+    private String mFullText = "";
+    private Playback.PlaybackTextPart[] mParagraphs = EMPTY_PARAGRAPHS;
 
     NativeMetadata(
             @Nullable String languageCode,
@@ -49,6 +52,14 @@ class NativeMetadata implements Playback.Metadata {
 
     void setPublisher(@Nullable String publisher) {
         mPublisher = publisher != null ? publisher : "";
+    }
+
+    void setFullText(@Nullable String fullText) {
+        mFullText = fullText != null ? fullText : "";
+    }
+
+    void setParagraphs(Playback.PlaybackTextPart @Nullable [] paragraphs) {
+        mParagraphs = paragraphs != null ? paragraphs : EMPTY_PARAGRAPHS;
     }
 
     @Override
@@ -74,16 +85,12 @@ class NativeMetadata implements Playback.Metadata {
 
     @Override
     public String fullText() {
-        // TODO(b/537855631): Populate fullText from native service when highlighting and
-        // tap-to-seek are supported.
-        return "";
+        return mFullText;
     }
 
     @Override
     public Playback.PlaybackTextPart[] paragraphs() {
-        // TODO(b/537855631): Populate paragraph text parts from native service when granular
-        // highlighting is supported.
-        return EMPTY_PARAGRAPHS;
+        return mParagraphs;
     }
 
     @Override
@@ -101,5 +108,40 @@ class NativeMetadata implements Playback.Metadata {
     @Override
     public PlaybackMode playbackMode() {
         return mPlaybackMode;
+    }
+
+    /** Concrete implementation of {@link Playback.PlaybackTextPart} for native playback. */
+    static class TextPart implements Playback.PlaybackTextPart {
+        private final int mParagraphIndex;
+        private final int mOffset;
+        private final int mLength;
+        @PlaybackTextType private final int mType;
+
+        TextPart(int paragraphIndex, int offset, int length, @PlaybackTextType int type) {
+            mParagraphIndex = paragraphIndex;
+            mOffset = offset;
+            mLength = length;
+            mType = type;
+        }
+
+        @Override
+        public int getParagraphIndex() {
+            return mParagraphIndex;
+        }
+
+        @Override
+        public int getOffset() {
+            return mOffset;
+        }
+
+        @Override
+        public int getLength() {
+            return mLength;
+        }
+
+        @Override
+        public @PlaybackTextType int getType() {
+            return mType;
+        }
     }
 }
