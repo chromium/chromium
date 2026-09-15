@@ -45,6 +45,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
@@ -712,6 +713,28 @@ TEST_F(NavigationRequestTest, NoDnsAliases) {
 
   // Verify that there are no aliases in the NavigationRequest.
   EXPECT_TRUE(navigation->GetNavigationHandle()->GetDnsAliases().empty());
+}
+
+TEST_F(NavigationRequestTest, DeviceBoundSessionUsage) {
+  const GURL kUrl = GURL("http://chromium.org");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+  navigation->set_response_postprocess_hook(
+      base::BindRepeating([](network::mojom::URLResponseHead& response) {
+        response.device_bound_session_usage =
+            network::mojom::DeviceBoundSessionUsage::kDeferred;
+      }));
+
+  // Start the navigation. Before response headers are received, usage is
+  // unknown.
+  navigation->Start();
+  EXPECT_EQ(network::mojom::DeviceBoundSessionUsage::kUnknown,
+            navigation->GetNavigationHandle()->GetDeviceBoundSessionUsage());
+
+  // Ready to commit receives the response head.
+  navigation->ReadyToCommit();
+  EXPECT_EQ(network::mojom::DeviceBoundSessionUsage::kDeferred,
+            navigation->GetNavigationHandle()->GetDeviceBoundSessionUsage());
 }
 
 TEST_F(NavigationRequestTest, ProcessSelectionUserDataIsAvailableFromUrlInfo) {

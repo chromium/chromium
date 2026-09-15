@@ -41,6 +41,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -200,6 +201,9 @@ const char kHistogramGWSBeforeUnloadExecutionMode[] =
 
 const char kHistogramGWSIsFirstNavigationForGWS[] =
     HISTOGRAM_PREFIX "IsFirstNavigationForGWS";
+
+const char kHistogramGWSDeviceBoundSessionsNavigationWasDeferred[] =
+    HISTOGRAM_PREFIX "DeviceBoundSessions.NavigationWasDeferred";
 
 const char kHistogramGWSConnectionReuseStatus[] =
     HISTOGRAM_PREFIX "ConnectionReuseStatus";
@@ -743,7 +747,24 @@ GWSPageLoadMetricsObserver::OnCommit(
         base::StrCat({internal::kHistogramGWSPrewarmPrerenderCoverageStatus,
                       initiator_suffix}),
         coverage_status);
+
+    network::mojom::DeviceBoundSessionUsage device_bound_session_usage =
+        navigation_handle->GetDeviceBoundSessionUsage();
+    if (device_bound_session_usage >=
+        network::mojom::DeviceBoundSessionUsage::kInScopeRefreshNotYetNeeded) {
+      bool was_deferred = device_bound_session_usage ==
+                          network::mojom::DeviceBoundSessionUsage::kDeferred;
+      base::UmaHistogramBoolean(
+          internal::kHistogramGWSDeviceBoundSessionsNavigationWasDeferred,
+          was_deferred);
+      base::UmaHistogramBoolean(
+          base::StrCat(
+              {internal::kHistogramGWSDeviceBoundSessionsNavigationWasDeferred,
+               initiator_suffix}),
+          was_deferred);
+    }
   }
+
   if (!navigation_handle->IsSameDocument() &&
       navigation_handle->IsInOutermostMainFrame() &&
       navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {

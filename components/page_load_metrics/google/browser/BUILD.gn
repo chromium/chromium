@@ -39,6 +39,7 @@ source_set("browser") {
     "//components/user_prefs",
     "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/mojom",
   ]
 }
 

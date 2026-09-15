@@ -84,6 +84,7 @@ extern const char kHistogramGWSConnectStart[];
 extern const char kHistogramGWSDomainLookupStart[];
 extern const char kHistogramGWSDomainLookupEnd[];
 extern const char kHistogramGWSBeforeUnloadExecutionMode[];
+extern const char kHistogramGWSDeviceBoundSessionsNavigationWasDeferred[];
 
 extern const char kHistogramServiceWorkerParseStartSearch[];
 extern const char kHistogramServiceWorkerFirstContentfulPaintSearch[];
@@ -108,6 +109,8 @@ extern const char kHistogramGWSActivationToFirstContentfulPaint[];
 extern const char kHistogramGWSActivationToLargestContentfulPaint[];
 extern const char kHistogramGWSPrewarmPrerenderCoverageStatus[];
 
+extern const char kHistogramBrowserInitiatedSuffix[];
+extern const char kHistogramRendererInitiatedSuffix[];
 extern const char kHistogramPrerenderSuffix[];
 extern const char kHistogramNonPrerenderSuffix[];
 extern const char kHistogramDuplicateIgnoredSuffix[];

@@ -2534,6 +2534,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.DeviceBoundSessions.NavigationWasDeferred{InitiatorOfNavigation}"
+    enum="BooleanWasDeferred" expires_after="2027-02-07">
+  <owner>alexilin@chromium.org</owner>
+  <owner>ahijazi@google.com</owner>
+  <summary>
+    Records whether a committed Google Search navigation request in scope of an
+    active Device Bound Session was deferred for cookie refresh. Recorded once
+    per navigation commit for non-prerendered main-frame Google Search
+    navigations that are in scope of a session, for {InitiatorOfNavigation}.
+  </summary>
+  <token key="InitiatorOfNavigation" variants="InitiatorOfNavigation">
+    <variant name="" summary="all navigations"/>
+  </token>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.DomainLookupTiming.NavigationToDomainLookupEnd2.{NavigationCountType}{BrowserInitializationStatus}{TabInitializationStatus}"
     units="ms" expires_after="2027-03-07">
   <owner>suzukikeita@chromium.org</owner>

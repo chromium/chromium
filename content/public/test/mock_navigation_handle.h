@@ -30,6 +30,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -197,6 +198,14 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD2(SetRequestHeader, void(std::string_view, std::string_view));
   const net::HttpResponseHeaders* GetResponseHeaders() override {
     return response_headers_.get();
+  }
+  network::mojom::DeviceBoundSessionUsage GetDeviceBoundSessionUsage()
+      const override {
+    return device_bound_session_usage_;
+  }
+  void set_device_bound_session_usage(
+      network::mojom::DeviceBoundSessionUsage usage) {
+    device_bound_session_usage_ = usage;
   }
   MOCK_METHOD0(GetDeclarativePerformanceObserverPolicy,
                const network::mojom::DeclarativePerformanceObserverPolicy*());
@@ -458,6 +467,8 @@ class MockNavigationHandle : public NavigationHandle {
   bool is_blocked_by_connection_allowlist_ = false;
   net::HttpRequestHeaders request_headers_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
+  network::mojom::DeviceBoundSessionUsage device_bound_session_usage_ =
+      network::mojom::DeviceBoundSessionUsage::kUnknown;
   scoped_refptr<network::ResourceRequestBody> post_data_;
   std::optional<net::SSLInfo> ssl_info_;
   std::optional<net::AuthChallengeInfo> auth_challenge_info_;

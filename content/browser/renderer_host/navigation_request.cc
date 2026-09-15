@@ -10243,6 +10243,12 @@ const net::HttpResponseHeaders* NavigationRequest::GetResponseHeaders() {
   return response_head_.get() ? response_head_->headers.get() : nullptr;
 }
 
+network::mojom::DeviceBoundSessionUsage
+NavigationRequest::GetDeviceBoundSessionUsage() const {
+  return response_head_ ? response_head_->device_bound_session_usage
+                        : network::mojom::DeviceBoundSessionUsage::kUnknown;
+}
+
 const network::mojom::DeclarativePerformanceObserverPolicy*
 NavigationRequest::GetDeclarativePerformanceObserverPolicy() {
   if (!response_head_.get() || !response_head_->parsed_headers ||

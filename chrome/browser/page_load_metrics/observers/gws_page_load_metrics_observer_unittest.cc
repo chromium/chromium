@@ -31,10 +31,17 @@
 #include "net/dns/public/resolution_details.h"
 #include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+using base::Bucket;
+using base::BucketsAre;
+using testing::IsEmpty;
+using testing::Pair;
+using testing::UnorderedElementsAre;
 
 namespace {
 
@@ -1472,4 +1479,117 @@ TEST_F(GWSPageLoadMetricsObserverTest,
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kPreloadProcessReused_Prewarm,
       1);
+}
+
+TEST_F(GWSPageLoadMetricsObserverTest, DeviceBoundSessionsNavigationDeferred) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+  content::NavigationHandleTiming timing;
+  GwsMockNavigationHandle handle(GURL(kGoogleSearchResultsUrl), main_rfh());
+  EXPECT_CALL(handle, GetNavigationHandleTiming())
+      .WillRepeatedly(testing::ReturnRef(timing));
+  handle.set_device_bound_session_usage(
+      network::mojom::DeviceBoundSessionUsage::kDeferred);
+  handle.set_is_renderer_initiated(false);
+
+  observer_->OnCommit(&handle);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix(
+          internal::kHistogramGWSDeviceBoundSessionsNavigationWasDeferred),
+      UnorderedElementsAre(
+          Pair(internal::kHistogramGWSDeviceBoundSessionsNavigationWasDeferred,
+               BucketsAre(Bucket(true, 1))),
+          Pair(base::StrCat(
+                   {internal::
+                        kHistogramGWSDeviceBoundSessionsNavigationWasDeferred,
+                    internal::kHistogramBrowserInitiatedSuffix}),
+               BucketsAre(Bucket(true, 1)))));
+}
+
+TEST_F(GWSPageLoadMetricsObserverTest,
+       DeviceBoundSessionsNavigationNotDeferred) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+  content::NavigationHandleTiming timing;
+  GwsMockNavigationHandle handle(GURL(kGoogleSearchResultsUrl), main_rfh());
+  EXPECT_CALL(handle, GetNavigationHandleTiming())
+      .WillRepeatedly(testing::ReturnRef(timing));
+  handle.set_device_bound_session_usage(
+      network::mojom::DeviceBoundSessionUsage::kInScopeRefreshNotYetNeeded);
+  handle.set_is_renderer_initiated(true);
+
+  observer_->OnCommit(&handle);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix(
+          internal::kHistogramGWSDeviceBoundSessionsNavigationWasDeferred),
+      UnorderedElementsAre(
+          Pair(internal::kHistogramGWSDeviceBoundSessionsNavigationWasDeferred,
+               BucketsAre(Bucket(false, 1))),
+          Pair(base::StrCat(
+                   {internal::
+                        kHistogramGWSDeviceBoundSessionsNavigationWasDeferred,
+                    internal::kHistogramRendererInitiatedSuffix}),
+               BucketsAre(Bucket(false, 1)))));
+}
+
+TEST_F(GWSPageLoadMetricsObserverTest, DeviceBoundSessionsNotInScope) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+  content::NavigationHandleTiming timing;
+  GwsMockNavigationHandle handle(GURL(kGoogleSearchResultsUrl), main_rfh());
+  EXPECT_CALL(handle, GetNavigationHandleTiming())
+      .WillRepeatedly(testing::ReturnRef(timing));
+  handle.set_device_bound_session_usage(
+      network::mojom::DeviceBoundSessionUsage::kSiteMatchNotInScope);
+
+  observer_->OnCommit(&handle);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix(
+          internal::kHistogramGWSDeviceBoundSessionsNavigationWasDeferred),
+      IsEmpty());
+}
+
+TEST_F(GWSPageLoadMetricsObserverTest,
+       DeviceBoundSessionsNonSearchUrlNotRecorded) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+  const GURL non_search_url("https://www.google.com/other");
+  GwsMockNavigationHandle handle(non_search_url, main_rfh());
+  handle.set_device_bound_session_usage(
+      network::mojom::DeviceBoundSessionUsage::kDeferred);
+
+  observer_->OnCommit(&handle);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix(
+          internal::kHistogramGWSDeviceBoundSessionsNavigationWasDeferred),
+      IsEmpty());
+}
+
+TEST_F(GWSPageLoadMetricsObserverTest,
+       DeviceBoundSessionsPrerenderNavigationNotRecorded) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+  content::NavigationHandleTiming timing;
+  GwsMockNavigationHandle handle(GURL(kGoogleSearchResultsUrl), main_rfh());
+  EXPECT_CALL(handle, GetNavigationHandleTiming())
+      .WillRepeatedly(testing::ReturnRef(timing));
+  handle.set_device_bound_session_usage(
+      network::mojom::DeviceBoundSessionUsage::kDeferred);
+
+  observer_->OnPrerenderStart(&handle, GURL(kGoogleSearchResultsUrl));
+  observer_->OnCommit(&handle);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamplesForPrefix(
+          internal::kHistogramGWSDeviceBoundSessionsNavigationWasDeferred),
+      IsEmpty());
 }

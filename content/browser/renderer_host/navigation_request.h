@@ -448,6 +448,8 @@ class CONTENT_EXPORT NavigationRequest
   const blink::mojom::LCPCriticalPathPredictorNavigationTimeHintPtr&
   GetLCPPNavigationHint() override;
   const net::HttpResponseHeaders* GetResponseHeaders() override;
+  network::mojom::DeviceBoundSessionUsage GetDeviceBoundSessionUsage()
+      const override;
   const network::mojom::DeclarativePerformanceObserverPolicy*
   GetDeclarativePerformanceObserverPolicy() override;
   net::HttpConnectionInfo GetConnectionInfo() override;
