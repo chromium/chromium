@@ -839,7 +839,7 @@
     {
       // Killswitch M153.
       name: "AvoidEmbeddedContentViewLocation",
-      status: "experimental",
+      status: "test",
     },
     {
       // Don't use a position inside non-selectable content as a selection
