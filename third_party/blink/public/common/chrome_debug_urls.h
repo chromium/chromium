@@ -71,6 +71,7 @@ inline constexpr char kChromeUINetworkErrorsListingURL[] =
 inline constexpr char kChromeUINetworkErrorURL[] = "chrome://network-error/";
 inline constexpr char kChromeUIProcessInternalsURL[] =
     "chrome://process-internals/";
+inline constexpr char kChromeUIV8OOMURL[] = "chrome://v8-oom/";
 
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr char kChromeUIGpuJavaCrashURL[] = "chrome://gpu-java-crash/";

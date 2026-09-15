@@ -80,7 +80,7 @@ bool IsRendererDebugURL(const GURL& url) {
       url == kChromeUICrashURL || url == kChromeUIDumpURL ||
       url == kChromeUIKillURL || url == kChromeUIHangURL ||
       url == kChromeUIShorthangURL || url == kChromeUIMemoryExhaustURL ||
-      url == kChromeUICrashRustURL) {
+      url == kChromeUIV8OOMURL || url == kChromeUICrashRustURL) {
     return true;
   }
 

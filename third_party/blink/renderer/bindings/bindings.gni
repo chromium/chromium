@@ -172,6 +172,8 @@ blink_core_sources_bindings =
                     "core/v8/v8_object_builder.h",
                     "core/v8/v8_object_parser.cc",
                     "core/v8/v8_object_parser.h",
+                    "core/v8/v8_oom.cc",
+                    "core/v8/v8_oom.h",
                     "core/v8/v8_page_popup_controller_binding.cc",
                     "core/v8/v8_page_popup_controller_binding.h",
                     "core/v8/v8_script_runner.cc",

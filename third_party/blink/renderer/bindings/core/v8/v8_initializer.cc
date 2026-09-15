@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_idle_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_metrics.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_oom.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
@@ -859,22 +860,6 @@ bool IsDOMExceptionWrapper(v8::Isolate* isolate, v8::Local<v8::Object> object) {
   return V8DOMException::HasInstance(isolate, object);
 }
 
-struct PrintV8OOM {
-  const char* location;
-  const v8::OOMDetails& details;
-};
-
-std::ostream& operator<<(std::ostream& os, const PrintV8OOM& oom_details) {
-  const auto [location, details] = oom_details;
-  os << "V8 " << (details.is_heap_oom ? "javascript" : "process") << " OOM ("
-     << location;
-  if (details.detail) {
-    os << "; detail: " << details.detail;
-  }
-  os << ").";
-  return os;
-}
-
 void EmitDevToolsEvent(v8::Isolate* isolate) {
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters", "data",
@@ -944,26 +929,11 @@ void V8Initializer::InitializeContext(v8::Local<v8::Context> context,
           : CoarseTemporalHostSystemUTCEpochNanosecondsCallback);
 }
 
-// Callback functions called when V8 encounters a fatal or OOM error.
-// Keep them outside the anonymous namespace such that ChromeCrash recognizes
-// them.
+// Callback function called when V8 encounters a fatal error.
+// Keep it outside the anonymous namespace such that ChromeCrash recognizes
+// it.
 void ReportV8FatalError(const char* location, const char* message) {
   LOG(FATAL) << "V8 error: " << message << " (" << location << ").";
-}
-
-void ReportV8OOMError(const char* location, const v8::OOMDetails& details) {
-  if (location) {
-    static crash_reporter::CrashKeyString<64> location_key("v8-oom-location");
-    location_key.Set(location);
-  }
-
-  if (details.detail) {
-    static crash_reporter::CrashKeyString<128> detail_key("v8-oom-detail");
-    detail_key.Set(details.detail);
-  }
-
-  LOG(ERROR) << PrintV8OOM{location, details};
-  OOM_CRASH(0);
 }
 
 namespace {
