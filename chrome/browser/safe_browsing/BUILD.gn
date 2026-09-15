@@ -137,6 +137,7 @@ static_library("safe_browsing") {
   }
 
   if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
     public += [
       "generated_safe_browsing_pref.h",
       "generated_security_settings_bundle_pref.h",

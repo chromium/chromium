@@ -105,6 +105,7 @@ if (!is_android) {
       deps = [
         ":site_isolation",
         "//chrome/browser/password_manager",
+        "//chrome/browser/ui:browser_window_header",
         "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/location_bar",
         "//chrome/test:test_support",

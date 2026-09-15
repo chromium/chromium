@@ -142,6 +142,7 @@ source_set("browser_tests") {
   if (!is_android) {
     deps += [
       "//chrome/browser/signin",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/webui",

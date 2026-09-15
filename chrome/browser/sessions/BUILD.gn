@@ -99,7 +99,10 @@ source_set("impl") {
 
   if (!is_android) {
     sources += [ "restore_on_startup_policy_handler.cc" ]
-    deps += [ "//chrome/browser/prefs:util" ]
+    deps += [
+      "//chrome/browser/prefs:util",
+      "//chrome/browser/ui:browser_window_header",
+    ]
   }
 
   if (enable_session_service) {
@@ -299,6 +302,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui:browser_live_tab_context",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:browser_window_state",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_web_contents_delegate",
@@ -371,6 +375,7 @@ if (!is_android) {
         "//base",
         "//chrome/browser/prefs:util",
         "//chrome/browser/ui",
+        "//chrome/browser/ui:browser_window_header",
         "//chrome/test:test_support",
         "//chrome/test:test_support_ui",
         "//content/test:test_support",

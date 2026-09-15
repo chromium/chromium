@@ -198,6 +198,7 @@ if (!is_android) {
       ":themes",
       "//base",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

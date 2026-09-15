@@ -134,5 +134,8 @@ if (is_android) {
       "//ui/strings:ui_strings",
       "//ui/strings:ui_strings_grit",
     ]
+    if (!is_android) {
+      deps += [ "//chrome/browser/ui:browser_window_header" ]
+    }
   }
 }

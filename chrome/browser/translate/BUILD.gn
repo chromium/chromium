@@ -76,6 +76,7 @@ source_set("impl") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/side_panel",
@@ -138,6 +139,7 @@ if (!is_android) {
       "//chrome/browser/language",
       "//chrome/browser/prefs:util",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/translate",

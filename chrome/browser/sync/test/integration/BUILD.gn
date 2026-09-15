@@ -265,6 +265,7 @@ source_set("sync_integration_tests_impl") {
       "//chrome/browser/sharing",
       "//chrome/browser/skills",
       "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/send_tab_to_self",
@@ -637,5 +638,8 @@ source_set("sync_integration_test_support") {
     ]
 
     deps += [ "//chrome/browser/extensions" ]
+  }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
   }
 }

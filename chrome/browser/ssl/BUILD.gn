@@ -175,6 +175,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser:certificate_viewer",
       "//chrome/browser/extensions",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/web_applications",
     ]
@@ -325,6 +326,7 @@ if (!is_android) {
       "//chrome/browser/interstitials:test_support",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/preloading/prerender",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/web_applications",
@@ -375,6 +377,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/history:test_support",
       "//chrome/browser/interstitials:test_support",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/web_applications:web_applications_test_support",
