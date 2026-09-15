@@ -999,6 +999,36 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   EXPECT_TRUE(spec_results.empty());
 }
 
+// A same-identifier infobar the global machinery isn't tracking must not
+// take the armed global infobar down with it when it goes away.
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       GlobalSurvivesRemovalOfUntrackedInstance) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Test Message")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .Build());
+  ASSERT_TRUE(manager()->ShowGlobally(identifier));
+  auto* tracked_infobar_manager = ContentInfoBarManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_EQ(1u, tracked_infobar_manager->infobars().size());
+
+  // A scope override puts an untracked instance on a background tab, which
+  // leaves the tracked instance on the active tab where it is.
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, /*foreground=*/false);
+  InfoBarShowParams params;
+  params.scope = InfoBarScope::kTab;
+  infobars::InfoBar* untracked =
+      manager()->Show(browser()->tab_strip_model()->GetTabAtIndex(1),
+                      identifier, std::move(params));
+  ASSERT_TRUE(untracked);
+  untracked->RemoveSelf();
+
+  EXPECT_EQ(1u, tracked_infobar_manager->infobars().size());
+  // Still armed, so the context outlived the untracked instance too.
+  EXPECT_FALSE(manager()->ShowGlobally(identifier));
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
                        ShowParamsScopeOverrideShowsGlobalSpecOnOneTab) {
   const auto identifier = InfoBarDelegate::TEST_INFOBAR;

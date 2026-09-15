@@ -97,10 +97,7 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
 
  private:
   void OnActiveTabChanged(BrowserWindowInterface* browser);
-  bool IsGlobal(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
   bool IsTrackedGlobalInstance(infobars::InfoBar* infobar) const;
-  BrowserWindowInterface* FindBrowserWithWebContents(
-      content::WebContents* web_contents);
 
   ui::ScopedUnownedUserData<BrowserInfoBarManager> scoped_unowned_user_data_;
 
