@@ -37,6 +37,10 @@
 #include "net/ssl/ssl_private_key.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
+#if BUILDFLAG(ENTERPRISE_PROXY)
+#include "components/enterprise/net/core/enterprise_proxy_service.h"
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
+
 namespace enterprise_connectors::utils {
 
 namespace {
@@ -386,4 +390,74 @@ ProcessReportGenerationResult(
   return {std::nullopt, GetJsonForReportRequest(*request)};
 }
 
+#if BUILDFLAG(ENTERPRISE_PROXY)
+
+connectors_internals::mojom::ProvisioningDomainStatePtr
+GetProvisioningDomainState(
+    enterprise_net::EnterpriseProxyService* proxy_service) {
+  std::vector<connectors_internals::mojom::ProvisioningDomainConfigPtr>
+      pvd_configs;
+  if (!proxy_service) {
+    return connectors_internals::mojom::ProvisioningDomainState::New(
+        std::move(pvd_configs));
+  }
+
+  base::DictValue debug_info = proxy_service->GetDebugInfo();
+  const base::ListValue* domains = debug_info.FindList("domains");
+
+  if (!domains) {
+    return connectors_internals::mojom::ProvisioningDomainState::New(
+        std::move(pvd_configs));
+  }
+
+  for (const base::Value& domain : *domains) {
+    if (!domain.is_dict()) {
+      continue;
+    }
+    const base::DictValue& domain_dict = domain.GetDict();
+
+    const std::string* pvd_id_ptr =
+        domain_dict.FindStringByDottedPath("policy.pvd_id");
+    if (!pvd_id_ptr || pvd_id_ptr->empty()) {
+      pvd_id_ptr =
+          domain_dict.FindStringByDottedPath("fetched_config.identifier");
+    }
+    std::string pvd_id = pvd_id_ptr ? *pvd_id_ptr : "";
+
+    const std::string* expires_ptr =
+        domain_dict.FindStringByDottedPath("fetched_config.expires");
+    std::optional<base::Time> expires_time;
+    if (expires_ptr) {
+      base::Time parsed_time;
+      if (base::Time::FromString(expires_ptr->c_str(), &parsed_time)) {
+        expires_time = parsed_time;
+      }
+    }
+
+    const base::DictValue* policy_dict = domain_dict.FindDict("policy");
+    std::string policy_json;
+    if (policy_dict) {
+      base::JSONWriter::WriteWithOptions(
+          *policy_dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &policy_json);
+    }
+
+    const base::DictValue* fetched_dict =
+        domain_dict.FindDict("fetched_config");
+    std::string routes_json;
+    if (fetched_dict) {
+      base::JSONWriter::WriteWithOptions(
+          *fetched_dict, base::JSONWriter::OPTIONS_PRETTY_PRINT, &routes_json);
+    }
+
+    pvd_configs.push_back(
+        connectors_internals::mojom::ProvisioningDomainConfig::New(
+            std::move(pvd_id), expires_time, std::move(routes_json),
+            std::move(policy_json)));
+  }
+
+  return connectors_internals::mojom::ProvisioningDomainState::New(
+      std::move(pvd_configs));
+}
+
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
 }  // namespace enterprise_connectors::utils

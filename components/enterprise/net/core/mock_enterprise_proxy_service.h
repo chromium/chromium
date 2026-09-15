@@ -29,6 +29,9 @@ class MockEnterpriseProxyService : public EnterpriseProxyService {
 
   MOCK_METHOD(base::DictValue, GetDebugInfo, (), (const, override));
 
+  MOCK_METHOD(void, ForceRefreshAllConfigs, (), (override));
+  MOCK_METHOD(bool, IsRefreshInProgress, (), (const, override));
+
  private:
   base::ObserverList<Observer> observers_;
 };

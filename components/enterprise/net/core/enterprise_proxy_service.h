@@ -114,7 +114,7 @@ class EnterpriseProxyService
       const;
 
   // Returns true if there is at least one background refresh currently running.
-  bool IsRefreshInProgress() const;
+  virtual bool IsRefreshInProgress() const;
 
   // Looks up the first matching `ProxyEndpoint` across all active Provisioning
   // Domain configs for a given `destination_url` and `proxy_chain`.
@@ -163,7 +163,7 @@ class EnterpriseProxyService
   void OnAccountStateChanged() override;
 
   // Forces a new fetch for all managed Provisioning Domains.
-  void ForceRefreshAllConfigs();
+  virtual void ForceRefreshAllConfigs();
 
  private:
   friend class EnterpriseProxyServiceTest;

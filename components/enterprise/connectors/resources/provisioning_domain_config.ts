@@ -17,8 +17,12 @@ export class ProvisioningDomainConfigElement extends CustomElement {
     return getTemplate();
   }
 
+  private isRefreshing_: boolean = false;
+
   constructor() {
     super();
+    this.refreshButton?.addEventListener(
+        'click', () => this.onRefreshClicked());
     this.fetchProvisioningDomainState();
   }
 
@@ -34,11 +38,55 @@ export class ProvisioningDomainConfigElement extends CustomElement {
     return this.$('#pvd-configs-list');
   }
 
+  private get refreshButton(): HTMLButtonElement | null {
+    return this.$('#refresh-routes-button');
+  }
+
+  private get refreshStatus(): HTMLElement | null {
+    return this.$('#refresh-status');
+  }
+
   private fetchProvisioningDomainState() {
     this.pageHandler.getProvisioningDomainState().then(
         (response: {state: ProvisioningDomainState}) => this.updateState(response.state),
         err => console.error(
             `Failed to fetch Provisioning Domain state: ${JSON.stringify(err)}`));
+  }
+
+  private async onRefreshClicked() {
+    if (this.isRefreshing_) {
+      return;
+    }
+    this.isRefreshing_ = true;
+    if (this.refreshButton) {
+      this.refreshButton.disabled = true;
+    }
+    if (this.refreshStatus) {
+      this.refreshStatus.textContent = 'Refreshing...';
+      this.refreshStatus.classList.remove('hidden');
+    }
+
+    try {
+      const response =
+          await this.pageHandler.refreshProvisioningDomainConfigs();
+      this.updateState(response.state);
+      if (this.refreshStatus) {
+        const timeString = new Date().toLocaleTimeString();
+        this.refreshStatus.textContent = `Last refreshed at ${timeString}`;
+      }
+    } catch (err) {
+      console.error(
+          `Failed to refresh Provisioning Domain configs: ${
+              JSON.stringify(err)}`);
+      if (this.refreshStatus) {
+        this.refreshStatus.textContent = 'Refresh failed';
+      }
+    } finally {
+      this.isRefreshing_ = false;
+      if (this.refreshButton) {
+        this.refreshButton.disabled = false;
+      }
+    }
   }
 
   private updateState(state: ProvisioningDomainState) {

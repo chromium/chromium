@@ -13,6 +13,7 @@ source_set("connectors_internals") {
   ]
   deps = [
     "//base",
+    "//components/enterprise/buildflags",
     "//components/device_signals/core/browser",
     "//components/enterprise",
     "//components/enterprise/client_certificates/core",

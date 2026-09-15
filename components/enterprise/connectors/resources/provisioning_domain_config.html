@@ -18,8 +18,24 @@
     margin-bottom: 10px;
   }
 
+  .action-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  #refresh-status {
+    color: var(--cr-secondary-text-color, #555);
+    font-size: 0.9em;
+  }
 </style>
 <h2>Provisioning Domain Configurations</h2>
+<div class="action-row">
+  <button id="refresh-routes-button">Refresh Routes</button>
+  <span id="refresh-status" class="hidden" role="status" aria-live="polite"></span>
+</div>
 <div id="no-configs-message">
   No PvD configurations available.
 </div>

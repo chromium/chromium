@@ -229,8 +229,24 @@ void ConnectorsInternalsPageHandler::OnReportGenerated(
 
 void ConnectorsInternalsPageHandler::GetProvisioningDomainState(
     GetProvisioningDomainStateCallback callback) {
+#if BUILDFLAG(ENTERPRISE_PROXY)
+  std::move(callback).Run(
+      enterprise_connectors::utils::GetProvisioningDomainState(
+          /*proxy_service=*/nullptr));
+#else
   std::move(callback).Run(
       connectors_internals::mojom::ProvisioningDomainState::New(
           std::vector<
               connectors_internals::mojom::ProvisioningDomainConfigPtr>()));
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
+}
+
+void ConnectorsInternalsPageHandler::RefreshProvisioningDomainConfigs(
+    RefreshProvisioningDomainConfigsCallback callback) {
+#if BUILDFLAG(ENTERPRISE_PROXY)
+  pvd_refresh_helper_.RefreshConfigs(/*proxy_service=*/nullptr,
+                                     std::move(callback));
+#else
+  GetProvisioningDomainState(std::move(callback));
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
 }

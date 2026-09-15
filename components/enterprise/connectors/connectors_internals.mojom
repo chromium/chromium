@@ -219,4 +219,8 @@ interface PageHandler {
 
   // Get state information about PvD configs.
   GetProvisioningDomainState() => (ProvisioningDomainState state);
+
+  // Forces a refresh of all Provisioning Domain routes/configs and returns
+  // the updated state once network fetches complete.
+  RefreshProvisioningDomainConfigs() => (ProvisioningDomainState state);
 };

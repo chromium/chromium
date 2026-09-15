@@ -24,12 +24,17 @@
 #include "components/enterprise/client_certificates/core/upload_client_error.h"  // nogncheck
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
+#if BUILDFLAG(ENTERPRISE_PROXY)
+namespace enterprise_net {
+class EnterpriseProxyService;
+}
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
+
 class PrefService;
 
 namespace base {
 class Time;
 }  // namespace base
-
 namespace client_certificates {
 class CertificateProvisioningService;
 }  // namespace client_certificates
@@ -81,6 +86,17 @@ CreateClientCertificateState(
         profile_certificate_provisioning_service);
 
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+
+#if BUILDFLAG(ENTERPRISE_PROXY)
+
+// Converts debug info from `proxy_service` into a Mojo
+// `ProvisioningDomainStatePtr`. Returns an empty state if `proxy_service` is
+// null.
+connectors_internals::mojom::ProvisioningDomainStatePtr
+GetProvisioningDomainState(
+    enterprise_net::EnterpriseProxyService* proxy_service);
+
+#endif  // BUILDFLAG(ENTERPRISE_PROXY)
 
 // Maps a signature algorithm to a Mojo key type.
 connectors_internals::mojom::KeyType AlgorithmToType(
