@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <list>
 #include <memory>
 #include <string>
 #include <utility>
@@ -16,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -328,6 +330,90 @@ TEST(CommandsTest, ExecuteSessionCommand) {
 
 namespace {
 
+class TargetDetachedChrome : public StubChrome {
+ public:
+  TargetDetachedChrome(bool has_remaining_window, bool* quit_called)
+      : quit_called_(quit_called) {
+    if (has_remaining_window) {
+      remaining_window_ = std::make_unique<StubWebView>("remaining");
+    }
+  }
+  ~TargetDetachedChrome() override = default;
+
+  Status GetTopLevelWebViewIds(std::list<std::string>* web_view_ids,
+                               bool w3c_compliant) override {
+    if (remaining_window_) {
+      web_view_ids->push_back(remaining_window_->GetId());
+    }
+    return Status(kOk);
+  }
+
+  Status GetActivePageByWebViewId(const std::string& id,
+                                  WebView** web_view,
+                                  bool wait_for_page) override {
+    if (!remaining_window_ || id != remaining_window_->GetId()) {
+      return Status(kNoSuchWindow);
+    }
+    *web_view = remaining_window_.get();
+    return Status(kOk);
+  }
+
+  Status Quit() override {
+    *quit_called_ = true;
+    return Status(kOk);
+  }
+
+ private:
+  std::unique_ptr<StubWebView> remaining_window_;
+  raw_ptr<bool> quit_called_;
+};
+
+void CreateTargetDetachedSession(const std::string& id,
+                                 bool has_remaining_window,
+                                 bool* quit_called) {
+  auto session =
+      std::make_unique<Session>(id, std::make_unique<TargetDetachedChrome>(
+                                        has_remaining_window, quit_called));
+  session->window = "closed";
+  SetThreadLocalSession(std::move(session));
+}
+
+Status ExecuteTargetDetachedCommand(
+    Session* session,
+    const base::DictValue& params,
+    std::unique_ptr<base::Value>* return_value) {
+  return Status(kTargetDetached);
+}
+
+void OnRecoveredCloseWindow(base::RunLoop* run_loop,
+                            bool expect_remaining_window,
+                            const Status& status,
+                            std::unique_ptr<base::Value> value,
+                            const std::string& session_id,
+                            bool w3c_compliant) {
+  EXPECT_EQ(kOk, status.code()) << status.message();
+  if (!value) {
+    ADD_FAILURE() << "CloseWindow did not return window handles";
+    run_loop->Quit();
+    return;
+  }
+  if (!value->is_list()) {
+    ADD_FAILURE() << "CloseWindow returned a non-list value";
+    run_loop->Quit();
+    return;
+  }
+  const base::ListValue& handles = value->GetList();
+  if (expect_remaining_window) {
+    EXPECT_EQ(1u, handles.size());
+    if (!handles.empty()) {
+      EXPECT_EQ("remaining", handles.front().GetString());
+    }
+  } else {
+    EXPECT_TRUE(handles.empty());
+  }
+  run_loop->Quit();
+}
+
 Status ShouldNotBeCalled(Session* session,
                          const base::DictValue& params,
                          std::unique_ptr<base::Value>* value) {
@@ -352,6 +438,55 @@ void OnNoSuchSessionIsOk(const Status& status,
 }
 
 }  // namespace
+
+TEST(CommandsTest, CloseWindowReturnsHandlesAfterTargetDetached) {
+  SessionThreadMap map;
+  auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
+  base::Thread* thread = thread_info->thread();
+  ASSERT_TRUE(thread->Start());
+  const std::string id("id");
+  bool quit_called = false;
+  thread->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CreateTargetDetachedSession, id, true, &quit_called));
+  map[id] = std::move(thread_info);
+
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::RunLoop run_loop;
+  ExecuteSessionCommand(
+      &map, "CloseWindow", base::BindRepeating(&ExecuteTargetDetachedCommand),
+      true /*w3c_standard_command*/, false, base::DictValue(), id,
+      base::BindRepeating(&OnRecoveredCloseWindow, &run_loop, true));
+  run_loop.Run();
+
+  EXPECT_FALSE(quit_called);
+  thread->task_runner()->PostTask(FROM_HERE,
+                                  base::BindOnce(&Session::Terminate));
+  thread->FlushForTesting();
+}
+
+TEST(CommandsTest, CloseWindowQuitsAfterLastTargetDetached) {
+  SessionThreadMap map;
+  auto thread_info = std::make_unique<SessionThreadInfo>("1", true);
+  base::Thread* thread = thread_info->thread();
+  ASSERT_TRUE(thread->Start());
+  const std::string id("id");
+  bool quit_called = false;
+  thread->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CreateTargetDetachedSession, id, false, &quit_called));
+  map[id] = std::move(thread_info);
+
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::RunLoop run_loop;
+  ExecuteSessionCommand(
+      &map, "CloseWindow", base::BindRepeating(&ExecuteTargetDetachedCommand),
+      true /*w3c_standard_command*/, false, base::DictValue(), id,
+      base::BindRepeating(&OnRecoveredCloseWindow, &run_loop, false));
+  run_loop.Run();
+
+  EXPECT_TRUE(quit_called);
+}
 
 TEST(CommandsTest, ExecuteSessionCommandOnNoSuchSession) {
   SessionThreadMap map;

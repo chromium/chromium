@@ -42,6 +42,7 @@ const char kInspectorPushPermissionError[] =
 const char kInspectorNoSuchFrameError[] =
     "Frame with the given id was not found.";
 const char kNoTargetWithGivenIdError[] = "No target with given id found";
+const char kNoTargetFoundForTargetIdError[] = "No target found for targetId";
 const char kUniqueContextIdNotFoundError[] = "uniqueContextId not found";
 const char kNoNodeForBackendNodeIdError[] =
     "No node found for given backend id";
@@ -1511,7 +1512,8 @@ Status ParseInspectorError(const std::string& error_json) {
     }
     std::optional<int> error_code = error_dict->FindInt("code");
     if (error_code == kInvalidParamsInspectorCode) {
-      if (error_message == kNoTargetWithGivenIdError) {
+      if (error_message == kNoTargetWithGivenIdError ||
+          error_message == kNoTargetFoundForTargetIdError) {
         return Status(kNoSuchWindow, error_message);
       }
       return Status(kInvalidArgument, error_message);

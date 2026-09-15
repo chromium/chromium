@@ -1347,6 +1347,13 @@ TEST(ParseInspectorError, NoTargetWithGivenIdFound) {
   ASSERT_EQ("no such window: No target with given id found", status.message());
 }
 
+TEST(ParseInspectorError, NoTargetFoundForTargetId) {
+  Status status = internal::ParseInspectorError(
+      "{\"code\": -32602, \"message\": \"No target found for targetId\"}");
+  ASSERT_EQ(kNoSuchWindow, status.code());
+  ASSERT_EQ("no such window: No target found for targetId", status.message());
+}
+
 TEST(ParseInspectorError, UnknownError) {
   const std::string error("{\"code\": 10, \"message\": \"Error description\"}");
   Status status = internal::ParseInspectorError(error);

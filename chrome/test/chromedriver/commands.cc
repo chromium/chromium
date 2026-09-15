@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <functional>
 #include <list>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -342,7 +343,16 @@ void ExecuteSessionCommandOnSessionThread(
             status.AddDetails("failed to check if window was closed: " +
                               status_tmp.message());
           } else if (!std::ranges::contains(tab_view_ids, session->window)) {
-            status = Status(kOk);
+            if (std::string_view(command_name) == "CloseWindow") {
+              status =
+                  ExecuteGetWindowHandles(session, base::DictValue(), &value);
+              if (status.IsOk() && value->GetList().empty()) {
+                session->quit = true;
+                status = session->chrome->Quit();
+              }
+            } else {
+              status = Status(kOk);
+            }
           }
         }
         if (status.IsError()) {
