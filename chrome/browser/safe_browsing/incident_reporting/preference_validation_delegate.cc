@@ -98,6 +98,9 @@ void PreferenceValidationDelegate::OnSplitPreferenceValidation(
     ValueState value_state,
     ValueState external_validation_value_state,
     bool is_personal) {
+  if (!profile_) {
+    return;  // Profile already destroyed.
+  }
   TPIncident_ValueState proto_value_state =
       MapValueState(value_state, external_validation_value_state);
   if (proto_value_state != TPIncident::UNKNOWN) {

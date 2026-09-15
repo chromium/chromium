@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident.h"
+#include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/mock_incident_receiver.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -190,6 +191,23 @@ TEST_P(PreferenceValidationDelegateValues, OnProfileDestroyed) {
   instance_->OnAtomicPreferenceValidation(
       kPrefPath, MakeValue(value_type_), ValueState::CLEARED,
       ValueState::UNSUPPORTED, false /* is_personal */);
+  ASSERT_EQ(0U, incidents_.size());
+}
+
+TEST_F(PreferenceValidationDelegateTest, OnProfileDestroyedSplit) {
+  safe_browsing::IncidentReportingService incident_reporting_service(nullptr);
+  Profile* profile = testing_profile_manager_.CreateTestingProfile("profile 2");
+  auto delegate =
+      incident_reporting_service.CreatePreferenceValidationDelegate(profile);
+  testing_profile_manager_.DeleteTestingProfile("profile 2");
+  delegate->OnSplitPreferenceValidation(
+      kPrefPath, invalid_keys_, external_validation_invalid_keys_,
+      ValueState::CLEARED, ValueState::UNSUPPORTED, false /* is_personal */);
+
+  testing_profile_manager_.DeleteTestingProfile("profile 1");
+  instance_->OnSplitPreferenceValidation(
+      kPrefPath, invalid_keys_, external_validation_invalid_keys_,
+      ValueState::CLEARED, ValueState::UNSUPPORTED, false /* is_personal */);
   ASSERT_EQ(0U, incidents_.size());
 }
 
