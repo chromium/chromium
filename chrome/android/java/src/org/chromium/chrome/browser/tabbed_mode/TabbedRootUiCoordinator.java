@@ -3400,4 +3400,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public @Nullable OneshotSupplier<String> getCountrySupplierForTesting() {
         return mCountrySupplier;
     }
+
+    /** Returns the {@link TabSearchOverlayCoordinator} for testing. */
+    public @Nullable TabSearchOverlayCoordinator getTabSearchOverlayCoordinatorForTesting() {
+        return mTabSearchOverlayCoordinator;
+    }
 }

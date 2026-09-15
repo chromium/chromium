@@ -16,6 +16,9 @@ import android.app.Activity;
 import android.os.SystemClock;
 import android.view.View;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.OptionalViewElement;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
@@ -23,6 +26,9 @@ import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -40,6 +46,8 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
+import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility;
+import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
 import java.util.function.Supplier;
@@ -58,8 +66,10 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
             viewSpec(
                     withId(R.id.optional_toolbar_button),
                     withContentDescription(R.string.accessibility_toolbar_btn_mic));
+    public static final ViewSpec<View> TAB_SEARCH_BUTTON = viewSpec(withId(R.id.tab_search_button));
     public final OptionalViewElement<View> optionalToolbarMicButtonElement;
     public final OptionalViewElement<View> homeButtonElement;
+    public final OptionalViewElement<View> tabSearchButtonElement;
     // TODO(crbug.com/477035792): Temporarily nullable while the toolbar is being migrated.
     public final @Nullable ViewElement<ToolbarControlContainer> toolbarElement;
     public final ViewElement<View> tabSwitcherButtonElement;
@@ -108,6 +118,10 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
 
         // The optional toolbar mic button specifically.
         optionalToolbarMicButtonElement = declareOptionalView(TOOLBAR_MIC_BUTTON);
+
+        // The tab search button is only intended to appear on desktop.
+        tabSearchButtonElement =
+                declareOptionalView(TAB_SEARCH_BUTTON, ViewElement.unscopedOption());
     }
 
     /**
@@ -142,6 +156,41 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         recheckActiveConditions();
 
         return menuButtonElement.clickTo().enterFacility(new PageAppMenuFacility<>());
+    }
+
+    /** Opens the Tab Search overlay by clicking the tab search button. */
+    public TabSearchOverlayFacility<CtaPageStation> openTabSearchOverlay() {
+        recheckActiveConditions();
+        assert ChromeFeatureList.sTabSearchForDesktop.isEnabled();
+
+        ChromeTabbedActivity activity = getActivity();
+        boolean hasVerticalTabSearchButton =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            View v = activity.findViewById(R.id.tab_search_button);
+                            return v != null && v.isShown();
+                        });
+        // In vertical tabs mode, the tab search button is an Android View in the hierarchy,
+        // so it can be clicked via Espresso.
+        if (hasVerticalTabSearchButton) {
+            return tabSearchButtonElement.clickTo().enterFacility(new TabSearchOverlayFacility<>());
+        }
+
+        // In the horizontal tab strip, the tab search button is drawn in the native composited UI
+        // without an Android View, so simulate a click on the compositor button directly.
+        StripLayoutHelper strip = TabStripUtils.getStripLayoutHelper(activity, mIsIncognito);
+        assert strip != null;
+        CompositorButton tabSearchButton = strip.getTabSearchButton();
+        assert tabSearchButton != null;
+        return runTo(
+                        () -> {
+                            TabStripUtils.settleDownCompositor(strip);
+                            TabStripUtils.clickCompositorButton(
+                                    tabSearchButton,
+                                    InstrumentationRegistry.getInstrumentation(),
+                                    activity);
+                        })
+                .enterFacility(new TabSearchOverlayFacility<>());
     }
 
     /** Shortcut to open a new tab programmatically as if selecting "New Tab" from the app menu. */
