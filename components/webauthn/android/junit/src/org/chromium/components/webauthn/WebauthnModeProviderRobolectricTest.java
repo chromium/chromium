@@ -9,8 +9,6 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,7 +36,6 @@ public class WebauthnModeProviderRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredManRequestDecorator_whenGlobalModeApp_thenAppDecorator() {
         mProvider.setGlobalWebauthnMode(WebauthnMode.APP);
 
@@ -47,7 +44,6 @@ public class WebauthnModeProviderRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredManRequestDecorator_whenGlobalModeBrowser_thenBrowserDecorator() {
         mProvider.setGlobalWebauthnMode(WebauthnMode.BROWSER);
 
@@ -56,7 +52,6 @@ public class WebauthnModeProviderRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredManRequestDecorator_whenGlobalModeChrome_thenChromeDecorator() {
         mProvider.setGlobalWebauthnMode(WebauthnMode.CHROME);
 
@@ -65,7 +60,6 @@ public class WebauthnModeProviderRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetFido2ApiCallParams_whenGlobalModeApp_thenAppApi() {
         mProvider.setGlobalWebauthnMode(WebauthnMode.APP);
 
@@ -73,7 +67,6 @@ public class WebauthnModeProviderRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetFido2ApiCallParams_whenGlobalModeBrowser_thenBrowserApi() {
         mProvider.setGlobalWebauthnMode(WebauthnMode.BROWSER);
 
@@ -82,7 +75,6 @@ public class WebauthnModeProviderRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetFido2ApiCallParams_whenGlobalModeChrome_thenBrowserApi() {
         mProvider.setGlobalWebauthnMode(WebauthnMode.CHROME);
 
@@ -91,7 +83,6 @@ public class WebauthnModeProviderRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetWebauthnMode_whenNoGlobalMode_thenJniCalled() {
         mProvider.setGlobalWebauthnMode(WebauthnMode.NONE);
 

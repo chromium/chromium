@@ -11,8 +11,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.test.filters.SmallTest;
-
 import com.google.android.gms.identitycredentials.CreateCredentialRequest;
 import com.google.android.gms.identitycredentials.SignalCredentialStateRequest;
 
@@ -73,7 +71,6 @@ public class IdentityCredentialsHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildConditionalCreateRequest() {
         PublicKeyCredentialCreationOptions options =
                 Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
@@ -121,7 +118,6 @@ public class IdentityCredentialsHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildSignalCredentialStateRequest_unknownCredentialId() {
         PublicKeyCredentialReportOptions options = new PublicKeyCredentialReportOptions();
         options.relyingPartyId = ORIGIN_STRING;
@@ -131,7 +127,6 @@ public class IdentityCredentialsHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildSignalCredentialStateRequest_allAcceptedCredentials() {
         PublicKeyCredentialReportOptions options = new PublicKeyCredentialReportOptions();
         options.relyingPartyId = ORIGIN_STRING;
@@ -144,7 +139,6 @@ public class IdentityCredentialsHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildSignalCredentialStateRequest_currentUserDetails() {
         PublicKeyCredentialReportOptions options = new PublicKeyCredentialReportOptions();
         options.relyingPartyId = ORIGIN_STRING;

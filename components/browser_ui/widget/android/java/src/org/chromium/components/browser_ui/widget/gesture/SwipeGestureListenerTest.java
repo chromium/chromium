@@ -9,8 +9,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 
 import android.view.MotionEvent;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,28 +41,24 @@ public class SwipeGestureListenerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnSwipeLeftDirection() {
         testSwipeByGivenDirection(
                 ScrollDirection.LEFT, buildEventStream(100.0f, 100.0f, -5.0f, -3.0f, 10));
     }
 
     @Test
-    @SmallTest
     public void testOnSwipeRightDirection() {
         testSwipeByGivenDirection(
                 ScrollDirection.RIGHT, buildEventStream(100.0f, 100.0f, 5.0f, -3.0f, 10));
     }
 
     @Test
-    @SmallTest
     public void testOnSwipeUpDirection() {
         testSwipeByGivenDirection(
                 ScrollDirection.UP, buildEventStream(100.0f, 100.0f, 3.0f, -5.0f, 10));
     }
 
     @Test
-    @SmallTest
     public void testOnSwipeDownDirection() {
         testSwipeByGivenDirection(
                 ScrollDirection.DOWN, buildEventStream(100.0f, 100.0f, 2.0f, 5.0f, 10));

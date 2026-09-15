@@ -33,7 +33,6 @@ import android.os.ResultReceiver;
 import android.util.Pair;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -260,7 +259,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testMakeCredential() {
         handleMakeCredentialRequest(/* browserOptions= */ null);
 
@@ -268,7 +266,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testMakeCredential_rkDiscouraged_goesToPlayServices() {
         mCreationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.DISCOURAGED;
 
@@ -281,7 +278,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testMakeCredential_paymentsEnabled_goesToPlayServices() {
         mCreationOptions.isPaymentCredentialCreation = true;
 
@@ -292,7 +288,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testMakeCredential_webauthnModeAppAndBelowAndroid14_goesToPlayServices() {
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
         Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.NONE);
@@ -307,7 +302,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testMakeCredential_webauthnModeAppAndAboveAndroid14_goesToCredMan() {
         Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
         Mockito.when(mModeProviderMock.getGlobalWebauthnMode()).thenReturn(WebauthnMode.NONE);
@@ -324,7 +318,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testConvertError() {
         final String prefix = "[12345] ";
         // Pass null for cases where the error message is not used by the mapping logic,
@@ -414,7 +407,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testMakeCredentialOutcomeCodeFromFidoError() {
         final String prefix = "[12345] ";
         // Pass null for cases where the error message is not used by the mapping logic,
@@ -493,7 +485,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_credManEnabledGpmInCredMan_success() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         handleGetCredentialRequest();
@@ -519,7 +510,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_GpmNotInCredMan_callCredManGetCredentialsAndGmsCoreInParallel() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         CredManSupportProvider.setupForTesting(
@@ -556,7 +546,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_hybridCancel_parallelMode_failsRequest() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         CredManSupportProvider.setupForTesting(
@@ -597,7 +586,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_allowListMatchWithExplicitHash_goesToGmsCore() {
         setGetCredentialRequestOptions(/* hasAllowList= */ true);
 
@@ -612,7 +600,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_NoCredentials_fallbackToPlayServices() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mFido2ApiCallHelper.mCredentialsError = new IllegalStateException("injected error");
@@ -643,7 +630,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_allowListNoMatch_goesToCredMan() {
         setGetCredentialRequestOptions(/* hasAllowList= */ true);
         handleGetCredentialRequest();
@@ -657,7 +643,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_allowListEnumerationFails_goesToCredMan() {
         setGetCredentialRequestOptions(/* hasAllowList= */ true);
         handleGetCredentialRequest();
@@ -673,7 +658,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_allowListMatch_goesToPlayServices() {
         setGetCredentialRequestOptions(/* hasAllowList= */ true);
 
@@ -688,7 +672,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_allowListNoMatchAndGpmNotInCredMan_goesToCredMan() {
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
@@ -707,7 +690,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_WebAuthnModeApp_GoesToPlayServices() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         CredManSupportProvider.setupForTesting(
@@ -724,7 +706,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_WebAuthnModeApp_failsIfGmscoreNotAvailable() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         CredManSupportProvider.setupForTesting(
@@ -747,7 +728,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testConditionalGetCredential_success() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
@@ -768,7 +748,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testConditionalGetCredential_GpmNotInCredMan_success() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
@@ -800,7 +779,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testConditionalGetCredential_webauthnModeNotChrome_notImplemented() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
@@ -814,7 +792,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testConditionalGetCredential_RpCancelWhileIdleWithGpmInCredMan_notAllowedError() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
@@ -831,8 +808,8 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
-    public void testConditionalGetCredential_RpCancelWhileIdleWithGpmNotInCredMan_notAllowedError() {
+    public void
+            testConditionalGetCredential_RpCancelWhileIdleWithGpmNotInCredMan_notAllowedError() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
         CredManSupportProvider.setupForTesting(
@@ -856,7 +833,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testConditionalGetCredential_abortedWhileWaitingForRpIdValidation_aborted() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         // Capture the RP ID validation callback and let the request sit
@@ -896,7 +872,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testConditionalGetCredential_webauthnModeChrome3pp_goesToCredMan() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
@@ -913,7 +888,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_webauthnModeChrome3pp_goesToCredMan() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         Mockito.when(mModeProviderMock.getWebauthnMode(any()))
@@ -929,7 +903,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testImmediateGetCredential_success() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.IMMEDIATE;
@@ -950,7 +923,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testImmediateGetCredential_withAllowList_notAllowed() {
         setGetCredentialRequestOptions(/* hasAllowList= */ true);
         mRequestOptions.mediation = Mediation.IMMEDIATE;
@@ -964,7 +936,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testImmediateGetCredential_timeout_notAllowed() {
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
@@ -989,7 +960,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testImmediateGetCredential_passwordOnly_subframe_fails() {
         GetCredentialOptions options = new GetCredentialOptions();
         options.publicKey = null;
@@ -1008,7 +978,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testImmediateGetCredential_iframeWithPassword_passwordDisabled() {
         setGetCredentialRequestOptions(/* hasAllowList= */ false);
         mRequestOptions.mediation = Mediation.IMMEDIATE;
@@ -1053,7 +1022,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetAssertionOutcomeCodeFromFidoError() {
         final String prefix = "[12345] ";
         // Pass null for cases where the error message is not used by the mapping logic,
@@ -1128,7 +1096,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testReportRequest_noSignalArgumentsSet_unknownError() {
         PublicKeyCredentialReportOptions options = new PublicKeyCredentialReportOptions();
         options.relyingPartyId = "rpId";
@@ -1139,7 +1106,6 @@ public class Fido2CredentialRequestRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testReportRequest_WebAuthnModeApp_originIsNull() {
         PublicKeyCredentialReportOptions options = new PublicKeyCredentialReportOptions();
         options.relyingPartyId = "rpId";

@@ -13,8 +13,6 @@ import static org.mockito.Mockito.verify;
 import android.credentials.CredentialOption;
 import android.credentials.GetCredentialRequest;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,7 +56,6 @@ public class CredManGetCredentialRequestHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetGetCredentialRequest_nullDecorator_setsBasicGetCredentialRequest() {
         GetCredentialRequest getCredentialRequest = mHelper.getGetCredentialRequest(null);
 
@@ -72,7 +69,6 @@ public class CredManGetCredentialRequestHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetGetCredentialRequest_mockDecorator_setsBasicGetCredentialRequest() {
         GetCredentialRequest getCredentialRequest = mHelper.getGetCredentialRequest(mDecorator);
 
@@ -88,7 +84,6 @@ public class CredManGetCredentialRequestHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetGetCredentialRequest_nullDecorator_firstCredentialOptionIsPublicKey() {
         GetCredentialRequest getCredentialRequest = mHelper.getGetCredentialRequest(null);
 
@@ -113,7 +108,6 @@ public class CredManGetCredentialRequestHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetGetCredentialRequest_mockDecorator_firstCredentialOptionIsPublicKey() {
         GetCredentialRequest getCredentialRequest = mHelper.getGetCredentialRequest(mDecorator);
 
@@ -140,7 +134,6 @@ public class CredManGetCredentialRequestHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void
             testGetGetCredentialRequest_nullDecoratorAndRequestPasswordsIsTrue_BothOptionsInRequest() {
         mHelper =
@@ -161,7 +154,6 @@ public class CredManGetCredentialRequestHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void
             testGetGetCredentialRequest_mockDecoratorAndRequestPasswordsIsTrue_BothOptionsInRequest() {
         mHelper =

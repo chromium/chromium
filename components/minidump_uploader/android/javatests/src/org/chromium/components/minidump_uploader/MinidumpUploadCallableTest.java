@@ -4,8 +4,6 @@
 
 package org.chromium.components.minidump_uploader;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -88,7 +86,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testSuccessfulUpload() throws Exception {
         final CrashReportingPermissionManager testPermManager =
@@ -109,7 +106,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testFailedUploadLocalError() throws Exception {
         final CrashReportingPermissionManager testPermManager =
@@ -129,7 +125,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testFailedUploadRemoteError() throws Exception {
         final CrashReportingPermissionManager testPermManager =
@@ -149,7 +144,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCallWhenCurrentlyPermitted() throws Exception {
         CrashReportingPermissionManager testPermManager =
@@ -174,7 +168,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCallNotPermittedByUser() {
         CrashReportingPermissionManager testPermManager =
@@ -204,7 +197,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCallPermittedButNotInSample() {
         CrashReportingPermissionManager testPermManager =
@@ -235,7 +227,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCallPermittedButNotUnderCurrentCircumstances() {
         CrashReportingPermissionManager testPermManager =
@@ -259,7 +250,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCrashUploadEnabledForTestsDespiteConstraints() throws Exception {
         CrashReportingPermissionManager testPermManager =
@@ -284,7 +274,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCallWhenCurrentlyPermitted_ForcedUpload() throws Exception {
         setForcedUpload();
@@ -310,7 +299,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCallNotPermittedByUser_ForcedUpload() {
         setForcedUpload();
@@ -341,7 +329,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCallPermittedButNotInSample_ForcedUpload() {
         setForcedUpload();
@@ -372,7 +359,6 @@ public class MinidumpUploadCallableTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCallPermittedButNotUnderCurrentCircumstances_ForcedUpload() {
         setForcedUpload();

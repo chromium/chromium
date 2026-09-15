@@ -20,7 +20,6 @@ robolectric_library("junit") {
     "//components/facilitated_payments/core/utils:facilitated_payments_enums_java",
     "//components/signin/public/android:java",
     "//content/public/android:content_full_java",
-    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

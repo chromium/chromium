@@ -6,8 +6,6 @@ package org.chromium.components.webapps.pwa_restore_ui;
 
 import android.app.Activity;
 
-import androidx.test.filters.MediumTest;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +26,6 @@ public final class PwaRestoreBottomSheetContentTest {
     private Activity mActivity;
 
     @Test
-    @MediumTest
     public void testBasics() {
         // Create a mocked version of the PwaRestoreBottomSheetView, for use with the
         // BottomSheetContent. Note that the view is not initialized, and therefore it does not

@@ -93,7 +93,6 @@ robolectric_library("components_policy_junit_tests") {
     "//base:base_junit_test_support",
     "//build/android:build_java",
     "//third_party/androidx:androidx_test_core_java",
-    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/google-truth:google_truth_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

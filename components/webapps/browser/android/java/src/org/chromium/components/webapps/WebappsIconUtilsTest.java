@@ -9,8 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import android.graphics.Bitmap;
 import android.os.Build;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -25,7 +23,6 @@ import org.chromium.url.GURL;
 public class WebappsIconUtilsTest {
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void testGenerateHomeScreenIcon_NullUrl() {
         GURL url = GURL.emptyGURL();
@@ -35,7 +32,6 @@ public class WebappsIconUtilsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void testGenerateHomeScreenIcon_ValidUrl() {
         GURL url = new GURL("https://example.com");

@@ -35,7 +35,6 @@ robolectric_library("junit") {
   deps = [
     ":device_attestation_java",
     "//base:base_junit_test_support",
-    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
 }

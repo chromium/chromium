@@ -6,8 +6,6 @@ package org.chromium.components.download;
 
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -89,7 +87,6 @@ public class NetworkStatusListenerAndroidTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCurrentConnectionType() {
         initWithConnectionType(ConnectionType.CONNECTION_3G);
 
@@ -101,7 +98,6 @@ public class NetworkStatusListenerAndroidTest {
     }
 
     @Test
-    @SmallTest
     public void testOnConnectionTypeChanged() {
         initWithConnectionType(ConnectionType.CONNECTION_3G);
 

@@ -12,8 +12,6 @@ import static org.mockito.Mockito.verify;
 
 import android.credentials.CreateCredentialRequest;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,7 +53,6 @@ public class CredManCreateCredentialRequestHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCreateCredentialRequest_nullDecorator_onlyRequiredValues() {
         CreateCredentialRequest createCredentialRequest = mHelper.getCreateCredentialRequest(null);
 
@@ -76,7 +73,6 @@ public class CredManCreateCredentialRequestHelperRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCreateCredentialRequest_mockDecorator_setsOriginAndBundleValues() {
         mHelper.getCreateCredentialRequest(mDecorator);
 

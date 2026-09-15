@@ -21,7 +21,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +58,6 @@ public class WebappsUtilsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void testIsAddToHomeIntentSupported_ShortcutManagerSupported() {
         mShadowShortcutManager.setIsRequestPinShortcutSupported(true);
@@ -67,7 +65,6 @@ public class WebappsUtilsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void testIsAddToHomeIntentSupported_ShortcutManagerNotSupported() {
         mShadowShortcutManager.setIsRequestPinShortcutSupported(false);
@@ -75,7 +72,6 @@ public class WebappsUtilsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void testAddShortcutToHomescreen_ShortcutManagerSupported() {
         mShadowShortcutManager.setIsRequestPinShortcutSupported(true);
@@ -91,7 +87,6 @@ public class WebappsUtilsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void testAddShortcutToHomescreen_ShortcutManagerNotSupported() {
         mShadowShortcutManager.setIsRequestPinShortcutSupported(false);
@@ -106,7 +101,6 @@ public class WebappsUtilsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void
             testIsAddToHomeIntentSupported_ShortcutManagerNotSupported_HasDefaultLauncherWithFallback() {
@@ -133,7 +127,6 @@ public class WebappsUtilsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void
             testIsAddToHomeIntentSupported_ShortcutManagerNotSupported_DefaultLauncherNoFallback() {
@@ -152,7 +145,6 @@ public class WebappsUtilsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void testAddShortcutToHomescreen_ShortcutManagerNotSupported_HasDefaultLauncher() {
         mShadowShortcutManager.setIsRequestPinShortcutSupported(false);
@@ -190,7 +182,6 @@ public class WebappsUtilsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void
             testIsAddToHomeIntentSupported_ShortcutManagerNotSupported_ReceiverInDifferentSystemPackage() {
@@ -221,7 +212,6 @@ public class WebappsUtilsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void
             testAddShortcutToHomescreen_ShortcutManagerNotSupported_TargetedToSystemReceiverPackage() {
@@ -265,7 +255,6 @@ public class WebappsUtilsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapp"})
     public void
             testIsAddToHomeIntentSupported_ShortcutManagerNotSupported_ReceiverInDifferentNonSystemPackage() {

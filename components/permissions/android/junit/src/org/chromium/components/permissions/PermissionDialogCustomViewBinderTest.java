@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -57,7 +56,6 @@ public class PermissionDialogCustomViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testMessageText() {
         TextView permissionDialogMessageText = mCustomView.findViewById(R.id.text);
 
@@ -65,7 +63,6 @@ public class PermissionDialogCustomViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testIcon_WithoutTint() {
         Drawable drawable =
                 ResourcesCompat.getDrawable(
@@ -86,7 +83,6 @@ public class PermissionDialogCustomViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testIcon_WithTint() {
         testIcon_WithTintImpl();
     }
@@ -117,7 +113,6 @@ public class PermissionDialogCustomViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testIcon_ResetTint() {
         testIcon_WithTintImpl();
 

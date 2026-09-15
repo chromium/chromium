@@ -16,8 +16,6 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.test.filters.MediumTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -75,7 +73,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
     }
 
     @Test
-    @MediumTest
     public void testViewInitialization() {
         PwaRestoreBottomSheetCoordinator coordinator =
                 new PwaRestoreBottomSheetCoordinator(
@@ -124,7 +121,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
     }
 
     @Test
-    @MediumTest
     public void testShowAndExpand() {
         PwaRestoreBottomSheetCoordinator coordinator =
                 new PwaRestoreBottomSheetCoordinator(

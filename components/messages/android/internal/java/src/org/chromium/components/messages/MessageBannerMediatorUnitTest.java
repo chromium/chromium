@@ -22,8 +22,6 @@ import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,7 +44,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link MessageBannerMediator}. */
-@SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({MessageFeatureList.MESSAGES_CLOSE_BUTTON})
 public class MessageBannerMediatorUnitTest {

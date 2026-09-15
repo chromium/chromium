@@ -13,7 +13,6 @@ import android.content.Context;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,7 +57,6 @@ public class BottomSheetRecyclerScrollListenerTest {
 
     /** Tests that listener starts in scrolled-to-top state. */
     @Test
-    @SmallTest
     public void testInitialState() {
         assertTrue(mScrollListener.isScrolledToTop());
     }
@@ -67,7 +65,6 @@ public class BottomSheetRecyclerScrollListenerTest {
      * Tests that {@link BottomSheetRecyclerScrollListener#reset} returns to scrolled-to-top state.
      */
     @Test
-    @SmallTest
     public void testReset() {
         RecyclerView recyclerView = createRecyclerViewWithOffset(100);
 
@@ -82,7 +79,6 @@ public class BottomSheetRecyclerScrollListenerTest {
      * Tests that scroll listener correctly identifies conditions that trigger layout suppression.
      */
     @Test
-    @SmallTest
     public void testSuppressLayoutConditionsMet() {
         RecyclerView recyclerView = createRecyclerViewWithOffset(0);
 
@@ -95,7 +91,6 @@ public class BottomSheetRecyclerScrollListenerTest {
 
     /** Tests that layout suppression is not triggered when RecyclerView is not at top position. */
     @Test
-    @SmallTest
     public void testNoSuppressLayoutWhenNotAtTop() {
         RecyclerView recyclerView = createRecyclerViewWithOffset(100);
 
@@ -108,7 +103,6 @@ public class BottomSheetRecyclerScrollListenerTest {
 
     /** Tests that layout suppression is not triggered when bottom sheet is not in half state. */
     @Test
-    @SmallTest
     public void testNoSuppressLayoutWhenSheetNotHalf() {
         RecyclerView recyclerView = createRecyclerViewWithOffset(0);
 
@@ -122,7 +116,6 @@ public class BottomSheetRecyclerScrollListenerTest {
 
     /** Tests that layout suppression is applied in standard mode at half state and top position. */
     @Test
-    @SmallTest
     public void testSuppressLayout_StandardMode() {
         RecyclerView recyclerView = createRecyclerViewWithOffset(0);
 
@@ -137,7 +130,6 @@ public class BottomSheetRecyclerScrollListenerTest {
 
     /** Tests that layout suppression is NOT applied on desktop. */
     @Test
-    @SmallTest
     public void testNoSuppressLayout_Desktop() {
         RecyclerView recyclerView = createRecyclerViewWithOffset(0);
 

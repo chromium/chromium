@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +35,6 @@ import org.chromium.url.Origin;
 
 /** Tests for {@link AuthenticatorImpl} with password-only requests. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SmallTest
 public class AuthenticatorImplPasswordOnlyTest {
     private AuthenticatorImpl mAuthenticator;
     private Origin mOrigin;

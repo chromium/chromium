@@ -6,8 +6,6 @@ package org.chromium.components.webapps.pwa_universal_install;
 
 import android.content.Context;
 
-import androidx.test.filters.MediumTest;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +24,6 @@ public final class PwaUniversalInstallBottomSheetContentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Test
-    @MediumTest
     public void testBasics() {
         // Create a mocked version of the PwaUniversalInstallBottomSheetView, for use with the
         // BottomSheetContent. Note that the view is not initialized, and therefore it does not

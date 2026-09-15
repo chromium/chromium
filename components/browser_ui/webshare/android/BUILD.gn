@@ -39,7 +39,6 @@ robolectric_library("junit") {
     "//base/test:test_support_java",
     "//components/browser_ui/share/android:java",
     "//mojo/public/mojom/base:base_java",
-    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/junit",
     "//ui/android:ui_no_recycler_view_java",

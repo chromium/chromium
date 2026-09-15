@@ -22,8 +22,6 @@ import static org.robolectric.Shadows.shadowOf;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -106,7 +104,6 @@ public class MessageAnimationCoordinatorUnitTest {
     // Test incoming candidates are same with current displayed ones.
     // [m1, m2] -> [m1, m2]
     @Test
-    @SmallTest
     public void testDoNothing() throws TimeoutException {
         MessageState m1 = buildMessageState();
         MessageState m2 = buildMessageState();
@@ -142,7 +139,6 @@ public class MessageAnimationCoordinatorUnitTest {
     // Test showing messages.
     // [null, null] -> [m1, m2]
     @Test
-    @SmallTest
     public void testShowMessages() {
         // Initial values should be null.
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
@@ -166,7 +162,6 @@ public class MessageAnimationCoordinatorUnitTest {
     // Test only front message becomes hidden.
     // [m1, m2] -> [m2, null]
     @Test
-    @SmallTest
     public void testHideFrontMessageOnly() {
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
@@ -192,7 +187,6 @@ public class MessageAnimationCoordinatorUnitTest {
     // [m1, m2] -> [m2, m3] is done in two steps.
     // [m1, m2] -> [m2, null], then [m2, null] -> [m2, m3]
     @Test
-    @SmallTest
     public void testDismissFrontAndEnqueueNew() {
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
@@ -225,7 +219,6 @@ public class MessageAnimationCoordinatorUnitTest {
     // Test only back message becomes hidden.
     // [m1, m2] -> [m1, null]
     @Test
-    @SmallTest
     public void testHiddenBackMessageOnly() {
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
@@ -248,7 +241,6 @@ public class MessageAnimationCoordinatorUnitTest {
 
     /** Test replacing back message. [m1, m2] -> [m1, m3] */
     @Test
-    @SmallTest
     public void testReplacingBack() {
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
@@ -279,7 +271,6 @@ public class MessageAnimationCoordinatorUnitTest {
     // Test pushing front message to back.
     // [m1, null] -> [m2, m1]
     @Test
-    @SmallTest
     public void testPushFrontBack() {
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
@@ -304,7 +295,6 @@ public class MessageAnimationCoordinatorUnitTest {
     // TODO(crbug.com/40877229): simplify this into one step.
     // This should be done in two steps:  [m1, null] -> [null, null] -> [m2, null]
     @Test
-    @SmallTest
     public void testUpdateFrontMessageOnly() {
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
@@ -333,7 +323,6 @@ public class MessageAnimationCoordinatorUnitTest {
 
     /** Test messages are hidden before #onStartShow is done. */
     @Test
-    @SmallTest
     public void testHideBeforeFullyShow() {
         mAnimationCoordinator.setMessageQueueDelegate(
                 new MessageQueueDelegate() {
@@ -390,7 +379,6 @@ public class MessageAnimationCoordinatorUnitTest {
 
     // Test showing animation is triggered after hiding animation is started.
     @Test
-    @SmallTest
     public void testObsoleteShowingAnimation() {
         mAnimationCoordinator = new MessageAnimationCoordinator(mContainer, mAnimatorStartCallback);
         mAnimationCoordinator.setMessageQueueDelegate(mQueueDelegate);
@@ -425,7 +413,6 @@ public class MessageAnimationCoordinatorUnitTest {
 
     // Test when onStartShowing takes some time to be ready.
     @Test
-    @SmallTest
     public void testWaitForOnStartShowing() {
         mAnimationCoordinator = new MessageAnimationCoordinator(mContainer, mAnimatorStartCallback);
         MessageQueueDelegate queueDelegate = Mockito.mock(MessageQueueDelegate.class);
@@ -473,7 +460,6 @@ public class MessageAnimationCoordinatorUnitTest {
 
     // Test a new message is enqueued when the previous message is still waiting for onStartShowing.
     @Test
-    @SmallTest
     public void testEnqueuingWhileWaitingForOnStartShowing() {
         doAnswer(
                         invocation -> {
@@ -537,7 +523,6 @@ public class MessageAnimationCoordinatorUnitTest {
 
     // Test when suspension cancels a hiding animation.
     @Test
-    @SmallTest
     public void testSuspensionCancellingHidingAnimation() throws TimeoutException {
         var currentMessages = mAnimationCoordinator.getCurrentDisplayedMessages();
         Assert.assertArrayEquals(new MessageState[] {null, null}, currentMessages.toArray());
@@ -589,7 +574,6 @@ public class MessageAnimationCoordinatorUnitTest {
     // Test that second message should not trigger new animation if the first message is still
     // waiting for container to finish layout.
     @Test
-    @SmallTest
     public void testContainerIsInitializingLayout() {
         MessageState m1 = buildMessageState();
         setMessageIdentifier(m1, 1);
@@ -615,7 +599,6 @@ public class MessageAnimationCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCurrentMessagesUpdateWhileWaitingForDelegateBeReady() {
         when(mQueueDelegate.isReadyForShowing()).thenReturn(false);
         doNothing().when(mQueueDelegate).onRequestShowing(any());
@@ -633,7 +616,6 @@ public class MessageAnimationCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateAfterLifecycleDestroyed() {
         when(mQueueDelegate.isReadyForShowing()).thenReturn(false);
         when(mQueueDelegate.isDestroyed()).thenReturn(true);

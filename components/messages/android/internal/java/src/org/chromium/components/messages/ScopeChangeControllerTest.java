@@ -10,8 +10,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +36,6 @@ public class ScopeChangeControllerTest {
     private static final boolean DID_COMMIT = true;
 
     @Test
-    @SmallTest
     public void testNavigationScopeChange() {
         ScopeChangeController.Delegate delegate =
                 Mockito.mock(ScopeChangeController.Delegate.class);
@@ -140,7 +137,6 @@ public class ScopeChangeControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testScopeChange_WindowChanged() {
         ScopeChangeController.Delegate delegate =
                 Mockito.mock(ScopeChangeController.Delegate.class);
@@ -179,7 +175,6 @@ public class ScopeChangeControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testIgnoreNavigation() {
         ScopeChangeController.Delegate delegate =
                 Mockito.mock(ScopeChangeController.Delegate.class);
@@ -215,7 +210,6 @@ public class ScopeChangeControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testOriginScopeChange() {
         ScopeChangeController.Delegate delegate =
                 Mockito.mock(ScopeChangeController.Delegate.class);
@@ -330,7 +324,6 @@ public class ScopeChangeControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testRedirectedReload_DismissEnabled() {
         ScopeChangeController.Delegate delegate =
                 Mockito.mock(ScopeChangeController.Delegate.class);
@@ -363,7 +356,6 @@ public class ScopeChangeControllerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(MessageFeatureList.DISMISS_NAVIGATION_MESSAGES_ON_PRIMARY_PAGE_CHANGED)
     public void testRedirectedReload_DismissDisabled() {
         ScopeChangeController.Delegate delegate =
@@ -391,7 +383,6 @@ public class ScopeChangeControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testRedirectedReload_SameOrigin() {
         ScopeChangeController.Delegate delegate =
                 Mockito.mock(ScopeChangeController.Delegate.class);

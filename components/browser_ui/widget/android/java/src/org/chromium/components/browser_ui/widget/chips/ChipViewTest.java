@@ -30,7 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -74,7 +73,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void primaryTextView() {
         mChipView.getPrimaryTextView().setText("Primary text");
 
@@ -85,7 +83,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void secondaryTextView() {
         mChipView.getSecondaryTextView().setText("Secondary text");
 
@@ -96,7 +93,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void setMaxWidthWithPrimaryText() {
         mChipView.getPrimaryTextView().setText("Primary text");
         assertThat(mChipView.getPrimaryTextView().getEllipsize(), nullValue());
@@ -118,7 +114,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void setMaxWidthWithSecondaryText() {
         mChipView.getPrimaryTextView().setText("Primary text");
         mChipView.getSecondaryTextView().setText("SecondaryText");
@@ -149,7 +144,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void setTwoLineChip() {
         mTwoLineChipView.getPrimaryTextView().setText("Primary text");
         mTwoLineChipView.getSecondaryTextView().setText("Secondary text");
@@ -171,7 +165,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void setMaxWidthWithTwoLineChip() {
         mTwoLineChipView.getPrimaryTextView().setText("Primary text");
         mTwoLineChipView.getSecondaryTextView().setText("SecondaryText");
@@ -211,7 +204,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void loadingView() {
         // The start icon shouldn't be visible by default.
         ImageView startIcon = mChipView.findViewById(R.id.chip_view_start_icon);
@@ -240,7 +232,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void loadingViewNullObserver() {
         // Calling show/hide with null should not crash.
         mChipView.showLoadingView(null);
@@ -248,7 +239,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void loadingViewSkipDelay() {
         mChipView.setIconWithTint(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ false);
         LoadingView loadingView = mChipView.findViewById(R.id.chip_view_loading_view);
@@ -266,7 +256,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void cancelButton() {
         assertNull(mChipView.findViewById(R.id.chip_view_end_icon));
 
@@ -279,7 +268,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void cancelButtonClickListener() {
         mChipView.addRemoveIcon();
         mChipView.getPrimaryTextView().setText("Primary text");
@@ -292,7 +280,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void dropdownButton() {
         assertNull(mChipView.findViewById(R.id.chip_view_end_icon));
 
@@ -306,7 +293,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void setStartIconId() {
         ImageView startIcon = mChipView.findViewById(R.id.chip_view_start_icon);
         assertEquals(View.GONE, startIcon.getVisibility());
@@ -321,7 +307,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void setStartIconDrawable() {
         ImageView startIcon = mChipView.findViewById(R.id.chip_view_start_icon);
         assertEquals(View.GONE, startIcon.getVisibility());
@@ -340,7 +325,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void compactMode() {
         mChipView.getPrimaryTextView().setText("Primary text");
         int defaultStartPadding =
@@ -364,7 +348,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void compactWidthDelta_matchesMeasuredDelta_primaryTextOnly() {
         mChipView.setIcon(R.drawable.test_ic_arrow_downward_black_24dp, false);
         mChipView.setText("Primary text");
@@ -382,7 +365,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void compactWidthDelta_matchesMeasuredDelta_withRemoveIcon() {
         mChipView.setIcon(R.drawable.test_ic_arrow_downward_black_24dp, false);
         mChipView.setText("Primary text");
@@ -401,7 +383,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void compactWidthDelta_matchesMeasuredDelta_primaryAndSecondaryText() {
         mChipView.setIcon(R.drawable.test_ic_arrow_downward_black_24dp, false);
         mChipView.setText("Primary text");
@@ -420,7 +401,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void compactWidthDelta_matchesMeasuredDelta_twoLineWrapper_primaryLonger() {
         mTwoLineChipView.setIcon(R.drawable.test_ic_arrow_downward_black_24dp, false);
         mTwoLineChipView.getPrimaryTextView().setText("A very long primary text label");
@@ -439,7 +419,6 @@ public final class ChipViewTest {
     }
 
     @Test
-    @SmallTest
     public void compactWidthDelta_matchesMeasuredDelta_twoLineWrapper_secondaryLonger() {
         mTwoLineChipView.setIcon(R.drawable.test_ic_arrow_downward_black_24dp, false);
         mTwoLineChipView.getPrimaryTextView().setText("Short");

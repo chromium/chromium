@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +21,6 @@ public class WebsiteTest {
     private static final String HTTPS_ORIGIN = "https://" + VALID_HOST;
 
     @Test
-    @SmallTest
     public void testCreateContentSettingException_httpsOrigin() {
         WebsiteAddress address = WebsiteAddress.create(HTTPS_ORIGIN);
         Website website = new Website(address, null);
@@ -44,7 +41,6 @@ public class WebsiteTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateContentSettingException_extensionOrigin() {
         WebsiteAddress address = WebsiteAddress.create(CHROME_EXTENSION_ORIGIN);
         Website website = new Website(address, null);

@@ -6,8 +6,6 @@ package org.chromium.components.enterprise.device_attestation;
 
 import android.text.TextUtils;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +17,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AttestationBlobGeneratorTest {
     @Test
-    @SmallTest
     public void testGenerate_Generated() {
         String testString = "test";
 

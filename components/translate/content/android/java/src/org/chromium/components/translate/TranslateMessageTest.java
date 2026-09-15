@@ -13,8 +13,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -73,7 +71,6 @@ public final class TranslateMessageTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateWithNullWindowAndroid() {
         doReturn(null).when(mWebContents).getTopLevelNativeWindow();
         Assert.assertNull(
@@ -82,7 +79,6 @@ public final class TranslateMessageTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateWithNullActivityWeakReference() {
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         doReturn(null).when(windowAndroid).getActivity();
@@ -93,7 +89,6 @@ public final class TranslateMessageTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateWithNullActivity() {
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         doReturn(new WeakReference<Activity>(null)).when(windowAndroid).getActivity();
@@ -104,7 +99,6 @@ public final class TranslateMessageTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateWithNullMessageDispatcher() {
         Activity activity = Mockito.mock(Activity.class);
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
@@ -119,7 +113,6 @@ public final class TranslateMessageTest {
     }
 
     @Test
-    @SmallTest
     public void testFullTranslateFlowThenDismissViaGesture() {
         TranslateMessage translateMessage =
                 new TranslateMessage(
@@ -213,7 +206,6 @@ public final class TranslateMessageTest {
     }
 
     @Test
-    @SmallTest
     public void testShowMessageWithoutOverflowMenu() {
         TranslateMessage translateMessage =
                 new TranslateMessage(
@@ -256,7 +248,6 @@ public final class TranslateMessageTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissFromNative() {
         TranslateMessage translateMessage =
                 new TranslateMessage(
@@ -300,7 +291,6 @@ public final class TranslateMessageTest {
     }
 
     @Test
-    @SmallTest
     public void testClearNativePointer() {
         TranslateMessage translateMessage =
                 new TranslateMessage(
@@ -336,7 +326,6 @@ public final class TranslateMessageTest {
     }
 
     @Test
-    @SmallTest
     public void testConstructMenuItemArray() {
         final String[] titles = new String[] {"foo", "bar", "", "English", "French"};
         final String[] subtitles = new String[] {"", "", "", "", "Français"};

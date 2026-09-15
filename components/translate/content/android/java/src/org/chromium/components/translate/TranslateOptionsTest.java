@@ -4,8 +4,6 @@
 
 package org.chromium.components.translate;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +23,6 @@ public class TranslateOptionsTest {
     private static final String[] CONTENT_LANGUAGES_CODES = {"es", "fr"};
 
     @Test
-    @SmallTest
     @Feature({"Translate"})
     public void testNoChanges() {
         TranslateOptions options =
@@ -50,7 +47,6 @@ public class TranslateOptionsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Translate"})
     public void testBasicLanguageChanges() {
         TranslateOptions options =
@@ -90,7 +86,6 @@ public class TranslateOptionsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Translate"})
     public void testInvalidLanguageChanges() {
         TranslateOptions options =
@@ -115,7 +110,6 @@ public class TranslateOptionsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Translate"})
     public void testBasicOptionsChanges() {
         TranslateOptions options =
@@ -162,7 +156,6 @@ public class TranslateOptionsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Translate"})
     public void testContentLanguagesAreFilledAsExpected() {
         TranslateOptions options =
@@ -193,7 +186,6 @@ public class TranslateOptionsTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Translate"})
     public void testupdateContentLanguages() {
         TranslateOptions options =

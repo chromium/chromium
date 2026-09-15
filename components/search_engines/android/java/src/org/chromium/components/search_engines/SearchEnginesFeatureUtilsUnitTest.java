@@ -7,8 +7,6 @@ package org.chromium.components.search_engines;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-@SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchEnginesFeatureUtilsUnitTest {
 

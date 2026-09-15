@@ -8,8 +8,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import android.os.Parcel;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -23,7 +21,6 @@ public class Fido2ApiRobolectricTest {
     private static final byte[] sCredentialId = new byte[] {1, 2, 3, 4};
 
     @Test
-    @SmallTest
     public void testParseCredentialList_fromCacheIsDiscoverableTrue() {
         Parcel p = Parcel.obtain();
         p.writeInt(1); // One credential in list.
@@ -40,7 +37,6 @@ public class Fido2ApiRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testParseCredentialList_notFromCacheIsDiscoverableTrue() {
         Parcel p = Parcel.obtain();
         p.writeInt(1); // One credential in list.
@@ -57,7 +53,6 @@ public class Fido2ApiRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testParseCredentialList_notFromCacheIsDiscoverableFalse() {
         Parcel p = Parcel.obtain();
         p.writeInt(1); // One credential in list.

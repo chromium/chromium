@@ -8,8 +8,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,7 +25,6 @@ import java.util.List;
 
 /** Tests for the native bridge of the facilitated payment API client. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SmallTest
 public class FacilitatedPaymentsApiClientBridgeUnitTest {
     private static final long NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID = 0x12345678;
     private static final byte[] ACTION_TOKEN = new byte[] {'A', 'c', 't', 'i', 'o', 'n'};

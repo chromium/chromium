@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +28,6 @@ public class ImageFetcherFactoryTest {
     @Mock SimpleFactoryKeyHandle mSimpleFactoryKeyHandle;
 
     @Test
-    @SmallTest
     public void testGetImageFetcher() {
         assertEquals(
                 ImageFetcherConfig.NETWORK_ONLY,
@@ -67,7 +64,6 @@ public class ImageFetcherFactoryTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateImageFetcher() {
         int config = ImageFetcherConfig.NETWORK_ONLY;
 

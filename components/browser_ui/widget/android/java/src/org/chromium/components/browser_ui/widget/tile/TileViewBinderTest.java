@@ -16,8 +16,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +75,6 @@ public class TileViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testTitleTextPropertySet() {
         mModel.set(TileViewProperties.TITLE, "Testing Title");
         Assert.assertEquals("Testing Title", mTitleView.getText());
@@ -87,7 +84,6 @@ public class TileViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testTitleLinesPropertySet() {
         mModel.set(TileViewProperties.TITLE_LINES, 1);
         Assert.assertEquals(1, mTitleView.getMaxLines());
@@ -104,7 +100,6 @@ public class TileViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testIconDrawablePropertySet() {
         Drawable drawable1 = mock(Drawable.class);
         Drawable drawable2 = mock(Drawable.class);
@@ -119,7 +114,6 @@ public class TileViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testOfflineBadgeVisiblePropertySet() {
         mModel.set(TileViewProperties.OFFLINE_BADGE_VISIBLE, true);
         Assert.assertEquals(View.VISIBLE, mOfflineBadgeView.getVisibility());
@@ -129,7 +123,6 @@ public class TileViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testPinnedShortcutBadgeVisiblePropertySet() {
         // By default, the badge is not visible and the title text is horizontally centered.
         Assert.assertEquals(View.GONE, mPinnedShortcutBadgeView.getVisibility());
@@ -147,7 +140,6 @@ public class TileViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testShowLargeIconPropertySet() {
         final int smallIconRoundingRadius = 13;
 
@@ -177,7 +169,6 @@ public class TileViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testSmallIconRoundingRadiusPropertySet() {
         // Initial value should be 0, matching properties.
         Assert.assertEquals(0, mTileView.getRoundingRadiusForTesting());

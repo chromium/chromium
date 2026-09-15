@@ -12,8 +12,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +41,6 @@ public class WebauthnRequestCallbackRobolectricTest {
     @Mock private Runnable mCompletionCallback;
 
     @Test
-    @SmallTest
     public void testMakeCredential_success() {
         WebauthnRequestCallback callback =
                 WebauthnRequestCallback.forMakeCredential(
@@ -72,7 +69,6 @@ public class WebauthnRequestCallbackRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testMakeCredential_failure() {
         WebauthnRequestCallback callback =
                 WebauthnRequestCallback.forMakeCredential(
@@ -101,7 +97,6 @@ public class WebauthnRequestCallbackRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_success() {
         WebauthnRequestCallback callback =
                 WebauthnRequestCallback.forGetCredential(
@@ -128,7 +123,6 @@ public class WebauthnRequestCallbackRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCredential_failure() {
         WebauthnRequestCallback callback =
                 WebauthnRequestCallback.forGetCredential(
@@ -157,7 +151,6 @@ public class WebauthnRequestCallbackRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testReport() {
         WebauthnRequestCallback callback = WebauthnRequestCallback.forReport(mReportCallback);
         callback.setCompletionCallback(mCompletionCallback);
@@ -172,7 +165,6 @@ public class WebauthnRequestCallbackRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testOnComplete_multipleCallsIgnored() {
         WebauthnRequestCallback callback =
                 WebauthnRequestCallback.forMakeCredential(
@@ -198,7 +190,6 @@ public class WebauthnRequestCallbackRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testOnComplete_mismatchedResponseIsIgnored() {
         WebauthnRequestCallback callback =
                 WebauthnRequestCallback.forMakeCredential(

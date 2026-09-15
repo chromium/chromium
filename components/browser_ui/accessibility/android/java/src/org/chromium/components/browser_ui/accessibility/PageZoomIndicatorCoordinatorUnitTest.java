@@ -18,7 +18,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,7 +41,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link PageZoomIndicatorCoordinator}. */
-@SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp")
 public class PageZoomIndicatorCoordinatorUnitTest {

@@ -8,8 +8,6 @@ import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,7 +49,6 @@ public class PromoCardCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateView_Large() {
         setupCoordinator(LayoutStyle.LARGE);
 
@@ -63,7 +60,6 @@ public class PromoCardCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateView_Compact() {
         setupCoordinator(LayoutStyle.COMPACT);
 
@@ -75,7 +71,6 @@ public class PromoCardCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateView_Slim() {
         setupCoordinator(LayoutStyle.SLIM);
 
@@ -88,7 +83,6 @@ public class PromoCardCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTextImageBinding() {
         setupCoordinator(LayoutStyle.LARGE);
         final Drawable testImage = Mockito.mock(Drawable.class);
@@ -127,7 +121,6 @@ public class PromoCardCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testChangeVisibility() {
         setupCoordinator(LayoutStyle.LARGE);
         Assert.assertEquals(View.VISIBLE, mView.mSecondaryButton.getVisibility());
@@ -141,7 +134,6 @@ public class PromoCardCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testActionBinding() throws Exception {
         setupCoordinator(LayoutStyle.LARGE);
         final CallbackHelper primaryClickCallback = new CallbackHelper();

@@ -4,8 +4,6 @@
 
 package org.chromium.components.minidump_uploader;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -75,7 +73,6 @@ public class MinidumpUploaderTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCrashUrlMatchesBranding() {
         String expectedUrl =
@@ -87,7 +84,6 @@ public class MinidumpUploaderTest {
 
     // This is a regression test for http://crbug.com/712420
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCallWithInvalidMinidumpBoundary() throws Exception {
         // Include an invalid character, '[', in the test string.
@@ -104,7 +100,6 @@ public class MinidumpUploaderTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCallWithValidMinidumpBoundary() throws Exception {
         // Include all valid characters in the test string.
@@ -123,7 +118,6 @@ public class MinidumpUploaderTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testReceivingErrorCodes() {
         final int[] errorCodes = {400, 401, 403, 404, 500};

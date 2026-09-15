@@ -4,8 +4,6 @@
 
 package org.chromium.components.facilitated_payments;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,7 +17,6 @@ import java.util.Collections;
 
 /** Tests for the facilitated payment API client. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SmallTest
 public class FacilitatedPaymentsApiClientUnitTest {
     private static final byte[] TEST_CLIENT_TOKEN = new byte[] {'C', 'l', 'i', 'e', 'n', 't'};
 

@@ -4,8 +4,6 @@
 
 package org.chromium.components.crash;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -109,7 +107,6 @@ public class PureJavaExceptionReporterTest {
     }
 
     @Test
-    @SmallTest
     public void verifyMinidumpContentAndUpload() {
         Throwable exception = new RuntimeException(EXCEPTION_NAME);
         TestPureJavaExceptionReporter reporter = new TestPureJavaExceptionReporter();
@@ -130,7 +127,6 @@ public class PureJavaExceptionReporterTest {
     }
 
     @Test
-    @SmallTest
     public void verifyCrashKeys() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

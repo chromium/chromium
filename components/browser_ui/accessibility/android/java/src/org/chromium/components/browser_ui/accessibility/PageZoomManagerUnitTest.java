@@ -13,8 +13,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.doubleThat;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,7 +37,6 @@ import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link PageZoomManager}. */
-@SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
 public class PageZoomManagerUnitTest {

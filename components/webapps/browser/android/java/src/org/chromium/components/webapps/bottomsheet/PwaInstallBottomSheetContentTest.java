@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.view.View;
 
 import androidx.core.widget.NestedScrollView;
-import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,7 +35,6 @@ public final class PwaInstallBottomSheetContentTest {
     }
 
     @Test
-    @MediumTest
     public void testBasicsWithMockedView() {
         PwaInstallBottomSheetView mockedView = Mockito.mock(PwaInstallBottomSheetView.class);
         Mockito.when(mockedView.getVerticalScrollOffset()).thenReturn(42);
@@ -58,7 +56,6 @@ public final class PwaInstallBottomSheetContentTest {
     }
 
     @Test
-    @MediumTest
     public void testVerticalScrollOffsetWithRealView() {
         PwaBottomSheetController.ScreenshotsAdapter adapter =
                 new PwaBottomSheetController.ScreenshotsAdapter(

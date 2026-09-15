@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.webshare;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +31,6 @@ import java.util.ArrayList;
 public class ShareServiceImplTest {
     // Verifies all the file names that are not allowed to be shared on Android.
     @Test
-    @SmallTest
     public void testExtensionFormattingDisallowed() {
         Assert.assertTrue(ShareServiceImpl.isDangerousFilename("foo/bar.txt"));
         Assert.assertTrue(ShareServiceImpl.isDangerousFilename("foo\\bar\u03C0.txt"));
@@ -56,7 +53,6 @@ public class ShareServiceImplTest {
 
     // Verifies all the file names that are allowed to be shared on Android.
     @Test
-    @SmallTest
     public void testExtensionFormattingAllowed() {
         Assert.assertFalse(ShareServiceImpl.isDangerousFilename(".hello.txt"));
         Assert.assertFalse(ShareServiceImpl.isDangerousFilename("bar.txt"));
@@ -64,7 +60,6 @@ public class ShareServiceImplTest {
     }
 
     @Test
-    @SmallTest
     public void testExecutable() {
         Assert.assertTrue(ShareServiceImpl.isDangerousFilename("application.apk"));
         Assert.assertTrue(ShareServiceImpl.isDangerousFilename("application.dex"));
@@ -72,7 +67,6 @@ public class ShareServiceImplTest {
     }
 
     @Test
-    @SmallTest
     public void testContent() {
         Assert.assertFalse(ShareServiceImpl.isDangerousFilename("diagram.svg"));
         Assert.assertFalse(ShareServiceImpl.isDangerousFilename("greeting.txt"));
@@ -83,13 +77,11 @@ public class ShareServiceImplTest {
     }
 
     @Test
-    @SmallTest
     public void testCompound() {
         Assert.assertFalse(ShareServiceImpl.isDangerousFilename("powerless.sh.txt"));
     }
 
     @Test
-    @SmallTest
     public void testUnsupportedMime() {
         Assert.assertTrue(ShareServiceImpl.isDangerousMimeType("application/x-shockwave-flash"));
         Assert.assertTrue(ShareServiceImpl.isDangerousMimeType("image/wmf"));
@@ -98,7 +90,6 @@ public class ShareServiceImplTest {
     }
 
     @Test
-    @SmallTest
     public void testSupportedMime() {
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("application/pdf"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("audio/mp3"));
@@ -113,7 +104,6 @@ public class ShareServiceImplTest {
     }
 
     @Test
-    @SmallTest
     public void testInvalidScheme() {
         // Using 1-element arrays to allow anonymous inner classes (WebShareDelegate and
         // Share_Response) to modify local state, as captured variables must be effectively final.
@@ -162,7 +152,6 @@ public class ShareServiceImplTest {
     }
 
     @Test
-    @SmallTest
     public void testEmptyUrlAllowedIfTextSet() {
         int[] badMessageReason = new int[1];
         int[] shareError = new int[1];
@@ -221,7 +210,6 @@ public class ShareServiceImplTest {
 
     // Verifies that ShareServiceImpl preserves file names when creating temporary shared files.
     @Test
-    @SmallTest
     public void testPreservesFileNames() {
         String filename = "intro.webm";
         SafeBaseName name = new SafeBaseName();
@@ -267,7 +255,6 @@ public class ShareServiceImplTest {
     }
 
     @Test
-    @SmallTest
     public void testShareWhenWebContentsDestroyed() {
         int[] shareError = new int[1];
 

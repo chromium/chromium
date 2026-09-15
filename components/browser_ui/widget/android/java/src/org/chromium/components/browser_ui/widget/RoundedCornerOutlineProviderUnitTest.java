@@ -10,8 +10,6 @@ import android.graphics.Outline;
 import android.graphics.Rect;
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +50,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyCanClipWithRounding() {
         mProvider.getOutline(mView, mOutline);
         mOutline.getRect(mRect);
@@ -62,7 +59,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyCanClipWithNoRounding() {
         mProvider = new RoundedCornerOutlineProvider();
         mProvider.getOutline(mView, mOutline);
@@ -73,7 +69,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyRespectsRoundingUpdates() {
         mProvider.setRadius(RADIUS * 3);
         mProvider.getOutline(mView, mOutline);
@@ -88,7 +83,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyRespectsPaddings() {
         mView.setPaddingRelative(15, 10, 25, 20);
         mProvider.getOutline(mView, mOutline);
@@ -110,7 +104,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyRespectsPaddingsInRTLMode() {
         mView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         Assert.assertEquals(
@@ -137,7 +130,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyViewOriginDoesNotImpactOutline() {
         mView.layout(10, 15, 10 + VIEW_WIDTH, 15 + VIEW_HEIGHT);
         mView.setPaddingRelative(15, 10, 25, 20);
@@ -159,7 +151,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyLeftEdgeExclusion() {
         mView.layout(10, 15, 10 + VIEW_WIDTH, 15 + VIEW_HEIGHT);
         mView.setPaddingRelative(15, 10, 25, 20);
@@ -186,7 +177,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyTopEdgeExclusion() {
         mView.layout(10, 15, 10 + VIEW_WIDTH, 15 + VIEW_HEIGHT);
         mView.setPaddingRelative(15, 10, 25, 20);
@@ -213,7 +203,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyRightEdgeExclusion() {
         mView.layout(10, 15, 10 + VIEW_WIDTH, 15 + VIEW_HEIGHT);
         mView.setPaddingRelative(15, 10, 25, 20);
@@ -240,7 +229,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyBottomEdgeExclusion() {
         mView.layout(10, 15, 10 + VIEW_WIDTH, 15 + VIEW_HEIGHT);
         mView.setPaddingRelative(15, 10, 25, 20);
@@ -267,7 +255,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyRightBottomEdgeExclusion() {
         mView.layout(10, 15, 10 + VIEW_WIDTH, 15 + VIEW_HEIGHT);
         mView.setPaddingRelative(15, 10, 25, 20);
@@ -297,7 +284,6 @@ public class RoundedCornerOutlineProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void verifyTopBottomEdgeExclusion() {
         mView.layout(10, 15, 10 + VIEW_WIDTH, 15 + VIEW_HEIGHT);
         mView.setPaddingRelative(15, 10, 25, 20);

@@ -8,8 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,7 +24,6 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.HostZoomMap;
 
 /** Unit tests for {@link PageZoomUtils}. */
-@SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 public class PageZoomUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

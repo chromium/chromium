@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.provider.MediaStore;
 
 import androidx.annotation.IntDef;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -195,7 +194,6 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
      * calls the {@link ContentResolver} back with the right parameters.
      */
     @Test
-    @SmallTest
     public void testCursorCreation() throws Exception {
         ContentResolver contentResolver = Mockito.mock(ContentResolver.class);
         List<String> mimeTypes = Collections.singletonList("");
@@ -251,7 +249,6 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
     }
 
     @Test
-    @SmallTest
     public void testNoMimeTypes() throws Exception {
         List<String> mimeTypes = Collections.singletonList("");
         TestFileEnumWorkerTask task =
@@ -283,7 +280,6 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
     }
 
     @Test
-    @SmallTest
     public void testNoCameraTile() throws Exception {
         List<String> mimeTypes = Collections.singletonList("");
         TestFileEnumWorkerTask task =
@@ -311,7 +307,6 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
     }
 
     @Test
-    @SmallTest
     public void testNoBrowseTile() throws Exception {
         List<String> mimeTypes = Collections.singletonList("");
         TestFileEnumWorkerTask task =
@@ -339,7 +334,6 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
     }
 
     @Test
-    @SmallTest
     public void testImagesOnly() throws Exception {
         List<String> mimeTypes = Collections.singletonList("image/*");
         TestFileEnumWorkerTask task =
@@ -381,7 +375,6 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
     }
 
     @Test
-    @SmallTest
     public void testVideoOnly() throws Exception {
         // Try with just video files (plus camera and gallery tiles).
         List<String> mimeTypes = Collections.singletonList("video/*");
@@ -424,7 +417,6 @@ public class FileEnumWorkerTaskTest implements FileEnumWorkerTask.FilesEnumerate
     }
 
     @Test
-    @SmallTest
     public void testImagesAndVideos() throws Exception {
         List<String> mimeTypes = Arrays.asList("image/*", "video/*");
         TestFileEnumWorkerTask task =

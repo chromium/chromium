@@ -9,8 +9,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,7 +23,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link MessageDispatcherImpl}. */
-@SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({
     MessageFeatureList.MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK,

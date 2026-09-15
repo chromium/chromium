@@ -8,8 +8,6 @@ import static org.mockito.Mockito.never;
 
 import android.graphics.Bitmap;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,7 +35,6 @@ public class MessageWrapperTest {
 
     /** Tests that message properties are correctly propagated to PropertyModel. */
     @Test
-    @SmallTest
     public void testMessageProperties() {
         MessageWrapper message = MessageWrapper.create(1, MessageIdentifier.TEST_MESSAGE);
         PropertyModel messageProperties = message.getMessageProperties();
@@ -107,7 +104,6 @@ public class MessageWrapperTest {
 
     /** Tests that native functions are called in response to callbacks invocation. */
     @Test
-    @SmallTest
     public void testCallbacks() {
         final long nativePtr = 1;
         MessageWrapper message = MessageWrapper.create(nativePtr, MessageIdentifier.TEST_MESSAGE);
@@ -124,7 +120,6 @@ public class MessageWrapperTest {
 
     /** Tests that native callbacks are not delivered if the MessageWrapper was destroyed. */
     @Test
-    @SmallTest
     public void testDestroyedMessageWrapperCallbacks() {
         final long nativePtr = 1;
         MessageWrapper message = MessageWrapper.create(nativePtr, MessageIdentifier.TEST_MESSAGE);
@@ -142,9 +137,10 @@ public class MessageWrapperTest {
                 .handleDismissCallback(Mockito.anyLong(), Mockito.anyInt());
     }
 
-    /** Tests the secondary menu functionality including addition, selection and clearance of items. */
+    /**
+     * Tests the secondary menu functionality including addition, selection and clearance of items.
+     */
     @Test
-    @SmallTest
     public void testSecondaryMenuUpdates() {
         final long nativePtr = 1;
         MessageWrapper message = MessageWrapper.create(1, MessageIdentifier.TEST_MESSAGE);

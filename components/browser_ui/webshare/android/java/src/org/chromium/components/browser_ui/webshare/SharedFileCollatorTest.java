@@ -4,8 +4,6 @@
 
 package org.chromium.components.browser_ui.webshare;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +16,6 @@ import org.chromium.webshare.mojom.SharedFile;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SharedFileCollatorTest {
     @Test
-    @SmallTest
     public void testDissimilar() {
         Assert.assertEquals("*/*", SharedFileCollator.commonMimeType(new SharedFile[0]));
         Assert.assertEquals(
@@ -30,7 +27,6 @@ public class SharedFileCollatorTest {
     }
 
     @Test
-    @SmallTest
     public void testMalformed() {
         Assert.assertEquals("*/*", SharedFileCollator.commonMimeType(createFiles("invalid")));
         Assert.assertEquals(
@@ -41,7 +37,6 @@ public class SharedFileCollatorTest {
     }
 
     @Test
-    @SmallTest
     public void testApplication() {
         Assert.assertEquals(
                 "application/*",
@@ -50,7 +45,6 @@ public class SharedFileCollatorTest {
     }
 
     @Test
-    @SmallTest
     public void testAudio() {
         Assert.assertEquals(
                 "audio/*",
@@ -58,7 +52,6 @@ public class SharedFileCollatorTest {
     }
 
     @Test
-    @SmallTest
     public void testImage() {
         Assert.assertEquals(
                 "image/jpeg", SharedFileCollator.commonMimeType(createFiles("image/jpeg")));
@@ -76,7 +69,6 @@ public class SharedFileCollatorTest {
     }
 
     @Test
-    @SmallTest
     public void testText() {
         Assert.assertEquals("text/css", SharedFileCollator.commonMimeType(createFiles("text/css")));
         Assert.assertEquals(
@@ -88,7 +80,6 @@ public class SharedFileCollatorTest {
     }
 
     @Test
-    @SmallTest
     public void testVideo() {
         Assert.assertEquals(
                 "video/webm", SharedFileCollator.commonMimeType(createFiles("video/webm")));

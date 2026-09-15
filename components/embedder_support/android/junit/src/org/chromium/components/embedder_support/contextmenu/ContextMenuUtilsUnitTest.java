@@ -20,8 +20,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.URLUtil;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -78,7 +76,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetHeaderInfo_noCustomItemPresent() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -119,7 +116,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetHeaderInfo_customItemPresent_notImage() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -165,7 +161,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetHeaderInfo_customItemPresent_isImageLink() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -206,7 +201,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetHeaderInfo_customItemPresent_isImageNotAnchor() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -247,7 +241,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void getAltText_hasAltTextText() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -275,7 +268,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void getAltText_noAltTextTextHasLinkText() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -303,7 +295,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void getAltText_noAltTextTextOrLinkText() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -332,7 +323,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void getAltText_noShareParams() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -402,7 +392,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Config(qualifiers = "sw320dp")
     @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void isDragDropEnabled_featureDisabledPopupNotSupported() {
@@ -412,7 +401,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Config(qualifiers = "sw320dp")
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void isDragDropEnabled_featureEnabledPopupNotSupported() {
@@ -422,7 +410,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Config(qualifiers = "sw600dp")
     @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void isDragDropEnabled_featureDisabledPopupSupported() {
@@ -432,7 +419,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     @Config(qualifiers = "sw600dp")
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void isDragDropEnabled_featureEnabledPopupSupported() {
@@ -442,7 +428,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void isMouseOrHighlightPopup_mouse() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -472,7 +457,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void isMouseOrHighlightPopup_highlight() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -502,7 +486,6 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void isMouseOrHighlightPopup_neither() {
         ContextMenuParams params =
                 new ContextMenuParams(
@@ -532,13 +515,11 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetTouchPointCoordinates_popupWindow() {
         doTestGetTouchPointCoordinates(true);
     }
 
     @Test
-    @SmallTest
     public void testGetTouchPointCoordinates_dialog() {
         doTestGetTouchPointCoordinates(false);
     }
@@ -627,13 +608,11 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testComputeDragShadowRect_dragStarted() {
         doTestComputeDragShadowRect(true);
     }
 
     @Test
-    @SmallTest
     public void testComputeDragShadowRect_dragNotStarted() {
         doTestComputeDragShadowRect(false);
     }
@@ -662,14 +641,12 @@ public class ContextMenuUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void testGetContextMenuAnchorRect_dragDropEnabled() {
         doTestGetContextMenuAnchorRect(true);
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
     public void testGetContextMenuAnchorRect_dragDropNotEnabled() {
         doTestGetContextMenuAnchorRect(false);
