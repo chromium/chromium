@@ -79,8 +79,9 @@ void LiveTranslateController::GetTranslation(const std::string& result,
   base::UmaHistogramSparse(
       "Accessibility.LiveTranslate.GetTranslation.SourceLanguage",
       base::HashMetricName(
-          speech::GetBCP47LanguageCodeFromSodaLanguage(source_language)
-              .value_or(source_language)));
+          speech::GetLanguageTagFromSodaLanguage(source_language)
+              .value_or(base::i18n::GetKnownLanguageTag("und"))
+              .tag_string()));
   base::UmaHistogramSparse(
       "Accessibility.LiveTranslate.GetTranslation.TargetLanguage",
       base::HashMetricName(target_language));

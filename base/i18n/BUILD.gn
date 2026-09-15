@@ -31,6 +31,8 @@ component("language_tag_no_icu") {
 component("language_tag") {
   output_name = "language_tag"
   sources = [
+    "chinese_helpers.cc",
+    "chinese_helpers.h",
     "language_tag_matcher.cc",
     "language_tag_matcher.h",
     "legacy_language_tag_helpers.h",
@@ -100,6 +102,7 @@ source_set("unittests") {
   testonly = true
   sources = [
     "bcp47_extensions_unittest.cc",
+    "chinese_helpers_unittest.cc",
     "language_tag_matcher_unittest.cc",
     "language_tag_unittest.cc",
     "locale_holder_unittest.cc",

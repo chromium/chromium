@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/i18n/chinese_helpers.h"
 #include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
@@ -28,6 +29,11 @@
 
 namespace speech {
 namespace {
+
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::GetLanguageTagFromString;
+using ::base::i18n::LanguageTag;
+
 constexpr auto kChineseLocaleMap =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
         {{"cmn-hans-cn", "cmn-Hans-CN"},
@@ -36,21 +42,6 @@ constexpr auto kChineseLocaleMap =
          {"zh-hans-cn", "cmn-Hans-CN"},
          {"zh-hant-tw", "cmn-Hant-TW"},
          {"zh-tw", "cmn-Hant-TW"}});
-
-constexpr auto kSodaLanguageToBcp47Map =
-    base::MakeFixedFlatMap<std::string_view, std::string_view>({
-        {"cmn-hans-cn", "zh"}, {"cmn-hant-tw", "zh-Hant"}, {"da-dk", "da-DK"},
-        {"de-be", "de-BE"},    {"de-ch", "de-CH"},         {"de-de", "de-DE"},
-        {"en-au", "en-AU"},    {"en-gb", "en-GB"},         {"en-ie", "en-IE"},
-        {"en-in", "en-IN"},    {"en-sg", "en-SG"},         {"en-us", "en-US"},
-        {"es-es", "es-ES"},    {"es-us", "es-US"},         {"fr-be", "fr-BE"},
-        {"fr-ca", "fr-CA"},    {"fr-ch", "fr-CH"},         {"fr-fr", "fr-FR"},
-        {"hi-in", "hi-IN"},    {"id-id", "id-ID"},         {"it-it", "it-IT"},
-        {"ja-jp", "ja-JP"},    {"ko-kr", "ko-KR"},         {"nb-no", "nb-NO"},
-        {"nl-nl", "nl-NL"},    {"pl-pl", "pl-PL"},         {"pt-br", "pt-BR"},
-        {"ru-ru", "ru-RU"},    {"sv-se", "sv-SE"},         {"th-th", "th-TH"},
-        {"tr-tr", "tr-TR"},    {"vi-vn", "vi-VN"},
-    });
 
 }  // namespace
 
@@ -66,13 +57,19 @@ const std::string MaybeMapToChineseLocale(std::string_view language_name) {
   return std::string(language_name);
 }
 
-std::optional<std::string> GetBCP47LanguageCodeFromSodaLanguage(
+std::optional<LanguageTag> GetLanguageTagFromSodaLanguage(
     std::string_view soda_language) {
-  auto it = kSodaLanguageToBcp47Map.find(base::ToLowerASCII(soda_language));
-  if (it != kSodaLanguageToBcp47Map.end()) {
-    return std::string(it->second);
+  std::optional<LanguageTag> soda_language_tag =
+      GetLanguageTagFromString(soda_language);
+  if (!soda_language_tag) {
+    return std::nullopt;
   }
-  return std::nullopt;
+  if (!base::i18n::IsChinese(*soda_language_tag)) {
+    return *soda_language_tag;
+  }
+  return base::i18n::IsTraditionalChinese(*soda_language_tag)
+             ? GetKnownLanguageTag("zh-Hant")
+             : GetKnownLanguageTag("zh");
 }
 
 const char kUsEnglishLocale[] = "en-US";

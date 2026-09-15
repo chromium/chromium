@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/i18n/language_tag.h"
 #include "components/soda/pref_names.h"
 #include "components/strings/grit/components_strings.h"
 
@@ -364,9 +365,9 @@ std::string_view GetDefaultLiveCaptionLanguage(
 // Otherwise, return `language_name`.
 const std::string MaybeMapToChineseLocale(std::string_view language_name);
 
-// Return a BCP47 language code for the given SODA language code. If the given
+// Return a BCP47 language tag for the given SODA language code. If the given
 // input is not a string corresponding a SODA language, then return nullopt.
-std::optional<std::string> GetBCP47LanguageCodeFromSodaLanguage(
+std::optional<base::i18n::LanguageTag> GetLanguageTagFromSodaLanguage(
     std::string_view soda_language);
 
 }  // namespace speech
