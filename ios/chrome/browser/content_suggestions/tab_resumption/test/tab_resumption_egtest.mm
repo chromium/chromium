@@ -158,7 +158,6 @@ NSString* HostnameFromGURL(GURL URL) {
                                      createFakeTabsForServerURL:self.testServer
                                                                     ->base_url()
                                                    numberOfTabs:4]];
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tile is displayed when there is a distant tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(true);
@@ -239,7 +238,6 @@ NSString* HostnameFromGURL(GURL URL) {
                                      createFakeTabsForServerURL:self.testServer
                                                                     ->base_url()
                                                    numberOfTabs:4]];
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tile is displayed when there is a distant tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(true);
@@ -268,7 +266,6 @@ NSString* HostnameFromGURL(GURL URL) {
                                      createFakeTabsForServerURL:self.testServer
                                                                     ->base_url()
                                                    numberOfTabs:4]];
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tile is displayed when there is a distant tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(true);

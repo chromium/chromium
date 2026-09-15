@@ -51,9 +51,6 @@ void ClearFakeSyncServerData();
 // its usual on-destruction flush.
 void FlushFakeSyncServerToDisk();
 
-// Triggers a sync cycle for a `type`.
-void TriggerSyncCycle(syncer::DataType type);
-
 // Gets the number of entities of the given `type`.
 int GetNumberOfSyncEntities(syncer::DataType type);
 

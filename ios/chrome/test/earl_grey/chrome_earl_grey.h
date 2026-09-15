@@ -399,9 +399,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
                                     textFragment:(NSString*)textFragment
                                        entryGUID:(NSString*)guid;
 
-// Triggers a sync cycle for a `type`.
-- (void)triggerSyncCycleForType:(syncer::DataType)type;
-
 // Deletes an autofill profile from the fake sync server with `GUID`, if it
 // exists. If it doesn't exist, nothing is done.
 - (void)deleteAutofillProfileFromFakeSyncServerWithGUID:

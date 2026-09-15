@@ -274,7 +274,6 @@ void TestShareKitService::DeleteGroup(ShareKitDeleteConfiguration* config) {
       dispatch_time(DISPATCH_TIME_NOW, kDeleteGroupDelay.InNanoseconds()),
       dispatch_get_main_queue(), ^{
         chrome_test_util::DeleteSharedGroupFromFakeServer(group_guid);
-        chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
       });
 }
 
@@ -328,7 +327,6 @@ void TestShareKitService::PrepareToShareGroup(
       tab_group_sync_service_->GetGroup(tab_group_id);
   if (saved_group && !saved_group->is_shared_tab_group()) {
     chrome_test_util::AddCollaborationGroupToFakeServer(collaboration_id);
-    chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);
   }
 }
 
@@ -404,7 +402,6 @@ void TestShareKitService::CreateSharedTabGroupInFakeServer(bool owner,
   chrome_test_util::AddTabToFakeServer(tab);
   chrome_test_util::AddGroupToFakeServer(
       CreateGroup(u"shared group", tabs, group_guid));
-  chrome_test_util::TriggerSyncCycle(syncer::SAVED_TAB_GROUP);
 
   // Add `group_guid` to keep the track of which group is being shared.
   processing_group_guids_.insert(group_guid);

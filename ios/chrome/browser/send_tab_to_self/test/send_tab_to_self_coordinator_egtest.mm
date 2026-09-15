@@ -413,7 +413,6 @@ void DismissSendTabToSelfModal() {
                                                  title:@"Scroll Page"
                                           textFragment:textFragment];
 
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
   [ChromeEarlGrey waitForSendTabToSelfEntryWithGUID:guid];
 
   // Open the new tab marking it as from Send Tab To Self.
@@ -461,7 +460,6 @@ void DismissSendTabToSelfModal() {
                                                  title:@"Scroll Page"
                                           textFragment:textFragment];
 
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
   [ChromeEarlGrey waitForSendTabToSelfEntryWithGUID:guid];
 
   // Open the new tab in the background.
@@ -511,7 +509,6 @@ void DismissSendTabToSelfModal() {
                                                  title:@"Scroll Page"
                                           textFragment:textFragment];
 
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
   [ChromeEarlGrey waitForSendTabToSelfEntryWithGUID:guid];
 
   // Open the new tab marking it as from Send Tab To Self.
@@ -566,7 +563,6 @@ void DismissSendTabToSelfModal() {
                                                  title:@"Scroll Page"
                                           textFragment:textFragment];
 
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
   [ChromeEarlGrey waitForSendTabToSelfEntryWithGUID:guid];
 
   // Open the new tab marking it as from Send Tab To Self.
@@ -612,10 +608,6 @@ void DismissSendTabToSelfModal() {
                                                               title:@"Form Page"
                                                       formFieldData:formData];
 
-  // TODO(crbug.com/519101926): Investigate why manually triggering a sync cycle
-  // is necessary. It might be because we are not waiting for the invalidations
-  // system on the client to be started up. If so, we should find a global fix.
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
   [ChromeEarlGrey waitForSendTabToSelfEntryWithGUID:guid];
 
   // 2. Open the tab via Send Tab To Self.
@@ -943,8 +935,6 @@ void DismissSendTabToSelfModal() {
                                                   deviceName:@"remote_device"
                                             targetDeviceGUID:@""];
 
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
-
   // Verify that a background tab was opened automatically (tab count increased
   // by 1).
   [ChromeEarlGrey waitForMainTabCount:initialTabCount + 1];
@@ -1007,8 +997,6 @@ void DismissSendTabToSelfModal() {
                                                   deviceName:@"remote_device"
                                             targetDeviceGUID:@""];
 
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
-
   // While there is no active WebState, the tab should be queued as pending and
   // not opened immediately.
   GREYAssertEqual(
@@ -1058,7 +1046,6 @@ void DismissSendTabToSelfModal() {
                                                        title:@"AutoOpen Page"
                                                   deviceName:@"remote_device"
                                             targetDeviceGUID:@""];
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
 
   // Wait for the background tab to open.
   [ChromeEarlGrey waitForMainTabCount:initialTabCount + 1];
@@ -1103,7 +1090,6 @@ void DismissSendTabToSelfModal() {
                                                        title:@"AutoOpen Page"
                                                   deviceName:@"remote_device"
                                             targetDeviceGUID:@""];
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
 
   // Wait for the background tab to open.
   [ChromeEarlGrey waitForMainTabCount:initialTabCount + 1];
@@ -1166,7 +1152,6 @@ void DismissSendTabToSelfModal() {
                                                        title:@"AutoOpen Page"
                                                   deviceName:@"remote_device"
                                             targetDeviceGUID:@""];
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
 
   // Wait for the background tab to open.
   [ChromeEarlGrey waitForMainTabCount:initialTabCount + 1];
@@ -1270,7 +1255,6 @@ void DismissSendTabToSelfModal() {
                                            title:@"AutoOpen Page"
                                       deviceName:@"remote_device"
                                 targetDeviceGUID:@""];
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SEND_TAB_TO_SELF];
 
   // While in the Tab Grid, the tab should be opened immediately in the
   // background, increasing tab count from 2 to 3.

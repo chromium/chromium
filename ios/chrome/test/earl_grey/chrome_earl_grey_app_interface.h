@@ -480,9 +480,6 @@ enum class TipsNotificationType;
 // is not what is expected, or there is an error, return NO.
 + (BOOL)isURL:(NSString*)spec presentOnClient:(BOOL)expectPresent;
 
-// Triggers a sync cycle for a `type`.
-+ (void)triggerSyncCycleForType:(syncer::DataType)type;
-
 // Injects user demographics into the fake sync server. `rawBirthYear` is the
 // true birth year, pre-noise, and the gender corresponds to the proto enum
 // UserDemographicsProto::Gender.

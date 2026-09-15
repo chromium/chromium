@@ -259,14 +259,6 @@ void FlushFakeSyncServerToDisk() {
   GetFakeServer()->FlushToDisk();
 }
 
-void TriggerSyncCycle(syncer::DataType type) {
-  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
-  sync_service->TriggerRefresh(
-      syncer::SyncService::TriggerRefreshSource::kUnknown, {type});
-}
-
 int GetNumberOfSyncEntities(syncer::DataType type) {
   base::DictValue entities = GetFakeServer()->GetEntitiesAsDictForTesting();
 

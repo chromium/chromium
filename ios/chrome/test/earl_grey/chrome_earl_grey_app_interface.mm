@@ -1104,10 +1104,6 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return success && !error;
 }
 
-+ (void)triggerSyncCycleForType:(syncer::DataType)type {
-  chrome_test_util::TriggerSyncCycle(type);
-}
-
 + (void)
     addUserDemographicsToSyncServerWithBirthYear:(int)rawBirthYear
                                           gender:

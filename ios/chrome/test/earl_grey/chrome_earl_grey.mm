@@ -1199,10 +1199,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
       [ChromeEarlGreyAppInterface waitForSyncInvalidationFields]);
 }
 
-- (void)triggerSyncCycleForType:(syncer::DataType)type {
-  [ChromeEarlGreyAppInterface triggerSyncCycleForType:type];
-}
-
 - (void)deleteAutofillProfileFromFakeSyncServerWithGUID:
     (const std::string&)UTF8GUID {
   NSString* GUID = base::SysUTF8ToNSString(UTF8GUID);

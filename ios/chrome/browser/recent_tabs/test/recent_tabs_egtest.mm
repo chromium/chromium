@@ -841,7 +841,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                      createFakeTabsForServerURL:self.testServer
                                                                     ->base_url()
                                                    numberOfTabs:numberOfTabs]];
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   OpenRecentTabsPanel();
 
@@ -899,7 +898,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                           self.testServer->base_url()
                                                     numberOfTabs:numberOfTabs]];
   }
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   OpenRecentTabsPanel();
 
