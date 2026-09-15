@@ -1084,9 +1084,10 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   __weak __typeof__(self) weakSelf = self;
 
   if (OmahaService::HasStarted()) {
-    OmahaService::CheckNow(base::BindOnce(^(UpgradeRecommendedDetails details) {
-      [weakSelf handleOmahaResponse:details];
-    }));
+    OmahaService::CheckNow(
+        base::BindOnce(^(const UpgradeRecommendedDetails& details) {
+          [weakSelf handleOmahaResponse:details];
+        }));
   }
 
   // If after 30 seconds the Omaha server has not responded, assume Omaha error.

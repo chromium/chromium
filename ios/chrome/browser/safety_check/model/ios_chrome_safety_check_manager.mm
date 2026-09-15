@@ -577,7 +577,7 @@ void IOSChromeSafetyCheckManager::StartOmahaCheckInternal() {
 // For now, all Omaha data will be maintained in-memory and tied to the
 // lifecycle of the this class.
 void IOSChromeSafetyCheckManager::HandleOmahaResponse(
-    UpgradeRecommendedDetails details) {
+    const UpgradeRecommendedDetails& details) {
   UpdateChromeSafetyCheckState state = UpdateChromeSafetyCheckState::kDefault;
 
   if (details.is_up_to_date) {

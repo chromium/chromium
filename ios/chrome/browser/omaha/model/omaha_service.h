@@ -46,14 +46,15 @@ class OmahaService {
       base::RepeatingCallback<void(const UpgradeRecommendedDetails&)>;
 
   // Called when a one-off Omaha check returns.
-  using OneOffCallback = base::OnceCallback<void(UpgradeRecommendedDetails)>;
+  using OneOffCallback =
+      base::OnceCallback<void(const UpgradeRecommendedDetails&)>;
 
   // Starts the service. Also set the `URLLoaderFactory` necessary to access the
   // Omaha server. This method should only be called once.  Does nothing if
   // Omaha should not be enabled for this build variant.
   static void Start(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      const UpgradeRecommendedCallback& callback);
+      UpgradeRecommendedCallback upgrade_recommended_callback = {});
 
   // Returns `true` if the Omaha service is available and has been
   // successfully started for this build variant. Returns `false` if
@@ -116,7 +117,7 @@ class OmahaService {
   // Starts the service.
   void StartInternal(
       PendingSharedURLLoaderFactoryCallback pending_url_loader_factory,
-      const UpgradeRecommendedCallback& callback);
+      UpgradeRecommendedCallback upgrade_recommended_callback);
 
   // Resyncs the timer if device sleep has caused it to get out of
   // sync with `next_tries_time_`.

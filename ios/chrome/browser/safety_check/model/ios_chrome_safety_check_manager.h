@@ -156,7 +156,7 @@ class IOSChromeSafetyCheckManager
   //
   // If the app is outdated, sets `upgrade_url_` and `next_version_` to maintain
   // the upgrade details.
-  void HandleOmahaResponse(UpgradeRecommendedDetails details);
+  void HandleOmahaResponse(const UpgradeRecommendedDetails& details);
 
   // For unit-testing only.
   void StartOmahaCheckForTesting();

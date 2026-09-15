@@ -25,6 +25,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/system/sys_info.h"
+#import "base/task/bind_post_task.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "build/branding_buildflags.h"
@@ -101,19 +103,26 @@ OmahaService* OmahaService::GetInstance() {
 // static
 void OmahaService::Start(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    const UpgradeRecommendedCallback& callback) {
+    UpgradeRecommendedCallback upgrade_recommended_callback) {
   DCHECK(shared_url_loader_factory);
-  DCHECK(!callback.is_null());
-
   if (!OmahaService::IsEnabled()) {
     return;
+  }
+
+  // The OmahaService lives on the IO thread but the client expects the
+  // upgrade_recommended_callback to be called on the current sequence,
+  // so wrap it in base::BindPostTask(...) if not null.
+  if (!upgrade_recommended_callback.is_null()) {
+    upgrade_recommended_callback =
+        base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                           std::move(upgrade_recommended_callback));
   }
 
   OmahaService* service = GetInstance();
   service->StartInternal(
       base::BindOnce(&network::SharedURLLoaderFactory::Create,
                      shared_url_loader_factory->Clone()),
-      std::move(callback));
+      std::move(upgrade_recommended_callback));
 
   service->locale_lang_ =
       GetApplicationContext()->GetApplicationLocaleStorage()->Get();
@@ -147,8 +156,10 @@ void OmahaService::CheckNow(OneOffCallback callback) {
 
     web::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&OmahaService::CheckNowOnIOThread,
-                       base::Unretained(service), std::move(callback)));
+        base::BindOnce(
+            &OmahaService::CheckNowOnIOThread, base::Unretained(service),
+            base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                               std::move(callback))));
   }
 }
 
@@ -186,13 +197,13 @@ OmahaService::~OmahaService() {
 
 void OmahaService::StartInternal(
     PendingSharedURLLoaderFactoryCallback pending_url_loader_factory,
-    const UpgradeRecommendedCallback& callback) {
+    UpgradeRecommendedCallback upgrade_recommended_callback) {
   if (started_) {
     return;
   }
   started_ = true;
   pending_url_loader_factory_ = std::move(pending_url_loader_factory);
-  upgrade_recommended_callback_ = callback;
+  upgrade_recommended_callback_ = std::move(upgrade_recommended_callback);
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   next_tries_time_ = base::Time::FromCFAbsoluteTime(
@@ -519,17 +530,15 @@ void OmahaService::OnURLLoadComplete(std::optional<std::string> response_body) {
 
     // Use the correct callback based on if a one-off check is ongoing.
     if (!one_off_check_callback_.is_null()) {
-      web::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(std::move(one_off_check_callback_),
-                                    std::move(details)));
       // Do not schedule another ping for one-off checks, unless
       // it canceled a scheduled ping.
       need_to_schedule_ping = scheduled_ping_canceled_;
       scheduled_ping_canceled_ = false;
+      std::move(one_off_check_callback_).Run(details);
     } else if (!details.is_up_to_date) {
-      web::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(upgrade_recommended_callback_, std::move(details)));
+      if (!upgrade_recommended_callback_.is_null()) {
+        upgrade_recommended_callback_.Run(details);
+      }
     }
   }
 
