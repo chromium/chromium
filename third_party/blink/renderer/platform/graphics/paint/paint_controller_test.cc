@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller_test.h"
 
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
@@ -22,6 +23,7 @@
 #include "third_party/skia/include/core/SkPathBuilder.h"
 
 using testing::ElementsAre;
+using testing::Property;
 
 namespace blink {
 
@@ -57,11 +59,10 @@ PaintControllerTestBase::DrawResult PaintControllerTestBase::Draw(
 
   if (matching_cached_item) {
     // We should reused the cached paint record and paint into it.
+    const auto& items =
+        GetNewPaintArtifact(paint_controller).GetDisplayItemList();
     PaintRecord new_record =
-        To<DrawingDisplayItem>(UNSAFE_TODO(GetNewPaintArtifact(paint_controller)
-                                               .GetDisplayItemList()
-                                               .back()))
-            .GetPaintRecord();
+        To<DrawingDisplayItem>(items.back()).GetPaintRecord();
     EXPECT_NE(&old_record.GetFirstOp(), &new_record.GetFirstOp());
     EXPECT_EQ(old_record.bytes_used(), new_record.bytes_used());
     return kRepaintedCachedItem;
@@ -1875,16 +1876,15 @@ TEST_P(PaintControllerTest, SkipCacheDuplicatedItemAndChunkIds) {
   EXPECT_THAT(GetPersistentData().GetDisplayItemList(),
               ElementsAre(IsSameId(item_client.Id(), kBackgroundType),
                           IsSameId(item_client.Id(), kBackgroundType)));
-  EXPECT_FALSE(
-      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[0]).IsCacheable());
-  EXPECT_FALSE(
-      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[1]).IsCacheable());
+  EXPECT_THAT(GetPersistentData().GetDisplayItemList(),
+              ElementsAre(Property(&DisplayItem::IsCacheable, false),
+                          Property(&DisplayItem::IsCacheable, false)));
 
-  EXPECT_THAT(GetPersistentData().GetPaintChunks(),
-              ElementsAre(IsPaintChunk(0, 1, chunk_id, properties),
-                          IsPaintChunk(1, 2, chunk_id, properties)));
-  EXPECT_FALSE(GetPersistentData().GetPaintChunks()[0].is_cacheable);
-  EXPECT_FALSE(GetPersistentData().GetPaintChunks()[1].is_cacheable);
+  base::span chunks = GetPersistentData().GetPaintChunks();
+  EXPECT_THAT(chunks, ElementsAre(IsPaintChunk(0, 1, chunk_id, properties),
+                                  IsPaintChunk(1, 2, chunk_id, properties)));
+  EXPECT_FALSE(chunks[0].is_cacheable);
+  EXPECT_FALSE(chunks[1].is_cacheable);
 }
 
 TEST_P(PaintControllerTest, SmallPaintControllerHasOnePaintChunk) {
@@ -2123,12 +2123,10 @@ TEST_P(PaintControllerTest, AllowDuplicatedIdForUncacheableItem) {
       DrawRect(context, uncacheable, kBackgroundType, gfx::Rect(r));
     }
   }
-  EXPECT_TRUE(
-      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[0]).IsCacheable());
-  EXPECT_FALSE(
-      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[1]).IsCacheable());
-  EXPECT_FALSE(
-      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[2]).IsCacheable());
+  EXPECT_THAT(GetPersistentData().GetDisplayItemList(),
+              ElementsAre(Property(&DisplayItem::IsCacheable, true),
+                          Property(&DisplayItem::IsCacheable, false),
+                          Property(&DisplayItem::IsCacheable, false)));
   EXPECT_TRUE(cacheable.IsCacheable());
   EXPECT_FALSE(uncacheable.IsCacheable());
 
@@ -2138,12 +2136,10 @@ TEST_P(PaintControllerTest, AllowDuplicatedIdForUncacheableItem) {
     InitRootChunk(paint_controller);
     EXPECT_TRUE(paint_controller.UseCachedSubsequenceIfPossible(cacheable));
   }
-  EXPECT_TRUE(
-      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[0]).IsCacheable());
-  EXPECT_FALSE(
-      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[1]).IsCacheable());
-  EXPECT_FALSE(
-      UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[2]).IsCacheable());
+  EXPECT_THAT(GetPersistentData().GetDisplayItemList(),
+              ElementsAre(Property(&DisplayItem::IsCacheable, true),
+                          Property(&DisplayItem::IsCacheable, false),
+                          Property(&DisplayItem::IsCacheable, false)));
   EXPECT_TRUE(cacheable.IsCacheable());
   EXPECT_FALSE(uncacheable.IsCacheable());
 }

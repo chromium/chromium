@@ -431,8 +431,7 @@ PendingLayer::CompositingType PaintArtifactCompositor::ChunkCompositingType(
     return PendingLayer::kScrollHitTestLayer;
   }
   if (chunk.size() == 1) {
-    const auto& item =
-        UNSAFE_TODO(artifact.GetDisplayItemList()[chunk.begin_index]);
+    const auto& item = artifact.GetDisplayItemList()[chunk.begin_index];
     if (item.IsForeignLayer()) {
       return PendingLayer::kForeignLayer;
     }
@@ -463,7 +462,7 @@ cc::Layer* ForeignLayer(const PaintChunk& chunk,
   if (chunk.size() != 1)
     return nullptr;
   const auto& first_display_item =
-      UNSAFE_TODO(artifact.GetDisplayItemList()[chunk.begin_index]);
+      artifact.GetDisplayItemList()[chunk.begin_index];
   auto* foreign_layer = DynamicTo<ForeignLayerDisplayItem>(first_display_item);
   return foreign_layer ? foreign_layer->GetLayer() : nullptr;
 }

@@ -79,9 +79,8 @@ class PaintChunkSubset {
 
     DisplayItemRange DisplayItems() const {
       auto& chunk = GetChunk();
-      return UNSAFE_TODO(
-          subset_->paint_artifact_->GetDisplayItemList().ItemsInRange(
-              chunk.begin_index, chunk.end_index));
+      return subset_->paint_artifact_->GetDisplayItemList().ItemsInRange(
+          chunk.begin_index, chunk.end_index);
     }
 
    private:

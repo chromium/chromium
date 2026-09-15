@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -42,53 +43,6 @@ class PLATFORM_EXPORT DisplayItemList {
   // This private section is before the public APIs because some inline public
   // methods depend on the private definitions.
  private:
-  // Declares itself as a forward iterator, but also supports a few more
-  // things. The whole random access iterator interface is a bit much.
-  template <typename BaseIterator, typename ItemType>
-  class IteratorWrapper {
-    DISALLOW_NEW();
-
-   public:
-    using iterator_category = std::forward_iterator_tag;
-    using value_type = ItemType;
-    using difference_type = std::ptrdiff_t;
-    using pointer = ItemType*;
-    using reference = ItemType&;
-
-    IteratorWrapper() = default;
-    explicit IteratorWrapper(const BaseIterator& it) : it_(it) {}
-
-    bool operator==(const IteratorWrapper& other) const {
-      return it_ == other.it_;
-    }
-    bool operator<(const IteratorWrapper& other) const {
-      return it_ < other.it_;
-    }
-    ItemType& operator*() const { return reinterpret_cast<ItemType&>(*it_); }
-    ItemType* operator->() const { return &operator*(); }
-    UNSAFE_BUFFER_USAGE IteratorWrapper operator+(std::ptrdiff_t n) const {
-      // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
-      return UNSAFE_BUFFERS(IteratorWrapper(it_ + n));
-    }
-    UNSAFE_BUFFER_USAGE IteratorWrapper operator++(int) {
-      IteratorWrapper tmp = *this;
-      // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE
-      UNSAFE_BUFFERS(++it_);
-      return tmp;
-    }
-    std::ptrdiff_t operator-(const IteratorWrapper& other) const {
-      return it_ - other.it_;
-    }
-    UNSAFE_BUFFER_USAGE IteratorWrapper& operator++() {
-      // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
-      UNSAFE_BUFFERS(++it_);
-      return *this;
-    }
-
-   private:
-    BaseIterator it_;
-  };
-
   // kAlignment must be a multiple of alignof(derived display item) for each
   // derived display item; the ideal value is the least common multiple.
   // The validity of kAlignment and kMaxItemSize are checked in
@@ -99,40 +53,95 @@ class PLATFORM_EXPORT DisplayItemList {
   struct ItemSlot {
     alignas(kAlignment) uint8_t data[kMaxItemSize];
     DISALLOW_NEW();
+
+    DisplayItem& Item() { return *reinterpret_cast<DisplayItem*>(data); }
+    const DisplayItem& Item() const {
+      return *reinterpret_cast<const DisplayItem*>(data);
+    }
   };
   using ItemVector = Vector<ItemSlot>;
 
+  base::span<ItemSlot> ItemSpan() { return base::span(items_); }
+  base::span<const ItemSlot> ItemSpan() const { return base::span(items_); }
+
  public:
+  // Useful for iterating with a range-based for loop.
+  template <typename SlotType>
+  class Range {
+    STACK_ALLOCATED();
+
+   public:
+    using SpanType = base::span<SlotType>;
+    using ItemType = std::conditional_t<std::is_const_v<SlotType>,
+                                        const DisplayItem,
+                                        DisplayItem>;
+    using value_type = ItemType;
+
+    class iterator {
+     public:
+      using iterator_category = std::forward_iterator_tag;
+      using value_type = ItemType;
+      using difference_type = std::ptrdiff_t;
+      using pointer = ItemType*;
+      using reference = ItemType&;
+
+      iterator() = default;
+      explicit iterator(typename SpanType::iterator it) : it_(it) {}
+
+      ItemType& operator*() const { return it_->Item(); }
+      ItemType* operator->() const { return &operator*(); }
+      iterator& operator++() {
+        ++it_;
+        return *this;
+      }
+      iterator operator++(int) {
+        iterator tmp = *this;
+        ++it_;
+        return tmp;
+      }
+      std::ptrdiff_t operator-(const iterator& other) const {
+        return it_ - other.it_;
+      }
+      auto operator<=>(const iterator&) const = default;
+
+     private:
+      typename SpanType::iterator it_;
+    };
+
+    using const_iterator = Range<const SlotType>::iterator;
+
+    Range() = default;
+    explicit Range(SpanType span) : span_(span) {}
+
+    iterator begin() const { return iterator(span_.begin()); }
+    iterator end() const { return iterator(span_.end()); }
+    wtf_size_t size() const {
+      return base::checked_cast<wtf_size_t>(span_.size());
+    }
+    bool IsEmpty() const { return span_.empty(); }
+
+   private:
+    SpanType span_;
+  };
+
   using value_type = DisplayItem;
-  using iterator = IteratorWrapper<ItemVector::iterator, DisplayItem>;
-  using const_iterator =
-      IteratorWrapper<ItemVector::const_iterator, const DisplayItem>;
-  iterator begin() { return iterator(items_.begin()); }
-  iterator end() { return iterator(items_.end()); }
-  const_iterator begin() const { return const_iterator(items_.begin()); }
-  const_iterator end() const { return const_iterator(items_.end()); }
+  using iterator = Range<ItemSlot>::iterator;
+  using const_iterator = Range<const ItemSlot>::iterator;
+  using DisplayItemRange = Range<const ItemSlot>;
 
-  UNSAFE_BUFFER_USAGE DisplayItem& front() { return *begin(); }
-  UNSAFE_BUFFER_USAGE const DisplayItem& front() const { return *begin(); }
-  UNSAFE_BUFFER_USAGE DisplayItem& back() {
-    DCHECK(size());
-    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE
-    return UNSAFE_BUFFERS((*this)[size() - 1]);
-  }
-  UNSAFE_BUFFER_USAGE const DisplayItem& back() const {
-    DCHECK(size());
-    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE
-    return UNSAFE_BUFFERS((*this)[size() - 1]);
-  }
+  iterator begin() { return iterator(ItemSpan().begin()); }
+  iterator end() { return iterator(ItemSpan().end()); }
+  const_iterator begin() const { return const_iterator(ItemSpan().begin()); }
+  const_iterator end() const { return const_iterator(ItemSpan().end()); }
 
-  UNSAFE_BUFFER_USAGE DisplayItem& operator[](wtf_size_t index) {
-    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
-    return UNSAFE_BUFFERS(*(begin() + index));
-  }
+  DisplayItem& front() { return items_.front().Item(); }
+  const DisplayItem& front() const { return items_.front().Item(); }
+  DisplayItem& back() { return items_.back().Item(); }
+  const DisplayItem& back() const { return items_.back().Item(); }
 
-  UNSAFE_BUFFER_USAGE const DisplayItem& operator[](wtf_size_t index) const {
-    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
-    UNSAFE_BUFFERS(return *(begin() + index));
+  DisplayItem& operator[](wtf_size_t index) { return items_[index].Item(); }
+  const DisplayItem& operator[](wtf_size_t index) const {
+    return items_[index].Item();
   }
 
   wtf_size_t size() const { return items_.size(); }
@@ -142,45 +151,21 @@ class PLATFORM_EXPORT DisplayItemList {
     return sizeof(*this) + items_.CapacityInBytes();
   }
 
-  // Useful for iterating with a range-based for loop.
-  template <typename Iterator>
-  class Range {
-    DISALLOW_NEW();
-
-   public:
-    Range(const Iterator& begin, const Iterator& end)
-        : begin_(begin), end_(end) {}
-    Iterator begin() const { return begin_; }
-    Iterator end() const { return end_; }
-    wtf_size_t size() const {
-      return base::checked_cast<wtf_size_t>(end_ - begin_);
-    }
-
-    // To meet the requirement of gmock ElementsAre().
-    using value_type = DisplayItem;
-    using const_iterator = DisplayItemList::const_iterator;
-
-   private:
-    Iterator begin_;
-    Iterator end_;
-  };
-
   // In most cases, we should use PaintChunkSubset::Iterator::DisplayItems()
   // instead of these.
-  UNSAFE_BUFFER_USAGE Range<iterator> ItemsInRange(wtf_size_t begin_index,
-                                                   wtf_size_t end_index) {
-    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE,
-    return UNSAFE_BUFFERS(
-        Range<iterator>(begin() + begin_index, begin() + end_index));
+  Range<ItemSlot> ItemsInRange(wtf_size_t begin_index, wtf_size_t end_index) {
+    CHECK_LE(begin_index, end_index);
+    return Range<ItemSlot>(
+        ItemSpan().subspan(begin_index, end_index - begin_index));
   }
-  UNSAFE_BUFFER_USAGE Range<const_iterator> ItemsInRange(
-      wtf_size_t begin_index,
-      wtf_size_t end_index) const {
-    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE,
-    return UNSAFE_BUFFERS(
-        Range<const_iterator>(begin() + begin_index, begin() + end_index));
+  DisplayItemRange ItemsInRange(wtf_size_t begin_index,
+                                wtf_size_t end_index) const {
+    CHECK_LE(begin_index, end_index);
+    return DisplayItemRange(
+        ItemSpan().subspan(begin_index, end_index - begin_index));
   }
 
+ public:
   template <class DerivedItemType, typename... Args>
   DerivedItemType& AllocateAndConstruct(Args&&... args) {
     static_assert(IsSubclass<DerivedItemType, DisplayItem>::value,
@@ -201,7 +186,7 @@ class PLATFORM_EXPORT DisplayItemList {
 
   DisplayItem& ReplaceLastByMoving(DisplayItem& item) {
     DCHECK(!item.IsTombstone());
-    DisplayItem& last = UNSAFE_TODO(back());
+    DisplayItem& last = back();
     last.Destruct();
     return MoveItem(item, reinterpret_cast<ItemSlot*>(&last));
   }
@@ -243,7 +228,7 @@ class PLATFORM_EXPORT DisplayItemList {
   static std::unique_ptr<JSONArray> DisplayItemsAsJSON(
       const PaintArtifact&,
       wtf_size_t first_item_index,
-      const Range<const_iterator>& display_items,
+      const DisplayItemRange& display_items,
       JsonOption);
 #else  // DCHECK_IS_ON()
   enum JsonOption { kDefault };
@@ -281,7 +266,7 @@ class PLATFORM_EXPORT DisplayItemList {
 };
 
 using DisplayItemIterator = DisplayItemList::const_iterator;
-using DisplayItemRange = DisplayItemList::Range<DisplayItemIterator>;
+using DisplayItemRange = DisplayItemList::DisplayItemRange;
 
 }  // namespace blink
 

@@ -103,17 +103,13 @@ DisplayItemIterator DisplayItemRasterInvalidator::MatchNewDisplayItemInOldChunk(
     DisplayItemIterator& next_old_item_to_match) {
   if (!new_item.IsCacheable())
     return old_display_items_.end();
-  // SAFETY: next_old_item_to_match is checked against end() in the loop
-  // condition.
   for (; next_old_item_to_match != old_display_items_.end();
-       UNSAFE_BUFFERS(next_old_item_to_match++)) {
+       next_old_item_to_match++) {
     const auto& old_item = *next_old_item_to_match;
     if (!old_item.IsCacheable())
       continue;
     if (old_item.GetId() == new_item.GetId()) {
-      // SAFETY: next_old_item_to_match is not at end() because we just accessed
-      // it above.
-      return UNSAFE_BUFFERS(next_old_item_to_match++);
+      return next_old_item_to_match++;
     }
     // Add the skipped old item into index.
     old_display_items_index_
