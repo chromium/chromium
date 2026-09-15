@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_ANDROID_ANDROID_OS_SIGNALS_COLLECTOR_H_
-#define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_ANDROID_ANDROID_OS_SIGNALS_COLLECTOR_H_
+#ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_ANDROID_ANDROID_SIGNALS_COLLECTOR_H_
+#define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_ANDROID_ANDROID_SIGNALS_COLLECTOR_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -24,16 +24,15 @@ namespace device_signals {
 
 struct VerifyAppsSignalsResponse;
 
-class AndroidOsSignalsCollector : public BaseSignalsCollector {
+class AndroidSignalsCollector : public BaseSignalsCollector {
  public:
-  explicit AndroidOsSignalsCollector(
+  explicit AndroidSignalsCollector(
       policy::CloudPolicyManager* device_cloud_policy_manager);
 
-  ~AndroidOsSignalsCollector() override;
+  ~AndroidSignalsCollector() override;
 
-  AndroidOsSignalsCollector(const AndroidOsSignalsCollector&) = delete;
-  AndroidOsSignalsCollector& operator=(const AndroidOsSignalsCollector&) =
-      delete;
+  AndroidSignalsCollector(const AndroidSignalsCollector&) = delete;
+  AndroidSignalsCollector& operator=(const AndroidSignalsCollector&) = delete;
 
  private:
   void GetOsSignals(UserPermission permission,
@@ -61,9 +60,9 @@ class AndroidOsSignalsCollector : public BaseSignalsCollector {
       int status_code);
 
   const raw_ptr<policy::CloudPolicyManager> device_cloud_policy_manager_;
-  base::WeakPtrFactory<AndroidOsSignalsCollector> weak_factory_{this};
+  base::WeakPtrFactory<AndroidSignalsCollector> weak_factory_{this};
 };
 
 }  // namespace device_signals
 
-#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_ANDROID_ANDROID_OS_SIGNALS_COLLECTOR_H_
+#endif  // COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_ANDROID_ANDROID_SIGNALS_COLLECTOR_H_

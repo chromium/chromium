@@ -43,7 +43,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/device_signals/core/browser/android/android_os_signals_collector.h"
+#include "components/device_signals/core/browser/android/android_signals_collector.h"
 #else
 #include "chrome/browser/enterprise/signals/system_signals_service_host_factory.h"
 #include "components/device_signals/core/browser/desktop/desktop_os_signals_collector.h"
@@ -195,7 +195,7 @@ SignalsAggregatorFactory::BuildServiceInstanceForBrowserContext(
 
 #if BUILDFLAG(IS_ANDROID)
   collectors.push_back(
-      std::make_unique<device_signals::AndroidOsSignalsCollector>(
+      std::make_unique<device_signals::AndroidSignalsCollector>(
           browser_policy_manager));
 #else
   collectors.push_back(

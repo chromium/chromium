@@ -64,8 +64,8 @@ static_library("browser") {
   }
 
   if (is_android) {
-    public += [ "android/android_os_signals_collector.h" ]
-    sources += [ "android/android_os_signals_collector.cc" ]
+    public += [ "android/android_signals_collector.h" ]
+    sources += [ "android/android_signals_collector.cc" ]
     deps += [
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_api_handler_util",
@@ -164,7 +164,7 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
-    sources += [ "android/android_os_signals_collector_unittest.cc" ]
+    sources += [ "android/android_signals_collector_unittest.cc" ]
     deps += [
       "//components/safe_browsing/android:safe_browsing_api_handler",
       "//components/safe_browsing/android:safe_browsing_api_handler_util",

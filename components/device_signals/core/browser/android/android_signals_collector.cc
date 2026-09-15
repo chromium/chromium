@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/browser/android/android_os_signals_collector.h"
+#include "components/device_signals/core/browser/android/android_signals_collector.h"
 
 #include <string>
 #include <utility>
@@ -57,21 +57,21 @@ void LogSafetyNetMetrics(HasHarmfulAppsResultStatus result,
 
 }  // namespace
 
-AndroidOsSignalsCollector::AndroidOsSignalsCollector(
+AndroidSignalsCollector::AndroidSignalsCollector(
     policy::CloudPolicyManager* device_cloud_policy_manager)
     : BaseSignalsCollector({
           {SignalName::kOsSignals,
-           base::BindRepeating(&AndroidOsSignalsCollector::GetOsSignals,
+           base::BindRepeating(&AndroidSignalsCollector::GetOsSignals,
                                base::Unretained(this))},
           {SignalName::kVerifyApps,
-           base::BindRepeating(&AndroidOsSignalsCollector::GetVerifyApps,
+           base::BindRepeating(&AndroidSignalsCollector::GetVerifyApps,
                                base::Unretained(this))},
       }),
       device_cloud_policy_manager_(device_cloud_policy_manager) {}
 
-AndroidOsSignalsCollector::~AndroidOsSignalsCollector() = default;
+AndroidSignalsCollector::~AndroidSignalsCollector() = default;
 
-void AndroidOsSignalsCollector::GetOsSignals(
+void AndroidSignalsCollector::GetOsSignals(
     UserPermission permission,
     const SignalsAggregationRequest& request,
     SignalsAggregationResponse& response,
@@ -106,7 +106,7 @@ void AndroidOsSignalsCollector::GetOsSignals(
       FROM_HERE, std::move(done_closure));
 }
 
-void AndroidOsSignalsCollector::GetVerifyApps(
+void AndroidSignalsCollector::GetVerifyApps(
     UserPermission permission,
     const SignalsAggregationRequest& request,
     SignalsAggregationResponse& response,
@@ -120,12 +120,12 @@ void AndroidOsSignalsCollector::GetVerifyApps(
   base::TimeTicks start_time = base::TimeTicks::Now();
   safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
       .StartIsVerifyAppsEnabled(
-          base::BindOnce(&AndroidOsSignalsCollector::OnIsVerifyAppsEnabled,
+          base::BindOnce(&AndroidSignalsCollector::OnIsVerifyAppsEnabled,
                          weak_factory_.GetWeakPtr(), std::ref(response),
                          std::move(done_closure), start_time));
 }
 
-void AndroidOsSignalsCollector::OnIsVerifyAppsEnabled(
+void AndroidSignalsCollector::OnIsVerifyAppsEnabled(
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure,
     base::TimeTicks start_time,
@@ -136,14 +136,14 @@ void AndroidOsSignalsCollector::OnIsVerifyAppsEnabled(
        result == VerifyAppsEnabledResult::SUCCESS_ALREADY_ENABLED);
 
   safe_browsing::SafeBrowsingApiHandlerBridge::GetInstance()
-      .StartHasPotentiallyHarmfulApps(base::BindOnce(
-          &AndroidOsSignalsCollector::OnHasPotentiallyHarmfulApps,
-          weak_factory_.GetWeakPtr(), std::ref(response),
-          std::move(done_closure), std::move(verify_apps_response),
-          start_time));
+      .StartHasPotentiallyHarmfulApps(
+          base::BindOnce(&AndroidSignalsCollector::OnHasPotentiallyHarmfulApps,
+                         weak_factory_.GetWeakPtr(), std::ref(response),
+                         std::move(done_closure),
+                         std::move(verify_apps_response), start_time));
 }
 
-void AndroidOsSignalsCollector::OnHasPotentiallyHarmfulApps(
+void AndroidSignalsCollector::OnHasPotentiallyHarmfulApps(
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure,
     VerifyAppsSignalsResponse verify_apps_response,
