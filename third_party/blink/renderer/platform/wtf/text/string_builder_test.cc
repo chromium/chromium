@@ -116,6 +116,72 @@ TEST(StringBuilderTest, Append) {
             StringView(builder_for_u_char32_append));
 }
 
+// position == length_ delegates to Append().
+TEST(StringBuilderTest, InsertAtEnd) {
+  StringBuilder builder;
+  builder.Insert(0, 'a');  // Empty builder: position == length_ == 0.
+  EXPECT_EQ(String("a"), StringView(builder));
+  builder.Insert(1, 'b');
+  EXPECT_EQ(String("ab"), StringView(builder));
+}
+
+// is_8bit_ && c <= 0xFF inserts into an existing buffer8_.
+TEST(StringBuilderTest, InsertInto8BitBuffer) {
+  StringBuilder builder;
+  builder.ReserveCapacity(10);  // Forces an owned buffer instead of a shared
+                                // view.
+  builder.Append("ace");
+  builder.Insert(0, 'X');
+  builder.Insert(2, 'Y');
+  builder.Insert(4, 'Z');
+  EXPECT_TRUE(builder.Is8Bit());
+  EXPECT_EQ(String("XaYcZe"), StringView(builder));
+}
+
+// Inserting into a shared string view (no owned buffer yet) materializes the
+// view into an owned 8-bit buffer before mutating it.
+TEST(StringBuilderTest, InsertMaterializesSharedView8Bit) {
+  String source("ace");
+  StringBuilder builder;
+  builder.Append(source);  // Retains a shared view, no owned buffer yet.
+  builder.Insert(1, 'b');
+  EXPECT_TRUE(builder.Is8Bit());
+  EXPECT_EQ(String("abce"), builder.ToString());
+  EXPECT_NE(source.Impl(), builder.ToString().Impl());
+}
+
+// !is_8bit_ inserts into an existing buffer16_.
+TEST(StringBuilderTest, InsertInto16BitBuffer) {
+  StringBuilder builder;
+  builder.ReserveCapacity(10);  // Forces an owned buffer instead of a shared
+                                // view.
+  builder.Append(String(u"a\u1234c"));
+  ASSERT_FALSE(builder.Is8Bit());
+  builder.Insert(2, 'b');  // Latin-1 char, but builder stays 16-bit.
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(String(u"a\u1234bc"), builder.ToString());
+}
+
+// Inserting into a shared 16-bit string view materializes it before mutating.
+TEST(StringBuilderTest, InsertMaterializesSharedView16Bit) {
+  String source(u"a\u1234c");
+  StringBuilder builder;
+  builder.Append(source);
+  builder.Insert(1, 'b');
+  EXPECT_EQ(String(u"ab\u1234c"), builder.ToString());
+  EXPECT_NE(source.Impl(), builder.ToString().Impl());
+}
+
+// c > 0xFF widens an 8-bit builder to 16-bit before inserting.
+TEST(StringBuilderTest, InsertWidensTo16Bit) {
+  StringBuilder builder;
+  builder.Append("ace");
+  ASSERT_TRUE(builder.Is8Bit());
+  builder.Insert(1, static_cast<UChar>(0x1234));
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(String(u"a\u1234ce"), builder.ToString());
+}
+
 TEST(StringBuilderTest, AppendSpan) {
   StringBuilder builder;
 

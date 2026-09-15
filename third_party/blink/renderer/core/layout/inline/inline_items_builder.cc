@@ -1428,17 +1428,7 @@ void InlineItemsBuilderTemplate<
   mapping_builder_.RestoreTrailingCollapsibleSpace(
       To<LayoutText>(*item->GetLayoutObject()), item->EndOffset());
 
-  // TODO(kojii): Implement StringBuilder::insert().
-  UChar space_char = GetCollapsedSpaceChar(item->Style());
-  if (text_.length() == item->EndOffset()) {
-    text_.Append(space_char);
-  } else {
-    String current = text_.ToString();
-    text_.Clear();
-    text_.Append(StringView(current, 0, item->EndOffset()));
-    text_.Append(space_char);
-    text_.Append(StringView(current, item->EndOffset()));
-  }
+  text_.Insert(item->EndOffset(), GetCollapsedSpaceChar(item->Style()));
 
   item->SetEndOffset(item->EndOffset() + 1);
   item->SetEndCollapseType(InlineItem::kCollapsible);

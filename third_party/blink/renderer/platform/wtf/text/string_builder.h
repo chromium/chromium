@@ -181,6 +181,27 @@ class WTF_EXPORT StringBuilder {
     Append(U16_TRAIL(c));
   }
 
+  // Inserts `c` at `position` (0 <= position <= length()), shifting the
+  // existing [position, length()) content right by one. Mirrors the
+  // EnsureBuffer8/16 materialize-then-mutate pattern already used by
+  // Append(LChar)/Append(UChar) above, so a shared string view (no owned
+  // buffer yet) is copied into an owned buffer first, same as on append.
+  void Insert(wtf_size_t position, UChar c) {
+    DCHECK_LE(position, length_);
+    if (position == length_) {
+      Append(c);
+      return;
+    }
+    if (is_8bit_ && c <= 0xFF) {
+      EnsureBuffer8(1);
+      buffer8_.insert(position, static_cast<LChar>(c));
+    } else {
+      EnsureBuffer16(1);
+      buffer16_.insert(position, c);
+    }
+    ++length_;
+  }
+
   template <typename IntegerType>
   void AppendNumber(IntegerType number) {
     IntegerToStringConverter<IntegerType> converter(number);
