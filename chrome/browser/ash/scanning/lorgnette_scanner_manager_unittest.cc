@@ -441,9 +441,6 @@ class LorgnetteScannerManagerTest : public testing::Test {
                        base::Unretained(this)));
   }
 
-  // Runs all tasks until the ThreadPool's non-delayed queues are empty.
-  void CompleteTasks() { task_environment_.RunUntilIdle(); }
-
   // Runs run_loop_ until a callback calls Quit().
   void WaitForResult() {
     run_loop_->Run();
@@ -641,7 +638,6 @@ TEST_F(LorgnetteScannerManagerTest, NoScannersWithNoCap) {
 TEST_F(LorgnetteScannerManagerTest, ZeroconfScanner) {
   auto scanner = CreateZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.display_name}));
@@ -651,7 +647,6 @@ TEST_F(LorgnetteScannerManagerTest, ZeroconfScanner) {
 TEST_F(LorgnetteScannerManagerTest, NonEsclEpsonZeroconfScanner) {
   auto scanner = CreateNonEsclEpsonZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.display_name}));
@@ -662,7 +657,6 @@ TEST_F(LorgnetteScannerManagerTest, NonEsclEpsonZeroconfScanner) {
 TEST_F(LorgnetteScannerManagerTest, EsclEpsonZeroconfScanner) {
   auto scanner = CreateEsclEpsonZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.display_name}));
@@ -701,7 +695,6 @@ TEST_F(LorgnetteScannerManagerTest, DeduplicateScanner) {
   fake_zeroconf_scanner_detector()->AddDetections({epson_scanner});
   auto escl_epson_scanner = CreateEsclEpsonZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({escl_epson_scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_THAT(scanner_names(), ElementsAreArray({epson_scanner.display_name,
@@ -719,7 +712,6 @@ TEST_F(LorgnetteScannerManagerTest, DeduplicateLorgnetteEpsonScanner) {
   fake_zeroconf_scanner_detector()->AddDetections({epson_scanner});
   auto escl_epson_scanner = CreateEsclEpsonZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({escl_epson_scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_THAT(scanner_names(), ElementsAreArray({epson_scanner.display_name}));
@@ -739,7 +731,6 @@ TEST_F(LorgnetteScannerManagerTest, DeduplicateNetPlusUsbScanner) {
   GetLorgnetteManagerClient()->SetListScannersResponse(response);
   auto scanner = CreateZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_THAT(scanner_names(),
@@ -807,12 +798,10 @@ TEST_F(LorgnetteScannerManagerTest, UniqueScannerNames) {
 TEST_F(LorgnetteScannerManagerTest, RemoveScanner) {
   auto scanner = CreateZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_THAT(scanner_names(), ElementsAreArray({scanner.display_name}));
   fake_zeroconf_scanner_detector()->RemoveDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_TRUE(scanner_names().empty());
@@ -873,7 +862,6 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListZeroconf) {
   expected_response.set_result(lorgnette::OPERATION_RESULT_UNKNOWN);
   *expected_response.add_scanners() = ScannerInfoFromScanner(expected_scanner);
 
-  CompleteTasks();
   GetScannerInfoList(LocalScannerFilter::kIncludeNetworkScanners,
                      SecureScannerFilter::kIncludeUnsecureScanners);
   WaitForResult();
@@ -889,7 +877,6 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListNonEsclZeroconf) {
   auto non_escl_scanner = CreateNonEsclEpsonZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections(
       {zeroconf_scanner, non_escl_scanner});
-  CompleteTasks();
 
   // When the scanner list is retrieved and it contains non-escl network
   // scanners, those are verified by attempting to open the scanner.  Provide an
@@ -923,7 +910,6 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListNonEsclZeroconf) {
 TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListNonEsclZeroconfBusy) {
   auto non_escl_scanner = CreateNonEsclEpsonZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({non_escl_scanner});
-  CompleteTasks();
 
   // When the scanner list is retrieved and it contains non-escl network
   // scanners, those are verified by attempting to open the scanner.  Provide an
@@ -956,7 +942,6 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListNonEsclZeroconfDead) {
   auto non_escl_scanner = CreateNonEsclEpsonZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({non_escl_scanner});
 
-  CompleteTasks();
 
   // When the scanner list is retrieved and it contains non-escl network
   // scanners, those are verified by attempting to open the scanner.  Provide an
@@ -980,7 +965,6 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListNonEsclZeroconfDead) {
 TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListZeroconfUnusable) {
   auto scanner = CreateZeroconfScanner(false);
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerInfoList(LocalScannerFilter::kIncludeNetworkScanners,
                      SecureScannerFilter::kIncludeUnsecureScanners);
   WaitForResult();
@@ -997,7 +981,6 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListZeroconfSameUuid) {
   scanner.device_names.begin()->second.insert(
       ScannerDeviceName("airscan:escl:Test MX3100:http://192.168.0.3:5/"));
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerInfoList(LocalScannerFilter::kIncludeNetworkScanners,
                      SecureScannerFilter::kIncludeUnsecureScanners);
   WaitForResult();
@@ -1019,7 +1002,6 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListZeroconfAbsentUuid) {
   scanner.device_names.begin()->second.insert(
       ScannerDeviceName("airscan:escl:Test MX3100:http://192.168.0.3:5/"));
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerInfoList(LocalScannerFilter::kIncludeNetworkScanners,
                      SecureScannerFilter::kIncludeUnsecureScanners);
   WaitForResult();
@@ -1043,7 +1025,6 @@ TEST_F(LorgnetteScannerManagerTest,
   GetLorgnetteManagerClient()->SetListScannersResponse(response);
   fake_zeroconf_scanner_detector()->AddDetections({CreateZeroconfScanner()});
 
-  CompleteTasks();
   GetScannerInfoList(LocalScannerFilter::kIncludeNetworkScanners,
                      SecureScannerFilter::kIncludeUnsecureScanners);
   WaitForResult();
@@ -1072,7 +1053,6 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListLocalOnlyFilter) {
   GetLorgnetteManagerClient()->SetListScannersResponse(response);
   fake_zeroconf_scanner_detector()->AddDetections({CreateZeroconfScanner()});
 
-  CompleteTasks();
   GetScannerInfoList(LocalScannerFilter::kLocalScannersOnly,
                      SecureScannerFilter::kIncludeUnsecureScanners);
   WaitForResult();
@@ -1101,7 +1081,6 @@ TEST_F(LorgnetteScannerManagerTest, GetScannerInfoListSecureOnlyFilter) {
   GetLorgnetteManagerClient()->SetListScannersResponse(response);
   fake_zeroconf_scanner_detector()->AddDetections({expected_scanner});
 
-  CompleteTasks();
   GetScannerInfoList(LocalScannerFilter::kIncludeNetworkScanners,
                      SecureScannerFilter::kSecureScannersOnly);
   WaitForResult();
@@ -1128,7 +1107,6 @@ TEST_F(LorgnetteScannerManagerTest,
   // This scanner should get filtered out because it's a network scanner.
   fake_zeroconf_scanner_detector()->AddDetections({CreateZeroconfScanner()});
 
-  CompleteTasks();
   GetScannerInfoList(LocalScannerFilter::kLocalScannersOnly,
                      SecureScannerFilter::kSecureScannersOnly);
   WaitForResult();
@@ -1194,7 +1172,6 @@ TEST_F(LorgnetteScannerManagerTest, GetCapsNoScanner) {
 // correspond to a known scanner.
 TEST_F(LorgnetteScannerManagerTest, GetCapsUnknownScanner) {
   fake_zeroconf_scanner_detector()->AddDetections({CreateZeroconfScanner()});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   GetScannerCapabilities(kUnknownScannerName);
@@ -1206,7 +1183,6 @@ TEST_F(LorgnetteScannerManagerTest, GetCapsUnknownScanner) {
 TEST_F(LorgnetteScannerManagerTest, GetCapsNoUsableDeviceName) {
   auto scanner = CreateZeroconfScanner(/*usable=*/false);
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   GetScannerCapabilities(scanner.display_name);
@@ -1218,7 +1194,6 @@ TEST_F(LorgnetteScannerManagerTest, GetCapsNoUsableDeviceName) {
 TEST_F(LorgnetteScannerManagerTest, GetCapsFail) {
   auto scanner = CreateZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   GetLorgnetteManagerClient()->SetScannerCapabilitiesResponse(std::nullopt);
@@ -1231,7 +1206,6 @@ TEST_F(LorgnetteScannerManagerTest, GetCapsFail) {
 TEST_F(LorgnetteScannerManagerTest, GetCaps) {
   auto scanner = CreateZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   lorgnette::ScannerCapabilities capabilities;
   capabilities.add_resolutions(300);
   capabilities.add_color_modes(lorgnette::MODE_COLOR);
@@ -1472,7 +1446,6 @@ TEST_F(LorgnetteScannerManagerTest, NoScannersNames) {
 // scanner.
 TEST_F(LorgnetteScannerManagerTest, UnknownScannerName) {
   fake_zeroconf_scanner_detector()->AddDetections({CreateZeroconfScanner()});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   lorgnette::ScanSettings settings;
@@ -1486,7 +1459,6 @@ TEST_F(LorgnetteScannerManagerTest, UnknownScannerName) {
 TEST_F(LorgnetteScannerManagerTest, NoUsableDeviceName) {
   auto scanner = CreateZeroconfScanner(/*usable=*/false);
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   lorgnette::ScanSettings settings;
@@ -1500,7 +1472,6 @@ TEST_F(LorgnetteScannerManagerTest, NoUsableDeviceName) {
 TEST_F(LorgnetteScannerManagerTest, ScanNotRotatedNonEpson) {
   auto scanner = CreateZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_FALSE(GetRotateAlternate(scanner.display_name, "ADF Duplex"));
@@ -1510,7 +1481,6 @@ TEST_F(LorgnetteScannerManagerTest, ScanNotRotatedNonEpson) {
 TEST_F(LorgnetteScannerManagerTest, ScanNotRotatedEpsonException) {
   auto scanner = CreateScannerCustomName("Epson WF-C579Ra");
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_FALSE(GetRotateAlternate(scanner.display_name, "ADF Duplex"));
@@ -1520,7 +1490,6 @@ TEST_F(LorgnetteScannerManagerTest, ScanNotRotatedEpsonException) {
 TEST_F(LorgnetteScannerManagerTest, ScanNotRotatedNonADF) {
   auto scanner = CreateScannerCustomName("Epson XP-7100");
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_FALSE(GetRotateAlternate(scanner.display_name, "Flatbed"));
@@ -1530,7 +1499,6 @@ TEST_F(LorgnetteScannerManagerTest, ScanNotRotatedNonADF) {
 TEST_F(LorgnetteScannerManagerTest, ScanRotated) {
   auto scanner = CreateScannerCustomName("Epson XP-7100");
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   EXPECT_TRUE(GetRotateAlternate(scanner.display_name, "ADF Duplex"));
@@ -1540,7 +1508,6 @@ TEST_F(LorgnetteScannerManagerTest, ScanRotated) {
 TEST_F(LorgnetteScannerManagerTest, ScanOnePage) {
   auto scanner = CreateZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   std::vector<std::string> pages = {"TestScanData"};
@@ -1556,7 +1523,6 @@ TEST_F(LorgnetteScannerManagerTest, ScanOnePage) {
 TEST_F(LorgnetteScannerManagerTest, ScanMultiplePages) {
   auto scanner = CreateZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   std::vector<std::string> pages = {"TestPageOne", "TestPageTwo",
@@ -1577,7 +1543,6 @@ TEST_F(LorgnetteScannerManagerTest, ScanMultiplePages) {
 TEST_F(LorgnetteScannerManagerTest, CancelScan) {
   auto scanner = CreateZeroconfScanner();
   fake_zeroconf_scanner_detector()->AddDetections({scanner});
-  CompleteTasks();
   GetScannerNames();
   WaitForResult();
   CancelScan();
