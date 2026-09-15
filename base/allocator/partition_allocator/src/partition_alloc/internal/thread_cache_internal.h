@@ -111,7 +111,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   // Controls the thread cache size, by setting the multiplier to a value above
   // or below |ThreadCache::kDefaultMultiplier|.
   void SetThreadCacheMultiplier(float multiplier);
-  void SetActiveBucketCount(uint16_t active_bucket_count);
+  void SetLargestActiveBucketIndex(uint16_t largest_active_bucket_index);
 
   static internal::Lock& GetLock() { return Instance().lock_; }
   // Purges all thread caches *now*. This is completely thread-unsafe, and
@@ -129,8 +129,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   static constexpr size_t kMinCachedMemoryForPurgingBytes = 500 * 1024;
 
  private:
-  friend class ThreadCache;
-  friend class PartitionAllocThreadCacheTest;
   friend class tools::ThreadCacheInspector;
   friend class tools::HeapDumper;
 
@@ -140,9 +138,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCacheRegistry {
   bool periodic_purge_is_initialized_ = false;
   internal::base::TimeDelta periodic_purge_next_interval_;
 
-  uint16_t active_bucket_count_ = BucketIndexLookup::GetIndexForNeutralBuckets(
-                                      kThreadCacheDefaultSizeThreshold) +
-                                  1;
+  uint16_t largest_active_bucket_index_ =
+      BucketIndexLookup::GetIndexForNeutralBuckets(
+          kThreadCacheDefaultSizeThreshold);
 };
 
 constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
@@ -422,14 +420,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   static constexpr uintptr_t kTombstoneMask = ~kTombstone;
 
   static std::array<uint8_t, kBucketCount> global_limits_;
+  // Index of the largest active bucket. Not all processes/platforms will use
+  // all buckets, as using larger buckets increases the memory footprint.
+  //
+  // TODO(lizeb): Investigate making this per-thread rather than static, to
+  // improve locality, and open the door to per-thread settings.
+  static uint16_t largest_active_bucket_index_;
 
- private:
   // These are at the beginning as they're accessed for each allocation.
   uint32_t cached_memory_ = 0;
-  // Number of active buckets in this thread cache. Not all processes/platforms
-  // will use all buckets, as using larger buckets increases the memory
-  // footprint.
-  uint16_t active_bucket_count_ = 0;
   std::atomic<bool> should_purge_;
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   const internal::PoolOffsetLookup offset_lookup_;
@@ -468,7 +467,7 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.cache_fill_count);
 
-  if (bucket_index >= active_bucket_count_) [[unlikely]] {
+  if (bucket_index > largest_active_bucket_index_) [[unlikely]] {
     PA_INCREMENT_COUNTER(stats_.cache_fill_misses);
     return std::nullopt;
   }
@@ -507,7 +506,7 @@ PA_ALWAYS_INLINE std::optional<SlotAddressAndSize> ThreadCache::GetFromCache(
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   PA_INCREMENT_COUNTER(stats_.alloc_count);
   // Only handle "small" allocations.
-  if (bucket_index >= active_bucket_count_) [[unlikely]] {
+  if (bucket_index > largest_active_bucket_index_) [[unlikely]] {
     PA_INCREMENT_COUNTER(stats_.alloc_miss_too_large);
     PA_INCREMENT_COUNTER(stats_.alloc_misses);
     return std::nullopt;
