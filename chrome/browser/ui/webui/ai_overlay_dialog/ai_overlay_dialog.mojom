@@ -56,12 +56,6 @@ struct RememberedNote {
   string value;
 };
 
-// Recognized debug output file types for diagnostic disk logging.
-enum DebugFileType {
-  kPrimingTurnMarkdown,
-  kImage,
-};
-
 // Factory for creating a PageHandler.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -107,12 +101,6 @@ interface PageHandler {
 
   // Retrieves all currently stored key-value remembered notes.
   GetRememberedNotes() => (array<RememberedNote> notes);
-
-  // Writes debug data (such as Markdown text or Base64 images) to /tmp/ttc/
-  // when debug logging flag (--enable-ttc-debug-logs) is enabled.
-  // A static enum is used to prevent untrusted renderers from specifying
-  // arbitrary file paths. Does nothing if debug logging is not enabled.
-  SaveDebugFile(DebugFileType type, string content);
 
   // Retrieves the raw image content and MIME type for an image or linked image
   // element on the active page by its numeric DOM node ID.

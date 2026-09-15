@@ -256,16 +256,6 @@ TEST_F(AiOverlayDialogPageHandlerTest, RememberedNotesDictionaryStorage) {
   }
 }
 
-TEST_F(AiOverlayDialogPageHandlerTest, SaveDebugFile) {
-  // Calling SaveDebugFile without debug flags should safely no-op without
-  // error.
-  handler_remote()->SaveDebugFile(
-      ai_overlay_dialog::mojom::DebugFileType::kPrimingTurnMarkdown,
-      "# test markdown");
-  handler_remote().FlushForTesting();
-}
-
-
 TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_DisabledByDefault) {
   // When kAiOverlayDialogUseMes is not enabled, calling StartStreamingSession
   // should safely no-op.

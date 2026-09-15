@@ -55,8 +55,6 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   void SetRememberedNote(ai_overlay_dialog::mojom::RememberedNotePtr note,
                          SetRememberedNoteCallback callback) override;
   void GetRememberedNotes(GetRememberedNotesCallback callback) override;
-  void SaveDebugFile(ai_overlay_dialog::mojom::DebugFileType type,
-                     const std::string& content) override;
   void GetImageBytes(const blink::DOMNodeIdType& dom_node_id,
                      GetImageBytesCallback callback) override;
 

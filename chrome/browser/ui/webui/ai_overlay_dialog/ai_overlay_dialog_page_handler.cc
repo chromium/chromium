@@ -381,10 +381,6 @@ void AiOverlayDialogPageHandler::GetRememberedNotes(
   std::move(callback).Run(std::move(result));
 }
 
-void AiOverlayDialogPageHandler::SaveDebugFile(
-    ai_overlay_dialog::mojom::DebugFileType type,
-    const std::string& content) {}
-
 void AiOverlayDialogPageHandler::GetImageBytes(
     const blink::DOMNodeIdType& dom_node_id,
     GetImageBytesCallback callback) {
