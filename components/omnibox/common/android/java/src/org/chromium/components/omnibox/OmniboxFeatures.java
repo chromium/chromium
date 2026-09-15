@@ -165,6 +165,11 @@ public class OmniboxFeatures {
     private static final CachedFlag sOmniboxMultimodalInput =
             newFlag(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT, FeatureState.ENABLED_IN_PROD);
 
+    public static final CachedFlag sOmniboxFuseboxPopupVariations =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS,
+                    FeatureState.ENABLED_IN_TEST);
+
     public static final BooleanCachedFeatureParam sMultiattachmentFusebox =
             newBooleanParam(sOmniboxMultimodalInput, "multi_context", true);
 
@@ -176,25 +181,31 @@ public class OmniboxFeatures {
             newBooleanParam(sOmniboxMultimodalInput, "allow_current_tab", true);
 
     /**
-     * Whether the bottom sheet popup should be shown. This is private to ensure that callers use
-     * {@link #shouldShowBottomSheetPopup()} which also checks if the platform is desktop.
+     * Whether the bottom sheet popup should be shown for multimodal input.
      */
-    private static final BooleanCachedFeatureParam sShowBottomSheetPopup =
+    private static final BooleanCachedFeatureParam sMultimodalShowBottomSheetPopup =
             newBooleanParam(sOmniboxMultimodalInput, "show_bottom_sheet_popup", false);
+
+    /**
+     * Whether the bottom sheet popup should be shown for fusebox popup variations.
+     */
+    private static final BooleanCachedFeatureParam sFuseboxPopupShowBottomSheet =
+            newBooleanParam(sOmniboxFuseboxPopupVariations, "show_bottom_sheet_popup", false);
 
     /**
      * Whether the popup should use a horizontal carousel for attachments. This is private to ensure
      * that callers use {@link #shouldUseCarousel()} which also checks if the platform is desktop.
      */
     private static final BooleanCachedFeatureParam sFuseboxPopupCarouselUi =
-            newBooleanParam(sOmniboxMultimodalInput, "fusebox_popup_carousel_ui", false);
+            newBooleanParam(sOmniboxFuseboxPopupVariations, "fusebox_popup_carousel_ui", false);
 
     /**
      * Whether the popup should use an accordion for tools. This is private to ensure that callers
      * use {@link #hasAccordion()} which also checks if the platform is desktop.
      */
     private static final BooleanCachedFeatureParam sFuseboxPopupAccordionUi =
-            newBooleanParam(sOmniboxMultimodalInput, "fusebox_popup_use_accordion_ui", false);
+            newBooleanParam(
+                    sOmniboxFuseboxPopupVariations, "fusebox_popup_use_accordion_ui", false);
 
     public static final BooleanCachedFeatureParam sUseAskHintForNtp =
             newBooleanParam(sOmniboxMultimodalInput, "use_ask_hint_for_ntp", false);
@@ -414,7 +425,8 @@ public class OmniboxFeatures {
 
     /** Modifies the output of {@link #shouldShowBottomSheetPopup()} for testing. */
     public static void setShowBottomSheetPopupForTesting(boolean value) {
-        sShowBottomSheetPopup.setForTesting(value);
+        sMultimodalShowBottomSheetPopup.setForTesting(value);
+        sFuseboxPopupShowBottomSheet.setForTesting(value);
     }
 
     /** Modifies the output of {@link #shouldUseCarousel()} for testing. */
@@ -429,7 +441,12 @@ public class OmniboxFeatures {
 
     /** Returns whether the bottom sheet popup should be shown. */
     public static boolean shouldShowBottomSheetPopup() {
-        return !OmniboxCapabilities.isDesktopPlatform() && sShowBottomSheetPopup.getValue();
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return false;
+        }
+        return sOmniboxFuseboxPopupVariations.isEnabled()
+                ? sFuseboxPopupShowBottomSheet.getValue()
+                : sMultimodalShowBottomSheetPopup.getValue();
     }
 
     /** Returns whether the popup should use a horizontal carousel for attachments. */

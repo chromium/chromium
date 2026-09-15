@@ -196,6 +196,9 @@ BASE_FEATURE(kHideAimEntrypointForUrlSuggestions, ENABLED);
 // When enabled, the multimodal input button is shown in the Omnibox.
 BASE_FEATURE(kOmniboxMultimodalInput, ENABLED);
 
+// Enables popup variations (e.g. accordion menu) for mobile Fusebox.
+BASE_FEATURE(kOmniboxFuseboxPopupVariations, DISABLED);
+
 
 // Disables tab attachments for Canvas requests and disables Canvas if tabs are
 // attached.
@@ -621,6 +624,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kInlineLocationSignaling,
       &kOmniboxSiteSearch,
       &kOmniboxMultimodalInput,
+      &kOmniboxFuseboxPopupVariations,
       &kServeJavaCachedZeroSuggest,
       &kAIMSuppressVerbatimMatch,
       &kResetSuggestionsScroll,

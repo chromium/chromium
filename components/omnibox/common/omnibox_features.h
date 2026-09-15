@@ -115,6 +115,9 @@ BASE_DECLARE_FEATURE(kOmniboxDisableTabsForCanvas);
 BASE_DECLARE_FEATURE(kAim3pEntrypoint);
 extern const base::FeatureParam<bool> kAim3pEntrypointDebug;
 
+// Enables popup variations (e.g. accordion menu) for mobile Fusebox.
+BASE_DECLARE_FEATURE(kOmniboxFuseboxPopupVariations);
+
 // Navigation experiments.
 BASE_DECLARE_FEATURE(kDefaultTypedNavigationsToHttps);
 extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];

@@ -3622,6 +3622,12 @@ inline constexpr char kOmniboxMultimodalInputName[] =
 inline constexpr char kOmniboxMultimodalInputDescription[] =
     "When enabled, the multimodal input toolbar is shown in the Omnibox.";
 
+inline constexpr char kOmniboxFuseboxPopupVariationsName[] =
+    "Omnibox Fusebox Popup Variations";
+inline constexpr char kOmniboxFuseboxPopupVariationsDescription[] =
+    "Enables popup variations (with the accordion menu) for the mobile "
+    "Fusebox popup.";
+
 
 inline constexpr char kOmniboxDisableTabsForCanvasName[] =
     "Omnibox Disable Tabs For Canvas";

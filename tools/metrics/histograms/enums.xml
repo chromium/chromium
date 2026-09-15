@@ -10417,6 +10417,7 @@ from previous Chrome versions.
   <int value="-1353195918" label="UseSkiaRenderer:enabled"/>
   <int value="-1352117564" label="PickerFlip:enabled"/>
   <int value="-1351968795" label="SingleProcessMash:enabled"/>
+  <int value="-1351665994" label="OmniboxFuseboxPopupVariations:disabled"/>
   <int value="-1351328710"
       label="OmniboxUIExperimentJogTextfieldOnPopup:disabled"/>
   <int value="-1351140174" label="CastStreamingMaxVideoBitrate:25 Mbps"/>
@@ -11000,6 +11001,7 @@ from previous Chrome versions.
   <int value="-1172940200" label="AuxiliarySearchThirdParty:enabled"/>
   <int value="-1172572865" label="NTPShowGoogleGInOmnibox:enabled"/>
   <int value="-1172204005" label="enable-offline-auto-reload-visible-only"/>
+  <int value="-1171756457" label="OmniboxFuseboxPopupVariations:enabled"/>
   <int value="-1171556368" label="SyncPollImmediatelyOnEveryStartup2:disabled"/>
   <int value="-1170286604" label="Commander:disabled"/>
   <int value="-1170030520" label="WebUIOmniboxAimPopup:enabled"/>
