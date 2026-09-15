@@ -310,13 +310,9 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   *out_release_callback = blink::BindOnce(
       [](scoped_refptr<CanvasResource> canvas_resource,
          const gpu::SyncToken& sync_token, bool is_lost) {
-        CHECK(canvas_resource);
-        canvas_resource->WaitSyncToken(sync_token);
-        if (is_lost) {
-          canvas_resource->NotifyResourceLost();
-        }
-
-        CanvasResource::DropRefOnOwningThread(std::move(canvas_resource));
+        auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
+            std::move(canvas_resource));
+        exported_resource->EndDisplayCompositorAccess(sync_token, is_lost);
       },
       std::move(frame));
 

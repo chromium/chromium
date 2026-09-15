@@ -31,6 +31,7 @@ class PLATFORM_EXPORT ExportedCanvasResource
   void Transfer();
   void EndDisplayCompositorAccess(gpu::SharedImageExportResult export_result,
                                   bool is_lost);
+  void EndDisplayCompositorAccess(gpu::SyncToken export_result, bool is_lost);
   bool PrepareTransferableResource(
       viz::TransferableResource* transferable_resource,
       bool needs_verified_synctoken);

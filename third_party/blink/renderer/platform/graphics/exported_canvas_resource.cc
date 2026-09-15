@@ -62,7 +62,12 @@ void ExportedCanvasResource::EndDisplayCompositorAccess(
     bool is_lost) {
   auto sync_token =
       resource_->GetSharedImage()->EndExport(std::move(export_result));
+  EndDisplayCompositorAccess(sync_token, is_lost);
+}
 
+void ExportedCanvasResource::EndDisplayCompositorAccess(
+    gpu::SyncToken sync_token,
+    bool is_lost) {
   resource_->WaitSyncToken(sync_token);
   if (is_lost) {
     resource_->NotifyResourceLost();
