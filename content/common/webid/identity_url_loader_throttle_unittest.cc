@@ -44,16 +44,20 @@ class IdentityUrlLoaderThrottleTest : public testing::Test {
     return GetSetLoginHeaderInProcessParser();
   }
 
-  void SetIdpStatus(const std::optional<url::Origin>& initiator,
+  void SetIdpStatus(network::mojom::RequestDestination destination,
+                    const std::optional<url::Origin>& initiator,
                     const url::Origin& idp_origin,
                     IdpSigninStatus status) {
     ++cb_num_calls_;
+    cb_destination_ = destination;
     cb_initiator_ = initiator;
     cb_idp_origin_ = idp_origin;
     cb_signin_status_ = status;
   }
 
   int cb_num_calls_ = 0;
+  network::mojom::RequestDestination cb_destination_ =
+      network::mojom::RequestDestination::kEmpty;
   std::optional<url::Origin> cb_initiator_;
   url::Origin cb_idp_origin_;
   IdpSigninStatus cb_signin_status_ = IdpSigninStatus::kSignedOut;
@@ -76,6 +80,7 @@ TEST_P(IdentityUrlLoaderThrottleTestParameterized, Headers) {
   network::ResourceRequest request;
   request.url = GURL("https://accounts.idp.example/");
   request.request_initiator = url::Origin::Create(GURL("https://rp.example/"));
+  request.destination = network::mojom::RequestDestination::kDocument;
   bool defer = false;
 
   throttle->WillStartRequest(&request, &defer);
@@ -96,6 +101,7 @@ TEST_P(IdentityUrlLoaderThrottleTestParameterized, Headers) {
   EXPECT_EQ(url::Origin::Create(GURL("https://accounts.idp.example/")),
             cb_idp_origin_);
   EXPECT_EQ(request.request_initiator, cb_initiator_);
+  EXPECT_EQ(request.destination, cb_destination_);
   EXPECT_EQ(0, delegate.resume_called_);
 }
 
@@ -127,6 +133,32 @@ TEST_F(IdentityUrlLoaderThrottleTest, NoRelevantHeader) {
 
   EXPECT_EQ(0, cb_num_calls_);
   EXPECT_EQ(0, delegate.resume_called_);
+}
+
+TEST_F(IdentityUrlLoaderThrottleTest, NonDefaultDestination) {
+  TestDelegate delegate;
+  std::unique_ptr<blink::URLLoaderThrottle> throttle =
+      MaybeCreateIdentityUrlLoaderThrottle(CreateCallback(),
+                                           CreateParseCallback());
+  ASSERT_NE(nullptr, throttle);
+  throttle->set_delegate(&delegate);
+
+  network::ResourceRequest request;
+  request.url = GURL("https://accounts.idp.example/");
+  request.destination = network::mojom::RequestDestination::kScript;
+  bool defer = false;
+
+  throttle->WillStartRequest(&request, &defer);
+  EXPECT_FALSE(defer);
+
+  network::mojom::URLResponseHead response_head;
+  response_head.headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\nSet-Login: logged-in\n");
+  throttle->WillProcessResponse(request.url, &response_head, &defer);
+  EXPECT_FALSE(defer);
+
+  EXPECT_EQ(1, cb_num_calls_);
+  EXPECT_EQ(network::mojom::RequestDestination::kScript, cb_destination_);
 }
 
 TEST_F(IdentityUrlLoaderThrottleTest, InvalidHeader) {

@@ -283,6 +283,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
             [](const blink::LocalFrameToken& token,
                const scoped_refptr<base::SequencedTaskRunner>
                    main_thread_task_runner,
+               network::mojom::RequestDestination destination,
                const std::optional<url::Origin>& initiator,
                const url::Origin& idp_origin,
                blink::mojom::IdpSigninStatus status) {

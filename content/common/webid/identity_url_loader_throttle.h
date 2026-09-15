@@ -15,6 +15,7 @@
 #include "content/common/content_export.h"
 #include "content/public/common/web_identity.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -57,6 +58,8 @@ class CONTENT_EXPORT IdentityUrlLoaderThrottle
 
   GURL request_url_;
   std::optional<url::Origin> request_initiator_;
+  network::mojom::RequestDestination request_destination_ =
+      network::mojom::RequestDestination::kEmpty;
   SetIdpStatusCallback set_idp_status_cb_;
   ParseSetLoginHeaderCallback parse_set_login_header_cb_;
   bool is_inside_handler_response_ = false;

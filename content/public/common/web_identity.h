@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace url {
@@ -22,11 +23,11 @@ enum class IdpSigninStatus;
 
 namespace content {
 
-typedef base::RepeatingCallback<void(
-    const std::optional<url::Origin>& initiator,
-    const url::Origin& idp_origin,
-    blink::mojom::IdpSigninStatus status)>
-    SetIdpStatusCallback;
+using SetIdpStatusCallback =
+    base::RepeatingCallback<void(network::mojom::RequestDestination destination,
+                                 const std::optional<url::Origin>& initiator,
+                                 const url::Origin& idp_origin,
+                                 blink::mojom::IdpSigninStatus status)>;
 
 using ParseSetLoginHeaderCallback = base::RepeatingCallback<void(
     const std::string& header_value,
