@@ -81,16 +81,17 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -124,8 +125,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -167,8 +168,7 @@ import java.util.stream.IntStream;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
-// TODO(crbug.com/40899175): Investigate batching.
-@DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
+@Batch(Batch.PER_CLASS)
 @DisableFeatures({
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
@@ -185,8 +185,8 @@ public class BookmarkTest {
     private static final int TEST_PORT = 12345;
 
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -220,6 +220,7 @@ public class BookmarkTest {
 
     @Before
     public void setUp() {
+        BookmarkModel.clearLastUsedParent();
         // Setup the shopping service.
         ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
@@ -235,19 +236,35 @@ public class BookmarkTest {
                 });
 
         // Use a custom port so the links are consistent for render tests.
-        mActivityTestRule
-                .getActivityTestRule()
-                .getEmbeddedTestServerRule()
-                .setServerPort(TEST_PORT);
-        mTestServer = mActivityTestRule.getTestServer();
+        if (mTestServer == null) {
+            mActivityTestRule
+                    .getActivityTestRule()
+                    .getEmbeddedTestServerRule()
+                    .setServerPort(TEST_PORT);
+            mTestServer = mActivityTestRule.getTestServer();
+            mTestPage = new GURL(mTestServer.getURL(TEST_PAGE_URL_GOOGLE));
+            mTestPageFoo = new GURL(mTestServer.getURL(TEST_PAGE_URL_FOO));
+        }
         mTestUrlA = new GURL("http://a.com");
-        mTestPage = new GURL(mTestServer.getURL(TEST_PAGE_URL_GOOGLE));
-        mTestPageFoo = new GURL(mTestServer.getURL(TEST_PAGE_URL_FOO));
     }
 
     @After
     public void tearDown() throws Exception {
-        if (mBookmarkActivity != null) ApplicationTestUtils.finishActivity(mBookmarkActivity);
+        if (mBookmarkActivity != null) {
+            ApplicationTestUtils.finishActivity(mBookmarkActivity);
+            mBookmarkActivity = null;
+        }
+        runOnUiThreadBlocking(
+                () -> {
+                    // The bookmark model is loaded lazily, and removeAllUserBookmarks() asserts
+                    // that it is loaded. Tests which never touch bookmarks leave it unloaded and
+                    // have nothing to clean up.
+                    if (mBookmarkModel != null && mBookmarkModel.isBookmarkModelLoaded()) {
+                        mBookmarkModel.removeAllUserBookmarks();
+                    }
+                    AccessibilityStateTestHelper.uninitializeForTesting();
+                });
+        BookmarkModel.clearLastUsedParent();
     }
 
     @AfterClass
@@ -258,6 +275,7 @@ public class BookmarkTest {
     @Test
     @SmallTest
     @DisabledTest(message = "Flaky, crbug.com/342644856")
+    @RequiresRestart("Tests lazy loading of partner bookmarks and bookmark model")
     public void testAddBookmark() throws Exception {
         mActivityTestRule.loadUrl(mTestPage);
         // Check partner bookmarks are lazily loaded.
@@ -1302,7 +1320,12 @@ public class BookmarkTest {
 
         openBookmarkManager();
 
-        View promo = getNthBookmarkViewHolder(1).itemView;
+        // getNthBookmarkViewHolder(1) resolves the first *bookmark* row, which is a selectable row
+        // and not the promo. The test only passed while the model list happened to still be empty
+        // when the index was computed; a warm batched process populates it sooner. Look the promo
+        // up by its view type instead so the row under test is always the promo.
+        onViewWaiting(withId(R.id.signin_promo_view_container));
+        View promo = getViewHolderAtIndex(getSigninPromoIndex()).itemView;
         TouchCommon.longPressView(promo);
         RecyclerViewTestUtils.waitForStableMvcRecyclerView(mItemsContainer);
         assertFalse(
@@ -1441,6 +1464,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     public void testTopLevelFolders() throws Exception {
+        BookmarkModel.clearLastUsedParent();
         // NOTE: Hide promos to ensure top level-folders will fit the viewport.
         SigninPromoCoordinator.disablePromoForTesting();
         openBookmarkManager();
@@ -1470,7 +1494,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     public void testTopLevelFolderUpdateAfterSync() throws Exception {
-        // Set up the test and open the bookmark manager to the Mobile Bookmarks folder.
+        BookmarkModel.clearLastUsedParent();
         BookmarkTestUtil.readPartnerBookmarks(mActivityTestRule.getActivityTestRule());
         openBookmarkManager();
 
@@ -1796,6 +1820,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
+    @RequiresRestart("Asserts exact total count from process launch histogram")
     public void testBookmarksDoesNotRecordLaunchMetrics() throws Throwable {
         assertEquals(
                 1,
@@ -1835,6 +1860,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
+    @RequiresRestart("Asserts exact total count of 0 prior to opening bookmark manager")
     public void testRecordsHistogramWhenBookmarkManagerOpened_InRegular() throws Throwable {
         assertEquals(
                 0,
@@ -1870,6 +1896,7 @@ public class BookmarkTest {
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest(message = "https://crbug.com/344981899, this test needs to be fixed post-UNO")
+    @RequiresRestart("Asserts exact total count of 0 prior to opening bookmark manager")
     public void testRecordsHistogramWhenBookmarkManagerOpened_InIncognito() throws Throwable {
         assertEquals(
                 0,
@@ -2352,6 +2379,16 @@ public class BookmarkTest {
         }
 
         return index;
+    }
+
+    // Returns the index of the sign-in promo row in the list.
+    private int getSigninPromoIndex() {
+        for (int index = 0; index < mModelList.size(); index++) {
+            if (mModelList.get(index).type == BookmarkListEntry.ViewType.SIGNIN_PROMO) {
+                return index;
+            }
+        }
+        throw new AssertionError("The bookmark list does not contain a sign-in promo.");
     }
 
     // Returns the nth bookmark row in the list, regardless of other item types. The given value for
