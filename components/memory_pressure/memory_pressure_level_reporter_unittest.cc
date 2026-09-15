@@ -50,6 +50,53 @@ TEST(MemoryPressureLevelReporterTest, PressureWindowDuration) {
       "Memory.PressureWindowDuration.CriticalToModerate", base::Seconds(27), 1);
 }
 
+TEST(MemoryPressureLevelReporterTest,
+     PressureWindowDurationWithPeriodicReporting) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  MemoryPressureLevelReporter reporter(base::MEMORY_PRESSURE_LEVEL_NONE);
+  base::HistogramTester histogram_tester;
+
+  // Transition to MODERATE.
+  reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Fast forward 12 minutes. The periodic reporting timer fires at 5 min and
+  // 10 min to flush Memory.PressureLevel2, but must not reset the episode
+  // clock.
+  task_environment.FastForwardBy(base::Minutes(12));
+
+  // Moderate -> Critical.
+  reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  // The full 12 minutes must be reported.
+  histogram_tester.ExpectTimeBucketCount(
+      "Memory.PressureWindowDuration.ModerateToCritical", base::Minutes(12), 1);
+  histogram_tester.ExpectTotalCount(
+      "Memory.PressureWindowDuration.ModerateToCritical", 1);
+
+  // Fast forward 8 minutes in CRITICAL (periodic timer fires at 5 min).
+  task_environment.FastForwardBy(base::Minutes(8));
+
+  // Critical -> None.
+  reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE);
+  // The full 8 minutes must be reported.
+  histogram_tester.ExpectTimeBucketCount(
+      "Memory.PressureWindowDuration.CriticalToNone", base::Minutes(8), 1);
+  histogram_tester.ExpectTotalCount(
+      "Memory.PressureWindowDuration.CriticalToNone", 1);
+
+  // Verify time-in-state accumulation in Memory.PressureLevel2.
+  histogram_tester.ExpectBucketCount(
+      "Memory.PressureLevel2",
+      static_cast<int>(base::MEMORY_PRESSURE_LEVEL_MODERATE),
+      base::Minutes(12).InSeconds());
+  histogram_tester.ExpectBucketCount(
+      "Memory.PressureLevel2",
+      static_cast<int>(base::MEMORY_PRESSURE_LEVEL_CRITICAL),
+      base::Minutes(8).InSeconds());
+}
+
 TEST(MemoryPressureLevelReporterTest, MemoryPressureHistogram) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO,

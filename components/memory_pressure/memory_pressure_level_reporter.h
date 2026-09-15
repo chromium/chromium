@@ -52,7 +52,17 @@ class MemoryPressureLevelReporter {
   const std::optional<std::string> histogram_name_;
   const std::optional<std::string> transition_prefix_;
   base::MemoryPressureLevel current_pressure_level_;
+
+  // The timestamp when the current memory pressure level started. Used to
+  // calculate the duration of memory pressure episodes for the
+  // `Memory.PressureWindowDuration.*` histograms upon a level transition.
   base::TimeTicks current_pressure_level_begin_ = base::TimeTicks::Now();
+
+  // The timestamp of the last time ReportHistogram() accumulated time into
+  // the `Memory.PressureLevel2` histogram. Decoupled from
+  // `current_pressure_level_begin_` so periodic flushes do not move the
+  // episode start marker.
+  base::TimeTicks last_report_time_ = base::TimeTicks::Now();
 
   // Tracks whether the current critical pressure is due to low disk space.
   // When true, |os_pressure_level_| indicates the OS-reported level so that

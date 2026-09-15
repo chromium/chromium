@@ -85,8 +85,10 @@ void MemoryPressureLevelReporter::OnMemoryPressureLevelChanged(
                                   base::Seconds(1), base::Minutes(10), 50);
   }
 
-  current_pressure_level_begin_ = now;
-  current_pressure_level_ = new_level;
+  if (new_level != current_pressure_level_) {
+    current_pressure_level_begin_ = now;
+    current_pressure_level_ = new_level;
+  }
 
   StartPeriodicTimer();
 }
@@ -105,11 +107,11 @@ void MemoryPressureLevelReporter::UpdateDiskPressureState(
   ReportHistogram(base::TimeTicks::Now());
   is_disk_pressure_ = new_is_disk_pressure;
   os_pressure_level_ = new_os_pressure_level;
-  current_pressure_level_begin_ = base::TimeTicks::Now();
 }
 
 void MemoryPressureLevelReporter::ReportHistogram(base::TimeTicks now) {
-  auto duration = now - current_pressure_level_begin_;
+  auto duration = now - last_report_time_;
+  last_report_time_ = now;
   auto duration_s = duration.InSeconds();
 
   MemoryPressureHistogramBuckets bucket;
