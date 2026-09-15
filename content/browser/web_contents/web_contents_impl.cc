@@ -4479,7 +4479,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
 #endif
 
   SchedulerLoopQuarantineWebContentsObserver::MaybeCreateForWebContents(this);
-  RedirectChainDetector::CreateForWebContents(this);
+  RedirectChainDetector::MaybeCreateForWebContents(this);
   BtmWebContentsObserver::MaybeCreateForWebContents(this);
   DeclarativePerformanceObserverCoordinator::CreateForWebContents(this);
 

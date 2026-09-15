@@ -415,10 +415,15 @@ class CONTENT_EXPORT RedirectChainDetector
     virtual void ReportRedirectors(const std::set<std::string>& sites) {}
   };
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(const Observer* observer);
+  // Creates a `RedirectChainDetector` for `web_contents` unless `web_contents`
+  // is an inner WebContents for a guest (e.g., `<webview>` or
+  // `<controlledframe>`).
+  static void MaybeCreateForWebContents(WebContents* web_contents);
 
   ~RedirectChainDetector() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(const Observer* observer);
 
   void SetRedirectChainHandlerForTesting(BtmRedirectChainHandler handler) {
     detector_.SetRedirectChainHandlerForTesting(handler);

@@ -11,9 +11,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_file_util.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -24,10 +26,14 @@
 #include "content/browser/btm/btm_test_utils.h"
 #include "content/browser/btm/btm_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_plugin_guest_delegate.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/btm_service.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/site_instance.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
@@ -41,7 +47,10 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_launcher.h"
 #include "content/shell/browser/shell.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_options.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/url_constants.h"
@@ -53,13 +62,14 @@ namespace content {
 
 class BtmTabHelperBrowserTest : public ContentBrowserTest {
  protected:
-  void SetUp() override {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(
+  BtmTabHelperBrowserTest() {
+    enabled_features_.push_back(
         {features::kBtm, {{"triggering_action", "bounce"}}});
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
+  }
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features_,
+                                                       disabled_features_);
     ContentBrowserTest::SetUp();
   }
 
@@ -138,6 +148,9 @@ class BtmTabHelperBrowserTest : public ContentBrowserTest {
   BrowserContext* extra_browser_context() {
     return extra_browser_context_.get();
   }
+
+  std::vector<base::test::FeatureRefAndParams> enabled_features_;
+  std::vector<base::test::FeatureRef> disabled_features_;
 
  private:
   raw_ptr<WebContents, AcrossTasksDanglingUntriaged> web_contents_ = nullptr;
@@ -685,5 +698,319 @@ IN_PROC_BROWSER_TEST_F(BtmTabHelperBrowserTest,
                    .has_value());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
+namespace {
+class TestGuestDelegate : public BrowserPluginGuestDelegate {
+ public:
+  explicit TestGuestDelegate(WebContents* owner) : owner_(owner) {}
+  WebContents* GetOwnerWebContents() override { return owner_.get(); }
+  base::WeakPtr<BrowserPluginGuestDelegate> GetGuestDelegateWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  raw_ptr<WebContents> owner_ = nullptr;
+  base::WeakPtrFactory<TestGuestDelegate> weak_factory_{this};
+};
+
+std::unique_ptr<WebContents> CreateGuestWebContents(
+    BrowserContext* browser_context,
+    BrowserPluginGuestDelegate* guest_delegate) {
+  StoragePartitionConfig guest_partition_config =
+      StoragePartitionConfig::Create(browser_context, "guest_domain",
+                                     "guest_partition",
+                                     /*in_memory=*/false);
+  scoped_refptr<SiteInstance> guest_site_instance =
+      SiteInstance::CreateForGuest(browser_context, guest_partition_config);
+
+  WebContents::CreateParams guest_params(browser_context, guest_site_instance);
+  guest_params.guest_delegate = guest_delegate;
+  return WebContents::Create(guest_params);
+}
+
+// Creates a legacy inner-WebContents guest and attaches it to `rfh`.
+// Note: this requires `features::kGuestViewMPArch` to be disabled.
+WebContents* CreateAndAttachGuestContents(
+    RenderFrameHost* rfh,
+    BrowserPluginGuestDelegate* guest_delegate) {
+  auto* outer_contents = WebContents::FromRenderFrameHost(rfh);
+  if (!outer_contents) {
+    return nullptr;
+  }
+
+  std::unique_ptr<WebContents> guest_contents = CreateGuestWebContents(
+      outer_contents->GetBrowserContext(), guest_delegate);
+  WebContents* guest_contents_ptr = guest_contents.get();
+  outer_contents->AttachInnerWebContents(std::move(guest_contents), rfh,
+                                         /*is_full_page=*/false);
+  return guest_contents_ptr;
+}
+
+std::string GetCookiesForPartition(StoragePartition* partition,
+                                   const GURL& url) {
+  network::mojom::CookieManager* cookie_manager =
+      partition->GetCookieManagerForBrowserProcess();
+  net::CookieOptions options;
+  options.set_same_site_cookie_context(
+      net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+  base::test::TestFuture<const net::CookieAccessResultList&,
+                         const net::CookieAccessResultList&>
+      future;
+  cookie_manager->GetCookieList(
+      url, options, net::CookiePartitionKeyCollection::ContainsAll(),
+      future.GetCallback());
+  return net::CanonicalCookie::BuildCookieLine(future.Get<0>());
+}
+}  // namespace
+
+// Test fixture for guest WebContents tests.
+// Note: Requires `features::kGuestViewMPArch` to be disabled for legacy
+// inner-WebContents guest support.
+class BtmTabHelperGuestBrowserTest : public BtmTabHelperBrowserTest {
+ protected:
+  BtmTabHelperGuestBrowserTest() {
+    disabled_features_.push_back(features::kGuestViewMPArch);
+  }
+};
+
+// Tests that BtmWebContentsObserver and RedirectChainDetector are attached to
+// regular WebContents, but not to guest WebContents.
+IN_PROC_BROWSER_TEST_F(BtmTabHelperGuestBrowserTest,
+                       GuestWebContentsExcludedFromBtm) {
+  WebContents* web_contents = GetActiveWebContents();
+  BrowserContext* browser_context = web_contents->GetBrowserContext();
+  // Both should be attached to the regular web contents.
+  EXPECT_NE(BtmWebContentsObserver::FromWebContents(web_contents), nullptr);
+  EXPECT_NE(RedirectChainDetector::FromWebContents(web_contents), nullptr);
+
+  TestGuestDelegate guest_delegate(web_contents);
+  std::unique_ptr<WebContents> guest_contents =
+      CreateGuestWebContents(browser_context, &guest_delegate);
+
+  ASSERT_TRUE(guest_contents->IsInnerWebContentsForGuest());
+
+  // Neither should be attached to the guest WebContents.
+  EXPECT_EQ(BtmWebContentsObserver::FromWebContents(guest_contents.get()),
+            nullptr);
+  EXPECT_EQ(RedirectChainDetector::FromWebContents(guest_contents.get()),
+            nullptr);
+
+  // Calling `MaybeCreateForWebContents` explicitly should also be a no-op for
+  // guest `WebContents`.
+  RedirectChainDetector::MaybeCreateForWebContents(guest_contents.get());
+  EXPECT_EQ(RedirectChainDetector::FromWebContents(guest_contents.get()),
+            nullptr);
+  BtmWebContentsObserver::MaybeCreateForWebContents(guest_contents.get());
+  EXPECT_EQ(BtmWebContentsObserver::FromWebContents(guest_contents.get()),
+            nullptr);
+}
+
+// Tests that a stateful bounce occurring within an attached guest WebContents
+// is ignored by BTM, does not record state, and does not trigger state
+// deletion in the default StoragePartition or the guest partition.
+IN_PROC_BROWSER_TEST_F(BtmTabHelperGuestBrowserTest,
+                       GuestBounceDoesNotTriggerDefaultPartitionStateDeletion) {
+  WebContents* web_contents = GetActiveWebContents();
+  BrowserContext* browser_context = web_contents->GetBrowserContext();
+  BtmServiceImpl* btm_service = BtmServiceImpl::Get(browser_context);
+
+  // Set a cookie for b.test in the default storage partition.
+  ASSERT_TRUE(NavigateToURL(
+      web_contents, embedded_test_server()->GetURL(
+                        "b.test", "/set-cookie?primary_session=secret")));
+  EXPECT_EQ(GetCookies(browser_context, GURL("http://b.test")),
+            "primary_session=secret");
+
+  // Navigate to a.test with an iframe placeholder to ensure b.test is not an
+  // open tab.
+  GURL host_url =
+      embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
+  ASSERT_TRUE(NavigateToURL(web_contents, host_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+  RenderFrameHost* subframe =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+
+  // Attach a guest WebContents in a non-default partition to the iframe.
+  TestGuestDelegate guest_delegate(web_contents);
+  WebContents* guest_contents =
+      CreateAndAttachGuestContents(subframe, &guest_delegate);
+  ASSERT_TRUE(guest_contents);
+
+  ASSERT_TRUE(guest_contents->IsInnerWebContentsForGuest());
+  StoragePartition* guest_partition =
+      browser_context->GetStoragePartition(guest_contents->GetSiteInstance());
+  ASSERT_NE(browser_context->GetDefaultStoragePartition(), guest_partition);
+
+  // A time within the past hour.
+  base::Time bounce_time = base::Time::Now() - base::Minutes(10);
+  SetBtmTime(bounce_time);
+
+  // Make b.test statefully bounce to d.test inside the attached guest
+  // WebContents.
+  const GURL bounce_url = embedded_test_server()->GetURL(
+      "b.test", "/cross-site-with-cookie/d.test/title1.html");
+  ASSERT_TRUE(NavigateToURL(guest_contents, embedded_test_server()->GetURL(
+                                                "a.test", "/title1.html")));
+  ASSERT_TRUE(NavigateToURLFromRenderer(
+      guest_contents, bounce_url,
+      embedded_test_server()->GetURL("d.test", "/title1.html")));
+  ASSERT_TRUE(NavigateToURL(guest_contents, embedded_test_server()->GetURL(
+                                                "a.test", "/title1.html")));
+
+  // Verify the cookie was written in the guest WebContents storage partition
+  // during the bounce.
+  EXPECT_EQ(GetCookiesForPartition(guest_partition, bounce_url),
+            "server-redirect=true");
+
+  WaitOnStorage(btm_service);
+
+  // Verify no BTM state was recorded for b.test.
+  EXPECT_FALSE(GetBtmState(btm_service, GURL("http://b.test")).has_value());
+
+  // Trigger the BTM timer which would delete tracker data.
+  SetBtmTime(bounce_time + features::kBtmGracePeriod.Get() +
+             base::Milliseconds(1));
+  btm_service->OnTimerFiredForTesting();
+  WaitOnStorage(btm_service);
+
+  // Verify the cookie for b.test in the default partition is preserved.
+  EXPECT_EQ(GetCookies(browser_context, GURL("http://b.test")),
+            "primary_session=secret");
+
+  // Verify the guest WebContents partition cookie remains intact.
+  EXPECT_EQ(GetCookiesForPartition(guest_partition, bounce_url),
+            "server-redirect=true");
+}
+
+// Tests that user activation inside an attached guest WebContents does not
+// record user activation in BTM state for the guest site.
+IN_PROC_BROWSER_TEST_F(BtmTabHelperGuestBrowserTest,
+                       GuestUserActivationDoesNotGrantProfileWideImmunization) {
+  WebContents* web_contents = GetActiveWebContents();
+  BrowserContext* browser_context = web_contents->GetBrowserContext();
+  BtmServiceImpl* btm_service = BtmServiceImpl::Get(browser_context);
+
+  // Set a tracker cookie for c.test in the default storage partition.
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
+      embedded_test_server()->GetURL("c.test", "/set-cookie?tracker=1")));
+  EXPECT_EQ(GetCookies(browser_context, GURL("http://c.test")), "tracker=1");
+
+  // Navigate to a.test in the top-level frame with an iframe placeholder.
+  GURL host_url =
+      embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
+  ASSERT_TRUE(NavigateToURL(web_contents, host_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+  RenderFrameHost* subframe =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+
+  // Attach a guest WebContents in a non-default partition to the iframe.
+  TestGuestDelegate guest_delegate(web_contents);
+  WebContents* guest_contents =
+      CreateAndAttachGuestContents(subframe, &guest_delegate);
+  ASSERT_TRUE(guest_contents);
+
+  // A time within the past hour.
+  base::Time interaction_time = base::Time::Now() - base::Minutes(10);
+  SetBtmTime(interaction_time);
+
+  // Click on c.test inside the attached guest WebContents.
+  ASSERT_TRUE(NavigateToURL(guest_contents, embedded_test_server()->GetURL(
+                                                "c.test", "/title1.html")));
+  UserActivationObserver observer_c(guest_contents,
+                                    guest_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(ExecJs(guest_contents, "// activate guest frame"));
+  observer_c.Wait();
+
+  WaitOnStorage(btm_service);
+
+  // Verify user activation in the guest WebContents was not recorded in BTM
+  // state for c.test.
+  std::optional<StateValue> c_state =
+      GetBtmState(btm_service, GURL("http://c.test"));
+  EXPECT_FALSE(c_state.has_value());
+
+  // Make c.test statefully bounce to d.test in the regular tab.
+  base::Time bounce_time = interaction_time + base::Minutes(1);
+  SetBtmTime(bounce_time);
+
+  ASSERT_TRUE(NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
+  const GURL bounce_url = embedded_test_server()->GetURL(
+      "c.test", "/cross-site-with-cookie/d.test/title1.html");
+  ASSERT_TRUE(NavigateToURLFromRenderer(
+      web_contents, bounce_url,
+      embedded_test_server()->GetURL("d.test", "/title1.html")));
+  EndRedirectChain();
+
+  // Trigger the BTM timer which will delete tracker data.
+  SetBtmTime(bounce_time + features::kBtmGracePeriod.Get() +
+             base::Milliseconds(1));
+  btm_service->OnTimerFiredForTesting();
+  WaitOnStorage(btm_service);
+
+  // Verify that the c.test cookie was deleted from the default partition,
+  // because the guest WebContents interaction does not grant exemption.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetCookies(browser_context, GURL("http://c.test")).empty();
+  }));
+}
+
+// Tests that user activation inside a guest WebContents embedded on a page is
+// attributed to the hosting top-level site and not to the embedded guest
+// WebContents site (matching iframe user activation semantics).
+IN_PROC_BROWSER_TEST_F(BtmTabHelperGuestBrowserTest,
+                       GuestWebContentsInteractionAttributedToHostingSite) {
+  WebContents* web_contents = GetActiveWebContents();
+  BrowserContext* browser_context = web_contents->GetBrowserContext();
+  BtmServiceImpl* btm_service = BtmServiceImpl::Get(browser_context);
+
+  // The top-level page is on a.test, containing an iframe placeholder.
+  GURL host_url =
+      embedded_test_server()->GetURL("a.test", "/page_with_blank_iframe.html");
+  ASSERT_TRUE(NavigateToURL(web_contents, host_url));
+  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+  RenderFrameHost* subframe =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+
+  // Attach a guest WebContents in a non-default partition to the iframe.
+  TestGuestDelegate guest_delegate(web_contents);
+  WebContents* guest_contents =
+      CreateAndAttachGuestContents(subframe, &guest_delegate);
+  ASSERT_TRUE(guest_contents);
+
+  // Navigate the attached guest WebContents to b.test.
+  GURL guest_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(guest_contents, guest_url));
+
+  // Initially, no BTM state for either site.
+  WaitOnStorage(btm_service);
+  EXPECT_FALSE(GetBtmState(btm_service, GURL("http://a.test")).has_value());
+  EXPECT_FALSE(GetBtmState(btm_service, GURL("http://b.test")).has_value());
+
+  // Click on the b.test guest WebContents frame.
+  base::Time click_time = base::Time::Now();
+  SetBtmTime(click_time);
+
+  UserActivationObserver observer_guest(guest_contents,
+                                        guest_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(ExecJs(guest_contents, "// activate guest frame"));
+  observer_guest.Wait();
+
+  WaitOnStorage(btm_service);
+
+  // No user activation is recorded for the guest WebContents site (b.test).
+  EXPECT_FALSE(GetBtmState(btm_service, GURL("http://b.test")).has_value());
+
+  // User activation is recorded for a.test (the hosting site).
+  std::optional<StateValue> a_state =
+      GetBtmState(btm_service, GURL("http://a.test"));
+  ASSERT_TRUE(a_state.has_value());
+  EXPECT_TRUE(a_state->user_activation_times.has_value());
+  EXPECT_EQ(a_state->user_activation_times->first, click_time);
+}
 
 }  // namespace content

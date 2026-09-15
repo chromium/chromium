@@ -110,6 +110,25 @@ PAGE_USER_DATA_KEY_IMPL(PrimaryPageMarker);
 /* static */
 void BtmWebContentsObserver::MaybeCreateForWebContents(
     WebContents* web_contents) {
+  // Guest WebContents (e.g., <webview>, <controlledframe>) run in isolated
+  // guest views with their own storage partitions. They are not top-level
+  // browsing contexts and we should not observe them for the purposes of BTM,
+  // which operates at the profile level on the default `StoragePartition`.
+  //
+  // `IsInnerWebContentsForGuest()` is used here rather than checking
+  // `GetOuterWebContents()` because unattached guest `WebContents` (e.g.,
+  // during initialization in `WebContentsImpl::Init()` prior to attachment,
+  // or when created before DOM attachment) do not yet have an outer
+  // `WebContents`, but are already marked as guests.
+  //
+  // Note that under MPArch (`features::kGuestViewMPArch`), guest views are
+  // hosted within the outer `WebContents` via `GuestPageHolder` rather than in
+  // a separate `WebContents`, and their subframes return false for
+  // `IsInPrimaryMainFrame()`, which already excludes them from BTM.
+  if (web_contents->IsInnerWebContentsForGuest()) {
+    return;
+  }
+
   auto* btm_service = BtmServiceImpl::Get(web_contents->GetBrowserContext());
   if (!btm_service) {
     return;
@@ -131,6 +150,19 @@ BtmWebContentsObserver::BtmWebContentsObserver(WebContents* web_contents,
 }
 
 BtmWebContentsObserver::~BtmWebContentsObserver() = default;
+
+/* static */
+void RedirectChainDetector::MaybeCreateForWebContents(
+    WebContents* web_contents) {
+  // Guest `WebContents` run in isolated guest views and are not top-level
+  // browsing contexts, so they should not be tracked for BTM. See the comment
+  // in `BtmWebContentsObserver::MaybeCreateForWebContents()` for more info.
+  if (web_contents->IsInnerWebContentsForGuest()) {
+    return;
+  }
+
+  RedirectChainDetector::CreateForWebContents(web_contents);
+}
 
 RedirectChainDetector::RedirectChainDetector(WebContents* web_contents)
     : WebContentsObserver(web_contents),
