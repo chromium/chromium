@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -171,7 +172,12 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParent) {
       gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
 
   // The sync token is given to the ReleaseCallback.
-  EXPECT_CALL(release, Released(sync_token, false));
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_CALL(release, Released(_, false));
+  } else {
+    EXPECT_CALL(release, Released(sync_token, false));
+  }
   provider().ReceiveReturnsFromParent(std::move(returned));
 }
 
@@ -319,7 +325,12 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParentManyUnsent) {
       gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
 
   // The sync token is given to the ReleaseCallback.
-  EXPECT_CALL(release, Released(sync_token, false));
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_CALL(release, Released(_, false));
+  } else {
+    EXPECT_CALL(release, Released(sync_token, false));
+  }
   provider().ReceiveReturnsFromParent(std::move(returned));
 
   EXPECT_CALL(release, Released(_, false)).Times(4);
@@ -358,7 +369,12 @@ TEST_P(ClientResourceProviderTest, TransferableResourceRemovedAfterReturn) {
   testing::Mock::VerifyAndClearExpectations(&release);
 
   // Once removed, the resource is released.
-  EXPECT_CALL(release, Released(sync_token, false));
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_CALL(release, Released(_, false));
+  } else {
+    EXPECT_CALL(release, Released(sync_token, false));
+  }
   provider().RemoveImportedResource(id);
 }
 
@@ -408,7 +424,12 @@ TEST_P(ClientResourceProviderTest, TransferableResourceExportedTwice) {
         exported[0].id,
         gpu::SharedImageExportResult::CreateForTesting(sync_token),
         gfx::GpuFenceHandle(), /*count=*/1, /*lost=*/false);
-    EXPECT_CALL(release, Released(sync_token, false));
+    if (base::FeatureList::IsEnabled(
+            features::kUseAutomaticSyncTokenManagement)) {
+      EXPECT_CALL(release, Released(_, false));
+    } else {
+      EXPECT_CALL(release, Released(sync_token, false));
+    }
     provider().ReceiveReturnsFromParent(std::move(returned));
   }
 }
@@ -450,7 +471,12 @@ TEST_P(ClientResourceProviderTest, TransferableResourceReturnedTwiceAtOnce) {
   returned.back().lost = false;
 
   // When returned, the ReleaseCallback can happen, using the latest sync token.
-  EXPECT_CALL(release, Released(sync_token, false));
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_CALL(release, Released(_, false));
+  } else {
+    EXPECT_CALL(release, Released(sync_token, false));
+  }
   provider().ReceiveReturnsFromParent(std::move(returned));
 }
 

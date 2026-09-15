@@ -16,6 +16,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*unittest\\.cc": [
+    "+gpu/config/gpu_finch_features.h",
     "+mojo/public/cpp",
   ],
 }
