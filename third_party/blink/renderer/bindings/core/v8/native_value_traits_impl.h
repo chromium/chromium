@@ -286,13 +286,7 @@ class CORE_EXPORT NativeValueTraitsStringAdapter {
     return StringType(wtf_string_);
   }
 
-  StringView ToStringView() const& {
-    if (!v8_string_.IsEmpty()) [[likely]] {
-      return ToBlinkStringView(isolate_, v8_string_, string_view_backing_store_,
-                               kExternalize);
-    }
-    return wtf_string_;
-  }
+  StringView ToStringView() const&;
 
   // Careful here, ordering some of the members here (mainly the isolate) may
   // be important in the hot path. Having the isolate the second member showed
