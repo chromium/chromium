@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_image.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/video_frame.h"
@@ -99,8 +101,26 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
       if (sk_sp<SkImage> skia_image = paint_image.GetSwSkImage()) {
         SkPixmap pixmap;
         if (skia_image->peekPixels(&pixmap)) {
-          copy_success = lease->UploadToBackingSharedImage(
-              pixmap, image_sub_rect.x(), image_sub_rect.y());
+          uint32_t src_x = image_sub_rect.x();
+          uint32_t src_y = image_sub_rect.y();
+          const int dest_width = lease->shared_image()->size().width();
+          const int dest_height = lease->shared_image()->size().height();
+
+          SkPixmap subset;
+          if (pixmap.extractSubset(
+                  &subset, SkIRect::MakeXYWH(static_cast<int>(src_x),
+                                             static_cast<int>(src_y),
+                                             dest_width, dest_height))) {
+            TRACE_EVENT0("blink",
+                         "WebGPUMailboxTexture::FromStaticBitmapImage");
+            if (!lease->IsGpuContextLost()) {
+              lease->SetSyncToken(lease->RasterInterface()->WritePixels(
+                  lease->shared_image(), lease->sync_token(),
+                  /*dst_x_offset=*/0, /*dst_y_offset=*/0, subset));
+              lease->SetCleared();
+              copy_success = true;
+            }
+          }
         }
       }
     }

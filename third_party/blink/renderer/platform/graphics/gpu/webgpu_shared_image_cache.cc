@@ -82,36 +82,6 @@ bool WebGpuSharedImageLease::IsGpuContextLost() const {
   return ::blink::IsGpuContextLost(resource_.context_provider_wrapper_.get());
 }
 
-bool WebGpuSharedImageLease::UploadToBackingSharedImage(const SkPixmap& pixmap,
-                                                        uint32_t src_x,
-                                                        uint32_t src_y) {
-  const int dest_width = resource_.shared_image_->size().width();
-  const int dest_height = resource_.shared_image_->size().height();
-
-  SkPixmap subset;
-  if (!pixmap.extractSubset(
-          &subset,
-          SkIRect::MakeXYWH(static_cast<int>(src_x), static_cast<int>(src_y),
-                            dest_width, dest_height))) {
-    return false;
-  }
-
-  TRACE_EVENT0("blink",
-               "WebGpuSharedImageLease::"
-               "UploadToBackingSharedImage");
-  if (IsGpuContextLost()) {
-    return false;
-  }
-
-  resource_.sync_token_ = RasterInterface()->WritePixels(
-      resource_.shared_image_, resource_.sync_token_, /*dst_x_offset=*/0,
-      /*dst_y_offset=*/0, subset);
-
-  resource_.is_cleared_ = true;
-
-  return true;
-}
-
 void WebGpuSharedImageLease::DrawToBackingSharedImage(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   if (IsGpuContextLost()) {
