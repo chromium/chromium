@@ -562,6 +562,32 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
     return std::get<0>(GetParam());
   }
 
+  // Focuses the omnibox and waits until it reports being focused.  Focusing
+  // the WebUI omnibox is asynchronous, as the request round-trips through the
+  // toolbar's renderer, so its focus state cannot be checked synchronously.
+  void FocusOmniboxAndWait() {
+    chrome::FocusLocationBar(browser());
+    ASSERT_NO_FATAL_FAILURE(
+        ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true));
+    EXPECT_FALSE(
+        ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+  }
+
+  // Waits until the tab contents has taken the focus away from the omnibox.
+  void WaitForFocusToMoveToTabContents() {
+    ASSERT_NO_FATAL_FAILURE(ui_test_utils::WaitForViewFocus(
+        browser(), VIEW_ID_TAB_CONTAINER, true));
+    // The omnibox's own focus state is only checked with the Views omnibox:
+    // the WebUI omnibox tracks focus in the toolbar's renderer, and a focus
+    // request that is still in flight when the contents takes focus is
+    // reported back afterwards, leaving the WebUI omnibox believing that it is
+    // still focused.
+    if (BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetLocationBarView()) {
+      EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+    }
+  }
+
   content::RenderFrameHost* GetLeftFrame(
       content::WebContents* contents = nullptr) {
     AssertTestPageIsLoaded();
@@ -918,9 +944,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
   ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Focus the omnibox.
-  chrome::FocusLocationBar(browser());
-  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+  ASSERT_NO_FATAL_FAILURE(FocusOmniboxAndWait());
 
   // Drag a normal URL from outside the browser into/over the right frame.
   GURL dragged_url = https_test_server()->GetURL("d.test", "/title2.html");
@@ -947,8 +971,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
   EXPECT_EQ(initial_history_count, controller.GetEntryCount());
 
   // Verify that the focus moved from the omnibox to the tab contents.
-  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+  ASSERT_NO_FATAL_FAILURE(WaitForFocusToMoveToTabContents());
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1038,6 +1061,16 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragAndDropVirtualFiles) {
 #define MAYBE_DropUrlIntoOmnibox DropUrlIntoOmnibox
 #endif
 IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  if (!browser_view->GetLocationBarView()) {
+    // This test drives OmniboxViewViews directly - its selection state, its
+    // drop cursor and its view coordinates - none of which exists with the
+    // WebUI toolbar, where the omnibox lives in the toolbar's renderer.
+    // Dropping onto the WebUI omnibox is covered by
+    // WebUIReadOnlyOmniboxDragDropBrowserTest instead.
+    GTEST_SKIP() << "Test requires the Views omnibox.";
+  }
+
   std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
   ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
@@ -1051,7 +1084,6 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   OmniboxViewViews* omnibox_view =
       browser_view->toolbar()->location_bar_view()->omnibox_view();
   EXPECT_TRUE(omnibox_view->IsSelectAll());
@@ -1111,9 +1143,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
   ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
   // Focus the omnibox.
-  chrome::FocusLocationBar(browser());
-  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+  ASSERT_NO_FATAL_FAILURE(FocusOmniboxAndWait());
 
   // Drag a file from outside the browser into/over the right frame.
   base::FilePath dragged_file = chrome_test_utils::GetTestFilePath(
@@ -1141,8 +1171,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
   EXPECT_EQ(initial_history_count, controller.GetEntryCount());
 
   // Verify that the focus moved from the omnibox to the tab contents.
-  EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-  EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+  ASSERT_NO_FATAL_FAILURE(WaitForFocusToMoveToTabContents());
 }
 
 // This test verifies that dropping multiple files from outside the browser
