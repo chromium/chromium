@@ -20,6 +20,8 @@ namespace drive_picker {
 // `FpopService` to check whether the user has accepted the disclaimer.
 class DriveDisclaimerController {
  public:
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.contextual_search
+  // GENERATED_JAVA_PREFIX_TO_STRIP: k
   enum class DisclaimerStatus {
     kAccepted,
     kNotAccepted,

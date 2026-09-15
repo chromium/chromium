@@ -14,7 +14,10 @@ if (is_android) {
 
   java_cpp_enum("java_enum_srcjar") {
     visibility = [ ":*" ]
-    sources = [ "contextual_search_types.h" ]
+    sources = [
+      "contextual_search_types.h",
+      "footprints/public/drive_disclaimer_controller.h",
+    ]
   }
 
   android_library("components_contextual_search_java") {
