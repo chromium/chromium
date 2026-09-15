@@ -4094,7 +4094,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.Registration_FailStatus"
-    enum="ServiceWorkerStatusCode" expires_after="2027-01-10">
+    enum="ServiceWorkerStatusCode" expires_after="2027-03-14">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4307,7 +4307,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ServiceWorkerBackground.WorkerRegistrationRetryAttemptsResult"
-    enum="Boolean" expires_after="2027-01-10">
+    enum="Boolean" expires_after="2027-03-14">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4324,7 +4324,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.WorkerRegistrationState"
-    enum="Boolean" expires_after="2027-01-10">
+    enum="Boolean" expires_after="2027-03-14">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

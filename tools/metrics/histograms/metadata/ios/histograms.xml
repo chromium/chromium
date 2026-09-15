@@ -5928,7 +5928,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PersistTabContext.DeleteDirectoryResult"
-    enum="IOSPersistTabContextDeleteDirectoryResult" expires_after="2027-01-10">
+    enum="IOSPersistTabContextDeleteDirectoryResult" expires_after="2027-03-14">
   <owner>cloutierc@google.com</owner>
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
@@ -8547,7 +8547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Variations.FirstRun.SeedFetchResult"
-    enum="VariationsSeedFetchResult" expires_after="2027-01-10">
+    enum="VariationsSeedFetchResult" expires_after="2027-03-14">
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>

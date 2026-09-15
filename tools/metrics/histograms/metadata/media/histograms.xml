@@ -818,7 +818,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Audio.Android.AAudio.CallbackSizeDistribution.{Direction}"
-    units="frames" expires_after="2027-01-10">
+    units="frames" expires_after="2027-03-14">
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -831,7 +831,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.Audio.Android.AAudio.CallbackTransitionsPer1000.{Direction}"
-    units="transitions" expires_after="2027-01-10">
+    units="transitions" expires_after="2027-03-14">
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8940,7 +8940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoEncoder.{Usage}.{Impl}.Status" enum="EncoderStatus"
-    expires_after="2027-01-10">
+    expires_after="2027-03-14">
   <owner>hiroh@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>

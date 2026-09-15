@@ -3965,7 +3965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Prerender.Experimental.FoundReusePrerenderHost" enum="Boolean"
-    expires_after="2027-01-10">
+    expires_after="2027-03-14">
   <owner>gjc@google.com</owner>
   <owner>chrome-prerendering@google.com</owner>
   <owner>chrome-loading@google.com</owner>
@@ -4175,7 +4175,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.ReusePrerenderHost.PrerenderHostCount.Failed"
-    units="count" expires_after="2027-01-10">
+    units="count" expires_after="2027-03-14">
   <owner>suzukikeita@google.com</owner>
   <owner>gjc@google.com</owner>
   <owner>chrome-prerendering@google.com</owner>
