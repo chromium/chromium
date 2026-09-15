@@ -125,6 +125,46 @@ TEST_F(GuestUtilMultiInstanceTest,
   EXPECT_FALSE(state->enable_skills);
 }
 
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_SkillsV2EnabledWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSkillsWebViewV2Enabled);
+
+  TestingProfile* profile = CreateTestingProfile();
+
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  bool found_capability = false;
+  for (const mojom::HostCapability& capability : state->host_capabilities) {
+    if (capability == mojom::HostCapability::kSkillsV2) {
+      found_capability = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_capability);
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_SkillsV2DisabledWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSkillsWebViewV2Enabled);
+
+  TestingProfile* profile = CreateTestingProfile();
+
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  bool found_capability = false;
+  for (const mojom::HostCapability& capability : state->host_capabilities) {
+    if (capability == mojom::HostCapability::kSkillsV2) {
+      found_capability = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(found_capability);
+}
+
 TEST(GuestUtilTest, IsOriginAllowedGlicApiWildcardMatching) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(

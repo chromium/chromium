@@ -2404,6 +2404,8 @@ enum HostCapability {
   kAttemptOtpFilling = 15,
   // Indicates that the host supports exposing Chrome-defined tools.
   kChromeTools = 16,
+  // Indicates that skills V2 are supported.
+  kSkillsV2 = 17,
 };
 
 // @generate glic_api

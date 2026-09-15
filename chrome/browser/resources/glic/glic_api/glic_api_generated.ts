@@ -483,6 +483,8 @@ export enum HostCapability {
   ATTEMPT_OTP_FILLING = 15,
   // Indicates that the host supports exposing Chrome-defined tools.
   CHROME_TOOLS = 16,
+  // Indicates that skills V2 are supported.
+  SKILLS_V2 = 17,
 }
 
 // Lists capabilities that the glic web client may support.
