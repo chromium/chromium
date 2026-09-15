@@ -5068,11 +5068,7 @@
     },
     {
       name: "RasterInducingScroll",
-      status: {
-        "Linux": "stable",
-        "Win": "stable",
-        "default": "test",
-      }
+      status: "stable",
     },
     {
       // Used as a kill switch in case the rate limiting causes issues.
