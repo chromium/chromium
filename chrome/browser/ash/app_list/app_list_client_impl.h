@@ -38,7 +38,6 @@
 #include "ui/gfx/image/image.h"
 
 namespace app_list {
-class AppListSurveyHandler;
 class SearchController;
 }  // namespace app_list
 
@@ -180,7 +179,6 @@ class AppListClientImpl
   void MaybeRecalculateAppsGridDefaultOrder();
 
  private:
-  friend class AppListSurveyTriggerTest;
   FRIEND_TEST_ALL_PREFIXES(AppListClientWithProfileTest, CheckDataRace);
 
   struct StateForNewUser {
@@ -282,8 +280,6 @@ class AppListClientImpl
   // sessions for the given user. As such, this value is absent until the first
   // app list sync of the session is completed.
   std::optional<bool> is_primary_profile_new_user_;
-
-  std::unique_ptr<app_list::AppListSurveyHandler> survey_handler_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>

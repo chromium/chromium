@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/file_suggest",
   "+chrome/browser/ash/guest_os",
-  "+chrome/browser/ash/hats",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",

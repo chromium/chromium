@@ -2119,16 +2119,6 @@ BASE_FEATURE(kHappinessTrackingOsSettingsSearch,
 BASE_FEATURE(kHappinessTrackingBorealisGames,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Happiness Tracking System for ChromeOS Launcher survey. This
-// survey is enabled to 25% of users.
-BASE_FEATURE(kHappinessTrackingLauncherAppsFinding,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables the Happiness Tracking System for ChromeOS Launcher survey. This
-// survey is enabled to 75% of users.
-BASE_FEATURE(kHappinessTrackingLauncherAppsNeeding,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Happiness Tracking System for the Office integration.
 BASE_FEATURE(kHappinessTrackingOffice, base::FEATURE_DISABLED_BY_DEFAULT);
 
