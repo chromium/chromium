@@ -68,6 +68,9 @@ class ZxcvbnDataComponentInstallerPolicyTest : public ::testing::Test {
     SetVersion(kTextfilesOnlyVersion);
   }
 
+  // The dictionary is process-global; drop it so later tests start empty.
+  void TearDown() override { zxcvbn::SetRankedDicts(zxcvbn::RankedDicts()); }
+
   ZxcvbnDataComponentInstallerPolicy& policy() { return policy_; }
 
   base::test::TaskEnvironment& task_env() { return task_env_; }
