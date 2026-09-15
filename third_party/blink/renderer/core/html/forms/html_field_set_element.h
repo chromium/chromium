@@ -52,6 +52,9 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
 
   void UpdateMenuItemCheckableExclusivity(HTMLMenuItemElement*);
 
+  InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+  void RemovedFrom(ContainerNode&) override;
+
  protected:
   void DisabledAttributeChanged(DisabledChangedReason) override;
   void AncestorDisabledStateWasChanged(DisabledChangedReason) override;

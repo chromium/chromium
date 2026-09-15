@@ -2247,6 +2247,27 @@ class CORE_EXPORT Document : public ContainerNode,
     return disabled_fieldset_count_;
   }
 
+  // Number of connected <fieldset> elements in this document (in any tree
+  // scope). Form controls use it to skip looking for <fieldset> ancestors on
+  // insertion and removal when there are none.
+  void IncrementConnectedFieldsetCount() { ++connected_fieldset_count_; }
+  void DecrementConnectedFieldsetCount() {
+    DCHECK_GT(connected_fieldset_count_, 0u);
+    --connected_fieldset_count_;
+  }
+  bool HasConnectedFieldsets() const { return connected_fieldset_count_; }
+
+  // Number of <form> elements owned by this document that have a <form>
+  // ancestor. Nested forms cannot be created by the parser, so this is nearly
+  // always zero, in which case a form control's owner is the only form whose
+  // element lists can contain it (outside of shadow trees).
+  void IncrementConnectedNestedFormCount() { ++connected_nested_form_count_; }
+  void DecrementConnectedNestedFormCount() {
+    DCHECK_GT(connected_nested_form_count_, 0u);
+    --connected_nested_form_count_;
+  }
+  bool HasConnectedNestedForms() const { return connected_nested_form_count_; }
+
   // Updates application title based to the latest application title meta tag
   // value.
   void UpdateApplicationTitle();
@@ -2292,10 +2313,16 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetLcpElementFoundInHtml(bool found);
   bool IsLcpElementFoundInHtml();
 
-  // Adds/removes an element to the set of elements that need shadow tree
-  // creation on the next layout.
+  // Adds/removes an element to the list of elements that need shadow tree
+  // creation on the next style/layout update. `element` keeps track of whether
+  // (and, approximately, where) it is in the list, so callers must only
+  // schedule unscheduled elements and vice versa. Only active documents
+  // process the list.
   void ScheduleShadowTreeCreation(HTMLInputElement& element);
   void UnscheduleShadowTreeCreation(HTMLInputElement& element);
+  wtf_size_t ScheduledShadowTreeCreationCountForTesting() const {
+    return elements_needing_shadow_tree_.size();
+  }
 
   void ScheduleSelectionchangeEvent();
 
@@ -3269,6 +3296,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // Number of disabled <fieldset> elements in this document.
   unsigned disabled_fieldset_count_ = 0;
 
+  // See HasConnectedFieldsets() / HasConnectedNestedForms().
+  unsigned connected_fieldset_count_ = 0;
+  unsigned connected_nested_form_count_ = 0;
+
   // For rendering media URLs in a top-level context that use the
   // Content-Security-Policy header to sandbox their content. This causes
   // access-controlled media to not load when it is the top-level URL when
@@ -3281,8 +3312,13 @@ class CORE_EXPORT Document : public ContainerNode,
   // which case subsequent duplicate navigations are not ignored.
   uint64_t cookie_modification_count_ = 0;
 
-  // See description in ScheduleShadowTreeCreation().
-  HeapHashSet<Member<HTMLInputElement>> elements_needing_shadow_tree_;
+  // See description in ScheduleShadowTreeCreation(). This is short-lived
+  // (emptied at the next style/layout update) and form controls are inserted
+  // and removed at high rates by some pages, so a vector, with each element
+  // remembering (the low bits of) its index
+  // (HTMLInputElement::ScheduledShadowTreeCreationIndexHint()) rather than a
+  // hash set.
+  HeapVector<Member<HTMLInputElement>> elements_needing_shadow_tree_;
 
   // See https://github.com/whatwg/dom/issues/1255 and
   // https://crbug.com/40150299. This flag is consulted via its getter, by any

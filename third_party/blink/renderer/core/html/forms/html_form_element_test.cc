@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -515,6 +517,127 @@ TEST_F(HTMLAutofillContainedFormsTest, FormRemovalsInvalidateFormCaches) {
   EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), IsEmpty());
   EXPECT_THAT(f2->ListedElements(), IsEmpty());
   EXPECT_THAT(f2->AllContainedFormElementsForAutofill(), IsEmpty());
+}
+
+// A control associated with a nested form through its form attribute need not
+// be a descendant of the outer form; the outer form's autofill cache must still
+// learn about it.
+TEST_F(HTMLAutofillContainedFormsTest, FormAttributeOnNestedFormControl) {
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+  HTMLFormElement* f1 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  HTMLFormElement* f2 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  HTMLInputElement* t = MakeGarbageCollected<HTMLInputElement>(GetDocument());
+  f2->SetIdAttribute(AtomicString("f2"));
+  t->setAttribute(html_names::kFormAttr, AtomicString("f2"));
+  body->AppendChild(f1);
+  f1->AppendChild(f2);
+  body->AppendChild(div);
+  EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), IsEmpty());
+
+  div->AppendChild(t);
+  EXPECT_EQ(t->Form(), f2);
+  EXPECT_THAT(f2->AllContainedFormElementsForAutofill(), ElementsAre(t));
+  EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), ElementsAre(t));
+
+  t->remove();
+  EXPECT_THAT(f2->AllContainedFormElementsForAutofill(), IsEmpty());
+  EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), IsEmpty());
+
+  div->AppendChild(t);
+  EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), ElementsAre(t));
+  t->removeAttribute(html_names::kFormAttr);
+  EXPECT_EQ(t->Form(), nullptr);
+  EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), IsEmpty());
+}
+
+// When a nested form is removed from the document, controls elsewhere that were
+// associated with it through their form attribute lose their form owner; the
+// outer forms (also being removed) must drop them from their autofill lists.
+TEST_F(HTMLAutofillContainedFormsTest,
+       FormAttributeOnNestedFormControlOuterFormsRemoved) {
+  HTMLBodyElement* body = GetDocument().FirstBodyElement();
+  auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  HTMLFormElement* f1 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  HTMLFormElement* f2 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  HTMLInputElement* t = MakeGarbageCollected<HTMLInputElement>(GetDocument());
+  f2->SetIdAttribute(AtomicString("f2"));
+  t->setAttribute(html_names::kFormAttr, AtomicString("f2"));
+  body->AppendChild(div);
+  div->AppendChild(f1);
+  f1->AppendChild(f2);
+  body->AppendChild(t);
+  EXPECT_EQ(t->Form(), f2);
+  EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), ElementsAre(t));
+  EXPECT_THAT(f2->AllContainedFormElementsForAutofill(), ElementsAre(t));
+
+  div->remove();
+  EXPECT_EQ(t->Form(), nullptr);
+  EXPECT_THAT(f2->AllContainedFormElementsForAutofill(), IsEmpty());
+  EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), IsEmpty());
+
+  body->AppendChild(div);
+  EXPECT_EQ(t->Form(), f2);
+  EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), ElementsAre(t));
+}
+
+// Only connected nested forms are counted on the Document, so forms that are
+// nested while disconnected (and possibly never inserted) leave no trace, and
+// the count follows connection and disconnection.
+TEST_F(HTMLAutofillContainedFormsTest, ConnectedNestedFormCount) {
+  Document& document = GetDocument();
+  HTMLBodyElement* body = document.FirstBodyElement();
+  EXPECT_FALSE(document.HasConnectedNestedForms());
+  {
+    HTMLFormElement* f1 = MakeGarbageCollected<HTMLFormElement>(document);
+    HTMLFormElement* f2 = MakeGarbageCollected<HTMLFormElement>(document);
+    f1->AppendChild(f2);
+    EXPECT_FALSE(document.HasConnectedNestedForms());
+  }
+  HTMLFormElement* f1 = MakeGarbageCollected<HTMLFormElement>(document);
+  HTMLFormElement* f2 = MakeGarbageCollected<HTMLFormElement>(document);
+  HTMLFormElement* f3 = MakeGarbageCollected<HTMLFormElement>(document);
+  f1->AppendChild(f2);
+  body->AppendChild(f1);
+  EXPECT_TRUE(document.HasConnectedNestedForms());
+  f2->AppendChild(f3);
+  EXPECT_TRUE(document.HasConnectedNestedForms());
+  f2->remove();  // Removes f2 and f3.
+  EXPECT_FALSE(document.HasConnectedNestedForms());
+  body->AppendChild(f2);  // f2 is top-level now; f3 is nested in it.
+  EXPECT_TRUE(document.HasConnectedNestedForms());
+  f3->remove();
+  EXPECT_FALSE(document.HasConnectedNestedForms());
+  // Moving a nested pair to another document.
+  f1->AppendChild(f3);
+  EXPECT_TRUE(document.HasConnectedNestedForms());
+  ScopedNullExecutionContext execution_context;
+  Document* other =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  other->AppendChild(f1);
+  EXPECT_FALSE(document.HasConnectedNestedForms());
+  EXPECT_TRUE(other->HasConnectedNestedForms());
+}
+
+// As above, but with only two forms and the outer one not connected to the
+// document: removing the inner form makes the document free of nested forms
+// before the inner form's controls are notified of the removal.
+TEST_F(HTMLAutofillContainedFormsTest,
+       DisconnectedNestedFormRemovalInvalidatesOuterFormCache) {
+  HTMLFormElement* f1 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  HTMLFormElement* f2 = MakeGarbageCollected<HTMLFormElement>(GetDocument());
+  HTMLInputElement* t = MakeGarbageCollected<HTMLInputElement>(GetDocument());
+  f1->AppendChild(f2);
+  f2->AppendChild(t);
+  EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), ElementsAre(t));
+  EXPECT_THAT(f2->AllContainedFormElementsForAutofill(), ElementsAre(t));
+
+  f1->RemoveChild(f2);
+  EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), IsEmpty());
+  EXPECT_THAT(f2->AllContainedFormElementsForAutofill(), ElementsAre(t));
+
+  f1->AppendChild(f2);
+  EXPECT_THAT(f1->AllContainedFormElementsForAutofill(), ElementsAre(t));
 }
 
 // Tests that `collect_for_autofill=true` also includes form control elements

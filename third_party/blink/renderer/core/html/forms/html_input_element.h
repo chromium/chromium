@@ -411,6 +411,36 @@ class CORE_EXPORT HTMLInputElement
 
   ShadowRoot* EnsureShadowSubtree();
 
+  // Creating the UA shadow subtree is deferred to the next style/layout update
+  // for inputs inserted into an active document (many are removed again
+  // before that). While an input is in its Document's list of such inputs
+  // (Document::ScheduleShadowTreeCreation()), it remembers the low
+  // kShadowTreeCreationIndexBits bits of its position in that list, so that
+  // removal can find and take it out again in O(1) (or, with more than 2^16
+  // inputs pending in one document, in a few probes; see
+  // Document::UnscheduleShadowTreeCreation()).
+  static constexpr unsigned kShadowTreeCreationIndexBits = 16;
+  static constexpr wtf_size_t kShadowTreeCreationIndexHintRange =
+      wtf_size_t{1} << kShadowTreeCreationIndexBits;
+  bool IsShadowTreeCreationScheduled() const {
+    return is_shadow_tree_creation_scheduled_;
+  }
+  // The scheduled input's index in the Document's list, modulo
+  // kShadowTreeCreationIndexHintRange.
+  wtf_size_t ScheduledShadowTreeCreationIndexHint() const {
+    DCHECK(IsShadowTreeCreationScheduled());
+    return scheduled_shadow_tree_creation_index_hint_;
+  }
+  void SetScheduledShadowTreeCreationIndex(wtf_size_t index) {
+    is_shadow_tree_creation_scheduled_ = true;
+    scheduled_shadow_tree_creation_index_hint_ =
+        index & (kShadowTreeCreationIndexHintRange - 1);
+  }
+  void ClearScheduledShadowTreeCreation() {
+    is_shadow_tree_creation_scheduled_ = false;
+    scheduled_shadow_tree_creation_index_hint_ = 0;
+  }
+
   bool IsValidBuiltinCommand(HTMLElement& invoker,
                              CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
@@ -552,7 +582,12 @@ class CORE_EXPORT HTMLInputElement
   unsigned needs_to_update_view_value_ : 1;
   unsigned is_placeholder_visible_ : 1;
   unsigned has_been_password_field_ : 1;
-  unsigned scheduled_create_shadow_tree_ : 1;
+  // See ScheduledShadowTreeCreationIndexHint(). The flags above take 15 bits,
+  // so with these 1 + 16 the bit-fields fill exactly one 32-bit word (there
+  // is a static_assert in the constructor).
+  unsigned is_shadow_tree_creation_scheduled_ : 1;
+  unsigned scheduled_shadow_tree_creation_index_hint_
+      : kShadowTreeCreationIndexBits;
   Member<InputType> input_type_;
   Member<InputTypeView> input_type_view_;
   // The ImageLoader must be owned by this element because the loader code

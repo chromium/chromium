@@ -370,6 +370,10 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   bool has_elements_associated_by_form_attribute_ : 1;
   bool did_finish_parsing_children_ : 1;
   bool is_in_reset_function_ : 1;
+  // Whether this form is connected and has a <form> ancestor, i.e. is counted
+  // in Document::HasConnectedNestedForms(). Maintained in InsertedInto() and
+  // RemovedFrom().
+  bool is_connected_nested_form_ : 1;
   // Because forms undergo lots of synchronous mutations during construction,
   // each of which affects the declarative WebMCP tool's input JSON schema, we
   // batch all such changes and postpone tool registration behind the task

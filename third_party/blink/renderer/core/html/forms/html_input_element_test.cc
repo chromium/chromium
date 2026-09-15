@@ -11,6 +11,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_wheel_event_init.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -25,8 +27,10 @@
 #include "third_party/blink/renderer/core/html/forms/file_input_type.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/forms/spin_button_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -999,6 +1003,223 @@ TEST_F(HTMLInputElementTest, EmailVerificationIndicatorSupported) {
             : nullptr;
     ASSERT_TRUE(indicator);
     EXPECT_EQ(indicator->getAttribute(AtomicString("data-state")), "supported");
+  }
+}
+
+// Removing a disabled <fieldset> notifies its descendants in tree order.
+// Removing the checked radio button re-validates the remaining (still
+// connected, still fieldset-descendant) radio button of the group while the
+// fieldset is already being removed; that must not lose track of the
+// fieldset ancestor.
+TEST_F(HTMLInputElementTest, RadioGroupInRemovedDisabledFieldset) {
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <fieldset disabled id=fs>
+      <input type=radio name=g id=r1 checked>
+      <span><input type=radio name=g id=test required></span>
+    </fieldset>
+  )HTML");
+  HTMLInputElement& r2 = TestElement();
+  EXPECT_TRUE(r2.IsDisabledFormControl());
+  EXPECT_FALSE(r2.willValidate());
+  // Evaluate (and cache) r2's validity, as e.g. accessibility does, so that
+  // removing the checked r1 from the group re-validates r2 while the fieldset
+  // is being removed.
+  EXPECT_TRUE(static_cast<ListedElement&>(r2).IsValidElement());
+
+  Element* fieldset = GetDocument().getElementById(AtomicString("fs"));
+  fieldset->remove();
+
+  // Still inside the (now detached) disabled fieldset.
+  EXPECT_TRUE(r2.IsDisabledFormControl());
+  EXPECT_FALSE(r2.willValidate());
+  EXPECT_TRUE(r2.matches(AtomicString(":disabled")));
+}
+
+using HTMLInputElementLazyShadowTreeTest = HTMLInputElementTest;
+
+// Inputs inserted and removed again before the next style/layout update are
+// unscheduled again; processing the pending list must only create shadow
+// trees for inputs that are still scheduled.
+TEST_F(HTMLInputElementLazyShadowTreeTest, InsertAndRemoveBeforeUpdate) {
+  Document& document = GetDocument();
+  Element* body = document.body();
+  HeapVector<Member<HTMLInputElement>> inputs;
+  // Large enough that a linear search per removal would be noticeable.
+  constexpr int kCount = 20000;
+  for (int i = 0; i < kCount; ++i) {
+    auto* input = MakeGarbageCollected<HTMLInputElement>(document);
+    inputs.push_back(input);
+    body->AppendChild(input);
+    EXPECT_TRUE(input->IsShadowTreeCreationScheduled());
+  }
+  EXPECT_EQ(document.ScheduledShadowTreeCreationCountForTesting(),
+            static_cast<wtf_size_t>(kCount));
+  // Remove in insertion (FIFO) order, the worst case for a search from the
+  // back of the list.
+  for (int i = 0; i < kCount; ++i) {
+    inputs[i]->remove();
+    EXPECT_FALSE(inputs[i]->IsShadowTreeCreationScheduled());
+  }
+  EXPECT_EQ(document.ScheduledShadowTreeCreationCountForTesting(), 0u);
+
+  // Re-insert two of them (one twice) and one new input; only those get a
+  // shadow tree.
+  body->AppendChild(inputs[0]);
+  body->AppendChild(inputs[1]);
+  inputs[1]->remove();
+  body->AppendChild(inputs[1]);
+  auto* fresh = MakeGarbageCollected<HTMLInputElement>(document);
+  body->AppendChild(fresh);
+  EXPECT_TRUE(inputs[0]->IsShadowTreeCreationScheduled());
+  EXPECT_TRUE(inputs[1]->IsShadowTreeCreationScheduled());
+  EXPECT_FALSE(inputs[2]->IsShadowTreeCreationScheduled());
+  EXPECT_EQ(document.ScheduledShadowTreeCreationCountForTesting(), 3u);
+  document.UpdateStyleAndLayoutTree();
+  EXPECT_EQ(document.ScheduledShadowTreeCreationCountForTesting(), 0u);
+  EXPECT_TRUE(inputs[0]->UserAgentShadowRoot());
+  EXPECT_TRUE(inputs[1]->UserAgentShadowRoot());
+  EXPECT_TRUE(fresh->UserAgentShadowRoot());
+  EXPECT_FALSE(inputs[2]->UserAgentShadowRoot());
+  EXPECT_FALSE(inputs[0]->IsShadowTreeCreationScheduled());
+  EXPECT_FALSE(inputs[1]->IsShadowTreeCreationScheduled());
+}
+
+// A document that is not active (no frame; e.g. created by DOMParser) never
+// updates style, so inputs inserted into it do not queue lazy shadow tree
+// creation there. Moving them into an active document schedules them; moving
+// a scheduled input out of the active document unschedules it.
+TEST_F(HTMLInputElementLazyShadowTreeTest, InactiveDocument) {
+  Document& doc_a = GetDocument();
+  ScopedNullExecutionContext execution_context;
+  Document* doc_b =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  ASSERT_FALSE(doc_b->IsActive());
+  doc_b->AppendChild(doc_b->CreateRawElement(html_names::kHTMLTag));
+  doc_b->documentElement()->AppendChild(
+      doc_b->CreateRawElement(html_names::kBodyTag));
+  ASSERT_TRUE(doc_b->body());
+
+  HeapVector<Member<HTMLInputElement>> inputs;
+  for (int i = 0; i < 40; ++i) {
+    auto* input = MakeGarbageCollected<HTMLInputElement>(*doc_b);
+    inputs.push_back(input);
+    doc_b->body()->AppendChild(input);
+    EXPECT_FALSE(input->IsShadowTreeCreationScheduled());
+    EXPECT_FALSE(input->UserAgentShadowRoot());
+  }
+  EXPECT_EQ(doc_b->ScheduledShadowTreeCreationCountForTesting(), 0u);
+
+  // Tree-order move into the active document.
+  for (HTMLInputElement* input : inputs) {
+    doc_a.body()->AppendChild(input);
+    EXPECT_EQ(&input->GetDocument(), &doc_a);
+    EXPECT_TRUE(input->IsShadowTreeCreationScheduled());
+  }
+  EXPECT_EQ(doc_a.ScheduledShadowTreeCreationCountForTesting(), 40u);
+  doc_a.UpdateStyleAndLayoutTree();
+  for (HTMLInputElement* input : inputs) {
+    EXPECT_FALSE(input->IsShadowTreeCreationScheduled());
+    EXPECT_TRUE(input->UserAgentShadowRoot());
+  }
+  EXPECT_EQ(doc_a.ScheduledShadowTreeCreationCountForTesting(), 0u);
+
+  // A fresh input scheduled in doc_a and moved to doc_b is unscheduled and
+  // gets its shadow tree on demand only.
+  auto* input = MakeGarbageCollected<HTMLInputElement>(doc_a);
+  doc_a.body()->AppendChild(input);
+  EXPECT_TRUE(input->IsShadowTreeCreationScheduled());
+  doc_b->body()->AppendChild(input);
+  EXPECT_EQ(&input->GetDocument(), doc_b);
+  EXPECT_FALSE(input->IsShadowTreeCreationScheduled());
+  EXPECT_EQ(doc_a.ScheduledShadowTreeCreationCountForTesting(), 0u);
+  doc_a.UpdateStyleAndLayoutTree();
+  EXPECT_FALSE(input->UserAgentShadowRoot());
+  EXPECT_TRUE(input->EnsureShadowSubtree());
+}
+
+// Each input remembers only the low bits of its position in the document's
+// pending list. With more inputs pending than those bits can distinguish,
+// several list slots share the same stored bits, and unscheduling has to find
+// the right one; scheduling, unscheduling (in any order) and the flush must
+// keep working across that boundary.
+TEST_F(HTMLInputElementLazyShadowTreeTest, MorePendingThanIndexBits) {
+  Document& document = GetDocument();
+  // The inputs only need to occupy slots in the pending list; keep them out
+  // of the rendered tree so that the test does not also pay for style and
+  // layout of 64k text fields.
+  auto* container = MakeGarbageCollected<HTMLDivElement>(document);
+  container->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
+  document.body()->AppendChild(container);
+
+  const wtf_size_t range = HTMLInputElement::kShadowTreeCreationIndexHintRange;
+  const wtf_size_t count = range + 8;
+  HeapVector<Member<HTMLInputElement>> inputs;
+  inputs.reserve(count);
+  for (wtf_size_t i = 0; i < count; ++i) {
+    auto* input = MakeGarbageCollected<HTMLInputElement>(document);
+    inputs.push_back(input);
+    container->AppendChild(input);
+  }
+  EXPECT_EQ(document.ScheduledShadowTreeCreationCountForTesting(), count);
+  for (wtf_size_t i :
+       {wtf_size_t{0}, wtf_size_t{1}, range - 1, range, range + 1, count - 1}) {
+    SCOPED_TRACE(i);
+    EXPECT_TRUE(inputs[i]->IsShadowTreeCreationScheduled());
+    EXPECT_FALSE(inputs[i]->UserAgentShadowRoot());
+  }
+  // Slots i and i + range store the same bits.
+  EXPECT_EQ(inputs[1]->ScheduledShadowTreeCreationIndexHint(),
+            inputs[range + 1]->ScheduledShadowTreeCreationIndexHint());
+
+  // Remove the later of two aliasing inputs: the probe has to skip slot 1.
+  // The last input is swapped into the freed slot and now aliases slot 1.
+  inputs[range + 1]->remove();
+  EXPECT_FALSE(inputs[range + 1]->IsShadowTreeCreationScheduled());
+  EXPECT_TRUE(inputs[1]->IsShadowTreeCreationScheduled());
+  EXPECT_EQ(inputs[count - 1]->ScheduledShadowTreeCreationIndexHint(),
+            inputs[1]->ScheduledShadowTreeCreationIndexHint());
+  EXPECT_EQ(document.ScheduledShadowTreeCreationCountForTesting(), count - 1);
+
+  // Remove the earlier of two aliasing inputs: found at the first probe. The
+  // (new) last input is swapped into slot 0 and now aliases slot `range`.
+  inputs[0]->remove();
+  EXPECT_FALSE(inputs[0]->IsShadowTreeCreationScheduled());
+  EXPECT_TRUE(inputs[range]->IsShadowTreeCreationScheduled());
+  EXPECT_TRUE(inputs[count - 2]->IsShadowTreeCreationScheduled());
+  EXPECT_EQ(inputs[count - 2]->ScheduledShadowTreeCreationIndexHint(),
+            inputs[range]->ScheduledShadowTreeCreationIndexHint());
+  EXPECT_EQ(document.ScheduledShadowTreeCreationCountForTesting(), count - 2);
+
+  // The swapped-in inputs and the ones they alias can all still be removed.
+  inputs[range]->remove();
+  inputs[count - 2]->remove();
+  inputs[count - 1]->remove();
+  inputs[1]->remove();
+  for (wtf_size_t i : {wtf_size_t{1}, range, count - 2, count - 1}) {
+    SCOPED_TRACE(i);
+    EXPECT_FALSE(inputs[i]->IsShadowTreeCreationScheduled());
+  }
+  EXPECT_EQ(document.ScheduledShadowTreeCreationCountForTesting(), count - 6);
+
+  // Re-inserting schedules again, at the end of the list.
+  container->AppendChild(inputs[0]);
+  EXPECT_TRUE(inputs[0]->IsShadowTreeCreationScheduled());
+  EXPECT_EQ(document.ScheduledShadowTreeCreationCountForTesting(), count - 5);
+
+  // The flush handles a list longer than the index range, and leaves every
+  // element unscheduled.
+  document.UpdateStyleAndLayoutTree();
+  EXPECT_EQ(document.ScheduledShadowTreeCreationCountForTesting(), 0u);
+  for (wtf_size_t i :
+       {wtf_size_t{0}, wtf_size_t{2}, range - 1, range + 2, range + 3}) {
+    SCOPED_TRACE(i);
+    EXPECT_FALSE(inputs[i]->IsShadowTreeCreationScheduled());
+    EXPECT_TRUE(inputs[i]->UserAgentShadowRoot());
+  }
+  // Removed before the flush: never got a shadow tree.
+  for (wtf_size_t i : {wtf_size_t{1}, range, range + 1, count - 2, count - 1}) {
+    SCOPED_TRACE(i);
+    EXPECT_FALSE(inputs[i]->UserAgentShadowRoot());
   }
 }
 

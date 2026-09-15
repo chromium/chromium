@@ -177,6 +177,21 @@ void HTMLFieldSetElement::AncestorDisabledStateWasChanged(
   HTMLFormControlElement::DisabledAttributeChanged(reason);
 }
 
+Node::InsertionNotificationRequest HTMLFieldSetElement::InsertedInto(
+    ContainerNode& insertion_point) {
+  if (insertion_point.isConnected()) {
+    GetDocument().IncrementConnectedFieldsetCount();
+  }
+  return HTMLFormControlElement::InsertedInto(insertion_point);
+}
+
+void HTMLFieldSetElement::RemovedFrom(ContainerNode& insertion_point) {
+  if (insertion_point.isConnected()) {
+    GetDocument().DecrementConnectedFieldsetCount();
+  }
+  HTMLFormControlElement::RemovedFrom(insertion_point);
+}
+
 void HTMLFieldSetElement::DidMoveToNewDocument(Document& old_document) {
   HTMLFormControlElement::DidMoveToNewDocument(old_document);
   if (IsSelfDisabledIgnoringAncestors()) {

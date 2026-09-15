@@ -123,6 +123,7 @@ HTMLFormElement::HTMLFormElement(Document& document)
       has_elements_associated_by_form_attribute_(false),
       did_finish_parsing_children_(false),
       is_in_reset_function_(false),
+      is_connected_nested_form_(false),
       rel_list_(MakeGarbageCollected<RelList>(this)) {
   UseCounter::Count(document, WebFeature::kFormElement);
 }
@@ -465,6 +466,11 @@ void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
 Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
+  if (insertion_point.isConnected() && FindFormAncestor()) {
+    DCHECK(!is_connected_nested_form_);
+    is_connected_nested_form_ = true;
+    GetDocument().IncrementConnectedNestedFormCount();
+  }
   LogAddElementIfIsolatedWorldAndInDocument("form", html_names::kMethodAttr,
                                             html_names::kActionAttr);
   if (insertion_point.isConnected()) {
@@ -514,6 +520,21 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
   }
   GetDocument().EnsureFormController().WillDeleteForm(this);
   HTMLElement::RemovedFrom(insertion_point);
+
+  // Stop counting this form as a connected nested form. This has to come
+  // after the code above: removing the form disassociates listed elements that
+  // are not descendants (ones associated by the parser, and, via
+  // HTMLElement::RemovedFrom(), ones associated through their form attribute),
+  // and Disassociate() checks `is_connected_nested_form_` to invalidate the
+  // outer forms' element lists for them. (Descendant listed elements get
+  // their own RemovedFrom() after this and handle the outer forms there.)
+  if (is_connected_nested_form_) {
+    // The flag is only set while connected, and a connected node is always
+    // removed as part of a connected subtree.
+    DCHECK(insertion_point.isConnected());
+    is_connected_nested_form_ = false;
+    GetDocument().DecrementConnectedNestedFormCount();
+  }
 
   if (insertion_point.isConnected()) {
     InvalidateAncestorFormsForAutofill(&insertion_point);
@@ -1191,6 +1212,13 @@ void HTMLFormElement::Associate(ListedElement& e) {
   listed_elements_for_autofill_.clear();
   if (e.ToHTMLElement().FastHasAttribute(html_names::kFormAttr))
     has_elements_associated_by_form_attribute_ = true;
+  if (is_connected_nested_form_ || !isConnected()) {
+    // Outer forms list this form's elements for autofill
+    // (CollectListedElements()), including form=-associated ones that are not
+    // their descendants. Only connected nested forms are tracked; a
+    // disconnected form just walks its (cold) ancestor chain.
+    InvalidateAncestorFormsForAutofill(parentNode());
+  }
   ScheduleWebMCPSchemaUpdateIfActive();
   if (RuntimeEnabledFeatures::EmailVerificationStatusIndicatorEnabled(
           GetExecutionContext())) {
@@ -1207,6 +1235,9 @@ void HTMLFormElement::Disassociate(ListedElement& e) {
   listed_elements_.clear();
   listed_elements_for_autofill_are_dirty_ = true;
   listed_elements_for_autofill_.clear();
+  if (is_connected_nested_form_ || !isConnected()) {
+    InvalidateAncestorFormsForAutofill(parentNode());
+  }
   RemoveFromPastNamesMap(e.ToHTMLElement());
   ScheduleWebMCPSchemaUpdateIfActive();
   if (RuntimeEnabledFeatures::EmailVerificationStatusIndicatorEnabled(

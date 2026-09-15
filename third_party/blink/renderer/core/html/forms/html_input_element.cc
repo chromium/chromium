@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 
+#include <stddef.h>
+
 #include "base/compiler_specific.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink.h"
@@ -171,7 +173,8 @@ HTMLInputElement::HTMLInputElement(Document& document,
       needs_to_update_view_value_(true),
       is_placeholder_visible_(false),
       has_been_password_field_(false),
-      scheduled_create_shadow_tree_(false),
+      is_shadow_tree_creation_scheduled_(false),
+      scheduled_shadow_tree_creation_index_hint_(0),
       // |input_type_| is lazily created when constructed by the parser to avoid
       // constructing unnecessarily a text InputType and its shadow subtree,
       // just to destroy them when the |type| attribute gets set by the parser
@@ -180,6 +183,14 @@ HTMLInputElement::HTMLInputElement(Document& document,
                       ? nullptr
                       : MakeGarbageCollected<TextInputType>(*this)),
       input_type_view_(input_type_ ? input_type_->CreateView() : nullptr) {
+  // The bit-fields from `has_dirty_value_` to
+  // `scheduled_shadow_tree_creation_index_hint_` are meant to share one
+  // 32-bit word after `size_`; adding a bit would silently grow every input
+  // by 8 bytes.
+  static_assert(offsetof(HTMLInputElement, input_type_) -
+                        offsetof(HTMLInputElement, size_) ==
+                    2 * sizeof(unsigned),
+                "HTMLInputElement's bit-fields no longer fit in 32 bits");
   SetHasCustomStyleCallbacks();
 }
 
@@ -1719,7 +1730,9 @@ String HTMLInputElement::FilterBeforeTextInserted(const String& text) {
 }
 
 ShadowRoot* HTMLInputElement::EnsureShadowSubtree() {
-  scheduled_create_shadow_tree_ = false;
+  if (IsShadowTreeCreationScheduled()) {
+    GetDocument().UnscheduleShadowTreeCreation(*this);
+  }
   input_type_view_->CreateShadowSubtreeIfNeeded();
   return UserAgentShadowRoot();
 }
@@ -1959,13 +1972,21 @@ Node::InsertionNotificationRequest HTMLInputElement::InsertedInto(
     if (!form) {
       AddToRadioButtonGroup();
     }
+    // Defer creating the UA shadow subtree to the next style/layout update
+    // (many inputs are removed again before that). A document that is not
+    // active never updates style, so don't queue there; EnsureShadowSubtree()
+    // creates the subtree on demand.
     if (!input_type_view_->HasCreatedShadowSubtree() &&
-        input_type_view_->NeedsShadowSubtree()) {
-      scheduled_create_shadow_tree_ = true;
+        input_type_view_->NeedsShadowSubtree() && GetDocument().IsActive()) {
       GetDocument().ScheduleShadowTreeCreation(*this);
     }
   }
-  ResetListAttributeTargetObserver();
+  if (insertion_point.isConnected()) {
+    ResetListAttributeTargetObserver();
+  } else {
+    // The observer is only ever registered while connected.
+    DCHECK(!list_attribute_target_observer_);
+  }
   LogAddElementIfIsolatedWorldAndInDocument("input", html_names::kTypeAttr,
                                             html_names::kFormactionAttr);
 
@@ -1985,7 +2006,11 @@ Node::InsertionNotificationRequest HTMLInputElement::InsertedInto(
     }
   }
 
-  return kInsertionShouldCallDidNotifySubtreeInsertions;
+  // DidNotifySubtreeInsertionsToDocument() re-resolves the list attribute
+  // target, which cannot have changed if there is no (non-empty) list
+  // attribute: DataList() is null before and after the insertion.
+  return has_non_empty_list_ ? kInsertionShouldCallDidNotifySubtreeInsertions
+                             : kInsertionDone;
 }
 
 void HTMLInputElement::RemovedFrom(ContainerNode& insertion_point) {
@@ -1994,14 +2019,13 @@ void HTMLInputElement::RemovedFrom(ContainerNode& insertion_point) {
     if (!Form()) {
       RemoveFromRadioButtonGroup();
     }
-    if (scheduled_create_shadow_tree_) {
-      scheduled_create_shadow_tree_ = false;
+    if (IsShadowTreeCreationScheduled()) {
       GetDocument().UnscheduleShadowTreeCreation(*this);
     }
   }
   TextControlElement::RemovedFrom(insertion_point);
   DCHECK(!isConnected());
-  ResetListAttributeTargetObserver();
+  SetListAttributeTargetObserver(nullptr);
 
   if (RuntimeEnabledFeatures::FilterableSelectEnabled()) {
     HTMLSelectElement::SelectOptgroupDatalist result =
@@ -2213,13 +2237,17 @@ void HTMLInputElement::SetListAttributeTargetObserver(
 }
 
 void HTMLInputElement::ResetListAttributeTargetObserver() {
-  const AtomicString& value = FastGetAttribute(html_names::kListAttr);
-  if (!value.IsNull() && isConnected()) {
-    SetListAttributeTargetObserver(
-        MakeGarbageCollected<ListAttributeTargetObserver>(value, this));
-  } else {
+  // An IdTargetObserver with an empty id never observes anything, so only
+  // create one for a non-empty list attribute. `has_non_empty_list_` avoids
+  // the attribute lookup on the common insertion path.
+  if (!has_non_empty_list_ || !isConnected()) {
     SetListAttributeTargetObserver(nullptr);
+    return;
   }
+  const AtomicString& value = FastGetAttribute(html_names::kListAttr);
+  DCHECK(!value.empty());
+  SetListAttributeTargetObserver(
+      MakeGarbageCollected<ListAttributeTargetObserver>(value, this));
 }
 
 void HTMLInputElement::ListAttributeTargetChanged() {

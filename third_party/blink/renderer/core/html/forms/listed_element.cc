@@ -61,9 +61,35 @@ namespace blink {
 
 namespace {
 
-void InvalidateAncestorFormsForAutofill(ContainerNode& insertion_point) {
-  // If no FormController exists, walk and invalidate all ancestor forms
-  // without deduplication rather than creating one just for this optimization.
+// Let every form whose ListedElements(/*include_shadow_trees=*/true) may
+// contain `element` know that it was inserted or removed below
+// `insertion_point`. Those are the element's form owner, forms that are
+// shadow-including ancestors of a shadow tree containing the element, and
+// outer forms of a nested form (see HTMLFormElement::CollectListedElements()).
+// The latter two need a walk up the shadow-including ancestor chain, which is
+// skipped only for a connected mutation (the hot case) when the element is not
+// in a shadow tree and the document has no connected nested forms; outer forms
+// of a nested form owner are also notified when the owner changes
+// (HTMLFormElement::Associate()/Disassociate()). Both the element
+// and `insertion_point` are checked: when a shadow host is inserted or removed,
+// the controls in its shadow tree are notified with the host's parent as the
+// insertion point, and when an element is removed from a shadow tree its own
+// IsInShadowTree() is already cleared.
+void InvalidateFormsForAutofill(const ListedElement& element,
+                                ContainerNode& insertion_point) {
+  if (HTMLFormElement* form = element.Form()) {
+    form->InvalidateListedElementsForAutofill();
+  }
+  if (insertion_point.isConnected() &&
+      !element.ToHTMLElement().IsInShadowTree() &&
+      !insertion_point.IsInShadowTree() &&
+      !insertion_point.GetDocument().HasConnectedNestedForms()) {
+    return;
+  }
+  // The ancestor chain is the same for every listed element inserted or
+  // removed under `insertion_point` in one mutation, so walk it only once. If
+  // no FormController exists, walk without deduplication rather than creating
+  // one just for this optimization.
   if (FormController* form_controller =
           insertion_point.GetDocument().GetFormController();
       form_controller &&
@@ -71,8 +97,6 @@ void InvalidateAncestorFormsForAutofill(ContainerNode& insertion_point) {
           insertion_point)) {
     return;
   }
-  // Let any forms in the shadow including ancestors know that this
-  // ListedElement has changed.
   ContainerNode* starting_node = &insertion_point;
   for (ContainerNode* parent = starting_node; parent;
        parent = parent->ParentOrShadowHostNode()) {
@@ -163,7 +187,7 @@ void ListedElement::InsertedInto(ContainerNode& insertion_point) {
         &element, WebFormRelatedChangeType::kAdd);
   }
 
-  InvalidateAncestorFormsForAutofill(insertion_point);
+  InvalidateFormsForAutofill(*this, insertion_point);
 }
 
 void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
@@ -216,7 +240,7 @@ void ListedElement::RemovedFrom(ContainerNode& insertion_point) {
         .InvalidateStatefulFormControlList();
   }
 
-  InvalidateAncestorFormsForAutofill(insertion_point);
+  InvalidateFormsForAutofill(*this, insertion_point);
 
   if (insertion_point.isConnected()) {
     // We don't insist on form_ being non-null as the form does not take care of
@@ -289,6 +313,16 @@ void ListedElement::FieldSetAncestorsSetNeedsValidityCheck(
     return;
   if (!may_have_fieldset_ancestor_)
     return;
+  if (starting_type == StartingNodeType::kInsertionPoint &&
+      node->isConnected() && !node->GetDocument().HasConnectedFieldsets()) {
+    // On insertion into / removal from a connected tree without connected
+    // <fieldset>s there is no fieldset ancestor to notify. (This is not true
+    // for kParent callers, which can run on a still-connected descendant of a
+    // <fieldset> that is in the middle of being removed and has already been
+    // uncounted.) may_have_fieldset_ancestor_ is left alone; it refers to the
+    // element's new ancestors, not to `node`'s.
+    return;
+  }
   auto* field_set = Traversal<HTMLFieldSetElement>::FirstAncestorOrSelf(*node);
   if (!field_set) {
     if (starting_type == StartingNodeType::kParent) {

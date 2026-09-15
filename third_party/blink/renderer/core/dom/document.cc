@@ -10198,11 +10198,33 @@ bool Document::IsLcpElementFoundInHtml() {
 }
 
 void Document::ScheduleShadowTreeCreation(HTMLInputElement& element) {
-  elements_needing_shadow_tree_.insert(&element);
+  DCHECK(!element.IsShadowTreeCreationScheduled());
+  DCHECK(IsActive());
+  element.SetScheduledShadowTreeCreationIndex(
+      elements_needing_shadow_tree_.size());
+  elements_needing_shadow_tree_.push_back(&element);
 }
 
 void Document::UnscheduleShadowTreeCreation(HTMLInputElement& element) {
-  elements_needing_shadow_tree_.erase(&element);
+  // Swap-remove, so that this is O(1) no matter in which order inputs are
+  // removed. The element only stores the low bits of its index; with more
+  // than kShadowTreeCreationIndexHintRange inputs pending, several slots share
+  // those bits and we probe each of them (the list is bounded by the number
+  // of inputs in the document, so this stays a handful of probes).
+  wtf_size_t index = element.ScheduledShadowTreeCreationIndexHint();
+  while (elements_needing_shadow_tree_[index] != &element) {
+    index += HTMLInputElement::kShadowTreeCreationIndexHintRange;
+    CHECK_LT(index, elements_needing_shadow_tree_.size());
+  }
+  // Note that `last` is `element` itself when removing the last entry, so
+  // the order matters: move `last` into the slot and update its hint first,
+  // then shrink the list, and clear `element` last so that it ends up
+  // unscheduled either way.
+  HTMLInputElement& last = *elements_needing_shadow_tree_.back();
+  elements_needing_shadow_tree_[index] = &last;
+  last.SetScheduledShadowTreeCreationIndex(index);
+  elements_needing_shadow_tree_.pop_back();
+  element.ClearScheduledShadowTreeCreation();
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -10228,9 +10250,15 @@ void Document::ProcessScheduledShadowTreeCreationsNow() {
   if (elements_needing_shadow_tree_.empty()) {
     return;
   }
-  HeapHashSet<Member<HTMLInputElement>> elements_needing_shadow_tree;
+  // EnsureShadowSubtree() can schedule or unschedule other elements, so work
+  // on a swapped-out list, and mark every element unscheduled first so that
+  // such re-entrant calls never refer to the swapped-out list.
+  HeapVector<Member<HTMLInputElement>> elements_needing_shadow_tree;
   std::swap(elements_needing_shadow_tree, elements_needing_shadow_tree_);
-  for (auto& element : elements_needing_shadow_tree) {
+  for (HTMLInputElement* element : elements_needing_shadow_tree) {
+    element->ClearScheduledShadowTreeCreation();
+  }
+  for (HTMLInputElement* element : elements_needing_shadow_tree) {
     element->EnsureShadowSubtree();
   }
 }
