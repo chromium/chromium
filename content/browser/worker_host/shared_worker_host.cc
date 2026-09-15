@@ -223,6 +223,10 @@ SharedWorkerHost::~SharedWorkerHost() {
     }
   }
 
+  if (auto* lock_manager = GetStoragePartitionImpl()->GetLockManager()) {
+    lock_manager->RemoveLockObserver(token().value());
+  }
+
   if (site_instance_->HasProcess()) {
     // Send any final reports and allow the reporting configuration to be
     // removed.
@@ -234,10 +238,6 @@ SharedWorkerHost::~SharedWorkerHost() {
         ->SendReportsAndRemoveSource(reporting_source_);
 
     GetProcessHost()->RemoveObserver(this);
-
-    if (auto* lock_manager = GetStoragePartitionImpl()->GetLockManager()) {
-      lock_manager->RemoveLockObserver(token().value());
-    }
 
     GetStoragePartitionImpl()->ClearNetworkRestrictionsAfterDelay({
         network_restrictions_id_,
@@ -624,7 +624,7 @@ void SharedWorkerHost::CreateLockManager(
   GetStoragePartitionImpl()->BindLockManager(
       GetWorkerStorageKey(), token().value(), std::move(receiver));
   GetStoragePartitionImpl()->GetLockManager()->AddLockObserver(token().value(),
-                                                            this);
+                                                               this);
 }
 
 bool SharedWorkerHost::OnLockContention() {
@@ -970,8 +970,7 @@ void SharedWorkerHost::RenderProcessHostDestroyed(RenderProcessHost* host) {
 }
 
 StoragePartitionImpl* SharedWorkerHost::GetStoragePartitionImpl() {
-  return static_cast<StoragePartitionImpl*>(
-      GetProcessHost()->GetStoragePartition());
+  return service_->storage_partition();
 }
 
 std::vector<GlobalRenderFrameHostId>

@@ -21,6 +21,7 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/worker_host/mock_shared_worker.h"
 #include "content/browser/worker_host/shared_worker_connector_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
@@ -74,7 +75,8 @@ class SharedWorkerHostTest : public testing::Test {
   }
 
   SharedWorkerHostTest()
-      : service_(nullptr /* storage_partition */,
+      : service_(static_cast<StoragePartitionImpl*>(
+                     browser_context_.GetDefaultStoragePartition()),
                  nullptr /* service_worker_context */) {}
 
   SharedWorkerHostTest(const SharedWorkerHostTest&) = delete;

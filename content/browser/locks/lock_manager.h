@@ -119,7 +119,7 @@ class CONTENT_EXPORT LockManager : public blink::mojom::LockManager {
   int64_t next_lock_id_ = 0;
   std::map<LockGroupIdType, LockGroupState> lock_groups_;
 
-  base::flat_map<std::string, Observer*> client_observer_map_;
+  base::flat_map<std::string, raw_ptr<Observer>> client_observer_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LockManager> weak_ptr_factory_{this};
