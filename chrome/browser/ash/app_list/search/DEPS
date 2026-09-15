@@ -27,7 +27,6 @@ include_rules = [
   "+chrome/browser/bookmarks",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/favicon",
-  "+chrome/browser/history",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles",
   "+chrome/browser/screen_ai",
@@ -46,6 +45,16 @@ include_rules = [
   "+chrome/common/chrome_paths.h",
   "+chrome/grit",
   "+chrome/test/base",
+
+  # Dependencies outside of //chrome:
+  "+ash/accelerators",
+  "+ash/strings/grit",
+  "+chromeos/ash/components/browser_context_helper",
+  "+chromeos/ash/components/history",
+  "+chromeos/ash/components/launcher_search",
+  "+chromeos/ash/components/system_info",
+  "+chromeos/ui/vector_icons",
+  "+third_party/omnibox_proto",
 ]
 
 specific_include_rules = {
@@ -74,6 +83,7 @@ specific_include_rules = {
   # inside OmniboxProvider) calls TemplateURLServiceFactory::GetForProfile()
   # unconditionally.
   ".*unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/keyed_service_provider",
     "+chrome/browser/search_engines",
   ],
 }

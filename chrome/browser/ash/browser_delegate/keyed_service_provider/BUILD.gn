@@ -9,6 +9,7 @@ group("keyed_service_provider") {
     ":desk_sync_service_provider_impl",
     ":favicon_service_provider_impl",
     ":feature_engagement_tracker_provider_impl",
+    ":history_service_provider_impl",
     ":identity_manager_provider_impl",
     ":sync_service_provider_impl",
     ":template_url_service_provider_impl",
@@ -48,6 +49,26 @@ source_set("feature_engagement_tracker_provider_impl") {
     "//chromeos/ash/components/feature_engagement:feature_engagement_tracker_provider",
     "//components/account_id",
     "//components/feature_engagement/public",
+    "//content/public/browser",
+  ]
+
+  visibility = [ ":keyed_service_provider" ]
+}
+
+source_set("history_service_provider_impl") {
+  sources = [
+    "history_service_provider_impl.cc",
+    "history_service_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/history",
+    "//chrome/browser/profiles",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/history:history_service_provider",
+    "//components/account_id",
+    "//components/keyed_service/core",
     "//content/public/browser",
   ]
 

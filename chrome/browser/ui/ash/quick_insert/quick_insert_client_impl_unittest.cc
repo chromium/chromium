@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/app_list/search/test/test_ranker_manager.h"
+#include "chrome/browser/ash/browser_delegate/keyed_service_provider/history_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/template_url_service_provider_impl.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
@@ -233,6 +234,7 @@ class QuickInsertClientImplTest : public BrowserWithTestWindowTest {
   }
 
  private:
+  ash::HistoryServiceProviderImpl history_service_provider_;
   ash::TemplateURLServiceProviderImpl template_url_service_provider_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
