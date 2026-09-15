@@ -228,21 +228,6 @@ class DisabledAccelerationCounterSupplement final
 const char DisabledAccelerationCounterSupplement::kSupplementName[] =
     "DisabledAccelerationCounterSupplement";
 
-// viz::ReleaseCallback for CanvasResource
-void ReleaseCanvasResource(scoped_refptr<CanvasResource> canvas_resource,
-                           const gpu::SyncToken& sync_token,
-                           bool is_lost) {
-  CHECK(canvas_resource);
-  canvas_resource->WaitSyncToken(sync_token);
-  if (is_lost) {
-    canvas_resource->NotifyResourceLost();
-  }
-
-  CanvasResource::DropRefOnOwningThread(std::move(canvas_resource));
-}
-
-
-
 }  // namespace
 
 HTMLCanvasElement::HTMLCanvasElement(Document& document)
@@ -322,8 +307,18 @@ bool HTMLCanvasElement::PrepareTransferableResource(
     return false;
   }
   // Note: frame is kept alive via a reference kept in out_release_callback.
-  *out_release_callback =
-      blink::BindOnce(ReleaseCanvasResource, std::move(frame));
+  *out_release_callback = blink::BindOnce(
+      [](scoped_refptr<CanvasResource> canvas_resource,
+         const gpu::SyncToken& sync_token, bool is_lost) {
+        CHECK(canvas_resource);
+        canvas_resource->WaitSyncToken(sync_token);
+        if (is_lost) {
+          canvas_resource->NotifyResourceLost();
+        }
+
+        CanvasResource::DropRefOnOwningThread(std::move(canvas_resource));
+      },
+      std::move(frame));
 
   return true;
 }
