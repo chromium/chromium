@@ -9149,3 +9149,42 @@ crbug.com/417529151 external/wpt/preload/preload-referrer-policy-subresource-hea
 crbug.com/417529151 external/wpt/preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=true&isCrossOriginResource=true [ Failure Timeout ]
 crbug.com/417529151 external/wpt/signed-exchange/subresource/sxg-subresource.tentative.html [ Failure Timeout ]
 
+# Android WebDriver BiDi user context failures
+# Target browser-context lifecycle commands not supported on Android
+crbug.com/508799457 [ Android ] external/wpt/webdriver/tests/bidi/browser/remove_user_context/user_context.py [ Failure ]
+
+# Android Target.createTarget ignores browserContextId and creates targets in the default profile
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/create/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/dom_content_loaded/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/fragment_navigated/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/history_updated/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/load/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/navigation_committed/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/navigation_failed/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_closed/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_opened/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_locale_override/user_contexts.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/user_contexts.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_screen_orientation_override/user_contexts.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_touch_override/user_contexts.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/external/user_agent_client_hints/set_client_hints_override/user_contexts.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/log/entry_added/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/network/before_request_sent/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/script/get_realms/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/script/message/user_context_tentative.py [ Failure ]
+crbug.com/516861183 [ Android ] external/wpt/webdriver/tests/bidi/script/realm_created/user_context_tentative.py [ Failure ]
+
+# Android Emulation.setDeviceMetricsOverride viewport and screen settings
+crbug.com/536833620 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/user_contexts.py [ Failure ]
+crbug.com/536833620 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_screen_settings_override/user_contexts.py [ Failure ]
+
+# ChromeDriver Android file upload / file dialog support
+crbug.com/540511547 [ Android ] external/wpt/webdriver/tests/bidi/input/file_dialog_opened/user_context_tentative.py [ Failure ]
+
+# Android BiDi network.setExtraHeaders scoped headers
+crbug.com/543076367 [ Android ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/user_contexts.py [ Failure ]
+
+# Android BiDi browser.setDownloadBehavior host file support
+crbug.com/549199028 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/download_end/user_context_tentative.py [ Failure ]
+crbug.com/549199028 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/download_will_begin/user_context_tentative.py [ Failure ]
