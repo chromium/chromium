@@ -73,6 +73,17 @@ struct HeuristicPageProperties {
   // heading.
   float heading_font_size_threshold = 0.0f;
 
+  // The height of the page.
+  float page_height = 0.0f;
+
+  // The Y-coordinate threshold for the header margin (top margin). Runs ending
+  // at or above this Y-coordinate are within the top margin.
+  float top_margin = 0.0f;
+
+  // The Y-coordinate threshold for footers (bottom margin). Runs starting at or
+  // below this Y-coordinate are within the bottom margin.
+  float bottom_margin = 0.0f;
+
   // The dominant body text color on the page (in ARGB format), if multiple
   // colors exist.
   std::optional<uint32_t> body_text_color;

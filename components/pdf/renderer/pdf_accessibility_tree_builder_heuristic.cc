@@ -23,6 +23,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 #include "pdf/accessibility_structs.h"
@@ -88,6 +90,26 @@ constexpr int kSmallestHeadingLevel = 6;
 // Font weight for semi-bold text. Used to determine if the run could be a
 // heading.
 constexpr int kSemiBoldWeight = 600;
+
+// Min page height needed to label headers and footers. Page bounds are
+// reported in CSS pixels at 96 DPI, so this is just over an inch. A page
+// shorter than this is too small for a margin band to mean anything.
+constexpr int kMinHeaderFooterPageHeight = 100;
+
+// Margin ratios for header and footer margins. Expressed as a fraction of the
+// vertical height of the page.
+constexpr float kHeaderMarginRatio = 0.10f;
+constexpr float kFooterMarginRatio = 0.95f;
+
+// Tolerance used when comparing font sizes, so that sizes that differ only by
+// floating point imprecision compare as equal.
+constexpr float kFontSizeEpsilon = 0.01f;
+
+enum class HeaderFooterRole {
+  kNone,
+  kHeader,
+  kFooter,
+};
 
 // Returns whether `heading_level` is in bounds, i.e. whether it corresponds to
 // one of <h1> through <h6>.
@@ -239,6 +261,21 @@ bool IsAllUppercase(base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
     }
   }
   return has_cased_letter;
+}
+
+bool ContainsAlphanumeric(std::string_view text) {
+  for (size_t i = 0; i < text.size(); ++i) {
+    base_icu::UChar32 code_point;
+    // `ReadUnicodeCharacter()` advances `i` to the last byte of the code point
+    // it decoded, so the loop's `++i` lands on the start of the next code
+    // point. It advances `i` even when it fails, so malformed input is skipped
+    // rather than decoded again.
+    if (base::ReadUnicodeCharacter(text, &i, &code_point) &&
+        u_isalnum(code_point)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Returns whether a font name indicates a bold, semi-bold, black, or heavy
@@ -399,7 +436,8 @@ std::optional<uint32_t> ComputeColors(
 }
 
 HeuristicPageProperties ComputeHeuristicPageProperties(
-    const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs) {
+    const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
+    const gfx::RectF& page_bounds) {
   std::vector<FontSizeCharCount> font_sizes;
   std::vector<float> line_spacings;
   std::map<uint32_t, uint32_t> all_color_char_counts;
@@ -422,6 +460,9 @@ HeuristicPageProperties ComputeHeuristicPageProperties(
   }
 
   HeuristicPageProperties page_properties;
+  page_properties.page_height = page_bounds.height();
+  page_properties.top_margin = page_bounds.height() * kHeaderMarginRatio;
+  page_properties.bottom_margin = page_bounds.height() * kFooterMarginRatio;
   ComputeFontSizes(std::move(font_sizes),
                    &page_properties.heading_font_size_threshold,
                    &page_properties.median_font_size,
@@ -490,6 +531,91 @@ base::span<const chrome_pdf::AccessibilityCharInfo> GetTextRunChars(
   uint32_t start_index = layout.text_run_start_indices[text_run_index];
   uint32_t len = layout.text_runs[text_run_index].len;
   return base::span(layout.chars).subspan(start_index, len);
+}
+
+// Returns the text of `chars` as a UTF-8 string, with leading and trailing
+// whitespace removed.
+std::string GetTrimmedText(
+    base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
+  std::string result;
+  for (const auto& char_info : chars) {
+    base::WriteUnicodeCharacter(
+        static_cast<base_icu::UChar32>(char_info.unicode_character), &result);
+  }
+  return std::string(base::TrimWhitespaceASCII(result, base::TRIM_ALL));
+}
+
+// Returns the header or footer role that `current_run` qualifies for, or
+// `kNone` otherwise. A run must sit inside the top or bottom margin band,
+// contain at least one alphanumeric character, and be rendered smaller than the
+// page's median font size, since running headers, page numbers, and copyright
+// notices are often set smaller than body text.
+HeaderFooterRole GetHeaderFooterRole(
+    const chrome_pdf::AccessibilityTextRunInfo& current_run,
+    base::span<const chrome_pdf::AccessibilityCharInfo> current_run_chars,
+    const HeuristicPageProperties& page_properties) {
+  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
+      page_properties.page_height < kMinHeaderFooterPageHeight) {
+    return HeaderFooterRole::kNone;
+  }
+
+  // Must contain at least one alphanumeric character (letter or digit) to be a
+  // header or footer. This filters out isolated bullets, decorative rules, or
+  // symbols.
+  std::string run_text = GetTrimmedText(current_run_chars);
+  if (run_text.empty() || !ContainsAlphanumeric(run_text)) {
+    return HeaderFooterRole::kNone;
+  }
+
+  // Margin check: early return for text outside top/bottom margins.
+  bool is_in_top_margin =
+      current_run.bounds.bottom() <= page_properties.top_margin &&
+      current_run.bounds.bottom() > 0.0f;
+  bool is_in_bottom_margin =
+      current_run.bounds.y() >= page_properties.bottom_margin &&
+      current_run.bounds.y() < page_properties.page_height;
+  if (!is_in_top_margin && !is_in_bottom_margin) {
+    return HeaderFooterRole::kNone;
+  }
+
+  if (page_properties.median_font_size > 0) {
+    if (current_run.style.font_size > page_properties.median_font_size) {
+      return HeaderFooterRole::kNone;
+    }
+
+    // Header and footer text (such as running headers or copyright notices)
+    // is often styled smaller than body text. Text rendered at the body text
+    // size (the median) in the margin is typically body content that extends
+    // into the margin band.
+    bool is_strictly_smaller =
+        current_run.style.font_size <
+        (page_properties.median_font_size - kFontSizeEpsilon);
+    if (!is_strictly_smaller) {
+      return HeaderFooterRole::kNone;
+    }
+  }
+
+  if (is_in_top_margin) {
+    return HeaderFooterRole::kHeader;
+  }
+  // The margin check above returns early unless the run is in one of the two
+  // margin bands.
+  CHECK(is_in_bottom_margin);
+  return HeaderFooterRole::kFooter;
+}
+
+// Returns the AX role that corresponds to `role`, or `std::nullopt` for
+// `kNone` so that callers can continue with heading classification.
+std::optional<ax::mojom::Role> GetAXRoleForHeaderFooterRole(
+    HeaderFooterRole role) {
+  switch (role) {
+    case HeaderFooterRole::kHeader:
+      return ax::mojom::Role::kSectionHeader;
+    case HeaderFooterRole::kFooter:
+      return ax::mojom::Role::kSectionFooter;
+    case HeaderFooterRole::kNone:
+      return std::nullopt;
+  }
 }
 
 const chrome_pdf::AccessibilityTextRunInfo* GetRunAfterIndex(
@@ -699,7 +825,8 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   };
 
   const HeuristicPageProperties page_properties =
-      ComputeHeuristicPageProperties(builder_->text_runs());
+      ComputeHeuristicPageProperties(
+          builder_->text_runs(), builder_->page_node()->relative_bounds.bounds);
   const PageLayoutData page_layout = {
       .text_runs = builder_->text_runs(),
       .chars = builder_->chars(),
@@ -941,6 +1068,19 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
       }
       PromoteNodeToHeading(block_node, heading_level);
       *out_heading_classifier = classifier;
+      return block_node;
+    }
+
+    // Check for remaining headers and footers after heading classification.
+    // This ensures real headings in the margins (e.g. section headings at the
+    // top of a page or paper titles) are preserved as headings, while
+    // non-heading text in margins is classified as headers or footers.
+    std::optional<ax::mojom::Role> header_footer_ax_role =
+        GetAXRoleForHeaderFooterRole(GetHeaderFooterRole(
+            current_run, current_run_chars, page_properties));
+    if (header_footer_ax_role.has_value()) {
+      block_node->role = header_footer_ax_role.value();
+      return block_node;
     }
   }
 
