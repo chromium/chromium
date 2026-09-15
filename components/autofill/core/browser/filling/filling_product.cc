@@ -137,7 +137,9 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
       return FillingProduct::kLoyaltyCard;
     case SuggestionType::kIdentityCredential:
       return FillingProduct::kIdentityCredential;
+    case SuggestionType::kGmailOneTimePasswordEntry:
     case SuggestionType::kOneTimePasswordEntry:
+    case SuggestionType::kOpenGmailForOtps:
       return FillingProduct::kOneTimePassword;
     case SuggestionType::kAtMemoryFetching:
     case SuggestionType::kAtMemorySearchResult:

@@ -144,7 +144,16 @@ enum class SuggestionType {
   kWebauthnPasskeyQrCode = 86,
 
   // One time password suggestions.
+  // Represents an SMS OTP suggestion.
   kOneTimePasswordEntry = 74,
+  // Represents a Gmail OTP suggestion. Having a separate suggestion type allows
+  // recording distinct acceptance/impression metrics in AutofillSuggestionType
+  // histograms and configuring differing UI styling (e.g. Gmail icon and sender
+  // email labels vs Android Messages icon) without risking regressions to SMS
+  // OTP flows.
+  kGmailOneTimePasswordEntry = 100,
+  // Suggestion action to open Gmail for OTPs when no OTP was detected.
+  kOpenGmailForOtps = 101,
 
   // Other suggestions.
   kTitle = 45,
@@ -246,9 +255,9 @@ enum class SuggestionType {
   // entity source info.
   kAutofillAiSourceAttribution = 99,
 
-  // Next ID: 100
+  // Next ID: 102
 
-  kMaxValue = kAutofillAiSourceAttribution
+  kMaxValue = kOpenGmailForOtps
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

@@ -163,6 +163,10 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kRemoveAutofillAi";
     case SuggestionType::kAutofillAiSourceAttribution:
       return "kAutofillAiSourceAttribution";
+    case SuggestionType::kGmailOneTimePasswordEntry:
+      return "kGmailOneTimePasswordEntry";
+    case SuggestionType::kOpenGmailForOtps:
+      return "kOpenGmailForOtps";
   }
   NOTREACHED();
 }

@@ -94,16 +94,15 @@ constexpr int kAtMemoryLabelHorizontalSpacing = 4;
 // Popup items that use a leading icon instead of a trailing one.
 constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
     {SuggestionType::kAllLoyaltyCardsEntry,
-     SuggestionType::kAllSavedPasswordsEntry,
-     SuggestionType::kManageAddress, SuggestionType::kManageCreditCard,
-     SuggestionType::kManageAutofillAi,
+     SuggestionType::kAllSavedPasswordsEntry, SuggestionType::kManageAddress,
+     SuggestionType::kManageCreditCard, SuggestionType::kManageAutofillAi,
      SuggestionType::kManageAutofillAiIdentityDocs,
      SuggestionType::kManageAutofillAiShopping,
      SuggestionType::kManageAutofillAiTravel, SuggestionType::kManageIban,
      SuggestionType::kManageLoyaltyCard,
-     SuggestionType::kManageEnhancedAutofill, SuggestionType::kRemoveAutofillAi,
+     SuggestionType::kManageEnhancedAutofill, SuggestionType::kOpenGmailForOtps,
+     SuggestionType::kPendingStateSignin, SuggestionType::kRemoveAutofillAi,
      SuggestionType::kUndo, SuggestionType::kViewPasswordDetails,
-     SuggestionType::kPendingStateSignin,
      SuggestionType::kWebauthnSignInWithAnotherDevice});
 
 // Max width for the username and masked password.
@@ -1075,6 +1074,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kFillPassword:
     case SuggestionType::kFreeformFooter:
     case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kGmailOneTimePasswordEntry:
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kLoyaltyCardEntry:
@@ -1090,6 +1090,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kOneTimePasswordEntry:
+    case SuggestionType::kOpenGmailForOtps:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
     case SuggestionType::kPersonalContextNotice:

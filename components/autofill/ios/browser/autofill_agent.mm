@@ -698,6 +698,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       case SuggestionType::kFillPassword:
       case SuggestionType::kFreeformFooter:
       case SuggestionType::kGeneratePasswordEntry:
+      case SuggestionType::kGmailOneTimePasswordEntry:
       case SuggestionType::kIbanEntry:
       case SuggestionType::kIdentityCredential:
       case SuggestionType::kInsecureContextPaymentDisabledMessage:
@@ -715,6 +716,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       case SuggestionType::kMaximizeCreditCardBenefitsEntry:
       case SuggestionType::kMerchantPromoCodeEntry:
       case SuggestionType::kOneTimePasswordEntry:
+      case SuggestionType::kOpenGmailForOtps:
       case SuggestionType::kPasswordEntry:
       case SuggestionType::kPasswordFieldByFieldFilling:
       case SuggestionType::kPendingStateSignin:
