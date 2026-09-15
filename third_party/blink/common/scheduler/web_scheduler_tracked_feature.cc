@@ -154,6 +154,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"webauthn", "Active WebAuthn transaction"};
     case WebSchedulerTrackedFeature::kSharedWorkerMessage:
       return {"sharedworker-message", "Message posted from SharedWorker"};
+    case WebSchedulerTrackedFeature::kWebUSB:
+      return {"webusb", "USB device open"};
   }
   return {};
 }

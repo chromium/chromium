@@ -2054,6 +2054,7 @@ Called by update_scheduler_enums.py.-->
   <int value="69" label="WebBluetooth"/>
   <int value="70" label="WebAuthentication"/>
   <int value="71" label="SharedWorkerMessage"/>
+  <int value="72" label="WebUSB"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/scheduler/web_scheduler_tracked_feature.mojom:WebSchedulerTrackedFeature)-->

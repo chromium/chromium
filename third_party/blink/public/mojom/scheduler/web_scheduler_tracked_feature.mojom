@@ -165,5 +165,9 @@ enum WebSchedulerTrackedFeature {
   // The back/forward cache is disabled when pages receive a message from shared
   // worker.
   kSharedWorkerMessage = 71,
+
+  // Aggressive throttling is disabled when a USB device is opened and
+  // re-enabled when the opened device is closed.
+  kWebUSB = 72,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:WebSchedulerTrackedFeature)
