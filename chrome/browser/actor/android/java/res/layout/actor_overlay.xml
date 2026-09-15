@@ -5,9 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.actor.ui.ActorOverlayView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/actor_overlay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,13 +14,20 @@ found in the LICENSE file.
     android:clipToPadding="false"
     android:visibility="gone">
 
+    <org.chromium.chrome.browser.actor.ui.ActorOverlayView
+        android:id="@+id/actor_overlay_scrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:visibility="gone" />
+
     <ViewStub
         android:id="@+id/actor_handoff_button_stub"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="@dimen/actor_overlay_button_margin_top"
         android:inflatedId="@+id/actor_handoff_button_container"
         android:layout="@layout/actor_handoff_button" />
 
-</org.chromium.chrome.browser.actor.ui.ActorOverlayView>
+</FrameLayout>

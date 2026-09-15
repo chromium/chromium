@@ -24,7 +24,7 @@ import org.chromium.build.annotations.Nullable;
 
 /**
  * Container view for the Actor handoff ("Take over task") button that renders a custom glow shadow
- * behind the button.
+ * behind the button and is anchored to the bottom edge of the toolbar (line of death).
  */
 @NullMarked
 public class ActorHandoffButtonView extends FrameLayout {

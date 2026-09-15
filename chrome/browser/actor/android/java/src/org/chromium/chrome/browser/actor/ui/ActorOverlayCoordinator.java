@@ -12,6 +12,7 @@ import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -20,6 +21,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -59,6 +61,7 @@ public class ActorOverlayCoordinator {
     private final @Nullable SideUiStateProvider mSideUiStateProvider;
     private final PropertyObservable.PropertyObserver<PropertyKey> mModelObserver;
 
+    private @Nullable FrameLayout mContainer;
     private @Nullable ActorOverlayView mView;
     private @Nullable PropertyModelChangeProcessor mChangeProcessor;
     private @Nullable ViewStub mHandoffButtonStub;
@@ -105,6 +108,8 @@ public class ActorOverlayCoordinator {
                         .with(ActorOverlayProperties.TOP_MARGIN, 0)
                         .with(ActorOverlayProperties.RIGHT_MARGIN, 0)
                         .with(ActorOverlayProperties.BOTTOM_MARGIN, 0)
+                        .with(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP)
+                        .with(ActorOverlayProperties.HANDOFF_BUTTON_TOP_MARGIN, 0)
                         .with(ActorOverlayProperties.ON_CLICK_LISTENER, v -> handleOnClick())
                         .with(
                                 ActorOverlayProperties.ON_TAKE_OVER_CLICK_LISTENER,
@@ -132,6 +137,7 @@ public class ActorOverlayCoordinator {
 
         mMediator =
                 new ActorOverlayMediator(
+                        mContext,
                         mModel,
                         tabModelSelector,
                         browserControlsVisibilityManager,
@@ -147,18 +153,22 @@ public class ActorOverlayCoordinator {
     }
 
     private void inflateView() {
-        if (mView != null) return;
-        mView = (ActorOverlayView) mViewStub.inflate();
-        mHandoffButtonStub = mView.findViewById(R.id.actor_handoff_button_stub);
+        if (mContainer != null) return;
+        mContainer = (FrameLayout) mViewStub.inflate();
+        mView = mContainer.findViewById(R.id.actor_overlay_scrim);
+        mHandoffButtonStub = mContainer.findViewById(R.id.actor_handoff_button_stub);
         mChangeProcessor =
-                PropertyModelChangeProcessor.create(mModel, mView, ActorOverlayViewBinder::bind);
+                PropertyModelChangeProcessor.create(
+                        mModel,
+                        new ActorOverlayViewBinder.ViewHolder(mContainer, mView),
+                        ActorOverlayViewBinder::bind);
         if (mModel.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE)) {
             inflateHandoffButtonView();
         }
     }
 
     private void inflateHandoffButtonView() {
-        if (mHandoffButtonView != null || mHandoffButtonStub == null) return;
+        if (mHandoffButtonView != null || mContainer == null || mHandoffButtonStub == null) return;
         mHandoffButtonView = (ActorHandoffButtonView) mHandoffButtonStub.inflate();
         mHandoffButtonStub = null;
         mHandoffButtonChangeProcessor =
@@ -171,15 +181,15 @@ public class ActorOverlayCoordinator {
         @Override
         public @Nullable Transition onPreSideUiSpecsChange(
                 SideUiCoordinator.SideUiSpecs sideUiSpecs) {
-            if (mView == null || !mModel.get(ActorOverlayProperties.VISIBLE)) {
+            if (mContainer == null || !mModel.get(ActorOverlayProperties.VISIBLE)) {
                 return null;
             }
             TransitionSet transitionSet = new TransitionSet();
             Collection<View> descendants = new ArrayList<>();
-            ViewUtils.getAllDescendants(mView, descendants, emptySet());
+            ViewUtils.getAllDescendants(mContainer, descendants, emptySet());
 
             Transition transition = new ChangeBounds();
-            transition.addTarget(mView);
+            transition.addTarget(mContainer);
             for (View view : descendants) {
                 transition.addTarget(view);
             }
@@ -250,11 +260,15 @@ public class ActorOverlayCoordinator {
     }
 
     boolean isViewInflatedForTesting() {
-        return mView != null;
+        return mContainer != null;
     }
 
-    PropertyModel getModelForTesting() {
-        return mModel;
+    @Nullable FrameLayout getContainerForTesting() {
+        return mContainer;
+    }
+
+    @Nullable ActorOverlayView getOverlayViewForTesting() {
+        return mView;
     }
 
     @Nullable ActorHandoffButtonView getHandoffButtonViewForTesting() {
@@ -263,6 +277,10 @@ public class ActorOverlayCoordinator {
 
     @Nullable ViewStub getHandoffButtonStubForTesting() {
         return mHandoffButtonStub;
+    }
+
+    PropertyModel getModelForTesting() {
+        return mModel;
     }
 
     /** Sets the visibility of the overlay for testing purposes. */
@@ -292,6 +310,7 @@ public class ActorOverlayCoordinator {
             mHandoffButtonChangeProcessor.destroy();
             mHandoffButtonChangeProcessor = null;
         }
+        mContainer = null;
         mView = null;
         mHandoffButtonView = null;
         mHandoffButtonStub = null;
