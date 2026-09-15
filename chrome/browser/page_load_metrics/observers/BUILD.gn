@@ -37,6 +37,7 @@ if (!is_android) {
       "//components/page_load_metrics/common:test_support",
       "//components/page_load_metrics/google/browser",
       "//components/ukm:test_support",
+      "//content/test:browsertest_support",
       "//content/test:test_support",
       "//net:test_support",
       "//services/network/public/cpp",

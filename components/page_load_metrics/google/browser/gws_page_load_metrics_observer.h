@@ -106,6 +106,7 @@ extern const char kHistogramPrerenderHostReused[];
 extern const char kHistogramGWSPrerenderNavigationToActivation[];
 extern const char kHistogramGWSActivationToFirstContentfulPaint[];
 extern const char kHistogramGWSActivationToLargestContentfulPaint[];
+extern const char kHistogramGWSPrewarmPrerenderCoverageStatus[];
 
 extern const char kHistogramPrerenderSuffix[];
 extern const char kHistogramNonPrerenderSuffix[];
