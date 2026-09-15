@@ -119,6 +119,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/webui_toolbar/adapters:impl",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//chrome/test/base:profile_lifecycle_test_utils",
     "//components/keep_alive_registry",
     "//components/metrics:content",
     "//components/metrics/mapping",

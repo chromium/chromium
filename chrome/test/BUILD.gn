@@ -171,7 +171,6 @@ static_library("test_support") {
     "//chrome/test/base:browser_test_waiters",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/base:chrome_test_utils",
-    "//chrome/test/base:profile_lifecycle_test_utils",
     "//chrome/test/base:testing_browser_process_impl",
     "//chrome/test/base:testing_profile_impl",
     "//chrome/test/base:web_ui_mocha_browser_test",
@@ -878,6 +877,7 @@ source_set("platform_browser_tests") {
     "//chrome/common:non_code_constants",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_test",
+    "//chrome/test/base:profile_lifecycle_test_utils",
     "//components/browsing_data/content:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
@@ -8943,6 +8943,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/cocoa:interactive_ui_tests",
         "//chrome/browser/ui/views/frame:immersive_mode_controller_mac",
         "//chrome/browser/web_applications/extensions",
+        "//chrome/test/base:profile_lifecycle_test_utils",
         "//components/remote_cocoa/app_shim",
         "//components/spellcheck:buildflags",
       ]

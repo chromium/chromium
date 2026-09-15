@@ -549,6 +549,7 @@ source_set("unit_tests") {
     "//chrome/browser/sync",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:profile_lifecycle_test_utils",
     "//components/consent_auditor:test_support",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",

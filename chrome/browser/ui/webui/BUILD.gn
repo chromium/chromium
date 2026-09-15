@@ -942,6 +942,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/tracked_element:browser_tests",
       "//chrome/common",
       "//chrome/test:test_support",
+      "//chrome/test/base:profile_lifecycle_test_utils",
       "//components/local_state",
       "//components/prefs",
       "//content/public/browser",

@@ -149,6 +149,7 @@ source_set("browser_test_support") {
     ":test_support",
     "//base",
     "//chrome/test:test_support",
+    "//chrome/test/base:profile_lifecycle_test_utils",
     "//testing/gmock",
     "//url",
   ]

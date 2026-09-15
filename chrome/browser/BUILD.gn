@@ -4345,6 +4345,7 @@ if (!is_android) {
       "//chrome/browser/ui/login",
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/test:test_support_ui",
+      "//chrome/test/base:profile_lifecycle_test_utils",
       "//chrome/test/base:test_launcher_utils",
       "//components/embedder_support",
       "//components/enterprise/data_controls/core/browser:test_support",

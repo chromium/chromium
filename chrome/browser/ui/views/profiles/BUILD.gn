@@ -234,6 +234,7 @@ if (toolkit_views) {
       "//chrome/common",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
+      "//chrome/test/base:profile_lifecycle_test_utils",
       "//chrome/test/user_education",
       "//components/feature_engagement/public:feature_constants",
       "//components/keep_alive_registry",
