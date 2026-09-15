@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller_impl.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -46,8 +46,8 @@ class VerticalTabStripTopContainerTest : public ChromeViewsTestBase {
         .WillRepeatedly(testing::Return(&profile_));
     tabs::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.SetBoolean(prefs::kVerticalTabsEnabled, true);
-    controller_ = std::make_unique<tabs::VerticalTabStripStateController>(
-        &mock_browser_window_interface_, &pref_service_,
+    controller_ = std::make_unique<tabs::VerticalTabStripStateControllerImpl>(
+        mock_browser_window_interface_, &pref_service_,
         /*root_action_item=*/nullptr,
         /*session_service=*/nullptr, test_session_id,
         /*restored_state_collapsed=*/std::nullopt,

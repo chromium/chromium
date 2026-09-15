@@ -436,6 +436,7 @@ if (!is_android) {
       "vertical_tab_strip_metrics.h",
       "vertical_tab_strip_state.h",
       "vertical_tab_strip_state_controller.h",
+      "vertical_tab_strip_state_controller_impl.h",
     ]
 
     if (is_win || is_mac || is_linux || is_chromeos) {
@@ -509,6 +510,7 @@ if (!is_android) {
       "vertical_tab_iph_controller.cc",
       "vertical_tab_strip_metrics.cc",
       "vertical_tab_strip_state_controller.cc",
+      "vertical_tab_strip_state_controller_impl.cc",
     ]
 
     if (is_win || is_mac || is_linux || is_chromeos) {
@@ -711,6 +713,8 @@ if (!is_android) {
     testonly = true
 
     sources = [
+      "mock_vertical_tab_strip_state_controller.cc",
+      "mock_vertical_tab_strip_state_controller.h",
       "pinned_tab_test_utils.cc",
       "pinned_tab_test_utils.h",
       "tab_activity_simulator.cc",

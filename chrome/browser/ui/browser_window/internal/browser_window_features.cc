@@ -107,7 +107,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_iph_controller.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller_impl.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -646,8 +646,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
     vertical_tab_strip_state_controller_ =
         GetUserDataFactory()
-            .CreateInstance<tabs::VerticalTabStripStateController>(
-                *browser, browser, profile->GetPrefs(),
+            .CreateInstance<tabs::VerticalTabStripStateControllerImpl>(
+                *browser, *browser, profile->GetPrefs(),
                 browser_actions_->root_action_item(),
                 SessionServiceFactory::GetForProfile(browser_->GetProfile()),
                 browser_->GetSessionID(), restored_state_collapsed,

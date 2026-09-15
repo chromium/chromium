@@ -327,7 +327,7 @@ std::optional<int> BrowserNativeWidgetMac::GetGlassFrameWidth() const {
   // vertical tab strip resize handle, expand the glass view to cover the
   // maximum possible vertical tab strip width to avoid continuous resizing on
   // every mouse movement.
-  if (is_window_live_resizing_ || controller->is_resizing()) {
+  if (is_window_live_resizing_ || controller->IsResizing()) {
     return max_width;
   }
 

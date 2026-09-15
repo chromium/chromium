@@ -55,7 +55,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller_impl.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
@@ -441,8 +441,8 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
             &mock_browser_window_interface_);
 
     vertical_tab_strip_state_controller_ =
-        std::make_unique<tabs::VerticalTabStripStateController>(
-            &mock_browser_window_interface_, &pref_service_, nullptr, nullptr,
+        std::make_unique<tabs::VerticalTabStripStateControllerImpl>(
+            mock_browser_window_interface_, &pref_service_, nullptr, nullptr,
             SessionID::InvalidValue(), std::nullopt, std::nullopt);
 
     static_cast<BrowserCollectionObserver*>(
