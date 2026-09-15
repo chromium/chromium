@@ -235,10 +235,11 @@ source_set("toolbar_button_provider") {
 
 source_set("frame") {
   sources = [
-    "browser_root_view.h",
     "tab_strip_region_view.cc",
     "tab_strip_region_view.h",
   ]
+
+  public_deps = [ ":browser_root_view" ]
 
   deps = [
     "//base",
@@ -1474,4 +1475,122 @@ if (use_aura && !is_chromeos) {
       ]
     }
   }
+}
+
+source_set("browser_view_app_layout_impl") {
+  public = [ "layout/browser_view_app_layout_impl.h" ]
+  sources = [ "layout/browser_view_app_layout_impl.cc" ]
+  public_deps = [
+    ":browser_view_layout_delegate",
+    ":browser_view_layout_params",
+    "//chrome/browser:browser_public_dependencies",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+  deps = [
+    ":frame",
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/views/infobars",
+    "//chrome/browser/ui/web_applications",
+    "//ui/gfx",
+  ]
+}
+
+source_set("browser_view_popup_layout_impl") {
+  public = [ "layout/browser_view_popup_layout_impl.h" ]
+  sources = [ "layout/browser_view_popup_layout_impl.cc" ]
+  public_deps = [
+    ":browser_view_layout_delegate",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":frame",
+    "//chrome/browser/ui/views/infobars",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_view_tabbed_layout_impl") {
+  public = [ "layout/browser_view_tabbed_layout_impl.h" ]
+  sources = [ "layout/browser_view_tabbed_layout_impl.cc" ]
+  public_deps = [
+    ":browser_view_layout_delegate",
+    ":browser_view_layout_params",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/animation",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+  deps = [
+    ":custom_corners",
+    ":custom_corners_background",
+    ":custom_floating_corner",
+    ":frame",
+    ":shadow",
+    ":vertical_tab_strip_background_blur_backdrop",
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/views/animations",
+    "//chrome/browser/ui/views/bookmarks",
+    "//chrome/browser/ui/views/infobars",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/views/tabs/organizer",
+    "//ui/base:features",
+    "//ui/compositor",
+  ]
+  if (is_mac) {
+    deps += [ "//chrome/browser/ui:fullscreen_util_mac" ]
+  }
+}
+
+source_set("browser_root_view") {
+  public = [ "browser_root_view.h" ]
+  public_deps = [
+    "//base",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_root_view_impl") {
+  sources = [ "browser_root_view.cc" ]
+  public_deps = [
+    ":browser_root_view",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//build:buildflag_header_h",
+    "//chrome/browser:defaults",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/navigator",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/toolbar",
+    "//components/omnibox/browser",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//content/public/common:buildflags",
+    "//net",
+    "//third_party/blink/public/common:headers",
+    "//third_party/metrics_proto",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/dragdrop:types",
+    "//ui/base/dragdrop/mojom",
+    "//ui/color",
+    "//ui/compositor",
+    "//url",
+  ]
 }
