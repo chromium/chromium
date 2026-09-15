@@ -143,7 +143,8 @@ InstallServiceWorkItemImpl::InstallServiceWorkItemImpl(
     const base::CommandLine& com_service_cmd_line_args,
     const std::wstring& registry_path,
     const std::vector<GUID>& clsids,
-    const std::vector<GUID>& iids)
+    const std::vector<GUID>& iids,
+    base::span<const GUID> previous_iids)
     : com_registration_work_items_(WorkItem::CreateWorkItemList()),
       service_name_(service_name),
       display_name_(display_name),
@@ -154,6 +155,7 @@ InstallServiceWorkItemImpl::InstallServiceWorkItemImpl(
       registry_path_(registry_path),
       clsids_(clsids),
       iids_(iids),
+      previous_iids_(std::from_range, previous_iids),
       rollback_existing_service_(false),
       rollback_new_service_(false),
       original_service_still_exists_(false) {}
@@ -215,6 +217,18 @@ bool InstallServiceWorkItemImpl::DoInstallService() {
 }
 
 bool InstallServiceWorkItemImpl::DoComRegistration() {
+  for (const auto& iid : previous_iids_) {
+    const std::wstring iid_reg_path = GetComIidRegistryPath(iid);
+    const std::wstring typelib_reg_path = GetComTypeLibRegistryPath(iid);
+
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      com_registration_work_items_->AddDeleteRegKeyWorkItem(
+          HKEY_LOCAL_MACHINE, iid_reg_path, key_flag);
+    }
+    com_registration_work_items_->AddDeleteRegKeyWorkItem(
+        HKEY_LOCAL_MACHINE, typelib_reg_path, WorkItem::kWow64Default);
+  }
+
   for (const auto& clsid : clsids_) {
     const std::wstring clsid_reg_path = GetComClsidRegistryPath(clsid);
     const std::wstring appid_reg_path = GetComAppidRegistryPath(clsid);

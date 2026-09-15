@@ -15,6 +15,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/win/windows_types.h"
 
 namespace version_info {
@@ -109,12 +110,14 @@ const CLSID& GetToastActivatorClsid();
 // respectively.
 const CLSID& GetElevatorClsid();
 const IID& GetElevatorIid();
+base::span<const IID> GetOldElevatorIids();
 std::wstring GetElevationServiceName();
 std::wstring GetElevationServiceDisplayName();
 
 // Returns the Tracing Service CLSID, IID, Name, and Display Name respectively.
 const CLSID& GetTracingServiceClsid();
 const IID& GetTracingServiceIid();
+base::span<const IID> GetOldTracingServiceIids();
 std::wstring GetTracingServiceName();
 std::wstring GetTracingServiceDisplayName();
 

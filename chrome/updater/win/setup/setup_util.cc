@@ -433,7 +433,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
                          language),
       GetLocalizedString(IDS_UPDATER_SERVICE_DESCRIPTION_BASE, language),
       SERVICE_AUTO_START, com_service_command, com_switch, UPDATER_KEY, clsids,
-      {}));
+      {}, {}));
 
   for (const auto& clsid : clsids) {
     AddInstallComProgIdWorkItems(UpdaterScope::kSystem, clsid, list);

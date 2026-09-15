@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/strings/cstring_view.h"
 #include "base/win/scoped_handle.h"
@@ -64,7 +65,8 @@ class InstallServiceWorkItemImpl {
                              const base::CommandLine& com_service_cmd_line_args,
                              const std::wstring& registry_path,
                              const std::vector<GUID>& clsids,
-                             const std::vector<GUID>& iids);
+                             const std::vector<GUID>& iids,
+                             base::span<const GUID> previous_iids);
 
   InstallServiceWorkItemImpl(const InstallServiceWorkItemImpl&) = delete;
   InstallServiceWorkItemImpl& operator=(const InstallServiceWorkItemImpl&) =
@@ -225,6 +227,9 @@ class InstallServiceWorkItemImpl {
   // If COM Interface/Typelib registration is required, |iids_| would be
   // populated.
   const std::vector<GUID> iids_;
+
+  // Old COM Interface/Typelib registrations to be deleted upon install/update.
+  const std::vector<GUID> previous_iids_;
 
   ScopedScHandle scm_;
   ScopedScHandle service_;
