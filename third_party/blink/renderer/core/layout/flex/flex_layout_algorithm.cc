@@ -220,9 +220,9 @@ StyleContentAlignmentData FlexLayoutAlgorithm::ResolvedJustifyContent() const {
           return ContentPosition::kCenter;
         case EBoxPack::kJustify:
         case EBoxPack::kStart:
-          return ContentPosition::kFlexStart;
+          return ContentPosition::kFlowStart;
         case EBoxPack::kEnd:
-          return ContentPosition::kFlexEnd;
+          return ContentPosition::kFlowEnd;
       }
     })();
     const ContentDistributionType distribution =
@@ -235,8 +235,8 @@ StyleContentAlignmentData FlexLayoutAlgorithm::ResolvedJustifyContent() const {
   const auto writing_direction = GetConstraintSpace().GetWritingDirection();
   const StyleContentAlignmentData& justify_content = Style().JustifyContent();
 
-  // Coerce "left"/"right" their logical variants.
-  ContentPosition position = justify_content.GetPosition();
+  // Coerce 'left'/'right' to their logical variants.
+  ContentPosition position = justify_content.GetUsedPosition();
   if (position == ContentPosition::kLeft ||
       position == ContentPosition::kRight) {
     if (is_column_) {
@@ -265,23 +265,23 @@ StyleContentAlignmentData FlexLayoutAlgorithm::ResolvedJustifyContent() const {
 ItemPosition FlexLayoutAlgorithm::ResolvedAlignSelf(
     const ComputedStyle& child_style,
     bool is_out_of_flow) const {
-  // Any auto-margins coerce the alignment to flex-start.
+  // Any auto-margins coerce the alignment to 'flex-start'.
   if (!is_out_of_flow) {
     if (is_horizontal_flow_) {
       if (child_style.MarginTop().IsAuto() ||
           child_style.MarginBottom().IsAuto()) {
-        return ItemPosition::kFlexStart;
+        return ItemPosition::kFlowStart;
       }
     } else {
       if (child_style.MarginLeft().IsAuto() ||
           child_style.MarginRight().IsAuto()) {
-        return ItemPosition::kFlexStart;
+        return ItemPosition::kFlowStart;
       }
     }
   }
 
-  // -webkit-box has a relatively simple alignment mapping (no need to coerce
-  // "self-start", etc).
+  // '-webkit-box' has a relatively simple alignment mapping (no need to coerce
+  // 'self-start', etc).
   if (is_webkit_box_) {
     switch (Style().BoxAlign()) {
       case EBoxAlignment::kBaseline:
@@ -291,9 +291,9 @@ ItemPosition FlexLayoutAlgorithm::ResolvedAlignSelf(
       case EBoxAlignment::kStretch:
         return ItemPosition::kStretch;
       case EBoxAlignment::kStart:
-        return ItemPosition::kFlexStart;
+        return ItemPosition::kFlowStart;
       case EBoxAlignment::kEnd:
-        return ItemPosition::kFlexEnd;
+        return ItemPosition::kFlowEnd;
     }
   }
 
@@ -301,23 +301,23 @@ ItemPosition FlexLayoutAlgorithm::ResolvedAlignSelf(
       child_style
           .ResolvedAlignSelf(
               {ItemPosition::kStretch, OverflowAlignment::kDefault}, &Style())
-          .GetPosition();
+          .GetUsedPosition();
   DCHECK_NE(align, ItemPosition::kAuto);
   DCHECK_NE(align, ItemPosition::kNormal);
   DCHECK_NE(align, ItemPosition::kLeft) << "left, right are only for justify";
   DCHECK_NE(align, ItemPosition::kRight) << "left, right are only for justify";
 
   if (align == ItemPosition::kStart) {
-    return ItemPosition::kFlexStart;
+    return ItemPosition::kFlowStart;
   }
   if (align == ItemPosition::kEnd) {
-    return ItemPosition::kFlexEnd;
+    return ItemPosition::kFlowEnd;
   }
 
   LogicalToLogical<ItemPosition> logical(
       child_style.GetWritingDirection(),
-      GetConstraintSpace().GetWritingDirection(), ItemPosition::kFlexStart,
-      ItemPosition::kFlexEnd, ItemPosition::kFlexStart, ItemPosition::kFlexEnd);
+      GetConstraintSpace().GetWritingDirection(), ItemPosition::kFlowStart,
+      ItemPosition::kFlowEnd, ItemPosition::kFlowStart, ItemPosition::kFlowEnd);
   if (align == ItemPosition::kSelfStart) {
     return is_column_ ? logical.InlineStart() : logical.BlockStart();
   }
@@ -325,18 +325,11 @@ ItemPosition FlexLayoutAlgorithm::ResolvedAlignSelf(
     return is_column_ ? logical.InlineEnd() : logical.BlockEnd();
   }
 
-  // TODO(celestepan): swap usage of `kFlexStart/End` with `kFlowStart/End`.
-  if (align == ItemPosition::kFlowStart) {
-    align = ItemPosition::kFlexStart;
-  } else if (align == ItemPosition::kFlowEnd) {
-    align = ItemPosition::kFlexEnd;
-  }
-
   if (is_wrap_reverse_) {
-    if (align == ItemPosition::kFlexStart) {
-      align = ItemPosition::kFlexEnd;
-    } else if (align == ItemPosition::kFlexEnd) {
-      align = ItemPosition::kFlexStart;
+    if (align == ItemPosition::kFlowStart) {
+      align = ItemPosition::kFlowEnd;
+    } else if (align == ItemPosition::kFlowEnd) {
+      align = ItemPosition::kFlowStart;
     }
   }
 
@@ -468,8 +461,9 @@ AxisEdge MainAxisStaticPositionEdge(
   const ContentPosition content_position = justify_content.GetPosition();
   DCHECK_NE(content_position, ContentPosition::kLeft);
   DCHECK_NE(content_position, ContentPosition::kRight);
-  if (content_position == ContentPosition::kFlexEnd ||
-      content_position == ContentPosition::kFlowEnd) {
+  DCHECK_NE(content_position, ContentPosition::kFlexStart);
+  DCHECK_NE(content_position, ContentPosition::kFlexEnd);
+  if (content_position == ContentPosition::kFlowEnd) {
     return is_reverse_direction ? AxisEdge::kStart : AxisEdge::kEnd;
   }
 
@@ -490,15 +484,17 @@ AxisEdge MainAxisStaticPositionEdge(
 // Maps the resolved alignment value to a static-position edge.
 AxisEdge CrossAxisStaticPositionEdge(const ItemPosition alignment,
                                      bool is_wrap_reverse) {
-  // AlignmentForChild already accounted for wrap-reverse for kFlexStart and
-  // kFlexEnd, but not kStretch. kStretch is supposed to act like kFlexStart.
+  // `ResolvedAlignSelf` accounts for 'wrap-reverse' for 'flow-start' and
+  // 'flow-end', but not 'stretch'. For static positioning, 'stretch' should
+  // behave like 'flow-start'.
   if (is_wrap_reverse && alignment == ItemPosition::kStretch) {
     return AxisEdge::kEnd;
   }
 
-  if (alignment == ItemPosition::kFlexEnd ||
-      alignment == ItemPosition::kLastBaseline)
+  if (alignment == ItemPosition::kFlowEnd ||
+      alignment == ItemPosition::kLastBaseline) {
     return AxisEdge::kEnd;
+  }
 
   if (alignment == ItemPosition::kCenter)
     return AxisEdge::kCenter;
@@ -1690,17 +1686,15 @@ LayoutUnit InitialContentPositionOffset(const StyleContentAlignmentData& data,
     return LayoutUnit();
   }
 
-  switch (data.GetPosition()) {
+  switch (data.GetUsedPosition()) {
     case ContentPosition::kCenter:
       return free_space / 2;
     case ContentPosition::kStart:
       return LayoutUnit();
     case ContentPosition::kEnd:
       return free_space;
-    case ContentPosition::kFlexEnd:
     case ContentPosition::kFlowEnd:
       return is_reverse ? LayoutUnit() : free_space;
-    case ContentPosition::kFlexStart:
     case ContentPosition::kFlowStart:
     case ContentPosition::kNormal:
     case ContentPosition::kBaseline:
@@ -1708,6 +1702,8 @@ LayoutUnit InitialContentPositionOffset(const StyleContentAlignmentData& data,
       return is_reverse ? free_space : LayoutUnit();
     case ContentPosition::kLeft:
     case ContentPosition::kRight:
+    case ContentPosition::kFlexStart:
+    case ContentPosition::kFlexEnd:
       NOTREACHED();
   }
 }
@@ -2005,9 +2001,9 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           case ItemPosition::kCenter:
             offset = space / 2;
             break;
-          case ItemPosition::kFlexStart:
+          case ItemPosition::kFlowStart:
             break;
-          case ItemPosition::kFlexEnd:
+          case ItemPosition::kFlowEnd:
             offset = space;
             break;
           case ItemPosition::kStretch:
