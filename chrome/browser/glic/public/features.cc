@@ -297,7 +297,8 @@ BASE_FEATURE(kGlicMarketingAutoOpen, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kGlicMarketingUrlAllowlist{
     &kGlicMarketingAutoOpen, "allowlisted_urls",
 #if BUILDFLAG(IS_ANDROID)
-    "https://www.google.com/chrome/ai-innovations/gemini-in-chrome/"
+    "https://www.google.com/chrome/ai-innovations/gemini-in-chrome/,"
+    "https://www.google.com/chrome/campaigns/gic-on-android/"
 #else
     ""
 #endif
