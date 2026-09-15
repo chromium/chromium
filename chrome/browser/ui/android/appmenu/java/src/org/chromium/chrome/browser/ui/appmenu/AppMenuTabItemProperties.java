@@ -5,8 +5,11 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
@@ -14,8 +17,10 @@ import java.util.Arrays;
 @NullMarked
 public class AppMenuTabItemProperties {
     public static final WritableIntPropertyKey TAB_ID = new WritableIntPropertyKey("TAB_ID");
+    public static final WritableObjectPropertyKey<@Nullable GURL> TAB_URL =
+            new WritableObjectPropertyKey<>("TAB_URL");
 
-    public static final PropertyKey[] TAB_KEYS = new PropertyKey[] {TAB_ID};
+    public static final PropertyKey[] TAB_KEYS = new PropertyKey[] {TAB_ID, TAB_URL};
 
     public static final PropertyKey[] ALL_KEYS =
             Arrays.copyOf(

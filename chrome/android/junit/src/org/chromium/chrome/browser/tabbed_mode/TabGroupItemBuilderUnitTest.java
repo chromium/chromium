@@ -205,10 +205,12 @@ public class TabGroupItemBuilderUnitTest {
         assertEquals(AppMenuHandler.AppMenuItemType.TAB, tabItem1.type);
         assertEquals(AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU, groupItem.type);
         assertEquals(101, tabItem1.model.get(AppMenuTabItemProperties.TAB_ID));
+        assertEquals(JUnitTestGURLs.URL_1, tabItem1.model.get(AppMenuTabItemProperties.TAB_URL));
 
         ListItem tabItem2 = tabsSubmenuItems.get(1);
         assertEquals(AppMenuHandler.AppMenuItemType.TAB, tabItem2.type);
         assertEquals(102, tabItem2.model.get(AppMenuTabItemProperties.TAB_ID));
+        assertEquals(JUnitTestGURLs.URL_2, tabItem2.model.get(AppMenuTabItemProperties.TAB_URL));
     }
 
     @Test
@@ -658,6 +660,9 @@ public class TabGroupItemBuilderUnitTest {
                 groupItem2.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
         assertEquals(1, tabsSubmenuItems.size());
         assertEquals(102, tabsSubmenuItems.get(0).model.get(AppMenuTabItemProperties.TAB_ID));
+        assertEquals(
+                JUnitTestGURLs.URL_2,
+                tabsSubmenuItems.get(0).model.get(AppMenuTabItemProperties.TAB_URL));
     }
 
     @Test
@@ -790,6 +795,9 @@ public class TabGroupItemBuilderUnitTest {
         assertEquals(
                 Tab.INVALID_TAB_ID,
                 tabsSubmenuItems.get(0).model.get(AppMenuTabItemProperties.TAB_ID));
+        assertEquals(
+                JUnitTestGURLs.URL_1,
+                tabsSubmenuItems.get(0).model.get(AppMenuTabItemProperties.TAB_URL));
     }
 
     @Test

@@ -392,6 +392,7 @@ import java.util.function.Supplier;
                                     mIsMenuIconAtStart)
                             .with(AppMenuItemProperties.TITLE, tab.getTitle())
                             .with(AppMenuTabItemProperties.TAB_ID, tab.getId())
+                            .with(AppMenuTabItemProperties.TAB_URL, tab.getUrl())
                             .with(
                                     AppMenuItemProperties.ICON_SUPPLIER,
                                     AppMenuItemUtils.createIconSupplierForTab(
@@ -446,6 +447,7 @@ import java.util.function.Supplier;
                         .with(
                                 AppMenuTabItemProperties.TAB_ID,
                                 tab.localId != null ? tab.localId : Tab.INVALID_TAB_ID)
+                        .with(AppMenuTabItemProperties.TAB_URL, tabUrl)
                         .with(
                                 AppMenuItemProperties.ICON_SUPPLIER,
                                 AppMenuItemUtils.createIconSupplierForTab(

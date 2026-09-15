@@ -214,6 +214,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.chrome.browser.task_manager.TaskManagerFactory;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiUtils;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -3148,19 +3149,22 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
 
         if (id == R.id.tab_group_tab_menu_item) {
-            assert menuItemData != null
-                    && menuItemData.containsKey(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY);
-            @TabId int tabId = menuItemData.getInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY);
-            if (ChromeFeatureList.sCrossWindowTabGroupOperations.isEnabled()) {
-                Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
-                if (tab != null) {
-                    getTabCreator(tab.isIncognito())
+            assert menuItemData != null;
+            if (TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()) {
+                String urlString =
+                        menuItemData.getString(AppMenuPropertiesDelegateImpl.TAB_URL_BUNDLE_KEY);
+                if (urlString != null) {
+                    GURL url = new GURL(urlString);
+                    assert url.isValid();
+                    getTabCreator(getCurrentTabModel().isIncognito())
                             .createNewTab(
-                                    new LoadUrlParams(tab.getUrl()),
+                                    new LoadUrlParams(url),
                                     TabLaunchType.FROM_CHROME_UI,
                                     /* parent= */ null);
                 }
             } else {
+                @TabId
+                int tabId = menuItemData.getInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY);
                 TabModelUtils.selectTabById(
                         getTabModelSelector(), tabId, TabSelectionType.FROM_USER);
             }

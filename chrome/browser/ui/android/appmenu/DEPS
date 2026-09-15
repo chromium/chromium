@@ -15,4 +15,5 @@ include_rules = [
   "+components/browser_ui/util/android",
   "+content/public/test/android/javatests/src/org/chromium/content_public/browser",
   "+ui/android",
+  "+url/android",
 ]

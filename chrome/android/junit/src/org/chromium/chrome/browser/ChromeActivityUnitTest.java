@@ -42,6 +42,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -64,7 +65,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -83,7 +83,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.BottomContainer;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
@@ -123,6 +122,7 @@ public class ChromeActivityUnitTest {
     @Mock DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private TabStateThemeResourceProvider mThemeResourceProvider;
     @Mock LayoutManagerImpl mLayoutManagerMock;
+    @Captor ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private final SettableMonotonicObservableSupplier<ReadAloudController>
             mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
@@ -130,6 +130,26 @@ public class ChromeActivityUnitTest {
     class TestChromeActivity extends ChromeActivity {
         public TestChromeActivity() {
             mRootUiCoordinator = mRootUiCoordinatorMock;
+        }
+
+        @Override
+        public Tab getActivityTab() {
+            return mActivityTab;
+        }
+
+        @Override
+        public TabModel getCurrentTabModel() {
+            return mTabModel;
+        }
+
+        @Override
+        public TabCreator getTabCreator(boolean incognito) {
+            return mTabCreator;
+        }
+
+        @Override
+        public TabModelSelector getTabModelSelector() {
+            return mTabModelSelector;
         }
 
         @Override
@@ -595,26 +615,16 @@ public class ChromeActivityUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
     public void testSelectTabFromGroup_CrossWindowOperationsEnabled() {
-        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        TestChromeActivity chromeActivity = new TestChromeActivity();
         UserActionTester userActionTester = new UserActionTester();
 
-        doReturn(mActivityTab).when(chromeActivity).getActivityTab();
-        doReturn(mTabModel).when(chromeActivity).getCurrentTabModel();
         when(mTabModel.getProfile()).thenReturn(mProfile);
-        doReturn(mTabCreator).when(chromeActivity).getTabCreator(eq(false));
-
-        int tabId = 123;
-        Tab targetTab = mock(Tab.class);
-        when(targetTab.getId()).thenReturn(tabId);
-        when(targetTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        when(targetTab.isIncognito()).thenReturn(false);
-
-        TabWindowManager tabWindowManager = mock(TabWindowManager.class);
-        when(tabWindowManager.getTabById(tabId)).thenReturn(targetTab);
-        TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
+        when(mTabModel.isIncognito()).thenReturn(false);
 
         Bundle menuItemData = new Bundle();
-        menuItemData.putInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY, tabId);
+        menuItemData.putInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY, 123);
+        menuItemData.putString(
+                AppMenuPropertiesDelegateImpl.TAB_URL_BUNDLE_KEY, JUnitTestGURLs.URL_1.getSpec());
 
         assertTrue(
                 chromeActivity.onMenuOrKeyboardAction(
@@ -623,23 +633,48 @@ public class ChromeActivityUnitTest {
                         menuItemData,
                         /* triggeringMotion= */ null));
 
-        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(mTabCreator)
-                .createNewTab(paramsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(null));
-        assertEquals(JUnitTestGURLs.URL_1.getSpec(), paramsCaptor.getValue().getUrl());
+                .createNewTab(
+                        mLoadUrlParamsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(null));
+        assertEquals(JUnitTestGURLs.URL_1.getSpec(), mLoadUrlParamsCaptor.getValue().getUrl());
+        assertEquals(1, userActionTester.getActionCount("MobileMenuSelectTabFromGroup"));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
+    public void testSelectTabFromGroup_CrossWindowOperationsEnabled_Incognito() {
+        TestChromeActivity chromeActivity = new TestChromeActivity();
+        UserActionTester userActionTester = new UserActionTester();
+
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.isIncognito()).thenReturn(true);
+
+        Bundle menuItemData = new Bundle();
+        menuItemData.putInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY, 123);
+        menuItemData.putString(
+                AppMenuPropertiesDelegateImpl.TAB_URL_BUNDLE_KEY, JUnitTestGURLs.URL_1.getSpec());
+
+        assertTrue(
+                chromeActivity.onMenuOrKeyboardAction(
+                        R.id.tab_group_tab_menu_item,
+                        /* fromMenu= */ true,
+                        menuItemData,
+                        /* triggeringMotion= */ null));
+
+        verify(mTabCreator)
+                .createNewTab(
+                        mLoadUrlParamsCaptor.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(null));
+        assertEquals(JUnitTestGURLs.URL_1.getSpec(), mLoadUrlParamsCaptor.getValue().getUrl());
         assertEquals(1, userActionTester.getActionCount("MobileMenuSelectTabFromGroup"));
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
     public void testSelectTabFromGroup_CrossWindowOperationsDisabled() {
-        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
+        TestChromeActivity chromeActivity = new TestChromeActivity();
         UserActionTester userActionTester = new UserActionTester();
 
-        doReturn(mActivityTab).when(chromeActivity).getActivityTab();
-        doReturn(mTabModel).when(chromeActivity).getCurrentTabModel();
         when(mTabModel.getProfile()).thenReturn(mProfile);
-        doReturn(mTabModelSelector).when(chromeActivity).getTabModelSelector();
 
         int tabId = 123;
         Tab targetTab = mock(Tab.class);

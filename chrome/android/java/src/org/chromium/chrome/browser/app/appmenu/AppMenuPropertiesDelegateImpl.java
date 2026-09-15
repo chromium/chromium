@@ -124,6 +124,7 @@ import java.util.function.BiFunction;
 public abstract class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate {
     public static final String BOOKMARK_ID_BUNDLE_KEY = "BookmarkId";
     public static final String TAB_ID_BUNDLE_KEY = "TabId";
+    public static final String TAB_URL_BUNDLE_KEY = "TabUrl";
     public static final String TAB_GROUP_ID_BUNDLE_KEY = "TabGroupId";
     public static final String SYNC_GROUP_ID_BUNDLE_KEY = "SyncGroupId";
     public static final String RECENT_ENTRY_SESSION_ID_BUNDLE_KEY = "RecentEntrySessionId";
@@ -740,6 +741,10 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         if (model.containsKey(AppMenuTabItemProperties.TAB_ID)) {
             Bundle bundle = new Bundle();
             bundle.putInt(TAB_ID_BUNDLE_KEY, model.get(AppMenuTabItemProperties.TAB_ID));
+            GURL tabUrl = model.get(AppMenuTabItemProperties.TAB_URL);
+            if (tabUrl != null && tabUrl.isValid()) {
+                bundle.putString(TAB_URL_BUNDLE_KEY, tabUrl.getSpec());
+            }
             return bundle;
         }
         if (model.containsKey(AppMenuRecentEntryItemProperties.FOREIGN_SESSION_TAB)
