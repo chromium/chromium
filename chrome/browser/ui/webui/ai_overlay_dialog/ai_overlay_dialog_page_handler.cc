@@ -12,15 +12,22 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_untrusted_ui.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/tools/generated_tool_definitions.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/optimization_guide/content/browser/page_content_image_extractor.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
@@ -29,6 +36,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
@@ -487,6 +495,108 @@ void AiOverlayDialogPageHandler::StartStreamingSession() {
         std::make_unique<TtcMesClient>(browser_->GetProfile(), this);
   }
   ttc_mes_client_->Connect();
+  SendToolSetUpdate();
+}
+
+void AiOverlayDialogPageHandler::SendToolSetUpdate() {
+  if (!ttc_mes_client_) {
+    return;
+  }
+
+  std::vector<ToolDefinition> tools;
+  std::optional<base::ListValue> root = base::JSONReader::ReadList(
+      kBuiltInToolDefinitionsJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (root && !root->empty()) {
+    const base::DictValue* container = (*root)[0].GetIfDict();
+    const base::ListValue* decls =
+        container ? container->FindList("functionDeclarations") : nullptr;
+    if (decls) {
+      for (const auto& item : *decls) {
+        const base::DictValue* decl = item.GetIfDict();
+        if (!decl) {
+          continue;
+        }
+        const std::string* name = decl->FindString("name");
+        const std::string* desc = decl->FindString("description");
+        if (!name || !desc) {
+          continue;
+        }
+
+        ToolDefinition tool;
+        tool.name = *name;
+        tool.description = *desc;
+
+        const base::DictValue* params = decl->FindDict("parameters");
+        if (params) {
+          tool.parameters_json_schema = params->Clone();
+        }
+
+        const std::string* behavior = decl->FindString("behavior");
+        if (behavior && *behavior == "NON_BLOCKING") {
+          tool.behavior = ToolDefinition::Behavior::kNonBlocking;
+        } else {
+          tool.behavior = ToolDefinition::Behavior::kBlocking;
+        }
+
+        if (*name == "open_url" || *name == "switch_tab" ||
+            *name == "close_current_tab" || *name == "go_back" ||
+            *name == "go_forward" || *name == "reload_page" ||
+            *name == "scroll" || *name == "play_video" ||
+            *name == "pause_video" || *name == "click_element" ||
+            *name == "set_text" || *name == "select_option") {
+          tool.verbalization = ToolDefinition::Verbalization::kSilentAction;
+        } else {
+          tool.verbalization = ToolDefinition::Verbalization::kStandard;
+        }
+
+        tools.push_back(std::move(tool));
+      }
+    }
+  }
+
+  // Add extra built-in action tools.
+  {
+    ToolDefinition close_tool;
+    close_tool.name = "close_voice_interface";
+    close_tool.description =
+        "Close voice interface and stop listening/speaking.";
+    close_tool.behavior = ToolDefinition::Behavior::kNonBlocking;
+    close_tool.verbalization = ToolDefinition::Verbalization::kSilentAction;
+    tools.push_back(std::move(close_tool));
+  }
+  {
+    ToolDefinition rem_tool;
+    rem_tool.name = "remember_this";
+    rem_tool.description =
+        "Save a conversational fact or note to remember for later. "
+        "Use this tool when the user asks you to remember something for "
+        "later.";
+    std::optional<base::DictValue> rem_params = base::JSONReader::ReadDict(
+        R"({"type":"OBJECT","properties":{"key":{"type":"STRING"},)"
+        R"("value":{"type":"STRING"}},"required":["key","value"]})",
+        base::JSON_PARSE_RFC);
+    if (rem_params) {
+      rem_tool.parameters_json_schema = std::move(*rem_params);
+    }
+    tools.push_back(std::move(rem_tool));
+  }
+  {
+    ToolDefinition forget_tool;
+    forget_tool.name = "forget_this";
+    forget_tool.description =
+        "Delete a remembered conversational fact or note.";
+    std::optional<base::DictValue> forget_params = base::JSONReader::ReadDict(
+        R"({"type":"OBJECT","properties":{"key":{"type":"STRING"}},)"
+        R"("required":["key"]})",
+        base::JSON_PARSE_RFC);
+    if (forget_params) {
+      forget_tool.parameters_json_schema = std::move(*forget_params);
+    }
+    tools.push_back(std::move(forget_tool));
+  }
+
+  VLOG(1) << "Sending ToolSetUpdate with " << tools.size() << " active tools";
+  ttc_mes_client_->SendToolSetUpdate(tools);
 }
 
 void AiOverlayDialogPageHandler::SendAudioChunk(mojo_base::BigBuffer pcm_data) {
@@ -548,6 +658,345 @@ void AiOverlayDialogPageHandler::OnGenerationStateChanged(bool started,
   if (page_.is_bound()) {
     page_->OnGenerationStateChanged(started, completed, interrupted);
   }
+}
+
+void AiOverlayDialogPageHandler::OnToolCall(
+    const std::string& name,
+    base::DictValue arguments,
+    TtcMesClient::Observer::ToolResponseCallback response_callback) {
+  VLOG(1) << "AiOverlayDialogPageHandler executing tool: name=" << name
+          << ", args=" << arguments;
+
+  auto send_error = [&response_callback](std::string error_message) {
+    base::DictValue dict;
+    dict.Set("error", std::move(error_message));
+    std::move(response_callback).Run(std::move(dict));
+  };
+
+  auto send_status_ok = [&response_callback]() {
+    base::DictValue dict;
+    dict.Set("status", "ok");
+    std::move(response_callback).Run(std::move(dict));
+  };
+
+  auto make_status_cb =
+      [](TtcMesClient::Observer::ToolResponseCallback callback) {
+        return base::BindOnce(
+            [](TtcMesClient::Observer::ToolResponseCallback cb,
+               base::expected<std::monostate, std::string> result) {
+              base::DictValue dict;
+              if (result.has_value()) {
+                dict.Set("status", "ok");
+              } else {
+                dict.Set("error", result.error());
+              }
+              std::move(cb).Run(std::move(dict));
+            },
+            std::move(callback));
+      };
+
+  std::optional<int> dom_id;
+  if (auto id = arguments.FindInt("dom_node_id")) {
+    dom_id = *id;
+  } else if (auto* val = arguments.Find("dom_node_id")) {
+    if (val->is_double()) {
+      dom_id = static_cast<int>(val->GetDouble());
+    } else if (val->is_string()) {
+      int parsed = 0;
+      if (base::StringToInt(val->GetString(), &parsed)) {
+        dom_id = parsed;
+      }
+    }
+  }
+
+  // Handle overlay-level and controller-level tools.
+  if (name == "close_voice_interface") {
+    AiOverlayDialogController* controller =
+        AiOverlayDialogController::From(browser_);
+    if (controller) {
+      controller->HideOverlay();
+    }
+    send_status_ok();
+    return;
+  }
+
+  if (name == "remember_this") {
+    const std::string* key = arguments.FindString("key");
+    const std::string* val = arguments.FindString("value");
+    if (!key || key->empty() || !val) {
+      send_error("Missing key or value");
+      return;
+    }
+    AiOverlayDialogController* controller =
+        AiOverlayDialogController::From(browser_);
+    if (!controller) {
+      send_error("Controller not available");
+      return;
+    }
+    controller->SetRememberedNote(*key, *val);
+    send_status_ok();
+    return;
+  }
+
+  if (name == "forget_this") {
+    const std::string* key = arguments.FindString("key");
+    if (!key || key->empty()) {
+      send_error("Missing key");
+      return;
+    }
+    AiOverlayDialogController* controller =
+        AiOverlayDialogController::From(browser_);
+    if (!controller) {
+      send_error("Controller not available");
+      return;
+    }
+    controller->SetRememberedNote(*key, "");
+    send_status_ok();
+    return;
+  }
+
+  // Handle browser tools.
+  AiOverlayTools* tools = untrusted_ui_ ? untrusted_ui_->tools() : nullptr;
+  if (!tools) {
+    send_error("AiOverlayTools unavailable");
+    return;
+  }
+
+  if (name == "open_url") {
+    const std::string* url = arguments.FindString("url");
+    bool new_tab = arguments.FindBool("new_tab").value_or(false);
+    if (!url) {
+      send_error("Missing url parameter");
+      return;
+    }
+    tools->OpenUrl(*url, new_tab, make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "follow_link") {
+    const std::string* id = arguments.FindString("id");
+    if (!id) {
+      send_error("Missing id parameter");
+      return;
+    }
+    tools->FollowLink(*id, make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "perform_search") {
+    const std::string* query = arguments.FindString("query");
+    bool new_tab = arguments.FindBool("new_tab").value_or(false);
+    if (!query) {
+      send_error("Missing query parameter");
+      return;
+    }
+    tools->PerformSearch(*query, new_tab,
+                         make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "switch_tab") {
+    const std::string* query = arguments.FindString("query");
+    if (!query) {
+      send_error("Missing query parameter");
+      return;
+    }
+    tools->SwitchTab(
+        *query,
+        base::BindOnce(
+            [](TtcMesClient::Observer::ToolResponseCallback cb,
+               base::expected<ai_overlay_dialog::mojom::SwitchTabResultPtr,
+                              std::string> result) {
+              base::DictValue dict;
+              if (result.has_value() && result.value()) {
+                dict.Set("status", "ok");
+                dict.Set("title", result.value()->title);
+                dict.Set("url", result.value()->url.spec());
+                dict.Set("tab_id", result.value()->tab_id);
+              } else {
+                dict.Set("error",
+                         result.has_value() ? "Null result" : result.error());
+              }
+              std::move(cb).Run(std::move(dict));
+            },
+            std::move(response_callback)));
+    return;
+  }
+
+  if (name == "close_current_tab") {
+    tools->CloseCurrentTab(make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "go_back") {
+    tools->GoBack(make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "go_forward") {
+    tools->GoForward(make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "reload_page") {
+    tools->ReloadPage(make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "find_and_highlight") {
+    const std::string* query = arguments.FindString("query");
+    if (!query) {
+      send_error("Missing query parameter");
+      return;
+    }
+    tools->FindAndHighlight(*query,
+                            make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "scroll") {
+    const std::string* gran_str = arguments.FindString("granularity");
+    double magnitude = arguments.FindDouble("magnitude").value_or(0.0);
+    ai_overlay_dialog::mojom::ScrollGranularity granularity =
+        (gran_str && *gran_str == "document")
+            ? ai_overlay_dialog::mojom::ScrollGranularity::kDocument
+            : ai_overlay_dialog::mojom::ScrollGranularity::kPage;
+    tools->Scroll(granularity, magnitude,
+                  make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "play_video") {
+    tools->PlayVideo(make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "pause_video") {
+    tools->PauseVideo(make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "seek_to_timestamp") {
+    const std::string* timecode = arguments.FindString("timecode");
+    if (!timecode) {
+      send_error("Missing timecode parameter");
+      return;
+    }
+    tools->SeekToTimestamp(*timecode,
+                           make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "translate_page") {
+    const std::string* lang = arguments.FindString("target_language");
+    tools->TranslatePage(lang ? *lang : std::string(),
+                         make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "add_bookmark") {
+    tools->AddBookmark(make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "remove_bookmark") {
+    tools->RemoveBookmark(make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "open_page") {
+    const std::string* query = arguments.FindString("query");
+    if (!query) {
+      send_error("Missing query parameter");
+      return;
+    }
+    tools->OpenPage(*query,
+                    base::BindOnce(
+                        [](TtcMesClient::Observer::ToolResponseCallback cb,
+                           base::expected<std::string, std::string> result) {
+                          base::DictValue dict;
+                          if (result.has_value()) {
+                            std::optional<base::DictValue> parsed =
+                                base::JSONReader::ReadDict(
+                                    result.value(),
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+                            if (parsed) {
+                              dict = std::move(*parsed);
+                            } else {
+                              dict.Set("result", result.value());
+                            }
+                          } else {
+                            dict.Set("error", result.error());
+                          }
+                          std::move(cb).Run(std::move(dict));
+                        },
+                        std::move(response_callback)));
+    return;
+  }
+
+  if (name == "set_text") {
+    const std::string* text = arguments.FindString("text");
+    if (!dom_id.has_value() || !text) {
+      send_error("Missing dom_node_id or text parameter");
+      return;
+    }
+    tools->SetText(blink::DOMNodeIdType(*dom_id), *text,
+                   make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "click_element") {
+    if (!dom_id.has_value()) {
+      send_error("Missing dom_node_id parameter");
+      return;
+    }
+    tools->ClickElement(blink::DOMNodeIdType(*dom_id),
+                        make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "set_fullscreen") {
+    bool fullscreen = arguments.FindBool("fullscreen").value_or(true);
+    tools->SetFullscreen(fullscreen,
+                         make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "select_option") {
+    const std::string* value = arguments.FindString("value");
+    if (!dom_id.has_value() || !value) {
+      send_error("Missing dom_node_id or value parameter");
+      return;
+    }
+    tools->SelectOption(blink::DOMNodeIdType(*dom_id), *value,
+                        make_status_cb(std::move(response_callback)));
+    return;
+  }
+
+  if (name == "open_gemini_panel" || name == "invoke_glic") {
+    const std::string* prompt = arguments.FindString("prompt");
+    if (!prompt) {
+      send_error("Missing prompt parameter");
+      return;
+    }
+    tools->OpenGeminiPanel(
+        *prompt, base::BindOnce(
+                     [](TtcMesClient::Observer::ToolResponseCallback cb,
+                        base::expected<std::string, std::string> result) {
+                       base::DictValue dict;
+                       if (result.has_value()) {
+                         dict.Set("status", "ok");
+                         dict.Set("message", result.value());
+                       } else {
+                         dict.Set("error", result.error());
+                       }
+                       std::move(cb).Run(std::move(dict));
+                     },
+                     std::move(response_callback)));
+    return;
+  }
+
+  send_error(base::StrCat({"Unknown tool: ", name}));
 }
 
 }  // namespace ttc

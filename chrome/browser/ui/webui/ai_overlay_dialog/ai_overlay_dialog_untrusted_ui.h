@@ -66,6 +66,8 @@ class AiOverlayDialogUntrustedUI
     return page_context_monitor_.get();
   }
 
+  AiOverlayTools* tools() const { return tools_.get(); }
+
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 

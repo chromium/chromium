@@ -8,10 +8,12 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller_views.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -72,6 +74,8 @@ class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(testing::Return(profile()));
     ON_CALL(browser_window_interface_, GetTabStripModel())
         .WillByDefault(testing::Return(tab_strip_model_.get()));
+    ON_CALL(browser_window_interface_, GetFeatures())
+        .WillByDefault(testing::ReturnRef(features_));
 
     controller_ =
         std::make_unique<AiOverlayDialogControllerViews>(&browser_window_interface_);
@@ -104,6 +108,7 @@ class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
   mojo::Remote<ai_overlay_dialog::mojom::PageHandler>& handler_remote() {
     return handler_remote_;
   }
+  AiOverlayDialogController* controller() { return controller_.get(); }
 
   void RecreateHandler() {
     handler_.reset();
@@ -125,6 +130,7 @@ class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
       prevent_tab_features_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
+  BrowserWindowFeatures features_;
   testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
   MockPage mock_page_;
   mojo::Receiver<ai_overlay_dialog::mojom::Page> page_receiver_{&mock_page_};
@@ -299,6 +305,56 @@ TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_EnabledWithMes) {
 
   handler_remote()->StartStreamingSession();
   handler_remote()->SendTextInput("hello");
+  handler_remote()->StopStreamingSession();
+  handler_remote().FlushForTesting();
+}
+
+TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_HandlesToolCall) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kAiOverlayDialog, {{"use_mes", "true"}}}}, {});
+
+  handler_remote()->StartStreamingSession();
+  handler_remote().FlushForTesting();
+
+  // Test remember_this tool call
+  base::DictValue remember_args;
+  remember_args.Set("key", "test_key");
+  remember_args.Set("value", "test_val");
+  base::DictValue remember_response;
+  handler()->OnToolCall("remember_this", std::move(remember_args),
+                        base::BindLambdaForTesting([&](base::DictValue resp) {
+                          remember_response = std::move(resp);
+                        }));
+  const std::string* remember_status = remember_response.FindString("status");
+  ASSERT_TRUE(remember_status);
+  const std::vector<std::pair<std::string, std::string>> expected_notes = {
+      {"test_key", "test_val"}};
+  EXPECT_EQ(controller()->GetRememberedNotes(), expected_notes);
+
+  // Test forget_this tool call
+  base::DictValue forget_args;
+  forget_args.Set("key", "test_key");
+  base::DictValue forget_response;
+  handler()->OnToolCall("forget_this", std::move(forget_args),
+                        base::BindLambdaForTesting([&](base::DictValue resp) {
+                          forget_response = std::move(resp);
+                        }));
+  const std::string* forget_status = forget_response.FindString("status");
+  ASSERT_TRUE(forget_status);
+  EXPECT_EQ(*forget_status, "ok");
+  EXPECT_TRUE(controller()->GetRememberedNotes().empty());
+
+  // Test close_voice_interface tool call
+  base::DictValue close_response;
+  handler()->OnToolCall("close_voice_interface", base::DictValue(),
+                        base::BindLambdaForTesting([&](base::DictValue resp) {
+                          close_response = std::move(resp);
+                        }));
+  const std::string* close_status = close_response.FindString("status");
+  ASSERT_TRUE(close_status);
+  EXPECT_EQ(*close_status, "ok");
+
   handler_remote()->StopStreamingSession();
   handler_remote().FlushForTesting();
 }

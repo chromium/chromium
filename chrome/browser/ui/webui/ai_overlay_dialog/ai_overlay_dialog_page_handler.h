@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ttc/ttc_mes_client.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog.mojom.h"
@@ -77,6 +78,10 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   void OnGenerationStateChanged(bool started,
                                 bool completed,
                                 bool interrupted) override;
+  void OnToolCall(
+      const std::string& name,
+      base::DictValue arguments,
+      TtcMesClient::Observer::ToolResponseCallback response_callback) override;
 
   void DidChangePage(const GURL& url,
                      const std::optional<std::u16string>& title,
@@ -91,12 +96,16 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   void OnUsePersonaChanged(bool use_persona) override;
 
  private:
+  void SendToolSetUpdate();
+
   mojo::Receiver<ai_overlay_dialog::mojom::PageHandler> receiver_;
   mojo::Remote<ai_overlay_dialog::mojom::Page> page_;
   raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<actions::ActionItem> overlay_action_item_ = nullptr;
   raw_ptr<AiOverlayDialogUntrustedUI> untrusted_ui_ = nullptr;
   std::unique_ptr<TtcMesClient> ttc_mes_client_;
+
+  base::WeakPtrFactory<AiOverlayDialogPageHandler> weak_factory_{this};
 };
 
 }  // namespace ttc

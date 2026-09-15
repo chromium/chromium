@@ -18,6 +18,31 @@
 
 namespace ttc {
 
+namespace {
+
+optimization_guide::proto::ToolDefinition_ExecutionBehavior ToProtoBehavior(
+    ToolDefinition::Behavior behavior) {
+  switch (behavior) {
+    case ToolDefinition::Behavior::kNonBlocking:
+      return optimization_guide::proto::ToolDefinition::BEHAVIOR_NON_BLOCKING;
+    case ToolDefinition::Behavior::kBlocking:
+      return optimization_guide::proto::ToolDefinition::BEHAVIOR_BLOCKING;
+  }
+}
+
+optimization_guide::proto::ToolDefinition_VerbalizationBehavior
+ToProtoVerbalization(ToolDefinition::Verbalization verbalization) {
+  switch (verbalization) {
+    case ToolDefinition::Verbalization::kSilentAction:
+      return optimization_guide::proto::ToolDefinition::
+          VERBALIZATION_SILENT_ACTION;
+    case ToolDefinition::Verbalization::kStandard:
+      return optimization_guide::proto::ToolDefinition::VERBALIZATION_STANDARD;
+  }
+}
+
+}  // namespace
+
 TtcMesClient::TtcMesClient(Profile* profile, Observer* observer)
     : profile_(profile), observer_(observer) {
   CHECK(profile_);
@@ -141,22 +166,66 @@ void TtcMesClient::HandleServerFrame(
   }
 }
 
+void TtcMesClient::SendToolSetUpdate(const std::vector<ToolDefinition>& tools) {
+  optimization_guide::proto::TtcClientFrame frame;
+  frame.set_client_timestamp_ms(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
+  auto* update = frame.mutable_tool_set_update();
+  for (const ToolDefinition& tool_def : tools) {
+    auto* proto_tool = update->add_active_tools();
+    proto_tool->set_name(tool_def.name);
+    proto_tool->set_description(tool_def.description);
+    if (!tool_def.parameters_json_schema.empty()) {
+      std::optional<std::string> params_json =
+          base::WriteJson(tool_def.parameters_json_schema);
+      CHECK(params_json);
+      proto_tool->set_parameters_json_schema(std::move(*params_json));
+    }
+    proto_tool->set_behavior(ToProtoBehavior(tool_def.behavior));
+    proto_tool->set_verbalization(ToProtoVerbalization(tool_def.verbalization));
+  }
+  SendFrame(frame);
+}
+
 void TtcMesClient::HandleToolCall(
     const optimization_guide::proto::ToolCall& tool_call) {
-  OnToolExecutionComplete(tool_call.call_id(), tool_call.name(),
-                          "{\"status\": \"ok\"}");
+  if (!observer_) {
+    return;
+  }
+  base::DictValue args;
+  if (!tool_call.arguments_json().empty()) {
+    std::optional<base::DictValue> args_dict = base::JSONReader::ReadDict(
+        tool_call.arguments_json(), base::JSON_PARSE_RFC);
+    if (!args_dict) {
+      LOG(ERROR) << "Failed to parse tool call arguments as JSON: "
+                 << tool_call.arguments_json();
+      base::DictValue error_result;
+      error_result.Set("error", "Invalid JSON provided for tool arguments");
+      OnToolExecutionComplete(tool_call.call_id(), tool_call.name(),
+                              std::move(error_result));
+      return;
+    }
+    args = std::move(*args_dict);
+  }
+
+  auto callback = base::BindOnce(&TtcMesClient::OnToolExecutionComplete,
+                                 weak_factory_.GetWeakPtr(),
+                                 tool_call.call_id(), tool_call.name());
+  observer_->OnToolCall(tool_call.name(), std::move(args), std::move(callback));
 }
 
 void TtcMesClient::OnToolExecutionComplete(const std::string& call_id,
                                            const std::string& tool_name,
-                                           std::string result_json) {
+                                           base::DictValue result) {
   optimization_guide::proto::TtcClientFrame frame;
   frame.set_client_timestamp_ms(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   auto* response = frame.mutable_tool_response();
   response->set_call_id(call_id);
   response->set_name(tool_name);
-  response->set_response_json(std::move(result_json));
+  std::optional<std::string> json = base::WriteJson(result);
+  CHECK(json);
+  response->set_response_json(std::move(*json));
   SendFrame(frame);
 }
 

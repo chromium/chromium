@@ -9,8 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/ttc/tool_definition.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/features/ttc.pb.h"
 #include "url/gurl.h"
@@ -38,6 +42,11 @@ class TtcMesClient
     virtual void OnGenerationStateChanged(bool started,
                                           bool completed,
                                           bool interrupted) = 0;
+    using ToolResponseCallback =
+        base::OnceCallback<void(base::DictValue response)>;
+    virtual void OnToolCall(const std::string& name,
+                            base::DictValue arguments,
+                            ToolResponseCallback response_callback) {}
   };
 
   TtcMesClient(Profile* profile, Observer* observer);
@@ -48,6 +57,9 @@ class TtcMesClient
 
   // Starts the streaming session with the MES backend.
   void Connect();
+
+  // Sends dynamic tool definitions to the MES server.
+  void SendToolSetUpdate(const std::vector<ToolDefinition>& tools);
 
   // Sends raw PCM audio chunk to the MES server.
   void SendAudioChunk(const std::vector<uint8_t>& audio_data);
@@ -82,7 +94,7 @@ class TtcMesClient
   void HandleToolCall(const optimization_guide::proto::ToolCall& tool_call);
   void OnToolExecutionComplete(const std::string& call_id,
                                const std::string& tool_name,
-                               std::string result_json);
+                               base::DictValue result);
   void SendFrame(const optimization_guide::proto::TtcClientFrame& frame);
 
   raw_ptr<Profile> profile_;
