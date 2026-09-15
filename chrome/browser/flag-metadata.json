@@ -1667,7 +1667,7 @@
   {
     "name": "canvas-draw-element",
     "owners": [ "schenney@chromium.org", "pdr@chromium.org", "chrishtr@chromium.org" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 165
   },
   {
     "name": "capability-delegation-digital-credentials",
