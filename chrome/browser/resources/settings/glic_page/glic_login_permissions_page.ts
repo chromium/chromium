@@ -29,9 +29,6 @@ import {getHtml} from './glic_login_permissions_page.html.js';
 const SettingsGlicLoginPermissionsPageElementBase =
     RouteObserverMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
 
-export type GlicLoginPermissionsPageElement =
-    SettingsGlicLoginPermissionsPageElement;
-
 export class SettingsGlicLoginPermissionsPageElement extends
     SettingsGlicLoginPermissionsPageElementBase {
   static get is() {

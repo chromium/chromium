@@ -35,8 +35,6 @@ export interface SettingsGlicPageElement {
 const SettingsGlicPageElementBase =
     SettingsViewMixinLit(I18nMixinLit(CrLitElement));
 
-export type GlicPageElement = SettingsGlicPageElement;
-
 export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   static get is() {
     return 'settings-glic-page';
@@ -52,16 +50,21 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
 
   static override get properties() {
     return {
-      spark_: {type: String},
+      startIcon_: {type: String},
     };
   }
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  protected accessor spark_: string =
+  // <if expr="not _google_chrome">
+  protected accessor startIcon_: string = 'settings20:lightbulb-2';
+  // </if>
+  // <if expr="_google_chrome">
+  protected accessor startIcon_: string =
       loadTimeData.getBoolean('glicAssetsV2Enabled') ?
       'settings-internal:sparkv2' :
       'settings-internal:spark';
+  // </if>
 
   protected onGlicPageClick_() {
     Router.getInstance().navigateTo(routes.GEMINI);

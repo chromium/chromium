@@ -75,8 +75,6 @@ const SettingsGlicSubpageElementBase =
     SettingsViewMixinLit(HelpBubbleMixinLit(I18nMixinLit(
         WebUiListenerMixinLit(PrefServiceObserverMixinLit(CrLitElement)))));
 
-export type GlicSubpageElement = SettingsGlicSubpageElement;
-
 export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   static get is() {
     return 'settings-glic-subpage';

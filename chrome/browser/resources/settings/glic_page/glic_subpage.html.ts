@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsGlicSubpageElement} from './glic_subpage.js';
+
+export function getHtml(this: SettingsGlicSubpageElement) {
+  return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{glicPageTitle}"
     route-path="${this.routePath}">
   ${this.disallowedByAdmin_ ? html`
@@ -233,14 +243,15 @@
               <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
               <ul class="icon-bulleted-list">
                 <li>
-                  <cr-icon aria-hidden="true"
 <if expr="not _google_chrome">
-                      icon="settings20:edit-square">
+                  <cr-icon aria-hidden="true" icon="settings20:edit-square">
+                  </cr-icon>
 </if>
 <if expr="_google_chrome">
+                  <cr-icon aria-hidden="true"
                       icon="settings-internal:text-analysis">
-</if>
                   </cr-icon>
+</if>
                   <div class="secondary">$i18n{glicTabAccessWhenOn1}</div>
                 </li>
               </ul>
@@ -249,14 +260,14 @@
               <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
               <ul class="icon-bulleted-list">
                 <li>
-                  <cr-icon aria-hidden="true"
 <if expr="not _google_chrome">
-                      icon="settings20:web">
+                  <cr-icon aria-hidden="true" icon="settings20:web"></cr-icon>
 </if>
 <if expr="_google_chrome">
+                  <cr-icon aria-hidden="true"
                       icon="settings-internal:screensaver-auto">
-</if>
                   </cr-icon>
+</if>
                   <div class="secondary">$i18n{glicTabAccessConsider1}
                     <a id="shortcutTabAccessConsider1LearnMoreLabel"
                         class="learn-more-label"
@@ -305,27 +316,29 @@
               <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
               <ul class="icon-bulleted-list">
                 <li>
-                  <cr-icon aria-hidden="true"
 <if expr="not _google_chrome">
-                      icon="settings20:edit-square">
+                  <cr-icon aria-hidden="true" icon="settings20:edit-square">
+                  </cr-icon>
 </if>
 <if expr="_google_chrome">
+                  <cr-icon aria-hidden="true"
                       icon="settings-internal:text-analysis">
-</if>
                   </cr-icon>
+</if>
                   <div class="secondary">
                     $i18n{glicDefaultTabAccessWhenOn1}
                   </div>
                 </li>
                 <li>
-                  <cr-icon aria-hidden="true"
 <if expr="not _google_chrome">
-                      icon="settings20:edit-square">
+                  <cr-icon aria-hidden="true" icon="settings20:edit-square">
+                  </cr-icon>
 </if>
 <if expr="_google_chrome">
+                  <cr-icon aria-hidden="true"
                       icon="settings-internal:auto-tab-group">
-</if>
                   </cr-icon>
+</if>
                   <div class="secondary">
                     $i18n{glicDefaultTabAccessWhenOn2}
                   </div>
@@ -336,28 +349,28 @@
               <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
               <ul class="icon-bulleted-list">
                 <li>
-                  <cr-icon aria-hidden="true"
 <if expr="not _google_chrome">
-                      icon="settings20:web">
+                  <cr-icon aria-hidden="true" icon="settings20:web"></cr-icon>
 </if>
 <if expr="_google_chrome">
+                  <cr-icon aria-hidden="true"
                       icon="settings-internal:screensaver-auto">
-</if>
                   </cr-icon>
+</if>
                   <div class="secondary">
                     $i18n{glicDefaultTabAccessConsider1}
                   </div>
                 </li>
                 <li ?hidden="${
                     this.isEnterpriseAccountDataProtected_()}">
-                  <cr-icon aria-hidden="true"
 <if expr="not _google_chrome">
-                      icon="settings20:web">
+                  <cr-icon aria-hidden="true" icon="settings20:web"></cr-icon>
 </if>
 <if expr="_google_chrome">
+                  <cr-icon aria-hidden="true"
                       icon="settings-internal:insight-spark">
-</if>
                   </cr-icon>
+</if>
                   <div class="secondary">
                     $i18n{glicDefaultTabAccessConsider2}
                   </div>
@@ -486,14 +499,16 @@
             <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
             <ul class="icon-bulleted-list">
               <li>
-                <cr-icon aria-hidden="true"
 <if expr="not _google_chrome">
+                <cr-icon aria-hidden="true"
                     icon="settings20:arrow-selector-tool">
+                </cr-icon>
 </if>
 <if expr="_google_chrome">
+                <cr-icon aria-hidden="true"
                     icon="settings-internal:arrow-selector-spark">
-</if>
                 </cr-icon>
+</if>
                 <div class="secondary">
                   $i18n{glicWebActuationToggleWhenOn1}
                 </div>
@@ -512,14 +527,14 @@
             <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
             <ul class="icon-bulleted-list">
               <li>
-                <cr-icon aria-hidden="true"
 <if expr="not _google_chrome">
-                    icon="settings20:web">
+                <cr-icon aria-hidden="true" icon="settings20:web"></cr-icon>
 </if>
 <if expr="_google_chrome">
+                <cr-icon aria-hidden="true"
                     icon="settings-internal:screensaver-auto">
-</if>
                 </cr-icon>
+</if>
                 <div class="secondary">
                   $i18n{glicWebActuationToggleConsider1}
                 </div>
@@ -569,14 +584,16 @@
               <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
               <ul class="icon-bulleted-list">
                 <li>
-                  <cr-icon aria-hidden="true"
 <if expr="not _google_chrome">
+                  <cr-icon aria-hidden="true"
                       icon="settings20:arrow-selector-tool">
+                  </cr-icon>
 </if>
 <if expr="_google_chrome">
+                  <cr-icon aria-hidden="true"
                       icon="settings-internal:arrow-selector-spark">
-</if>
                   </cr-icon>
+</if>
                   <div class="secondary">
                     $i18n{glicExperimentalTriggeringWhenOn1}
                   </div>
@@ -626,3 +643,5 @@
     `}
   </div>
 </settings-subpage>
+<!--_html_template_end_-->`;
+}

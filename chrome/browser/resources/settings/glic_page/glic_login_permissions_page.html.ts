@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsGlicLoginPermissionsPageElement} from './glic_login_permissions_page.js';
+
+export function getHtml(this: SettingsGlicLoginPermissionsPageElement) {
+  return html`<!--_html_template_start_-->
 ${this.selectedPermissionToRemove_ ? html`
   <settings-simple-confirmation-dialog
       title-text="$i18n{glicRemoveActorLoginDialogTitle}"
@@ -20,8 +30,7 @@ ${this.selectedPermissionToRemove_ ? html`
       <div id="offlineWarning" class="no-sites cr-secondary-text">
         $i18n{glicLoginPermissionsOfflineWarning}
       </div>
-    ` : ''}
-    ${this.isOnline_ ? html`
+    ` : html`
       <div class="no-sites cr-secondary-text"
           ?hidden="${!!this.actorLoginPermissions_.length}">
         $i18n{glicLoginPermissionsNoSites}
@@ -38,16 +47,19 @@ ${this.selectedPermissionToRemove_ ? html`
                 data-index="${index}"
                 @click="${this.onRemoveActorLoginPermissionClick_}"
                 title="$i18n{remove}"
-                aria-label="${this.i18n('glicRevokeActorLoginPermissionAriaLabel',
+                aria-label="${this.i18n(
+                        'glicRevokeActorLoginPermissionAriaLabel',
                         item.displayName)}">
             </cr-icon-button>
           </div>
         </div>
       `)}
-    ` : ''}
+    `}
   </div>
 </settings-subpage>
 
 <cr-toast id="removeErrorToast" duration="3000">
   <div>$i18n{glicLoginPermissionsRemoveError}</div>
 </cr-toast>
+<!--_html_template_end_-->`;
+}
