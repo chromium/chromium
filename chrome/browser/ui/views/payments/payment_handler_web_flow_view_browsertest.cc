@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -2792,6 +2795,293 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
   EXPECT_EQ(nullptr, PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
 
   dialog_view()->CloseDialog();
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+                       PromptAction_Granted) {
+  base::HistogramTester histogram_tester;
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+
+  {
+    PermissionPromptWaiter prompt_waiter(manager);
+
+    manager->AddRequest(payment_handler_contents->GetPrimaryMainFrame(),
+                        std::make_unique<permissions::MockPermissionRequest>(
+                            permissions::RequestType::kCameraStream));
+    prompt_waiter.WaitUntilPromptAdded();
+  }
+
+  manager->Accept(std::monostate());
+
+  histogram_tester.ExpectUniqueSample("PaymentRequest.Camera.PromptAction",
+                                      permissions::PermissionAction::GRANTED,
+                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+                       PromptAction_Dismissed) {
+  base::HistogramTester histogram_tester;
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+
+  {
+    PermissionPromptWaiter prompt_waiter(manager);
+
+    manager->AddRequest(payment_handler_contents->GetPrimaryMainFrame(),
+                        std::make_unique<permissions::MockPermissionRequest>(
+                            permissions::RequestType::kCameraStream));
+    prompt_waiter.WaitUntilPromptAdded();
+  }
+
+  manager->Dismiss(std::monostate());
+
+  histogram_tester.ExpectUniqueSample("PaymentRequest.Camera.PromptAction",
+                                      permissions::PermissionAction::DISMISSED,
+                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+                       MediaAccessRequest_WindowClosedDuringPrompt) {
+  base::HistogramTester histogram_tester;
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  auto* manager = permissions::PermissionRequestManager::FromWebContents(
+      payment_handler_contents);
+  ASSERT_NE(nullptr, manager);
+
+  {
+    PermissionPromptWaiter prompt_waiter(manager);
+    EXPECT_TRUE(content::ExecJs(
+        payment_handler_contents,
+        "navigator.mediaDevices.getUserMedia({video: true}).catch(() => {});",
+        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+    prompt_waiter.WaitUntilPromptAdded();
+  }
+
+  histogram_tester.ExpectUniqueSample("PaymentRequest.Camera.AccessRequested",
+                                      true, 1);
+  histogram_tester.ExpectTotalCount("PaymentRequest.Camera.RequestOutcome", 0);
+
+  // Close the dialog while the prompt is active.
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  dialog_view()->CloseDialog();
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  // Window closure dismisses the pending media request.
+  histogram_tester.ExpectUniqueSample("PaymentRequest.Camera.AccessRequested",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.Camera.RequestOutcome",
+      blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED, 1);
+  histogram_tester.ExpectTotalCount("PaymentRequest.Camera.PromptAction", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+                       MediaAccessResponse_ErrorAndSystemMetrics) {
+  base::HistogramTester histogram_tester;
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+
+  // Verify that PaymentRequest.Camera.RequestOutcome properly records all valid
+  // MediaStreamRequestResult enum values passed to OnMediaAccessResponse.
+  size_t expected_count = 0;
+  for (auto i = std::to_underlying(
+           blink::mojom::MediaStreamRequestResult::kMinValue);
+       i <=
+       std::to_underlying(blink::mojom::MediaStreamRequestResult::kMaxValue);
+       ++i) {
+    auto result = static_cast<blink::mojom::MediaStreamRequestResult>(i);
+    if (!blink::mojom::IsKnownEnumValue(result)) {
+      continue;
+    }
+    test_api(web_flow_controller)
+        .OnMediaAccessResponse(base::DoNothing(),
+                               blink::mojom::StreamDevicesSet(), result,
+                               /*ui=*/nullptr);
+    histogram_tester.ExpectBucketCount("PaymentRequest.Camera.RequestOutcome",
+                                       result, 1);
+    ++expected_count;
+  }
+  histogram_tester.ExpectTotalCount("PaymentRequest.Camera.RequestOutcome",
+                                    expected_count);
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+                       MediaAccessRequest_RecordsCameraMetrics) {
+  base::HistogramTester histogram_tester;
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+  ASSERT_NE(nullptr, payment_handler_contents);
+
+  // 1. Audio-only request is rejected and records AccessRequested as false.
+  std::string audio_result = content::EvalJs(payment_handler_contents, R"(
+    navigator.mediaDevices.getUserMedia({audio: true})
+      .then(() => 'allowed')
+      .catch(err => err.name);
+  )")
+                                 .ExtractString();
+  EXPECT_EQ("NotSupportedError", audio_result);
+  histogram_tester.ExpectBucketCount("PaymentRequest.Camera.AccessRequested",
+                                     false, 1);
+  histogram_tester.ExpectBucketCount("PaymentRequest.Camera.AccessRequested",
+                                     true, 0);
+  histogram_tester.ExpectTotalCount("PaymentRequest.Camera.RequestOutcome", 0);
+
+  // 2. Pre-grant camera permission for the origin so getUserMedia({video:
+  // true}) succeeds through RequestMediaAccessPermission and
+  // OnMediaAccessResponse.
+  GURL payment_app_url = payment_handler_contents->GetLastCommittedURL();
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(payment_app_url, payment_app_url,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      CONTENT_SETTING_ALLOW);
+
+  std::string video_result = content::EvalJs(payment_handler_contents, R"(
+    navigator.mediaDevices.getUserMedia({video: true})
+      .then(stream =>
+          stream.getVideoTracks().length > 0 ? 'success' : 'no-tracks')
+      .catch(err => err.name);
+  )")
+                                 .ExtractString();
+  EXPECT_EQ("success", video_result);
+
+  histogram_tester.ExpectBucketCount("PaymentRequest.Camera.AccessRequested",
+                                     true, 1);
+  histogram_tester.ExpectTotalCount("PaymentRequest.Camera.AccessRequested", 2);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.Camera.RequestOutcome",
+      blink::mojom::MediaStreamRequestResult::OK, 1);
+
+  // 3. Close the dialog for clean teardown.
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  dialog_view()->CloseDialog();
+  ASSERT_TRUE(WaitForObservedEvent());
 }
 INSTANTIATE_TEST_SUITE_P(
     All,

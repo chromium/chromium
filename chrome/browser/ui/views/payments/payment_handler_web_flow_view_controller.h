@@ -227,6 +227,12 @@ class PaymentHandlerWebFlowViewController
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
                               bool reload_prompt);
   void AbortPayment();
+  static void OnMediaAccessResponse(
+      base::WeakPtr<PaymentHandlerWebFlowViewController> controller,
+      content::MediaResponseCallback original_callback,
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
+      blink::mojom::MediaStreamRequestResult result,
+      std::unique_ptr<content::MediaStreamUI> ui);
   void SetHeaderColorsAndOriginLabelText();
 
   LocationIconView* location_icon_view();
