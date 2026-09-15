@@ -32,6 +32,7 @@ build_webui("build") {
     "organizer_list_section_item_title.html.ts",
     "organizer_list_section_item_title.ts",
     "organizer_panel.ts",
+    "search_utils.ts",
     "stacked_favicons.html.ts",
     "stacked_favicons.ts",
   ]

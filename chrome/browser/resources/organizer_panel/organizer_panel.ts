@@ -4,6 +4,7 @@
 
 import './app.js';
 
+export type {Range} from '/tab_search/shared/search.js';
 export type {SearchApiProxy} from '/tab_search/shared/search_api_proxy.js';
 export {SearchApiProxyImpl} from '/tab_search/shared/search_api_proxy.js';
 export {OrganizerPanelAppElement} from './app.js';
@@ -20,6 +21,7 @@ export {OrganizerListSectionItemElement} from './organizer_list_section_item.js'
 export type {OrganizerListSectionItemDescriptionPart} from './organizer_list_section_item_description.js';
 export {OrganizerListSectionItemDescriptionElement} from './organizer_list_section_item_description.js';
 export {OrganizerListSectionItemTitleElement} from './organizer_list_section_item_title.js';
+export {renderHighlightedText, SEARCH_PART_SEPARATOR, sliceRangesForParts} from './search_utils.js';
 export {StackedFaviconsElement} from './stacked_favicons.js';
 export {Color} from './tab_group_types.mojom-webui.js';
 export type {PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TokenRange} from './tab_search.mojom-webui.js';
