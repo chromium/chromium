@@ -147,6 +147,14 @@ std::string GetAccountGivenName(Profile& profile) {
 
 void AssertChildStatusOfTheUser(Profile* profile, bool is_child) {
 #if BUILDFLAG(IS_CHROMEOS)
+  if (profile->AsTestingProfile() != nullptr) {
+    // Bail out during unit tests using TestingProfile. They have hard time
+    // simulating ChromeOS user types.
+    // TODO(crbug.com/561937726: Consider creating a drop-in test utility that
+    // would seamlessly assert expected ChromeOS user type, or better: preset
+    // such user type alongside with the TestingProfile.
+    return;
+  }
   user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (user && is_child != (user->GetType() == user_manager::UserType::kChild)) {
