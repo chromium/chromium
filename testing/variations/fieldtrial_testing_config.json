@@ -7302,6 +7302,28 @@
             ]
         }
     ],
+    "DisableGlicActorUiMagicCursorAnimation": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "params": {
+                        "magic-cursor-max-duration-ms": "1",
+                        "magic-cursor-min-duration-ms": "1"
+                    },
+                    "enable_features": [
+                        "GlicActorUiMagicCursor"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableGridTabSwitcher": [
         {
             "platforms": [
