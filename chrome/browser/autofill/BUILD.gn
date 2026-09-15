@@ -284,7 +284,10 @@ source_set("browser_tests") {
   if (is_android) {
     deps += [ "//content/test:browsertest_support" ]
   } else {
-    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+    deps += [
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/tabs:tab_strip",
+    ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -343,6 +346,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_io_data",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/translate",
@@ -408,6 +412,7 @@ if (!is_android) {
     deps = [
       ":test_support",
       "//chrome/browser/autofill:test_support_ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/autofill:test_support",
       "//chrome/browser/ui/translate:test_support",

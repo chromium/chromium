@@ -217,6 +217,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/startup",
       "//chrome/test:test_support",
       "//extensions:test_support",

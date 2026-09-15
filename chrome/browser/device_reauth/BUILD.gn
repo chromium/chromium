@@ -106,6 +106,7 @@ source_set("impl") {
   }
 
   if (is_win) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
     sources += [
       "win/authenticator_win.cc",
       "win/device_authenticator_win.cc",

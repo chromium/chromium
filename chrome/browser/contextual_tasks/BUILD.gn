@@ -519,6 +519,9 @@ source_set("ui_impl") {
       "//components/guest_view/browser/slim_web_view",
     ]
   }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
+  }
 }
 
 source_set("mojom_traits") {

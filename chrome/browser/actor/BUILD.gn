@@ -307,6 +307,9 @@ source_set("impl") {
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
     ]
   }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
+  }
 }
 
 source_set("variants") {
@@ -582,6 +585,9 @@ source_set("browser_tests") {
       "//components/translate/core/browser",
       "//components/translate/core/common",
     ]
+  }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
   }
 }
 

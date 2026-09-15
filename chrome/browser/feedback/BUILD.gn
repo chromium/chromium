@@ -184,6 +184,9 @@ source_set("feedback_impl") {
     ]
     deps += [ "//ui/ozone" ]
   }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
+  }
 }
 
 source_set("unit_tests") {

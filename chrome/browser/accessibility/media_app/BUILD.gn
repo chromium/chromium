@@ -52,6 +52,7 @@ source_set("browser_tests") {
     "//chrome/browser/accessibility/media_app/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/test:test_support",
     "//content/public/browser",
     "//content/test:test_support",
