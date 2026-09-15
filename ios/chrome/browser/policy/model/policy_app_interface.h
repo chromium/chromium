@@ -19,8 +19,17 @@
 + (void)setPolicyValue:(NSString*)jsonValue forKey:(NSString*)policyKey;
 
 // Merges the json policy corresponding to `policyKey` to the existing
-// policies with its value sets to `jsonValue`.
+// policies with its value sets to `jsonValue`. The policy is installed as a
+// mandatory machine platform policy.
 + (void)mergePolicyValue:(NSString*)jsonValue forKey:(NSString*)policyKey;
+
+// Same as `mergePolicyValue:forKey:`, but the policy is installed with the
+// user scope and the cloud source. Policies guarded by
+// `policy::CloudUserOnlyPolicyChecker` (e.g. CloudProfileReportingEnabled and
+// UserSecuritySignalsReporting) are silently dropped unless they are set this
+// way.
++ (void)mergeCloudUserPolicyValue:(NSString*)jsonValue
+                           forKey:(NSString*)policyKey;
 
 // Clear all policy values.
 + (void)clearPolicies;

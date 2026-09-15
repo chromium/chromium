@@ -32,6 +32,16 @@ void MergePolicy(base::Value value, const std::string& policy_key) {
   MergePolicy(SerializeValue(std::move(value)), policy_key);
 }
 
+// Merges the value policy corresponding to `policy_key` to the existing
+// policies with its value sets to `value`, using the user scope and the cloud
+// source.
+void MergeCloudUserPolicy(base::Value value, const std::string& policy_key) {
+  [PolicyAppInterface
+      mergeCloudUserPolicyValue:base::SysUTF8ToNSString(
+                                    SerializeValue(std::move(value)))
+                         forKey:base::SysUTF8ToNSString(policy_key)];
+}
+
 }  // namespace
 
 namespace policy_test_utils {
@@ -49,6 +59,10 @@ void SetPolicy(bool enabled, const std::string& policy_key) {
 
 void MergePolicy(bool enabled, const std::string& policy_key) {
   ::MergePolicy(base::Value(enabled), policy_key);
+}
+
+void MergeCloudUserPolicy(bool enabled, const std::string& policy_key) {
+  ::MergeCloudUserPolicy(base::Value(enabled), policy_key);
 }
 
 void SetPolicy(int value, const std::string& policy_key) {

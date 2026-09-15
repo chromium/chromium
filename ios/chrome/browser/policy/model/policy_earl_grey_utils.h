@@ -19,11 +19,18 @@ namespace policy_test_utils {
 std::string GetValueForPlatformPolicy(const std::string& policy_key);
 
 // Sets the boolean policy corresponding to `policy_key` to the given boolean
-// value, and removes previous policies.
+// value, and removes previous policies. The policy is installed as a mandatory
+// machine platform policy.
 void SetPolicy(bool enabled, const std::string& policy_key);
 // Merges the boolean policy corresponding to `policy_key` to the existing
-// policies with its value sets to `enabled`.
+// policies with its value sets to `enabled`. The policy is installed as a
+// mandatory machine platform policy.
 void MergePolicy(bool enabled, const std::string& policy_key);
+// Same as `MergePolicy`, but installs the policy with the user scope and the
+// cloud source. Policies guarded by `policy::CloudUserOnlyPolicyChecker`
+// (e.g. CloudProfileReportingEnabled and UserSecuritySignalsReporting) are
+// silently dropped unless they are set this way.
+void MergeCloudUserPolicy(bool enabled, const std::string& policy_key);
 
 // Sets the integer policy corresponding to `policy_key` to the given integer
 // value, and removes previous policies.

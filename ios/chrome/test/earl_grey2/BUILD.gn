@@ -155,6 +155,7 @@ _ui_eg2tests_deps = [
   "//ios/chrome/browser/download/ui:eg2_tests",
   "//ios/chrome/browser/drive_file_picker/test:eg2_tests",
   "//ios/chrome/browser/enterprise/data_controls/test:eg2_tests",
+  "//ios/chrome/browser/enterprise/signals/test:eg2_tests",
   "//ios/chrome/browser/file_upload_panel/test:eg2_tests",
   "//ios/chrome/browser/first_run/animated_lens/test:eg2_tests",
   "//ios/chrome/browser/first_run/best_features/test:eg2_tests",

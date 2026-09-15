@@ -541,6 +541,34 @@ TEST_F(UserSecuritySignalsServiceTest,
                                       SecurityReportTrigger::kCookieChange, 1);
 }
 
+// Test that verifies the default upload cadence. Every other cadence test in
+// this file is expressed relative to `GetSecurityUploadCadence()`, so they pass
+// for any default value; this test pins the absolute value that the CEP iOS
+// signal sharing design doc (go/cep-se-ios-signals-sharing-dd) specifies.
+TEST_F(UserSecuritySignalsServiceTest, DefaultCadenceIsFourHours) {
+  EXPECT_EQ(base::Hours(4),
+            UserSecuritySignalsService::GetSecurityUploadCadence());
+
+  SetEnabledPolicy(true);
+
+  CreateAndRunSignalsService();
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // No report should be triggered just before the four hour mark.
+  EXPECT_CALL(delegate_, OnReportEventTriggered(_)).Times(0);
+  FastForwardCustomTime(base::Hours(4) - base::Minutes(1));
+  Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Exactly one report should be triggered once four hours have elapsed.
+  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
+      .Times(1);
+  FastForwardCustomTime(base::Minutes(1));
+
+  histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
+                                       SecurityReportTrigger::kTimer,
+                                       ExpectedInitialTimerReportCount() + 1);
+}
+
 // Test that verifies if the feature flag param overrides the upload cadence
 // correctly.
 TEST_F(UserSecuritySignalsServiceTest, FlagOverrideCadence) {
