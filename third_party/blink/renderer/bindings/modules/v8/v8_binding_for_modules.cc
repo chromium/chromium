@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor_with_value.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -106,19 +108,49 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
             Vector<char>(base::as_chars(buffer->ByteSpan()))));
   }
 
+  if (value->IsSharedArrayBuffer()) {
+    DOMSharedArrayBuffer* buffer =
+        NativeValueTraits<DOMSharedArrayBuffer>::NativeValue(isolate, value,
+                                                             exception_state);
+    if (exception_state.HadException()) {
+      return IDBKey::CreateInvalid();
+    }
+    base::span<uint8_t> shared_bytes = buffer->ByteSpanMaybeShared();
+    SCOPED_CRASH_KEY_NUMBER("CreateIDBKey", "ArrayBuffer", shared_bytes.size());
+    Vector<char> bytes(base::checked_cast<wtf_size_t>(shared_bytes.size()));
+    // SAFETY: `bytes` and `shared_bytes` have the same size.
+    UNSAFE_BUFFERS(AtomicReadMemcpy(bytes.data(), shared_bytes.data(),
+                                    shared_bytes.size()));
+    return IDBKey::CreateBinary(
+        base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
+            std::move(bytes)));
+  }
+
   if (value->IsArrayBufferView()) {
     DOMArrayBufferView* view =
         NativeValueTraits<MaybeShared<DOMArrayBufferView>>::NativeValue(
             isolate, value, exception_state)
             .Get();
-    if (exception_state.HadException())
+    if (exception_state.HadException()) {
       return IDBKey::CreateInvalid();
+    }
+    SCOPED_CRASH_KEY_NUMBER("CreateIDBKey", "ArrayBuffer", view->byteLength());
+    if (view->IsShared()) {
+      Vector<char> bytes(base::checked_cast<wtf_size_t>(view->byteLength()));
+      // SAFETY: `byteLength()` returns the number of bytes at
+      // `BaseAddressMaybeShared()`.
+      UNSAFE_BUFFERS(AtomicReadMemcpy(
+          bytes.data(), view->BaseAddressMaybeShared(), bytes.size()));
+      return IDBKey::CreateBinary(
+          base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
+              std::move(bytes)));
+    }
+
     if (view->buffer()->IsDetached()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                         "The viewed ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
     }
-    SCOPED_CRASH_KEY_NUMBER("CreateIDBKey", "ArrayBuffer", view->byteLength());
     return IDBKey::CreateBinary(
         base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
             Vector<char>(base::as_chars(view->ByteSpan()))));
