@@ -608,7 +608,6 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   // policy. (http://crbug.com/921750).
   context_params->enforce_chrome_ct_policy = false;
 
-  context_params->enable_brotli = true;
   context_params->enable_zstd = true;
   context_params->stale_dns_enabled = enable_stale_dns_;
 

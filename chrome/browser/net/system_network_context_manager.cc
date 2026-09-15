@@ -980,8 +980,6 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   network_context_params->cors_exempt_header_list.push_back(
       contextual_tasks::kContextualTasksSearchCapabilitiesHeaderName);
 
-  network_context_params->enable_brotli = true;
-
   network_context_params->enable_zstd = true;
 
   network_context_params->user_agent = embedder_support::GetUserAgent();
