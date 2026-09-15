@@ -29,6 +29,7 @@ source_set("impl") {
     "//base",
     "//chrome/browser/app_mode",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:status_bubble",
     "//chrome/browser/ui:tab_ui_helper",
     "//chrome/browser/ui/bookmarks",

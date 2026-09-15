@@ -114,6 +114,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/printing",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/web_applications:web_applications_test_support",

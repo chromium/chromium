@@ -83,6 +83,7 @@ if (!is_android) {
 
     deps = [
       ":find_bar",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",

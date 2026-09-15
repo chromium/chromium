@@ -128,6 +128,7 @@ if (is_win) {
     deps = [
       ":mixers",
       "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/test:test_support",
       "//skia",
       "//ui/color",

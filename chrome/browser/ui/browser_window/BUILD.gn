@@ -109,6 +109,7 @@ if (!is_android || is_desktop_android) {
         "internal/create_browser_window_browsertest.cc",
         "public/browser_window_interface_iterator_browsertest.cc",
       ]
+      deps += [ "//chrome/browser/ui:browser_window_header" ]
     }
   }
 }

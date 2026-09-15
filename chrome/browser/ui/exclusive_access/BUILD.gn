@@ -97,6 +97,7 @@ if (!is_android) {
       "//content/test:test_support",
     ]
     deps = [
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/views/exclusive_access",
     ]
@@ -132,6 +133,7 @@ if (!is_android) {
     deps = [
       ":test_support",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/test/base:chrome_test_path_utils",
@@ -157,6 +159,7 @@ if (!is_android) {
         ":test_support",
         "//chrome/browser/content_settings:content_settings_factory",
         "//chrome/browser/preloading:test_support",
+        "//chrome/browser/ui:browser_window_header",
         "//chrome/browser/ui:test_support",
         "//chrome/browser/ui/browser_web_contents_delegate",
         "//chrome/browser/ui/browser_window",

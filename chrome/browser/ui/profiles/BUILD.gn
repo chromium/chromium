@@ -108,6 +108,7 @@ source_set("impl") {
       ]
 
       deps += [
+        "//chrome/browser/ui:browser_window_header",
         "//chrome/browser/ui:chrome_pages",
         "//chrome/browser/ui/views/profiles:profile_management_types",
         "//chrome/browser/ui/webui/signin",

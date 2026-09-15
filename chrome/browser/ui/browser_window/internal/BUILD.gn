@@ -222,6 +222,7 @@ source_set("internal") {
       "//chrome/browser/ui:browser_instant_controller",
       "//chrome/browser/ui:browser_location_bar_model_delegate",
       "//chrome/browser/ui:browser_select_file_dialog_controller",
+      "//chrome/browser/ui:browser_window_header",
     ]
   }
 }
