@@ -2547,15 +2547,10 @@ static_library("ui") {
 
   if (is_mac) {
     sources += [
-      "views/frame/browser_frame_view_factory_mac.mm",
       "views/frame/browser_frame_view_mac.h",
       "views/frame/browser_frame_view_mac.mm",
       "views/frame/browser_native_widget_mac.h",
       "views/frame/browser_native_widget_mac.mm",
-      "views/frame/immersive_mode_controller_mac.h",
-      "views/frame/immersive_mode_controller_mac.mm",
-      "views/frame/immersive_mode_overlay_views_mac.h",
-      "views/frame/immersive_mode_overlay_views_mac.mm",
     ]
 
     deps += [
@@ -2566,7 +2561,12 @@ static_library("ui") {
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui/cocoa",
       "//chrome/browser/ui/views:certificate_viewer_mac_views",
+      "//chrome/browser/ui/views/frame:browser_frame_view_factory_mac",
       "//chrome/browser/ui/views/frame:browser_native_widget_factory_mac",
+      "//chrome/browser/ui/views/frame:immersive_mode_controller_mac",
+      "//chrome/browser/ui/views/frame:immersive_mode_controller_mac_impl",
+      "//chrome/browser/ui/views/frame:immersive_mode_overlay_views_mac",
+      "//chrome/browser/ui/views/frame:immersive_mode_overlay_views_mac_impl",
     ]
 
     # Any circular includes must depend on the target
@@ -2576,9 +2576,22 @@ static_library("ui") {
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui/cocoa",
 
+      # browser_frame_view_factory_mac.mm includes browser_frame_view_mac.h,
+      # browser_view.h, and picture_in_picture_browser_frame_view.h from
+      # //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/frame:browser_frame_view_factory_mac",
+
       # browser_native_widget_factory_mac.mm includes
       # views/frame/browser_native_widget_mac.h which cannot be split out yet.
       "//chrome/browser/ui/views/frame:browser_native_widget_factory_mac",
+
+      # immersive_mode_controller_mac.mm includes browser_frame_view_mac.h,
+      # browser_view.h, and top_container_view.h from //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/frame:immersive_mode_controller_mac_impl",
+
+      # immersive_mode_overlay_views_mac.mm includes browser_frame_view_mac.h
+      # and browser_view.h from //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/frame:immersive_mode_overlay_views_mac_impl",
     ]
 
     deps += [
@@ -2605,8 +2618,6 @@ static_library("ui") {
     assert(use_aura)
 
     sources += [
-      "views/frame/browser_desktop_window_tree_host_win.cc",
-      "views/frame/browser_desktop_window_tree_host_win.h",
       "views/frame/browser_frame_view_win.cc",
       "views/frame/browser_frame_view_win.h",
     ]
@@ -3574,12 +3585,19 @@ static_library("ui") {
     if (is_win) {
       deps += [
         ":accessibility_util",
+        "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host_win",
+        "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host_win_impl",
         "//chrome/browser/ui/views/frame:system_menu_insertion_delegate_win",
         "//chrome/browser/ui/views/frame:windows_caption_button",
         "//chrome/browser/ui/views/frame:windows_caption_button_impl",
       ]
-      allow_circular_includes_from +=
-          [ "//chrome/browser/ui/views/frame:windows_caption_button_impl" ]
+      allow_circular_includes_from += [
+        # browser_desktop_window_tree_host_win.cc includes
+        # browser_frame_view_win.h, browser_view.h, and browser_widget.h from
+        # //chrome/browser/ui:ui.
+        "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host_win_impl",
+        "//chrome/browser/ui/views/frame:windows_caption_button_impl",
+      ]
     }
 
     if (is_chromeos) {

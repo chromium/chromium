@@ -8939,6 +8939,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/lifetime:termination_notification",
         "//chrome/browser/spellchecker:interactive_ui_tests",
         "//chrome/browser/ui/cocoa:interactive_ui_tests",
+        "//chrome/browser/ui/views/frame:immersive_mode_controller_mac",
         "//chrome/browser/web_applications/extensions",
         "//components/remote_cocoa/app_shim",
         "//components/spellcheck:buildflags",

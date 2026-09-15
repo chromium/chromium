@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/remote_cocoa/common/native_widget_ns_window.mojom.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/cocoa/immersive_mode_reveal_client.h"
@@ -18,6 +17,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
+class BrowserView;
 class ImmersiveModeControllerMac;
 
 // This class notifies the browser view to refresh layout whenever the overlay

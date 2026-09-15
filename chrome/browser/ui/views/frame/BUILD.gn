@@ -524,6 +524,52 @@ source_set("shadow_overlay_view_impl") {
 }
 
 if (is_win) {
+  # Desktop window tree host implementation for Windows.
+  source_set("browser_desktop_window_tree_host_win") {
+    public = [ "browser_desktop_window_tree_host_win.h" ]
+    public_deps = [
+      ":browser_desktop_window_tree_host",
+      "//base",
+      "//chrome/browser/profiles:profile_util",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/views",
+    ]
+  }
+
+  source_set("browser_desktop_window_tree_host_win_impl") {
+    sources = [ "browser_desktop_window_tree_host_win.cc" ]
+    public_deps = [
+      ":browser_desktop_window_tree_host_win",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":browser_window_property_manager_win",
+      ":frame",
+      ":system_menu_insertion_delegate_win",
+      ":windows_caption_button",
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser:titlebar_config",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/views/tabs:tab_strip",
+      "//chrome/browser/win",
+      "//chrome/common:constants",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//content/public/browser",
+      "//ui/base",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/display",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+  }
+
   source_set("minimize_button_metrics_win") {
     public = [ "minimize_button_metrics_win.h" ]
     sources = [ "minimize_button_metrics_win.cc" ]
@@ -1041,10 +1087,77 @@ source_set("main_background_region_view") {
 }
 
 if (is_mac) {
+  source_set("browser_frame_view_factory_mac") {
+    sources = [ "browser_frame_view_factory_mac.mm" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+
   source_set("browser_native_widget_factory_mac") {
     sources = [ "browser_native_widget_factory_mac.mm" ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps = [ ":browser_native_widget_factory" ]
+  }
+
+  source_set("immersive_mode_controller_mac") {
+    public = [ "immersive_mode_controller_mac.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/immersive:immersive_mode_controller",
+      "//components/remote_cocoa/common:mojo",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+  }
+
+  source_set("immersive_mode_controller_mac_impl") {
+    sources = [ "immersive_mode_controller_mac.mm" ]
+    public_deps = [
+      ":immersive_mode_controller_mac",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":frame",
+      "//base",
+      "//chrome/browser/glic",
+      "//chrome/browser/ui:fullscreen_util_mac",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/find_bar",
+      "//chrome/browser/ui/views/infobars",
+      "//chrome/browser/ui/views/omnibox",
+      "//components/constrained_window",
+      "//components/remote_cocoa/app_shim:features",
+      "//ui/gfx/geometry",
+      "//ui/views",
+    ]
+  }
+
+  source_set("immersive_mode_overlay_views_mac") {
+    public = [ "immersive_mode_overlay_views_mac.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/views:theme_copying_widget",
+      "//ui/base/metadata",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+  }
+
+  source_set("immersive_mode_overlay_views_mac_impl") {
+    sources = [ "immersive_mode_overlay_views_mac.mm" ]
+    public_deps = [
+      ":immersive_mode_overlay_views_mac",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/web_modal:browser_window_modal_dialog_delegate",
+      "//components/web_modal",
+      "//ui/base/clipboard:clipboard_types",
+      "//ui/base/metadata",
+      "//ui/views",
+    ]
   }
 }
 
