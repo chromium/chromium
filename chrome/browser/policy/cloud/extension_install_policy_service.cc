@@ -22,6 +22,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_proto_types.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"

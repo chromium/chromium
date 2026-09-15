@@ -4,7 +4,9 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 
-#include "base/functional/callback.h"
+#include <tuple>
+
+#include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
@@ -20,18 +22,6 @@ bool IsExtensionInstallPolicyType(const std::string& policy_type) {
 }
 
 }  // namespace
-
-ExtensionInstallDecision::ExtensionInstallDecision() = default;
-ExtensionInstallDecision::ExtensionInstallDecision(
-    enterprise_management::ExtensionInstallPolicy::Action action,
-    std::set<enterprise_management::ExtensionInstallPolicy::Reason> reasons)
-    : action(action), reasons(reasons) {}
-ExtensionInstallDecision::ExtensionInstallDecision(
-    const ExtensionInstallDecision&) = default;
-ExtensionInstallDecision::ExtensionInstallDecision(ExtensionInstallDecision&&) =
-    default;
-
-ExtensionInstallDecision::~ExtensionInstallDecision() = default;
 
 bool ExtensionIdAndVersion::operator<(
     const ExtensionIdAndVersion& other) const {

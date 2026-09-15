@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_proto_types.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"

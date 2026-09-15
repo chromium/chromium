@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-#include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
 
@@ -20,6 +19,8 @@ namespace policy {
 
 class CloudExternalDataManager;
 class PolicyMap;
+struct ExtensionIdAndVersion;
+struct ExtensionInstallDecision;
 
 enum class PolicyPerProfileFilter {
   // Applies to the browser profile.

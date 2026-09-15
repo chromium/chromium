@@ -21,6 +21,8 @@
 
 namespace policy {
 
+struct ExtensionInstallDecision;
+
 // Coordinates cloud policy handling, moving downloaded policy from the client
 // to the store, and setting up client registrations from cached data in the
 // store. Also coordinates actions on policy refresh triggers.

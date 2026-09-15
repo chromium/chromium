@@ -18,6 +18,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_proto_types.h"
+#include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
