@@ -2956,8 +2956,7 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
   URLRows text_matches;
   if (text_query.empty()) {
     // Host-only search.
-    text_matches =
-        GetMatchesForHost(base::UTF8ToUTF16(options.hostname_suffix));
+    text_matches = GetMatchesForHost(options.hostname_suffix);
   } else {
     // Text search or combined text + host search.
     text_matches = db_->GetTextMatchesWithAlgorithm(
@@ -3028,7 +3027,7 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
   }
 }
 
-URLRows HistoryBackend::GetMatchesForHost(const std::u16string& host_name) {
+URLRows HistoryBackend::GetMatchesForHost(const std::string& hostname_suffix) {
   URLRows results;
   URLDatabase::URLEnumerator iter;
 
@@ -3036,14 +3035,13 @@ URLRows HistoryBackend::GetMatchesForHost(const std::u16string& host_name) {
     URLRow row;
     const bool improved_suffix_matching = base::FeatureList::IsEnabled(
         kBrowsingHistoryImprovedHostnameSuffixMatching);
-    std::string host_name_utf8 = base::UTF16ToUTF8(host_name);
-    if (improved_suffix_matching) {
-      host_name_utf8 = base::ToLowerASCII(host_name_utf8);
-    }
+    const std::string target_host = improved_suffix_matching
+                                        ? base::ToLowerASCII(hostname_suffix)
+                                        : hostname_suffix;
     while (iter.GetNextURL(&row)) {
       const bool matches_host = improved_suffix_matching
-                                    ? row.url().DomainIs(host_name_utf8)
-                                    : (row.url().GetHost() == host_name_utf8);
+                                    ? row.url().DomainIs(target_host)
+                                    : (row.url().GetHost() == target_host);
       if (row.url().is_valid() && matches_host) {
         results.push_back(std::move(row));
       }
