@@ -160,10 +160,18 @@ class [[nodiscard]] ScopedMetricsReporter {
   base::ElapsedTimer timer_;
 };
 
+// The default value for `Reader::Config::use_rust`.
+bool ShouldUseRustParserByDefault() {
+#if BUILDFLAG(USE_CBOR_RUST)
+  return base::FeatureList::IsEnabled(kUseRustCborParser);
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
-Reader::Config::Config()
-    : use_rust(base::FeatureList::IsEnabled(kUseRustCborParser)) {}
+Reader::Config::Config() : use_rust(ShouldUseRustParserByDefault()) {}
 Reader::Config::~Config() = default;
 
 Reader::Reader(base::span<const uint8_t> data)
