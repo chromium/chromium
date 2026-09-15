@@ -6,17 +6,18 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
-import '../settings_shared.css.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 
-import {getTemplate} from './do_not_track_toggle.html.js';
+import {getCss} from './do_not_track_toggle.css.js';
+import {getHtml} from './do_not_track_toggle.html.js';
 
 export interface SettingsDoNotTrackToggleElement {
   $: {
@@ -24,7 +25,7 @@ export interface SettingsDoNotTrackToggleElement {
   };
 }
 
-const SettingsDoNotTrackToggleElementBase = I18nMixin(PolymerElement);
+const SettingsDoNotTrackToggleElementBase = I18nMixinLit(CrLitElement);
 
 export class SettingsDoNotTrackToggleElement extends
     SettingsDoNotTrackToggleElementBase {
@@ -32,46 +33,34 @@ export class SettingsDoNotTrackToggleElement extends
     return 'settings-do-not-track-toggle';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      showDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showUniversalOptOutSettings_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showUniversalOptOutSettings'),
-      },
-
-      doNotTrackSublabel_: {
-        type: String,
-        computed:
-            'computeDoNotTrackToggleSubLabel_(showUniversalOptOutSettings_)',
-      },
+      showDialog_: {type: Boolean},
+      showUniversalOptOutSettings_: {type: Boolean},
+      doNotTrackSublabel_: {type: String},
     };
   }
 
-  declare prefs: {enable_do_not_track: chrome.settingsPrivate.PrefObject};
-  declare private showDialog_: boolean;
-  declare private showUniversalOptOutSettings_: boolean;
-  declare private doNotTrackSublabel_: string;
+  protected accessor showDialog_: boolean = false;
+  protected accessor showUniversalOptOutSettings_: boolean =
+      loadTimeData.getBoolean('showUniversalOptOutSettings');
+  protected accessor doNotTrackSublabel_: string = '';
 
-  private onDomChange_() {
-    if (this.showDialog_) {
-      this.shadowRoot!.querySelector('cr-dialog')!.showModal();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('showUniversalOptOutSettings_')) {
+      this.doNotTrackSublabel_ = this.computeDoNotTrackToggleSubLabel_();
     }
   }
 
@@ -79,7 +68,7 @@ export class SettingsDoNotTrackToggleElement extends
    * Handles the change event for the do-not-track toggle. Shows a
    * confirmation dialog when enabling the setting.
    */
-  private onToggleChange_(event: Event) {
+  protected onSettingsBooleanControlChange_(event: Event) {
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.DO_NOT_TRACK);
     const target = event.target as SettingsToggleButtonElement;
@@ -93,29 +82,35 @@ export class SettingsDoNotTrackToggleElement extends
   }
 
   private closeDialog_() {
-    this.shadowRoot!.querySelector('cr-dialog')!.close();
+    this.shadowRoot.querySelector('cr-dialog')!.close();
     this.showDialog_ = false;
   }
 
-  private onDialogClosed_() {
-    focusWithoutInk(this.toggle_);
+  protected onDialogClose_() {
+    focusWithoutInk(this.$.toggle);
   }
 
   /**
    * Handles the shared proxy confirmation dialog 'Confirm' button.
    */
-  private onDialogConfirm_() {
-    this.toggle_.sendPrefChange();
+  protected onConfirmClick_() {
+    this.$.toggle.sendPrefChange();
     this.closeDialog_();
   }
 
   /**
-   * Handles the shared proxy confirmation dialog 'Cancel' button or a cancel
-   * event.
+   * Handles the shared proxy confirmation dialog 'Cancel' button.
    */
-  private onDialogCancel_() {
-    this.toggle_.resetToPrefValue();
+  protected onCancelClick_() {
+    this.$.toggle.resetToPrefValue();
     this.closeDialog_();
+  }
+
+  /**
+   * Handles the shared proxy confirmation dialog cancel event.
+   */
+  protected onDialogCancel_() {
+    this.onCancelClick_();
   }
 
   private computeDoNotTrackToggleSubLabel_(): string {
@@ -123,11 +118,6 @@ export class SettingsDoNotTrackToggleElement extends
         this.showUniversalOptOutSettings_ ?
             'trackingProtectionDoNotTrackDisclaimerToggleSubLabel' :
             'trackingProtectionDoNotTrackToggleSubLabel');
-  }
-
-  private get toggle_(): SettingsToggleButtonElement {
-    return this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#toggle')!;
   }
 }
 

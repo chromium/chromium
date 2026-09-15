@@ -5,43 +5,41 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsDoNotTrackToggleElement} from 'chrome://settings/lazy_load.js';
-import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {loadTimeData, MetricsBrowserProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, PrefService, PrefsBrowserProxy, PrivacyElementInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
 
 suite('CrSettingsDoNotTrackToggleTest', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testElement: SettingsDoNotTrackToggleElement;
-
-  function toggle(): SettingsToggleButtonElement {
-    return testElement.shadowRoot!.querySelector('#toggle')!;
-  }
+  let prefService: PrefService;
 
   setup(async function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([{
+      key: 'enable_do_not_track',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    }]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     await createToggle();
   });
 
-  async function createToggle() {
+  function createToggle() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-do-not-track-toggle');
-    testElement.prefs = {
-      enable_do_not_track: {
-        key: 'enable_do_not_track',
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        value: false,
-      },
-    };
     document.body.appendChild(testElement);
-    return flushTasks();
   }
 
   teardown(function() {
@@ -49,46 +47,56 @@ suite('CrSettingsDoNotTrackToggleTest', function() {
   });
 
   test('logDoNotTrackClick', async function() {
-    toggle().click();
+    testElement.$.toggle.click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.DO_NOT_TRACK, result);
   });
 
-  test('DialogAndToggleBehavior', function() {
-    toggle().click();
-    flush();
-    assertTrue(toggle().checked);
+  test('DialogAndToggleBehavior', async function() {
+    testElement.$.toggle.click();
+    await microtasksFinished();
+    assertTrue(testElement.$.toggle.checked);
 
+    const anchor =
+        testElement.shadowRoot.querySelector<HTMLAnchorElement>('a[href]');
+    assertTrue(!!anchor);
     assertEquals(
-        testElement.shadowRoot!.querySelector<HTMLAnchorElement>(
-                                   'a[href]')!.getAttribute('aria-description'),
-        loadTimeData.getString('opensInNewTab'));
-    testElement.shadowRoot!.querySelector<HTMLElement>(
-                               '.cancel-button')!.click();
-    assertFalse(toggle().checked);
-    assertFalse(testElement.prefs.enable_do_not_track.value);
+        loadTimeData.getString('opensInNewTab'),
+        anchor.getAttribute('aria-description'));
 
-    toggle().click();
-    flush();
-    assertTrue(toggle().checked);
-    testElement.shadowRoot!.querySelector<HTMLElement>(
-                               '.action-button')!.click();
-    assertTrue(toggle().checked);
-    assertTrue(testElement.prefs.enable_do_not_track.value);
+    const cancelButton =
+        testElement.shadowRoot.querySelector<HTMLElement>('.cancel-button');
+    assertTrue(!!cancelButton);
+    cancelButton.click();
+    await microtasksFinished();
+    assertFalse(testElement.$.toggle.checked);
+    assertFalse(prefService.getPref<boolean>('enable_do_not_track').value);
+
+    testElement.$.toggle.click();
+    await microtasksFinished();
+    assertTrue(testElement.$.toggle.checked);
+
+    const actionButton =
+        testElement.shadowRoot.querySelector<HTMLElement>('.action-button');
+    assertTrue(!!actionButton);
+    actionButton.click();
+    await microtasksFinished();
+    assertTrue(testElement.$.toggle.checked);
+    assertTrue(prefService.getPref<boolean>('enable_do_not_track').value);
   });
 
-  test('sublabelWithAndWithoutUniversalOptOut', async function() {
+  test('sublabelWithAndWithoutUniversalOptOut', function() {
     assertEquals(
         loadTimeData.getString('trackingProtectionDoNotTrackToggleSubLabel'),
-        toggle().subLabel);
+        testElement.$.toggle.subLabel);
 
     loadTimeData.overrideValues({showUniversalOptOutSettings: true});
-    await createToggle();
+    createToggle();
 
     assertEquals(
         loadTimeData.getString(
             'trackingProtectionDoNotTrackDisclaimerToggleSubLabel'),
-        toggle().subLabel);
+        testElement.$.toggle.subLabel);
   });
 });
