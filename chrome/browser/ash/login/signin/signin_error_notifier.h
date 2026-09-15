@@ -32,16 +32,23 @@ class Profile;
 class PrefRegistrySimple;
 class PrefService;
 
+namespace supervised_user {
+class SupervisedUserService;
+}  // namespace supervised_user
+
 namespace ash {
 
 // Shows signin-related errors as notifications in Ash.
 class SigninErrorNotifier : public SigninErrorController::Observer,
                             public KeyedService {
  public:
-  // `local_state` must be non-null and must outlive `this`.
-  SigninErrorNotifier(PrefService* local_state,
-                      SigninErrorController* controller,
-                      Profile* profile);
+  // `local_state` and `supervised_user_service` must be non-null and must
+  // outlive `this`.
+  SigninErrorNotifier(
+      PrefService* local_state,
+      SigninErrorController* controller,
+      Profile* profile,
+      supervised_user::SupervisedUserService* supervised_user_service);
 
   SigninErrorNotifier(const SigninErrorNotifier&) = delete;
   SigninErrorNotifier& operator=(const SigninErrorNotifier&) = delete;
@@ -99,6 +106,9 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
 
   // The Profile this service belongs to.
   const raw_ptr<Profile> profile_;
+
+  const raw_ref<supervised_user::SupervisedUserService>
+      supervised_user_service_;
 
   // A non-owning pointer to IdentityManager.
   const raw_ptr<signin::IdentityManager> identity_manager_;

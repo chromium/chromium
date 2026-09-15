@@ -59,7 +59,8 @@ SigninErrorNotifierFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<SigninErrorNotifier>(
       local_state, SigninErrorControllerFactory::GetForProfile(profile),
-      profile);
+      profile,
+      supervised_user::SupervisedUserServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace ash

@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -187,12 +186,15 @@ std::unique_ptr<LegacyTokenHandleFetcher> CreateTokenHandleFetcher(
 
 }  // namespace
 
-SigninErrorNotifier::SigninErrorNotifier(PrefService* local_state,
-                                         SigninErrorController* controller,
-                                         Profile* profile)
+SigninErrorNotifier::SigninErrorNotifier(
+    PrefService* local_state,
+    SigninErrorController* controller,
+    Profile* profile,
+    supervised_user::SupervisedUserService* supervised_user_service)
     : local_state_(CHECK_DEREF(local_state)),
       error_controller_(controller),
       profile_(profile),
+      supervised_user_service_(CHECK_DEREF(supervised_user_service)),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)),
       account_manager_(AccountManagerFactory::Get()->GetAccountManager(
           profile_->GetPath().value())),
@@ -324,10 +326,9 @@ void SigninErrorNotifier::HandleDeviceAccountError(
     const std::u16string& error_message) {
   // If this error has occurred because a user's account has just been converted
   // to a Family Link Supervised account, then suppress the notification.
-  supervised_user::SupervisedUserService* service =
-      supervised_user::SupervisedUserServiceFactory::GetForProfile(profile_);
-  if (service->signout_required_after_supervision_enabled())
+  if (supervised_user_service_->signout_required_after_supervision_enabled()) {
     return;
+  }
 
   // We need to save the flag in the local state because
   // TokenHandleUtil::IsReauthRequired might fail on the login screen due to

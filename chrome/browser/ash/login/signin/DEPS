@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
-  "+chrome/browser/supervised_user",
   "+chrome/browser/sync",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
@@ -29,6 +28,15 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # The keyed-service factory is the //chrome seam: it DependsOn() the
+  # Profile-keyed SupervisedUserServiceFactory and passes the resulting
+  # supervised_user::SupervisedUserService (//components) into
+  # SigninErrorNotifier. The unit test drives the same factory to set the
+  # service up.
+  "signin_error_notifier_(factory|unittest)\\.cc": [
+    "+chrome/browser/supervised_user",
+  ],
+
   "oauth2_browsertest\\.cc": [
     "+chrome/browser/lifetime/termination_notification.h",
   ],
