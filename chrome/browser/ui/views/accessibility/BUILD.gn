@@ -62,6 +62,7 @@ source_set("impl") {
     sources += [ "accessibility_util.cc" ]
     deps += [
       "//chrome/browser/ui:accessibility_util",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/waap:manager",
     ]
   }
@@ -168,6 +169,7 @@ if (!is_android) {
         "//base/test:test_support",
         "//chrome/browser/preloading:test_support",
         "//chrome/browser/ui",
+        "//chrome/browser/ui:browser_window_header",
         "//chrome/test:test_support_ui",
         "//components/live_caption:constants",
         "//components/on_device_translation/buildflags",

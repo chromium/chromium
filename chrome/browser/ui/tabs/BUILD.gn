@@ -322,7 +322,10 @@ if (!is_android) {
     if (is_chromeos) {
       sources += [ "existing_window_sub_menu_model_chromeos.cc" ]
 
-      deps += [ "//chromeos/ui/wm" ]
+      deps += [
+        "//chrome/browser/ui:browser_window_header",
+        "//chromeos/ui/wm",
+      ]
     }
   }
 
@@ -381,6 +384,7 @@ if (!is_android) {
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui:browser_tab_strip_tracker",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
@@ -562,6 +566,7 @@ if (!is_android) {
       "//chrome/browser/ui:accelerator_table",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_live_tab_context",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:focus_tab_after_navigation_helper",
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui:sad_tab",
@@ -784,6 +789,7 @@ if (!is_android) {
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",

@@ -38,6 +38,7 @@ source_set("impl") {
   if (!is_android) {
     sources += [ "file_system_access_scroll_panel.cc" ]
     deps += [
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/file_system_access",
       "//components/vector_icons",

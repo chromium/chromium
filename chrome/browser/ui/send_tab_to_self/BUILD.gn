@@ -73,6 +73,7 @@ if (!is_android) {
       ":send_tab_to_self",
       "//chrome/browser/prefs:util",
       "//chrome/browser/sync",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/views/send_tab_to_self",

@@ -42,6 +42,7 @@ source_set("impl") {
   ]
   deps = [
     ":user_education",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/focus",
     "//chrome/browser/ui/interaction",
@@ -79,6 +80,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/common",
@@ -106,6 +108,7 @@ if (!is_chromeos_device) {
       ":user_education",
       "//chrome/browser:browser_process",
       "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/common",
       "//chrome/test:test_support",

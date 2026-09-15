@@ -168,6 +168,7 @@ if (!is_android) {
         "//chrome/browser/signin:signin_browser_test_base",
         "//chrome/browser/ui",
         "//chrome/browser/ui:browser_element_identifiers",
+        "//chrome/browser/ui:browser_window_header",
         "//chrome/browser/ui:chrome_pages",
         "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/browser_window",
