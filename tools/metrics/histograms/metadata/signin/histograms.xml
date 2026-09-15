@@ -1006,7 +1006,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Android.AccountManagementAcceptedBeforeUserPolicyFetch"
-    enum="Boolean" expires_after="2027-01-13">
+    enum="Boolean" expires_after="2027-03-14">
   <owner>shadmehr@google.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
@@ -2275,7 +2275,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GetAccounts.Android.Result"
-    enum="GetAccountsAndroidResult" expires_after="2027-01-10">
+    enum="GetAccountsAndroidResult" expires_after="2027-03-14">
   <owner>mlbipin@google.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
@@ -2286,7 +2286,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.GetAccounts.AndroidApiAvailability" enum="Boolean"
-    expires_after="2027-01-10">
+    expires_after="2027-03-14">
   <owner>mlbipin@google.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
@@ -2588,7 +2588,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.FRE.Event"
-    enum="SigninInterceptFREDialogEvent" expires_after="2027-01-12">
+    enum="SigninInterceptFREDialogEvent" expires_after="2027-03-14">
   <owner>alexilin@chromium.org</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
@@ -3215,7 +3215,7 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.OAuth2MintToken.ApiCallResult"
-    enum="OAuth2MintTokenApiCallResult" expires_after="2027-01-10">
+    enum="OAuth2MintTokenApiCallResult" expires_after="2027-03-14">
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

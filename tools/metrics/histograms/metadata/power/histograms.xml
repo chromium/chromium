@@ -1497,7 +1497,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.HighestFanSpeed" units="100rpm"
-    expires_after="2027-01-10">
+    expires_after="2027-03-14">
   <owner>eshimanovich@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>

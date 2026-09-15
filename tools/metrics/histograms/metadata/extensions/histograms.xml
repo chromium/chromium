@@ -3908,7 +3908,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.RuntimeUninstallURL.Host"
-    enum="ExtensionRuntimeUninstallURLHost" expires_after="M155">
+    enum="ExtensionRuntimeUninstallURLHost" expires_after="2027-03-14">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>bershanskyi@gmail.com</owner>
   <owner>extensions-core@chromium.org</owner>

@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.Cellular.Apn.CreateCustomApn.AllowApnModification"
-    enum="BooleanEnabled" expires_after="2026-12-01">
+    enum="BooleanEnabled" expires_after="2027-03-14">
   <owner>nikhilcn@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -2517,7 +2517,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.SharedDictionary.DocumentRequestCacheResult"
     enum="SharedDictionaryDocumentRequestCacheResult"
-    expires_after="2027-01-10">
+    expires_after="2027-03-14">
   <owner>pmeenan@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -4381,7 +4381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Passpoint.ProvisioningResult"
-    enum="PasspointProvisioningResult" expires_after="2026-12-31">
+    enum="PasspointProvisioningResult" expires_after="2027-03-14">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-networking@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -5327,7 +5327,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.Scheduler.IOThread.NumberOfPendingTasks.{QueueName}Queue"
-    units="count" expires_after="2027-01-10">
+    units="count" expires_after="2027-03-14">
   <owner>bashi@chromium.org</owner>
   <owner>net-dev@chromium.org</owner>
   <summary>

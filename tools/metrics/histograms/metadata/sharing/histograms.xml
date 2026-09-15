@@ -523,7 +523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendTabToSelf.ScrollPosition.GenerationTime"
-    units="ms" expires_after="2027-01-10">
+    units="ms" expires_after="2027-03-14">
   <owner>mtatarski@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>

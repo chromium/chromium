@@ -727,7 +727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues"
-    enum="FrameStageScrollIdBasedCalculationIssues" expires_after="2027-01-10">
+    enum="FrameStageScrollIdBasedCalculationIssues" expires_after="2027-03-14">
   <owner>petrcermak@chromium.org</owner>
   <owner>kartarsingh@google.com</owner>
   <owner>jonross@chromium.org</owner>
@@ -934,7 +934,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="EventLatency.GestureScrollUpdate.{NonTouchscreenScrollInputType}.TotalLatency2"
-    units="microseconds" expires_after="2027-01-10">
+    units="microseconds" expires_after="2027-03-14">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>

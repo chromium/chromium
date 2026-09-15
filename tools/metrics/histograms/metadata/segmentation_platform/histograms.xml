@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.DefaultModelDelivery.Metadata.Validation.{ValidationPhase}.{SegmentationModel}"
-    enum="SegmentationPlatformValidationResult" expires_after="2027-01-12">
+    enum="SegmentationPlatformValidationResult" expires_after="2027-03-14">
   <owner>ritikagup@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.DefaultModelDelivery.SaveResult.{SegmentationModel}"
-    enum="BooleanSuccess" expires_after="2027-01-12">
+    enum="BooleanSuccess" expires_after="2027-03-14">
   <owner>ritikagup@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -415,7 +415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.ModelAvailability.{SegmentationModel}"
-    enum="SegmentationModelAvailability" expires_after="2027-01-12">
+    enum="SegmentationModelAvailability" expires_after="2027-03-14">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
