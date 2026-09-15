@@ -3,10 +3,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
+import logging
 import os
 import sys
 import unittest
 from unittest import mock
+import urllib.error
+from urllib.parse import parse_qs
+from urllib.parse import urlparse
 
 # Add the directory containing the script to the path so we can import it
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -18,6 +23,15 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     patcher = mock.patch('find_affected_coverage_guided_fuzzers.subprocess.run')
     self.mock_subprocess_run = patcher.start()
     self.addCleanup(patcher.stop)
+
+    # Several tests exercise error paths that log warnings/errors on purpose.
+    # Without any handler on the root logger, Python falls back to its
+    # "last resort" handler, which prints those messages to stderr and makes
+    # the test output look like something went wrong. A NullHandler keeps the
+    # messages discarded while still letting assertLogs() capture them.
+    null_handler = logging.NullHandler()
+    logging.root.addHandler(null_handler)
+    self.addCleanup(logging.root.removeHandler, null_handler)
 
   def get_calls_args(self, mock_obj):
     return [' '.join(call.args[0]) for call in mock_obj.call_args_list]
@@ -78,12 +92,15 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
       modified_files, 'out/test', all_fuzzers
     )
 
-    self.assertEqual(len(affected), 3)
+    # '//file3.cc' does not affect any fuzzer, so it maps to an empty list.
     self.assertEqual(
-      affected['//file1.cc'], ['//fuzzer1:fuzzer1', '//fuzzer2:fuzzer2']
+      affected,
+      {
+        '//file1.cc': ['//fuzzer1:fuzzer1', '//fuzzer2:fuzzer2'],
+        '//file2.cc': ['//fuzzer2:fuzzer2'],
+        '//file3.cc': [],
+      },
     )
-    self.assertEqual(affected['//file2.cc'], ['//fuzzer2:fuzzer2'])
-    self.assertEqual(affected['//file3.cc'], [])
 
     # We expect 3 calls to gn refs, one for each modified file.
     self.assertEqual(self.mock_subprocess_run.call_count, 3)
@@ -116,18 +133,14 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
     modified_files = ['file1.cc', 'file2.cc']
     all_fuzzers = ['//fuzzer1:fuzzer1']
 
-    with self.assertLogs(level='WARNING') as cm:
-      affected = find_affected_coverage_guided_fuzzers.get_affected_fuzzers(
-        modified_files, 'out/test', all_fuzzers
-      )
+    affected = find_affected_coverage_guided_fuzzers.get_affected_fuzzers(
+      modified_files, 'out/test', all_fuzzers
+    )
 
-    self.assertEqual(len(affected), 2)
-    self.assertEqual(affected['//file1.cc'], ['//fuzzer1:fuzzer1'])
-    self.assertEqual(affected['//file2.cc'], [])
-    self.assertTrue(
-      any(
-        'Failed to find reverse deps for //file2.cc' in log for log in cm.output
-      )
+    # The reverse deps of '//file2.cc' can't be computed, so no fuzzer is
+    # reported for it.
+    self.assertEqual(
+      affected, {'//file1.cc': ['//fuzzer1:fuzzer1'], '//file2.cc': []}
     )
 
   def test_run_gn_command_success(self):
@@ -236,8 +249,6 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
         self.assertEqual(find_affected_coverage_guided_fuzzers.main(), 0)
 
         # Verify the printed JSON output is correct
-        import json
-
         output_str = ''.join(
           call.args[0] for call in mock_stdout.write.call_args_list
         )
@@ -259,6 +270,114 @@ class FindAffectedCoverageGuidedFuzzersTest(unittest.TestCase):
         'gn refs out/test --all --as=label -q //file1.cc',
       ],
     )
+
+  @mock.patch('find_affected_coverage_guided_fuzzers.urllib.request.urlopen')
+  def test_get_findit_coverage_success(self, mock_urlopen):
+    lines = [
+      {'first': 1, 'last': 10, 'count': 5},
+      {'first': 12, 'last': 12, 'count': 0},
+    ]
+    fake_response = mock.MagicMock()
+    fake_response.read.return_value = json.dumps(
+      {'data': {'metadata': {'lines': lines}}}
+    ).encode('utf-8')
+    mock_urlopen.return_value.__enter__.return_value = fake_response
+
+    result = find_affected_coverage_guided_fuzzers.get_findit_coverage(
+      'base/json/json_reader.cc'
+    )
+    self.assertEqual(result, lines)
+
+    req = mock_urlopen.call_args[0][0]
+    query_params = parse_qs(urlparse(req.full_url).query)
+    self.assertEqual(query_params.get('path'), ['//base/json/json_reader.cc'])
+    self.assertEqual(query_params.get('platform'), ['fuzz'])
+    self.assertEqual(query_params.get('test_suite_type'), ['any'])
+    self.assertEqual(query_params.get('raw'), ['true'])
+
+  @mock.patch('find_affected_coverage_guided_fuzzers.time.sleep')
+  @mock.patch('find_affected_coverage_guided_fuzzers.urllib.request.urlopen')
+  def test_get_findit_coverage_with_unexpected_coverage_data(
+    self, mock_urlopen, mock_sleep
+  ):
+    fake_response = mock.MagicMock()
+    fake_response.read.return_value = json.dumps({'data': {}}).encode('utf-8')
+    mock_urlopen.return_value.__enter__.return_value = fake_response
+
+    result = find_affected_coverage_guided_fuzzers.get_findit_coverage(
+      '//base/test.cc'
+    )
+
+    # The response doesn't have the expected format, so no coverage is
+    # reported for the file. Confirm after the API returns malformed data
+    # that there are no attempted retries.
+    self.assertIsNone(result)
+    self.assertEqual(mock_urlopen.call_count, 1)
+    mock_sleep.assert_not_called()
+
+  def test_get_findit_coverage_with_empty_path(self):
+    with self.assertRaises(AssertionError):
+      find_affected_coverage_guided_fuzzers.get_findit_coverage('')
+
+  @mock.patch('find_affected_coverage_guided_fuzzers.time.sleep')
+  @mock.patch('find_affected_coverage_guided_fuzzers.urllib.request.urlopen')
+  def test_get_findit_coverage_retries_on_server_error(
+    self, mock_urlopen, mock_sleep
+  ):
+    lines = [{'first': 1, 'last': 2, 'count': 3}]
+    fake_response = mock.MagicMock()
+    fake_response.read.return_value = json.dumps(
+      {'data': {'metadata': {'lines': lines}}}
+    ).encode('utf-8')
+    mock_urlopen.side_effect = [
+      urllib.error.HTTPError(
+        'http://example.com', 500, 'Server Error', {}, None
+      ),
+      mock.MagicMock(__enter__=mock.MagicMock(return_value=fake_response)),
+    ]
+
+    result = find_affected_coverage_guided_fuzzers.get_findit_coverage(
+      '//base/test.cc'
+    )
+
+    self.assertEqual(result, lines)
+    self.assertEqual(mock_urlopen.call_count, 2)
+    self.assertEqual(mock_sleep.call_count, 1)
+
+  @mock.patch('find_affected_coverage_guided_fuzzers.time.sleep')
+  @mock.patch('find_affected_coverage_guided_fuzzers.urllib.request.urlopen')
+  def test_get_findit_coverage_gives_up_after_max_retries(
+    self, mock_urlopen, mock_sleep
+  ):
+    mock_urlopen.side_effect = urllib.error.HTTPError(
+      'http://example.com', 500, 'Server Error', {}, None
+    )
+
+    result = find_affected_coverage_guided_fuzzers.get_findit_coverage(
+      '//base/test.cc'
+    )
+
+    max_retries = find_affected_coverage_guided_fuzzers.MAX_FINDIT_API_RETRIES
+    self.assertIsNone(result)
+    self.assertEqual(mock_urlopen.call_count, max_retries)
+    self.assertEqual(mock_sleep.call_count, max_retries - 1)
+
+  @mock.patch('find_affected_coverage_guided_fuzzers.time.sleep')
+  @mock.patch('find_affected_coverage_guided_fuzzers.urllib.request.urlopen')
+  def test_get_findit_coverage_does_not_retry_on_client_error(
+    self, mock_urlopen, mock_sleep
+  ):
+    mock_urlopen.side_effect = urllib.error.HTTPError(
+      'http://example.com', 404, 'Not Found', {}, None
+    )
+
+    result = find_affected_coverage_guided_fuzzers.get_findit_coverage(
+      '//base/notfound.cc'
+    )
+
+    self.assertIsNone(result)
+    self.assertEqual(mock_urlopen.call_count, 1)
+    mock_sleep.assert_not_called()
 
 
 if __name__ == '__main__':

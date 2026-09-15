@@ -10,7 +10,11 @@ import logging
 import os
 import subprocess
 import sys
-from typing import Dict, List, Set
+import time
+from typing import Dict, List, Optional, Set, Tuple
+import urllib.error
+import urllib.parse
+import urllib.request
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 chromium_src_dir = os.path.dirname(os.path.dirname(script_dir))
@@ -35,10 +39,14 @@ use_siso = true
 # TODO: Support Centipede fuzzers too.
 # https://buganizer.corp.google.com/issues/522382682
 
+COVERAGE_API_URL = 'https://analysis.chromium.org/coverage/p/chromium/file'
+MAX_FINDIT_API_RETRIES = 3
+FINDIT_API_TIMEOUT = 10.0
+
 
 def generate_gn_build_dir(out_dir: str):
   """Generates the GN graph in the output directory."""
-  logging.info(f'Generating GN graph in {out_dir}...')
+  logging.info('Generating GN graph in %s...', out_dir)
 
   args_str = gn_args_libfuzzer.replace('\n', ' ')
   command = ['gn', 'gen', out_dir, f'--args={args_str}']
@@ -46,7 +54,7 @@ def generate_gn_build_dir(out_dir: str):
   try:
     subprocess.run(command, cwd=chromium_src_dir, check=True, env=os.environ)
   except subprocess.CalledProcessError as e:
-    logging.error(f'Error running gn gen: {e}')
+    logging.error('Error running gn gen: %s', e)
     raise
 
 
@@ -54,7 +62,7 @@ def run_gn_command(args: List[str]) -> List[str]:
   """Runs a gn command and returns stdout lines as a list."""
   try:
     command = ['gn'] + args
-    logging.debug(f'Running command: {" ".join(command)}')
+    logging.debug('Running command: %s', ' '.join(command))
     # Explicitly pass os.environ to ensure that GN inherits crucial environment
     # variables set by swarming bots or the local environment (e.g., PATH,
     # DEPOT_TOOLS_PATH, toolchain paths, and RBE/Reclient variables). GN cannot
@@ -70,7 +78,10 @@ def run_gn_command(args: List[str]) -> List[str]:
     return [line.strip() for line in result.stdout.splitlines() if line.strip()]
   except subprocess.CalledProcessError as e:
     logging.error(
-      f'Error running gn command: {e}\nStdout: {e.stdout}\nStderr: {e.stderr}'
+      'Error running gn command: %s\nStdout: %s\nStderr: %s',
+      e,
+      e.stdout,
+      e.stderr,
     )
     raise
   except FileNotFoundError:
@@ -84,7 +95,7 @@ def find_all_fuzzer_targets(out_dir: str) -> List[str]:
   """Finds all fuzz targets which are executable that depend on
   :fuzzing_engine.
   """
-  logging.info(f'Finding all fuzzer targets in {out_dir}...')
+  logging.info('Finding all fuzzer targets in %s...', out_dir)
   args = [
     'refs',
     out_dir,
@@ -99,7 +110,7 @@ def find_all_fuzzer_targets(out_dir: str) -> List[str]:
 
 def find_reverse_deps(out_dir: str, gn_file_path: str) -> List[str]:
   """Finds all targets that depend on the given GN file path."""
-  logging.debug(f'Finding reverse dependencies for {gn_file_path}...')
+  logging.debug('Finding reverse dependencies for %s...', gn_file_path)
   args = ['refs', out_dir, '--all', '--as=label', '-q', gn_file_path]
   return run_gn_command(args)
 
@@ -123,44 +134,141 @@ def get_modified_files() -> List[str]:
   ]
 
 
+def find_affected_fuzzers_for_file(
+  file_path: str, out_dir: str, all_fuzzers: Set[str]
+) -> Tuple[str, List[str]]:
+  """Finds the fuzzers affected by a single modified file."""
+  rel_path = file_path.replace(os.sep, '/')
+  # Prefix with '//' so the file path is formatted as a GN label, which is what
+  # both the reverse-dep query and the fuzzing coverage API expect.
+  gn_path = f'//{rel_path}'
+
+  try:
+    reverse_deps = find_reverse_deps(out_dir, gn_path)
+  except subprocess.CalledProcessError as e:
+    logging.warning(
+      'Failed to find reverse deps for %s: %s. '
+      'Fuzzing coverage for this file will be missing.',
+      gn_path,
+      e,
+    )
+    return gn_path, []
+
+  affected_fuzzers = [f for f in reverse_deps if f in all_fuzzers]
+
+  # TODO: Query the Findit fuzzing coverage API for the changed lines of this
+  # file and drop candidates with no coverage hits.
+  # https://buganizer.corp.google.com/issues/560236801
+
+  # TODO: Include newly added fuzzers as it will not have Findit Fuzzing
+  # Coverage API hits.
+  # https://buganizer.corp.google.com/issues/561529566
+
+  return gn_path, affected_fuzzers
+
+
 def get_affected_fuzzers(
   modified_files: List[str], out_dir: str, all_fuzzers: List[str]
 ) -> Dict[str, List[str]]:
-  """Maps modified files to the fuzzer targets they affect."""
+  """Maps modified files to the fuzzers they affect."""
   affected_map: Dict[str, List[str]] = {}
   all_fuzzers_set = set(all_fuzzers)
 
-  def process_file(file_path: str):
-    rel_path = file_path.replace(os.sep, '/')
-    # Prefix with '//' so that file paths in the output map are formatted
-    # consistently with GN target labels which are needed to query fuzzing
-    # coverage APIs.
-    gn_path = f'//{rel_path}'
-    try:
-      reverse_deps = find_reverse_deps(out_dir, gn_path)
-      affected = [f for f in reverse_deps if f in all_fuzzers_set]
-      return gn_path, affected
-    except subprocess.CalledProcessError as e:
-      logging.warning(
-        f'Failed to find reverse deps for {gn_path}: {e}. '
-        'Fuzzing coverage for this file will be missing.'
-      )
-      return gn_path, []
-
   with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-    future_to_file = {
-      executor.submit(process_file, f): f for f in modified_files
-    }
-    for future in concurrent.futures.as_completed(future_to_file):
-      gn_path, affected = future.result()
-      if affected:
-        logging.info(f'File "{gn_path}" affects {len(affected)} fuzzers.')
-        affected_map[gn_path] = affected
-      else:
-        logging.debug(f'File "{gn_path}" affects no fuzzers.')
-        affected_map[gn_path] = []
+    futures = [
+      executor.submit(
+        find_affected_fuzzers_for_file, f, out_dir, all_fuzzers_set
+      )
+      for f in modified_files
+    ]
+    for future in concurrent.futures.as_completed(futures):
+      gn_path, affected_fuzzers = future.result()
+      logging.info(
+        'File "%s" affects %d fuzzers.', gn_path, len(affected_fuzzers)
+      )
+      affected_map[gn_path] = affected_fuzzers
 
   return affected_map
+
+
+def get_findit_coverage(
+  file_path: str,
+  fuzzer_name: str = 'any',
+) -> Optional[List[Dict[str, int]]]:
+  """Fetches fuzzing coverage data for a file from the Findit Coverage API.
+
+  Args:
+    file_path: Path of the source file
+    fuzzer_name: Name of the fuzzer whose coverage is requested, e.g.
+      'base_json_reader_fuzzer'. The default, 'any', returns the coverage
+      aggregated over all LibFuzzer/FUZZ_TEST fuzzers for the file_path.
+
+  Returns:
+    The latest collected fuzzing coverage of the file, as a list of
+    {'first': int, 'last': int, 'count': int} objects, where 'first' and
+    'last' are the inclusive bounds of a range of consecutive lines that was
+    executed 'count' times. Non-executable lines (e.g. comments) are not part
+    of any range. Returns None if the coverage data can't be fetched, for
+    example because the file or the fuzzer is unknown to the API, or because
+    the request keeps failing.
+
+  Raises:
+    AssertionError: if file_path is empty.
+  """
+  assert file_path, 'file_path must be a non-empty path.'
+
+  gn_path = (
+    file_path if file_path.startswith('//') else f'//{file_path.lstrip("/")}'
+  )
+
+  # Findit coverage API uses 'fuzz' for Libfuzzer and FUZZ_TEST coverage.
+  params = urllib.parse.urlencode(
+    {
+      'path': gn_path,
+      'platform': 'fuzz',
+      'test_suite_type': fuzzer_name,
+      'raw': 'true',
+    }
+  )
+  url = f'{COVERAGE_API_URL}?{params}'
+
+  req = urllib.request.Request(
+    url, headers={'User-Agent': 'Chromium-FindAffectedFuzzers/1.0'}
+  )
+
+  for attempt in range(MAX_FINDIT_API_RETRIES):
+    try:
+      with urllib.request.urlopen(req, timeout=FINDIT_API_TIMEOUT) as resp:
+        response = json.loads(resp.read().decode('utf-8'))
+      return response['data']['metadata']['lines']
+    except urllib.error.HTTPError as e:
+      # Retry on 429 (rate limit) or 5xx (transient server errors).
+      should_retry = e.code in (429, 500, 502, 503, 504)
+      error_msg = 'HTTP error %s fetching coverage for %s: %s'
+      error_args = (e.code, gn_path, e.reason)
+    except (urllib.error.URLError, TimeoutError) as e:
+      should_retry = True
+      error_msg = 'Network error fetching coverage for %s: %s'
+      error_args = (gn_path, e)
+    except (json.JSONDecodeError, KeyError) as e:
+      # The request succeeded but the response isn't JSON or doesn't have the
+      # expected fields, e.g. because the API changed and retrying won't help.
+      should_retry = False
+      error_msg = 'Malformed coverage response for %s: %r'
+      error_args = (gn_path, e)
+    except Exception as e:
+      should_retry = False
+      error_msg = 'Unexpected error fetching coverage for %s: %s'
+      error_args = (gn_path, e)
+
+    if should_retry and attempt < MAX_FINDIT_API_RETRIES - 1:
+      time.sleep(1.0 * (attempt + 1))
+      continue
+
+    logging.warning(error_msg, *error_args)
+    break
+
+  return None
 
 
 def main():
