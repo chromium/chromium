@@ -47,60 +47,13 @@ TEST(ProtocolParserTest, Reading) {
   ASSERT_TRUE(root.get());
   EXPECT_EQ(Value::TypeBoolean, root->type());
 
-  // Embedded comment
+  // Comments are not allowed.
   root = ParseJSON("40 /*/");
   EXPECT_FALSE(root.get());
-  root = ParseJSON("/* comment */null");
-  ASSERT_TRUE(root.get());
-  EXPECT_EQ(Value::TypeNull, root->type());
   root = ParseJSON("40 /* comment */");
-  ASSERT_TRUE(root.get());
-  EXPECT_EQ(Value::TypeInteger, root->type());
-  EXPECT_TRUE(root->asInteger(&int_val));
-  EXPECT_EQ(40, int_val);
-  root = ParseJSON("/**/ 40 /* multi-line\n comment */ // more comment");
-  ASSERT_TRUE(root.get());
-  EXPECT_EQ(Value::TypeInteger, root->type());
-  EXPECT_TRUE(root->asInteger(&int_val));
-  EXPECT_EQ(40, int_val);
+  EXPECT_FALSE(root.get());
   root = ParseJSON("true // comment");
-  ASSERT_TRUE(root.get());
-  EXPECT_EQ(Value::TypeBoolean, root->type());
-  root = ParseJSON("/* comment */\"sample string\"");
-  ASSERT_TRUE(root.get());
-  EXPECT_TRUE(root->asString(&str_val));
-  EXPECT_EQ("sample string", str_val);
-  root = ParseJSON("[1, /* comment, 2 ] */ \n 3]");
-  ASSERT_TRUE(root.get());
-  ListValue* list = ListValue::cast(root.get());
-  ASSERT_TRUE(list);
-  EXPECT_EQ(2u, list->size());
-  tmp_value = list->at(0);
-  ASSERT_TRUE(tmp_value);
-  EXPECT_TRUE(tmp_value->asInteger(&int_val));
-  EXPECT_EQ(1, int_val);
-  tmp_value = list->at(1);
-  ASSERT_TRUE(tmp_value);
-  EXPECT_TRUE(tmp_value->asInteger(&int_val));
-  EXPECT_EQ(3, int_val);
-  root = ParseJSON("[1, /*a*/2, 3]");
-  ASSERT_TRUE(root.get());
-  list = ListValue::cast(root.get());
-  ASSERT_TRUE(list);
-  EXPECT_EQ(3u, list->size());
-  root = ParseJSON("/* comment **/42");
-  ASSERT_TRUE(root.get());
-  EXPECT_EQ(Value::TypeInteger, root->type());
-  EXPECT_TRUE(root->asInteger(&int_val));
-  EXPECT_EQ(42, int_val);
-  root = ParseJSON(
-      "/* comment **/\n"
-      "// */ 43\n"
-      "44");
-  ASSERT_TRUE(root.get());
-  EXPECT_EQ(Value::TypeInteger, root->type());
-  EXPECT_TRUE(root->asInteger(&int_val));
-  EXPECT_EQ(44, int_val);
+  EXPECT_FALSE(root.get());
 
   // Test number formats
   root = ParseJSON("43");
@@ -256,7 +209,7 @@ TEST(ProtocolParserTest, Reading) {
   root = ParseJSON("[true, false, null]");
   ASSERT_TRUE(root.get());
   EXPECT_EQ(Value::TypeArray, root->type());
-  list = ListValue::cast(root.get());
+  ListValue* list = ListValue::cast(root.get());
   ASSERT_TRUE(list);
   EXPECT_EQ(3U, list->size());
 
