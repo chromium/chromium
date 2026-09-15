@@ -3041,6 +3041,11 @@
       status: "stable",
     },
     {
+      // Fix for https://crbug.com/558819236
+      name: "FindBufferSkipIgnoredSubtrees",
+      status: "stable",
+    },
+    {
       name: "FindFirstMisspellingEndWhenNonEditable",
       status: "stable",
     },

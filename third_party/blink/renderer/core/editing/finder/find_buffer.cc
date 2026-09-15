@@ -375,11 +375,14 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
 
   // It's possible that 2 nodes are in the same block flow but there is a node
   // in between that has a separate block flow. An example is an input field.
-  for (const Node* node = &start_node; !node->isSameNode(&end_node);
-       node = FlatTreeTraversal::Next(*node)) {
+  const Node* node = &start_node;
+  while (node && !node->isSameNode(&end_node)) {
     const ComputedStyle* style = ComputedStyle::NullifyEnsured(
         GetComputedStyleForElementOrLayoutObject(*node));
     if (ShouldIgnoreContents(*node) || !VisibleForStyle(style)) {
+      node = RuntimeEnabledFeatures::FindBufferSkipIgnoredSubtreesEnabled()
+                 ? FlatTreeTraversal::NextSkippingChildren(*node)
+                 : FlatTreeTraversal::Next(*node);
       continue;
     }
 
@@ -387,6 +390,7 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
         GetInlineFormattingContext(*node) != start_block_flow) {
       return false;
     }
+    node = FlatTreeTraversal::Next(*node);
   }
 
   return true;
