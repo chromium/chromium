@@ -11,8 +11,13 @@ source_set("ui") {
     "autofill_ai_save_entity_table_view_controller.h",
     "autofill_ai_save_entity_table_view_controller.mm",
     "autofill_ai_save_entity_table_view_controller_delegate.h",
+    "autofill_ai_source_item.h",
+    "autofill_ai_source_item.mm",
+    "autofill_ai_sources_util.h",
+    "autofill_ai_sources_util.mm",
   ]
   deps = [
+    "//base",
     "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -20,26 +25,36 @@ source_set("ui") {
     "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/autofill/autofill_ai/utils",
+    "//ios/chrome/browser/shared/ui:buildflags",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/util",
     "//ui/base",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "autofill_ai_save_entity_table_view_controller_unittest.mm" ]
+  sources = [
+    "autofill_ai_save_entity_table_view_controller_unittest.mm",
+    "autofill_ai_sources_util_unittest.mm",
+  ]
   deps = [
     ":ui",
+    "//base",
     "//components/autofill/core/browser:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//testing/gtest",
+    "//ui/base",
+    "//url",
   ]
 }
