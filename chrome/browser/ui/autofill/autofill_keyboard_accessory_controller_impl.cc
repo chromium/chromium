@@ -923,17 +923,20 @@ void AutofillKeyboardAccessoryControllerImpl::
   }
   CHECK_EQ(suggestions_.size(), labels_.size());
 
-  // TODO(crbug.com/556058028): Call the suppression code.
+  // Suppress suggestion in data model & clear if already previewing.
+  if (!delegate_ || !delegate_->RemoveSuggestion(suggestion)) {
+    return;
+  }
+  delegate_->ClearPreviewedForm();
 
-  // Remove the suppressed element.
+  // Remove the suppressed element visually.
   const size_t index = std::distance(suggestions_.begin(), it);
   suggestions_.erase(it);
   labels_.erase(labels_.begin() + index);
 
+  // Update the accessory to remove the item from the view or hide it if nothing
+  // worth showing is left.
   if (HasSuggestions()) {
-    if (delegate_) {
-      delegate_->ClearPreviewedForm();
-    }
     OnSuggestionsChanged();
   } else {
     Hide(SuggestionHidingReason::kNoSuggestions);

@@ -491,10 +491,63 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
               IDS_AUTOFILL_AI_SUPPRESSION_DIALOG_PRIMARY_BUTTON),
           _))
       .WillOnce(RunOnceCallback<4>(/*confirmed=*/true));
-  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion).Times(0);
+  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion(suggestion))
+      .WillOnce(Return(true));
 
   EXPECT_TRUE(suggestion_controller().ShowAutofillAiSuggestionDetails(0));
   EXPECT_TRUE(suggestion_controller().GetSuggestions().empty());
+}
+
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       ShowAutofillAiSuggestionDetails_RemoveSuggestionFails) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAmbientAutofillSuppressionUI};
+  EntityInstance passport = CreatePassport();
+  SetEntitiesInClient({passport});
+
+  Suggestion suggestion(u"Passport", SuggestionType::kFillAutofillAi);
+  suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
+  ShowSuggestions(manager(), {suggestion});
+
+  EXPECT_CALL(*client().popup_view(), ShowAutofillAiSuggestionDetails)
+      .WillOnce(RunOnceCallback<4>(/*confirmed=*/true));
+  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion(suggestion))
+      .WillOnce(Return(false));
+
+  EXPECT_TRUE(suggestion_controller().ShowAutofillAiSuggestionDetails(0));
+  EXPECT_EQ(suggestion_controller().GetSuggestions().size(), 1u);
+}
+
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       ShowAutofillAiSuggestionDetails_StaleSuggestionNotRemoved) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAmbientAutofillSuppressionUI};
+  EntityInstance passport = CreatePassport();
+  SetEntitiesInClient({passport});
+
+  Suggestion suggestion1(u"Passport", SuggestionType::kFillAutofillAi);
+  suggestion1.payload = Suggestion::AutofillAiPayload(passport.guid());
+  ShowSuggestions(manager(), {suggestion1});
+
+  base::OnceCallback<void(bool)> captured_dialog_callback;
+  EXPECT_CALL(*client().popup_view(), ShowAutofillAiSuggestionDetails)
+      .WillOnce([&](const std::u16string& title, const std::u16string& body,
+                    const std::u16string& confirm_button_text,
+                    const std::u16string& primary_button_text,
+                    base::OnceCallback<void(bool)> dialog_callback) {
+        captured_dialog_callback = std::move(dialog_callback);
+      });
+
+  EXPECT_TRUE(suggestion_controller().ShowAutofillAiSuggestionDetails(0));
+  ASSERT_FALSE(captured_dialog_callback.is_null());
+
+  // Suggestions change while dialog is open.
+  Suggestion suggestion2(u"Autocomplete", SuggestionType::kAutocompleteEntry);
+  ShowSuggestions(manager(), {suggestion2});
+
+  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion).Times(0);
+  std::move(captured_dialog_callback).Run(/*confirmed=*/true);
+  EXPECT_EQ(suggestion_controller().GetSuggestions().size(), 1u);
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
