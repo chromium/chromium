@@ -8526,20 +8526,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Navigation.MainFrame"
-    enum="WebViewNavigationType" expires_after="2026-09-30">
-  <owner>torne@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    For each committed navigation in the main frame of a WebView, records
-    whether this was the initial navigation, a same-document navigation, or in
-    all other cases whether it is same- or cross-origin and whether it was
-    triggered by the browser or renderer.
-
-    Navigations that do not commit (interrupted, HTTP 204, etc) are not counted.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.NonAppUid" enum="AndroidUidType"
     expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>
@@ -9315,7 +9301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.InitReason2"
-    enum="WebViewStartupCallSite" expires_after="2026-10-02">
+    enum="WebViewStartupCallSite" expires_after="2027-08-01">
   <owner>torne@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -9491,24 +9477,6 @@ chromium-metrics-reviews@google.com.
     Recorded once during WebView process global startup.
 
     Only recorded on Android WebView.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.Startup.LockRetryResult"
-    enum="LockRetryResult" expires_after="2026-06-01">
-  <owner>torne@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Recorded after successfully acquiring the WebView data dir lock based on the
-    number of retry attempts and whether we saw an OverlappingFileLockException.
-
-    This is not recorded when we run out of retries and fail to acquire the lock
-    because this case throws an exception - we don't complete startup and so
-    would never actually store and upload the metric value.
-
-    This does not record the exact number of retries, just a few buckets - we're
-    primarily interested in whether OverlappingFileLockException is involved and
-    whether retrying provides any value at all.
   </summary>
 </histogram>
 

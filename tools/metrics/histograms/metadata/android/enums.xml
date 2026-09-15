@@ -1471,22 +1471,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java:LaunchInInstanceEarlyFailureReason) -->
 
-<enum name="LockRetryResult">
-  <int value="0" label="Succeeded the first time"/>
-  <int value="1"
-      label="Succeeded with one retry, no OverlappingFileLockException"/>
-  <int value="2"
-      label="Succeeded with one retry, saw OverlappingFileLockException"/>
-  <int value="3"
-      label="Succeeded with 2-3 retries, no OverlappingFileLockException"/>
-  <int value="4"
-      label="Succeeded with 2-3 retries, saw OverlappingFileLockException"/>
-  <int value="5"
-      label="Succeeded with 4+ retries, no OverlappingFileLockException"/>
-  <int value="6"
-      label="Succeeded with 4+ retries, saw OverlappingFileLockException"/>
-</enum>
-
 <enum name="MainFrameIntentLaunch">
   <int value="0" label="Not from external app, to intent scheme"/>
   <int value="1" label="Not from external app, to custom scheme"/>
@@ -2938,15 +2922,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Always allow"/>
   <int value="1" label="Never allow"/>
   <int value="2" label="Compatibility Mode"/>
-</enum>
-
-<enum name="WebViewNavigationType">
-  <int value="0" label="Initial"/>
-  <int value="1" label="Same-document"/>
-  <int value="2" label="Browser-initiated same-origin"/>
-  <int value="3" label="Browser-initiated cross-origin"/>
-  <int value="4" label="Renderer-initiated same-origin"/>
-  <int value="5" label="Renderer-initiated cross-origin"/>
 </enum>
 
 <!-- LINT.IfChange(WebViewRendererKeepAliveEvent) -->

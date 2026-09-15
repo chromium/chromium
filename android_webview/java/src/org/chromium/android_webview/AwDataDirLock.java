@@ -17,7 +17,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,37 +41,6 @@ public abstract class AwDataDirLock {
 
     private static @Nullable RandomAccessFile sLockFile;
     private static @Nullable FileLock sExclusiveFileLock;
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    // This is an enum histogram and not a number, because we are more
-    // interested in whether retrying was necessary *at all* and whether the
-    // overlapping file lock issue was involved than the exact retry count;
-    // a general range is enough to tweak LOCK_RETRIES.
-    @IntDef({
-        LockRetryResult.FIRST_TIME_OK,
-        LockRetryResult.ONE_RETRY_NO_OVERLAP,
-        LockRetryResult.ONE_RETRY_WITH_OVERLAP,
-        LockRetryResult.UP_TO_THREE_RETRIES_NO_OVERLAP,
-        LockRetryResult.UP_TO_THREE_RETRIES_WITH_OVERLAP,
-        LockRetryResult.MORE_RETRIES_NO_OVERLAP,
-        LockRetryResult.MORE_RETRIES_WITH_OVERLAP,
-    })
-    private @interface LockRetryResult {
-        int FIRST_TIME_OK = 0;
-        int ONE_RETRY_NO_OVERLAP = 1;
-        int ONE_RETRY_WITH_OVERLAP = 2;
-        int UP_TO_THREE_RETRIES_NO_OVERLAP = 3;
-        int UP_TO_THREE_RETRIES_WITH_OVERLAP = 4;
-        int MORE_RETRIES_NO_OVERLAP = 5;
-        int MORE_RETRIES_WITH_OVERLAP = 6;
-        int COUNT = 7;
-    }
-
-    private static void logResult(@LockRetryResult int result) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.Startup.LockRetryResult", result, LockRetryResult.COUNT);
-    }
 
     @IntDef({
         ProcessStatus.UNKNOWN,
@@ -161,7 +129,6 @@ public abstract class AwDataDirLock {
             // anything to prevent or avoid it other than catch exceptions from WebView startup and
             // give up on using it, but we don't support or recommend this, and it's difficult to
             // implement correctly without introducing other problems.
-            boolean sawOverlappingFileLock = false;
             for (int attempts = 1; attempts <= LOCK_RETRIES; ++attempts) {
                 try {
                     sExclusiveFileLock = sLockFile.getChannel().tryLock();
@@ -198,7 +165,6 @@ public abstract class AwDataDirLock {
                     // On the last retry, we rethrow the exception, because we don't want to lose
                     // the crash report data that shows us that the OverlappingFileLockException is
                     // occuring by having it just turn into the normal lock failure exception.
-                    sawOverlappingFileLock = true;
                     if (attempts == LOCK_RETRIES) {
                         throw e;
                     }
@@ -206,34 +172,6 @@ public abstract class AwDataDirLock {
                 if (sExclusiveFileLock != null) {
                     // We got the lock; write out info for debugging.
                     ProcessInfo.current().writeToFile(sLockFile);
-
-                    // Log the appropriate metric value to track whether the retry mechanism is
-                    // actually doing anything useful for apps. We only log it here - there's no
-                    // point in logging it when the locking fails because we're going to throw an
-                    // exception and fail startup anyway, so the metric would never actually be
-                    // uploaded; persistent histograms are not yet initialized at this time.
-                    if (attempts == 1) {
-                        logResult(LockRetryResult.FIRST_TIME_OK);
-                    } else if (attempts == 2) {
-                        if (sawOverlappingFileLock) {
-                            logResult(LockRetryResult.ONE_RETRY_WITH_OVERLAP);
-                        } else {
-                            logResult(LockRetryResult.ONE_RETRY_NO_OVERLAP);
-                        }
-                    } else if (attempts <= 4) {
-                        if (sawOverlappingFileLock) {
-                            logResult(LockRetryResult.UP_TO_THREE_RETRIES_WITH_OVERLAP);
-                        } else {
-                            logResult(LockRetryResult.UP_TO_THREE_RETRIES_NO_OVERLAP);
-                        }
-                    } else {
-                        if (sawOverlappingFileLock) {
-                            logResult(LockRetryResult.MORE_RETRIES_WITH_OVERLAP);
-                        } else {
-                            logResult(LockRetryResult.MORE_RETRIES_NO_OVERLAP);
-                        }
-                    }
-
                     return;
                 }
 
