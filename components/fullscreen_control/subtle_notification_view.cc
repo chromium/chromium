@@ -204,7 +204,7 @@ END_METADATA
 SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
   auto bubble_border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW);
-  bubble_border->SetColor(GetSubtleNotificationBackgroundColor());
+  bubble_border->set_background_color(GetSubtleNotificationBackgroundColor());
   SetBackground(std::make_unique<views::BubbleBackground>(bubble_border.get()));
   SetBorder(std::move(bubble_border));
 

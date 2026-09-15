@@ -115,8 +115,9 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
                                              *label);
 
+  // The border is only used to inset the contents; it is never painted.
   SetBorder(views::CreateRoundedRectBorder(kBorderThicknessDp, kButtonRadius,
-                                           gfx::kPlaceholderColor));
+                                           SK_ColorTRANSPARENT));
   SetBackground(views::CreateRoundedRectBackground(gfx::kPlaceholderColor,
                                                    kButtonRadius));
 
@@ -168,7 +169,6 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
       is_selected_ ? cros_tokens::kCrosSysPrimary
                    : cros_tokens::kCrosSysSystemOnBase,
       kButtonRadius));
-  GetBorder()->SetColor(SK_ColorTRANSPARENT);
 }
 
 BEGIN_METADATA(ResizeToggleMenu, MenuButtonView)

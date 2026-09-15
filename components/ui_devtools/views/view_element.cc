@@ -331,7 +331,8 @@ std::vector<UIElement::PropertyGroup> ViewElement::GetPropertyGroups() const {
             auto new_color = ui::metadata::SkColorConverter::FromString(
                 base::UTF8ToUTF16(value));
             if (new_color) {
-              v->GetBorder()->SetColor(*new_color);
+              v->SetBorder(views::CreateSolidSidedBorder(
+                  v->GetBorder()->GetInsets(), *new_color));
               return true;
             }
           }

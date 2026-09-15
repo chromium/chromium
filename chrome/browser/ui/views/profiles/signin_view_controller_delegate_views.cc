@@ -519,7 +519,7 @@ void SigninViewControllerDelegateViews::DisplayModal() {
       if (should_show_close_button_) {
         auto border = std::make_unique<views::BubbleBorder>(
             views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
-        border->SetColor(kColorProfilesReauthDialogBorder);
+        border->set_background_color(kColorProfilesReauthDialogBorder);
         GetBubbleFrameView()->SetBubbleBorder(std::move(border));
       }
       constrained_window::ShowModalDialog(

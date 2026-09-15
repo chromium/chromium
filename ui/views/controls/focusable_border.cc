@@ -7,7 +7,6 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -26,9 +25,9 @@ constexpr int kInsetSize = 1;
 
 namespace views {
 
-FocusableBorder::FocusableBorder()
+FocusableBorder::FocusableBorder(ui::ColorVariant color)
     : insets_(kInsetSize), corner_radius_(FocusRing::kDefaultCornerRadiusDp) {
-  SetColor(ui::kColorFocusableBorderUnfocused);
+  set_color(color);
 }
 
 FocusableBorder::~FocusableBorder() = default;

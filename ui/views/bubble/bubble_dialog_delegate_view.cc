@@ -631,7 +631,7 @@ std::unique_ptr<FrameView> BubbleDialogDelegate::CreateFrameView(
 
   std::unique_ptr<BubbleBorder> border =
       std::make_unique<BubbleBorder>(arrow(), GetShadow());
-  border->SetColor(background_color());
+  border->set_background_color(background_color());
 
   if (GetParams().round_corners) {
     border->set_rounded_corners(gfx::RoundedCornersF(GetCornerRadius()));

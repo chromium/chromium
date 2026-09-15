@@ -78,8 +78,8 @@ constexpr int kMinimumWidth = 320;
 class LinkFocusBorder : public views::Border {
  public:
   explicit LinkFocusBorder(bool is_focused) : is_focused_(is_focused) {
-    SetColor(is_focused ? ui::kColorFocusableBorderFocused
-                        : ui::ColorVariant());
+    set_color(is_focused ? ui::kColorFocusableBorderFocused
+                         : ui::ColorVariant());
   }
 
   LinkFocusBorder(const LinkFocusBorder&) = delete;

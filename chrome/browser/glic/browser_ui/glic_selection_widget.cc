@@ -238,7 +238,7 @@ class GlicSelectionContentsView : public views::View,
 
     auto border1 = std::make_unique<views::BubbleBorder>(
         views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
-    border1->SetColor(ui::kColorSysSurface);
+    border1->set_background_color(ui::kColorSysSurface);
     if (is_small_chip) {
       if (features::kGlicSelectionSmallChipOnTop.Get()) {
         border1->set_rounded_corners(
@@ -652,7 +652,7 @@ class GlicSelectionContentsView : public views::View,
 
     auto border = std::make_unique<views::BubbleBorder>(
         views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
-    border->SetColor(ui::kColorSysSurface);
+    border->set_background_color(ui::kColorSysSurface);
     border->set_rounded_corners(
         gfx::RoundedCornersF(kExplanationCornerRadius));
     container->SetBackground(

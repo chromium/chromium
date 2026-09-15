@@ -486,7 +486,7 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
   id = border_color_id_.value_or(id);
 
   auto bubble_border = std::make_unique<BubbleBorder>(arrow_, shadow_type);
-  bubble_border->SetColor(id);
+  bubble_border->set_background_color(id);
 
   const MenuConfig& menu_config = MenuConfig::instance();
   bubble_border->set_md_shadow_elevation(

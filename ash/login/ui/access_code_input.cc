@@ -49,7 +49,7 @@ class PinCodeUnderline : public views::Border {
  public:
   PinCodeUnderline(int thickness_dp, const ui::ColorId color_id)
       : thickness_dp_(thickness_dp) {
-    SetColor(color_id);
+    set_color(color_id);
   }
   PinCodeUnderline(const PinCodeUnderline&) = delete;
   PinCodeUnderline& operator=(const PinCodeUnderline&) = delete;

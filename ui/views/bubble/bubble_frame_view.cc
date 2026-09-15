@@ -884,7 +884,7 @@ bool BubbleFrameView::GetDisplayVisibleArrow() const {
 }
 
 void BubbleFrameView::SetBackgroundColor(ui::ColorVariant color) {
-  bubble_border_->SetColor(color);
+  bubble_border_->set_background_color(color);
   if (!GetWidget()) {
     return;
   }

@@ -142,7 +142,7 @@ std::unique_ptr<views::FrameView> DeleteEditShortcut::CreateFrameView(
   // Create the customized bubble border.
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
-  bubble_border->SetColor(background_color());
+  bubble_border->set_background_color(background_color());
   if (GetParams().round_corners) {
     bubble_border->set_rounded_corners(gfx::RoundedCornersF(GetCornerRadius()));
   }

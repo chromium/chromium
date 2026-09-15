@@ -47,7 +47,7 @@ class SolidSidedBorder : public Border {
 SolidSidedBorder::SolidSidedBorder(const gfx::Insets& insets,
                                    ui::ColorVariant color)
     : insets_(insets) {
-  SetColor(color);
+  set_color(color);
 }
 
 void SolidSidedBorder::Paint(const View& view, gfx::Canvas* canvas) {
@@ -126,7 +126,7 @@ RoundedRectBorder::RoundedRectBorder(int thickness,
     : thickness_(thickness),
       corner_radius_(corner_radius),
       paint_insets_(paint_insets) {
-  SetColor(color);
+  set_color(color);
 }
 
 void RoundedRectBorder::Paint(const View& view, gfx::Canvas* canvas) {
@@ -205,7 +205,7 @@ class ExtraInsetsBorder : public Border {
 ExtraInsetsBorder::ExtraInsetsBorder(std::unique_ptr<Border> border,
                                      const gfx::Insets& insets)
     : border_(std::move(border)), extra_insets_(insets) {
-  SetColor(border_->color());
+  set_color(border_->color());
 }
 
 void ExtraInsetsBorder::Paint(const View& view, gfx::Canvas* canvas) {
@@ -233,7 +233,6 @@ class BorderPainter : public Border {
   void Paint(const View& view, gfx::Canvas* canvas) override;
   gfx::Insets GetInsets() const override;
   gfx::Size GetMinimumSize() const override;
-  void SetColor(ui::ColorVariant color) override;
 
  private:
   std::unique_ptr<Painter> painter_;
@@ -258,11 +257,6 @@ gfx::Size BorderPainter::GetMinimumSize() const {
   return painter_->GetMinimumSize();
 }
 
-void BorderPainter::SetColor(ui::ColorVariant color) {
-  NOTREACHED() << "It does not make sense to `SetColor()` for a painter "
-                  "based border.";
-}
-
 }  // namespace
 
 Border::Border() = default;
@@ -271,7 +265,7 @@ Border::~Border() = default;
 
 void Border::OnViewThemeChanged(View* view) {}
 
-void Border::SetColor(ui::ColorVariant color) {
+void Border::set_color(ui::ColorVariant color) {
   color_ = color;
 }
 

@@ -449,7 +449,7 @@ IndigoToolbar::~IndigoToolbar() {
 std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
   auto bubble_border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
-  bubble_border->SetColor(ui::kColorSysSurface);
+  bubble_border->set_background_color(ui::kColorSysSurface);
   bubble_border->set_rounded_corners(
       gfx::RoundedCornersF(kToolbarCornerRadius));
 

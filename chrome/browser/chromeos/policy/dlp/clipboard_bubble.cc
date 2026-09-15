@@ -185,7 +185,7 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   auto shadow_border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::FLOAT, views::BubbleBorder::STANDARD_SHADOW);
   shadow_border->set_rounded_corners(gfx::RoundedCornersF(kBubbleCornerRadius));
-  shadow_border->SetColor(SK_ColorTRANSPARENT);
+  shadow_border->set_background_color(SK_ColorTRANSPARENT);
   shadow_border->set_insets(kBubbleBorderInsets);
   border_->SetSize({kBubbleWidth, INT_MAX});
   border_->SetBorder(std::move(shadow_border));

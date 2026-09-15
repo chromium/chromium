@@ -98,7 +98,7 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
       views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW);
   border->set_rounded_corners(
       gfx::RoundedCornersF(kQuickInsertContainerBorderRadius));
-  border->SetColor(SK_ColorTRANSPARENT);
+  border->set_background_color(SK_ColorTRANSPARENT);
   return border;
 }
 

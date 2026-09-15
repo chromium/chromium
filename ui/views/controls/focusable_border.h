@@ -21,7 +21,7 @@ namespace views {
 // A Border class to draw a focused border around a field (e.g textfield).
 class VIEWS_EXPORT FocusableBorder : public Border {
  public:
-  FocusableBorder();
+  explicit FocusableBorder(ui::ColorVariant color);
 
   FocusableBorder(const FocusableBorder&) = delete;
   FocusableBorder& operator=(const FocusableBorder&) = delete;

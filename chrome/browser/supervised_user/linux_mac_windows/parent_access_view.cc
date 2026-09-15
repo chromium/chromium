@@ -456,7 +456,7 @@ void ParentAccessView::UpdateDialogBorderAndChildrenBackgroundColors() {
     // The background color of the view needs to match the fixed webview's
     // content background.
     auto background_color = kColorParentAccessViewLocalWebApprovalBackground;
-    border->SetColor(background_color);
+    border->set_background_color(background_color);
     SetBackground(
         views::CreateRoundedRectBackground(background_color, corner_radius_));
     web_view_->SetBackground(

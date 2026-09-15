@@ -164,6 +164,12 @@ class VIEWS_EXPORT BubbleBorder : public Border {
                                   gfx::Canvas* canvas,
                                   const ui::ColorProvider* color_provider);
 
+  // Sets the color used to fill the bubble's interior. Note this is not the
+  // color of the border stroke, which is always `ui::kColorBubbleBorder`.
+  // `BubbleFrameView` keeps this in sync with the frame's background color and
+  // repaints after changing it.
+  void set_background_color(ui::ColorVariant color) { set_color(color); }
+
   void set_rounded_corners(const gfx::RoundedCornersF& radii) {
     rounded_corners_ = radii;
   }

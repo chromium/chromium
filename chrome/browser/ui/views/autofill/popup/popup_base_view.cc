@@ -71,7 +71,7 @@ constexpr int kMaxPopupWebContentsTopYOverflow = 8;
 std::unique_ptr<views::Border> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
-  border->SetColor(ui::kColorDropdownBackground);
+  border->set_background_color(ui::kColorDropdownBackground);
   border->set_rounded_corners(
       gfx::RoundedCornersF(PopupBaseView::GetCornerRadius()));
   border->set_md_shadow_elevation(

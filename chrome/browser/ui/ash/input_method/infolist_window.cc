@@ -63,7 +63,7 @@ class InfolistBorder : public views::BubbleBorder {
 InfolistBorder::InfolistBorder()
     : views::BubbleBorder(views::BubbleBorder::LEFT_CENTER,
                           views::BubbleBorder::STANDARD_SHADOW) {
-  SetColor(SK_ColorTRANSPARENT);
+  set_color(SK_ColorTRANSPARENT);
 }
 
 InfolistBorder::~InfolistBorder() = default;

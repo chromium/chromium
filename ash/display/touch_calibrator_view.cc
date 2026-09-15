@@ -336,7 +336,7 @@ HintBox::HintBox(const gfx::Rect& bounds, int border_radius)
       base::i18n::IsRTL() ? views::BubbleBorder::RIGHT_CENTER
                           : views::BubbleBorder::LEFT_CENTER,
       views::BubbleBorder::NO_SHADOW);
-  border->SetColor(SK_ColorWHITE);
+  border->set_background_color(SK_ColorWHITE);
   SetBorder(std::move(border));
 
   arrow_width_ = (GetInsets().right() - GetInsets().left()) *

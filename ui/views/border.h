@@ -72,8 +72,11 @@ class VIEWS_EXPORT Border {
 
   ui::ColorVariant color() const { return color_; }
 
-  // Sets the border color.
-  virtual void SetColor(ui::ColorVariant color);
+ protected:
+  // Sets the border color. Restricted to subclasses: callers holding a generic
+  // `Border*` cannot know how the concrete subclass uses the color, if at all.
+  // To change a view's border, install a new one with `View::SetBorder()`.
+  void set_color(ui::ColorVariant color);
 
  private:
   ui::ColorVariant color_;

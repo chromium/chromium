@@ -37,7 +37,7 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
       views::BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW);
   border->set_rounded_corners(
       gfx::RoundedCornersF(kQuickInsertContainerBorderRadius));
-  border->SetColor(SK_ColorTRANSPARENT);
+  border->set_background_color(SK_ColorTRANSPARENT);
   return border;
 }
 

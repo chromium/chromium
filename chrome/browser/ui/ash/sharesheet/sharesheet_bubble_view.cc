@@ -523,7 +523,7 @@ std::unique_ptr<views::FrameView> SharesheetBubbleView::CreateFrameView(
   // TODO(crbug.com/40136695) Replace this with layer->SetRoundedCornerRadius.
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
-  bubble_border->SetColor(background_color());
+  bubble_border->set_background_color(background_color());
   bubble_border->set_rounded_corners(gfx::RoundedCornersF(kCornerRadius));
   auto frame = views::BubbleDialogDelegateView::CreateFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())

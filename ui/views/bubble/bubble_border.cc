@@ -276,7 +276,7 @@ bool IsExplicitNoShadow(BubbleBorder::Shadow shadow) {
 BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow)
     : arrow_(arrow), shadow_(shadow) {
   DCHECK_LT(shadow_, SHADOW_COUNT);
-  SetColor(ui::kColorDialogBackground);
+  set_color(ui::kColorDialogBackground);
 }
 
 BubbleBorder::~BubbleBorder() = default;
