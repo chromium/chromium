@@ -22,11 +22,15 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/speech/network_speech_recognition_engine_impl.h"
 #include "content/browser/speech/speech_recognition_dispatcher_host.h"
 #include "content/browser/speech/speech_recognition_manager_impl.h"
 #include "content/browser/speech/speech_recognizer_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -48,6 +52,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "base/test/scoped_feature_list.h"
@@ -169,11 +175,9 @@ std::string MakeGoodResponse() {
   result->hypotheses.push_back(media::mojom::SpeechRecognitionHypothesis::New(
       u"Pictures of the moon", 1.0F));
   proto_result->set_final(!result->is_provisional);
-  for (size_t i = 0; i < result->hypotheses.size(); ++i) {
+  for (const auto& hypothesis : result->hypotheses) {
     proto::SpeechRecognitionAlternative* proto_alternative =
         proto_result->add_alternative();
-    const media::mojom::SpeechRecognitionHypothesisPtr& hypothesis =
-        result->hypotheses[i];
     proto_alternative->set_confidence(hypothesis->confidence);
     proto_alternative->set_transcript(base::UTF16ToUTF8(hypothesis->utterance));
   }
@@ -199,7 +203,11 @@ class MockSpeechRecognitionSessionClient
                            results) override {}
 
   void ErrorOccurred(media::mojom::SpeechRecognitionErrorPtr error) override {
+    error_code_ = error->code;
     event_occurred_ = true;
+    if (error_closure_) {
+      std::move(error_closure_).Run();
+    }
     if (event_closure_) {
       std::move(event_closure_).Run();
     }
@@ -216,10 +224,30 @@ class MockSpeechRecognitionSessionClient
     }
   }
 
-  void AudioStarted() override {}
+  void AudioStarted() override {
+    audio_started_occurred_ = true;
+    event_occurred_ = true;
+    if (audio_started_closure_) {
+      std::move(audio_started_closure_).Run();
+    }
+    if (event_closure_) {
+      std::move(event_closure_).Run();
+    }
+  }
+
   void SoundStarted() override {}
   void SoundEnded() override {}
-  void AudioEnded() override {}
+
+  void AudioEnded() override {
+    audio_ended_occurred_ = true;
+    event_occurred_ = true;
+    if (audio_ended_closure_) {
+      std::move(audio_ended_closure_).Run();
+    }
+    if (event_closure_) {
+      std::move(event_closure_).Run();
+    }
+  }
 
   void Ended() override {
     ended_occurred_ = true;
@@ -241,12 +269,30 @@ class MockSpeechRecognitionSessionClient
     run_loop.Run();
   }
 
+  void WaitForAudioStarted() {
+    if (audio_started_occurred_) {
+      return;
+    }
+    base::RunLoop run_loop;
+    audio_started_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
   void WaitForEnded() {
     if (ended_occurred_) {
       return;
     }
     base::RunLoop run_loop;
     ended_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  void WaitForError() {
+    if (error_code_ != media::mojom::SpeechRecognitionErrorCode::kNone) {
+      return;
+    }
+    base::RunLoop run_loop;
+    error_closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
 
@@ -258,6 +304,12 @@ class MockSpeechRecognitionSessionClient
     event_closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
+
+  media::mojom::SpeechRecognitionErrorCode error_code() const {
+    return error_code_;
+  }
+  bool audio_started_occurred() const { return audio_started_occurred_; }
+  bool audio_ended_occurred() const { return audio_ended_occurred_; }
 
   void OnDisconnected() {
     event_occurred_ = true;
@@ -278,10 +330,17 @@ class MockSpeechRecognitionSessionClient
  private:
   mojo::Receiver<media::mojom::SpeechRecognitionSessionClient> receiver_{this};
   base::OnceClosure started_closure_;
+  base::OnceClosure audio_started_closure_;
+  base::OnceClosure audio_ended_closure_;
   base::OnceClosure ended_closure_;
+  base::OnceClosure error_closure_;
   base::OnceClosure event_closure_;
 
+  media::mojom::SpeechRecognitionErrorCode error_code_ =
+      media::mojom::SpeechRecognitionErrorCode::kNone;
   bool started_occurred_ = false;
+  bool audio_started_occurred_ = false;
+  bool audio_ended_occurred_ = false;
   bool ended_occurred_ = false;
   bool event_occurred_ = false;
 };
@@ -366,11 +425,11 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
     ASSERT_EQ(NetworkSpeechRecognitionEngineImpl::kAudioPacketIntervalMs,
               capture_packet_interval_ms);
     FeedAudioCapturerSource(audio_parameters, capture_callback, 500 /* ms */,
-                            /*noise=*/false);
+                            /*feed_with_noise=*/false);
     FeedAudioCapturerSource(audio_parameters, capture_callback, 1000 /* ms */,
-                            /*noise=*/true);
+                            /*feed_with_noise=*/true);
     FeedAudioCapturerSource(audio_parameters, capture_callback, 1000 /* ms */,
-                            /*noise=*/false);
+                            /*feed_with_noise=*/false);
   }
 
   void OnCapturerSourceStop() {
@@ -534,6 +593,338 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
 
   EXPECT_EQ(0, SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
                    global_id));
+}
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
+                       PermissionRevocationStopsAudioCapture) {
+  net::test_server::ControllableHttpResponse upstream_response(
+      embedded_test_server(), "/foo/up?", /*relative_url_is_prefix=*/true);
+  net::test_server::ControllableHttpResponse downstream_response(
+      embedded_test_server(), "/foo/down?", /*relative_url_is_prefix=*/true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::string web_service_base_url =
+      embedded_test_server()->base_url().spec() + "foo";
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      web_service_base_url.c_str());
+
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  content::GlobalRenderFrameHostId global_id = rfh->GetGlobalId();
+  url::Origin origin = rfh->GetLastCommittedOrigin();
+
+  PermissionControllerImpl* permission_controller =
+      PermissionControllerImpl::FromBrowserContext(rfh->GetBrowserContext());
+  ASSERT_TRUE(permission_controller);
+
+  // Set initial microphone permission to GRANTED.
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> grant_future;
+  permission_controller->SetPermissionOverride(
+      origin, origin, blink::PermissionType::AUDIO_CAPTURE,
+      blink::mojom::PermissionStatus::GRANTED, grant_future.GetCallback());
+  EXPECT_EQ(PermissionControllerImpl::OverrideStatus::kOverrideSet,
+            grant_future.Get());
+
+  mojo::Remote<media::mojom::SpeechRecognizer> speech_recognizer;
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SpeechRecognitionDispatcherHost::Create, global_id,
+                     speech_recognizer.BindNewPipeAndPassReceiver()));
+
+  MockSpeechRecognitionSessionClient client;
+  media::mojom::StartSpeechRecognitionRequestParamsPtr params =
+      media::mojom::StartSpeechRecognitionRequestParams::New();
+  params->client = client.BindNewPipeAndPassRemote();
+  mojo::Remote<media::mojom::SpeechRecognitionSession> session_remote;
+  params->session_receiver = session_remote.BindNewPipeAndPassReceiver();
+  params->continuous = true;
+
+  speech_recognizer->Start(std::move(params));
+
+  // Wait for audio capture to start.
+  client.WaitForAudioStarted();
+
+  EXPECT_EQ(1, SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+                   global_id));
+  EXPECT_EQ(kTestAudioCapturerSourceOpened, streaming_server_state());
+
+  // Revoke microphone permission by changing the setting to DENIED.
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> deny_future;
+  permission_controller->SetPermissionOverride(
+      origin, origin, blink::PermissionType::AUDIO_CAPTURE,
+      blink::mojom::PermissionStatus::DENIED, deny_future.GetCallback());
+  EXPECT_EQ(PermissionControllerImpl::OverrideStatus::kOverrideSet,
+            deny_future.Get());
+
+  // Wait for the session to end following permission revocation.
+  client.WaitForEnded();
+
+  EXPECT_EQ(media::mojom::SpeechRecognitionErrorCode::kNotAllowed,
+            client.error_code());
+  EXPECT_EQ(kTestAudioCapturerSourceClosed, streaming_server_state());
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+               global_id) == 0;
+  }));
+
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
+                       PermissionResetStopsAudioCapture) {
+  net::test_server::ControllableHttpResponse upstream_response(
+      embedded_test_server(), "/foo/up?", /*relative_url_is_prefix=*/true);
+  net::test_server::ControllableHttpResponse downstream_response(
+      embedded_test_server(), "/foo/down?", /*relative_url_is_prefix=*/true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::string web_service_base_url =
+      embedded_test_server()->base_url().spec() + "foo";
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      web_service_base_url.c_str());
+
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  content::GlobalRenderFrameHostId global_id = rfh->GetGlobalId();
+  url::Origin origin = rfh->GetLastCommittedOrigin();
+
+  PermissionControllerImpl* permission_controller =
+      PermissionControllerImpl::FromBrowserContext(rfh->GetBrowserContext());
+  ASSERT_TRUE(permission_controller);
+
+  // Set initial microphone permission to GRANTED.
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> grant_future;
+  permission_controller->SetPermissionOverride(
+      origin, origin, blink::PermissionType::AUDIO_CAPTURE,
+      blink::mojom::PermissionStatus::GRANTED, grant_future.GetCallback());
+  EXPECT_EQ(PermissionControllerImpl::OverrideStatus::kOverrideSet,
+            grant_future.Get());
+
+  mojo::Remote<media::mojom::SpeechRecognizer> speech_recognizer;
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SpeechRecognitionDispatcherHost::Create, global_id,
+                     speech_recognizer.BindNewPipeAndPassReceiver()));
+
+  MockSpeechRecognitionSessionClient client;
+  media::mojom::StartSpeechRecognitionRequestParamsPtr params =
+      media::mojom::StartSpeechRecognitionRequestParams::New();
+  params->client = client.BindNewPipeAndPassRemote();
+  mojo::Remote<media::mojom::SpeechRecognitionSession> session_remote;
+  params->session_receiver = session_remote.BindNewPipeAndPassReceiver();
+  params->continuous = true;
+
+  speech_recognizer->Start(std::move(params));
+
+  // Wait for audio capture to start.
+  client.WaitForAudioStarted();
+
+  EXPECT_EQ(1, SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+                   global_id));
+  EXPECT_EQ(kTestAudioCapturerSourceOpened, streaming_server_state());
+
+  // Reset microphone permission to ASK.
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> reset_future;
+  permission_controller->SetPermissionOverride(
+      origin, origin, blink::PermissionType::AUDIO_CAPTURE,
+      blink::mojom::PermissionStatus::ASK, reset_future.GetCallback());
+  EXPECT_EQ(PermissionControllerImpl::OverrideStatus::kOverrideSet,
+            reset_future.Get());
+
+  // Wait for the session to end following permission reset.
+  client.WaitForEnded();
+
+  EXPECT_EQ(media::mojom::SpeechRecognitionErrorCode::kNotAllowed,
+            client.error_code());
+  EXPECT_EQ(kTestAudioCapturerSourceClosed, streaming_server_state());
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+               global_id) == 0;
+  }));
+
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SpeechRecognitionBrowserTest,
+    AudioForwarderSessionUnaffectedByMicrophonePermissionRevocation) {
+  net::test_server::ControllableHttpResponse upstream_response(
+      embedded_test_server(), "/foo/up?", /*relative_url_is_prefix=*/true);
+  net::test_server::ControllableHttpResponse downstream_response(
+      embedded_test_server(), "/foo/down?", /*relative_url_is_prefix=*/true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::string web_service_base_url =
+      embedded_test_server()->base_url().spec() + "foo";
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      web_service_base_url.c_str());
+
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  content::GlobalRenderFrameHostId global_id = rfh->GetGlobalId();
+  url::Origin origin = rfh->GetLastCommittedOrigin();
+
+  PermissionControllerImpl* permission_controller =
+      PermissionControllerImpl::FromBrowserContext(rfh->GetBrowserContext());
+  ASSERT_TRUE(permission_controller);
+
+  // Set initial microphone permission to GRANTED.
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> grant_future;
+  permission_controller->SetPermissionOverride(
+      origin, origin, blink::PermissionType::AUDIO_CAPTURE,
+      blink::mojom::PermissionStatus::GRANTED, grant_future.GetCallback());
+  EXPECT_EQ(PermissionControllerImpl::OverrideStatus::kOverrideSet,
+            grant_future.Get());
+
+  mojo::Remote<media::mojom::SpeechRecognizer> speech_recognizer;
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SpeechRecognitionDispatcherHost::Create, global_id,
+                     speech_recognizer.BindNewPipeAndPassReceiver()));
+
+  MockSpeechRecognitionSessionClient client;
+  media::mojom::StartSpeechRecognitionRequestParamsPtr params =
+      media::mojom::StartSpeechRecognitionRequestParams::New();
+  params->client = client.BindNewPipeAndPassRemote();
+  mojo::Remote<media::mojom::SpeechRecognitionSession> session_remote;
+  params->session_receiver = session_remote.BindNewPipeAndPassReceiver();
+
+  mojo::PendingRemote<media::mojom::SpeechRecognitionAudioForwarder>
+      audio_forwarder_remote;
+  params->audio_forwarder =
+      audio_forwarder_remote.InitWithNewPipeAndPassReceiver();
+  params->channel_count = 1;
+  params->sample_rate = 16000;
+
+  speech_recognizer->Start(std::move(params));
+
+  // Wait for the session to be fully started.
+  client.WaitForStarted();
+
+  EXPECT_EQ(1, SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+                   global_id));
+
+  // Revoking microphone permission should NOT affect audio forwarder session.
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> deny_future;
+  permission_controller->SetPermissionOverride(
+      origin, origin, blink::PermissionType::AUDIO_CAPTURE,
+      blink::mojom::PermissionStatus::DENIED, deny_future.GetCallback());
+  EXPECT_EQ(PermissionControllerImpl::OverrideStatus::kOverrideSet,
+            deny_future.Get());
+
+  base::RunLoop run_loop;
+  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The session should still be active.
+  EXPECT_EQ(1, SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+                   global_id));
+  EXPECT_FALSE(client.audio_ended_occurred());
+
+  // Clean up session by aborting it explicitly.
+  session_remote->Abort();
+  client.WaitForEnded();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+               global_id) == 0;
+  }));
+
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
+                       WebSpeechPermissionRevocationEndsSession) {
+  net::test_server::ControllableHttpResponse upstream_response(
+      embedded_test_server(), "/foo/up?", /*relative_url_is_prefix=*/true);
+  net::test_server::ControllableHttpResponse downstream_response(
+      embedded_test_server(), "/foo/down?", /*relative_url_is_prefix=*/true);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::string web_service_base_url =
+      embedded_test_server()->base_url().spec() + "foo";
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      web_service_base_url.c_str());
+
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  content::GlobalRenderFrameHostId global_id = rfh->GetGlobalId();
+  url::Origin origin = rfh->GetLastCommittedOrigin();
+
+  PermissionControllerImpl* permission_controller =
+      PermissionControllerImpl::FromBrowserContext(rfh->GetBrowserContext());
+  ASSERT_TRUE(permission_controller);
+
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> grant_future;
+  permission_controller->SetPermissionOverride(
+      origin, origin, blink::PermissionType::AUDIO_CAPTURE,
+      blink::mojom::PermissionStatus::GRANTED, grant_future.GetCallback());
+  EXPECT_EQ(PermissionControllerImpl::OverrideStatus::kOverrideSet,
+            grant_future.Get());
+
+  const char kStartScript[] = R"(
+    window.sessionEnded = false;
+    window.sessionError = '';
+    window.audioStartedPromise = new Promise(resolve => {
+      const SpeechRecognition = window.SpeechRecognition ||
+                                window.webkitSpeechRecognition;
+      window.recognition = new SpeechRecognition();
+      window.recognition.continuous = true;
+      window.recognition.onaudiostart = () => {
+        resolve('audiostarted');
+      };
+      window.recognition.onerror = (e) => { window.sessionError = e.error; };
+      window.endPromise = new Promise(endResolve => {
+        window.recognition.onend = () => {
+          window.sessionEnded = true;
+          endResolve(window.sessionError);
+        };
+      });
+      window.recognition.start();
+    });
+    'started';
+  )";
+
+  EXPECT_EQ("started", EvalJs(rfh, kStartScript));
+  EXPECT_EQ("audiostarted", EvalJs(rfh, "window.audioStartedPromise"));
+
+  EXPECT_EQ(1, SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+                   global_id));
+  EXPECT_EQ(kTestAudioCapturerSourceOpened, streaming_server_state());
+
+  // Revoke microphone permission.
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> deny_future;
+  permission_controller->SetPermissionOverride(
+      origin, origin, blink::PermissionType::AUDIO_CAPTURE,
+      blink::mojom::PermissionStatus::DENIED, deny_future.GetCallback());
+  EXPECT_EQ(PermissionControllerImpl::OverrideStatus::kOverrideSet,
+            deny_future.Get());
+
+  EXPECT_EQ("not-allowed", EvalJs(rfh, "window.endPromise"));
+  EXPECT_EQ(true, EvalJs(rfh, "window.sessionEnded"));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return SpeechRecognitionManagerImpl::GetSessionTrackerCountForTesting(
+               global_id) == 0 &&
+           streaming_server_state() == kTestAudioCapturerSourceClosed;
+  }));
+
+  NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
+      nullptr);
 }
 
 #if BUILDFLAG(IS_ANDROID)
