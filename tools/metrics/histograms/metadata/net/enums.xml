@@ -3121,6 +3121,57 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="kFailedNonInitial"/>
 </enum>
 
+<!-- LINT.IfChange(QuicMigrationAttemptCause) -->
+
+<enum name="QuicMigrationAttemptCause">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="On network disconnected (direct)"/>
+  <int value="2" label="On write error (direct)"/>
+  <int value="3" label="On network made default (probing)"/>
+  <int value="4" label="On migrate back to default network (probing)"/>
+  <int value="5" label="Change network on path degrading (probing)"/>
+  <int value="6" label="Change port on path degrading (probing)"/>
+  <int value="7" label="New network connected post path degrading (probing)"/>
+  <int value="8" label="On server preferred address available (probing)"/>
+  <int value="9" label="Multi-port path"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_migration_attempt_context.h:QuicMigrationAttemptCause) -->
+
+<!-- LINT.IfChange(QuicMigrationAttemptFailureReason) -->
+
+<enum name="QuicMigrationAttemptFailureReason">
+  <int value="0" label="Socket configuration failed"/>
+  <int value="1" label="Probe timeout"/>
+  <int value="2" label="No unused Connection ID"/>
+  <int value="3" label="Stateless reset received"/>
+  <int value="4" label="Probe failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_migration_attempt_context.h:QuicMigrationAttemptFailureReason) -->
+
+<!-- LINT.IfChange(QuicMigrationAttemptIneligibleReason) -->
+
+<enum name="QuicMigrationAttemptIneligibleReason">
+  <int value="0" label="Idle session"/>
+  <int value="1" label="Already using target network"/>
+  <int value="2" label="Disabled by server"/>
+  <int value="3" label="No alternate network"/>
+  <int value="4" label="Disabled by client"/>
+  <int value="5" label="Handshake not confirmed"/>
+  <int value="6" label="Idle migration period exceeded"/>
+  <int value="7" label="Only non-migratable streams"/>
+  <int value="8" label="Proxied session"/>
+  <int value="9" label="Session became idle during probing"/>
+  <int value="10" label="Too many migrations"/>
+  <int value="11" label="Idle migration period exceeded during probing"/>
+  <int value="12" label="Disconnected during probing"/>
+  <int value="13" label="Too many packet readers"/>
+  <int value="14" label="Session destroyed"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/quic/quic_migration_attempt_context.h:QuicMigrationAttemptIneligibleReason) -->
+
 <enum name="QuicNotReusableReason">
   <int value="0" label="NULLPTR"/>
   <int value="1" label="TOO_SMALL"/>

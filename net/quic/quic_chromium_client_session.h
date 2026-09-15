@@ -22,6 +22,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
@@ -919,6 +920,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool CommitMigration(
       std::unique_ptr<QuicMigrationAttemptContext> migration_context);
 
+  // Creates a callback that returns whether this session is still alive.
+  base::RepeatingCallback<bool()> CreateSessionAliveCallback();
+
   // Called when NetworkChangeNotifier notifies observers of a newly
   // connected network. Migrates this session to the newly connected
   // network if the session has a pending migration.
@@ -1052,7 +1056,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // attempt when path degrading is detected.
   // Called when path is degrading and there is an alternate network or a new
   // network is connected after path degrading.
-  void MaybeMigrateToAlternateNetworkOnPathDegrading();
+  void MaybeMigrateToAlternateNetworkOnPathDegrading(
+      MigrationCause migration_cause);
 
   // Helper method to initiate a port migration on path degrading is detected.
   void MaybeMigrateToDifferentPortOnPathDegrading();

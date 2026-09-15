@@ -3101,6 +3101,7 @@ target(_test_target_type, "net_unittests") {
     "quic/quic_end_to_end_unittest.cc",
     "quic/quic_http_stream_test.cc",
     "quic/quic_http_utils_test.cc",
+    "quic/quic_migration_attempt_context_unittest.cc",
     "quic/quic_network_connectivity_tracker_unittest.cc",
     "quic/quic_network_transaction_unittest.cc",
     "quic/quic_proxy_client_socket_test_base.cc",

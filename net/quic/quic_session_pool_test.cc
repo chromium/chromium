@@ -7013,7 +7013,8 @@ TEST_P(QuicSessionPoolTest,
   auto context = std::make_unique<QuicMigrationAttemptContext>(
       UNKNOWN_CAUSE, session->GetCurrentNetwork(),
       handles::kInvalidNetworkHandle, quic::QuicSocketAddress(),
-      std::move(reader), std::move(writer));
+      std::move(reader), std::move(writer),
+      session->CreateSessionAliveCallback());
   session->CommitMigration(std::move(context));
 }
 
@@ -7084,8 +7085,8 @@ TEST_P(QuicSessionPoolTest,
       handles::kInvalidNetworkHandle, net_log_.net_log(), net_log_.source()));
   DatagramClientSocket* socket_ptr = socket.get();
   auto context = std::make_unique<QuicMigrationAttemptContext>(
-      ON_NETWORK_CONNECTED, session->GetCurrentNetwork(), kNewNetworkForTests,
-      session->connection()->peer_address(),
+      ON_NETWORK_DISCONNECTED, session->GetCurrentNetwork(),
+      kNewNetworkForTests, session->connection()->peer_address(),
       std::make_unique<QuicChromiumPacketReader>(
           std::move(socket), session->connection()->clock(), session,
           /*yield_after_packets=*/kQuicYieldAfterPacketsRead,
@@ -7093,7 +7094,8 @@ TEST_P(QuicSessionPoolTest,
               kQuicYieldAfterDurationMilliseconds),
           session->net_log()),
       std::make_unique<QuicChromiumPacketWriter>(
-          socket_ptr, base::SingleThreadTaskRunner::GetCurrentDefault().get()));
+          socket_ptr, base::SingleThreadTaskRunner::GetCurrentDefault().get()),
+      session->CreateSessionAliveCallback());
   pool_->ConnectAndConfigureSocket(
       base::BindLambdaForTesting(
           [&session, context = std::move(context)](int rv) mutable {

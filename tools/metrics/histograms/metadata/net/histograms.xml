@@ -142,6 +142,30 @@ chromium-metrics-reviews@google.com.
       summary="When an existing network is soon to be disconnected"/>
 </variants>
 
+<!-- LINT.IfChange(QuicMigrationAttemptCause) -->
+
+<variants name="QuicMigrationAttemptCause">
+  <variant name="ChangeNetworkOnPathDegrading"
+      summary="Triggered by path degrading - network change."/>
+  <variant name="ChangePortOnPathDegrading"
+      summary="Triggered by path degrading - port change."/>
+  <variant name="MultiPortPath" summary="Triggered by multi-port path."/>
+  <variant name="NewNetworkConnectedPostPathDegrading"
+      summary="Triggered by a new network connecting post path degrading."/>
+  <variant name="OnMigrateBackToDefaultNetwork"
+      summary="Triggered by the timer to migrate back to default network."/>
+  <variant name="OnNetworkDisconnected"
+      summary="Triggered by the network being currently used disconnecting."/>
+  <variant name="OnNetworkMadeDefault"
+      summary="Triggered by a new network being made default."/>
+  <variant name="OnServerPreferredAddressAvailable"
+      summary="Triggered by server preferred address available."/>
+  <variant name="OnWriteError" summary="Triggered by a socket write error."/>
+  <variant name="Unknown" summary="Triggered by unknown cause."/>
+</variants>
+
+<!-- LINT.ThenChange(//net/quic/quic_migration_attempt_context.h:QuicMigrationAttemptCause) -->
+
 <variants name="ReferrerPolicySameOrigin">
   <variant name=".CrossOrigin" summary="Cross-origin requests."/>
   <variant name=".SameOrigin"
@@ -5353,6 +5377,104 @@ chromium-metrics-reviews@google.com.
     doing proxy auto-discovery, or failed attempts at retrieving PAC scripts. If
     the response body was empty, this measures the total time to fetch the
     (empty) response body.
+  </summary>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.Eligible" enum="BooleanSuccess"
+    expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records whether an eligible QUIC connection migration attempt succeeded or
+    failed. Ineligible and superseded attempts are not recorded here. Failures
+    are broken down by reason in Net.Quic.Migration.Attempt.FailureReason.
+  </summary>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.Eligible.ByTrigger.{Trigger}"
+    enum="BooleanSuccess" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.Eligible, but partitioned by the
+    migration cause {Trigger}.
+  </summary>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.FailureReason"
+    enum="QuicMigrationAttemptFailureReason" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the failure reason for eligible QUIC connection migration attempts
+    that failed.
+  </summary>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.FailureReason.ByTrigger.{Trigger}"
+    enum="QuicMigrationAttemptFailureReason" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.FailureReason, but partitioned by the
+    migration cause {Trigger}.
+  </summary>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.Ineligible"
+    enum="QuicMigrationAttemptIneligibleReason" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the reason a QUIC connection was ineligible for migration when an
+    event occurred that would otherwise trigger migration. Recorded at the time
+    migration eligibility check fails.
+  </summary>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.Ineligible.ByTrigger.{Trigger}"
+    enum="QuicMigrationAttemptIneligibleReason" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Same as Net.Quic.Migration.Attempt.Ineligible, but partitioned by the
+    migration cause {Trigger}.
+  </summary>
+  <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.SpuriousOutcome" enum="Boolean"
+    expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records true when an outcome (Success, Failure, Ineligible, or Superseded)
+    is set on a QuicMigrationAttemptContext that already had an outcome set
+    (i.e. outcome was not kUnknown). This should never happen and indicates an
+    unexpected spurious outcome assignment.
+  </summary>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.Superseded"
+    enum="QuicMigrationAttemptCause" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the type of migration attempts that superseded an in-flight probe
+    for another QUIC connection migration attempt.
+  </summary>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.UnclassifiedOutcome" enum="Boolean"
+    expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records when a QuicMigrationAttemptContext is destroyed without having an
+    explicit outcome set while its associated QuicChromiumClientSession is still
+    alive. This should never happen and indicates a bug.
   </summary>
 </histogram>
 
