@@ -64,6 +64,10 @@
   opacity: 0;
 }
 
+:host(.initial-load) #text {
+  transition: none !important;
+}
+
 #button.highlight-default {
   --toolbar-chip-bg-color:
       var(--color-avatar-button-highlight-default);

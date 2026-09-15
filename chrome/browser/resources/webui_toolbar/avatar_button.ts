@@ -48,6 +48,7 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.classList.add('initial-load');
     this.registerHelpBubble('kToolbarAvatarButtonElementId', this.$.button, {
       onHighlightChanged: (highlighted: boolean) => {
         this.classList.toggle('anchor-highlight', highlighted);

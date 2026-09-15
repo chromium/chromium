@@ -786,4 +786,110 @@ suite('ToolbarAppTest', () => {
 
     assertFalse(innerChip.classList.contains('help-anchor-highlight'));
   });
+
+  test('AvatarButtonDoesNotAnimateOnNewWindow', async () => {
+    loadTimeData.overrideValues({
+      initialWebUISurfaceSyncEnabled: false,
+    });
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
+    const textSpan = avatarButton.shadowRoot.querySelector('#text')!;
+
+    assertTrue(avatarButton.classList.contains('initial-load'));
+
+    let transitionFired = false;
+    textSpan.addEventListener('transitionrun', () => {
+      transitionFired = true;
+    });
+    textSpan.addEventListener('transitionstart', () => {
+      transitionFired = true;
+    });
+
+    // Simulate initial Mojo navigation state delivery for an Incognito window.
+    const navigationState = createMockNavigationState();
+    navigationState.avatarControlState = {
+      state: AvatarToolbarButtonState.kIncognitoProfile,
+      text: 'Incognito',
+      icon: {handleId: 0n},
+      tooltip: '',
+      accessibilityName: '',
+      accessibilityDescription: '',
+      enabled: true,
+      hasLinearGradientRing: false,
+    };
+
+    browserProxy.fireNavigationStateListener([], navigationState);
+    await microtasksFinished();
+
+    // Trigger style calculation / layout.
+    window.getComputedStyle(textSpan).maxWidth;
+
+    assertFalse(
+        transitionFired,
+        'Avatar button text should not animate on initial window load');
+
+    // Wait for the animation frame to remove initial-load.
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    assertFalse(avatarButton.classList.contains('initial-load'));
+  });
+
+  test('AvatarButtonAnimatesOnSubsequentTextChanges', async () => {
+    loadTimeData.overrideValues({
+      initialWebUISurfaceSyncEnabled: false,
+    });
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
+    const textSpan = avatarButton.shadowRoot.querySelector('#text')!;
+
+    assertTrue(avatarButton.classList.contains('initial-load'));
+
+    // Deliver initial navigation state for a standard window without text.
+    browserProxy.fireNavigationStateListener([], createMockNavigationState());
+    await microtasksFinished();
+
+    // Wait for initial-load to be removed after initial window load.
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    assertFalse(avatarButton.classList.contains('initial-load'));
+    window.getComputedStyle(textSpan).maxWidth;
+
+    let transitionFired = false;
+    textSpan.addEventListener('transitionrun', () => {
+      transitionFired = true;
+    });
+    textSpan.addEventListener('transitionstart', () => {
+      transitionFired = true;
+    });
+
+    // Subsequent state change (e.g. sync error with label) should animate.
+    const syncErrorNavigationState = createMockNavigationState();
+    syncErrorNavigationState.avatarControlState = {
+      state: AvatarToolbarButtonState.kSyncError,
+      text: 'Error',
+      icon: {handleId: 0n},
+      tooltip: '',
+      accessibilityName: '',
+      accessibilityDescription: '',
+      enabled: true,
+      hasLinearGradientRing: false,
+    };
+    browserProxy.fireNavigationStateListener([], syncErrorNavigationState);
+    await microtasksFinished();
+    // Trigger layout/style resolution, then flush event loop for queued events.
+    window.getComputedStyle(textSpan).maxWidth;
+    await microtasksFinished();
+
+    assertTrue(
+        transitionFired ||
+            window.getComputedStyle(textSpan).maxWidth.includes('calc-size'),
+        'Avatar button text should animate on subsequent state changes');
+    assertFalse(avatarButton.classList.contains('initial-load'));
+  });
 });
