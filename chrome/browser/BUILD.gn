@@ -1291,6 +1291,7 @@ source_set("core") {
       "//chrome/browser/dictation",
       "//chrome/browser/direct_sockets",
       "//chrome/browser/error_reporting",
+      "//chrome/browser/password_manager/remote_actor",
       "//chrome/browser/ui:browser_actions_impl",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:uma_browsing_activity_observer",

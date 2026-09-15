@@ -1827,6 +1827,7 @@ if (!is_android) {
       "//chrome/browser/password_manager:test_support",
       "//chrome/browser/password_manager:test_support_ui",
       "//chrome/browser/password_manager/password_change",
+      "//chrome/browser/password_manager/remote_actor:browser_tests",
       "//chrome/browser/payments",
       "//chrome/browser/payments:browser_tests",
       "//chrome/browser/performance_manager",

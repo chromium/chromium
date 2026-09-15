@@ -119,7 +119,6 @@ source_set("password_manager") {
       # move this back to /password_change.
       "password_change/password_change_actuator.h",
       "password_change/password_change_from_checkup_delegate.h",
-      "remote_actor/remote_actor_credential_sharing_impl.h",
       "web_app_profile_switcher.h",
     ]
     public_deps += [
@@ -254,13 +253,11 @@ source_set("impl") {
       "password_change/script_password_change_actuator.h",
       "password_change_delegate_impl.cc",
       "password_change_delegate_impl.h",
-      "remote_actor/remote_actor_credential_sharing_impl.cc",
       "web_app_profile_switcher.cc",
     ]
     deps += [
       "//chrome/browser/glic/actor",
       "//chrome/browser/password_manager/password_change",
-      "//chrome/browser/password_manager/remote_actor",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/passwords:impl",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -505,14 +502,12 @@ source_set("unit_tests") {
       "password_change/script_password_change_actuator_unittest.cc",
       "password_change_delegate_impl_unittest.cc",
       "password_manager_critical_action_logger_unittest.cc",
-      "remote_actor/remote_actor_credential_sharing_impl_unittest.cc",
     ]
     deps += [
       "//chrome/browser/actor:test_support",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/password_manager/password_change",
-      "//chrome/browser/password_manager/remote_actor",
       "//chrome/browser/signin",
       "//chrome/browser/signin:test_support",
       "//chrome/browser/ui/hats",
@@ -556,7 +551,6 @@ if (!is_android) {
       "password_change_browsertest.cc",
       "password_change_from_checkup_browsertest.cc",
       "password_manager_browsertest.cc",
-      "remote_actor/remote_actor_credential_sharing_browsertest.cc",
     ]
 
     deps = [
