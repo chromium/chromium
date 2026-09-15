@@ -210,12 +210,6 @@ void SharedWorkerGlobalScope::Connect(MessagePortChannel channel) {
   DispatchEvent(*event);
 }
 
-void SharedWorkerGlobalScope::DidReceiveResponseForClassicScript(
-    WorkerClassicScriptLoader* classic_script_loader) {
-  DCHECK(IsContextThread());
-  probe::DidReceiveScriptResponse(this, classic_script_loader->Identifier());
-}
-
 // https://html.spec.whatwg.org/C/#worker-processing-model
 void SharedWorkerGlobalScope::DidFetchClassicScript(
     WorkerClassicScriptLoader* classic_script_loader,

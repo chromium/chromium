@@ -439,8 +439,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       std::unique_ptr<Vector<uint8_t>> meta_data) override;
   void ExceptionThrown(ErrorEvent*) override;
 
-  void DidReceiveResponseForClassicScript(
-      WorkerClassicScriptLoader* classic_script_loader);
   void DidFetchClassicScript(WorkerClassicScriptLoader* classic_script_loader,
                              const v8_inspector::V8StackTraceId& stack_id);
 

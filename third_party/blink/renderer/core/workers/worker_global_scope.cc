@@ -496,6 +496,12 @@ ExecutionContext* WorkerGlobalScope::GetExecutionContext() const {
   return const_cast<WorkerGlobalScope*>(this);
 }
 
+void WorkerGlobalScope::DidReceiveResponseForClassicScript(
+    WorkerClassicScriptLoader* classic_script_loader) {
+  DCHECK(IsContextThread());
+  probe::DidReceiveScriptResponse(this, classic_script_loader->Identifier());
+}
+
 // [Worker]
 // https://html.spec.whatwg.org/C/#run-a-worker
 // [ServiceWorker]

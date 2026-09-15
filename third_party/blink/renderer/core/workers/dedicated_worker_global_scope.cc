@@ -479,13 +479,6 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
       },
       perfetto::Flow::Global(trace_id));  // SchedulePostMessage
 }
-
-void DedicatedWorkerGlobalScope::DidReceiveResponseForClassicScript(
-    WorkerClassicScriptLoader* classic_script_loader) {
-  DCHECK(IsContextThread());
-  probe::DidReceiveScriptResponse(this, classic_script_loader->Identifier());
-}
-
 // https://html.spec.whatwg.org/C/#worker-processing-model
 void DedicatedWorkerGlobalScope::DidFetchClassicScript(
     WorkerClassicScriptLoader* classic_script_loader,

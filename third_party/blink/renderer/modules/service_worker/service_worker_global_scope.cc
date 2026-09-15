@@ -416,12 +416,6 @@ ServiceWorkerGlobalScope::GetAssociatedInterfaceRegistry() {
   return associated_inteface_registy_;
 }
 
-void ServiceWorkerGlobalScope::DidReceiveResponseForClassicScript(
-    WorkerClassicScriptLoader* classic_script_loader) {
-  DCHECK(IsContextThread());
-  probe::DidReceiveScriptResponse(this, classic_script_loader->Identifier());
-}
-
 // https://w3c.github.io/ServiceWorker/#update
 void ServiceWorkerGlobalScope::DidFetchClassicScript(
     WorkerClassicScriptLoader* classic_script_loader,

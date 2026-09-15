@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/url/dom_origin_utils.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
+#include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -303,6 +304,8 @@ class CORE_EXPORT WorkerGlobalScope
   void ExceptionThrown(ErrorEvent*) override;
   void RemoveURLFromMemoryCache(const KURL&) final;
 
+  void DidReceiveResponseForClassicScript(
+      WorkerClassicScriptLoader* classic_script_loader);
   void RunClassicScript(
       const KURL& response_url,
       network::mojom::ReferrerPolicy response_referrer_policy,

@@ -220,8 +220,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
           back_forward_cache_controller_host,
       base::TimeTicks dedicated_worker_start_time);
 
-  void DidReceiveResponseForClassicScript(
-      WorkerClassicScriptLoader* classic_script_loader);
   void DidFetchClassicScript(WorkerClassicScriptLoader* classic_script_loader,
                              const v8_inspector::V8StackTraceId& stack_id);
 
