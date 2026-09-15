@@ -3396,6 +3396,29 @@ chromium-metrics-reviews@google.com.
   <token key="HostType" variants="HostType"/>
 </histogram>
 
+<histogram name="Net.DNS.HttpsRecordAddressHints.AddressQueryOutstanding"
+    enum="Boolean" expires_after="2027-07-07">
+  <owner>bashi@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Whether the address hints delivered by the HTTPS DNS transaction had a
+    chance to provide provisional service endpoints, i.e. whether the query of
+    the corresponding address family (A for ipv4hint, AAAA for ipv6hint) was
+    still outstanding for at least one hinted family. Recorded when an HTTPS DNS
+    transaction completes with at least one address hint.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.HttpsRecordAddressHints.Presence"
+    enum="DNS.HttpsRecordAddressHintsPresence" expires_after="2027-07-07">
+  <owner>bashi@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Presence of address hints (ipv4hint, ipv6hint) in HTTPS DNS records.
+    Recorded when an HTTPS DNS transaction completes with compatible metadata.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.DnsRcode"
     enum="HttpssvcDnsRcode" expires_after="2027-08-13">
   <owner>bashi@chromium.org</owner>

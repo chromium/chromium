@@ -14,6 +14,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -197,6 +198,8 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
       }
       case HostResolverInternalResult::Type::kMetadata: {
         CHECK_EQ(query_type, DnsQueryType::HTTPS);
+        RecordAddressHintsMetrics(result->AsMetadata().address_hints(),
+                                  /*is_terminal_transaction=*/false);
         for (auto [priority, metadata] : result->AsMetadata().metadatas()) {
           // Associate the metadata with the target name instead of the domain
           // name since the metadata is for the target name.
@@ -365,7 +368,13 @@ void DnsTaskResultsManager::OnAaaaResolutionTimedout() {
 }
 
 void DnsTaskResultsManager::UpdateEndpoints() {
-  std::vector<ServiceEndpoint> new_endpoints;
+  // Tracks whether each endpoint's per-family addresses came from hints.
+  struct EndpointAndProvenance {
+    ServiceEndpoint endpoint;
+    bool ipv4_from_hints = false;
+    bool ipv6_from_hints = false;
+  };
+  std::vector<EndpointAndProvenance> new_endpoints;
 
   const bool ipv4_hints_usable = Ipv4HintsUsable();
   const bool ipv6_hints_usable = Ipv6HintsUsable();
@@ -373,14 +382,18 @@ void DnsTaskResultsManager::UpdateEndpoints() {
   for (const auto& [domain_name, per_domain_result] : per_domain_results_) {
     // Hint endpoints are used only until the corresponding address family's
     // response arrives.
+    const bool ipv4_from_hints =
+        ipv4_hints_usable && per_domain_result->ipv4_endpoints.empty() &&
+        !per_domain_result->ipv4_hint_endpoints.empty();
     const std::vector<IPEndPoint>& ipv4_endpoints =
-        (ipv4_hints_usable && per_domain_result->ipv4_endpoints.empty())
-            ? per_domain_result->ipv4_hint_endpoints
-            : per_domain_result->ipv4_endpoints;
+        ipv4_from_hints ? per_domain_result->ipv4_hint_endpoints
+                        : per_domain_result->ipv4_endpoints;
+    const bool ipv6_from_hints =
+        ipv6_hints_usable && per_domain_result->ipv6_endpoints.empty() &&
+        !per_domain_result->ipv6_hint_endpoints.empty();
     const std::vector<IPEndPoint>& ipv6_endpoints =
-        (ipv6_hints_usable && per_domain_result->ipv6_endpoints.empty())
-            ? per_domain_result->ipv6_hint_endpoints
-            : per_domain_result->ipv6_endpoints;
+        ipv6_from_hints ? per_domain_result->ipv6_hint_endpoints
+                        : per_domain_result->ipv6_endpoints;
 
     if (ipv4_endpoints.empty() && ipv6_endpoints.empty()) {
       continue;
@@ -390,7 +403,8 @@ void DnsTaskResultsManager::UpdateEndpoints() {
       ServiceEndpoint endpoint;
       endpoint.ipv4_endpoints = ipv4_endpoints;
       endpoint.ipv6_endpoints = ipv6_endpoints;
-      new_endpoints.emplace_back(std::move(endpoint));
+      new_endpoints.push_back(
+          {std::move(endpoint), ipv4_from_hints, ipv6_from_hints});
     } else {
       for (const auto& [priority, metadata] : per_domain_result->metadatas) {
         ServiceEndpoint endpoint;
@@ -405,7 +419,8 @@ void DnsTaskResultsManager::UpdateEndpoints() {
         // the current logic doesn't do that. To handle it correctly we need to
         // go though an alias tree for the domain name.
         endpoint.metadata = metadata;
-        new_endpoints.emplace_back(std::move(endpoint));
+        new_endpoints.push_back(
+            {std::move(endpoint), ipv4_from_hints, ipv6_from_hints});
       }
     }
   }
@@ -419,10 +434,14 @@ void DnsTaskResultsManager::UpdateEndpoints() {
   // not work when Chrome tries to support HTTPS follow-up queries and aliases.
 
   // Stable sort preserves metadata priorities.
-  std::stable_sort(new_endpoints.begin(), new_endpoints.end(),
-                   CompareServiceEndpoint);
+  std::ranges::stable_sort(new_endpoints, CompareServiceEndpoint,
+                           &EndpointAndProvenance::endpoint);
   const bool had_endpoints = !current_endpoints_.empty();
-  current_endpoints_ = std::move(new_endpoints);
+  current_endpoints_.clear();
+  current_endpoints_.reserve(new_endpoints.size());
+  for (EndpointAndProvenance& entry : new_endpoints) {
+    current_endpoints_.push_back(std::move(entry.endpoint));
+  }
 
   if (current_endpoints_.empty() && !had_endpoints) {
     return;
@@ -432,8 +451,15 @@ void DnsTaskResultsManager::UpdateEndpoints() {
                     [&] {
                       base::DictValue dict;
                       base::ListValue endpoints;
-                      for (const auto& endpoint : current_endpoints_) {
-                        endpoints.Append(endpoint.ToValue());
+                      for (size_t i = 0; i < current_endpoints_.size(); ++i) {
+                        base::DictValue value = current_endpoints_[i].ToValue();
+                        if (new_endpoints[i].ipv4_from_hints) {
+                          value.Set("ipv4_endpoints_from_hints", true);
+                        }
+                        if (new_endpoints[i].ipv6_from_hints) {
+                          value.Set("ipv6_endpoints_from_hints", true);
+                        }
+                        endpoints.Append(std::move(value));
                       }
                       dict.Set("endpoints", std::move(endpoints));
                       return dict;
@@ -478,6 +504,54 @@ bool DnsTaskResultsManager::HasIpv4Addresses() const {
         return !pair.second->ipv4_endpoints.empty() ||
                (ipv4_hints_usable && !pair.second->ipv4_hint_endpoints.empty());
       });
+}
+
+void DnsTaskResultsManager::RecordAddressHintsMetrics(
+    const HostResolverInternalMetadataResult::AddressHintsMap& address_hints,
+    bool is_terminal_transaction) {
+  bool has_ipv4_hints = false;
+  bool has_ipv6_hints = false;
+  for (const auto& [target_name, hints] : address_hints) {
+    has_ipv4_hints |= !hints.ipv4_hints.empty();
+    has_ipv6_hints |= !hints.ipv6_hints.empty();
+  }
+
+  HttpsRecordAddressHintsPresence presence;
+  if (has_ipv4_hints && has_ipv6_hints) {
+    presence = HttpsRecordAddressHintsPresence::kBoth;
+  } else if (has_ipv4_hints) {
+    presence = HttpsRecordAddressHintsPresence::kIPv4Only;
+  } else if (has_ipv6_hints) {
+    presence = HttpsRecordAddressHintsPresence::kIPv6Only;
+  } else {
+    presence = HttpsRecordAddressHintsPresence::kNoHints;
+  }
+  base::UmaHistogramEnumeration("Net.DNS.HttpsRecordAddressHints.Presence",
+                                presence);
+
+  if (has_ipv4_hints || has_ipv6_hints) {
+    const bool query_outstanding =
+        !is_terminal_transaction && ((has_ipv4_hints && Ipv4HintsUsable()) ||
+                                     (has_ipv6_hints && Ipv6HintsUsable()));
+    base::UmaHistogramBoolean(
+        "Net.DNS.HttpsRecordAddressHints.AddressQueryOutstanding",
+        query_outstanding);
+  }
+}
+
+void DnsTaskResultsManager::ProcessDnsTaskComplete(
+    const HostResolverDnsTask::Results& results) {
+  MaybeStopResolutionDelayTimer();
+
+  if (!is_metadata_ready_) {
+    for (const auto& result : results) {
+      if (result->type() == HostResolverInternalResult::Type::kMetadata) {
+        RecordAddressHintsMetrics(result->AsMetadata().address_hints(),
+                                  /*is_terminal_transaction=*/true);
+        break;
+      }
+    }
+  }
 }
 
 void DnsTaskResultsManager::RecordResolutionDelayResult(bool timedout) {

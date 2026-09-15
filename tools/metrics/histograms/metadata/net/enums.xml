@@ -696,6 +696,17 @@ historical analysis. -->
 
 <!-- LINT.ThenChange(/net/dns/host_resolver_manager.cc:DnsClientCapability) -->
 
+<!-- LINT.IfChange(DNS.HttpsRecordAddressHintsPresence) -->
+
+<enum name="DNS.HttpsRecordAddressHintsPresence">
+  <int value="0" label="No address hints"/>
+  <int value="1" label="IPv4 hints only"/>
+  <int value="2" label="IPv6 hints only"/>
+  <int value="3" label="Both IPv4 and IPv6 hints"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/dns/dns_task_results_manager.h:HttpsRecordAddressHintsPresence) -->
+
 <enum name="DNS.SvcbHttpsTransactionError">
   <int value="0" label="No transaction error"/>
   <int value="1" label="Insecure DNS transaction error (never task-fatal)"/>

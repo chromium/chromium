@@ -10,13 +10,19 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/host_resolver_results_test_util.h"
 #include "net/dns/https_record_rdata.h"
+#include "net/log/net_log.h"
+#include "net/log/net_log_event_type.h"
+#include "net/log/net_log_source_type.h"
+#include "net/log/test_net_log.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -140,12 +146,17 @@ class ManagerFactory {
             HostResolver::Host(url::SchemeHostPort("https", kHostName, 443))) {}
 
   std::unique_ptr<DnsTaskResultsManager> Create() {
-    return std::make_unique<DnsTaskResultsManager>(
-        delegate_, host_, query_types_, NetLogWithSource());
+    return std::make_unique<DnsTaskResultsManager>(delegate_, host_,
+                                                   query_types_, net_log_);
   }
 
   ManagerFactory& query_types(DnsQueryTypeSet query_types) {
     query_types_ = query_types;
+    return *this;
+  }
+
+  ManagerFactory& net_log(const NetLogWithSource& net_log) {
+    net_log_ = net_log;
     return *this;
   }
 
@@ -154,6 +165,7 @@ class ManagerFactory {
   HostResolver::Host host_;
   DnsQueryTypeSet query_types_ = {DnsQueryType::A, DnsQueryType::AAAA,
                                   DnsQueryType::HTTPS};
+  NetLogWithSource net_log_;
 };
 
 }  // namespace
@@ -1060,6 +1072,194 @@ TEST_F(DnsTaskResultsManagerTest, AddressHintsIPv6NotQueried) {
               ElementsAre(ExpectServiceEndpoint(
                   ElementsAre(MakeIPEndPoint("192.0.2.10", 443)), IsEmpty(),
                   kMetadata1)));
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsUmaPresence) {
+  struct TestCase {
+    std::vector<std::string_view> ipv4_hints;
+    std::vector<std::string_view> ipv6_hints;
+    HttpsRecordAddressHintsPresence expected;
+  };
+  const TestCase kTestCases[] = {
+      {{}, {}, HttpsRecordAddressHintsPresence::kNoHints},
+      {{"192.0.2.10"}, {}, HttpsRecordAddressHintsPresence::kIPv4Only},
+      {{}, {"2001:db8::10"}, HttpsRecordAddressHintsPresence::kIPv6Only},
+      {{"192.0.2.10"},
+       {"2001:db8::10"},
+       HttpsRecordAddressHintsPresence::kBoth},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(static_cast<int>(test_case.expected));
+    base::HistogramTester histograms;
+    std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+    HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+    if (!test_case.ipv4_hints.empty() || !test_case.ipv6_hints.empty()) {
+      address_hints[std::string(kHostName)] =
+          MakeAddressHints(test_case.ipv4_hints, test_case.ipv6_hints);
+    }
+    std::unique_ptr<HostResolverInternalResult> result =
+        CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+    manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result.get()});
+
+    histograms.ExpectUniqueSample("Net.DNS.HttpsRecordAddressHints.Presence",
+                                  test_case.expected, 1);
+  }
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsUmaAddressQueryOutstandingTrue) {
+  base::HistogramTester histograms;
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // HTTPS comes first with hints while both A and AAAA are outstanding.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result.get()});
+
+  histograms.ExpectUniqueSample("Net.DNS.HttpsRecordAddressHints.Presence",
+                                HttpsRecordAddressHintsPresence::kBoth, 1);
+  histograms.ExpectUniqueSample(
+      "Net.DNS.HttpsRecordAddressHints.AddressQueryOutstanding", true, 1);
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsUmaAddressQueryOutstandingFalse) {
+  base::HistogramTester histograms;
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // A and AAAA are responded before HTTPS.
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result1.get()});
+  std::unique_ptr<HostResolverInternalResult> result2 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
+
+  // HTTPS comes last with hints. The hints have no chance to help.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result3 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  HostResolverDnsTask::Results final_results;
+  final_results.insert(std::move(result3));
+  manager->ProcessDnsTaskComplete(final_results);
+
+  histograms.ExpectUniqueSample("Net.DNS.HttpsRecordAddressHints.Presence",
+                                HttpsRecordAddressHintsPresence::kBoth, 1);
+  histograms.ExpectUniqueSample(
+      "Net.DNS.HttpsRecordAddressHints.AddressQueryOutstanding", false, 1);
+}
+
+TEST_F(DnsTaskResultsManagerTest,
+       AddressHintsUmaAddressQueryOutstandingFamilyMismatch) {
+  base::HistogramTester histograms;
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // A is responded first.
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result1.get()});
+
+  // HTTPS comes with IPv4-only hints while only AAAA is outstanding. The
+  // hints have no chance to help since the A response has already arrived.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, /*ipv6_literals=*/{});
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result2.get()});
+
+  histograms.ExpectUniqueSample("Net.DNS.HttpsRecordAddressHints.Presence",
+                                HttpsRecordAddressHintsPresence::kIPv4Only, 1);
+  histograms.ExpectUniqueSample(
+      "Net.DNS.HttpsRecordAddressHints.AddressQueryOutstanding", false, 1);
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsNetLogProvenance) {
+  RecordingNetLogObserver observer;
+  std::unique_ptr<DnsTaskResultsManager> manager =
+      factory()
+          .net_log(
+              NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE))
+          .Create();
+
+  // HTTPS comes first with hints for both families.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints({"192.0.2.10"}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
+
+  std::vector<NetLogEntry> entries = observer.GetEntriesWithType(
+      NetLogEventType::HOST_RESOLVER_SERVICE_ENDPOINTS_UPDATED);
+  ASSERT_EQ(entries.size(), 1u);
+  const base::ListValue* endpoints = entries[0].params.FindList("endpoints");
+  ASSERT_TRUE(endpoints);
+  ASSERT_EQ(endpoints->size(), 1u);
+  EXPECT_EQ((*endpoints)[0].GetDict().FindBool("ipv4_endpoints_from_hints"),
+            true);
+  EXPECT_EQ((*endpoints)[0].GetDict().FindBool("ipv6_endpoints_from_hints"),
+            true);
+
+  // AAAA is responded. The IPv6 side is now real addresses so only the IPv4
+  // key should remain.
+  std::unique_ptr<HostResolverInternalResult> result2 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
+
+  entries = observer.GetEntriesWithType(
+      NetLogEventType::HOST_RESOLVER_SERVICE_ENDPOINTS_UPDATED);
+  ASSERT_EQ(entries.size(), 2u);
+  endpoints = entries[1].params.FindList("endpoints");
+  ASSERT_TRUE(endpoints);
+  ASSERT_EQ(endpoints->size(), 1u);
+  EXPECT_EQ((*endpoints)[0].GetDict().FindBool("ipv4_endpoints_from_hints"),
+            true);
+  EXPECT_FALSE((*endpoints)[0]
+                   .GetDict()
+                   .FindBool("ipv6_endpoints_from_hints")
+                   .has_value());
+}
+
+TEST_F(DnsTaskResultsManagerTest, AddressHintsNetLogFlushToEmpty) {
+  RecordingNetLogObserver observer;
+  std::unique_ptr<DnsTaskResultsManager> manager =
+      factory()
+          .net_log(
+              NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE))
+          .Create();
+
+  // HTTPS comes first with IPv6-only hints, which are published immediately.
+  HostResolverInternalMetadataResult::AddressHintsMap address_hints;
+  address_hints[std::string(kHostName)] =
+      MakeAddressHints(/*ipv4_literals=*/{}, {"2001:db8::10"});
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateMetadata(kHostName, {{1, kMetadata1}}, std::move(address_hints));
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
+
+  ASSERT_FALSE(manager->GetCurrentEndpoints().empty());
+  ASSERT_EQ(delegate()->update_count(), 1u);
+
+  // AAAA is responded with no data, flushing the published IPv6 hints. The
+  // transition to empty endpoints should be recorded in the NetLog.
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateNoData(kHostName, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
+
+  EXPECT_TRUE(manager->GetCurrentEndpoints().empty());
+  EXPECT_EQ(delegate()->update_count(), 2u);
+
+  std::vector<NetLogEntry> entries = observer.GetEntriesWithType(
+      NetLogEventType::HOST_RESOLVER_SERVICE_ENDPOINTS_UPDATED);
+  ASSERT_EQ(entries.size(), 2u);
+  const base::ListValue* endpoints = entries[1].params.FindList("endpoints");
+  ASSERT_TRUE(endpoints);
+  EXPECT_TRUE(endpoints->empty());
 }
 
 TEST_F(DnsTaskResultsManagerTest, AddressHintsIgnoredAfterFamilyComplete) {

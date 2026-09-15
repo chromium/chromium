@@ -26,6 +26,21 @@
 
 namespace net {
 
+// Presence of address hints in HTTPS records.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(HttpsRecordAddressHintsPresence)
+enum class HttpsRecordAddressHintsPresence {
+  kNoHints = 0,
+  kIPv4Only = 1,
+  kIPv6Only = 2,
+  kBoth = 3,
+  kMaxValue = kBoth,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DNS.HttpsRecordAddressHintsPresence)
+
 // Creates and updates intermediate service endpoints while resolving a host.
 // This class is designed to have a 1:1 relationship with a HostResolverDnsTask
 // and expects to be notified every time a DnsTransaction is completed. When
@@ -68,6 +83,11 @@ class NET_EXPORT_PRIVATE DnsTaskResultsManager {
   // Expected be called when a DnsTransaction is completed.
   void ProcessDnsTransactionResults(DnsQueryType query_type,
                                     HostResolverDnsTask::ResultRefs results);
+
+  // Called when the entire DnsTask completes. If HTTPS completed as the final
+  // transaction, records address hints metrics. Also stops the resolution delay
+  // timer if still running.
+  void ProcessDnsTaskComplete(const HostResolverDnsTask::Results& results);
 
   // Returns the current service endpoints. The results could change over time.
   // Use the delegate's OnServiceEndpointsUpdated() to watch for updates.
@@ -114,6 +134,12 @@ class NET_EXPORT_PRIVATE DnsTaskResultsManager {
   bool HasIpv4Addresses() const;
 
   void RecordResolutionDelayResult(bool timedout);
+
+  // Records address hints UMA (presence and whether address queries were
+  // outstanding) for the HTTPS transaction results.
+  void RecordAddressHintsMetrics(
+      const HostResolverInternalMetadataResult::AddressHintsMap& address_hints,
+      bool is_terminal_transaction);
 
   const raw_ptr<Delegate> delegate_;
   const HostResolver::Host host_;

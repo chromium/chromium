@@ -44,6 +44,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/scheme_host_port.h"
 
+using ::testing::_;
+using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Optional;
@@ -2007,6 +2009,7 @@ class HostResolverServiceEndpointRequestAddressHintsTest
 
 TEST_F(HostResolverServiceEndpointRequestAddressHintsTest,
        Ipv6HintsNotPublishedWhenNoIpv6) {
+  base::HistogramTester histograms;
   set_ipv6_reachable(false);
 
   const std::string kHost = "address_hints";
@@ -2024,6 +2027,43 @@ TEST_F(HostResolverServiceEndpointRequestAddressHintsTest,
     EXPECT_THAT(endpoint.ipv6_endpoints, IsEmpty());
   }
 
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return requester.finished_result().has_value(); }));
+  EXPECT_THAT(*requester.finished_result(), IsOk());
+
+  // Because hints were not usable (no AAAA queried), AddressQueryOutstanding
+  // was false.
+  histograms.ExpectUniqueSample("Net.DNS.HttpsRecordAddressHints.Presence",
+                                HttpsRecordAddressHintsPresence::kIPv6Only, 1);
+  histograms.ExpectUniqueSample(
+      "Net.DNS.HttpsRecordAddressHints.AddressQueryOutstanding", false, 1);
+}
+
+TEST_F(HostResolverServiceEndpointRequestAddressHintsTest,
+       HintMetricsRecordedWhenHintsArriveFirst) {
+  base::HistogramTester histograms;
+  const std::string kHost = "address_hints";
+  const IPAddress kIpv6Hint = *IPAddress::FromIPLiteral("2001:db8::10");
+  UseIpv6HintDelayedAaaaDnsRules(kHost, kIpv6Hint);
+
+  Requester requester = CreateRequester("https://address_hints");
+  EXPECT_THAT(requester.Start(), IsError(ERR_IO_PENDING));
+
+  // Wait for the HTTPS response, which publishes the IPv6 hint while AAAA is
+  // still outstanding.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return requester.request()->EndpointsCryptoReady(); }));
+  EXPECT_THAT(requester.request()->GetEndpointResults(),
+              Contains(ExpectServiceEndpoint(
+                  _, ElementsAre(IPEndPoint(kIpv6Hint, 443)), _)));
+
+  histograms.ExpectUniqueSample("Net.DNS.HttpsRecordAddressHints.Presence",
+                                HttpsRecordAddressHintsPresence::kIPv6Only, 1);
+  histograms.ExpectUniqueSample(
+      "Net.DNS.HttpsRecordAddressHints.AddressQueryOutstanding", true, 1);
+
+  // Complete AAAA, the last transaction, superseding the published hint.
+  mock_dns_client_->CompleteDelayedTransactions();
   ASSERT_TRUE(base::test::RunUntil(
       [&] { return requester.finished_result().has_value(); }));
   EXPECT_THAT(*requester.finished_result(), IsOk());
