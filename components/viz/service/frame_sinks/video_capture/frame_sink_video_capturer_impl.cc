@@ -1122,25 +1122,34 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // TODO(crbug.com/346799708): The condition to check `pixel_format_` shouldn't
   // be necessary but video capture is started with I420+mappable SI in tests.
   // That still captures software I420 frames and not textures.
-  const bool capture_texture_results =
+  const bool prefer_mappable_shared_image =
       buffer_format_preference_ ==
-          mojom::BufferFormatPreference::kPreferMappableSharedImage &&
-      (pixel_format_ == media::PIXEL_FORMAT_NV12 ||
-       pixel_format_ == media::PIXEL_FORMAT_ARGB ||
-       pixel_format_ == media::PIXEL_FORMAT_RGBAF16);
+      mojom::BufferFormatPreference::kPreferMappableSharedImage;
+#if BUILDFLAG(IS_LINUX)
+  const bool prefer_shared_image =
+      prefer_mappable_shared_image ||
+      buffer_format_preference_ ==
+          mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle;
+#else
+  const bool prefer_shared_image = prefer_mappable_shared_image;
+#endif
+  const bool should_capture_texture_results =
+      prefer_shared_image && (pixel_format_ == media::PIXEL_FORMAT_NV12 ||
+                              pixel_format_ == media::PIXEL_FORMAT_ARGB ||
+                              pixel_format_ == media::PIXEL_FORMAT_RGBAF16);
 
   std::optional<BlitRequest> blit_request;
-  if (capture_texture_results) {
+  if (should_capture_texture_results) {
     TRACE_EVENT("gpu.capture", "PopulateBlitRequest");
 
     auto sync_token = frame_capture.frame->acquire_sync_token();
 
     // TODO(crbug.com/41350322): change the capturer to only request the
     // parts of the frame that have changed whenever possible.
-    blit_request =
-        BlitRequest(content_rect.origin(), LetterboxingBehavior::kLetterbox,
-                    frame_capture.frame->shared_image(), sync_token,
-                    /*populates_mappable_shared_image=*/true);
+    blit_request = BlitRequest(
+        content_rect.origin(), LetterboxingBehavior::kLetterbox,
+        frame_capture.frame->shared_image(), sync_token,
+        /*populates_mappable_shared_image=*/prefer_mappable_shared_image);
 
     // We haven't captured the frame yet, but let's pretend that we did for
     // the sake of blend information computation. We will be asking for an
@@ -1170,7 +1179,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // Request a copy of the next frame from the frame sink.
   auto request = std::make_unique<CopyOutputRequest>(
       VideoPixelFormatToCopyOutputRequestFormat(pixel_format_),
-      capture_texture_results
+      should_capture_texture_results
           ? CopyOutputRequest::ResultDestination::kSharedImage
           : CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&FrameSinkVideoCapturerImpl::DidCopyFrame,
@@ -1350,8 +1359,16 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
         frame_capture.CaptureFailed(CaptureResult::kARGBReadbackFailed);
       }
     } else {
+#if BUILDFLAG(IS_LINUX)
+      CHECK(buffer_format_preference_ ==
+                mojom::BufferFormatPreference::kPreferMappableSharedImage ||
+            buffer_format_preference_ ==
+                mojom::BufferFormatPreference::
+                    kPreferSharedImageWithNativeHandle);
+#else
       CHECK_EQ(buffer_format_preference_,
                mojom::BufferFormatPreference::kPreferMappableSharedImage);
+#endif
       // MappableSI ARGB results are written to the existing pool texture.
       if (result->IsEmpty()) {
         frame_capture.CaptureFailed(

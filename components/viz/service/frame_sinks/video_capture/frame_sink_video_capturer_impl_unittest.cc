@@ -24,6 +24,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/token.h"
+#include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -464,6 +465,12 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
   void RequestCopyOfOutput(std::unique_ptr<PendingCopyOutputRequest>
                                pending_copy_output_request) override {
     auto& request = pending_copy_output_request->copy_output_request;
+    last_result_destination_ = request->result_destination();
+    last_blit_request_populates_mappable_shared_image_ =
+        request->has_blit_request()
+            ? std::make_optional(
+                  request->blit_request().populates_mappable_shared_image())
+            : std::nullopt;
     EXPECT_NE(base::UnguessableToken(), request->source());
     if (pending_copy_output_request->subtree_capture_id.is_valid()) {
       EXPECT_EQ(capture_bounds_, request->area());
@@ -551,6 +558,15 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
   // is done via |SendCopyOutputResult()|.
   int num_copy_results() const { return results_.size(); }
 
+  std::optional<CopyOutputResult::Destination> last_result_destination() const {
+    return last_result_destination_;
+  }
+
+  std::optional<bool> last_blit_request_populates_mappable_shared_image()
+      const {
+    return last_blit_request_populates_mappable_shared_image_;
+  }
+
   void SendCopyOutputResult(int offset) {
     auto it = results_.begin() + offset;
     std::move(*it).Run();
@@ -572,6 +588,8 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
   SizeSet size_set_;
   CompositorFrameMetadata metadata_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+  std::optional<CopyOutputResult::Destination> last_result_destination_;
+  std::optional<bool> last_blit_request_populates_mappable_shared_image_;
 
   mutable RegionCaptureCropId current_crop_id_;
   mutable SubtreeCaptureId current_capture_id_;
@@ -874,7 +892,9 @@ class FrameSinkVideoCapturerTest
 
   bool IsUsingGpuMemoryBuffer() {
     return buffer_format_preference_ ==
-           mojom::BufferFormatPreference::kPreferMappableSharedImage;
+               mojom::BufferFormatPreference::kPreferMappableSharedImage ||
+           buffer_format_preference_ == mojom::BufferFormatPreference::
+                                            kPreferSharedImageWithNativeHandle;
   }
 
   base::TimeTicks GetNextVsync() const {
@@ -2355,19 +2375,60 @@ TEST_P(FrameSinkVideoCapturerTest, BufferFormatPreferencePassedToGpuFramePool) {
   StopCapture();
 }
 
+TEST_P(FrameSinkVideoCapturerTest, ConfiguresSharedImageBlitRequest) {
+  if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
+    GTEST_SKIP();
+  }
+
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kVideoCaptureTarget))
+      .WillRepeatedly(Return(&frame_sink_));
+  capturer_->ChangeTarget(kVideoCaptureTarget,
+                          /*sub_capture_target_version=*/0);
+
+  NiceMock<MockConsumer> consumer;
+  StartCapture(&consumer);
+
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  ASSERT_TRUE(frame_sink_.last_result_destination().has_value());
+  EXPECT_EQ(CopyOutputResult::Destination::kSharedImage,
+            *frame_sink_.last_result_destination());
+
+  ASSERT_TRUE(frame_sink_.last_blit_request_populates_mappable_shared_image()
+                  .has_value());
+  const bool expect_mappable =
+      buffer_format_preference_ ==
+      mojom::BufferFormatPreference::kPreferMappableSharedImage;
+  EXPECT_EQ(expect_mappable,
+            *frame_sink_.last_blit_request_populates_mappable_shared_image());
+
+  StopCapture();
+}
+
+std::vector<std::tuple<mojom::BufferFormatPreference, media::VideoPixelFormat>>
+GetFrameSinkVideoCapturerTestParams() {
+  std::vector<
+      std::tuple<mojom::BufferFormatPreference, media::VideoPixelFormat>>
+      params = {
+          {mojom::BufferFormatPreference::kDefault, media::PIXEL_FORMAT_I420},
+          {mojom::BufferFormatPreference::kDefault, media::PIXEL_FORMAT_ARGB},
+          {mojom::BufferFormatPreference::kPreferMappableSharedImage,
+           media::PIXEL_FORMAT_NV12},
+          {mojom::BufferFormatPreference::kPreferMappableSharedImage,
+           media::PIXEL_FORMAT_ARGB},
+          {mojom::BufferFormatPreference::kPreferMappableSharedImage,
+           media::PIXEL_FORMAT_RGBAF16},
+      };
+#if BUILDFLAG(IS_LINUX)
+  params.emplace_back(
+      mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle,
+      media::PIXEL_FORMAT_ARGB);
+#endif
+  return params;
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     FrameSinkVideoCapturerTest,
-    testing::Values(
-        std::tuple(mojom::BufferFormatPreference::kDefault,
-                   media::PIXEL_FORMAT_I420),
-        std::tuple(mojom::BufferFormatPreference::kDefault,
-                   media::PIXEL_FORMAT_ARGB),
-        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
-                   media::PIXEL_FORMAT_NV12),
-        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
-                   media::PIXEL_FORMAT_ARGB),
-        std::tuple(mojom::BufferFormatPreference::kPreferMappableSharedImage,
-                   media::PIXEL_FORMAT_RGBAF16)));
+    testing::ValuesIn(GetFrameSinkVideoCapturerTestParams()));
 
 }  // namespace viz
