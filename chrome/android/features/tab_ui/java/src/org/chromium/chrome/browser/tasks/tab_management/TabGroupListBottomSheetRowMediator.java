@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.C
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -28,6 +29,8 @@ import java.util.List;
 class TabGroupListBottomSheetRowMediator {
     private final GroupWindowInfo mGroupInfo;
     private final TabModel mTabModel;
+    private final @Nullable TabGroupSyncService mTabGroupSyncService;
+    private final @Nullable TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final @Nullable TabMovedCallback mTabMovedCallback;
     private final PropertyModel mPropertyModel;
 
@@ -36,6 +39,7 @@ class TabGroupListBottomSheetRowMediator {
      * @param tabModel Used to read current tab groups.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
+     * @param tabGroupUiActionHandler For UI actions on tab groups.
      * @param onClickRunnable To be run on clicking the row.
      * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
      * @param tabs The tabs to be added to a tab group.
@@ -45,11 +49,14 @@ class TabGroupListBottomSheetRowMediator {
             TabModel tabModel,
             FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
+            @Nullable TabGroupUiActionHandler tabGroupUiActionHandler,
             Runnable onClickRunnable,
             @Nullable TabMovedCallback tabMovedCallback,
             List<Tab> tabs) {
         mGroupInfo = groupInfo;
         mTabModel = tabModel;
+        mTabGroupSyncService = tabGroupSyncService;
+        mTabGroupUiActionHandler = tabGroupUiActionHandler;
         mTabMovedCallback = tabMovedCallback;
 
         int numTabs = mGroupInfo.tabCount;
@@ -88,15 +95,16 @@ class TabGroupListBottomSheetRowMediator {
         RecordUserAction.record("TabGroupParity.BottomSheetRowSelection.ExistingGroup");
 
         assert !tabs.isEmpty();
-        if (mGroupInfo.localId == null) {
+        if (!TabGroupUiUtils.isValidDestination(
+                mGroupInfo, mTabGroupSyncService, mTabGroupUiActionHandler)) {
             return;
         }
         TabGroupUiUtils.addTabsToGroup(
                 mTabModel,
                 tabs,
                 mGroupInfo,
-                /* syncService= */ null,
-                /* uiActionHandler= */ null,
+                mTabGroupSyncService,
+                mTabGroupUiActionHandler,
                 mTabMovedCallback,
                 /* bringToFront= */ false);
     }

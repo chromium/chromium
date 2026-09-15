@@ -193,7 +193,8 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
                         controller,
                         /* supportsShowNewGroup= */ true,
                         /* destroyOnHide= */ true,
-                        tabs.get(0).getWindowAndroid());
+                        tabs.get(0).getWindowAndroid(),
+                        /* tabGroupUiActionHandler= */ null);
         mTabGroupListBottomSheetCoordinator.showBottomSheet(tabs);
     }
 

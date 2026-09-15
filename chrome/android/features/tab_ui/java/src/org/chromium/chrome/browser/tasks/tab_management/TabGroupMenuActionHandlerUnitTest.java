@@ -98,7 +98,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         when(mTabModel.tabGroupExists(any())).thenReturn(true);
 
         TabGroupListBottomSheetCoordinatorFactory factory =
-                (a, b, callback, d, e, f, g, h, i) -> {
+                (a, b, callback, d, e, f, g, h, i, j) -> {
                     mTabGroupCreationCallback = callback;
                     return mTabGroupListBottomSheetCoordinator;
                 };

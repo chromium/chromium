@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -85,6 +86,7 @@ public class TabGroupListBottomSheetCoordinator {
      * @param supportsShowNewGroup Whether the 'New Tab Group' row is supported.
      * @param destroyOnHide Whether this object should be destroyed on hiding the bottom sheet.
      * @param windowAndroid Used to observe activity state changes.
+     * @param tabGroupUiActionHandler Used to handle tab group UI actions.
      */
     public TabGroupListBottomSheetCoordinator(
             Context context,
@@ -95,7 +97,8 @@ public class TabGroupListBottomSheetCoordinator {
             BottomSheetController bottomSheetController,
             boolean supportsShowNewGroup,
             boolean destroyOnHide,
-            @Nullable WindowAndroid windowAndroid) {
+            @Nullable WindowAndroid windowAndroid,
+            @Nullable TabGroupUiActionHandler tabGroupUiActionHandler) {
         mView =
                 new TabGroupListBottomSheetView(
                         context, bottomSheetController, supportsShowNewGroup);
@@ -150,6 +153,7 @@ public class TabGroupListBottomSheetCoordinator {
                         tabMovedCallback,
                         faviconResolver,
                         tabGroupSyncService,
+                        tabGroupUiActionHandler,
                         bottomSheetController,
                         delegate,
                         supportsShowNewGroup);

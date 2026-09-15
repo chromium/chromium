@@ -122,7 +122,8 @@ public class TabGroupMenuActionHandler {
                             mBottomSheetController,
                             /* supportsShowNewGroup= */ true,
                             /* destroyOnHide= */ true,
-                            tab.getWindowAndroid());
+                            tab.getWindowAndroid(),
+                            mTabGroupUiActionHandler);
             mTabGroupListBottomSheetCoordinatorSupplier.set(tabGroupListBottomSheetCoordinator);
             tabGroupListBottomSheetCoordinator.showBottomSheet(List.of(tab));
         }

@@ -54,6 +54,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.ArrayList;
@@ -77,6 +78,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
     @Mock private TabMovedCallback mTabMovedCallback;
     @Mock private FaviconResolver mFaviconResolver;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
@@ -107,6 +109,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mTabMovedCallback,
                         mFaviconResolver,
                         mTabGroupSyncService,
+                        mTabGroupUiActionHandler,
                         mBottomSheetController,
                         mDelegate,
                         /* supportsShowNewGroup= */ true);
@@ -364,6 +367,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mTabMovedCallback,
                         mFaviconResolver,
                         /* tabGroupSyncService= */ null,
+                        mTabGroupUiActionHandler,
                         mBottomSheetController,
                         mDelegate,
                         /* supportsShowNewGroup= */ true);
@@ -505,6 +509,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mTabMovedCallback,
                         mFaviconResolver,
                         mTabGroupSyncService,
+                        mTabGroupUiActionHandler,
                         mBottomSheetController,
                         mDelegate,
                         /* supportsShowNewGroup= */ false);
@@ -524,6 +529,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mTabMovedCallback,
                         mFaviconResolver,
                         mTabGroupSyncService,
+                        mTabGroupUiActionHandler,
                         mBottomSheetController,
                         mDelegate,
                         /* supportsShowNewGroup= */ true);
@@ -547,6 +553,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mTabMovedCallback,
                         mFaviconResolver,
                         mTabGroupSyncService,
+                        mTabGroupUiActionHandler,
                         mBottomSheetController,
                         mDelegate,
                         /* supportsShowNewGroup= */ true);
@@ -571,6 +578,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
                         mTabMovedCallback,
                         mFaviconResolver,
                         mTabGroupSyncService,
+                        mTabGroupUiActionHandler,
                         mBottomSheetController,
                         mDelegate,
                         /* supportsShowNewGroup= */ true);

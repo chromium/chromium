@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -49,6 +50,7 @@ public class TabGroupListBottomSheetMediator {
     private final TabGroupCreationCallback mTabGroupCreationCallback;
     private final FaviconResolver mFaviconResolver;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
+    private final @Nullable TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final boolean mShowNewGroup;
     private boolean mCurrentlyShowing;
 
@@ -92,6 +94,7 @@ public class TabGroupListBottomSheetMediator {
      * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
+     * @param tabGroupUiActionHandler For UI actions on tab groups.
      * @param bottomSheetController Used to interact with the bottom sheet.
      * @param delegate Called on {@link BottomSheetObserver} calls.
      * @param supportsShowNewGroup Whether the 'New Tab Group' row is supported.
@@ -104,6 +107,7 @@ public class TabGroupListBottomSheetMediator {
             @Nullable TabMovedCallback tabMovedCallback,
             FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
+            @Nullable TabGroupUiActionHandler tabGroupUiActionHandler,
             BottomSheetController bottomSheetController,
             TabGroupListBottomSheetCoordinatorDelegate delegate,
             boolean supportsShowNewGroup) {
@@ -114,6 +118,7 @@ public class TabGroupListBottomSheetMediator {
         mTabMovedCallback = tabMovedCallback;
         mFaviconResolver = faviconResolver;
         mTabGroupSyncService = tabGroupSyncService;
+        mTabGroupUiActionHandler = tabGroupUiActionHandler;
         mBottomSheetController = bottomSheetController;
         mDelegate = delegate;
         mShowNewGroup = supportsShowNewGroup;
@@ -169,7 +174,11 @@ public class TabGroupListBottomSheetMediator {
         List<GroupWindowInfo> sortedTabGroups = windowChecker.getDefaultSortedGroupList();
 
         for (GroupWindowInfo tabGroup : sortedTabGroups) {
-            if (tabGroup.localId != null && Objects.equals(groupToFilter, tabGroup.localId)) {
+            if (groupToFilter != null && Objects.equals(groupToFilter, tabGroup.localId)) {
+                continue;
+            }
+            if (!TabGroupUiUtils.isValidDestination(
+                    tabGroup, mTabGroupSyncService, mTabGroupUiActionHandler)) {
                 continue;
             }
 
@@ -179,6 +188,7 @@ public class TabGroupListBottomSheetMediator {
                             mTabModel,
                             mFaviconResolver,
                             mTabGroupSyncService,
+                            mTabGroupUiActionHandler,
                             () -> hide(StateChangeReason.INTERACTION_COMPLETE),
                             mTabMovedCallback,
                             tabs);

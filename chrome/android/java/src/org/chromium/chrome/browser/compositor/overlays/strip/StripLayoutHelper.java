@@ -2713,7 +2713,8 @@ public class StripLayoutHelper
                                 mBottomSheetController,
                                 /* supportsShowNewGroup= */ true,
                                 /* destroyOnHide= */ false,
-                                mWindowAndroid);
+                                mWindowAndroid,
+                                /* tabGroupUiActionHandler= */ null);
             }
             mTabContextMenuCoordinator =
                     TabContextMenuCoordinator.createContextMenuCoordinator(

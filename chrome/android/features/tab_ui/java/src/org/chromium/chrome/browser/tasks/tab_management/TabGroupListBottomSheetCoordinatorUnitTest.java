@@ -45,6 +45,7 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 
@@ -62,6 +63,7 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private TabModel mTabModel;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private CollaborationService mCollaborationService;
     @Mock private DataSharingService mDataSharingService;
     @Mock private Profile mProfile;
@@ -97,7 +99,8 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
                         mBottomSheetController,
                         /* supportsShowNewGroup= */ true,
                         /* destroyOnHide= */ false,
-                        mWindowAndroid);
+                        mWindowAndroid,
+                        mTabGroupUiActionHandler);
     }
 
     @Test
@@ -164,7 +167,8 @@ public class TabGroupListBottomSheetCoordinatorUnitTest {
                 mBottomSheetController,
                 /* supportsShowNewGroup= */ true,
                 /* destroyOnHide= */ false,
-                /* windowAndroid= */ null);
+                /* windowAndroid= */ null,
+                /* tabGroupUiActionHandler= */ null);
     }
 
     @Test

@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallba
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Factory class for creating {@link TabGroupListBottomSheetCoordinator} instances. */
@@ -31,6 +32,7 @@ public interface TabGroupListBottomSheetCoordinatorFactory {
      * @param supportsShowNewGroup Whether the 'New Tab Group' row is supported.
      * @param destroyOnHide Whether the coordinator should be destroyed on hide.
      * @param windowAndroid Used to observe activity state.
+     * @param tabGroupUiActionHandler Used to handle tab group UI actions.
      */
     TabGroupListBottomSheetCoordinator create(
             Context context,
@@ -41,5 +43,6 @@ public interface TabGroupListBottomSheetCoordinatorFactory {
             BottomSheetController controller,
             boolean supportsShowNewGroup,
             boolean destroyOnHide,
-            @Nullable WindowAndroid windowAndroid);
+            @Nullable WindowAndroid windowAndroid,
+            @Nullable TabGroupUiActionHandler tabGroupUiActionHandler);
 }

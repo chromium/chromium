@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListL
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 
@@ -94,6 +95,15 @@ public class TabListEditorAddToGroupActionUnitTest {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.syncId = "sync_group_id";
+        savedGroup.localId = new LocalTabGroupId(mTabGroupId);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedGroup.savedTabs.add(savedTab);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_group_id"});
+        when(mTabGroupSyncService.getGroup("sync_group_id")).thenReturn(savedGroup);
+        when(mTabModel.getTabGroupCount()).thenReturn(1);
+        when(mTabModel.tabGroupExists(mTabGroupId)).thenReturn(true);
 
         mAction =
                 new TabListEditorAddToGroupAction(
@@ -103,7 +113,7 @@ public class TabListEditorAddToGroupActionUnitTest {
                         TEXT,
                         START,
                         mDrawable,
-                        (a, b, c, d, e, f, g, h, i) -> mCoordinator);
+                        (a, b, c, d, e, f, g, h, i, j) -> mCoordinator);
         mAction.configure(
                 mTabModelSupplier, mSelectionDelegate, mActionDelegate, TabListLayoutType.FLAT);
     }
@@ -156,6 +166,8 @@ public class TabListEditorAddToGroupActionUnitTest {
                 TabListEditorAddToGroupAction.createAction(
                         mActivity, mTabGroupCreationDialogManager, MENU_ONLY, TEXT, START);
         when(mTabModel.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.tabGroupExists(any())).thenReturn(false);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
         action.configure(
                 mTabModelSupplier, mSelectionDelegate, mActionDelegate, TabListLayoutType.FLAT);
 
@@ -244,6 +256,8 @@ public class TabListEditorAddToGroupActionUnitTest {
     public void testPerformAction_NoTabGroups() {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         when(mTabModel.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.tabGroupExists(any())).thenReturn(false);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
 
         assertTrue(mAction.performAction(tabs, Collections.emptyList()));
         verify(mTabModel).mergeListOfTabsToGroup(eq(tabs), eq(mTab1), anyInt());
