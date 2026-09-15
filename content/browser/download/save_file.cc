@@ -27,8 +27,9 @@ SaveFile::SaveFile(std::unique_ptr<SaveFileCreateInfo> info,
 }
 
 SaveFile::~SaveFile() {
-  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
-        base::NotFatalUntil::M159);
+  // TODO(crbug.com/561396069): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
 }
 
 download::DownloadInterruptReason SaveFile::Initialize() {
