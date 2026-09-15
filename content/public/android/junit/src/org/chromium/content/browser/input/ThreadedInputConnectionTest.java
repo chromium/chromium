@@ -24,6 +24,7 @@ import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputContentInfo;
 import android.view.inputmethod.InputMethodManager;
 
 import org.junit.Before;
@@ -43,6 +44,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
@@ -399,5 +401,22 @@ public class ThreadedInputConnectionTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         mInOrder.verify(mImeAdapter).commitCorrection(mCorrectionInfo);
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @DisableFeatures(ContentFeatures.ANDROID_MEDIA_INSERTION)
+    public void testCommitContent_FeatureDisabled() {
+        InputContentInfo contentInfo = Mockito.mock(InputContentInfo.class);
+        assertFalse(mConnection.commitContent(contentInfo, 0, null));
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @EnableFeatures(ContentFeatures.ANDROID_MEDIA_INSERTION)
+    public void testCommitContent_NullTargetFrame() {
+        when(mImeAdapter.getFocusedFrame()).thenReturn(null);
+        InputContentInfo contentInfo = Mockito.mock(InputContentInfo.class);
+        assertFalse(mConnection.commitContent(contentInfo, 0, null));
     }
 }

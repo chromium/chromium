@@ -412,8 +412,13 @@ void ImeAdapterAndroid::FinishComposingText(JNIEnv* env) {
 
 bool ImeAdapterAndroid::InsertMediaFromBytes(
     JNIEnv* env,
+    RenderFrameHost* target_rfh,
     const base::android::JavaRef<jbyteArray>& bytes,
     const base::android::JavaRef<jstring>& extension) {
+  if (!target_rfh || GetFocusedFrame() != target_rfh) {
+    return false;
+  }
+
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler) {
     return false;
