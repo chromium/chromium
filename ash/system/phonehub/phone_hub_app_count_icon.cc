@@ -48,10 +48,9 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
 
  private:
   size_t count_;
-  const gfx::FontList& GetNumberIconFontList() {
-    static gfx::FontList font_list({"Roboto"}, gfx::Font::NORMAL, 10,
-                                   gfx::Font::Weight::NORMAL);
-    return font_list;
+  gfx::FontList GetNumberIconFontList() {
+    return gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 10,
+                         gfx::Font::Weight::NORMAL);
   }
 };
 

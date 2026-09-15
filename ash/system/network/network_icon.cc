@@ -200,9 +200,9 @@ gfx::ImageSkia& ConnectingWirelessImage(const ui::ColorProvider* color_provider,
   // bars (as oppose to arcs), a SkColor representing whether the icon is to be
   // displayed in a specific color scheme, the IconType, and an int representing
   // the index of the image (with respect to GetImageForIndex()).
-  static base::flat_map<std::tuple<bool, SkColor, IconType, int>,
-                        gfx::ImageSkia>
-      s_image_cache;
+  using ImageCache =
+      base::flat_map<std::tuple<bool, SkColor, IconType, int>, gfx::ImageSkia>;
+  static auto* s_image_cache = new ImageCache();
 
   // Note that if |image_type| is NONE, arcs are displayed by default.
   bool is_bars_image = image_type == BARS;
@@ -215,18 +215,18 @@ gfx::ImageSkia& ConnectingWirelessImage(const ui::ColorProvider* color_provider,
       is_bars_image, GetDefaultColorForIconType(color_provider, icon_type),
       icon_type, index);
 
-  if (!s_image_cache.contains(map_key)) {
+  if (!s_image_cache->contains(map_key)) {
     // Lazily cache images.
     // TODO(estade): should the alpha be applied in SignalStrengthImageSource?
     gfx::ImageSkia source = GetImageForIndex(
         image_type, GetDefaultColorForIconType(color_provider, icon_type),
         index + 1);
-    s_image_cache[map_key] =
+    (*s_image_cache)[map_key] =
         gfx::ImageSkia(gfx::ImageSkiaOperations::CreateTransparentImage(
             source, kConnectingImageAlpha));
   }
 
-  return s_image_cache[map_key];
+  return (*s_image_cache)[map_key];
 }
 
 gfx::ImageSkia ConnectingVpnImage(double animation) {

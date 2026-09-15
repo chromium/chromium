@@ -37,13 +37,13 @@
 namespace ash {
 namespace {
 
-const std::u16string kInitialFeatureViewSubtitleText = u"This is a test";
-const std::u16string kSodaDownloaded = u"Speech files downloaded";
-const std::u16string kSodaInProgress25 =
+constexpr char16_t kInitialFeatureViewSubtitleText[] = u"This is a test";
+constexpr char16_t kSodaDownloaded[] = u"Speech files downloaded";
+constexpr char16_t kSodaInProgress25[] =
     u"Downloading speech recognition files… 25%";
-const std::u16string kSodaInProgress50 =
+constexpr char16_t kSodaInProgress50[] =
     u"Downloading speech recognition files… 50%";
-const std::u16string kSodaFailed =
+constexpr char16_t kSodaFailed[] =
     u"Can't download speech files. Try again later.";
 
 void SetScreenMagnifierEnabled(bool enabled) {

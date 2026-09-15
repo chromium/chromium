@@ -63,8 +63,8 @@ namespace ash {
 
 namespace {
 
-const std::string kEnabledTooltip = "Dictation";
-const std::string kDisabledTooltip = "Downloading speech files";
+constexpr char16_t kEnabledTooltip[] = u"Dictation";
+constexpr char16_t kDisabledTooltip[] = u"Downloading speech files";
 
 DictationButtonTray* GetTray() {
   return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
@@ -334,7 +334,7 @@ TEST_F(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/0);
   EXPECT_EQ(0, tray->download_progress());
   EXPECT_TRUE(tray->GetEnabled());
-  EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
+  EXPECT_EQ(kEnabledTooltip, image->GetTooltipText());
 
   // The tray icon should be visible when the download is not in-progress.
   ProgressIndicator* progress_indicator = GetProgressIndicator();
@@ -347,7 +347,7 @@ TEST_F(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/50);
   EXPECT_EQ(50, tray->download_progress());
   EXPECT_FALSE(tray->GetEnabled());
-  EXPECT_EQ(base::UTF8ToUTF16(kDisabledTooltip), image->GetTooltipText());
+  EXPECT_EQ(kDisabledTooltip, image->GetTooltipText());
 
   // Enabled state doesn't change even if text input is focused.
   DetachTextInputClient();
@@ -364,7 +364,7 @@ TEST_F(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/70);
   EXPECT_EQ(70, tray->download_progress());
   EXPECT_FALSE(tray->GetEnabled());
-  EXPECT_EQ(base::UTF8ToUTF16(kDisabledTooltip), image->GetTooltipText());
+  EXPECT_EQ(kDisabledTooltip, image->GetTooltipText());
 
   // The tray icon should be visible when the download is in progress.
   ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.7f);
@@ -376,7 +376,7 @@ TEST_F(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/100);
   EXPECT_EQ(100, tray->download_progress());
   EXPECT_TRUE(tray->GetEnabled());
-  EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
+  EXPECT_EQ(kEnabledTooltip, image->GetTooltipText());
 
   // The tray icon should be visible when the download is not in-progress.
   ProgressIndicatorWaiter().WaitForProgress(

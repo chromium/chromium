@@ -28,16 +28,16 @@ using bluetooth_config::ScopedBluetoothConfigTestHelper;
 using bluetooth_config::mojom::BluetoothSystemState;
 
 // Logitech Vendor ID
-const uint16_t kLogitechVID = 0x046d;
+constexpr uint16_t kLogitechVID = 0x046d;
 
 // Logitech MX Master 3S Product ID (Bluetooth)
-const uint16_t KMousePID = 0xb034;
+constexpr uint16_t KMousePID = 0xb034;
 
 // Logitech MX Keys Product ID (Bluetooth)
-const uint16_t KKeyboardPID = 0xb35b;
+constexpr uint16_t KKeyboardPID = 0xb35b;
 
-const std::string kSampleMouseBluetooth = "kSampleMouseBluetooth";
-const std::string kSampleKeyboardBluetooth = "kSampleKeyboardBluetooth";
+constexpr char kSampleMouseBluetooth[] = "kSampleMouseBluetooth";
+constexpr char kSampleKeyboardBluetooth[] = "kSampleKeyboardBluetooth";
 
 const ui::KeyboardDevice GetSampleKeyboardBluetooth() {
   return {10,

@@ -50,9 +50,9 @@ using bluetooth_config::mojom::DeviceType;
 using bluetooth_config::mojom::PairedBluetoothDeviceProperties;
 using bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
-const char kDeviceId[] = "/device/id";
-const std::string kDeviceNickname = "clicky keys";
-const std::u16string kDevicePublicName = u"Mechanical Keyboard";
+constexpr char kDeviceId[] = "/device/id";
+constexpr char kDeviceNickname[] = "clicky keys";
+constexpr char16_t kDevicePublicName[] = u"Mechanical Keyboard";
 constexpr uint8_t kBatteryPercentage = 27;
 constexpr uint8_t kLeftBudBatteryPercentage = 27;
 constexpr uint8_t kCaseBatteryPercentage = 54;
@@ -158,7 +158,7 @@ TEST_F(BluetoothDeviceListItemViewTest, HasCorrectLabel) {
   bluetooth_device_list_item()->UpdateDeviceProperties(
       /*device_index=*/0, /*device_count=*/0, paired_device_properties);
 
-  EXPECT_EQ(base::ASCIIToUTF16(kDeviceNickname),
+  EXPECT_EQ(u"clicky keys",
             bluetooth_device_list_item()->text_label()->GetText());
 }
 
