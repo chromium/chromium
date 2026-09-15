@@ -436,17 +436,40 @@ protocol::Response InspectorAnimationAgent::setPaused(
 
 protocol::Response InspectorAnimationAgent::seekAnimations(
     std::unique_ptr<protocol::Array<String>> animation_ids,
-    double current_time) {
+    std::optional<double> current_time,
+    std::unique_ptr<protocol::Array<double>> current_times) {
+  if (current_time.has_value() == (current_times != nullptr)) {
+    return protocol::Response::InvalidRequest(
+        "Only one of current_time or current_times may be set.");
+  }
+
+  if (current_times && current_times->size() != animation_ids->size()) {
+    return protocol::Response::InvalidRequest(
+        "current_times should be the same size as animation_ids.");
+  }
+
+  size_t index = 0;
   for (const String& animation_id : *animation_ids) {
     blink::Animation* animation = nullptr;
     protocol::Response response = AssertAnimation(animation_id, animation);
-    if (!response.IsSuccess())
+    if (!response.IsSuccess()) {
       return response;
+    }
     if (!animation->Paused()) {
       animation->play();
     }
-    animation->SetCurrentTimeInternal(
-        ANIMATION_TIME_DELTA_FROM_MILLISECONDS(current_time));
+    auto time_delta = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(
+        !current_time ? current_times->at(index) : *current_time);
+
+    if (animation->effect()) {
+      // Seeking to a time past the end time will not allow the animation to
+      // play. But this can happen due to rounding errors, so we clamp the
+      // time delta to the end time.
+      auto end_time = animation->effect()->NormalizedTiming().end_time;
+      time_delta = std::min(time_delta, end_time);
+    }
+    animation->SetCurrentTimeInternal(time_delta);
+    index++;
   }
   return protocol::Response::Success();
 }

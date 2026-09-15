@@ -51,7 +51,8 @@ class CORE_EXPORT InspectorAnimationAgent final
                                double delay) override;
   protocol::Response seekAnimations(
       std::unique_ptr<protocol::Array<String>> animations,
-      double current_time) override;
+      std::optional<double> current_time,
+      std::unique_ptr<protocol::Array<double>> current_times) override;
   protocol::Response releaseAnimations(
       std::unique_ptr<protocol::Array<String>> animations) override;
   protocol::Response resolveAnimation(

@@ -143,8 +143,12 @@ experimental domain Animation
     parameters
       # List of animation ids to seek.
       array of string animations
-      # Set the current time of each animation.
-      number currentTime
+      # Set each animation to the same time.
+      optional number currentTime
+      # Set each animation to a different time. If set, should have the same
+      # length as animations. Exactly one of currentTime or currentTimes should
+      # be set.
+      optional array of number currentTimes
 
   # Sets the paused state of a set of animations.
   command setPaused

@@ -13,5 +13,10 @@
     await dp.Animation.seekAnimations({ animations: [ response.params.animation.id ], currentTime: 0 });
     testRunner.log("Animation seeked");
   }
+
+  for (var run = 0; run < 5; run++) {
+    await dp.Animation.seekAnimations({ animations: [ response.params.animation.id ], currentTimes: [0] });
+    testRunner.log("Animation seeked");
+  }
   testRunner.completeTest();
 })
