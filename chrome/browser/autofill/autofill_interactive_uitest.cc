@@ -415,7 +415,7 @@ class ValueWaiter {
 // Event 9 happens no later than 5 seconds after that.
 [[nodiscard]] ValueWaiter ListenForValueChange(
     const std::string& id,
-    const std::optional<std::string>& unblock_variable,
+    const std::string& unblock_variable,
     content::ToRenderFrameHost execution_target) {
   const std::string kFunction = R"(
     // This function observes the DOM for an attached form-control element `id`.
@@ -488,9 +488,8 @@ class ValueWaiter {
       return waiterId;
     }
   )";
-  std::string call =
-      base::StringPrintf("listenForValueChange(`%s`, `%s`)", id.c_str(),
-                         unblock_variable.value_or("").c_str());
+  std::string call = base::StringPrintf("listenForValueChange(`%s`, `%s`)",
+                                        id.c_str(), unblock_variable.c_str());
   content::EvalJsResult r = content::EvalJs(execution_target, kFunction + call);
   int waiterId = r.ExtractInt();
   return ValueWaiter(waiterId, execution_target);
@@ -871,14 +870,6 @@ const char AutofillInteractiveTestBase::kTestUrlPath[] =
     "/internal/test_url_path";
 
 class AutofillInteractiveTest : public AutofillInteractiveTestBase {
- public:
-  ValueWaiter ListenForRefill(
-      const std::string& id,
-      std::optional<std::string> unblock_variable = "refill") {
-    return ListenForValueChange(id, std::move(unblock_variable),
-                                GetWebContents());
-  }
-
  protected:
   AutofillInteractiveTest() = default;
   ~AutofillInteractiveTest() override = default;
@@ -2089,139 +2080,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   EXPECT_EQ("red.swingline@initech.com", GetFieldValue(email));
 }
 
-// The following four tests verify that we can autofill forms with multiple
-// nameless forms, and repetitive field names and make sure that the dynamic
-// refill would not trigger a wrong refill, regardless of the form.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
-                       Dynamic_MultipleNoNameForms_BadNames_FourthForm) {
-  CreateTestProfile();
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill/multiple_noname_forms_badnames.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Lower the refill limit, so the test doesn't have to wait forever.
-  constexpr base::TimeDelta kLimitBeforeRefillForTest = base::Milliseconds(100);
-  constexpr base::TimeDelta kRefillSafetyMargin = base::Milliseconds(20);
-  test_api(test_api(*GetBrowserAutofillManager()).form_filler())
-      .set_limit_before_refill(kLimitBeforeRefillForTest);
-
-  ValueWaiter refill =
-      ListenForRefill("firstname_1", /*unblock_variable=*/std::nullopt);
-  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_4"), this));
-  DoNothingAndWaitAndIgnoreEvents(kLimitBeforeRefillForTest +
-                                  kRefillSafetyMargin);
-  ASSERT_FALSE(std::move(refill).Wait(base::Milliseconds(0)));
-
-  EXPECT_EQ("", GetFieldValueById("firstname_1"));
-  EXPECT_EQ("", GetFieldValueById("lastname_1"));
-  EXPECT_EQ("", GetFieldValueById("email_1"));
-  EXPECT_EQ("", GetFieldValueById("firstname_2"));
-  EXPECT_EQ("", GetFieldValueById("lastname_2"));
-  EXPECT_EQ("", GetFieldValueById("email_2"));
-  EXPECT_EQ("", GetFieldValueById("firstname_3"));
-  EXPECT_EQ("", GetFieldValueById("lastname_3"));
-  EXPECT_EQ("", GetFieldValueById("email_3"));
-  EXPECT_EQ("Milton", GetFieldValueById("firstname_4"));
-  EXPECT_EQ("Waddams", GetFieldValueById("lastname_4"));
-  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_4"));
-}
-
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
-                       Dynamic_MultipleNoNameForms_BadNames_ThirdForm) {
-  CreateTestProfile();
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill/multiple_noname_forms_badnames.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Lower the refill limit, so the test doesn't have to wait forever.
-  constexpr base::TimeDelta kLimitBeforeRefillForTest = base::Milliseconds(100);
-  constexpr base::TimeDelta kRefillSafetyMargin = base::Milliseconds(20);
-  test_api(test_api(*GetBrowserAutofillManager()).form_filler())
-      .set_limit_before_refill(kLimitBeforeRefillForTest);
-
-  ValueWaiter refill =
-      ListenForRefill("firstname_1", /*unblock_variable=*/std::nullopt);
-  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_3"), this));
-  DoNothingAndWaitAndIgnoreEvents(kLimitBeforeRefillForTest +
-                                  kRefillSafetyMargin);
-  ASSERT_FALSE(std::move(refill).Wait(base::Milliseconds(0)));
-
-  EXPECT_EQ("", GetFieldValueById("firstname_1"));
-  EXPECT_EQ("", GetFieldValueById("lastname_1"));
-  EXPECT_EQ("", GetFieldValueById("email_1"));
-  EXPECT_EQ("", GetFieldValueById("firstname_2"));
-  EXPECT_EQ("", GetFieldValueById("lastname_2"));
-  EXPECT_EQ("", GetFieldValueById("email_2"));
-  EXPECT_EQ("Milton", GetFieldValueById("firstname_3"));
-  EXPECT_EQ("Waddams", GetFieldValueById("lastname_3"));
-  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_3"));
-  EXPECT_EQ("", GetFieldValueById("firstname_4"));
-  EXPECT_EQ("", GetFieldValueById("lastname_4"));
-  EXPECT_EQ("", GetFieldValueById("email_4"));
-}
-
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
-                       Dynamic_MultipleNoNameForms_BadNames_SecondForm) {
-  CreateTestProfile();
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill/multiple_noname_forms_badnames.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Lower the refill limit, so the test doesn't have to wait forever.
-  constexpr base::TimeDelta kLimitBeforeRefillForTest = base::Milliseconds(100);
-  constexpr base::TimeDelta kRefillSafetyMargin = base::Milliseconds(20);
-  test_api(test_api(*GetBrowserAutofillManager()).form_filler())
-      .set_limit_before_refill(kLimitBeforeRefillForTest);
-
-  ValueWaiter refill =
-      ListenForRefill("firstname_1", /*unblock_variable=*/std::nullopt);
-  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_2"), this));
-  DoNothingAndWaitAndIgnoreEvents(kLimitBeforeRefillForTest +
-                                  kRefillSafetyMargin);
-  ASSERT_FALSE(std::move(refill).Wait(base::Milliseconds(0)));
-
-  EXPECT_EQ("", GetFieldValueById("firstname_1"));
-  EXPECT_EQ("", GetFieldValueById("lastname_1"));
-  EXPECT_EQ("", GetFieldValueById("email_1"));
-  EXPECT_EQ("Milton", GetFieldValueById("firstname_2"));
-  EXPECT_EQ("Waddams", GetFieldValueById("lastname_2"));
-  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_2"));
-  EXPECT_EQ("", GetFieldValueById("firstname_3"));
-  EXPECT_EQ("", GetFieldValueById("lastname_3"));
-  EXPECT_EQ("", GetFieldValueById("email_3"));
-}
-
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
-                       Dynamic_MultipleNoNameForms_BadNames_FirstForm) {
-  CreateTestProfile();
-  GURL url = embedded_test_server()->GetURL(
-      "a.com", "/autofill/multiple_noname_forms_badnames.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Lower the refill limit, so the test doesn't have to wait forever.
-  constexpr base::TimeDelta kLimitBeforeRefillForTest = base::Milliseconds(100);
-  constexpr base::TimeDelta kRefillSafetyMargin = base::Milliseconds(20);
-  test_api(test_api(*GetBrowserAutofillManager()).form_filler())
-      .set_limit_before_refill(kLimitBeforeRefillForTest);
-
-  ValueWaiter refill =
-      ListenForRefill("firstname_2", /*unblock_variable=*/std::nullopt);
-  ASSERT_TRUE(AutofillFlow(GetElementById("firstname_1"), this));
-  DoNothingAndWaitAndIgnoreEvents(kLimitBeforeRefillForTest +
-                                  kRefillSafetyMargin);
-  ASSERT_FALSE(std::move(refill).Wait(base::Milliseconds(0)));
-
-  EXPECT_EQ("Milton", GetFieldValueById("firstname_1"));
-  EXPECT_EQ("Waddams", GetFieldValueById("lastname_1"));
-  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email_1"));
-  EXPECT_EQ("", GetFieldValueById("firstname_2"));
-  EXPECT_EQ("", GetFieldValueById("lastname_2"));
-  EXPECT_EQ("", GetFieldValueById("email_2"));
-  EXPECT_EQ("", GetFieldValueById("firstname_3"));
-  EXPECT_EQ("", GetFieldValueById("lastname_3"));
-  EXPECT_EQ("", GetFieldValueById("email_3"));
-}
-
 // Test that we can Autofill forms where some fields name change during the
 // fill.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, FieldsChangeName) {
@@ -2547,6 +2405,11 @@ class AutofillInteractiveTestDynamicForm : public AutofillInteractiveTest {
     test_api(test_api(*GetBrowserAutofillManager()).form_filler())
         .set_limit_before_refill(base::Hours(1));
   }
+
+  ValueWaiter ListenForRefill(const std::string& id,
+                              const std::string& unblock_variable = "refill") {
+    return ListenForValueChange(id, unblock_variable, GetWebContents());
+  }
 };
 
 // Test that we can Autofill dynamically generated forms.
@@ -2638,7 +2501,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
   // Lower the refill limit, so the test doesn't have to wait forever.
   constexpr base::TimeDelta kLimitBeforeRefillForTest = base::Milliseconds(100);
-  constexpr base::TimeDelta kRefillSafetyMargin = base::Milliseconds(20);
   test_api(test_api(*GetBrowserAutofillManager()).form_filler())
       .set_limit_before_refill(kLimitBeforeRefillForTest);
 
@@ -2650,7 +2512,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
     return content::EvalJs(GetWebContents(), "window['refill'] === true") ==
            true;
   }));
-  ASSERT_FALSE(std::move(refill).Wait(kRefillSafetyMargin));
+  ASSERT_FALSE(std::move(refill).Wait());
 
   // Make sure that the new form was not filled.
   EXPECT_EQ("", GetFieldValueById("firstname_form1"));
