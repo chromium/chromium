@@ -470,7 +470,9 @@ InputController::MaybeCreateVoiceIsolationHandler(
 
   return VoiceIsolationHandler::MaybeCreate(
       *ml_model_manager, processing_output_params,
-      std::move(deliver_processed_audio_callback));
+      std::move(deliver_processed_audio_callback),
+      base::BindRepeating(&EventHandler::OnLog,
+                          base::Unretained(event_handler_)));
 }
 
 #endif

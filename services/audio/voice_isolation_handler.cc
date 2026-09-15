@@ -4,6 +4,9 @@
 
 #include "services/audio/voice_isolation_handler.h"
 
+#include <cinttypes>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -12,6 +15,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
@@ -84,17 +89,24 @@ class VoiceIsolationHandler::StartupMetricsLogger {
 VoiceIsolationHandler::VoiceIsolationHandler(
     scoped_refptr<media::MlModelHandle> model_handle,
     const media::AudioParameters& output_params,
-    DeliverProcessedAudioCallback deliver_processed_audio_callback)
+    DeliverProcessedAudioCallback deliver_processed_audio_callback,
+    LogCallback log_callback)
     : model_handle_(std::move(model_handle)),
       output_params_(output_params),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
+      log_callback_(std::move(log_callback)),
       output_bus_(media::AudioBus::Create(output_params)),
       bypass_voice_isolation_(true),
       startup_metrics_logger_(std::make_unique<StartupMetricsLogger>()) {
   CHECK(!deliver_processed_audio_callback_.is_null());
+  CHECK(!log_callback_.is_null());
   CHECK(output_bus_);
   CHECK(model_handle_);
+
+  SendLogMessage(
+      base::StringPrintf("%s({output_params_=[%s], async=true})", __func__,
+                         output_params_.AsHumanReadableString().c_str()));
 
   TRACE_EVENT_BEGIN(
       "audio", "VoiceIsolationHandler::Initialize",
@@ -110,21 +122,31 @@ VoiceIsolationHandler::VoiceIsolationHandler(
 VoiceIsolationHandler::VoiceIsolationHandler(
     std::unique_ptr<media::VoiceIsolation> voice_isolation,
     const media::AudioParameters& output_params,
-    DeliverProcessedAudioCallback deliver_processed_audio_callback)
+    DeliverProcessedAudioCallback deliver_processed_audio_callback,
+    LogCallback log_callback)
     : model_handle_(nullptr),
       output_params_(output_params),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
+      log_callback_(std::move(log_callback)),
       output_bus_(media::AudioBus::Create(output_params)),
       voice_isolation_(std::move(voice_isolation)),
       bypass_voice_isolation_(false) {
   CHECK(!deliver_processed_audio_callback_.is_null());
+  CHECK(!log_callback_.is_null());
   CHECK(output_bus_);
   CHECK(voice_isolation_);
+
+  SendLogMessage(
+      base::StringPrintf("%s({output_params_=[%s], async=false})", __func__,
+                         output_params_.AsHumanReadableString().c_str()));
 }
 
 VoiceIsolationHandler::~VoiceIsolationHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  SendLogMessage(
+      base::StringPrintf("%s({initialized=%s})", __func__,
+                         base::ToString(voice_isolation_ != nullptr)));
   if (!voice_isolation_) {
     TRACE_EVENT_END("audio", perfetto::NamedTrack::FromPointer(
                                  "audio::VoiceIsolationHandler", this));
@@ -135,6 +157,9 @@ void VoiceIsolationHandler::OnComponentCreated(
     std::unique_ptr<media::VoiceIsolationComponent> component) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT("audio", "VoiceIsolationHandler::OnComponentCreated");
+  SendLogMessage(base::StringPrintf("%s({success=%s})", __func__,
+                                    base::ToString(component != nullptr)));
+
   CHECK(startup_metrics_logger_);
   startup_metrics_logger_->SetResult(component ? StartupResult::kSuccess
                                                : StartupResult::kFailed);
@@ -151,6 +176,10 @@ void VoiceIsolationHandler::OnComponentCreated(
   if (voice_isolation_enabled_) {
     bypass_voice_isolation_.store(false, std::memory_order_release);
   }
+
+  SendLogMessage(base::StringPrintf(
+      "%s => bypass=%s", __func__,
+      base::ToString(bypass_voice_isolation_.load(std::memory_order_relaxed))));
 }
 
 void VoiceIsolationHandler::ProcessCapturedAudio(
@@ -191,6 +220,9 @@ void VoiceIsolationHandler::SetVoiceIsolation(bool enabled) {
     // bypassed until OnComponentCreated() finishes creating `voice_isolation_`.
     bypass_voice_isolation_.store(false, std::memory_order_release);
   }
+  SendLogMessage(base::StringPrintf(
+      "%s({enabled=%s}) => bypass=%s", __func__, base::ToString(enabled),
+      base::ToString(bypass_voice_isolation_.load(std::memory_order_relaxed))));
 }
 
 bool VoiceIsolationHandler::IsVoiceIsolationBypassed() const {
@@ -201,10 +233,18 @@ bool VoiceIsolationHandler::HasProcessingThread() const {
   return false;
 }
 
+void VoiceIsolationHandler::SendLogMessage(std::string_view message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  log_callback_.Run(base::StringPrintf("VIH::%.*s [id=%s]",
+                                       static_cast<int>(message.size()),
+                                       message.data(), id_.ToString().c_str()));
+}
+
 std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::MaybeCreate(
     MlModelManager& ml_model_manager,
     const media::AudioParameters& output_params,
-    DeliverProcessedAudioCallback deliver_processed_audio_callback) {
+    DeliverProcessedAudioCallback deliver_processed_audio_callback,
+    LogCallback log_callback) {
   TRACE_EVENT("audio", "VoiceIsolationHandler::MaybeCreate");
   scoped_refptr<media::MlModelHandle> model_handle =
       ml_model_manager.GetModel(mojom::MlModelType::kVoiceIsolationDenoiser);
@@ -214,17 +254,18 @@ std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::MaybeCreate(
     return nullptr;
   }
 
-  return base::WrapUnique(
-      new VoiceIsolationHandler(std::move(model_handle), output_params,
-                                std::move(deliver_processed_audio_callback)));
+  return base::WrapUnique(new VoiceIsolationHandler(
+      std::move(model_handle), output_params,
+      std::move(deliver_processed_audio_callback), std::move(log_callback)));
 }
 
 std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::CreateForTesting(
     std::unique_ptr<media::VoiceIsolation> voice_isolation,
     const media::AudioParameters& output_params,
-    DeliverProcessedAudioCallback deliver_processed_audio_callback) {
-  return base::WrapUnique(
-      new VoiceIsolationHandler(std::move(voice_isolation), output_params,
-                                std::move(deliver_processed_audio_callback)));
+    DeliverProcessedAudioCallback deliver_processed_audio_callback,
+    LogCallback log_callback) {
+  return base::WrapUnique(new VoiceIsolationHandler(
+      std::move(voice_isolation), output_params,
+      std::move(deliver_processed_audio_callback), std::move(log_callback)));
 }
 }  // namespace audio

@@ -8,13 +8,17 @@
 #include <atomic>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 
@@ -40,6 +44,7 @@ class VoiceIsolationHandler {
       const media::AudioBus& audio_bus,
       base::TimeTicks audio_capture_time,
       const media::AudioGlitchInfo& audio_glitch_info)>;
+  using LogCallback = base::RepeatingCallback<void(std::string_view)>;
 
   VoiceIsolationHandler(const VoiceIsolationHandler&) = delete;
   VoiceIsolationHandler& operator=(const VoiceIsolationHandler&) = delete;
@@ -49,12 +54,14 @@ class VoiceIsolationHandler {
   static std::unique_ptr<VoiceIsolationHandler> MaybeCreate(
       MlModelManager& ml_model_manager,
       const media::AudioParameters& output_params,
-      DeliverProcessedAudioCallback deliver_processed_audio_callback);
+      DeliverProcessedAudioCallback deliver_processed_audio_callback,
+      LogCallback log_callback = base::DoNothing());
 
   static std::unique_ptr<VoiceIsolationHandler> CreateForTesting(
       std::unique_ptr<media::VoiceIsolation> voice_isolation,
       const media::AudioParameters& output_params,
-      DeliverProcessedAudioCallback deliver_processed_audio_callback);
+      DeliverProcessedAudioCallback deliver_processed_audio_callback,
+      LogCallback log_callback = base::DoNothing());
 
   // Processes the captured audio. Called on the capture/processing thread.
   void ProcessCapturedAudio(const media::AudioBus& audio_source,
@@ -82,23 +89,29 @@ class VoiceIsolationHandler {
   VoiceIsolationHandler(
       scoped_refptr<media::MlModelHandle> model_handle,
       const media::AudioParameters& output_params,
-      DeliverProcessedAudioCallback deliver_processed_audio_callback);
+      DeliverProcessedAudioCallback deliver_processed_audio_callback,
+      LogCallback log_callback);
 
   VoiceIsolationHandler(
       std::unique_ptr<media::VoiceIsolation> voice_isolation,
       const media::AudioParameters& output_params,
-      DeliverProcessedAudioCallback deliver_processed_audio_callback);
+      DeliverProcessedAudioCallback deliver_processed_audio_callback,
+      LogCallback log_callback);
 
   void OnComponentCreated(
       std::unique_ptr<media::VoiceIsolationComponent> component);
 
   bool IsVoiceIsolationBypassed() const;
 
+  void SendLogMessage(std::string_view message);
+
   SEQUENCE_CHECKER(owning_sequence_);
 
+  const base::UnguessableToken id_{base::UnguessableToken::Create()};
   const scoped_refptr<media::MlModelHandle> model_handle_;
   const media::AudioParameters output_params_;
   const DeliverProcessedAudioCallback deliver_processed_audio_callback_;
+  const LogCallback log_callback_;
   std::unique_ptr<media::AudioBus> output_bus_;
 
   // Initialized on the owning sequence and read on the real-time audio thread
