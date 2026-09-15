@@ -14,7 +14,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -45,7 +44,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -76,8 +74,6 @@ import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
-import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.AppInstallState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider.Observer;
 import org.chromium.chrome.browser.omnibox.LocationBarSelectionController.SelectableView;
@@ -109,14 +105,9 @@ import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
-import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -126,7 +117,6 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
@@ -147,9 +137,7 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AppBannerManager;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.KeyNavigationUtil;
@@ -248,8 +236,7 @@ class LocationBarMediator
     private final LocationBarEmbedder mLocationBarEmbedder;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final CallbackController mCallbackController = new CallbackController();
-    private final OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
-    private final LocaleManager mLocaleManager;
+    private final LocationBarNavigator mNavigator;
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final Context mContext;
     private final BackKeyBehaviorDelegate mBackKeyBehavior;
@@ -258,7 +245,6 @@ class LocationBarMediator
             new ObserverList<>();
     private final ObserverList<Callback<String>> mUrlTextChangeListeners = new ObserverList<>();
     private final Rect mRootViewBounds = new Rect();
-    private final OmniboxUma mOmniboxUma;
     private final OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
     private final @Nullable PageZoomIndicatorCoordinator mPageZoomIndicatorCoordinator;
     private final @Nullable LocationBarFocusScrimHandler mScrimHandler;
@@ -268,7 +254,6 @@ class LocationBarMediator
     private final BooleanSupplier mIsToolbarMicEnabledSupplier;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
-    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final FuseboxCoordinator mFuseboxCoordinator;
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
@@ -365,17 +350,14 @@ class LocationBarMediator
             OmniboxResourceProvider resourceProvider,
             LocationBarEmbedderUiOverrides embedderUiOverrides,
             MonotonicObservableSupplier<Profile> profileSupplier,
-            OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
-            LocaleManager localeManager,
+            LocationBarNavigator locationBarNavigator,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             BackKeyBehaviorDelegate backKeyBehavior,
             WindowAndroid windowAndroid,
             boolean isTablet,
             LensController lensController,
-            OmniboxUma omniboxUma,
             BooleanSupplier isToolbarMicEnabledSupplier,
             OmniboxSuggestionsDropdownEmbedderImpl dropdownEmbedder,
-            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             @Nullable PageZoomIndicatorCoordinator pageZoomIndicatorCoordinator,
@@ -393,8 +375,6 @@ class LocationBarMediator
         mFuseboxCoordinator = fuseboxCoordinator;
         mLocationBarDataProvider.addObserver(this);
         mEmbedderUiOverrides = embedderUiOverrides;
-        mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
-        mLocaleManager = localeManager;
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addSyncObserverAndPostIfNonNull(
                 mCallbackController.makeCancelable(this::setProfile));
@@ -404,15 +384,14 @@ class LocationBarMediator
         mIsTablet = isTablet;
         mShouldShowButtonsWhenUnfocused = isTablet;
         mLensController = lensController;
-        mOmniboxUma = omniboxUma;
         mIsToolbarMicEnabledSupplier = isToolbarMicEnabledSupplier;
         mEmbedderImpl = dropdownEmbedder;
-        mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mPageZoomIndicatorCoordinator = pageZoomIndicatorCoordinator;
         mWindowHasFocusSupplier = windowHasFocusSupplier;
         mWindowHasFocusSupplier.addSyncObserver(mOnWindowFocusChanged);
+        mNavigator = locationBarNavigator;
         if (mPageZoomIndicatorCoordinator != null) {
             mPageZoomIndicatorCoordinator.setOnDismissCallbacks(
                     () -> updateZoomButtonVisibility(/* notifyEmbedder= */ true));
@@ -1136,167 +1115,19 @@ class LocationBarMediator
     @Override
     public void loadUrl(OmniboxLoadUrlParams omniboxLoadUrlParams) {
         try (TraceEvent e = TraceEvent.scoped("LocationBarMediator.loadUrl")) {
-            assert mLocationBarDataProvider != null;
-            Tab currentTab = mLocationBarDataProvider.getTab();
-
             // The code of the rest of this class ensures that this can't be called until the native
             // side is initialized
             assert mNativeInitialized : "Loading URL before native side initialized";
 
-            // TODO(crbug.com/40693835): Should be taking a full loaded LoadUrlParams.
-            if (mOverrideUrlLoadingDelegate.willHandleLoadUrlWithPostData(
-                    omniboxLoadUrlParams, mLocationBarDataProvider.isIncognito())) {
-                return;
+            if (mNavigator.loadUrl(omniboxLoadUrlParams)) {
+                // Without the following postDelayedTask, focusCurrentTab runs on the critical path
+                // of navigation. The following code postpones running focusCurrentTab and
+                // prioritizes running navigation code.
+                PostTask.postDelayedTask(
+                        TaskTraits.UI_USER_VISIBLE,
+                        this::endInputAndFocusCurrentTab,
+                        OmniboxFeatures.sPostDelayedTaskFocusTabTimeMillis.getValue());
             }
-
-            if (handleExtensionUrl(currentTab, omniboxLoadUrlParams)) {
-                return;
-            }
-
-            String url = omniboxLoadUrlParams.url;
-            if (currentTab != null) {
-                url = handleNtpNavigationAndGetUrl(currentTab, omniboxLoadUrlParams);
-                attachTabLoadObserver(currentTab, omniboxLoadUrlParams);
-            }
-
-            if (currentTab != null && !url.isEmpty()) {
-                LoadUrlParams loadUrlParams = buildLoadUrlParams(omniboxLoadUrlParams, url);
-                dispatchUrlLoad(currentTab, loadUrlParams, omniboxLoadUrlParams);
-                RecordUserAction.record("MobileOmniboxUse");
-            }
-
-            mLocaleManager.recordLocaleBasedSearchMetrics(
-                    false, url, omniboxLoadUrlParams.transitionType);
-
-            // Without the following postDelayedTask, focusCurrentTab runs on the critical path of
-            // navigation. The following code postpone running focusCurrentTab and prioritize
-            // running navigation code.
-            PostTask.postDelayedTask(
-                    TaskTraits.UI_USER_VISIBLE,
-                    this::endInputAndFocusCurrentTab,
-                    OmniboxFeatures.sPostDelayedTaskFocusTabTimeMillis.getValue());
-        }
-    }
-
-    private boolean handleExtensionUrl(
-            @Nullable Tab currentTab, OmniboxLoadUrlParams omniboxLoadUrlParams) {
-        String url = omniboxLoadUrlParams.url;
-        if (url != null && url.startsWith(UrlConstants.CHROME_EXTENSION_SCHEME + "://")) {
-            if (currentTab != null && currentTab.getWebContents() != null) {
-                ExtensionUi.onOmniboxExtensionInputEntered(
-                        currentTab.getWebContents(),
-                        url,
-                        omniboxLoadUrlParams.openInNewTab,
-                        omniboxLoadUrlParams.openInNewWindow);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private String handleNtpNavigationAndGetUrl(
-            Tab currentTab, OmniboxLoadUrlParams omniboxLoadUrlParams) {
-        boolean isCurrentTabNtpUrl = OmniboxUrlUtils.isNtpUrl(currentTab.getUrl());
-        if (currentTab.isNativePage() || isCurrentTabNtpUrl) {
-            mOmniboxUma.recordNavigationOnNtp(
-                    omniboxLoadUrlParams.url,
-                    omniboxLoadUrlParams.transitionType,
-                    !currentTab.isIncognito() && isCurrentTabNtpUrl);
-            // Passing in an empty string should not do anything unless the user is at the
-            // NTP. Since the NTP has no url, pressing enter while clicking on the URL bar
-            // should refresh the page as it does when you click and press enter on any
-            // other site.
-            if (omniboxLoadUrlParams.url.isEmpty()) {
-                return currentTab.getUrl().getSpec();
-            }
-        }
-        return omniboxLoadUrlParams.url;
-    }
-
-    private void attachTabLoadObserver(Tab currentTab, OmniboxLoadUrlParams omniboxLoadUrlParams) {
-        if (omniboxLoadUrlParams.callback == null) return;
-
-        currentTab.addObserver(
-                new TabObserver() {
-                    @Override
-                    public void onLoadUrl(
-                            Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
-                        omniboxLoadUrlParams.callback.onLoadUrl(params, loadUrlResult);
-                        tab.removeObserver(this);
-                    }
-                });
-    }
-
-    private LoadUrlParams buildLoadUrlParams(
-            OmniboxLoadUrlParams omniboxLoadUrlParams, String url) {
-        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
-        try (TimingMetric record =
-                TimingMetric.shortUptime("Android.Omnibox.SetGeolocationHeadersTime")) {
-            loadUrlParams.setVerbatimHeaders(
-                    GeolocationHeader.getGeoHeader(
-                            url,
-                            assertNonNull(mProfileSupplier.get()),
-                            mTemplateUrlServiceSupplier.get()));
-        }
-        loadUrlParams.setRemoveExtraHeadersOnCrossOriginRedirect(true);
-        loadUrlParams.setTransitionType(
-                omniboxLoadUrlParams.transitionType | PageTransition.FROM_ADDRESS_BAR);
-        if (omniboxLoadUrlParams.inputStartTimestamp != 0) {
-            loadUrlParams.setInputStartTimestamp(omniboxLoadUrlParams.inputStartTimestamp);
-        }
-
-        if (!omniboxLoadUrlParams.extraHeaders.isEmpty()) {
-            StringBuilder headers = new StringBuilder();
-            for (var entry : omniboxLoadUrlParams.extraHeaders.entrySet()) {
-                headers.append(entry.getKey());
-                headers.append(": ");
-                headers.append(entry.getValue());
-                headers.append("\r\n");
-            }
-            String previousHeaders = loadUrlParams.getVerbatimHeaders();
-            if (!TextUtils.isEmpty(previousHeaders)) {
-                headers.append(previousHeaders);
-            }
-
-            loadUrlParams.setVerbatimHeaders(headers.toString());
-        }
-
-        if (omniboxLoadUrlParams.postData != null && omniboxLoadUrlParams.postData.length != 0) {
-            loadUrlParams.setPostData(
-                    ResourceRequestBody.createFromBytes(omniboxLoadUrlParams.postData));
-        }
-
-        return loadUrlParams;
-    }
-
-    private void dispatchUrlLoad(
-            Tab currentTab,
-            LoadUrlParams loadUrlParams,
-            OmniboxLoadUrlParams omniboxLoadUrlParams) {
-        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-        boolean processed = false;
-        if (omniboxLoadUrlParams.openInNewWindow) {
-            Context tabContext = currentTab.getContext();
-            if (tabContext instanceof Activity sourceActivity) {
-                processed =
-                        MultiInstanceOrchestratorFactory.getInstance()
-                                .openUrlInOtherWindow(
-                                        sourceActivity,
-                                        loadUrlParams,
-                                        currentTab.getParentId(),
-                                        /* preferNew= */ true,
-                                        currentTab.isIncognitoBranded());
-            }
-        } else if (omniboxLoadUrlParams.openInNewTab && tabModelSelector != null) {
-            tabModelSelector.openNewTab(
-                    loadUrlParams,
-                    TabLaunchType.FROM_OMNIBOX,
-                    currentTab,
-                    currentTab.isIncognito());
-            processed = true;
-        }
-        if (!processed) {
-            currentTab.loadUrl(loadUrlParams);
         }
     }
 

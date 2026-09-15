@@ -381,6 +381,15 @@ public class LocationBarCoordinator
         }
         // TODO(crbug.com/40733049): Inject LocaleManager instance to LocationBarCoordinator instead
         // of using the singleton.
+        LocationBarNavigator locationBarNavigator =
+                new LocationBarNavigator(
+                        locationBarDataProvider,
+                        profileObservableSupplier,
+                        templateUrlServiceSupplier,
+                        tabModelSelectorSupplier,
+                        overrideUrlLoadingDelegate,
+                        LocaleManager.getInstance(),
+                        omniboxUma);
         mLocationBarMediator =
                 new LocationBarMediator(
                         context,
@@ -389,17 +398,14 @@ public class LocationBarCoordinator
                         mResourceProvider,
                         uiOverrides,
                         profileObservableSupplier,
-                        overrideUrlLoadingDelegate,
-                        LocaleManager.getInstance(),
+                        locationBarNavigator,
                         templateUrlServiceSupplier,
                         backKeyBehavior,
                         windowAndroid,
                         isTabletWindow() && isTabletLayout(),
                         LensController.getInstance(),
-                        omniboxUma,
                         isToolbarMicEnabledSupplier,
                         mOmniboxDropdownEmbedderImpl,
-                        tabModelSelectorSupplier,
                         browserControlsStateProvider,
                         modalDialogManagerSupplier,
                         mPageZoomIndicatorCoordinator,
