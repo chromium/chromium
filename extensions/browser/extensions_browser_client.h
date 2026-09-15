@@ -600,7 +600,8 @@ class ExtensionsBrowserClient {
                                             const GURL& url);
 
   // Returns the ProtocolHandlerRegistry instance associated with the user
-  // profile.
+  // profile, or null if the embedder has none; extension protocol_handlers
+  // are then ignored.
   virtual custom_handlers::ProtocolHandlerRegistry* GetProtocolHandlerRegistry(
       content::BrowserContext* context);
 
