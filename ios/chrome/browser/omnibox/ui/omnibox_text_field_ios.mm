@@ -1123,6 +1123,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 }
 
 - (void)forceDisableReturnKey:(BOOL)forceDisable {
+  if (_forceDisableReturnKey == forceDisable) {
+    return;
+  }
+
   _forceDisableReturnKey = forceDisable;
   [self reloadInputViews];
 }
