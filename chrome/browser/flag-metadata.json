@@ -1027,7 +1027,7 @@
   {
     "name": "autofill-enable-autofill-settings-enterprise-policy",
     "owners": [ "luchenpeng@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 158
   },
   {
     "name": "autofill-enable-bnpl-affirm-internationalization",
