@@ -9188,3 +9188,16 @@ crbug.com/543076367 [ Android ] external/wpt/webdriver/tests/bidi/network/set_ex
 # Android BiDi browser.setDownloadBehavior host file support
 crbug.com/549199028 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/download_end/user_context_tentative.py [ Failure ]
 crbug.com/549199028 [ Android ] external/wpt/webdriver/tests/bidi/browsing_context/download_will_begin/user_context_tentative.py [ Failure ]
+
+# Gardener 2026-09-15: BiDi tests timing out on Linux Tests (dbg)(1)
+crbug.com/526673507 [ Debug Linux ] external/wpt/webdriver/tests/bidi/browsing_context/context_created/subscribe_steps.py [ Pass Timeout ]
+crbug.com/526673507 [ Debug Linux ] external/wpt/webdriver/tests/bidi/browsing_context/context_destroyed/context_destroyed.py [ Pass Timeout ]
+crbug.com/484353698 [ Debug Linux ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/user_contexts.py [ Pass Timeout ]
+crbug.com/540619916 [ Debug Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/user_contexts.py [ Pass Timeout ]
+crbug.com/540619916 [ Debug Linux ] external/wpt/webdriver/tests/bidi/emulation/set_locale_override/user_contexts.py [ Pass Timeout ]
+crbug.com/488362582 [ Debug Linux ] external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/user_contexts.py [ Pass Timeout ]
+crbug.com/469618144 [ Debug Linux ] external/wpt/webdriver/tests/bidi/emulation/set_touch_override/user_contexts.py [ Pass Timeout ]
+crbug.com/540619916 [ Debug Linux ] external/wpt/webdriver/tests/bidi/emulation/set_user_agent_override/user_contexts.py [ Pass Timeout ]
+crbug.com/547617167 [ Debug Linux ] external/wpt/webdriver/tests/bidi/external/user_agent_client_hints/set_client_hints_override/user_contexts.py [ Pass Timeout ]
+crbug.com/540619916 [ Debug Linux ] external/wpt/webdriver/tests/bidi/network/provide_response/body.py [ Failure Pass Timeout ]
+crbug.com/527713316 [ Debug Linux ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/user_contexts.py [ Pass Timeout ]
