@@ -45,6 +45,10 @@
 #include "ui/views/window/non_client_view.h"
 #include "url/origin.h"
 
+#if !BUILDFLAG(IS_WIN)
+#include "chrome/browser/picture_in_picture/picture_in_picture_widget_fade_animator.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_native_widget_mac.h"
 #endif
@@ -202,6 +206,12 @@ void DocumentPipHost::CreateAndShowPipWindow(
   CreateChildWebContentsHelpers(GetChildWebContents());
 
   restore_focus_on_activation_ = true;
+#if !BUILDFLAG(IS_WIN)
+  // Resizable Windows PiP widgets cannot be translucent.
+  fade_animator_ = std::make_unique<PictureInPictureWidgetFadeAnimator>();
+  fade_animator_->AnimateShowWindow(
+      widget_.get(), PictureInPictureWidgetFadeAnimator::WidgetShowType::kNone);
+#endif
   widget_->Show();
 }
 
@@ -690,6 +700,12 @@ void DocumentPipHost::PrepareForWidgetDestruction() {
     child->SetDelegate(nullptr);
   }
 
+#if !BUILDFLAG(IS_WIN)
+  if (fade_animator_) {
+    fade_animator_->CancelAndReset();
+    fade_animator_.reset();
+  }
+#endif
   // Destroy the tucker before the widget, since it references the widget.
   tucker_.reset();
   is_tucking_forced_ = false;

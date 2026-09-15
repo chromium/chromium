@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_interface.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
@@ -83,6 +84,16 @@
 
 class DocumentPipFrameViewTestApi {
  public:
+  static bool HasAnyVisibleContentSettingViews(
+      DocumentPipFrameView* frame_view) {
+    for (ContentSettingImageView* view : frame_view->content_setting_views_) {
+      if (view->GetVisible()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   static bool ShowPageInfo(DocumentPipFrameView* frame_view) {
     return frame_view->ShowPageInfo();
   }
@@ -95,6 +106,13 @@ class DocumentPipFrameViewTestApi {
 
 class DocumentPipHostTestApi {
  public:
+#if !BUILDFLAG(IS_WIN)
+  static PictureInPictureWidgetFadeAnimator* GetFadeAnimator(
+      DocumentPipHost* host) {
+    return host->fade_animator_.get();
+  }
+#endif
+
   static void RunPendingChildResize(DocumentPipHost* host) {
     host->RunPendingChildResizeForTesting();
   }
@@ -134,7 +152,20 @@ struct AnimationTimingTestCase {
   std::vector<ExpectationsAtTimeDelta> hide_expectations;
 };
 
-using AnimationTimingTest = WithParamInterface<AnimationTimingTestCase>;
+struct AnimationTimingTestParam {
+  bool standalone;
+  AnimationTimingTestCase test_case;
+};
+
+std::vector<AnimationTimingTestParam> WithBothBackends(
+    const std::vector<AnimationTimingTestCase>& test_cases) {
+  std::vector<AnimationTimingTestParam> params;
+  for (const auto& test_case : test_cases) {
+    params.push_back({false, test_case});
+    params.push_back({true, test_case});
+  }
+  return params;
+}
 
 constexpr base::TimeDelta kFirstAnimationInterval = base::Milliseconds(25);
 constexpr base::TimeDelta kSecondAnimationInterval = base::Milliseconds(75);
@@ -543,8 +574,7 @@ class PictureInPictureBrowserFrameViewTestBase : public WebRtcTestBase {
 };
 
 class PictureInPictureBrowserFrameViewTest
-    : public PictureInPictureBrowserFrameViewTestBase,
-      public AnimationTimingTest {};
+    : public PictureInPictureBrowserFrameViewTestBase {};
 
 class PictureInPictureChildDialogResizeTest
     : public PictureInPictureBrowserFrameViewTestBase,
@@ -560,12 +590,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "Standalone" : "BrowserBacked";
                          });
 
-class PictureInPictureTitleActivationTest
-    : public PictureInPictureBrowserFrameViewTestBase,
-      public testing::WithParamInterface<bool> {
+class PictureInPictureFrameControlsTestBase
+    : public PictureInPictureBrowserFrameViewTestBase {
  protected:
-  bool UseStandaloneDocumentPip() const override { return GetParam(); }
-
   views::View* GetPipFrameView() {
     return GetPipWidget()->non_client_view()->frame_view();
   }
@@ -573,6 +600,13 @@ class PictureInPictureTitleActivationTest
   bool IsPointInPIPFrameView(gfx::Point point_in_screen) {
     views::View::ConvertPointFromScreen(GetPipFrameView(), &point_in_screen);
     return GetPipFrameView()->GetLocalBounds().Contains(point_in_screen);
+  }
+
+  bool HasAnyVisibleContentSettingViews() {
+    return UseStandaloneDocumentPip()
+               ? DocumentPipFrameViewTestApi::HasAnyVisibleContentSettingViews(
+                     GetStandaloneFrameView())
+               : pip_frame_view()->HasAnyVisibleContentSettingViews();
   }
 
   views::View* GetBackToTabButton() {
@@ -625,6 +659,13 @@ class PictureInPictureTitleActivationTest
     return DocumentPipFrameViewTestApi::GetAnimationController(
         GetStandaloneFrameView());
   }
+};
+
+class PictureInPictureTitleActivationTest
+    : public PictureInPictureFrameControlsTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool UseStandaloneDocumentPip() const override { return GetParam(); }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -1557,22 +1598,54 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureReturnToOpenerTest,
 }
 
 #if !BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+class PictureInPictureFadeAnimationTest
+    : public PictureInPictureBrowserFrameViewTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool UseStandaloneDocumentPip() const override { return GetParam(); }
+
+  PictureInPictureWidgetFadeAnimator* GetFadeAnimator() {
+    if (!UseStandaloneDocumentPip()) {
+      return pip_frame_view()->GetFadeAnimatorForTesting();
+    }
+    auto* host = DocumentPipHost::FromWebContents(
+        browser()->GetTabStripModel()->GetActiveWebContents());
+    CHECK(host);
+    return DocumentPipHostTestApi::GetFadeAnimator(host);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PictureInPictureFadeAnimationTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+IN_PROC_BROWSER_TEST_P(PictureInPictureFadeAnimationTest,
                        FadeInAnimationIsUsedOnWindowShow) {
   // Set up document PiP.
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
   // Get the PiP fade animator and verify the expected fade in calls count.
-  PictureInPictureWidgetFadeAnimator* pip_fade_animator =
-      pip_frame_view()->GetFadeAnimatorForTesting();
-  EXPECT_NE(nullptr, pip_fade_animator);
+  PictureInPictureWidgetFadeAnimator* pip_fade_animator = GetFadeAnimator();
+  ASSERT_NE(nullptr, pip_fade_animator);
   EXPECT_EQ(1, pip_fade_animator->GetFadeInCallsCountForTesting());
 }
 #endif
 
-IN_PROC_BROWSER_TEST_P(PictureInPictureBrowserFrameViewTest,
+class PictureInPictureAnimationTimingTest
+    : public PictureInPictureFrameControlsTestBase,
+      public WithParamInterface<AnimationTimingTestParam> {
+ protected:
+  bool UseStandaloneDocumentPip() const override {
+    return GetParam().standalone;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PictureInPictureAnimationTimingTest,
                        TestAnimationTiming) {
-  const AnimationTimingTestCase& test_case = GetParam();
+  const AnimationTimingTestCase& test_case = GetParam().test_case;
   test_case.has_content_settings_view
       ? SetUpDocumentPIP(
             /*disallow_return_to_opener=*/test_case.disallow_return_to_opener,
@@ -1580,14 +1653,11 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureBrowserFrameViewTest,
       : SetUpDocumentPIP(
             /*disallow_return_to_opener=*/test_case.disallow_return_to_opener);
 
-  // Move mouse to the center of the pip window should activate title.
-  gfx::Point center = pip_frame_view()->GetLocalBounds().CenterPoint();
-  views::View::ConvertPointToScreen(pip_frame_view(), &center);
-  ASSERT_TRUE(IsPointInPIPFrameView(center));
-  UpdateTopBarView(center);
+  // Drive the transition directly: Wayland has no global screen coordinates
+  // for moving the pointer outside the window. TitleActivation covers input.
+  UpdateTopBarView(/*active=*/true);
 
-  AnimationWaiter show_animation_waiter(
-      pip_frame_view()->GetRenderActiveAnimationsForTesting());
+  AnimationWaiter show_animation_waiter(GetTopBarAnimations(/*active=*/true));
   for (size_t i = 0; i < test_case.show_expectations.size(); ++i) {
     const auto& show_expectations = test_case.show_expectations[i];
 
@@ -1599,32 +1669,20 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureBrowserFrameViewTest,
         show_expectations.time_delta);
     if (test_case.disallow_return_to_opener) {
       DCHECK(!show_expectations.expected_back_to_tab_button_is_visible);
-      ASSERT_EQ(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
+      ASSERT_EQ(nullptr, GetBackToTabButton());
     } else {
-      ASSERT_EQ(
-          show_expectations.expected_back_to_tab_button_is_visible,
-          IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
+      ASSERT_EQ(show_expectations.expected_back_to_tab_button_is_visible,
+                IsButtonVisible(GetBackToTabButton()));
     }
     ASSERT_EQ(show_expectations.expected_close_button_is_visible,
-              IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
+              IsButtonVisible(GetCloseButton()));
     ASSERT_EQ(show_expectations.expected_has_any_visible_content_setting_views,
-              pip_frame_view()->HasAnyVisibleContentSettingViews());
+              HasAnyVisibleContentSettingViews());
   }
 
-  // Move mouse to the top-left corner of the main browser window (out side of
-  // the pip window) should deactivate the title.
-  gfx::Point outside = gfx::Point();
-  if (PlatformSupportsScreenCoordinates()) {
-    views::View::ConvertPointToScreen(
-        BrowserView::GetBrowserViewForBrowser(browser()), &outside);
-    // This check only makes sense in platforms that support global screen
-    // coordinates.
-    ASSERT_FALSE(IsPointInPIPFrameView(outside));
-  }
-  UpdateTopBarView(outside);
+  UpdateTopBarView(/*active=*/false);
 
-  AnimationWaiter hide_animation_waiter(
-      pip_frame_view()->GetRenderInactiveAnimationsForTesting());
+  AnimationWaiter hide_animation_waiter(GetTopBarAnimations(/*active=*/false));
   for (size_t i = 0; i < test_case.hide_expectations.size(); ++i) {
     const auto& hide_expectations = test_case.hide_expectations[i];
 
@@ -1636,23 +1694,22 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureBrowserFrameViewTest,
         hide_expectations.time_delta);
     if (test_case.disallow_return_to_opener) {
       DCHECK(!hide_expectations.expected_back_to_tab_button_is_visible);
-      ASSERT_EQ(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
+      ASSERT_EQ(nullptr, GetBackToTabButton());
     } else {
-      ASSERT_EQ(
-          hide_expectations.expected_back_to_tab_button_is_visible,
-          IsButtonVisible(pip_frame_view()->GetBackToTabButtonForTesting()));
+      ASSERT_EQ(hide_expectations.expected_back_to_tab_button_is_visible,
+                IsButtonVisible(GetBackToTabButton()));
     }
     ASSERT_EQ(hide_expectations.expected_close_button_is_visible,
-              IsButtonVisible(pip_frame_view()->GetCloseButtonForTesting()));
+              IsButtonVisible(GetCloseButton()));
     ASSERT_EQ(hide_expectations.expected_has_any_visible_content_setting_views,
-              pip_frame_view()->HasAnyVisibleContentSettingViews());
+              HasAnyVisibleContentSettingViews());
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     AnimationTimingTestSuiteInstantiation,
-    PictureInPictureBrowserFrameViewTest,
-    testing::ValuesIn<AnimationTimingTestCase>({
+    PictureInPictureAnimationTimingTest,
+    testing::ValuesIn(WithBothBackends({
         {.test_name = "WithoutContentSettingView_WithBackToTabButton",
          .has_content_settings_view = false,
          .disallow_return_to_opener = false,
@@ -1913,9 +1970,10 @@ INSTANTIATE_TEST_SUITE_P(
                   .expected_back_to_tab_button_is_visible = std::nullopt,
                   .expected_close_button_is_visible = false,
                   .expected_has_any_visible_content_setting_views = true}}},
-    }),
-    [](const testing::TestParamInfo<AnimationTimingTest::ParamType>& info) {
-      return info.param.test_name;
+    })),
+    [](const testing::TestParamInfo<AnimationTimingTestParam>& info) {
+      return info.param.test_case.test_name +
+             (info.param.standalone ? "_Standalone" : "_BrowserBacked");
     });
 
 IN_PROC_BROWSER_TEST_P(PictureInPictureNativeWindowTest,

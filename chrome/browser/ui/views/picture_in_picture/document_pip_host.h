@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "chrome/browser/ui/views/picture_in_picture/pip_child_dialog_observer_helper.h"
 #include "components/web_modal/modal_dialog_host.h"
@@ -30,6 +31,10 @@
 class DocumentPipWidgetDelegate;
 class PictureInPictureTucker;
 class Profile;
+
+#if !BUILDFLAG(IS_WIN)
+class PictureInPictureWidgetFadeAnimator;
+#endif
 
 namespace content {
 class NavigationEntry;
@@ -327,6 +332,11 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   // destroyed (it observes the widget). Declared after `widget_` so it is
   // destroyed before the widget it observes.
   std::unique_ptr<PipChildDialogObserverHelper> child_dialog_observer_helper_;
+
+#if !BUILDFLAG(IS_WIN)
+  // Destroyed before the widget whose opacity it animates.
+  std::unique_ptr<PictureInPictureWidgetFadeAnimator> fade_animator_;
+#endif
 
   base::WeakPtrFactory<DocumentPipHost> weak_factory_{this};
 
