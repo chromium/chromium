@@ -124,9 +124,8 @@ CameraPreviewView::CameraPreviewView(
 
   resize_button_->SetPaintToLayer();
   resize_button_->layer()->SetFillsBoundsOpaquely(false);
-  resize_button_->SetBackground(views::CreateRoundedRectBackground(
-      kColorAshShieldAndBase80,
-      resize_button_->GetPreferredSize().height() / 2.f));
+  resize_button_->SetBackground(
+      views::CreatePillBackground(kColorAshShieldAndBase80));
 
   accessibility_observation_.Observe(Shell::Get()->accessibility_controller());
   RefreshResizeButtonVisibility();

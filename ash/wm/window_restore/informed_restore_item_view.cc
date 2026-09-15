@@ -192,8 +192,8 @@ void InformedRestoreItemView::OnAllFaviconsLoaded(
       builder
           .SetImage(ui::ImageModel::FromVectorIcon(
               kDefaultAppIcon, cros_tokens::kCrosSysOnPrimary))
-          .SetBackground(views::CreateRoundedRectBackground(
-              cros_tokens::kCrosSysPrimary, kFaviconPreferredSize.width()));
+          .SetBackground(
+              views::CreatePillBackground(cros_tokens::kCrosSysPrimary));
     } else {
       builder.SetImage(ui::ImageModel::FromImageSkia(
           gfx::ImageSkiaOperations::CreateResizedImage(

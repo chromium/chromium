@@ -50,7 +50,6 @@ constexpr base::TimeDelta kBounceEndDuration = base::Milliseconds(700);
 // RoundedLabel construction values.
 constexpr int kLabelHorizontalPadding = 16;
 constexpr int kLabelHeight = 36;
-constexpr float kRoundedDivisor = 2.f;
 
 // The nudge will not be shown if it already been shown 3 times, or if 24 hours
 // have not yet passed since it was last shown.
@@ -86,8 +85,8 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
 
   auto nudge_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_TUCK_EDUCATIONAL_NUDGE_LABEL));
-  nudge_label->SetBackground(views::CreateRoundedRectBackground(
-      ui::kColorSysSurface3, kLabelHeight / kRoundedDivisor));
+  nudge_label->SetBackground(
+      views::CreatePillBackground(ui::kColorSysSurface3));
   nudge_label->SetPreferredSize(gfx::Size(
       nudge_label->GetPreferredSize().width() + kLabelHorizontalPadding * 2,
       kLabelHeight));

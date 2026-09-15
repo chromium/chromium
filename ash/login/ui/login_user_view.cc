@@ -183,8 +183,7 @@ class LoginUserView::UserImage : public NonAccessibleView {
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
             chromeos::kEnterpriseIcon, icon_color_id,
             icon_size * kIconProportion)));
-    icon_->SetBackground(views::CreateRoundedRectBackground(
-        icon_background_color_id, icon_size / 2));
+    icon_->SetBackground(views::CreatePillBackground(icon_background_color_id));
   }
 
   UserImage(const UserImage&) = delete;

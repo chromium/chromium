@@ -83,11 +83,9 @@ CloseButton::CloseButton(PressedCallback callback,
                                    /*highlight_on_focus=*/false,
                                    /*background_color=*/gfx::kPlaceholderColor);
 
-  // Add a rounded rect background. The rounding will be half the button size so
-  // it is a circle.
+  // Add a pill background. The button is square, so this renders as a circle.
   if (!IsFloatingCloseButton(type_)) {
-    SetBackground(views::CreateRoundedRectBackground(
-        background_color_id, GetCloseButtonSize(type_) / 2));
+    SetBackground(views::CreatePillBackground(background_color_id));
   }
 
   // Use the default close vector icon base on the given `type_` if the client

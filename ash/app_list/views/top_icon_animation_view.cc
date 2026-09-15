@@ -81,9 +81,8 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
         views::BoxLayout::Orientation::kHorizontal,
         gfx::Insets(
             app_list_config->shortcut_host_badge_icon_border_margin())));
-    badge_container_->SetBackground(views::CreateRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBaseOpaque,
-        app_list_config->GetShortcutHostBadgeIconContainerDimension() / 2));
+    badge_container_->SetBackground(
+        views::CreatePillBackground(cros_tokens::kCrosSysSystemOnBaseOpaque));
     if (item_in_folder_icon_) {
       badge_container_->SetPaintToLayer();
       badge_container_->layer()->SetFillsBoundsOpaquely(false);

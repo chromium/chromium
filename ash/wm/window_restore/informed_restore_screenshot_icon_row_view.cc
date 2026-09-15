@@ -98,9 +98,8 @@ InformedRestoreScreenshotIconRowView::InformedRestoreScreenshotIconRowView(
               .SetPreferredSize(
                   informed_restore::kScreenshotIconRowImageViewSize)
               .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
-              .SetBackground(views::CreateRoundedRectBackground(
-                  cros_tokens::kCrosSysPrimaryContainer,
-                  informed_restore::kScreenshotIconRowIconSize / 2.0))
+              .SetBackground(views::CreatePillBackground(
+                  cros_tokens::kCrosSysPrimaryContainer))
               .Build());
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosLabel2,
                                             *count_label);
