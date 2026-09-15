@@ -1087,7 +1087,7 @@ TEST_F(AutocompleteResultTest, SortAndCullDuplicateSearchURLs) {
 
   TestData data[] = {
       {0, 1, 1300, true}, {1, 1, 1200, true}, {2, 1, 1100, true},
-      {3, 1, 1000, true}, {4, 2, 900, true},
+      {3, 1, 1000, true}, {4, 2, 900, true},  {5, 1, 800, true},
   };
 
   ACMatches matches;
@@ -1097,6 +1097,7 @@ TEST_F(AutocompleteResultTest, SortAndCullDuplicateSearchURLs) {
   matches[2].destination_url = GURL("http://www.foo.com/s?q=foo&oq=f");
   matches[3].destination_url = GURL("http://www.foo.com/s?q=foo&aqs=0");
   matches[4].destination_url = GURL("http://www.foo.com/");
+  matches[5].destination_url = GURL("http://www.foo.com/s?q=foo2#ref");
 
   AutocompleteInput input(u"a", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
@@ -1107,7 +1108,7 @@ TEST_F(AutocompleteResultTest, SortAndCullDuplicateSearchURLs) {
                      /*can_show_contextual_suggestions=*/false,
                      /*mia_enabled=*/false, /*is_incognito=*/false);
 
-  // We expect the 3rd and 4th results to be removed.
+  // We expect the 3rd, 4th, and 6th results to be removed.
   ASSERT_EQ(3U, result.size());
   EXPECT_EQ("http://www.foo.com/s?q=foo",
             result.match_at(0)->destination_url.spec());
@@ -1117,6 +1118,38 @@ TEST_F(AutocompleteResultTest, SortAndCullDuplicateSearchURLs) {
   EXPECT_EQ(1200, result.match_at(1)->relevance);
   EXPECT_EQ("http://www.foo.com/", result.match_at(2)->destination_url.spec());
   EXPECT_EQ(900, result.match_at(2)->relevance);
+}
+
+TEST_F(AutocompleteResultTest, SortAndCullSearchTermsInFragment) {
+  TemplateURLData url_data;
+  url_data.SetShortName(u"unittest");
+  url_data.SetKeyword(u"foo");
+  url_data.SetURL("https://www.foo.com/#ie=UTF-8&wd={searchTerms}");
+  template_url_service().Add(std::make_unique<TemplateURL>(url_data));
+
+  TestData data[] = {
+      {0, 1, 1300, true},
+      {1, 1, 1200, true},
+      {2, 1, 1100, true},
+  };
+
+  ACMatches matches;
+  PopulateAutocompleteMatches(data, &matches);
+  matches[0].destination_url = GURL("https://www.foo.com/#ie=UTF-8&wd=foo");
+  matches[1].destination_url = GURL("https://www.foo.com/#ie=UTF-8&wd=foobar");
+  matches[2].destination_url =
+      GURL("https://www.foo.com/#ie=UTF-8&wd=foo%20bar");
+
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  AutocompleteResult result;
+  result.AppendMatches(matches);
+  result.SortAndCull(input, &template_url_service(),
+                     triggered_feature_service(), /*is_lens_active=*/false,
+                     /*can_show_contextual_suggestions=*/false,
+                     /*mia_enabled=*/false, /*is_incognito=*/false);
+
+  EXPECT_EQ(3U, result.size());
 }
 
 TEST_F(AutocompleteResultTest, SortAndCullWithMatchDups) {
