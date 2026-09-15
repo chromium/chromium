@@ -363,6 +363,9 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
       res = false;
       HDC hdc = context->hdc;
       SkBitmap bitmap;
+      // TODO(crbug.com/503801928): Remove `BI_JPEG` and `BI_PNG` handling code
+      // if this check holds.
+      DUMP_WILL_BE_CHECK(bmih->biCompression == BI_RGB);
       if (bmih->biCompression == BI_JPEG) {
         base::span<const uint8_t> bits =
             GetBitmapBits(record_span, bmih->biSizeImage);
