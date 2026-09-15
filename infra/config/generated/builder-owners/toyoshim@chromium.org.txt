@@ -1,6 +1,0 @@
-ci/linux-separate-renderer-fyi-rel
-ci/mac-separate-renderer-fyi-rel
-ci/win-separate-renderer-fyi-rel
-try/linux-separate-renderer-rel
-try/mac-separate-renderer-rel
-try/win-separate-renderer-rel

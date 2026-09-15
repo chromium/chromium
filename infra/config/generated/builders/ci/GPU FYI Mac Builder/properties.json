@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "GPU FYI Mac Builder",
-              "project": "chromium"
+              "project": "chromium-m155"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -32,68 +32,8 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Mac FYI Experimental Release (Intel)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Mac Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true,
-              "use_test_trigger_cas": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Mac FYI Experimental Retina Release (AMD)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Mac Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true,
-              "use_test_trigger_cas": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
               "builder": "Mac FYI Release (Intel)",
-              "project": "chromium"
+              "project": "chromium-m155"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -113,37 +53,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Mac Builder",
-                "project": "chromium"
-              },
-              "run_tests_serially": true,
-              "use_test_trigger_cas": true
-            }
-          },
-          {
-            "builder_id": {
-              "bucket": "ci",
-              "builder": "Mac FYI Retina Release (AMD Radeon Pro 555X)",
-              "project": "chromium"
-            },
-            "builder_spec": {
-              "builder_group": "chromium.gpu.fyi",
-              "execution_mode": "TEST",
-              "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
-                "build_config": "Release",
-                "config": "chromium",
-                "target_bits": 64,
-                "target_platform": "mac"
-              },
-              "legacy_gclient_config": {
-                "config": "chromium"
-              },
-              "parent": {
-                "bucket": "ci",
-                "builder": "GPU FYI Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m155"
               },
               "run_tests_serially": true,
               "use_test_trigger_cas": true
@@ -153,7 +63,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Mac FYI Retina Release (AMD)",
-              "project": "chromium"
+              "project": "chromium-m155"
             },
             "builder_spec": {
               "builder_group": "chromium.gpu.fyi",
@@ -173,7 +83,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "GPU FYI Mac Builder",
-                "project": "chromium"
+                "project": "chromium-m155"
               },
               "run_tests_serially": true,
               "use_test_trigger_cas": true
@@ -185,57 +95,22 @@
         {
           "bucket": "ci",
           "builder": "GPU FYI Mac Builder",
-          "project": "chromium"
+          "project": "chromium-m155"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Mac FYI Experimental Release (Intel)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Mac FYI Experimental Retina Release (AMD)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
           "builder": "Mac FYI Release (Intel)",
-          "project": "chromium"
-        },
-        {
-          "bucket": "ci",
-          "builder": "Mac FYI Retina Release (AMD Radeon Pro 555X)",
-          "project": "chromium"
+          "project": "chromium-m155"
         },
         {
           "bucket": "ci",
           "builder": "Mac FYI Retina Release (AMD)",
-          "project": "chromium"
+          "project": "chromium-m155"
         }
       ],
       "mirroring_builder_group_and_names": [
-        {
-          "builder": "gpu-fyi-try-mac-amd-retina-555x-rel",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "gpu-fyi-try-mac-amd-retina-exp",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "gpu-fyi-try-mac-amd-retina-rel",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "gpu-fyi-try-mac-intel-exp",
-          "group": "tryserver.chromium.mac"
-        },
-        {
-          "builder": "gpu-fyi-try-mac-intel-rel",
-          "group": "tryserver.chromium.mac"
-        },
         {
           "builder": "mac_optional_gpu_tests_rel",
           "group": "tryserver.chromium.mac"
@@ -264,11 +139,11 @@
   },
   "builder_group": "chromium.gpu.fyi",
   "gardener_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ],
   "perf_dashboard_machine_group": "ChromiumGPUFYI",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium.gpu"
+    "chrome_browser_release"
   ]
 }

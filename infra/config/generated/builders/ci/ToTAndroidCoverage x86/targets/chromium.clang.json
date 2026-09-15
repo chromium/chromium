@@ -1,7 +1,0 @@
-{
-  "ToTAndroidCoverage x86": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  }
-}
