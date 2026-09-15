@@ -12,6 +12,12 @@ found in the LICENSE file.
     <dimen name="page_info_popup_padding_vertical">12dp</dimen>
     <dimen name="page_info_popup_corners_radius">16dp</dimen>
     <dimen name="page_info_popup_button_padding_sides">8dp</dimen>
-    <dimen name="page_info_subcontent_margin_start">56dp</dimen>
 
+    <!-- Page Info Suspicious Site Warning Dimensions -->
+    <dimen name="page_info_suspicious_site_buttons_padding_sides">20dp</dimen>
+    <dimen name="page_info_suspicious_site_buttons_padding_bottom">10dp</dimen>
+    <dimen name="page_info_suspicious_site_button_padding_horizontal">16dp</dimen>
+    <dimen name="page_info_suspicious_site_button_padding_vertical">8dp</dimen>
+    <dimen name="page_info_suspicious_site_button_vertical_inset">6dp</dimen>
+    <dimen name="page_info_suspicious_site_button_margin_end">8dp</dimen>
 </resources>

@@ -50,6 +50,8 @@ import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
 import org.chromium.chrome.browser.pdf.PdfUtils.PdfPageType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizerJni;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
@@ -94,6 +96,7 @@ public class LocationBarModelUnitTest {
     @Mock private SecurityStateModel.Natives mSecurityStateModelJni;
 
     @Mock private TabbedPaintPreview mTabbedPaintPreview;
+    @Mock private WebContents mWebContentsMock;
 
     private final UserDataHost mUserDataHost = new UserDataHost();
     private static final @ConnectionSecurityLevel int[] SECURITY_LEVELS = {
@@ -560,6 +563,39 @@ public class LocationBarModelUnitTest {
                 R.drawable.omnibox_dangerous,
                 ConnectionSecurityLevel.DANGEROUS,
                 ConnectionMaliciousContentStatus.NONE);
+    }
+
+    @Test
+    public void
+            getSecurityIconResource_connectionDangerous_warnableSuspiciousSite_returnsGppMaybe() {
+        mLocationBarModel.initializeWithNative();
+        assertResourceIdIs(
+                R.drawable.gpp_maybe,
+                ConnectionSecurityLevel.DANGEROUS,
+                ConnectionMaliciousContentStatus.WARNABLE_SUSPICIOUS_SITE);
+    }
+
+    @Test
+    public void getSecurityIconColor_dangerousWarnableSuspiciousSite_returnsThemedTint() {
+        when(mRegularTabMock.getWebContents()).thenReturn(mWebContentsMock);
+        doReturn(true).when(mRegularTabMock).isInitialized();
+        mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
+        when(mSecurityStateModelJni.getMaliciousContentStatusForWebContents(mWebContentsMock))
+                .thenReturn(ConnectionMaliciousContentStatus.WARNABLE_SUSPICIOUS_SITE);
+
+        assertEquals(
+                ThemeUtils.getThemedToolbarIconTintRes(BrandedColorScheme.APP_DEFAULT),
+                mLocationBarModel.getSecurityIconColorWithSecurityLevel(
+                        ConnectionSecurityLevel.DANGEROUS,
+                        BrandedColorScheme.APP_DEFAULT,
+                        /* isIncognito= */ false));
+
+        assertEquals(
+                ThemeUtils.getThemedToolbarIconTintRes(BrandedColorScheme.INCOGNITO),
+                mLocationBarModel.getSecurityIconColorWithSecurityLevel(
+                        ConnectionSecurityLevel.DANGEROUS,
+                        BrandedColorScheme.INCOGNITO,
+                        /* isIncognito= */ true));
     }
 
     @Test

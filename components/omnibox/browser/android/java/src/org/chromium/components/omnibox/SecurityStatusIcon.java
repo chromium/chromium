@@ -50,7 +50,7 @@ public class SecurityStatusIcon {
                     case ConnectionMaliciousContentStatus.BILLING ->
                             R.drawable.omnibox_not_secure_warning;
                     case ConnectionMaliciousContentStatus.WARNABLE_SUSPICIOUS_SITE ->
-                            R.drawable.shield_question;
+                            R.drawable.gpp_maybe;
                     default -> R.drawable.omnibox_dangerous;
                 };
             default:

@@ -37,6 +37,7 @@ static_library("android") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/page_info_shield_question.xml",
     "java/res/drawable/qwac_status.xml",
     "java/res/drawable/sticky_note_2.xml",
     "java/res/layout/connection_info.xml",

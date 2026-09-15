@@ -115,7 +115,7 @@ public class SecurityStatusIconUnitTest {
     @Test
     public void testGetSecurityIconResource_Dangerous_WarnableSuspiciousSite() {
         assertIconResourceIs(
-                R.drawable.shield_question,
+                R.drawable.gpp_maybe,
                 ConnectionSecurityLevel.DANGEROUS,
                 ConnectionMaliciousContentStatus.WARNABLE_SUSPICIOUS_SITE);
     }
