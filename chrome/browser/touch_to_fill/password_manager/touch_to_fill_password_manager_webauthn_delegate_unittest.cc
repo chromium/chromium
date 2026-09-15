@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
@@ -19,10 +20,12 @@
 #include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #include "chrome/browser/webauthn/shared_types.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/content/browser/mock_keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/site_instance.h"
@@ -36,6 +39,8 @@
 
 namespace {
 
+using base::test::RunOnceCallback;
+using device_reauth::MockDeviceAuthenticator;
 using password_manager::PasskeyCredential;
 using password_manager::UiCredential;
 using Credential = TouchToFillPasswordManagerView::Credential;
@@ -43,8 +48,23 @@ using IsOriginSecure = TouchToFillPasswordManagerView::IsOriginSecure;
 using SortingCallback =
     TouchToFillPasswordManagerWebAuthnDelegate::SortingCallback;
 using ::testing::_;
+using ::testing::ByMove;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
+using ::testing::Return;
+
+class MockPasswordManagerClient
+    : public password_manager::StubPasswordManagerClient {
+ public:
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
+              GetDeviceAuthenticator,
+              (),
+              (override));
+  MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (device_reauth::DeviceAuthenticator*),
+              (override));
+};
 
 constexpr char kRpId[] = "example.com";
 constexpr char kExampleCom[] = "https://example.com/";
@@ -181,6 +201,7 @@ class TouchToFillPasswordManagerWebAuthnDelegateTest
   }
 
   void TearDown() override {
+    authenticator_ = nullptr;
     request_delegate_.reset();
     web_contents_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -191,6 +212,16 @@ class TouchToFillPasswordManagerWebAuthnDelegateTest
   MockTouchToFillView& view() { return *mock_view_; }
 
   MockJniDelegate& jni_delegate() { return *jni_delegate_; }
+
+  MockPasswordManagerClient& client() { return client_; }
+
+  MockDeviceAuthenticator* authenticator() { return authenticator_; }
+
+  std::unique_ptr<MockDeviceAuthenticator> CreateMockAuthenticator() {
+    auto authenticator = std::make_unique<MockDeviceAuthenticator>();
+    authenticator_ = authenticator.get();
+    return authenticator;
+  }
 
   TouchToFillPasswordManagerController& touch_to_fill_controller() {
     return *touch_to_fill_controller_;
@@ -204,9 +235,10 @@ class TouchToFillPasswordManagerWebAuthnDelegateTest
   MakeTouchToFillPasswordManagerControllerDelegate(
       bool should_show_hybrid_option,
       bool is_immediate,
-      SortingCallback sorting_callback) {
+      SortingCallback sorting_callback,
+      password_manager::PasswordManagerClient* password_client = nullptr) {
     return std::make_unique<TouchToFillPasswordManagerWebAuthnDelegate>(
-        request_delegate_.get(), std::move(sorting_callback),
+        request_delegate_.get(), password_client, std::move(sorting_callback),
         should_show_hybrid_option, is_immediate);
   }
 
@@ -221,6 +253,8 @@ class TouchToFillPasswordManagerWebAuthnDelegateTest
       touch_to_fill_controller_;
   raw_ptr<MockTouchToFillView> mock_view_ = nullptr;
   raw_ptr<MockJniDelegate> jni_delegate_ = nullptr;
+  MockPasswordManagerClient client_;
+  raw_ptr<MockDeviceAuthenticator> authenticator_ = nullptr;
 };
 
 TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
@@ -340,6 +374,121 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
 }
 
 TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
+       ShowPasswordForImmediateWithReauthSuccess) {
+  auto password_credential = CreatePasswordCredential();
+  std::vector<Credential> credentials({CreatePasskey(), password_credential});
+
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                           ElementsAreArray(credentials),
+                           TouchToFillPasswordManagerView::kNone));
+  Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
+                        /*should_show_hybrid_option=*/false,
+                        /*is_immediate=*/true, SortingCallback(), &client()));
+
+  EXPECT_CALL(client(), GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(CreateMockAuthenticator())));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(true));
+
+  PasswordCredentialPair expected = {kUserName2, kPassword};
+  EXPECT_CALL(request_delegate(), OnPasswordCredentialSelected(expected));
+  touch_to_fill_controller().OnCredentialSelected(password_credential);
+}
+
+TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
+       ShowPasswordForImmediateWithReauthFailure) {
+  auto password_credential = CreatePasswordCredential();
+  std::vector<Credential> credentials({CreatePasskey(), password_credential});
+
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                           ElementsAreArray(credentials),
+                           TouchToFillPasswordManagerView::kNone));
+  Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
+                        /*should_show_hybrid_option=*/false,
+                        /*is_immediate=*/true, SortingCallback(), &client()));
+
+  EXPECT_CALL(client(), GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(CreateMockAuthenticator())));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(false));
+
+  EXPECT_CALL(request_delegate(), OnPasswordCredentialSelected).Times(0);
+  EXPECT_CALL(request_delegate(), OnCredentialSelectionDeclined());
+  touch_to_fill_controller().OnCredentialSelected(password_credential);
+}
+
+TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
+       ShowPasswordForImmediateReauthNotRequired) {
+  auto password_credential = CreatePasswordCredential();
+  std::vector<Credential> credentials({CreatePasskey(), password_credential});
+
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                           ElementsAreArray(credentials),
+                           TouchToFillPasswordManagerView::kNone));
+  Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
+                        /*should_show_hybrid_option=*/false,
+                        /*is_immediate=*/true, SortingCallback(), &client()));
+
+  EXPECT_CALL(client(), GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(CreateMockAuthenticator())));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
+  EXPECT_CALL(*authenticator(), AuthenticateWithMessage).Times(0);
+
+  PasswordCredentialPair expected = {kUserName2, kPassword};
+  EXPECT_CALL(request_delegate(), OnPasswordCredentialSelected(expected));
+  touch_to_fill_controller().OnCredentialSelected(password_credential);
+}
+
+TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
+       ShowPasswordForImmediateNullAuthenticator) {
+  auto password_credential = CreatePasswordCredential();
+  std::vector<Credential> credentials({CreatePasskey(), password_credential});
+
+  EXPECT_CALL(view(), Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                           ElementsAreArray(credentials),
+                           TouchToFillPasswordManagerView::kNone));
+  Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
+                        /*should_show_hybrid_option=*/false,
+                        /*is_immediate=*/true, SortingCallback(), &client()));
+
+  EXPECT_CALL(client(), GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(nullptr)));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(false));
+
+  PasswordCredentialPair expected = {kUserName2, kPassword};
+  EXPECT_CALL(request_delegate(), OnPasswordCredentialSelected(expected));
+  touch_to_fill_controller().OnCredentialSelected(password_credential);
+}
+
+TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
+       ReauthCancelledOnDestruction) {
+  auto password_credential = CreatePasswordCredential();
+  std::vector<Credential> credentials({CreatePasskey(), password_credential});
+
+  Show(credentials, MakeTouchToFillPasswordManagerControllerDelegate(
+                        /*should_show_hybrid_option=*/false,
+                        /*is_immediate=*/true, SortingCallback(), &client()));
+
+  EXPECT_CALL(client(), GetDeviceAuthenticator)
+      .WillOnce(Return(ByMove(CreateMockAuthenticator())));
+  ON_CALL(client(), IsReauthBeforeFillingRequired).WillByDefault(Return(true));
+  base::OnceCallback<void(bool)> auth_callback;
+  EXPECT_CALL(*authenticator(), AuthenticateWithMessage)
+      .WillOnce([&auth_callback](const std::u16string& message,
+                                 base::OnceCallback<void(bool)> callback) {
+        auth_callback = std::move(callback);
+      });
+  EXPECT_CALL(*authenticator(), Cancel).WillOnce([&auth_callback]() {
+    std::move(auth_callback).Run(false);
+  });
+
+  touch_to_fill_controller().OnCredentialSelected(password_credential);
+  touch_to_fill_controller().Close();
+}
+
+TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
        SortCredentialsForImmediate) {
   base::Time time_now = base::Time::Now();
   base::Time time_older = time_now - base::Minutes(1);
@@ -396,6 +545,7 @@ TEST_F(TouchToFillPasswordManagerWebAuthnDelegateTest,
        GetFrameUrlAndOriginNullReceiver) {
   TouchToFillPasswordManagerWebAuthnDelegate delegate(
       /*receiver=*/nullptr,
+      /*password_client=*/nullptr,
       /*sort_credentials_callback=*/base::NullCallback(),
       /*should_show_hybrid_option=*/false,
       /*is_immediate=*/true);

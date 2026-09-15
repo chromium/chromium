@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_PASSWORD_MANAGER_WEBAUTHN_DELEGATE_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_PASSWORD_MANAGER_WEBAUTHN_DELEGATE_H_
 
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -18,8 +19,13 @@
 #include "ui/gfx/native_ui_types.h"
 #include "url/origin.h"
 
+namespace device_reauth {
+class DeviceAuthenticator;
+}
+
 namespace password_manager {
 class PasskeyCredential;
+class PasswordManagerClient;
 class UiCredential;
 }  // namespace password_manager
 
@@ -40,6 +46,7 @@ class TouchToFillPasswordManagerWebAuthnDelegate
 
   TouchToFillPasswordManagerWebAuthnDelegate(
       CredentialReceiver* receiver,
+      password_manager::PasswordManagerClient* password_client,
       SortingCallback sort_credentials_callback,
       bool should_show_hybrid_option,
       bool is_immediate);
@@ -76,9 +83,25 @@ class TouchToFillPasswordManagerWebAuthnDelegate
   gfx::NativeView GetNativeView() override;
 
  private:
+  void OnReauthCompleted(password_manager::UiCredential credential,
+                         bool auth_successful);
+
+  void FillCredential(const password_manager::UiCredential& credential);
+
+  // Callback to the controller to be invoked when a finalizing action has
+  // completed. This will result in the destruction of the delegate so
+  // no internal state should be touched after its invocation.
+  base::OnceClosure action_complete_;
+
   // Raw pointer to the owning class that will receive the selected credential,
   // or other outcomes of the request.
   raw_ptr<CredentialReceiver> credential_receiver_ = nullptr;
+
+  // Weak pointer to the PasswordManagerClient this class is tied to.
+  raw_ptr<password_manager::PasswordManagerClient> password_client_ = nullptr;
+
+  // Authenticator used to trigger a biometric auth before filling.
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 
   SortingCallback sort_credentials_callback_;
 

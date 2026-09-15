@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -178,10 +179,12 @@ void WebAuthnRequestDelegateAndroid::MaybeShowTouchToFillSheet(
       std::move(credentials),
       ContentPasswordManagerDriver::GetForRenderFrameHost(frame_host)
           ->AsWeakPtrImpl());
+  ChromePasswordManagerClient* password_client =
+      ChromePasswordManagerClient::FromWebContents(web_contents());
   bool should_show_hybrid_option = !hybrid_closure_.is_null() && !is_immediate;
   touch_to_fill_controller_->Show(
       std::make_unique<TouchToFillPasswordManagerWebAuthnDelegate>(
-          this,
+          this, password_client,
           base::BindRepeating<
               std::vector<TouchToFillPasswordManagerView::Credential>(
                   std::vector<TouchToFillPasswordManagerView::Credential>,
