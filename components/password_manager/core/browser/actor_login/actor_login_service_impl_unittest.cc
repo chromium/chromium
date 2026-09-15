@@ -58,15 +58,16 @@ class ActorLoginServiceImplTest : public testing::Test {
         base::Unretained(&mock_delegate_)));
   }
 
-  base::WeakPtr<MockActorLoginQualityLogger> mqls_logger() {
-    return mock_mqls_logger_.AsWeakPtr();
+  scoped_refptr<MockActorLoginQualityLogger> mqls_logger() {
+    return mock_mqls_logger_;
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   MockActorLoginDelegate mock_delegate_;
   std::unique_ptr<ActorLoginServiceImpl> service_;
-  MockActorLoginQualityLogger mock_mqls_logger_;
+  scoped_refptr<MockActorLoginQualityLogger> mock_mqls_logger_ =
+      base::MakeRefCounted<MockActorLoginQualityLogger>();
 };
 
 TEST_F(ActorLoginServiceImplTest, GetCredentialsInvalidTabInterface) {

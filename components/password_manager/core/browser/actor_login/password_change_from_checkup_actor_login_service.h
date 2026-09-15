@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_service.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "url/gurl.h"
@@ -35,14 +37,14 @@ class PasswordChangeFromCheckupActorLoginService : public ActorLoginService {
   void GetCredentials(
       ActorLoginDelegateClient* client,
       bool has_sign_in_with_google_button,
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
       CredentialsOrErrorReply callback) override;
 
   void AttemptLogin(
       ActorLoginDelegateClient* client,
       const Credential& credential,
       bool should_store_permission,
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
       FrameFillingStartedCallback frame_filling_started_cb,
       LoginStatusResultOrErrorReply done_callback,

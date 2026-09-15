@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/origin.h"
@@ -81,7 +83,7 @@ class ActorLoginDelegateClient : public base::SupportsUserData {
   // Creates a federated credentials fetcher.
   virtual std::unique_ptr<ActorLoginCredentialsFetcher>
   CreateFederatedCredentialsFetcher(
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
       ActorLoginMetricsHelper* metrics_helper) = 0;
 
   // Creates a controller for Sign-in with Google interaction.
@@ -91,7 +93,7 @@ class ActorLoginDelegateClient : public base::SupportsUserData {
       bool should_store_permission,
       LoginStatusResultOrErrorReply on_finished_callback,
       base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
       base::OnceCallback<void(bool)>
           post_button_click_login_result_callback) = 0;

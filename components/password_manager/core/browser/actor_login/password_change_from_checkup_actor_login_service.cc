@@ -13,6 +13,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/automated_password_change_credential_filler.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate_client.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
@@ -41,7 +42,7 @@ PasswordChangeFromCheckupActorLoginService::
 void PasswordChangeFromCheckupActorLoginService::GetCredentials(
     ActorLoginDelegateClient* client,
     bool has_sign_in_with_google_button,
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
     CredentialsOrErrorReply callback) {
   CredentialsOrErrorReply async_callback =
       base::BindPostTaskToCurrentDefault(std::move(callback));
@@ -115,7 +116,7 @@ void PasswordChangeFromCheckupActorLoginService::AttemptLogin(
     ActorLoginDelegateClient* client,
     const Credential& credential,
     bool should_store_permission,
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
     FrameFillingStartedCallback frame_filling_started_cb,
     LoginStatusResultOrErrorReply done_callback,

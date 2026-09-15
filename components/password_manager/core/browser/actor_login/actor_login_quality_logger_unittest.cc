@@ -82,25 +82,37 @@ class ActorLoginQualityLoggerTest : public testing::Test {
   void TearDown() override { logs_uploader_ = nullptr; }
 
  protected:
+  scoped_refptr<ActorLoginQualityLogger> CreateLogger() {
+    return base::MakeRefCounted<ActorLoginQualityLogger>(
+        /*variations_service=*/nullptr, logs_uploader_.get());
+  }
+
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<optimization_guide::TestModelQualityLogsUploaderService>
       logs_uploader_;
 };
 
-TEST_F(ActorLoginQualityLoggerTest, UploadFinalLogNoMetadata) {
-  ActorLoginQualityLogger logger(/*variations_service=*/nullptr);
-  logger.UploadFinalLog(logs_uploader_.get());
+TEST_F(ActorLoginQualityLoggerTest, DoesNotUploadWithoutMetadata) {
+  scoped_refptr<ActorLoginQualityLogger> logger = CreateLogger();
+  // Dropping the last reference uploads the log.
+  logger.reset();
   EXPECT_EQ(0u, logs_uploader_->uploaded_logs().size());
 }
 
-TEST_F(ActorLoginQualityLoggerTest, UploadFinalLogHandlesNull) {
-  ActorLoginQualityLogger logger(/*variations_service=*/nullptr);
-  logger.UploadFinalLog(nullptr);
+TEST_F(ActorLoginQualityLoggerTest, DoesNotUploadWithoutUploader) {
+  // A logger without an uploader is what quality logging being disabled looks
+  // like. It must not upload anything.
+  scoped_refptr<ActorLoginQualityLogger> logger =
+      base::MakeRefCounted<ActorLoginQualityLogger>(
+          /*variations_service=*/nullptr, /*mqls_uploader=*/nullptr);
+  logger->SetPermissionPicked(
+      optimization_guide::proto::ActorLoginQuality_PermissionOption_ALLOW_ONCE);
+  logger.reset();
   EXPECT_TRUE(logs_uploader_->uploaded_logs().empty());
 }
 
 TEST_F(ActorLoginQualityLoggerTest, SetsGetCredentialsDetails) {
-  ActorLoginQualityLogger logger(/*variations_service=*/nullptr);
+  scoped_refptr<ActorLoginQualityLogger> logger = CreateLogger();
 
   GetCredentialsDetails expected_details;
   expected_details.set_outcome(
@@ -110,23 +122,24 @@ TEST_F(ActorLoginQualityLoggerTest, SetsGetCredentialsDetails) {
       optimization_guide::proto::
           ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
   expected_details.set_getting_credentials_time_ms(5);
-  logger.SetGetCredentialsDetails(expected_details);
+  logger->SetGetCredentialsDetails(expected_details);
 
   GetCredentialsDetails get_credentials_details =
-      logger.get_log_data().get_credentials_details();
+      logger->get_log_data().get_credentials_details();
 
   EXPECT_THAT(get_credentials_details, ProtoEquals(expected_details));
 
   base::test::TestFuture<void> log_uploaded_signal;
   logs_uploader_->WaitForLogUpload(log_uploaded_signal.GetCallback());
-  logger.UploadFinalLog(logs_uploader_.get());
+  // Dropping the last reference uploads the log.
+  logger.reset();
   ASSERT_TRUE(log_uploaded_signal.Wait());
 
   VerifyUniqueLogDetails(logs_uploader_->uploaded_logs(), expected_details);
 }
 
 TEST_F(ActorLoginQualityLoggerTest, SetsFederatedGetCredentialsDetails) {
-  ActorLoginQualityLogger logger(/*variations_service=*/nullptr);
+  scoped_refptr<ActorLoginQualityLogger> logger = CreateLogger();
 
   optimization_guide::proto::ActorLoginQuality_FederatedGetCredentialsDetails
       federated_details;
@@ -135,10 +148,10 @@ TEST_F(ActorLoginQualityLoggerTest, SetsFederatedGetCredentialsDetails) {
           ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_CREDENTIALS_FOUND);
   federated_details.set_list_permissions_call_time_ms(123);
 
-  logger.SetFederatedGetCredentialsDetails(federated_details);
+  logger->SetFederatedGetCredentialsDetails(federated_details);
 
   GetCredentialsDetails get_credentials_details =
-      logger.get_log_data().get_credentials_details();
+      logger->get_log_data().get_credentials_details();
 
   EXPECT_THAT(get_credentials_details.federated_get_credentials_details(),
               ProtoEquals(federated_details));
@@ -146,7 +159,7 @@ TEST_F(ActorLoginQualityLoggerTest, SetsFederatedGetCredentialsDetails) {
 
 TEST_F(ActorLoginQualityLoggerTest,
        SetsFederatedGetCredentialsDetailsDoesNotOverridePasswordDetails) {
-  ActorLoginQualityLogger logger(/*variations_service=*/nullptr);
+  scoped_refptr<ActorLoginQualityLogger> logger = CreateLogger();
 
   GetCredentialsDetails password_details;
   password_details.set_outcome(
@@ -156,7 +169,7 @@ TEST_F(ActorLoginQualityLoggerTest,
       optimization_guide::proto::
           ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
   password_details.set_getting_credentials_time_ms(5);
-  logger.SetGetCredentialsDetails(password_details);
+  logger->SetGetCredentialsDetails(password_details);
 
   optimization_guide::proto::ActorLoginQuality_FederatedGetCredentialsDetails
       federated_details;
@@ -164,10 +177,10 @@ TEST_F(ActorLoginQualityLoggerTest,
       optimization_guide::proto::
           ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_CREDENTIALS_FOUND);
   federated_details.set_list_permissions_call_time_ms(123);
-  logger.SetFederatedGetCredentialsDetails(federated_details);
+  logger->SetFederatedGetCredentialsDetails(federated_details);
 
   GetCredentialsDetails get_credentials_details =
-      logger.get_log_data().get_credentials_details();
+      logger->get_log_data().get_credentials_details();
 
   EXPECT_EQ(get_credentials_details.outcome(), password_details.outcome());
   EXPECT_EQ(get_credentials_details.permission_details(),
@@ -180,7 +193,7 @@ TEST_F(ActorLoginQualityLoggerTest,
 
 TEST_F(ActorLoginQualityLoggerTest,
        SetsGetCredentialsDetailsDoesNotOverrideFederatedDetails) {
-  ActorLoginQualityLogger logger(/*variations_service=*/nullptr);
+  scoped_refptr<ActorLoginQualityLogger> logger = CreateLogger();
 
   optimization_guide::proto::ActorLoginQuality_FederatedGetCredentialsDetails
       federated_details;
@@ -188,7 +201,7 @@ TEST_F(ActorLoginQualityLoggerTest,
       optimization_guide::proto::
           ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_CREDENTIALS_FOUND);
   federated_details.set_list_permissions_call_time_ms(123);
-  logger.SetFederatedGetCredentialsDetails(federated_details);
+  logger->SetFederatedGetCredentialsDetails(federated_details);
 
   GetCredentialsDetails password_details;
   password_details.set_outcome(
@@ -198,10 +211,10 @@ TEST_F(ActorLoginQualityLoggerTest,
       optimization_guide::proto::
           ActorLoginQuality_GetCredentialsDetails_PermissionDetails_HAS_PERMANENT_PERMISSION);
   password_details.set_getting_credentials_time_ms(5);
-  logger.SetGetCredentialsDetails(password_details);
+  logger->SetGetCredentialsDetails(password_details);
 
   GetCredentialsDetails get_credentials_details =
-      logger.get_log_data().get_credentials_details();
+      logger->get_log_data().get_credentials_details();
 
   EXPECT_EQ(get_credentials_details.outcome(), password_details.outcome());
   EXPECT_EQ(get_credentials_details.permission_details(),
@@ -213,7 +226,7 @@ TEST_F(ActorLoginQualityLoggerTest,
 }
 
 TEST_F(ActorLoginQualityLoggerTest, SetsDomainAndLanguage) {
-  ActorLoginQualityLogger logger(/*variations_service=*/nullptr);
+  scoped_refptr<ActorLoginQualityLogger> logger = CreateLogger();
 
   translate::testing::MockTranslateDriver translate_driver;
   auto mock_translate_ranker =
@@ -228,15 +241,15 @@ TEST_F(ActorLoginQualityLoggerTest, SetsDomainAndLanguage) {
 
   const GURL url1("https://subdomain.example.com/login");
   const GURL url2("https://someotherdomain.com");
-  logger.SetDomainAndLanguage(translate_manager.get(), url1);
-  logger.SetDomainAndLanguage(translate_manager.get(), url2);
+  logger->SetDomainAndLanguage(translate_manager.get(), url1);
+  logger->SetDomainAndLanguage(translate_manager.get(), url2);
 
   // Only the first domain should be recorded and only the eTLD+1.
   ActorLoginQuality expected_log;
   expected_log.set_domain("example.com");
   expected_log.set_language("en-us");
 
-  EXPECT_THAT(logger.get_log_data(), ProtoEquals(expected_log));
+  EXPECT_THAT(logger->get_log_data(), ProtoEquals(expected_log));
 }
 
 TEST_F(ActorLoginQualityLoggerTest, LogsLocation) {
@@ -261,12 +274,14 @@ TEST_F(ActorLoginQualityLoggerTest, LogsLocation) {
   ActorLoginQuality expected_log;
   expected_log.set_location("US");
 
-  ActorLoginQualityLogger logger(variations_service.get());
-  EXPECT_THAT(logger.get_log_data(), ProtoEquals(expected_log));
+  scoped_refptr<ActorLoginQualityLogger> logger =
+      base::MakeRefCounted<ActorLoginQualityLogger>(variations_service.get(),
+                                                    logs_uploader_.get());
+  EXPECT_THAT(logger->get_log_data(), ProtoEquals(expected_log));
 }
 
 TEST_F(ActorLoginQualityLoggerTest, AddAttemptLoginDetails) {
-  ActorLoginQualityLogger logger(/*variations_service=*/nullptr);
+  scoped_refptr<ActorLoginQualityLogger> logger = CreateLogger();
 
   optimization_guide::proto::ActorLoginQuality_AttemptLoginDetails
       expected_details;
@@ -276,19 +291,19 @@ TEST_F(ActorLoginQualityLoggerTest, AddAttemptLoginDetails) {
   expected_details.set_attempt_login_time_ms(0);
   FillingFormResult* form_result = expected_details.add_filling_form_result();
   form_result->set_was_password_filled(true);
-  logger.AddAttemptLoginDetails(expected_details);
-  logger.AddAttemptLoginDetails(expected_details);
+  logger->AddAttemptLoginDetails(expected_details);
+  logger->AddAttemptLoginDetails(expected_details);
 
-  ASSERT_EQ(logger.get_log_data().attempt_login_details().size(), 2);
-  EXPECT_THAT(logger.get_log_data().attempt_login_details(0),
+  ASSERT_EQ(logger->get_log_data().attempt_login_details().size(), 2);
+  EXPECT_THAT(logger->get_log_data().attempt_login_details(0),
               ProtoEquals(expected_details));
 }
 
 TEST_F(ActorLoginQualityLoggerTest, SetsPermissionDetails) {
-  ActorLoginQualityLogger logger(/*variations_service=*/nullptr);
+  scoped_refptr<ActorLoginQualityLogger> logger = CreateLogger();
 
   PermissionDetails expected_permission =
       optimization_guide::proto::ActorLoginQuality_PermissionOption_ALLOW_ONCE;
-  logger.SetPermissionPicked(expected_permission);
-  EXPECT_EQ(logger.get_log_data().permission_picked(), expected_permission);
+  logger->SetPermissionPicked(expected_permission);
+  EXPECT_EQ(logger->get_log_data().permission_picked(), expected_permission);
 }

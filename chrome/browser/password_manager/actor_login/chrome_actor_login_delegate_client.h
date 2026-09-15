@@ -7,8 +7,10 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate_client.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_web_content_interface.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -58,14 +60,14 @@ class ChromeActorLoginDelegateClient
   ActorLoginPermissionCleaningService* GetPermissionCleaningService() override;
   std::unique_ptr<ActorLoginCredentialsFetcher>
   CreateFederatedCredentialsFetcher(
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
       ActorLoginMetricsHelper* metrics_helper) override;
   std::unique_ptr<ActorLoginSiwgControllerInterface> CreateSiwgController(
       const Credential& credential,
       bool should_store_permission,
       LoginStatusResultOrErrorReply on_finished_callback,
       base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
       base::OnceCallback<void(bool)> post_button_click_login_result_callback)
       override;

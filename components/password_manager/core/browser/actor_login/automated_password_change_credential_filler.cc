@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "components/affiliations/core/browser/match_type.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 
@@ -19,7 +20,7 @@ AutomatedPasswordChangeCredentialFiller::
         const url::Origin& main_frame_origin,
         const Credential& credential,
         password_manager::PasswordManagerClient* client,
-        base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+        scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
         base::TimeTicks attempt_login_start_time,
         IsTaskInFocus is_task_in_focus,
         LoginStatusResultOrErrorReply callback,

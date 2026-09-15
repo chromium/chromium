@@ -17,6 +17,7 @@
 #include "chrome/common/buildflags.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_web_content_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -92,7 +93,7 @@ ChromeActorLoginDelegateClient::GetPermissionCleaningService() {
 
 std::unique_ptr<ActorLoginCredentialsFetcher>
 ChromeActorLoginDelegateClient::CreateFederatedCredentialsFetcher(
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
     ActorLoginMetricsHelper* metrics_helper) {
   ActorLoginPermissionService* permission_service =
       ActorLoginPermissionServiceFactory::GetForProfile(
@@ -124,7 +125,7 @@ ChromeActorLoginDelegateClient::CreateSiwgController(
     bool should_store_permission,
     LoginStatusResultOrErrorReply on_finished_callback,
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
     base::OnceCallback<void(bool)> post_button_click_login_result_callback) {
   ActorLoginPermissionService* permission_service =

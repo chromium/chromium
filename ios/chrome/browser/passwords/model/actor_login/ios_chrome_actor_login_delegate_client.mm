@@ -127,7 +127,7 @@ IOSChromeActorLoginDelegateClient::GetPermissionCleaningService() {
 
 std::unique_ptr<ActorLoginCredentialsFetcher>
 IOSChromeActorLoginDelegateClient::CreateFederatedCredentialsFetcher(
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
     ActorLoginMetricsHelper* metrics_helper) {
   // Not supported on iOS.
   return nullptr;
@@ -139,7 +139,7 @@ IOSChromeActorLoginDelegateClient::CreateSiwgController(
     bool should_store_permission,
     LoginStatusResultOrErrorReply on_finished_callback,
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
     base::OnceCallback<void(bool)> post_button_click_login_result_callback) {
   // Not supported on iOS.

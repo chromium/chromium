@@ -41,7 +41,7 @@ class ActorLoginFederatedCredentialsFetcher
       const url::Origin& request_origin,
       IdentityCredentialSourceCallback get_source_callback,
       ActorLoginPermissionService& permission_service,
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger);
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger);
   ~ActorLoginFederatedCredentialsFetcher() override;
 
   // ActorLoginCredentialsFetcher:
@@ -80,8 +80,10 @@ class ActorLoginFederatedCredentialsFetcher
   // Owned by `ActorLoginDelegateImpl`.
   raw_ptr<ActorLoginMetricsHelper> metrics_helper_ = nullptr;
 
-  // Owned by `ActorLoginDelegateImpl`.
-  base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger_;
+  // Collects the model quality log of the login flow. Shared with the other
+  // participants of the flow, the log is uploaded once the last of them is
+  // gone.
+  scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger_;
 
   // Stores the proto log fields populated during fetch.
   optimization_guide::proto::ActorLoginQuality_FederatedGetCredentialsDetails

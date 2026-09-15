@@ -181,8 +181,8 @@ class ActorLoginPasswordCredentialsFetcherTest : public ::testing::Test {
   NiceMock<password_manager::MockPasswordFormCache>& form_cache() {
     return form_cache_;
   }
-  base::WeakPtr<MockActorLoginQualityLogger> mqls_logger() {
-    return mock_mqls_logger_.AsWeakPtr();
+  scoped_refptr<MockActorLoginQualityLogger> mqls_logger() {
+    return mock_mqls_logger_;
   }
 
   std::unique_ptr<PasswordFormManager> CreateFormManager() {
@@ -254,7 +254,8 @@ class ActorLoginPasswordCredentialsFetcherTest : public ::testing::Test {
   NiceMock<MockPasswordManagerDriver> driver_;
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;
   NiceMock<password_manager::MockPasswordFormCache> form_cache_;
-  MockActorLoginQualityLogger mock_mqls_logger_;
+  scoped_refptr<MockActorLoginQualityLogger> mock_mqls_logger_ =
+      base::MakeRefCounted<MockActorLoginQualityLogger>();
 };
 
 TEST_F(ActorLoginPasswordCredentialsFetcherTest, Success) {

@@ -9,6 +9,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/scoped_refptr.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/password_manager/core/browser/actor_login/actor_login_quality_logger.h"
@@ -50,8 +51,11 @@ AttemptLoginTool::AttemptLoginTool(base::WeakPtr<web::WebState> web_state,
     : web_state_(web_state),
       tool_delegate_(tool_delegate),
       attempt_login_tool_start_time_(base::TimeTicks::Now()),
-      quality_logger_(std::make_unique<ActorLoginQualityLogger>(
-          GetApplicationContext()->GetVariationsService())) {}
+      // Quality logs are not uploaded on iOS yet, so the logger is
+      // created without an uploader and its log is dropped.
+      quality_logger_(base::MakeRefCounted<ActorLoginQualityLogger>(
+          GetApplicationContext()->GetVariationsService(),
+          /*mqls_uploader=*/nullptr)) {}
 
 AttemptLoginTool::~AttemptLoginTool() = default;
 
@@ -120,8 +124,8 @@ void AttemptLoginTool::Execute(ToolExecutionCallback callback) {
     const bool should_store_permission =
         user_selected_credential_and_permission->always_allow;
     login_service->AttemptLogin(
-        client, credential, should_store_permission,
-        quality_logger_->AsWeakPtr(), attempt_login_tool_start_time_,
+        client, credential, should_store_permission, quality_logger_,
+        attempt_login_tool_start_time_,
         /*frame_filling_started_cb=*/{},
         base::BindOnce(&AttemptLoginTool::OnAttemptLogin,
                        weak_ptr_factory_.GetWeakPtr(), credential,
@@ -132,7 +136,7 @@ void AttemptLoginTool::Execute(ToolExecutionCallback callback) {
 
   login_service->GetCredentials(
       client,
-      /*has_sign_in_with_google_button=*/false, quality_logger_->AsWeakPtr(),
+      /*has_sign_in_with_google_button=*/false, quality_logger_,
       base::BindOnce(&AttemptLoginTool::OnGetCredentials,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -212,7 +216,7 @@ void AttemptLoginTool::OnCredentialSelected(
       tool_delegate_->GetActorTaskFormFillingHandler()->GetActorLoginService();
   CHECK(login_service);
   login_service->AttemptLogin(
-      client, credential, selection->always_allow, quality_logger_->AsWeakPtr(),
+      client, credential, selection->always_allow, quality_logger_,
       attempt_login_tool_start_time_,
       /*frame_filling_started_cb=*/{},
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,

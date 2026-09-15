@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_ACTOR_LOGIN_QUALITY_LOGGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_ACTOR_LOGIN_QUALITY_LOGGER_H_
 
-#include "base/memory/weak_ptr.h"
+#include <memory>
+
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -24,9 +25,14 @@ class VariationsService;
 class ActorLoginQualityLogger
     : public actor_login::ActorLoginQualityLoggerInterface {
  public:
-  explicit ActorLoginQualityLogger(
-      variations::VariationsService* variations_service);
-  ~ActorLoginQualityLogger() override;
+  // `mqls_uploader` is the service the log is uploaded to, or null if quality
+  // logging is disabled, in which case the log is collected but dropped. It is
+  // only used to create the log entry: binding it here rather than looking it
+  // up when the log is uploaded means the log survives the tab the login was
+  // attempted in.
+  ActorLoginQualityLogger(
+      variations::VariationsService* variations_service,
+      optimization_guide::ModelQualityLogsUploaderService* mqls_uploader);
   ActorLoginQualityLogger(const ActorLoginQualityLogger&) = delete;
   ActorLoginQualityLogger& operator=(const ActorLoginQualityLogger&) = delete;
 
@@ -47,19 +53,27 @@ class ActorLoginQualityLogger
   void SetPermissionPicked(
       optimization_guide::proto::ActorLoginQuality_PermissionOption
           permission_option) override;
-  void UploadFinalLog(optimization_guide::ModelQualityLogsUploaderService*
-                          mqls_uploader) const override;
 
 #if defined(UNIT_TEST)
   const optimization_guide::proto::ActorLoginQuality& get_log_data() {
-    return log_data_.actor_login().quality();
+    return quality();
   }
 #endif  // defined(UNIT_TEST)
-  base::WeakPtr<ActorLoginQualityLogger> AsWeakPtr();
 
  private:
-  optimization_guide::proto::LogAiDataRequest log_data_;
-  base::WeakPtrFactory<ActorLoginQualityLogger> weak_ptr_factory_{this};
+  friend class base::RefCounted<actor_login::ActorLoginQualityLoggerInterface>;
+
+  // Destroying `log_entry_` uploads it. The logger is destroyed once the last
+  // participant of the login flow drops its reference, which is when the
+  // trajectory is finished.
+  ~ActorLoginQualityLogger() override;
+
+  // The quality message of the log this class fills in.
+  optimization_guide::proto::ActorLoginQuality& quality();
+
+  // The log this class fills in. Uploaded when it is destroyed, unless it was
+  // created without an uploader.
+  const std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_;
 };
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_ACTOR_LOGIN_QUALITY_LOGGER_H_

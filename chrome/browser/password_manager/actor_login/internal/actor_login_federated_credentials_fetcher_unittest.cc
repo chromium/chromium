@@ -114,14 +114,15 @@ class ActorLoginFederatedCredentialsFetcherTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
  protected:
-  base::WeakPtr<MockActorLoginQualityLogger> mqls_logger() {
-    return mock_mqls_logger_.AsWeakPtr();
+  scoped_refptr<MockActorLoginQualityLogger> mqls_logger() {
+    return mock_mqls_logger_;
   }
 
   base::test::TaskEnvironment task_environment_;
   MockIdentityCredentialSource mock_identity_source_;
   MockActorLoginPermissionService mock_permission_service_;
-  MockActorLoginQualityLogger mock_mqls_logger_;
+  scoped_refptr<MockActorLoginQualityLogger> mock_mqls_logger_ =
+      base::MakeRefCounted<MockActorLoginQualityLogger>();
 };
 
 TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
@@ -150,7 +151,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, GetCredentialsSuccess) {
       optimization_guide::proto::
           ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_CREDENTIALS_FOUND);
   expected_details.set_list_permissions_call_time_ms(50);
-  EXPECT_CALL(mock_mqls_logger_,
+  EXPECT_CALL(*mock_mqls_logger_,
               SetFederatedGetCredentialsDetails(
                   EqualsFederatedGetCredentialsDetails(expected_details)));
 
@@ -386,7 +387,7 @@ TEST_F(ActorLoginFederatedCredentialsFetcherTest, NoAccounts) {
       optimization_guide::proto::
           ActorLoginQuality_FederatedGetCredentialsDetails_FederatedGetCredentialsOutcome_NO_CREDENTIALS);
   expected_details.set_list_permissions_call_time_ms(50);
-  EXPECT_CALL(mock_mqls_logger_,
+  EXPECT_CALL(*mock_mqls_logger_,
               SetFederatedGetCredentialsDetails(
                   EqualsFederatedGetCredentialsDetails(expected_details)));
 

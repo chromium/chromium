@@ -93,7 +93,7 @@ class FakeActorLoginService : public actor_login::ActorLoginService {
   void GetCredentials(
       actor_login::ActorLoginDelegateClient* client,
       bool has_sign_in_with_google_button,
-      base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
+      scoped_refptr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
       actor_login::CredentialsOrErrorReply callback) override {
     if (get_credentials_error_.has_value()) {
       std::move(callback).Run(base::unexpected(*get_credentials_error_));
@@ -106,7 +106,7 @@ class FakeActorLoginService : public actor_login::ActorLoginService {
       actor_login::ActorLoginDelegateClient* client,
       const actor_login::Credential& credential,
       bool should_store_permission,
-      base::WeakPtr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
+      scoped_refptr<actor_login::ActorLoginQualityLoggerInterface> mqls_logger,
       base::TimeTicks attempt_login_tool_start_time,
       actor_login::FrameFillingStartedCallback frame_filling_started_cb,
       actor_login::LoginStatusResultOrErrorReply done_callback,

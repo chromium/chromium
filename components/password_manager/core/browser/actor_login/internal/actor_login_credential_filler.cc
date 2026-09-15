@@ -21,6 +21,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -115,7 +116,7 @@ ActorLoginCredentialFiller::ActorLoginCredentialFiller(
     const Credential& credential,
     bool should_store_permission,
     PasswordManagerClient* client,
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_start_time,
     IsTaskInFocus is_task_in_focus,
     FrameFillingStartedCallback frame_filling_started_cb,

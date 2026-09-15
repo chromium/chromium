@@ -217,8 +217,8 @@ class ActorLoginDelegateImplTest : public testing::Test {
     mock_cleaning_service_.reset();
   }
 
-  base::WeakPtr<MockActorLoginQualityLogger> mqls_logger() {
-    return mock_mqls_logger.AsWeakPtr();
+  scoped_refptr<MockActorLoginQualityLogger> mqls_logger() {
+    return mock_mqls_logger;
   }
 
   void SetUpActorCredentialFillerDeps() {
@@ -291,7 +291,8 @@ class ActorLoginDelegateImplTest : public testing::Test {
   url::Origin test_origin_ = url::Origin::Create(GURL(kTestUrl));
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
       {.disable_server_communication = true}};
-  NiceMock<MockActorLoginQualityLogger> mock_mqls_logger;
+  scoped_refptr<NiceMock<MockActorLoginQualityLogger>> mock_mqls_logger =
+      base::MakeRefCounted<NiceMock<MockActorLoginQualityLogger>>();
   std::unique_ptr<NiceMock<MockActorLoginPermissionCleaningService>>
       mock_cleaning_service_;
   base::test::ScopedFeatureList scoped_feature_list_;

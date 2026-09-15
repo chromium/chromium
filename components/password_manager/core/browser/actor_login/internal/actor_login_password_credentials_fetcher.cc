@@ -144,7 +144,7 @@ ActorLoginPasswordCredentialsFetcher::ActorLoginPasswordCredentialsFetcher(
     const url::Origin& origin,
     password_manager::PasswordManagerClient* client,
     password_manager::PasswordManagerInterface* password_manager,
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger)
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger)
     : request_origin_(origin),
       password_manager_(password_manager),
       client_(client),

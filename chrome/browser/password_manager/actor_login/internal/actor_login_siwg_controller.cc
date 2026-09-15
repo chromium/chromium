@@ -13,6 +13,7 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -155,7 +156,7 @@ ActorLoginSiwgController::ActorLoginSiwgController(
     ActorLoginPermissionService& permission_service,
     LoginStatusResultOrErrorReply on_finished_callback,
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
     PostButtonClickLoginResultCallback post_button_click_login_result_callback)
     : ActorLoginSiwgController(
@@ -178,7 +179,7 @@ ActorLoginSiwgController::ActorLoginSiwgController(
     ActorLoginPermissionService& permission_service,
     LoginStatusResultOrErrorReply on_finished_callback,
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate,
-    base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger,
+    scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger,
     base::TimeTicks attempt_login_tool_start_time,
     PostButtonClickLoginResultCallback post_button_click_login_result_callback)
     : content::WebContentsObserver(web_contents),

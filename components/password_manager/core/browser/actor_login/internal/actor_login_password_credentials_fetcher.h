@@ -38,7 +38,7 @@ class ActorLoginPasswordCredentialsFetcher
       const url::Origin& origin,
       password_manager::PasswordManagerClient* client,
       password_manager::PasswordManagerInterface* password_manager,
-      base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger);
+      scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger);
 
   ActorLoginPasswordCredentialsFetcher(
       const ActorLoginPasswordCredentialsFetcher&) = delete;
@@ -75,9 +75,9 @@ class ActorLoginPasswordCredentialsFetcher
       get_credentials_logs_;
 
   // Helper class that sends MQLS logs about full actor login attempt
-  // (GetCredentials + AttemptLogin). Owned by AttemptLoginTool.
-  // TODO(crbug.com/460025687): Use raw_ptr instead.
-  base::WeakPtr<ActorLoginQualityLoggerInterface> mqls_logger_;
+  // (GetCredentials + AttemptLogin). Shared with the other participants of the
+  // login flow, the log is uploaded once the last of them is gone.
+  scoped_refptr<ActorLoginQualityLoggerInterface> mqls_logger_;
 
   // Used to compute the request duration.
   base::TimeTicks start_time_;
