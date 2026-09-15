@@ -12,8 +12,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "partition_alloc/partition_alloc_base/component_export.h"
-
 #if PA_BUILDFLAG(ENABLE_PKEYS)
 #include "partition_alloc/thread_isolation/pkey.h"
 #endif
