@@ -2734,21 +2734,12 @@ void QuicChromiumClientSession::OnNetworkConnected(
     return;
   }
 
-  // If there was no migration waiting for new network and the path is not
-  // degrading, ignore this signal.
-  if (!wait_for_new_network_cause_.has_value() &&
-      !connection()->IsPathDegrading()) {
-    return;
+  if (wait_for_new_network_cause_.has_value() ||
+      connection()->IsPathDegrading()) {
+    net_log_.AddEventWithInt64Params(
+        NetLogEventType::QUIC_CONNECTION_MIGRATION_ON_NETWORK_CONNECTED,
+        "connected_network", network);
   }
-
-  net_log_.AddEventWithInt64Params(
-      NetLogEventType::QUIC_CONNECTION_MIGRATION_ON_NETWORK_CONNECTED,
-      "connected_network", network);
-
-  if (connection()->IsPathDegrading()) {
-    current_migration_cause_ = NEW_NETWORK_CONNECTED_POST_PATH_DEGRADING;
-  }
-
   if (wait_for_new_network_cause_.has_value()) {
     MigrationCause migration_cause = *wait_for_new_network_cause_;
     wait_for_new_network_cause_.reset();
@@ -2762,9 +2753,7 @@ void QuicChromiumClientSession::OnNetworkConnected(
     // previously. `network` is now the only possible candidate, migrate
     // immediately.
     MigrateNetworkImmediately(migration_cause, network);
-  } else {
-    // The connection is path degrading.
-    DCHECK(connection()->IsPathDegrading());
+  } else if (connection()->IsPathDegrading()) {
     MaybeMigrateToAlternateNetworkOnPathDegrading();
   }
 }
