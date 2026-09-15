@@ -388,6 +388,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(
       blink::features::kAndroidDesktopUASpoofAsChromeOS);
 
+  // Enables reporting the device CPU architecture in the user agent client
+  // hints on desktop Android.
+  // TODO(crbug.com/556358275): Remove when rollout is complete.
+  feature_overrides.EnableFeature(blink::features::kAndroidDesktopUACPUArch);
+
   // Enable opening PDFs in iframe in standalone tabs on Android.
   // TODO(crbug.com/556810751) Enable on non-AL form factors.
   feature_overrides.EnableFeature(blink::features::kAndroidHandlePdfInIframe);
