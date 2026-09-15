@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
-                       ShowAndSimulateClosingBottomSheet) {
+                       ShowAndSimulateDismissingDialog) {
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   ASSERT_TRUE(tab);
 
@@ -102,9 +102,9 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
     run_loop.Quit();
   });
 
-  // 3. Close bottom sheet.
+  // 3. Dismiss dialog.
   static_cast<GlicExperimentalOptInUIHostAndroid*>(host.get())
-      ->SimulateClosingBottomSheetForTesting();
+      ->SimulateDismissingForTesting();
 
   // 4. Run the loop to wait for the PostTask to bounce back to the delegate.
   run_loop.Run();
@@ -134,9 +134,9 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInUIHostAndroidBrowserTest,
     run_loop.Quit();
   });
 
-  // 4. Manually dismiss the bottom sheet.
+  // 4. Manually dismiss the dialog.
   static_cast<GlicExperimentalOptInUIHostAndroid*>(host.get())
-      ->SimulateClosingBottomSheetForTesting();
+      ->SimulateDismissingForTesting();
 
   // 5. Wait for the async callback.
   run_loop.Run();

@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -45,6 +46,10 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 })
 @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.TAB_BOTTOM_SHEET})
 @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+// Pre-existing Activity leak in StartupSigninStateCheckController, hit by every
+// test here because setUp() signs in.
+// TODO(crbug.com/561654982): Remove once the signin leak is fixed.
+@DisableLeakChecks("crbug.com/561654982")
 public class GlicAndroidMojoIntegrationTest {
     // Increase polling timeout to reduce flakiness hopefully.
     private static final long MOJO_BINDING_TIMEOUT_MS = 10000L;
@@ -157,5 +162,25 @@ public class GlicAndroidMojoIntegrationTest {
 
         // 4. Assert that the guest instance state has been preserved (the prompt still exists)
         assertEquals("State preservation test", getLastPrompt());
+    }
+
+    @Test
+    @LargeTest
+    public void testShowExperimentalOptInDialog() throws Throwable {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    GlicKeyedService service =
+                            GlicKeyedServiceFactory.getForProfile(mTab.getProfile());
+                    service.showExperimentalOptInDialogForTesting(mTab);
+                });
+
+        // Verify the dialog is showing via ModalDialogManager.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
+                    if (windowAndroid == null) return false;
+                    var modalDialogManager = windowAndroid.getModalDialogManager();
+                    return modalDialogManager != null && modalDialogManager.isShowing();
+                });
     }
 }

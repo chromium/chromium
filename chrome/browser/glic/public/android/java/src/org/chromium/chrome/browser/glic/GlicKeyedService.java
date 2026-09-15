@@ -162,6 +162,13 @@ public interface GlicKeyedService {
                 });
     }
 
+    /**
+     * Shows the experimental triggering opt-in dialog for testing.
+     *
+     * @param tab The target {@link Tab}.
+     */
+    void showExperimentalOptInDialogForTesting(Tab tab); // IN-TEST
+
     /** Observer for global show/hide events. */
     interface GlobalShowHideObserver {
         /** Called when any Glic instance opens or closes. */

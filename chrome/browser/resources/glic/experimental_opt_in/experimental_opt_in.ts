@@ -37,6 +37,7 @@ enum FailureType {
 const TRANSITION_DURATION_MS = 250;
 // Setup target height and width custom properties immediately at load to
 // prevent layout shifts.
+// <if expr="not is_android">
 const defaultHeight =
     loadTimeData.getInteger('glicExperimentalOptInDefaultHeight');
 const defaultWidth =
@@ -48,12 +49,17 @@ document.documentElement.style.setProperty(
     '--glic-experimental-opt-in-height', `${defaultHeight}px`);
 document.documentElement.style.setProperty(
     '--glic-experimental-opt-in-width', `${targetWidth}px`);
+document.body.style.minHeight = `${defaultHeight}px`;
+// </if>
+// <if expr="is_android">
+document.documentElement.classList.add('android');
+document.documentElement.style.setProperty(
+    '--glic-experimental-opt-in-height', '100%');
+document.documentElement.style.setProperty(
+    '--glic-experimental-opt-in-width', '100%');
+// </if>
 document.documentElement.style.setProperty(
     '--glic-transition-duration', `${TRANSITION_DURATION_MS}ms`);
-
-// Set min-height on body to prevent collapse during loading when webview is
-// hidden and skeleton is absolute.
-document.body.style.minHeight = `${defaultHeight}px`;
 
 export class ExperimentalOptInApp {
   private webview_: WebViewType;
@@ -73,11 +79,24 @@ export class ExperimentalOptInApp {
 
   constructor() {
     this.webview_ = getRequiredElement<WebViewType>('webview');
+    // <if expr="not is_android">
     // Allow a small margin of error (±2px) around the target width to prevent
     // subpixel rounding or zoom differences from failing the webview's internal
     // size-changed checks and collapsing the layout.
     this.webview_.setAttribute('minwidth', String(targetWidth - 2));
     this.webview_.setAttribute('maxwidth', String(targetWidth + 2));
+    // </if>
+    // <if expr="is_android">
+    // The WebUI is authored at a 512px design width, but the Android dialog is
+    // capped at 400dp (R.dimen.glic_experimental_opt_in_dialog_max_width);
+    // 400 / 512 = 0.78. Zoom applies to CSS pixels, so this is independent of
+    // screen density.
+    // TODO(crbug.com/561690931): Derive the scale from the webview's measured
+    // width so it stays correct when the dialog is narrower than its max width
+    // (small screens, split screen, large font scale).
+    this.webview_.style.zoom = '0.78';
+    this.webview_.removeAttribute('autosize');
+    // </if>
 
     this.errorPanel_ = getRequiredElement('errorPanel');
     this.errorIcon_ = getRequiredElement('errorIcon');
@@ -115,6 +134,8 @@ export class ExperimentalOptInApp {
         'contentload', () => this.transitionToWebview_());
     this.webview_.addEventListener(
         'loadstop', () => this.transitionToWebview_());
+    this.webview_.addEventListener(
+        'loadcommit', () => this.transitionToWebview_());
 
     window.addEventListener(
         'message',

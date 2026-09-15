@@ -604,4 +604,12 @@ void GlicKeyedService::OnBrowserWindowClosed(BrowserWindowInterface* browser) {
 }
 #endif
 
+void GlicKeyedService::ShowExperimentalOptInDialogForTesting(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return;
+  }
+  opt_in_controller().ShowDialog(web_contents, base::DoNothing());
+}
+
 }  // namespace glic

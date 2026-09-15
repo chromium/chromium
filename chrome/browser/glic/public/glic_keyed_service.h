@@ -226,6 +226,8 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   // Used only for testing purposes.
   void reset_profile_for_test() { profile_ = nullptr; }
+  void ShowExperimentalOptInDialogForTesting(
+      content::WebContents* web_contents);
 
   base::WeakPtr<GlicKeyedService> GetWeakPtr();
 

@@ -178,6 +178,16 @@ void GlicKeyedServiceAndroid::InvokeWithConversation(
   service_->Invoke(std::move(options));
 }
 
+void GlicKeyedServiceAndroid::ShowExperimentalOptInDialogForTesting(
+    JNIEnv* env,
+    TabAndroid* tab) {
+  if (!tab || !tab->GetContents()) {
+    return;
+  }
+  service_->ShowExperimentalOptInDialogForTesting(
+      tab->GetContents());  // IN-TEST
+}
+
 bool GlicKeyedServiceAndroid::IsPanelShowingForBrowser(
     JNIEnv* env,
     int64_t browser_window_ptr) {

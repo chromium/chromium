@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui_host.h"
@@ -19,8 +20,6 @@ class WebContents;
 
 namespace glic {
 
-class BottomSheetSession;
-
 class GlicExperimentalOptInUIHostAndroid : public GlicExperimentalOptInUIHost {
  public:
   GlicExperimentalOptInUIHostAndroid(Profile* profile, Delegate* delegate);
@@ -31,15 +30,20 @@ class GlicExperimentalOptInUIHostAndroid : public GlicExperimentalOptInUIHost {
   void Close(bool accepted) override;
   content::WebContents* GetOrCreateSuitableWebContents() override;
 
+  // Called from Java when the dialog is dismissed.
+  void OnDismissed();
+
   // Android-specific test accessor to simulate the native UI closing.
-  void SimulateClosingBottomSheetForTesting();
+  void SimulateDismissingForTesting();
 
  private:
-  void OnSessionClosed(bool accepted);
+  void NotifyDelegateClosed(bool accepted);
 
   raw_ptr<Profile> profile_;
   raw_ptr<Delegate> delegate_;
-  std::unique_ptr<BottomSheetSession> session_;
+  std::unique_ptr<content::WebContents> opt_in_web_contents_;
+  base::android::ScopedJavaGlobalRef<jobject> java_dialog_;
+  bool is_accepted_ = false;
   base::WeakPtrFactory<GlicExperimentalOptInUIHostAndroid> weak_ptr_factory_{
       this};
 };

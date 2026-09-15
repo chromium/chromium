@@ -144,6 +144,14 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     }
 
     @Override
+    public void showExperimentalOptInDialogForTesting(Tab tab) {
+        if (mNativePtr == 0) return;
+
+        GlicKeyedServiceImplJni.get()
+                .showExperimentalOptInDialogForTesting(mNativePtr, tab); // IN-TEST
+    }
+
+    @Override
     public boolean isPanelShowingForBrowser(long browserWindowPtr) {
         if (mNativePtr == 0) return false;
         return GlicKeyedServiceImplJni.get().isPanelShowingForBrowser(mNativePtr, browserWindowPtr);
@@ -304,6 +312,9 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
                 @GlicInvocationSource int source);
 
         boolean isPanelShowingForBrowser(long nativeGlicKeyedServiceAndroid, long browserWindowPtr);
+
+        void showExperimentalOptInDialogForTesting( // IN-TEST
+                long nativeGlicKeyedServiceAndroid, @JniType("TabAndroid*") Tab tab);
 
         boolean getUserEnabledActuationOnWeb(long nativeGlicKeyedServiceAndroid);
 

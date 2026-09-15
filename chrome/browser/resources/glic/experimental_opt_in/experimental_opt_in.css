@@ -114,6 +114,32 @@ webview.autosized {
   width: auto;
 }
 
+/* Android responsive dialog styles */
+html.android,
+html.android body {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+html.android .panel {
+  height: 100%;
+}
+
+html.android .panel.dialog {
+  height: 100%;
+}
+
+html.android webview {
+  box-sizing: border-box;
+  height: var(--glic-experimental-opt-in-height, 100%) !important;
+  width: min(100%, var(--glic-experimental-opt-in-width, 512px)) !important;
+}
+
+html.android webview.autosized {
+  height: var(--glic-experimental-opt-in-height, auto) !important;
+  width: var(--glic-experimental-opt-in-width, auto) !important;
+}
+
 .hidden,
 [hidden] {
   display: none !important;

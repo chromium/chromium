@@ -14,6 +14,7 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true"
+    android:clipToOutline="true"
     app:maxWidthLandscape="@dimen/modal_dialog_max_width_major"
     app:maxWidthPortrait="@dimen/modal_dialog_max_width_minor"
     app:maxHeight="@dimen/modal_dialog_max_height" >
