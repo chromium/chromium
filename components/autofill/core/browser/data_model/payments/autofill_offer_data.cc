@@ -57,6 +57,22 @@ AutofillOfferData AutofillOfferData::WalletDirectOffer(
                            promo_code);
 }
 
+AutofillOfferData::AutofillOfferData(int64_t offer_id,
+                                     base::Time expiry,
+                                     std::vector<GURL> merchant_origins,
+                                     GURL offer_details_url,
+                                     DisplayStrings display_strings,
+                                     std::string promo_code,
+                                     std::string offer_reward_amount)
+    : offer_type_(OfferType::WALLET_DIRECT_OFFER),
+      offer_id_(offer_id),
+      expiry_(expiry),
+      offer_details_url_(std::move(offer_details_url)),
+      merchant_origins_(std::move(merchant_origins)),
+      display_strings_(std::move(display_strings)),
+      offer_reward_amount_(std::move(offer_reward_amount)),
+      promo_code_(std::move(promo_code)) {}
+
 AutofillOfferData::AutofillOfferData() = default;
 
 AutofillOfferData::~AutofillOfferData() = default;

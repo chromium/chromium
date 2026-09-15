@@ -1441,12 +1441,6 @@ bool PaymentsAutofillTable::GetAutofillOffers(
       {kOfferId, kOfferRewardAmount, kExpiry, kOfferDetailsUrl, kPromoCode,
        kValuePropText, kSeeDetailsText, kUsageInstructionsText});
 
-  sql::Statement s_offer_eligible_instrument;
-  sql::CachedSelectBuilder(SQL_FROM_HERE, *db(), s_offer_eligible_instrument,
-                           kOfferEligibleInstrumentTable,
-                           {kOfferId, kInstrumentId},
-                           /*modifiers=*/"WHERE offer_id = ?");
-
   sql::Statement s_offer_merchant_domain;
   sql::CachedSelectBuilder(SQL_FROM_HERE, *db(), s_offer_merchant_domain,
                            kOfferMerchantDomainTable,
@@ -1466,17 +1460,7 @@ bool PaymentsAutofillTable::GetAutofillOffers(
     std::string usage_instructions_text = s.ColumnString(index++);
     DisplayStrings display_strings = {value_prop_text, see_details_text,
                                       usage_instructions_text};
-    std::vector<int64_t> eligible_instrument_id;
     std::vector<GURL> merchant_origins;
-
-    s_offer_eligible_instrument.BindInt64(0, offer_id);
-    while (s_offer_eligible_instrument.Step()) {
-      const int64_t instrument_id = s_offer_eligible_instrument.ColumnInt64(1);
-      if (instrument_id != 0) {
-        eligible_instrument_id.push_back(instrument_id);
-      }
-    }
-    s_offer_eligible_instrument.Reset(/*clear_bound_vars=*/true);
 
     s_offer_merchant_domain.BindInt64(0, offer_id);
     while (s_offer_merchant_domain.Step()) {
@@ -1488,19 +1472,10 @@ bool PaymentsAutofillTable::GetAutofillOffers(
     }
     s_offer_merchant_domain.Reset(/*clear_bound_vars=*/true);
 
-    if (promo_code.empty()) {
-      auto data = std::make_unique<AutofillOfferData>(
-          AutofillOfferData::GPayCardLinkedOffer(
-              offer_id, expiry, merchant_origins, offer_details_url,
-              display_strings, eligible_instrument_id, offer_reward_amount));
-      autofill_offer_data->emplace_back(std::move(data));
-    } else {
-      auto data = std::make_unique<AutofillOfferData>(
-          AutofillOfferData::GPayPromoCodeOffer(
-              offer_id, expiry, merchant_origins, offer_details_url,
-              display_strings, promo_code));
-      autofill_offer_data->emplace_back(std::move(data));
-    }
+    autofill_offer_data->emplace_back(std::make_unique<AutofillOfferData>(
+        offer_id, expiry, std::move(merchant_origins),
+        std::move(offer_details_url), std::move(display_strings),
+        std::move(promo_code), std::move(offer_reward_amount)));
   }
 
   return s.Succeeded();

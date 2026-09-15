@@ -232,6 +232,9 @@ class VirtualCardUsageData;
 // offer_eligible_instrument
 //                      Contains the mapping of credit cards and card linked
 //                      offers.
+//                      TODO(crbug.com/546252995): Remove this table once
+//                      `OfferType` is deprecated, since it will not be used
+//                      for direct offers.
 //
 //   offer_id           Int 64 to identify the relevant offer. Matches the
 //                      `offer_id` in the `offer_data` table.

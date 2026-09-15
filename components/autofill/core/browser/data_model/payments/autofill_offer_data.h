@@ -34,6 +34,8 @@ struct DisplayStrings {
 // promo codes. Merchants are determined by |merchant_origins|.
 class AutofillOfferData {
  public:
+  // TODO(crbug.com/546252995): Deprecate `OfferType` since we will only have
+  // `WALLET_DIRECT_OFFER`.
   // The specific type of offer.
   enum class OfferType {
     // Default value, should not be used.
@@ -46,6 +48,8 @@ class AutofillOfferData {
     WALLET_DIRECT_OFFER,
   };
 
+  // TODO(crbug.com/546252995): Deprecate static factory methods in favor of the
+  // constructor.
   // Returns an AutofillOfferData for a GPay card-linked offer.
   static AutofillOfferData GPayCardLinkedOffer(
       int64_t offer_id,
@@ -71,6 +75,14 @@ class AutofillOfferData {
       const GURL& offer_details_url,
       const DisplayStrings& display_strings,
       const std::string& promo_code);
+
+  AutofillOfferData(int64_t offer_id,
+                    base::Time expiry,
+                    std::vector<GURL> merchant_origins,
+                    GURL offer_details_url,
+                    DisplayStrings display_strings,
+                    std::string promo_code,
+                    std::string offer_reward_amount);
 
   // TODO(crbug.com/40932427): Refactor this class to ensure the correct access
   // specifiers and move constructors and move assignment constructors.
@@ -127,6 +139,8 @@ class AutofillOfferData {
 #endif
 
  private:
+  // TODO(crbug.com/546252995): Remove these constructors along with the static
+  // factory methods above once `OfferType` is deprecated.
   // Constructs an AutofillOfferData for a card-linked offer.
   AutofillOfferData(int64_t offer_id,
                     base::Time expiry,
@@ -168,16 +182,18 @@ class AutofillOfferData {
   // offers as well.
   DisplayStrings display_strings_;
 
-  /* Card-linked offer-specific fields */
-
+  // TODO(crbug.com/546252995): Rename `offer_reward_amount_` to
+  // `offer_short_title_` once `OfferType` is deprecated, since direct offers
+  // store their short title here.
   // The string including the reward details of the offer. Could be either
   // percentage off (XXX%) or fixed amount off ($XXX).
   std::string offer_reward_amount_;
 
+  // TODO(crbug.com/546252995): Remove `eligible_instrument_id_` field
+  // once `OfferType` is deprecated, since it will not be used for direct
+  // offers.
   // The ids of the cards this offer can be applied to.
   std::vector<int64_t> eligible_instrument_id_;
-
-  /* Promo code offer-specific fields */
 
   // A promo/gift/coupon code that can be applied at checkout with the merchant.
   std::string promo_code_;

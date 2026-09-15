@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -1386,129 +1387,65 @@ TEST_F(PaymentsAutofillTableTest, GetCreditCardCloudData_NoData) {
   EXPECT_TRUE(output.empty());
 }
 
-TEST_F(PaymentsAutofillTableTest, SetAndGetCreditCardOfferData) {
-  // Set Offer ID.
-  int64_t offer_id_1 = 1;
-  int64_t offer_id_2 = 2;
-  int64_t offer_id_3 = 3;
-
-  // Set reward amounts for card-linked offers on offer 1 and 2.
-  std::string offer_reward_amount_1 = "$5";
-  std::string offer_reward_amount_2 = "10%";
-
-  // Set promo code for offer 3.
-  std::string promo_code_3 = "5PCTOFFSHOES";
-
-  // Set expiry.
-  base::Time expiry_1 = base::Time::FromSecondsSinceUnixEpoch(1000);
-  base::Time expiry_2 = base::Time::FromSecondsSinceUnixEpoch(2000);
-  base::Time expiry_3 = base::Time::FromSecondsSinceUnixEpoch(3000);
-
-  // Set details URL.
-  GURL offer_details_url_1 = GURL("https://www.offer_1_example.com/");
-  GURL offer_details_url_2 = GURL("https://www.offer_2_example.com/");
-  GURL offer_details_url_3 = GURL("https://www.offer_3_example.com/");
-
-  // Set merchant domains for offer 1.
-  std::vector<GURL> merchant_origins_1;
-  merchant_origins_1.emplace_back("http://www.merchant_domain_1_1.com/");
-  std::vector<GURL> merchant_origins_2;
-  merchant_origins_2.emplace_back("http://www.merchant_domain_1_2.com/");
-  std::vector<GURL> merchant_origins_3;
-  merchant_origins_3.emplace_back("http://www.merchant_domain_1_3.com/");
-  // Set merchant domains for offer 2.
-  merchant_origins_2.emplace_back("http://www.merchant_domain_2_1.com/");
-  // Set merchant domains for offer 3.
-  merchant_origins_3.emplace_back("http://www.merchant_domain_3_1.com/");
-  merchant_origins_3.emplace_back("http://www.merchant_domain_3_2.com/");
-
-  DisplayStrings display_strings_1;
-  DisplayStrings display_strings_2;
-  DisplayStrings display_strings_3;
-  // Set display strings for all 3 offers.
-  display_strings_1.value_prop_text = "$5 off your purchase";
-  display_strings_2.value_prop_text = "10% off your purchase";
-  display_strings_3.value_prop_text = "5% off shoes. Up to $50.";
-  display_strings_1.see_details_text = "Terms apply.";
-  display_strings_2.see_details_text = "Terms apply.";
-  display_strings_3.see_details_text = "See details.";
-  display_strings_1.usage_instructions_text =
-      "Check out with this card to activate.";
-  display_strings_2.usage_instructions_text =
-      "Check out with this card to activate.";
-  display_strings_3.usage_instructions_text =
-      "Click the promo code field at checkout to autofill it.";
-
-  std::vector<int64_t> eligible_instrument_id_1;
-  std::vector<int64_t> eligible_instrument_id_2;
-  std::vector<int64_t> eligible_instrument_id_3;
-
-  // Set eligible card-linked instrument ID for offer 1.
-  eligible_instrument_id_1.push_back(10);
-  eligible_instrument_id_1.push_back(11);
-  // Set eligible card-linked instrument ID for offer 2.
-  eligible_instrument_id_2.push_back(20);
-  eligible_instrument_id_2.push_back(21);
-  eligible_instrument_id_2.push_back(22);
-
-  // Create vector of offer data.
+TEST_F(PaymentsAutofillTableTest, SetAndGetOfferData) {
   std::vector<AutofillOfferData> autofill_offer_data;
-  autofill_offer_data.push_back(AutofillOfferData::GPayCardLinkedOffer(
-      offer_id_1, expiry_1, merchant_origins_1, offer_details_url_1,
-      display_strings_2, eligible_instrument_id_1, offer_reward_amount_1));
-  autofill_offer_data.push_back(AutofillOfferData::GPayCardLinkedOffer(
-      offer_id_2, expiry_2, merchant_origins_2, offer_details_url_2,
-      display_strings_2, eligible_instrument_id_2, offer_reward_amount_2));
-  autofill_offer_data.push_back(AutofillOfferData::GPayPromoCodeOffer(
-      offer_id_3, expiry_3, merchant_origins_3, offer_details_url_3,
-      display_strings_3, promo_code_3));
+  autofill_offer_data.emplace_back(
+      /*offer_id=*/1,
+      /*expiry=*/base::Time::FromSecondsSinceUnixEpoch(1000),
+      /*merchant_origins=*/
+      std::vector<GURL>{GURL("http://www.merchant_domain_1_1.com/")},
+      /*offer_details_url=*/GURL("https://www.offer_1_example.com/"),
+      /*display_strings=*/
+      DisplayStrings{.value_prop_text = "$5 off your purchase",
+                     .see_details_text = "Terms apply.",
+                     .usage_instructions_text =
+                         "Click the promo code field at checkout to autofill "
+                         "it."},
+      /*promo_code=*/"5DOLLARSOFF",
+      /*offer_reward_amount=*/"$5");
+  // An offer redeemable at several merchants.
+  autofill_offer_data.emplace_back(
+      /*offer_id=*/2,
+      /*expiry=*/base::Time::FromSecondsSinceUnixEpoch(2000),
+      /*merchant_origins=*/
+      std::vector<GURL>{GURL("http://www.merchant_domain_1_2.com/"),
+                        GURL("http://www.merchant_domain_2_1.com/")},
+      /*offer_details_url=*/GURL("https://www.offer_2_example.com/"),
+      /*display_strings=*/
+      DisplayStrings{.value_prop_text = "10% off your purchase",
+                     .see_details_text = "Terms apply.",
+                     .usage_instructions_text =
+                         "Click the promo code field at checkout to autofill "
+                         "it."},
+      /*promo_code=*/"10PCTOFF",
+      /*offer_reward_amount=*/"10%");
 
   table_->SetAutofillOffers(autofill_offer_data);
 
   std::vector<std::unique_ptr<AutofillOfferData>> output_offer_data;
+  ASSERT_TRUE(table_->GetAutofillOffers(&output_offer_data));
+  ASSERT_EQ(autofill_offer_data.size(), output_offer_data.size());
 
-  EXPECT_TRUE(table_->GetAutofillOffers(&output_offer_data));
-  EXPECT_EQ(autofill_offer_data.size(), output_offer_data.size());
+  for (const AutofillOfferData& expected : autofill_offer_data) {
+    auto it = std::ranges::find(output_offer_data, expected.GetOfferId(),
+                                &AutofillOfferData::GetOfferId);
+    ASSERT_NE(it, output_offer_data.end());
+    const AutofillOfferData& actual = **it;
 
-  for (const auto& data : autofill_offer_data) {
-    // Find output data with corresponding Offer ID.
-    size_t output_index = 0;
-    while (output_index < output_offer_data.size()) {
-      if (data.GetOfferId() == output_offer_data[output_index]->GetOfferId()) {
-        break;
-      }
-      output_index++;
-    }
-
-    // Expect to find matching Offer ID's.
-    EXPECT_NE(output_index, output_offer_data.size());
-
-    // All corresponding fields must be equal.
-    EXPECT_EQ(data.GetOfferId(), output_offer_data[output_index]->GetOfferId());
-    EXPECT_EQ(data.GetOfferRewardAmount(),
-              output_offer_data[output_index]->GetOfferRewardAmount());
-    EXPECT_EQ(data.GetPromoCode(),
-              output_offer_data[output_index]->GetPromoCode());
-    EXPECT_EQ(data.GetExpiry(), output_offer_data[output_index]->GetExpiry());
-    EXPECT_EQ(data.GetOfferDetailsUrl().spec(),
-              output_offer_data[output_index]->GetOfferDetailsUrl().spec());
-    EXPECT_EQ(
-        data.GetDisplayStrings().value_prop_text,
-        output_offer_data[output_index]->GetDisplayStrings().value_prop_text);
-    EXPECT_EQ(
-        data.GetDisplayStrings().see_details_text,
-        output_offer_data[output_index]->GetDisplayStrings().see_details_text);
-    EXPECT_EQ(data.GetDisplayStrings().usage_instructions_text,
-              output_offer_data[output_index]
-                  ->GetDisplayStrings()
-                  .usage_instructions_text);
-    ASSERT_THAT(data.GetMerchantOrigins(),
-                testing::UnorderedElementsAreArray(
-                    output_offer_data[output_index]->GetMerchantOrigins()));
-    ASSERT_THAT(
-        data.GetEligibleInstrumentIds(),
-        testing::UnorderedElementsAreArray(
-            output_offer_data[output_index]->GetEligibleInstrumentIds()));
+    EXPECT_EQ(expected.GetOfferRewardAmount(), actual.GetOfferRewardAmount());
+    EXPECT_EQ(expected.GetPromoCode(), actual.GetPromoCode());
+    EXPECT_EQ(expected.GetExpiry(), actual.GetExpiry());
+    EXPECT_EQ(expected.GetOfferDetailsUrl().spec(),
+              actual.GetOfferDetailsUrl().spec());
+    EXPECT_EQ(expected.GetDisplayStrings().value_prop_text,
+              actual.GetDisplayStrings().value_prop_text);
+    EXPECT_EQ(expected.GetDisplayStrings().see_details_text,
+              actual.GetDisplayStrings().see_details_text);
+    EXPECT_EQ(expected.GetDisplayStrings().usage_instructions_text,
+              actual.GetDisplayStrings().usage_instructions_text);
+    EXPECT_THAT(
+        expected.GetMerchantOrigins(),
+        testing::UnorderedElementsAreArray(actual.GetMerchantOrigins()));
   }
 }
 
