@@ -136,19 +136,26 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Extract changed parameter sets and update active parameter set data.
-  std::vector<base::span<const uint8_t>> combined_nalu_data;
-  if (!sps_tracker_.ExtractForInbandUpdate(combined_nalu_data) ||
-      !pps_tracker_.ExtractForInbandUpdate(combined_nalu_data)) {
+  std::vector<base::span<const uint8_t>> sps_nalu_data;
+  if (!sps_tracker_.ExtractForInbandUpdate(sps_nalu_data)) {
+    return Status::kFail;
+  }
+  std::vector<base::span<const uint8_t>> pps_nalu_data;
+  if (!pps_tracker_.ExtractForInbandUpdate(pps_nalu_data)) {
     return Status::kFail;
   }
 
-  // Create a new format description if we haven't initialized one yet, or if we
-  // are at a keyframe and the parameter set data has changed.
-  if (!active_format_ || (pic->idr && !combined_nalu_data.empty())) {
-    combined_nalu_data.clear();
+  // Create a new format description if we haven't initialized one yet, or if
+  // the SPS has changed, or if we are at a keyframe and the PPS has changed.
+  std::vector<base::span<const uint8_t>> combined_nalu_data;
+  if (!active_format_ || !sps_nalu_data.empty() ||
+      (pic->idr && !pps_nalu_data.empty())) {
     if (!CreateFormat()) {
       return Status::kFail;
     }
+  } else {
+    // Non-IDR frames that only update the PPS can be handled in-band.
+    combined_nalu_data = std::move(pps_nalu_data);
   }
 
   // Append slice data.
