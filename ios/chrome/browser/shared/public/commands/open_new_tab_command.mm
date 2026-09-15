@@ -23,7 +23,6 @@
 @synthesize userInitiated = _userInitiated;
 @synthesize shouldFocusOmnibox = _shouldFocusOmnibox;
 @synthesize textFragment = _textFragment;
-@synthesize openerWebState = _openerWebState;
 
 - (instancetype)initInIncognito:(BOOL)inIncognito
                    inBackground:(BOOL)inBackground {

@@ -7,13 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/weak_ptr.h"
-
 class GURL;
 
 namespace web {
 struct Referrer;
-class WebState;
 }
 
 // Describes the intended position for a new tab.
@@ -128,9 +125,6 @@ enum class OpenPosition {
 
 // Location where the new tab should be opened.
 @property(nonatomic, assign) OpenPosition appendTo;
-
-// Opener WebState for the new tab.
-@property(nonatomic, assign) base::WeakPtr<web::WebState> openerWebState;
 
 @end
 
