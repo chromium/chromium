@@ -151,6 +151,8 @@ export function getHtml(this: NtpComposeboxElement) {
                 .selectedMatchIndex="${this.selectedMatchIndex}"
                 .maxSuggestions="${this.maxSuggestions}"
                 .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
+                .richImageSuggestionsEnabled="${
+                    this.richImageSuggestionsEnabled}"
                 @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
                 @match-focusin="${this.onMatchFocusin}"
                 @match-click="${this.onMatchClick}"

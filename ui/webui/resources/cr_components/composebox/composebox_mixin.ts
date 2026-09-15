@@ -16,7 +16,7 @@ import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {InputSource, QueryActionOverride, SuggestInventory} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, SmartComposeStats, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {DriveDisclaimerStatus, DriveUploadError, InputMethod} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, DriveUploadError, InputMethod, SuggestStyle} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
@@ -159,6 +159,7 @@ export const ComposeboxEmbedderMixin =
               type: Boolean,
             },
             dropdownNeeded: {type: Boolean},
+            richImageSuggestionsEnabled: {type: Boolean},
             clearAllInputsWhenSubmittingQuery: {type: Boolean},
             closeOnEscape: {type: Boolean},
             composeboxNoFlickerSuggestionsFix: {type: Boolean},
@@ -231,6 +232,8 @@ export const ComposeboxEmbedderMixin =
         accessor smartTabSharingActive: boolean = false;
         accessor smartTabSharingVisible: boolean =
             getLoadTimeBoolean('composeboxSmartTabSharingVisible', false);
+        accessor richImageSuggestionsEnabled: boolean =
+            getLoadTimeBoolean('composeboxRichImageSuggestionsEnabled', false);
         accessor contextManagementInComposeboxEnabled: boolean =
             getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
         accessor composeboxContextMenuTooltipsEnabled: boolean =
@@ -630,14 +633,17 @@ export const ComposeboxEmbedderMixin =
           const changedPrivateProperties =
               changedProperties as Map<PropertyKey, unknown>;
           if (changedPrivateProperties.has('selectedMatchIndex')) {
-            if (this.selectedMatch) {
+            const isImageSuggestion = this.richImageSuggestionsEnabled &&
+                this.selectedMatch?.suggestStyle === SuggestStyle.kRichImage;
+            if (this.selectedMatch && !isImageSuggestion) {
               // Update the input.
               if (this.input !== this.selectedMatch.fillIntoEdit) {
                 this.getInputElement().resetHeight();
                 this.input = this.selectedMatch.fillIntoEdit;
               }
             } else if (!this.lastQueriedInput) {
-              // This is for cases when focus leaves the matches/input.
+              // This is for cases when focus leaves the matches/input or an
+              // image suggestion is selected in zero-state.
               // If there was already text in the input do not clear it.
               // Only clear input when not empty, otherwise this impacts
               // suggestions getting fetched for zero state.
@@ -646,7 +652,7 @@ export const ComposeboxEmbedderMixin =
               }
             } else {
               // For typed queries reset the input back to typed value when
-              // focus leaves the match.
+              // focus leaves the match or an image suggestion is selected.
               if (this.input !== this.lastQueriedInput) {
                 this.getInputElement().resetHeight();
                 this.input = this.lastQueriedInput;
@@ -902,7 +908,11 @@ export const ComposeboxEmbedderMixin =
             // change (and therefore `selectedMatch` does not get updated since
             // `onSelectedMatchIndexChanged_` is not called).
             this.selectedMatch = this.result.matches[this.selectedMatchIndex]!;
-            this.input = this.selectedMatch.fillIntoEdit;
+            const isImageSuggestion = this.richImageSuggestionsEnabled &&
+                this.selectedMatch.suggestStyle === SuggestStyle.kRichImage;
+            if (!isImageSuggestion) {
+              this.input = this.selectedMatch.fillIntoEdit;
+            }
           } else {
             this.getDropdownElement().unselect();
           }
@@ -3088,6 +3098,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   selectedMatchIndex: number;
   showDropdown: boolean;
   dropdownNeeded: boolean;
+  richImageSuggestionsEnabled: boolean;
   showFileCarousel: boolean;
   usePecApi: boolean;
   showZps: boolean;
