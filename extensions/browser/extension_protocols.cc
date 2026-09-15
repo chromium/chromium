@@ -206,7 +206,10 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
                                 const ExtensionSet& extensions,
                                 const ProcessMap& process_map,
                                 const GURL& upstream_url) {
+  // A null child_id indicates the request is initiated from the browser process
+  // (e.g., during main-frame navigations).
   const bool is_main_frame =
+      child_id.is_null() &&
       destination == network::mojom::RequestDestination::kDocument;
   if (is_incognito &&
       !ExtensionCanLoadInIncognito(is_main_frame, extension,

@@ -48,10 +48,7 @@ bool AllowCrossRendererResourceLoad(
   const GURL& url = request.url;
   std::string_view resource_path = url.path();
 
-  // This logic is performed for main frame requests in
-  // ExtensionNavigationThrottle::WillStartRequest.
-  if (child_id ||
-      destination != network::mojom::RequestDestination::kDocument) {
+  if (child_id) {
     // Extensions with webview: allow loading certain resources by guest
     // renderers with privileged partition IDs as specified in owner's extension
     // the manifest file.
@@ -102,12 +99,10 @@ bool AllowCrossRendererResourceLoad(
 
   DCHECK_EQ(extension->url(), url.GetWithEmptyPath());
 
-  // Navigating the main frame to an extension URL is allowed, even if not
-  // explicitly listed as web_accessible_resource.
-  if (destination == network::mojom::RequestDestination::kDocument) {
-    *allowed = true;
-    return true;
-  }
+  // Main frame navigations to extension URLs are handled directly in the
+  // browser process by ExtensionNavigationThrottle and the navigation
+  // URLLoaderFactory. They never legitimately arrive through a renderer's
+  // subresource factory and must not bypass web_accessible_resources checks.
 
   // When navigating in subframe, verify that the extension the resource is
   // loaded from matches the process loading it.

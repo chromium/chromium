@@ -272,6 +272,18 @@ class ExtensionProtocolsTestBase : public testing::Test {
     return LoadURL(url, destination);
   }
 
+  GetResult RequestOrLoadFromSubresourceFactory(
+      const GURL& url,
+      network::mojom::RequestDestination destination,
+      const std::optional<url::Origin>& request_initiator = std::nullopt) {
+    mojo::Remote<network::mojom::URLLoaderFactory> subresource_factory;
+    subresource_factory.Bind(CreateExtensionURLLoaderFactory(
+        contents_->GetPrimaryMainFrame()->GetProcess()->GetID(),
+        contents_->GetPrimaryMainFrame()->GetRoutingID()));
+    return LoadURLFromFactory(subresource_factory.get(), url, destination,
+                              request_initiator);
+  }
+
   void AddExtension(const scoped_refptr<const Extension>& extension,
                     bool incognito_enabled,
                     bool notifications_disabled) {
@@ -323,14 +335,26 @@ class ExtensionProtocolsTestBase : public testing::Test {
  private:
   GetResult LoadURL(const GURL& url,
                     network::mojom::RequestDestination destination) {
+    return LoadURLFromFactory(loader_factory_.get(), url, destination);
+  }
+
+  GetResult LoadURLFromFactory(
+      network::mojom::URLLoaderFactory* factory,
+      const GURL& url,
+      network::mojom::RequestDestination destination,
+      const std::optional<url::Origin>& request_initiator = std::nullopt) {
     constexpr int32_t kRequestId = 28;
 
     mojo::PendingRemote<network::mojom::URLLoader> loader;
     network::TestURLLoaderClient client;
-    loader_factory_->CreateLoaderAndStart(
+    network::ResourceRequest request =
+        CreateResourceRequest("GET", destination, url);
+    if (request_initiator.has_value()) {
+      request.request_initiator = request_initiator;
+    }
+    factory->CreateLoaderAndStart(
         loader.InitWithNewPipeAndPassReceiver(), kRequestId,
-        network::mojom::kURLLoadOptionNone,
-        CreateResourceRequest("GET", destination, url), client.CreateRemote(),
+        network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     // If `power_monitor_source_` is set, simulates power suspend and resume
@@ -741,6 +765,85 @@ TEST_F(ExtensionProtocolsTest, AllowFrameRequests) {
     auto get_result = RequestOrLoad(extension->GetResourceURL("test.dat"),
                                     network::mojom::RequestDestination::kVideo);
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
+  }
+}
+
+// Tests that subresource requests from a non-extension renderer process
+// respect web accessible resource policies even when requesting with a
+// document destination.
+TEST_F(ExtensionProtocolsTest, SubresourceRequestsDocumentDestination) {
+  scoped_refptr<const Extension> extension = CreateTestExtension("foo", false);
+  AddExtension(extension, false, false);
+
+  // Non-web-accessible subresource requests specifying kDocument destination
+  // from a non-extension process should be blocked.
+  {
+    auto get_result = RequestOrLoadFromSubresourceFactory(
+        extension->GetResourceURL("test.dat"),
+        network::mojom::RequestDestination::kDocument);
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
+  }
+
+  // Subresource requests specifying other destinations should also be blocked.
+  {
+    auto get_result = RequestOrLoadFromSubresourceFactory(
+        extension->GetResourceURL("test.dat"),
+        network::mojom::RequestDestination::kVideo);
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
+  }
+
+  // Subresource requests with empty destination should also be blocked.
+  {
+    auto get_result = RequestOrLoadFromSubresourceFactory(
+        extension->GetResourceURL("test.dat"),
+        network::mojom::RequestDestination::kEmpty);
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
+  }
+
+  // Non-web-accessible subresource requests with custom web initiator should
+  // also be blocked.
+  url::Origin web_origin = url::Origin::Create(GURL("http://example.com"));
+  {
+    auto get_result = RequestOrLoadFromSubresourceFactory(
+        extension->GetResourceURL("test.dat"),
+        network::mojom::RequestDestination::kDocument, web_origin);
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
+  }
+
+  // A resource that is listed in web_accessible_resources should succeed.
+  scoped_refptr<const Extension> extension_with_war =
+      CreateTestResponseHeaderExtension();
+  AddExtension(extension_with_war, false, false);
+  {
+    auto get_result = RequestOrLoadFromSubresourceFactory(
+        extension_with_war->GetResourceURL("test.dat"),
+        network::mojom::RequestDestination::kEmpty);
+    EXPECT_EQ(net::OK, get_result.result());
+  }
+
+  {
+    auto get_result = RequestOrLoadFromSubresourceFactory(
+        extension_with_war->GetResourceURL("test.dat"),
+        network::mojom::RequestDestination::kDocument);
+    EXPECT_EQ(net::OK, get_result.result());
+  }
+
+  // Unlisted resources in an extension that has web_accessible_resources
+  // should still be blocked.
+  {
+    auto get_result = RequestOrLoadFromSubresourceFactory(
+        extension_with_war->GetResourceURL("background.js"),
+        network::mojom::RequestDestination::kDocument);
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
+  }
+
+  // Navigation requests through the navigation factory remain allowed for
+  // document destinations.
+  {
+    auto get_result =
+        RequestOrLoad(extension->GetResourceURL("test.dat"),
+                      network::mojom::RequestDestination::kDocument);
+    EXPECT_EQ(net::OK, get_result.result());
   }
 }
 

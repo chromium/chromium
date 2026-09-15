@@ -22,6 +22,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/background_script_executor.h"
+#include "extensions/browser/extension_protocols.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -33,6 +34,9 @@
 #include "net/base/filename_util.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/page_transition_types.h"
 
@@ -1524,6 +1528,79 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlScriptingBrowserTest,
   BackgroundScriptExecutor::ExecuteScriptAsync(
       profile(), extension->id(), base::StringPrintf(kScript, tab_id));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+// Test that subresource requests from a web page renderer specifying
+// RequestDestination::kDocument are properly blocked for non-web-accessible
+// resources.
+IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
+                       SubresourceURLLoaderFactoryDocumentDestination) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Test Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "web_accessible_resources": [{
+      "resources": ["accessible.html"],
+      "matches": ["*://example.com/*"]
+    }]
+  })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("accessible.html"),
+                     "accessible content");
+  test_dir.WriteFile(FILE_PATH_LITERAL("private.html"), "private content");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  EXPECT_TRUE(extension);
+
+  // Navigate to a web page on example.com.
+  EXPECT_TRUE(NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  content::RenderFrameHost* main_rfh =
+      GetActiveWebContents()->GetPrimaryMainFrame();
+  mojo::Remote<network::mojom::URLLoaderFactory> subresource_factory;
+  subresource_factory.Bind(CreateExtensionURLLoaderFactory(
+      main_rfh->GetProcess()->GetID(), main_rfh->GetRoutingID()));
+
+  auto load_subresource = [&](const GURL& url,
+                              network::mojom::RequestDestination destination) {
+    mojo::PendingRemote<network::mojom::URLLoader> loader;
+    network::TestURLLoaderClient client;
+    network::ResourceRequest request;
+    request.method = "GET";
+    request.url = url;
+    request.destination = destination;
+    request.request_initiator = main_rfh->GetLastCommittedOrigin();
+    subresource_factory->CreateLoaderAndStart(
+        loader.InitWithNewPipeAndPassReceiver(), 0,
+        network::mojom::kURLLoadOptionNone, request, client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+    client.RunUntilComplete();
+    return client.completion_status().error_code;
+  };
+
+  // 1. Requesting a non-web-accessible resource with destination kDocument
+  // should be blocked.
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+            load_subresource(extension->GetResourceURL("private.html"),
+                             network::mojom::RequestDestination::kDocument));
+
+  // 2. Requesting a non-web-accessible resource with destination kEmpty
+  // should be blocked.
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
+            load_subresource(extension->GetResourceURL("private.html"),
+                             network::mojom::RequestDestination::kEmpty));
+
+  // 3. Requesting a web-accessible resource should succeed.
+  EXPECT_EQ(net::OK,
+            load_subresource(extension->GetResourceURL("accessible.html"),
+                             network::mojom::RequestDestination::kEmpty));
+
+  // 4. Requesting a web-accessible resource with destination kDocument should
+  // also succeed.
+  EXPECT_EQ(net::OK,
+            load_subresource(extension->GetResourceURL("accessible.html"),
+                             network::mojom::RequestDestination::kDocument));
 }
 
 }  // namespace
