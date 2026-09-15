@@ -173,7 +173,6 @@ static_library("test_support") {
     "//chrome/test/base:testing_browser_process_impl",
     "//chrome/test/base:testing_profile_impl",
     "//chrome/test/base:web_ui_mocha_browser_test",
-    "//chrome/test/base:web_ui_test_support",
   ]
 
   if (is_android) {
@@ -878,6 +877,7 @@ source_set("platform_browser_tests") {
     "//chrome/test/base:browser_test_waiters",
     "//chrome/test/base:chrome_render_view_test",
     "//chrome/test/base:profile_lifecycle_test_utils",
+    "//chrome/test/base:web_ui_test_support",
     "//components/browsing_data/content:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",

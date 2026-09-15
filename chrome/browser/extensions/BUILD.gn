@@ -2537,6 +2537,7 @@ source_set("browser_tests") {
     "//chrome/test/base:profile_lifecycle_test_utils",
     "//chrome/test/base:test_launcher_utils",
     "//chrome/test/base:tracing",
+    "//chrome/test/base:web_ui_test_support",
     "//components/back_forward_cache",
     "//components/bookmarks/managed",
     "//components/contextual_tasks/public:feature_list",
