@@ -65,6 +65,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/test:test_support",
+      "//chrome/test/base:browser_test_waiters",
       "//components/content_settings/core/browser",
       "//components/omnibox/browser",
       "//components/omnibox/common",

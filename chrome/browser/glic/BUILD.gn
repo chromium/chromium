@@ -945,6 +945,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/navigator",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//chrome/test/base:browser_test_waiters",
     "//chrome/test/base:profile_lifecycle_test_utils",
     "//components/actor/core",
     "//components/actor/public/mojom:mojo_bindings",

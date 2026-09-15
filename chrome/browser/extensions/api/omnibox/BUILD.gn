@@ -59,6 +59,7 @@ if (enable_desktop_android_extensions) {
       "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/omnibox",
       "//chrome/test:test_support",
+      "//chrome/test/base:browser_test_waiters",
       "//components/omnibox/browser",
       "//components/omnibox/common",
       "//components/search_engines",

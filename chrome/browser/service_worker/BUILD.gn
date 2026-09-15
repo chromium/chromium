@@ -61,6 +61,7 @@ source_set("unit_tests") {
     "//chrome/browser/search_engines",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chrome/test/base:browser_test_waiters",
     "//components/search_engines",
     "//testing/gtest",
     "//url",

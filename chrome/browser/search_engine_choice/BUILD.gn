@@ -190,6 +190,7 @@ if (!is_android) {
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
       "//chrome/test:test_support",
+      "//chrome/test/base:browser_test_waiters",
       "//components/country_codes",
       "//components/metrics",
       "//components/regional_capabilities",
