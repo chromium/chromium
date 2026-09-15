@@ -698,10 +698,15 @@ void IdentityGetAuthTokenFunction::OnMintTokenSuccess(
 
   IdentityTokenCacheValue token = IdentityTokenCacheValue::CreateToken(
       result.access_token, result.granted_scopes, result.time_to_live);
-  IdentityAPI::GetFactoryInstance()
-      ->Get(GetProfile())
-      ->token_cache()
-      ->SetToken(token_key_, token);
+  IdentityAPI* id_api = IdentityAPI::GetFactoryInstance()->Get(GetProfile());
+
+  id_api->token_cache()->SetToken(token_key_, token);
+  // Persist the account once the remote consent flow has been verified by a
+  // successful mint token response.
+  if (remote_consent_approved_) {
+    id_api->SetGaiaIdForExtension(token_key_.extension_id,
+                                  token_key_.account_info.gaia);
+  }
 
   CompleteMintTokenFlow();
   CompleteFunctionWithResult(result.access_token, result.granted_scopes);
@@ -892,16 +897,16 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
     }
   }
 
-  IdentityAPI* id_api = IdentityAPI::GetFactoryInstance()->Get(GetProfile());
-  id_api->SetGaiaIdForExtension(token_key_.extension_id, gaia_id);
-
   // It's important to update the cache before calling CompleteMintTokenFlow()
   // as this call may start a new request synchronously and query the cache.
   ExtensionTokenKey new_token_key(token_key_);
   new_token_key.account_info = account.GetCoreAccountInfo();
-  id_api->token_cache()->SetToken(
-      new_token_key,
-      IdentityTokenCacheValue::CreateRemoteConsentApproved(consent_result));
+  IdentityAPI::GetFactoryInstance()
+      ->Get(GetProfile())
+      ->token_cache()
+      ->SetToken(
+          new_token_key,
+          IdentityTokenCacheValue::CreateRemoteConsentApproved(consent_result));
   CompleteMintTokenFlow();
   token_key_ = new_token_key;
   consent_result_ = consent_result;

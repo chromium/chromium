@@ -278,7 +278,10 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
 #endif
   std::unique_ptr<GaiaRemoteConsentFlow> gaia_remote_consent_flow_;
   std::string consent_result_;
-  // Added for debugging https://crbug.com/40134189.
+  // Indicates whether remote consent was approved for this request.
+  // Used for UMA logging and to gate persisting the account binding in
+  // `OnMintTokenSuccess`. See https://crbug.com/40134189 and
+  // https://crbug.com/497087197.
   bool remote_consent_approved_ = false;
 
   // Invoked when IdentityAPI is shut down.

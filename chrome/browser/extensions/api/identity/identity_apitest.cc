@@ -148,6 +148,7 @@ using ::extensions::ExtensionsAPIClient;
 using ::testing::_;
 using ::testing::HasSubstr;
 using ::testing::Return;
+using ::testing::StartsWith;
 
 namespace extensions {
 
@@ -2966,6 +2967,78 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
     histogram_tester()->ExpectUniqueSample(
         kGetAuthTokenResultAfterConsentApprovedHistogramName,
         IdentityGetAuthTokenError::State::kNone, 1);
+  }
+}
+
+// Regression test for https://crbug.com/497087197. Tests that when remote
+// consent flow is approved but the subsequent mint token flow fails (e.g.,
+// server rejects an invalid or forged consent result), Chrome does NOT persist
+// the account to prefs. Chrome should continue using the primary account in
+// subsequent `getAuthToken` calls for that extension.
+IN_PROC_BROWSER_TEST_F(
+    GetAuthTokenFunctionTest,
+    MultiSecondaryInteractiveRemoteConsentMintTokenFailureDoesNotPersistAccount) {
+  if (id_api()->AreExtensionsRestrictedToPrimaryAccount()) {
+    GTEST_SKIP() << "Extensions are restricted to the primary account.";
+  }
+
+  const CoreAccountId primary_account_id = SignIn("primary@example.com");
+  const AccountInfo secondary_account =
+      identity_test_env()->MakeAccountAvailable("secondary@example.com");
+  const extensions::Extension* extension = CreateExtension(CLIENT_ID | SCOPES);
+
+  {
+    auto func = base::MakeRefCounted<FakeGetAuthTokenFunction>();
+    func->set_extension(extension);
+    func->push_mint_token_result(
+        TestOAuth2MintTokenFlow::REMOTE_CONSENT_SUCCESS);
+    func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_FAILURE);
+    func->set_remote_consent_gaia_id(secondary_account.GetGaiaId());
+    func->set_auto_login_access_token(false);
+
+    base::RunLoop run_loop;
+    on_access_token_requested_ = run_loop.QuitClosure();
+    RunFunctionAsync(func.get(), /*args=*/"[{\"interactive\": true}]");
+    run_loop.Run();
+
+    IssueLoginAccessTokenForAccount(primary_account_id);
+    IssueLoginAccessTokenForAccount(secondary_account.GetAccountId());
+
+    ASSERT_THAT(WaitForError(func.get()), StartsWith(errors::kAuthFailure));
+    // The unverified account must NOT be persisted in prefs.
+    ASSERT_EQ(id_api()->GetGaiaIdForExtension(extension->id()), std::nullopt);
+    histogram_tester()->ExpectUniqueSample(
+        kGetAuthTokenResultHistogramName,
+        IdentityGetAuthTokenError::State::kMintTokenAuthFailure, 1);
+    histogram_tester()->ExpectUniqueSample(
+        kGetAuthTokenResultAfterConsentApprovedHistogramName,
+        IdentityGetAuthTokenError::State::kMintTokenAuthFailure, 1);
+  }
+
+  {
+    // Clear in-memory token cache to simulate a browser restart.
+    id_api()->token_cache()->EraseAllTokens();
+
+    // A subsequent `getAuthToken` call without an account parameter should
+    // fall back to the primary account rather than the secondary account.
+    auto func = base::MakeRefCounted<FakeGetAuthTokenFunction>();
+    func->set_extension(extension);
+    func->push_mint_token_result(TestOAuth2MintTokenFlow::MINT_TOKEN_SUCCESS);
+
+    std::string access_token;
+    std::set<std::string> granted_scopes;
+    RunGetAuthTokenFunction(func.get(), /*args=*/"[{}]", profile(),
+                            &access_token, &granted_scopes);
+    EXPECT_EQ(access_token, kAccessToken);
+    EXPECT_EQ(func->GetExtensionTokenKeyForTest()->account_info.account_id,
+              primary_account_id);
+    EXPECT_EQ(id_api()->GetGaiaIdForExtension(extension->id()), std::nullopt);
+    histogram_tester()->ExpectBucketCount(
+        kGetAuthTokenResultHistogramName,
+        IdentityGetAuthTokenError::State::kNone, 1);
+    histogram_tester()->ExpectBucketCount(
+        kGetAuthTokenResultAfterConsentApprovedHistogramName,
+        IdentityGetAuthTokenError::State::kNone, 0);
   }
 }
 
