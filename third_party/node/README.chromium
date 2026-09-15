@@ -696,6 +696,7 @@ URL: https://www.npmjs.com/package/@stylistic/stylelint-plugin
 Version: 5.0.0
 Update Mechanism: Manual
 License: MIT
+License File: node_modules/@stylistic/stylelint-plugin/LICENSE.md
 License Android Compatible: Yes
 Security Critical: no
 Shipped: no

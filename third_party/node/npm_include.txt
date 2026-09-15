@@ -10,6 +10,7 @@
 @mediapipe/tasks-vision/wasm/vision_wasm_internal.js
 @mediapipe/tasks-vision/vision.d.ts
 @mediapipe/tasks-vision/vision_bundle.mjs
+@stylistic/stylelint-plugin/LICENSE.md
 @types/chai/index.d.ts
 @types/d3/index.d.ts
 @types/d3/package.json
