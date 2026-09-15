@@ -3316,14 +3316,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (id == R.id.view_source
                 && !currentTab.isNativePage()
                 && DevToolsWindowAndroid.canViewSource(
-                        currentTab.getProfile(), currentTab.getWebContents())) {
+                        this, currentTab.getProfile(), currentTab.getWebContents())) {
             currentTab.getWebContents().getMainFrame().viewSource();
             return true;
         }
 
         if (id == R.id.dev_tools
                 && DevToolsWindowAndroid.isDevToolsAllowedFor(
-                        currentTab.getProfile(), currentTab.getWebContents())) {
+                        this, currentTab.getProfile(), currentTab.getWebContents())) {
             DevToolsWindowAndroid.openDevTools(currentTab.getWebContents());
             if (fromMenu) {
                 RecordUserAction.record("MobileMenuDevTools");

@@ -25,10 +25,7 @@ import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -251,10 +248,7 @@ public class MoreToolsItemBuilder {
      * @param currentTab The current tab.
      */
     public boolean shouldShowDevToolsItem(@Nullable Tab currentTab) {
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND)
-                || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                || currentTab == null
-                || currentTab.isNativePage()) {
+        if (currentTab == null || currentTab.isNativePage()) {
             return false;
         }
 
@@ -263,7 +257,8 @@ public class MoreToolsItemBuilder {
             return false;
         }
 
-        return DevToolsWindowAndroid.isDevToolsAllowedFor(currentTab.getProfile(), webContents);
+        return DevToolsWindowAndroid.isDevToolsAllowedFor(
+                mContext, currentTab.getProfile(), webContents);
     }
 
     /** Builds the "Dev tools" menu item. */

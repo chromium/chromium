@@ -66,7 +66,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.SupplierUtils;
-import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
@@ -76,6 +75,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.R;
@@ -105,6 +105,7 @@ import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuImageFormat;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
@@ -117,6 +118,7 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
@@ -133,7 +135,7 @@ import java.util.List;
 
 /** Unit tests for the context menu logic of Chrome. */
 @RunWith(ParameterizedRunner.class)
-@UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
 @DisableFeatures({
     ChromeFeatureList.LENS_OVERLAY_ANDROID,
@@ -2334,6 +2336,7 @@ public class ChromeContextMenuPopulatorTest {
 
     @Test
     @SmallTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @UiThreadTest
     public void testOpenInIncognitoWindow() {
         setAllMandatoryFlowsComplete();
@@ -2342,7 +2345,6 @@ public class ChromeContextMenuPopulatorTest {
         when(mItemDelegate.isIncognito()).thenReturn(false);
         when(mItemDelegate.isIncognitoSupported()).thenReturn(true);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        doReturn(true).when(mPopulator).isTabletScreen();
 
         List<Integer> expectedItems = new ArrayList<>();
         expectedItems.add(R.id.contextmenu_open_in_new_tab);

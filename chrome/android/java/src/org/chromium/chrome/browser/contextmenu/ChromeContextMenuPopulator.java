@@ -108,7 +108,6 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -472,11 +471,6 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     @VisibleForTesting
-    boolean isTabletScreen() {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
-    }
-
-    @VisibleForTesting
     boolean shouldShowEmptySpaceContextMenu() {
         // Enable empty space context menu from mouse-right click on all device form factors.
         // Limit long press (touch) as trigger only when desktop agent is used, because
@@ -503,13 +497,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     @VisibleForTesting
     boolean shouldShowDeveloperMenu() {
         return DevToolsWindowAndroid.isDevToolsAllowedFor(
-                        getProfile(), mItemDelegate.getWebContents())
-                && isTabletScreen();
+                mContext, getProfile(), mItemDelegate.getWebContents());
     }
 
     @VisibleForTesting
     boolean shouldShowViewPageSourceMenu() {
-        return DevToolsWindowAndroid.canViewSource(getProfile(), mItemDelegate.getWebContents());
+        return DevToolsWindowAndroid.canViewSource(
+                mContext, getProfile(), mItemDelegate.getWebContents());
     }
 
     @VisibleForTesting

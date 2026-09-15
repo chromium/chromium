@@ -20,6 +20,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//content/public/android:content_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   srcjar_deps = [ ":jni" ]
 }

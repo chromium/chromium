@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -31,6 +32,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** This class tests the functionality of the {@link DevToolsActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -50,6 +52,7 @@ public class DevToolsActivityTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testOpenDevTools() {
         TabModel tabModel = mTestRule.getActivity().getCurrentTabModel();
         Tab inspectedTab = tabModel.getCurrentTabSupplier().get();
@@ -59,7 +62,7 @@ public class DevToolsActivityTest {
                 runOnUiThreadBlocking(
                         () ->
                                 DevToolsWindowAndroid.isDevToolsAllowedFor(
-                                        profile, inspectedContents)));
+                                        mTestRule.getActivity(), profile, inspectedContents)));
 
         // Calling openDevTools() shows a DevToolsActivity.
         DevToolsActivity activity =
