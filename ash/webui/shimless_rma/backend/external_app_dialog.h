@@ -8,7 +8,7 @@
 #include <string>
 
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -65,9 +65,21 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
   // not ready.
   static content::WebContents* GetWebContents();
 
-  // Sets a callback to mock `Show` in test.
-  static void SetMockShowForTesting(
-      base::RepeatingCallback<void(const InitParams& params)> callback);
+  // RAII guard to mock `Show` in tests.
+  class ScopedMockShowForTesting {
+   public:
+    using Callback =
+        base::RepeatingCallback<void(const InitParams& params)>;
+
+    explicit ScopedMockShowForTesting(Callback callback);
+    ScopedMockShowForTesting(const ScopedMockShowForTesting&) = delete;
+    ScopedMockShowForTesting& operator=(const ScopedMockShowForTesting&) =
+        delete;
+    ~ScopedMockShowForTesting();
+
+   private:
+    Callback callback_;
+  };
 
   // Closes the open dialog in test. Does nothing if there is no open dialog.
   static void CloseForTesting();

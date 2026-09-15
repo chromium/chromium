@@ -41,9 +41,9 @@ class SearchTagRegistry {
   void RemoveObserver(Observer* observer);
 
   // Returns the tag metadata associated with |result_id|, which is the ID
-  // returned by the LocalSearchService. Returns SearchTagRegistry::not_found_
-  // if no metadata is available.
-  const SearchMetadata& GetTagMetadata(const std::string& result_id) const;
+  // returned by the LocalSearchService. Returns nullptr if no metadata is
+  // available.
+  const SearchMetadata* GetTagMetadata(const std::string& result_id) const;
 
   // Adds search concepts to the index.
   // Callbacks when the LSS index is done updating.
@@ -54,9 +54,6 @@ class SearchTagRegistry {
   // index. Callbacks when the LSS index is done updating.
   void ClearAndUpdate(std::vector<mojom::SearchConceptPtr> search_tags,
                       base::OnceCallback<void()> callback);
-
-  // Returned by GetTagMetadata if the id was not found.
-  static const SearchMetadata not_found_;
 
  private:
   void NotifyRegistryUpdated();

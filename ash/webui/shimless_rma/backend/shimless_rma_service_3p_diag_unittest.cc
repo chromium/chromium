@@ -39,15 +39,17 @@ class ShimlessRmaService3pDiagTest : public ::testing::Test {
     shimless_rma_provider_ =
         std::make_unique<ShimlessRmaService>(std::move(delegate));
 
-    ExternalAppDialog::SetMockShowForTesting(base::BindLambdaForTesting(
-        [&](const ExternalAppDialog::InitParams& params) {
-          last_shown_url_ = params.content_url;
-          last_shown_app_name_ = params.app_name;
-        }));
+    mock_show_ =
+        std::make_unique<ExternalAppDialog::ScopedMockShowForTesting>(
+            base::BindLambdaForTesting(
+                [&](const ExternalAppDialog::InitParams& params) {
+                  last_shown_url_ = params.content_url;
+                  last_shown_app_name_ = params.app_name;
+                }));
   }
 
   void TearDown() override {
-    ExternalAppDialog::SetMockShowForTesting(base::NullCallback());
+    mock_show_.reset();
     fake_shimless_rma_delegate_ = nullptr;
     shimless_rma_provider_.reset();
     RmadClient::Shutdown();
@@ -72,6 +74,7 @@ class ShimlessRmaService3pDiagTest : public ::testing::Test {
   ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
   std::unique_ptr<ShimlessRmaService> shimless_rma_provider_;
   raw_ptr<FakeShimlessRmaDelegate> fake_shimless_rma_delegate_;
+  std::unique_ptr<ExternalAppDialog::ScopedMockShowForTesting> mock_show_;
   GURL last_shown_url_;
   std::string last_shown_app_name_;
 };

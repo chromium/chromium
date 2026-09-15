@@ -39,8 +39,6 @@ std::vector<local_search_service::Data> ConceptVectorToDataVector(
 
 }  // namespace
 
-const SearchMetadata SearchTagRegistry::not_found_ = SearchMetadata();
-
 SearchTagRegistry::SearchTagRegistry(
     local_search_service::LocalSearchServiceProxy* local_search_service_proxy) {
   local_search_service_proxy->GetIndex(
@@ -88,13 +86,13 @@ void SearchTagRegistry::ClearAndUpdate(
                      std::move(search_tags), std::move(callback)));
 }
 
-const SearchMetadata& SearchTagRegistry::GetTagMetadata(
+const SearchMetadata* SearchTagRegistry::GetTagMetadata(
     const std::string& result_id) const {
   const auto it = result_id_to_metadata_list_map_.find(result_id);
   if (it == result_id_to_metadata_list_map_.end()) {
-    return not_found_;
+    return nullptr;
   }
-  return it->second;
+  return &it->second;
 }
 
 void SearchTagRegistry::NotifyRegistryUpdated() {

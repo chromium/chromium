@@ -232,18 +232,18 @@ void SearchHandler::OnPersistenceReadComplete(
 
 mojom::SearchResultPtr SearchHandler::ResultToSearchResult(
     const local_search_service::Result& result) const {
-  const auto& metadata = search_tag_registry_->GetTagMetadata(result.id);
+  const auto* metadata = search_tag_registry_->GetTagMetadata(result.id);
   // This should not happen because there isn't a way to remove metadata.
-  if (&metadata == &SearchTagRegistry::not_found_) {
+  if (!metadata) {
     return nullptr;
   }
 
   // Empty locale because we assume the locale always matches the system locale.
   return mojom::SearchResult::New(
       /*id=*/result.id,
-      /*title=*/metadata.title,
-      /*main_category=*/metadata.main_category,
-      /*url_path_with_parameters=*/metadata.url_path_with_parameters,
+      /*title=*/metadata->title,
+      /*main_category=*/metadata->main_category,
+      /*url_path_with_parameters=*/metadata->url_path_with_parameters,
       /*locale=*/"",
       /*relevance_score=*/result.score);
 }

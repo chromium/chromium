@@ -111,12 +111,13 @@ TEST_F(HelpAppSearchTagRegistryTest, AddAndGet) {
   EXPECT_EQ(1u, observer_.num_calls());
 
   // Get tag metadata for something that exists.
-  auto& result1 = search_tag_registry_.GetTagMetadata("test-id-1");
-  EXPECT_EQ(result1.title, u"Title 1");
+  const auto* result1 = search_tag_registry_.GetTagMetadata("test-id-1");
+  ASSERT_TRUE(result1);
+  EXPECT_EQ(result1->title, u"Title 1");
 
   // Get tag metadata for something that doesn't exist.
-  auto& result2 = search_tag_registry_.GetTagMetadata("not-found");
-  EXPECT_EQ(&result2, &SearchTagRegistry::not_found_);
+  const auto* result2 = search_tag_registry_.GetTagMetadata("not-found");
+  EXPECT_FALSE(result2);
 }
 
 TEST_F(HelpAppSearchTagRegistryTest, MultipleUpdate) {
@@ -175,8 +176,9 @@ TEST_F(HelpAppSearchTagRegistryTest, MultipleUpdate) {
   EXPECT_EQ(2u, observer_.num_calls());
 
   // The later concept should replace the earlier concept.
-  auto& result = search_tag_registry_.GetTagMetadata("test-id-1");
-  EXPECT_EQ(result.title, u"Title 3");
+  const auto* result = search_tag_registry_.GetTagMetadata("test-id-1");
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->title, u"Title 3");
 }
 
 }  // namespace ash::help_app

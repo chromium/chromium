@@ -38,8 +38,8 @@ namespace ash::shimless_rma {
 namespace {
 
 ExternalAppDialog* g_instance = nullptr;
-base::RepeatingCallback<void(const ExternalAppDialog::InitParams&)>
-    g_mock_show_function;
+base::RepeatingCallback<void(const ExternalAppDialog::InitParams&)>*
+    g_mock_show_function = nullptr;
 
 constexpr double kRelativeScreenWidth = 0.9;
 constexpr double kRelativeScreenHeight = 0.8;
@@ -127,7 +127,7 @@ void ExternalAppDialog::Show(const InitParams& params) {
     return;
   }
   if (g_mock_show_function) {
-    g_mock_show_function.Run(params);
+    g_mock_show_function->Run(params);
     return;
   }
   new ExternalAppDialog(params);
@@ -139,16 +139,22 @@ content::WebContents* ExternalAppDialog::GetWebContents() {
 }
 
 // static
-void ExternalAppDialog::SetMockShowForTesting(
-    base::RepeatingCallback<void(const InitParams& params)> callback) {
-  g_mock_show_function = callback;
-}
-
-// static
 void ExternalAppDialog::CloseForTesting() {
   if (g_instance) {
     g_instance->widget_->Close();
   }
+}
+
+ExternalAppDialog::ScopedMockShowForTesting::ScopedMockShowForTesting(
+    Callback callback)
+    : callback_(std::move(callback)) {
+  CHECK_EQ(g_mock_show_function, nullptr);
+  g_mock_show_function = &callback_;
+}
+
+ExternalAppDialog::ScopedMockShowForTesting::~ScopedMockShowForTesting() {
+  CHECK_EQ(g_mock_show_function, &callback_);
+  g_mock_show_function = nullptr;
 }
 
 ExternalAppDialog::ExternalAppDialog(const InitParams& params)
