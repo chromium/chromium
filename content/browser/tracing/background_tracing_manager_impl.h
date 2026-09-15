@@ -46,7 +46,7 @@ class BackgroundTracingManagerImpl
 
   CONTENT_EXPORT explicit BackgroundTracingManagerImpl(
       std::unique_ptr<TracingDelegate> delegate);
-  ~BackgroundTracingManagerImpl() override;
+  CONTENT_EXPORT ~BackgroundTracingManagerImpl() override;
 
   BackgroundTracingManagerImpl(const BackgroundTracingManagerImpl&) = delete;
   BackgroundTracingManagerImpl& operator=(const BackgroundTracingManagerImpl&) =
