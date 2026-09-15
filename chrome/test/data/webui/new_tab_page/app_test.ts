@@ -4284,6 +4284,62 @@ suite('NewTabPageAppTest', () => {
           // Glow animation reflects transcript.
           assertEquals('hello world', glow.transcript);
           assertTrue(glow.receivedSpeech);
+          const waveOverlay = glow.shadowRoot.querySelector<HTMLElement>(
+              '#fullContainerOverlay')!;
+          assertEquals('49px', window.getComputedStyle(waveOverlay).top);
+
+          // Disable transitions to test immediate computed layout.
+          dialog.style.transition = 'none';
+          waveOverlay.style.setProperty('transition', 'none', 'important');
+
+          // Simulate multiline transcript (3 lines) where voiceSearch moves
+          // wave to 102px and expands dialog height to 206px.
+          voiceSearch.toggleAttribute('has-multiline-transcript', true);
+          voiceSearch.setAttribute('transcript-lines', '3');
+          assertEquals('102px', window.getComputedStyle(waveOverlay).top);
+          assertEquals(
+              '206px',
+              window.getComputedStyle(dialog)
+                  .getPropertyValue('height')
+                  .trim());
+          assertEquals(
+              '8px',
+              window.getComputedStyle(voiceSearch)
+                  .getPropertyValue('--voice-bottom-actions-bottom')
+                  .trim());
+
+          // Verify 7 lines expands dialog to 302px and wave to 198px.
+          voiceSearch.setAttribute('transcript-lines', '7');
+          assertEquals('198px', window.getComputedStyle(waveOverlay).top);
+          assertEquals(
+              '302px',
+              window.getComputedStyle(dialog)
+                  .getPropertyValue('height')
+                  .trim());
+
+          // Verify 2 lines expands dialog to 182px and wave to 78px.
+          voiceSearch.setAttribute('transcript-lines', '2');
+          assertEquals('78px', window.getComputedStyle(waveOverlay).top);
+          assertEquals(
+              '182px',
+              window.getComputedStyle(dialog)
+                  .getPropertyValue('height')
+                  .trim());
+
+          // Reverting multiline restores single-line dimensions.
+          voiceSearch.removeAttribute('transcript-lines');
+          voiceSearch.toggleAttribute('has-multiline-transcript', false);
+          assertEquals('49px', window.getComputedStyle(waveOverlay).top);
+          assertEquals(
+              '168px',
+              window.getComputedStyle(dialog)
+                  .getPropertyValue('height')
+                  .trim());
+          assertEquals(
+              '16px',
+              window.getComputedStyle(voiceSearch)
+                  .getPropertyValue('--voice-bottom-actions-bottom')
+                  .trim());
 
           // Simulate clicking Stop button and verify dialog closes.
           $$<HTMLElement>(voiceSearch, '#stopButton')!.click();
