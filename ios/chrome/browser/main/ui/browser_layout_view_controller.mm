@@ -218,6 +218,9 @@ constexpr CGFloat kContainedLayoutTabStripTopMargin = 4.0;
     CGFloat height = TabStripCollectionViewConstants.height * progress;
     agent->AddObscuredInset(UIRectEdgeTop, height);
     [self updateForFullscreenProgress:progress];
+    if (agent->is_animating()) {
+      [self.view layoutIfNeeded];
+    }
   }
 }
 
