@@ -539,13 +539,14 @@ void DownloadShouldProceed(__weak SharingCoordinator* coordinator,
 - (void)cancelDownloadFromView:(UIView*)shareButton {
   [self stopDisplayDownloadOverlay];
   self.isCancelling = YES;
+  [self cleanUpAnalysisResources];
+  UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
+                            OpenInDownloadResult::kCanceled);
+
   __weak SharingCoordinator* weakSelf = self;
   [self.download cancelDownload:^{
     [weakSelf downloadWasCancelledFromView:shareButton];
   }];
-  [self cleanUpAnalysisResources];
-  UMA_HISTOGRAM_ENUMERATION(kOpenInDownloadHistogram,
-                            OpenInDownloadResult::kCanceled);
 }
 
 // Called when the download was cancelled to restart the coordinator if needed.
