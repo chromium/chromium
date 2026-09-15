@@ -2743,7 +2743,8 @@ public class StripLayoutHelper
                             mWindowAndroid.getModalDialogManager(),
                             TabClosingSource.TABLET_TAB_STRIP,
                             mCanActivateTabLayoutToggleMenuSupplier,
-                            TabStripLayoutType.HORIZONTAL);
+                            TabStripLayoutType.HORIZONTAL,
+                            /* tabGroupUiActionHandler= */ null);
         }
         RectProvider anchorRectProvider = new RectProvider();
         anchorTab.getAnchorRect(anchorRectProvider.getRect());

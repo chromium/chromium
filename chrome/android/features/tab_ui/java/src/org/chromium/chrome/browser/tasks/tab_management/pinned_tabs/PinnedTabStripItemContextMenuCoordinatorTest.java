@@ -42,6 +42,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetC
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -88,6 +91,14 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         when(mTabBookmarkerSupplier.get()).thenReturn(mTabBookmarker);
 
         when(mTabModel.getTabGroupCount()).thenReturn(1);
+        when(mTabModel.tabGroupExists(mTabGroupId)).thenReturn(true);
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.syncId = "sync_group_id";
+        savedGroup.localId = new LocalTabGroupId(mTabGroupId);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedGroup.savedTabs.add(savedTab);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_group_id"});
+        when(mTabGroupSyncService.getGroup("sync_group_id")).thenReturn(savedGroup);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTab.getTabGroupId()).thenReturn(mTabGroupId);
@@ -288,6 +299,8 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         mUrl = new GURL(LOCALHOST_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
         when(mTabModel.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.tabGroupExists(any())).thenReturn(false);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(4, mMenuItemList.size());
@@ -304,6 +317,8 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         mUrl = new GURL(LOCALHOST_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
         when(mTabModel.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.tabGroupExists(any())).thenReturn(false);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(4, mMenuItemList.size());

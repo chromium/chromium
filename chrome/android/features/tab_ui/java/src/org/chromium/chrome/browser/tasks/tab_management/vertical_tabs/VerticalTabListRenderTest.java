@@ -1367,7 +1367,8 @@ public class VerticalTabListRenderTest {
                                         /* modalDialogManager= */ null,
                                         TabClosingSource.VERTICAL_TAB_STRIP,
                                         () -> canToggleLayout,
-                                        TabContextMenuCoordinator.TabStripLayoutType.VERTICAL);
+                                        TabContextMenuCoordinator.TabStripLayoutType.VERTICAL,
+                                        /* tabGroupUiActionHandler= */ null);
 
                         View menuContentView =
                                 coordinatorHolder[0].buildMenuView(anchorInfo, mIsIncognito);

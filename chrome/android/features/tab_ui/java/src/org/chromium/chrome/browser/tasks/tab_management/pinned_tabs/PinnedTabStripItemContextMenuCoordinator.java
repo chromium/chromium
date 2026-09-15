@@ -17,7 +17,6 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -27,9 +26,8 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.GroupWindowChecker;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiUtils;
@@ -43,7 +41,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -140,11 +137,9 @@ public class PinnedTabStripItemContextMenuCoordinator
     }
 
     private ListItem buildGroupItem(Tab tab, boolean isIncognito) {
-        Collection<TabModelSelector> selectors =
-                TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()
-                        ? TabWindowManagerSingleton.getInstance().getAllTabModelSelectors()
-                        : null;
-        boolean hasTabGroups = TabGroupUtils.hasTabGroups(mTabModel, selectors);
+        GroupWindowChecker windowChecker =
+                new GroupWindowChecker(mActivity, mTabGroupSyncService, mTabModel);
+        boolean hasTabGroups = windowChecker.hasOtherGroups(/* currentGroupId= */ null);
         if (!hasTabGroups) {
             return new ListItemBuilder()
                     .withTitleRes(R.string.menu_add_tab_to_new_group)
