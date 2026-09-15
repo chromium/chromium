@@ -27,8 +27,9 @@ class WebUIMediaToolbarButtonInteractiveTest
             {}) {}
 };
 
+// TODO(crbug.com/561995604): Re-enable this test once the flakiness is fixed.
 IN_PROC_BROWSER_TEST_F(WebUIMediaToolbarButtonInteractiveTest,
-                       MediaButtonClickedAndRightClicked) {
+                       DISABLED_MediaButtonClickedAndRightClicked) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   ASSERT_TRUE(webui_toolbar_view);
 
