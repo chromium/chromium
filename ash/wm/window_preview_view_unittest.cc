@@ -11,6 +11,7 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -226,6 +227,68 @@ TEST_F(WindowPreviewViewTest, LayoutChildOutsideParentBounds) {
             test_api.GetMirrorViewForWidget(widget1.get())->bounds());
   EXPECT_EQ(gfx::Rect(375, 400, 125, 100),
             test_api.GetMirrorViewForWidget(widget2.get())->bounds());
+}
+
+namespace {
+
+bool HasNinePatchLayer(ui::Layer* layer) {
+  if (!layer) {
+    return false;
+  }
+  if (layer->type() == ui::LayerType::LAYER_NINE_PATCH) {
+    return true;
+  }
+  for (ui::Layer* child : layer->children()) {
+    if (HasNinePatchLayer(child)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
+TEST_F(WindowPreviewViewTest, ExcludeShadow) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect{0, 0, 100, 100});
+  ::wm::SetShadowElevation(widget->GetNativeWindow(),
+                           ::wm::kShadowElevationActiveWindow);
+
+  // Preview with exclude_shadow = false includes nine patch layer.
+  auto container1 = std::make_unique<views::Widget>();
+  views::Widget::InitParams params1{
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS};
+  params1.bounds = gfx::Rect{200, 200};
+  params1.context = widget->GetNativeWindow();
+  container1->Init(std::move(params1));
+  auto* view1 = container1->SetContentsView(
+      std::make_unique<WindowPreviewView>(widget->GetNativeWindow(),
+                                          /*exclude_shadow=*/false));
+  container1->Show();
+
+  WindowPreviewViewTestApi test_api1(view1);
+  auto* mirror_view1 = test_api1.GetMirrorViewForWidget(widget.get());
+  ASSERT_TRUE(mirror_view1);
+  EXPECT_TRUE(HasNinePatchLayer(mirror_view1->GetMirrorLayerForTesting()));
+
+  // Preview with exclude_shadow = true (default) excludes nine patch layer.
+  auto container2 = std::make_unique<views::Widget>();
+  views::Widget::InitParams params2{
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS};
+  params2.bounds = gfx::Rect{200, 200};
+  params2.context = widget->GetNativeWindow();
+  container2->Init(std::move(params2));
+  auto* view2 = container2->SetContentsView(
+      std::make_unique<WindowPreviewView>(widget->GetNativeWindow(),
+                                          /*exclude_shadow=*/true));
+  container2->Show();
+
+  WindowPreviewViewTestApi test_api2(view2);
+  auto* mirror_view2 = test_api2.GetMirrorViewForWidget(widget.get());
+  ASSERT_TRUE(mirror_view2);
+  EXPECT_FALSE(HasNinePatchLayer(mirror_view2->GetMirrorLayerForTesting()));
 }
 
 }  // namespace
