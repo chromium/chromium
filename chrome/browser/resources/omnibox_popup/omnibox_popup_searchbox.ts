@@ -15,7 +15,7 @@ import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_m
 import type {SearchboxMixinInterface} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {SearchboxMixin} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {selectionIsNativelySupported, selectionsEqual} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
-import {markOnce, sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
+import {afterNextPaint, markOnce, sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -24,7 +24,7 @@ import {isMac} from '//resources/js/platform.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {browserProxyFactory, OmniboxEscapeAction} from './omnibox_popup.mojom-webui.js';
@@ -541,6 +541,70 @@ export class OmniboxPopupSearchboxElement extends
         this.dropdownIsVisible = false;
       }
     }
+  }
+
+  /**
+   * Dispatches an autocomplete query to the browser process via Mojo.
+   *
+   * Overridden to record a performance mark when an autocomplete query is
+   * dispatched over Mojo while the dropdown is closed.
+   */
+  override queryAutocomplete(
+      input: string, preventInlineAutocomplete: boolean,
+      isOnFocus: boolean): void {
+    if (!this.dropdownIsVisible) {
+      performance.mark('OmniboxPopupSearchboxElement::queryAutocomplete');
+    }
+    super.queryAutocomplete(input, preventInlineAutocomplete, isOnFocus);
+  }
+
+  /**
+   * Handles autocomplete results received from the browser process via Mojo.
+   *
+   * Overridden to record performance marks when match results are received
+   * over IPC and when they have finished painting to the screen.
+   */
+  // TODO(crbug.com/553005514): Extract performance marks and `afterNextPaint`
+  // logic tracking into a dedicated PerformanceTracker helper class / util.
+  override async onAutocompleteResultChanged(result: AutocompleteResult):
+      Promise<void> {
+    if (this.isAutocompleteResultStale(result)) {
+      return;
+    }
+    // Snapshot visibility BEFORE applying results. `super` will mutate
+    // `this.dropdownIsVisible` to true if matches are present, so capturing
+    // this upfront is the only way to detect a closed -> open transition.
+    const wasDropdownVisible = this.dropdownIsVisible;
+
+    performance.mark(
+        'OmniboxPopupSearchboxElement::onAutocompleteResultChanged:ResultsReceived');
+    await super.onAutocompleteResultChanged(result);
+
+    // If these results didn't produce a visible dropdown (ex: 0 matches),
+    // don't schedule paint or emit marks.
+    if (!this.dropdownIsVisible) {
+      return;
+    }
+
+    // True if this specific result transitioned the dropdown from closed to
+    // open (as opposed to updating results in an already opened dropdown).
+    const isPopupNewlyOpened = !wasDropdownVisible;
+
+    afterNextPaint(() => {
+      // Abort if a newer query superseded this result or if the dropdown was
+      // closed (ex: Escape pressed) before this frame finished painting.
+      if (this.isAutocompleteResultStale(result) || !this.dropdownIsVisible) {
+        return;
+      }
+      // Mark when the popup first appears on screen.
+      if (isPopupNewlyOpened) {
+        performance.mark(
+            'OmniboxPopupSearchboxElement::onAutocompleteResultChanged:PopupOpened');
+      }
+      // Mark the visual presentation of matches for this query.
+      performance.mark(
+          'OmniboxPopupSearchboxElement::onAutocompleteResultChanged:ResultsRendered');
+    });
   }
 
   isInputEmpty(): boolean {
