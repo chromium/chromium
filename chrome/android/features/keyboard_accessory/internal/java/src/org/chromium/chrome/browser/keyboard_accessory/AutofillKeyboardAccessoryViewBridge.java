@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.keyboard_accessory;
 
 import android.graphics.RectF;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -38,7 +40,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             this::connectToFillingComponent;
     private @Nullable Integer mSelectedListIndex;
 
-    private AutofillKeyboardAccessoryViewBridge() {}
+    @VisibleForTesting
+    AutofillKeyboardAccessoryViewBridge() {}
 
     @CalledByNative
     private static AutofillKeyboardAccessoryViewBridge create() {
@@ -224,7 +227,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     }
 
     /**
-     * Shows an Autofill AI suggestion details / suppression confirmation dialog.
+     * Shows an Autofill AI suggestion details / suppression confirmation dialog. The body of the
+     * dialog may contain &lt;src_link&gt; and &lt;manage_link&gt; tags.
      *
      * @param title The title for the dialog.
      * @param body The body of the dialog.

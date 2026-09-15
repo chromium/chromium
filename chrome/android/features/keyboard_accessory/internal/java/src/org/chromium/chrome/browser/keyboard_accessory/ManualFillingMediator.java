@@ -45,6 +45,8 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -869,6 +871,42 @@ class ManualFillingMediator
         return body;
     }
 
+    @VisibleForTesting
+    CharSequence formatAutofillAiSuppressionMessage(String body) {
+        if (mActivity == null) {
+            return body;
+        }
+        if (body.contains("<src_link>")
+                && body.contains("</src_link>")
+                && body.contains("<manage_link>")
+                && body.contains("</manage_link>")) {
+            ChromeClickableSpan attributionSpan =
+                    new ChromeClickableSpan(
+                            mActivity,
+                            view -> {
+                                // TODO(crbug.com/391950346): Open attribution bottom sheet in
+                                // follow-ups.
+                            });
+            ChromeClickableSpan manageSpan =
+                    new ChromeClickableSpan(
+                            mActivity,
+                            view ->
+                                    SettingsNavigationHelper.showAutofillPersonalContextSettings(
+                                            mActivity,
+                                            AutofillOptionsReferrer
+                                                    .PERSONAL_CONTEXT_AMBIENT_AUTOFILL_NOTICE));
+            try {
+                return SpanApplier.applySpans(
+                        body,
+                        new SpanApplier.SpanInfo("<src_link>", "</src_link>", attributionSpan),
+                        new SpanApplier.SpanInfo("<manage_link>", "</manage_link>", manageSpan));
+            } catch (IllegalArgumentException e) {
+                return body;
+            }
+        }
+        return body;
+    }
+
     void confirmDeletionOperation(
             String title,
             String body,
@@ -889,6 +927,39 @@ class ManualFillingMediator
                         (handler, result, stopShowing) ->
                                 onConfirmationDialogInteracted(
                                         result, confirmedCallback, declinedCallback));
+    }
+
+    void showAutofillAiSuggestionDetails(
+            String title,
+            String body,
+            String confirmButtonText,
+            String primaryButtonText,
+            Runnable confirmedCallback,
+            Runnable declinedCallback) {
+        dismissConfirmationDialogIfShown();
+        ConfirmationDialogParams params =
+                new ConfirmationDialogParams.Builder(mActivity)
+                        .withTitle(title)
+                        .withDescription(formatAutofillAiSuppressionMessage(body))
+                        .withSupportStopShowing(false)
+                        .withPositiveButton(primaryButtonText)
+                        .withNegativeButton(confirmButtonText)
+                        .build();
+        mConfirmationDialogDismissHandler =
+                mActionConfirmationDialog.show(
+                        params,
+                        (handler, result, stopShowing) -> {
+                            mConfirmationDialogDismissHandler = null;
+                            // The positive button ("Got it") merely dismisses the dialog,
+                            // while the negative button ("Remove from Chrome") triggers
+                            // the suggestion suppression.
+                            if (result == ButtonClickResult.NEGATIVE) {
+                                confirmedCallback.run();
+                            } else {
+                                declinedCallback.run();
+                            }
+                            return DialogDismissType.DISMISS_IMMEDIATELY;
+                        });
     }
 
     private @DialogDismissType int onConfirmationDialogInteracted(
@@ -1413,8 +1484,7 @@ class ManualFillingMediator
         return mConfirmationDialogDismissHandler;
     }
 
-    @VisibleForTesting
-    KeyboardAccessoryCoordinator getKeyboardAccessory() {
+    KeyboardAccessoryCoordinator getKeyboardAccessoryForTesting() {
         return mKeyboardAccessory;
     }
 

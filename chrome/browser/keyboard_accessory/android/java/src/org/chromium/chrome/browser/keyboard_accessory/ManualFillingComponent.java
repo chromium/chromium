@@ -271,7 +271,7 @@ public interface ManualFillingComponent extends BackPressHandler {
     boolean removeObserver(Observer observer);
 
     /**
-     * Show a deletion confimation dialog.
+     * Show a deletion confirmation dialog.
      *
      * @param title A title of the confirmation dialog.
      * @param body The body of the confirmation dialog, possibly containing &lt;link&gt; tags.

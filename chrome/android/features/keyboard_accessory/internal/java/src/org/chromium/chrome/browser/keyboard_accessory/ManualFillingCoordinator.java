@@ -266,7 +266,13 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             String primaryButtonText,
             Runnable confirmedCallback,
             Runnable declinedCallback) {
-        // TODO(crbug.com/556058028): Forward to mMediator once implemented.
+        mMediator.showAutofillAiSuggestionDetails(
+                title,
+                body,
+                confirmButtonText,
+                primaryButtonText,
+                confirmedCallback,
+                declinedCallback);
     }
 
     ManualFillingMediator getMediatorForTesting() {

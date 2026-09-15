@@ -424,7 +424,9 @@ public class ManualFillingTestHelper {
     }
 
     private KeyboardAccessoryCoordinator getKeyboardAccessoryBar() {
-        return getManualFillingCoordinator().getMediatorForTesting().getKeyboardAccessory();
+        return getManualFillingCoordinator()
+                .getMediatorForTesting()
+                .getKeyboardAccessoryForTesting();
     }
 
     private View getFirstAccessorySuggestion() {

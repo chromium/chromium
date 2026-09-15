@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -47,8 +48,10 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -126,6 +129,9 @@ import java.util.List;
     ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP,
     ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING,
     ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_HOVER_PREVIEW,
+})
+@Features.DisableFeatures({
+    ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL_SUPPRESSION_UI,
 })
 public class KeyboardAccessoryControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -586,31 +592,19 @@ public class KeyboardAccessoryControllerTest {
                         .findViewById(R.id.description_text_view);
         assertThat(
                 description.getText().toString(),
-                equalTo(
-                        ApplicationProvider.getApplicationContext()
-                                .getString(
-                                        R.string
-                                                .autofill_ai_suggestion_long_press_dialog_description)));
-        Button positiveButton =
+                equalsString(R.string.autofill_ai_suggestion_long_press_dialog_description));
+        final Button positiveButton =
                 model.get(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW)
                         .findViewById(R.id.button_primary);
         assertThat(
                 positiveButton.getText().toString(),
-                equalTo(
-                        ApplicationProvider.getApplicationContext()
-                                .getString(
-                                        R.string
-                                                .autofill_ai_suggestion_long_press_dialog_positive_button)));
-        Button negativeButton =
+                equalsString(R.string.autofill_ai_suggestion_long_press_dialog_positive_button));
+        final Button negativeButton =
                 model.get(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW)
                         .findViewById(R.id.button_secondary);
         assertThat(
                 negativeButton.getText().toString(),
-                equalTo(
-                        ApplicationProvider.getApplicationContext()
-                                .getString(
-                                        R.string
-                                                .autofill_ai_suggestion_long_press_dialog_negative_button)));
+                equalsString(R.string.autofill_ai_suggestion_long_press_dialog_negative_button));
         verify(mMockAutofillDelegate, never()).deleteSuggestion(anyInt());
 
         model.get(ModalDialogProperties.CONTROLLER)
@@ -658,9 +652,34 @@ public class KeyboardAccessoryControllerTest {
         // Simulate a long press on the suggestion.
         barItems.get(0).getAction().getLongPressCallback().onResult(barItems.get(0).getAction());
 
-        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
-        verify(mModalDialogManager, never()).showDialog(modelCaptor.capture(), anyInt());
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
         verify(mMockAutofillDelegate).deleteSuggestion(0);
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL_SUPPRESSION_UI})
+    public void
+            testLongPressOnPersonalContextSuggestionWithSuppressionUIShowsAutofillAiSuggestionDetails() {
+        AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Personal Context Suggestion")
+                        .setSubLabel("Order * Water")
+                        .setSuggestionType(SuggestionType.FILL_AUTOFILL_AI)
+                        .setFeatureForIph("")
+                        .setPayload(new AutofillAiPayload("guid", false))
+                        .build();
+
+        mCoordinator.setSuggestions(List.of(suggestion), mMockAutofillDelegate);
+
+        List<ActionBarItem> barItems = flattenItemGroups();
+        assertThat(barItems.get(0).getAction().getLongPressCallback(), notNullValue());
+
+        // Simulate a long press on the suggestion.
+        barItems.get(0).getAction().getLongPressCallback().onResult(barItems.get(0).getAction());
+
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt());
+        verify(mMockAutofillDelegate, never()).deleteSuggestion(anyInt());
+        verify(mMockAutofillDelegate).showAutofillAiSuggestionDetails(0);
     }
 
     @Test
@@ -1681,5 +1700,9 @@ public class KeyboardAccessoryControllerTest {
             items.addAll(item.getActionBarItems());
         }
         return items;
+    }
+
+    private static Matcher<String> equalsString(@StringRes int str) {
+        return equalTo(ApplicationProvider.getApplicationContext().getString(str));
     }
 }

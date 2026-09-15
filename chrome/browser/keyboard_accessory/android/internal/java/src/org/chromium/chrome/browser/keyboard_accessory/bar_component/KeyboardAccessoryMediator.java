@@ -440,6 +440,9 @@ class KeyboardAccessoryMediator
                     delegate.suggestionAccepted(pos, suggestion.showLoadingOnAcceptance());
                 },
                 result -> {
+                    if (maybeShowAutofillAiSuggestionDetails(delegate, pos, suggestion)) {
+                        return;
+                    }
                     if (maybeShowDialogOnLongPress(delegate, suggestion)) {
                         return;
                     }
@@ -449,6 +452,16 @@ class KeyboardAccessoryMediator
                                 ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_HOVER_PREVIEW)
                         ? selected -> delegate.suggestionSelectionStateChanged(pos, selected)
                         : null);
+    }
+
+    private boolean maybeShowAutofillAiSuggestionDetails(
+            AutofillDelegate delegate, int pos, AutofillSuggestion suggestion) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL_SUPPRESSION_UI)
+                && suggestion.getSuggestionType() == SuggestionType.FILL_AUTOFILL_AI) {
+            delegate.showAutofillAiSuggestionDetails(pos);
+            return true;
+        }
+        return false;
     }
 
     private boolean maybeShowDialogOnLongPress(
@@ -471,22 +484,23 @@ class KeyboardAccessoryMediator
         if (sublabel == null) {
             return false;
         }
-        mDialog.show(
+        final String description =
+                mContext.getString(R.string.autofill_ai_suggestion_long_press_dialog_description);
+        final String positiveButton =
+                mContext.getString(
+                        R.string.autofill_ai_suggestion_long_press_dialog_positive_button);
+        final String negativeButton =
+                mContext.getString(
+                        R.string.autofill_ai_suggestion_long_press_dialog_negative_button);
+        ConfirmationDialogParams confirmationDialog =
                 new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(sublabel)
-                        .withDescription(
-                                mContext.getString(
-                                        R.string
-                                                .autofill_ai_suggestion_long_press_dialog_description))
-                        .withPositiveButton(
-                                mContext.getString(
-                                        R.string
-                                                .autofill_ai_suggestion_long_press_dialog_positive_button))
-                        .withNegativeButton(
-                                mContext.getString(
-                                        R.string
-                                                .autofill_ai_suggestion_long_press_dialog_negative_button))
-                        .build(),
+                        .withDescription(description)
+                        .withPositiveButton(positiveButton)
+                        .withNegativeButton(negativeButton)
+                        .build();
+        mDialog.show(
+                confirmationDialog,
                 (dismissHandler, buttonClickResult, stopShowing) ->
                         handleDialogAction(
                                 delegate,
