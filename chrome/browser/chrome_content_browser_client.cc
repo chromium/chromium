@@ -7980,7 +7980,7 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
       glic::IsGlicGuest(destination.web_contents())) {
     glic::LogPasteAttempt(source, metadata);
     if (!glic::IsClipboardPasteAllowed(source, destination, metadata)) {
-      std::move(callback).Run(ClipboardPasteData());
+      std::move(callback).Run(std::nullopt);
       return;
     }
   }
