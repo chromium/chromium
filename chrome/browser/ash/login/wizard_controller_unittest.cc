@@ -465,8 +465,16 @@ class WizardControllerTest : public WizardControllerTestBase {
         web_contents_factory_->CreateWebContents(web_ui_profile));
 
     fake_login_display_host_ = std::make_unique<FakeLoginDisplayHost>();
-    auto oobe_ui = std::make_unique<OobeUI>(test_web_ui_.get(),
-                                            GURL("chrome://oobe/oobe"));
+    auto oobe_ui = std::make_unique<OobeUI>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        test_web_ui_.get(), GURL("chrome://oobe/oobe"));
     fake_login_display_host_->SetOobeUI(oobe_ui.get());
     test_web_ui_->SetController(std::move(oobe_ui));
 

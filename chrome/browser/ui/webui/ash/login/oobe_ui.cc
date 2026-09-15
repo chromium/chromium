@@ -44,10 +44,7 @@
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -157,6 +154,7 @@
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -405,6 +403,21 @@ struct DisplayScaleFactor {
 const DisplayScaleFactor k4KDisplay = {3840, 1.5f},
                          kMediumDisplay = {1440, 4.f / 3};
 
+OobeUIConfig::OobeUIConfig(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : WebUIConfig(content::kChromeUIScheme, ash::kChromeUIOobeHost),
+      local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)) {
+  CHECK(shared_url_loader_factory_);
+}
+
+OobeUIConfig::~OobeUIConfig() = default;
+
 bool OobeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool is_running_test = command_line->HasSwitch(ash::switches::kTestName) ||
@@ -413,16 +426,18 @@ bool OobeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
   return IsSigninBrowserContext(browser_context) || is_running_test;
 }
 
-void OobeUI::ConfigureOobeDisplay() {
-  // TODO(crbug.com/489929275): Avoid using g_browser_process.
-  PrefService* local_state = g_browser_process->local_state();
-  ApplicationLocaleStorage* application_locale_storage =
-      g_browser_process->GetFeatures()->application_locale_storage();
-  policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
-      g_browser_process->shared_url_loader_factory();
+std::unique_ptr<content::WebUIController> OobeUIConfig::CreateWebUIController(
+    content::WebUI* web_ui,
+    const GURL& url) {
+  return std::make_unique<OobeUI>(&local_state_.get(),
+                                  &application_locale_storage_.get(),
+                                  &browser_policy_connector_ash_.get(),
+                                  shared_url_loader_factory_, web_ui, url);
+}
 
+void OobeUI::ConfigureOobeDisplay(
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   network_state_informer_ = new NetworkStateInformer();
   network_state_informer_->Init();
 
@@ -432,7 +447,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
   if (display_type_ == kOobeDisplay) {
     AddScreenHandler(std::make_unique<WelcomeScreenHandler>(
-        local_state, application_locale_storage));
+        &local_state_.get(), &application_locale_storage_.get()));
 
     AddScreenHandler(std::make_unique<DemoPreferencesScreenHandler>());
   }
@@ -456,11 +471,11 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<ErrorScreenHandler>());
 
   error_screen_ = std::make_unique<ErrorScreen>(
-      local_state, GetView<ErrorScreenHandler>()->AsWeakPtr());
+      &local_state_.get(), GetView<ErrorScreenHandler>()->AsWeakPtr());
   ErrorScreen* error_screen = error_screen_.get();
 
   AddScreenHandler(std::make_unique<EnrollmentScreenHandler>(
-      local_state, application_locale_storage));
+      &local_state_.get(), &application_locale_storage_.get()));
 
   AddScreenHandler(std::make_unique<LocaleSwitchScreenHandler>());
 
@@ -499,8 +514,9 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<MarketingOptInScreenHandler>());
 
   AddScreenHandler(std::make_unique<GaiaScreenHandler>(
-      local_state, application_locale_storage, browser_policy_connector_ash,
-      shared_url_loader_factory, network_state_informer_, error_screen));
+      &local_state_.get(), &application_locale_storage_.get(),
+      browser_policy_connector_ash, std::move(shared_url_loader_factory),
+      network_state_informer_, error_screen));
 
   AddScreenHandler(std::make_unique<OnlineAuthenticationScreenHandler>());
 
@@ -623,8 +639,7 @@ void OobeUI::ConfigureOobeDisplay() {
     UpScaleOobe();
   }
 
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice(
-          CHECK_DEREF(local_state))) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice(local_state_.get())) {
     oobe_display_chooser_ = std::make_unique<OobeDisplayChooser>(
         ash::Shell::Get()->cros_display_config());
   }
@@ -632,10 +647,8 @@ void OobeUI::ConfigureOobeDisplay() {
 
 bool OobeUI::ShouldUpScaleOobe() {
   const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
-  // TODO(crbug.com/489929275): Avoid using g_browser_process.
   return upscaled_display_id_ != display_id && switches::ShouldScaleOobe() &&
-         policy::EnrollmentRequisitionManager::IsMeetDevice(
-             CHECK_DEREF(g_browser_process->local_state()));
+         policy::EnrollmentRequisitionManager::IsMeetDevice(local_state_.get());
 }
 
 void OobeUI::UpScaleOobe() {
@@ -702,7 +715,7 @@ void OobeUI::BindInterface(
     mojo::PendingReceiver<auth::mojom::AuthFactorConfig> receiver) {
   auth::BindToAuthFactorConfig(std::move(receiver),
                                quick_unlock::QuickUnlockFactory::GetDelegate(),
-                               g_browser_process->local_state());
+                               &local_state_.get());
 }
 
 void OobeUI::BindInterface(
@@ -711,34 +724,41 @@ void OobeUI::BindInterface(
   CHECK(pin_backend);
   auth::BindToPinFactorEditor(std::move(receiver),
                               quick_unlock::QuickUnlockFactory::GetDelegate(),
-                              g_browser_process->local_state(), *pin_backend);
+                              &local_state_.get(), *pin_backend);
 }
 
 void OobeUI::BindInterface(
     mojo::PendingReceiver<auth::mojom::PasswordFactorEditor> receiver) {
   auth::BindToPasswordFactorEditor(
       std::move(receiver), quick_unlock::QuickUnlockFactory::GetDelegate(),
-      g_browser_process->local_state());
+      &local_state_.get());
 }
 
-OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
-    : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */) {
+OobeUI::OobeUI(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    content::WebUI* web_ui,
+    const GURL& url)
+    : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */),
+      local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
+  CHECK(browser_policy_connector_ash);
+  CHECK(shared_url_loader_factory);
   LOG(WARNING) << "OobeUI created";
   display_type_ = GetDisplayType(url);
 
-  // TODO(crbug.com/489929275): Avoid using g_browser_process.
-  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
-  policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-
-  auto core_oobe_handler = std::make_unique<CoreOobeHandler>(&local_state);
+  auto core_oobe_handler =
+      std::make_unique<CoreOobeHandler>(&local_state_.get());
   core_handler_ = core_oobe_handler.get();
-  core_oobe_ =
-      std::make_unique<CoreOobe>(local_state, browser_policy_connector_ash,
-                                 display_type_, core_oobe_handler->AsWeakPtr());
+  core_oobe_ = std::make_unique<CoreOobe>(
+      local_state_.get(), browser_policy_connector_ash, display_type_,
+      core_oobe_handler->AsWeakPtr());
   web_ui->AddMessageHandler(std::move(core_oobe_handler));
 
-  ConfigureOobeDisplay();
+  ConfigureOobeDisplay(browser_policy_connector_ash,
+                       std::move(shared_url_loader_factory));
 
   AddScreenHandler(std::make_unique<PinSetupScreenHandler>());
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
@@ -758,7 +778,7 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
   base::DictValue localized_strings = GetLocalizedStrings();
 
   // Set up the chrome://oobe/ source.
-  CreateAndAddOobeUIDataSource(local_state, Profile::FromWebUI(web_ui),
+  CreateAndAddOobeUIDataSource(local_state_.get(), Profile::FromWebUI(web_ui),
                                localized_strings, display_type_);
 }
 
@@ -831,7 +851,7 @@ base::DictValue OobeUI::GetLocalizedStrings() {
     handler->GetLocalizedStrings(&localized_strings);
   }
 
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  const std::string& app_locale = application_locale_storage_->Get();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
   localized_strings.Set("app_locale", app_locale);
 
@@ -853,7 +873,7 @@ base::DictValue OobeUI::GetLocalizedStrings() {
 
   bool keyboard_driven_oobe =
       ash::system::InputDeviceSettings::ForceKeyboardDrivenUINavigation(
-          CHECK_DEREF(g_browser_process->local_state()));
+          local_state_.get());
   localized_strings.Set("highlightStrength",
                         keyboard_driven_oobe ? "strong" : "normal");
   return localized_strings;

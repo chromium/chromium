@@ -11,9 +11,9 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "ash/webui/common/backend/webui_syslog_emitter.h"
-#include "ash/webui/common/chrome_os_webui_config.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -26,14 +26,24 @@
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+class ApplicationLocaleStorage;
 class PrefService;
 
 namespace content {
 class WebUIDataSource;
+}
+
+namespace network {
+class SharedURLLoaderFactory;
+}
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
 }
 
 namespace ash {
@@ -44,12 +54,33 @@ class OobeDisplayChooser;
 class OobeUI;
 
 // The WebUIConfig for chrome://oobe urls
-class OobeUIConfig : public ChromeOSWebUIConfig<OobeUI> {
+class OobeUIConfig : public content::WebUIConfig {
  public:
-  OobeUIConfig()
-      : ChromeOSWebUIConfig(content::kChromeUIScheme, ash::kChromeUIOobeHost) {}
+  // `local_state`, `application_locale_storage`, and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
+  OobeUIConfig(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+  OobeUIConfig(const OobeUIConfig&) = delete;
+  OobeUIConfig& operator=(const OobeUIConfig&) = delete;
+  ~OobeUIConfig() override;
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 };
 
 // A custom WebUI that defines datasource for out-of-box-experience (OOBE) UI:
@@ -81,7 +112,16 @@ class OobeUI : public ui::MojoWebUIController {
     virtual ~Observer() = default;
   };
 
-  OobeUI(content::WebUI* web_ui, const GURL& url);
+  // `local_state`, `application_locale_storage`, and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
+  OobeUI(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      content::WebUI* web_ui,
+      const GURL& url);
 
   OobeUI(const OobeUI&) = delete;
   OobeUI& operator=(const OobeUI&) = delete;
@@ -197,11 +237,16 @@ class OobeUI : public ui::MojoWebUIController {
 
   // Configures all the relevant screen shandlers and resources for OOBE/Login
   // display type.
-  void ConfigureOobeDisplay();
+  void ConfigureOobeDisplay(
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
   // Updates default scaling for CfM devices.
   void UpScaleOobe();
   bool ShouldUpScaleOobe();
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   // Type of UI.
   std::string display_type_;

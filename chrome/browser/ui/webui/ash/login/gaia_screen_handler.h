@@ -149,7 +149,7 @@ class GaiaScreenHandler final
   // `shared_url_loader_factory` must be non-null.
   GaiaScreenHandler(
       PrefService* local_state,
-      ApplicationLocaleStorage* application_locale_storage,
+      const ApplicationLocaleStorage* application_locale_storage,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,
@@ -384,7 +384,7 @@ class GaiaScreenHandler final
   void CreateSamlChallengeKeyHandler();
 
   const raw_ref<PrefService> local_state_;
-  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
   const raw_ref<policy::BrowserPolicyConnectorAsh>
       browser_policy_connector_ash_;
   const scoped_refptr<network::SharedURLLoaderFactory>

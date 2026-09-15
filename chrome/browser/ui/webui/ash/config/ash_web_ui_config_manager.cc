@@ -144,6 +144,7 @@
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/browser/webui_config_map.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -348,11 +349,16 @@ AshWebUIConfigManager* AshWebUIConfigManager::GetInstance() {
 AshWebUIConfigManager::AshWebUIConfigManager(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
-    const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
-      browser_policy_connector_ash_(browser_policy_connector_ash) {
+      browser_policy_connector_ash_(browser_policy_connector_ash),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)) {
   if (!browser_policy_connector_ash_) {
+    CHECK_IS_TEST();
+  }
+  if (!shared_url_loader_factory_) {
     CHECK_IS_TEST();
   }
   CHECK_EQ(g_instance, nullptr);
@@ -369,6 +375,7 @@ AshWebUIConfigManager::~AshWebUIConfigManager() {
 void AshWebUIConfigManager::RegisterWebUIConfigs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(browser_policy_connector_ash_);
+  CHECK(shared_url_loader_factory_);
   // Add trusted `WebUIConfig`s (chrome://) for Ash ChromeOS to the list here.
   //
   // All `WebUIConfig`s should be registered here, irrespective of whether their
@@ -438,7 +445,9 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(std::make_unique<NetworkUIConfig>(&local_state_.get()));
   AddWebUIConfig(std::make_unique<NotificationTesterUIConfig>());
   AddWebUIConfig(std::make_unique<office_fallback::OfficeFallbackUIConfig>());
-  AddWebUIConfig(std::make_unique<OobeUIConfig>());
+  AddWebUIConfig(std::make_unique<OobeUIConfig>(
+      &local_state_.get(), &application_locale_storage_.get(),
+      browser_policy_connector_ash_.get(), shared_url_loader_factory_));
   AddWebUIConfig(std::make_unique<OSCreditsUI>());
   AddWebUIConfig(MakeOSFeedbackUIConfig(&application_locale_storage_.get()));
   AddWebUIConfig(

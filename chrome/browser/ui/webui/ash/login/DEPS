@@ -55,7 +55,6 @@ specific_include_rules = {
   ],
   "oobe_ui\\.cc": [
     "+ash/shell.h",
-    "+chrome/browser/global_features.h",
   ],
 
   # Tests.

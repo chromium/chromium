@@ -59,7 +59,7 @@ namespace ash {
 
 WelcomeScreenHandler::WelcomeScreenHandler(
     PrefService* local_state,
-    ApplicationLocaleStorage* application_locale_storage)
+    const ApplicationLocaleStorage* application_locale_storage)
     : BaseScreenHandler(kScreenId),
       local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}

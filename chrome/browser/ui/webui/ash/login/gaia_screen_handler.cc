@@ -399,7 +399,7 @@ void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> user_context,
 
 GaiaScreenHandler::GaiaScreenHandler(
     PrefService* local_state,
-    ApplicationLocaleStorage* application_locale_storage,
+    const ApplicationLocaleStorage* application_locale_storage,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const scoped_refptr<NetworkStateInformer>& network_state_informer,

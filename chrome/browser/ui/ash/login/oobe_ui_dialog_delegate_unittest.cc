@@ -10,6 +10,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -52,7 +54,16 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
       content::WebUI* web_ui,
       const GURL& url) override {
     if (url.host() == "oobe") {
-      return std::make_unique<OobeUI>(web_ui, GURL("chrome://oobe/gaia-signin"));
+      return std::make_unique<OobeUI>(
+          TestingBrowserProcess::GetGlobal()->local_state(),
+          TestingBrowserProcess::GetGlobal()
+              ->GetFeatures()
+              ->application_locale_storage(),
+          TestingBrowserProcess::GetGlobal()
+              ->platform_part()
+              ->browser_policy_connector_ash(),
+          TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+          web_ui, GURL("chrome://oobe/gaia-signin"));
     }
     if (url.host() == "nonoobe") {
       return std::make_unique<NonOobeWebUIController>(web_ui);

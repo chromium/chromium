@@ -10,19 +10,24 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "url/gurl.h"
 
 class ApplicationLocaleStorage;
 class PrefService;
 
-namespace policy {
-class BrowserPolicyConnectorAsh;
-}  // namespace policy
-
 namespace content {
 class WebUIConfig;
 }  // namespace content
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace ash {
 
@@ -37,12 +42,14 @@ class AshWebUIConfigManager {
   static AshWebUIConfigManager* GetInstance();
 
   // `local_state` and `application_locale_storage` must not be null and must
-  // outlive `this`. `browser_policy_connector_ash` can only be null in tests.
-  // If non-null, it must outlive `this`.
+  // outlive `this`. `browser_policy_connector_ash` and
+  // `shared_url_loader_factory` can only be null in tests. If
+  // `browser_policy_connector_ash` is non-null, it must outlive `this`.
   AshWebUIConfigManager(
       PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
-      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   AshWebUIConfigManager(const AshWebUIConfigManager&) = delete;
   AshWebUIConfigManager& operator=(const AshWebUIConfigManager&) = delete;
   ~AshWebUIConfigManager();
@@ -69,9 +76,12 @@ class AshWebUIConfigManager {
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
-  // Note: `browser_policy_connector_ash_` may be null only in unit tests.
-  const raw_ptr<const policy::BrowserPolicyConnectorAsh>
+  // Note: `browser_policy_connector_ash_` and `shared_url_loader_factory_` may
+  // be null only in unit tests.
+  const raw_ptr<policy::BrowserPolicyConnectorAsh>
       browser_policy_connector_ash_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   std::vector<GURL> registered_urls_to_unregister_;
 

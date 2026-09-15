@@ -73,7 +73,8 @@ class AshWebUIConfigManagerTest : public testing::Test {
       TestingBrowserProcess::GetGlobal()
           ->GetFeatures()
           ->application_locale_storage(),
-      /*browser_policy_connector_ash=*/nullptr};
+      /*browser_policy_connector_ash=*/nullptr,
+      /*shared_url_loader_factory=*/nullptr};
 };
 
 TEST_F(AshWebUIConfigManagerTest, SingletonLifecycle) {

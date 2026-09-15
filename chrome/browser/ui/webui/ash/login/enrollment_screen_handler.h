@@ -34,8 +34,9 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
 
   // `local_state` and `application_locale_storage` must be non-null and must
   // outlive `this`.
-  EnrollmentScreenHandler(PrefService* local_state,
-                          ApplicationLocaleStorage* application_locale_storage);
+  EnrollmentScreenHandler(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage);
 
   EnrollmentScreenHandler(const EnrollmentScreenHandler&) = delete;
   EnrollmentScreenHandler& operator=(const EnrollmentScreenHandler&) = delete;
@@ -139,7 +140,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   bool IsOnEnrollmentScreen();
 
   const raw_ref<PrefService> local_state_;
-  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   // Keeps the controller for this view.
   raw_ptr<Controller, DanglingUntriaged> controller_ = nullptr;
