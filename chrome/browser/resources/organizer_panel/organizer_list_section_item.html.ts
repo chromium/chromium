@@ -17,7 +17,8 @@ export function getHtml(this: OrganizerListSectionItemElement) {
     .size="${this.item.size || nothing}">
   <div id="content" slot="content">
     <organizer-list-section-item-title id="title"
-        .titleParts="${this.item.title}">
+        .titleParts="${this.item.title}"
+        .highlightRanges="${this.titleHighlightRanges_()}">
     </organizer-list-section-item-title>
     <organizer-list-section-item-description id="description"
         ?hidden="${!this.hasDescription_()}"

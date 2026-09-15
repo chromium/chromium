@@ -15,11 +15,13 @@ import type {CrUrlListItemElement, CrUrlListItemSize} from '//resources/cr_eleme
 import {MouseHoverableMixinLit} from '//resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {Range} from '/tab_search/shared/search.js';
 
 import {getCss} from './organizer_list_section_item.css.js';
 import {getHtml} from './organizer_list_section_item.html.js';
 import type {OrganizerListSectionItemDescriptionElement, OrganizerListSectionItemDescriptionPart} from './organizer_list_section_item_description.js';
 import type {OrganizerListSectionItemTitleElement} from './organizer_list_section_item_title.js';
+import {sliceRangesForParts} from './search_utils.js';
 
 export type {OrganizerListSectionItemDescriptionPart};
 
@@ -80,6 +82,17 @@ export interface OrganizerListSectionItem<T> {
   data?: T;
 }
 
+// Search metadata attached to an item for highlighting matching ranges.
+export interface HighlightableItem {
+  highlightRanges?: {
+    title?: Range[],
+    description?: Range[],
+  };
+}
+
+export type HighlightableOrganizerListSectionItem<T = unknown> =
+    OrganizerListSectionItem<T>&HighlightableItem;
+
 export interface OrganizerListSectionItemElement {
   $: {
     actionButton: CrIconButtonElement,
@@ -113,7 +126,7 @@ export class OrganizerListSectionItemElement extends
     };
   }
 
-  accessor item: OrganizerListSectionItem<unknown> = {
+  accessor item: HighlightableOrganizerListSectionItem<unknown> = {
     title: [],
   };
 
@@ -145,6 +158,11 @@ export class OrganizerListSectionItemElement extends
       item: this.item,
       buttonElement: e.currentTarget as HTMLElement,
     });
+  }
+
+  protected titleHighlightRanges_(): Range[][] {
+    return sliceRangesForParts(
+        this.item.title, this.item.highlightRanges?.title);
   }
 }
 

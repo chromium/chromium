@@ -14,7 +14,8 @@ import {search} from '/tab_search/shared/search.js';
 import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
-import type {OrganizerListSectionItem, OrganizerListSectionItemElement} from './organizer_list_section_item.js';
+import type {HighlightableOrganizerListSectionItem, OrganizerListSectionItem, OrganizerListSectionItemElement} from './organizer_list_section_item.js';
+import {SEARCH_PART_SEPARATOR} from './search_utils.js';
 
 /**
  * This is the number of items in a section that are rendered before the "Show
@@ -57,10 +58,11 @@ export class OrganizerListSectionElement extends CrLitElement implements
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   protected accessor expanded_: boolean = false;
   accessor searchQuery: string = '';
-  protected accessor filteredItems_: Array<OrganizerListSectionItem<unknown>> =
-      [];
+  protected accessor filteredItems_:
+      Array<HighlightableOrganizerListSectionItem<unknown>> = [];
 
-  private searchOptions_: SearchOptions<OrganizerListSectionItem<unknown>> = {
+  private searchOptions_: SearchOptions<
+      HighlightableOrganizerListSectionItem<unknown>> = {
     includeScore: true,
     includeMatches: true,
     ignoreLocation: false,
@@ -70,12 +72,16 @@ export class OrganizerListSectionElement extends CrLitElement implements
         [
           {
             name: 'title',
-            getter: item => item.title.join(' '),
+            // Parts are joined with SEARCH_PART_SEPARATOR (newline) rather than
+            // a space so queries cannot match across part boundaries (e.g. the
+            // end of one title and the start of another in a split view).
+            getter: item => item.title.join(SEARCH_PART_SEPARATOR),
             weight: 2,
           },
           {
             name: 'description',
-            getter: item => item.description?.map(d => d.text).join(' '),
+            getter: item =>
+                item.description?.map(d => d.text).join(SEARCH_PART_SEPARATOR),
             weight: 1,
           },
         ],
@@ -136,11 +142,13 @@ export class OrganizerListSectionElement extends CrLitElement implements
     }
   }
 
-  protected getInitialItems_(): Array<OrganizerListSectionItem<unknown>> {
+  protected getInitialItems_():
+      Array<HighlightableOrganizerListSectionItem<unknown>> {
     return this.getFilteredItems_().slice(0, INITIAL_ITEM_COUNT);
   }
 
-  protected getRemainingItems_(): Array<OrganizerListSectionItem<unknown>> {
+  protected getRemainingItems_():
+      Array<HighlightableOrganizerListSectionItem<unknown>> {
     if (!this.expanded_) {
       return [];
     }
@@ -163,7 +171,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
   }
 
   protected onItemActionButtonClick_(e: CustomEvent<{
-    item: OrganizerListSectionItem<unknown>,
+    item: HighlightableOrganizerListSectionItem<unknown>,
     buttonElement: HTMLElement,
   }>) {
     assert(e.detail.item);
@@ -173,7 +181,8 @@ export class OrganizerListSectionElement extends CrLitElement implements
         e.detail.item, e.detail.buttonElement);
   }
 
-  protected getFilteredItems_(): Array<OrganizerListSectionItem<unknown>> {
+  protected getFilteredItems_():
+      Array<HighlightableOrganizerListSectionItem<unknown>> {
     return this.filteredItems_;
   }
 }
