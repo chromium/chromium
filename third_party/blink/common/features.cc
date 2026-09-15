@@ -1959,12 +1959,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kResampleScrollEventsForFling, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRestrictLinkHeaderOnSubresource,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kRestrictLinkHeaderOnSubresourceCompressionDictionary,
                    &kRestrictLinkHeaderOnSubresource,
                    "disable_compression_dictionary",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kRestrictLinkHeaderOnSubresourceCrossOrigin,
                    &kRestrictLinkHeaderOnSubresource,
@@ -1979,7 +1979,7 @@ BASE_FEATURE_PARAM(bool,
                    kRestrictLinkHeaderOnSubresourceResourceLoad,
                    &kRestrictLinkHeaderOnSubresource,
                    "disable_resource_load",
-                   false);
+                   true);
 
 BASE_FEATURE(kRustyIcoFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -53,6 +53,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/network/public/cpp/features.h"
 #include "storage/browser/blob/blob_storage_context.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace content {
@@ -731,8 +732,12 @@ class SignedExchangeSubresourcePrefetchBrowserTest
     // should be created while single-threaded.
     MockClock::Get();
 
-    feature_list_.InitAndEnableFeature(
-        net::features::kPartitionConnectionsByNetworkIsolationKey);
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{net::features::kPartitionConnectionsByNetworkIsolationKey, {}},
+         {blink::features::kRestrictLinkHeaderOnSubresource,
+          {{"disable_resource_load", "false"}}}},
+        /*disabled_features=*/{});
   }
 
   SignedExchangeSubresourcePrefetchBrowserTest(

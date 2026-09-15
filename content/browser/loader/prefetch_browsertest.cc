@@ -79,18 +79,23 @@ class PrefetchBrowserTest
         split_cache_test_case_(GetParam()),
         split_cache_experiment_feature_list_(GetParam(),
                                              kTestCaseToFeatureMapping) {
-    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsSplitCacheEnabled()) {
       enabled_features.emplace_back(
-          net::features::kSplitCacheByNetworkIsolationKey);
+          net::features::kSplitCacheByNetworkIsolationKey,
+          base::FieldTrialParams());
     } else {
       disabled_features.emplace_back(
           net::features::kSplitCacheByNetworkIsolationKey);
     }
-    enabled_features.emplace_back(net::features::kHttpCacheNoVarySearch);
-    split_cache_enabled_feature_list_.InitWithFeatures(enabled_features,
-                                                       disabled_features);
+    enabled_features.emplace_back(net::features::kHttpCacheNoVarySearch,
+                                  base::FieldTrialParams());
+    enabled_features.emplace_back(
+        blink::features::kRestrictLinkHeaderOnSubresource,
+        base::FieldTrialParams{{"disable_resource_load", "false"}});
+    split_cache_enabled_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features, disabled_features);
   }
 
   PrefetchBrowserTest(const PrefetchBrowserTest&) = delete;

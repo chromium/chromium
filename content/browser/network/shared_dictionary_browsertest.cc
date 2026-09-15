@@ -1069,7 +1069,28 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                          GetURL("/shared_dictionary/test.dict"));
 }
 
-IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+class SharedDictionarySubresourceBrowserTest
+    : public SharedDictionaryBrowserTest {
+ public:
+  SharedDictionarySubresourceBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kRestrictLinkHeaderOnSubresource,
+        {{"disable_compression_dictionary", "false"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedDictionarySubresourceBrowserTest,
+                         testing::Values(BrowserType::kNormal,
+                                         BrowserType::kOffTheRecord),
+                         [](const testing::TestParamInfo<BrowserType>& info) {
+                           return ToString(info.param);
+                         });
+
+IN_PROC_BROWSER_TEST_P(SharedDictionarySubresourceBrowserTest,
                        LinkRelCompressionDictionarySubresourceHeader) {
   RunWriteDictionaryTest(
       FetchType::kLinkRelCompressionDictionarySubresourceHeader,

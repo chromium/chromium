@@ -9136,3 +9136,15 @@ crbug.com/40940279 [ Debug ] external/wpt/css/css-anchor-position/anchor-positio
 
 # Gardener 2026-09-08
 crbug.com/558562090 http/tests/inspector-protocol/fenced-frame/device-emulation-commands-fenced-frame.https.js [ Failure Pass ]
+
+# Subresource Link header preload disabled
+crbug.com/417529151 external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-header-in-subresources.tentative.https.html [ Failure Timeout ]
+crbug.com/417529151 external/wpt/preload/cross-origin-link-header-on-subresource.sub.html [ Failure Timeout ]
+crbug.com/417529151 external/wpt/preload/link-header-on-subresource.html [ Failure Timeout ]
+crbug.com/417529151 external/wpt/preload/link-header-preload-non-html.html [ Failure Timeout ]
+crbug.com/417529151 external/wpt/preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=false&isCrossOriginResource=false [ Failure Timeout ]
+crbug.com/417529151 external/wpt/preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=false&isCrossOriginResource=true [ Failure Timeout ]
+crbug.com/417529151 external/wpt/preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=true&isCrossOriginResource=false [ Failure Timeout ]
+crbug.com/417529151 external/wpt/preload/preload-referrer-policy-subresource-header.tentative.html?isCrossOriginPreload=true&isCrossOriginResource=true [ Failure Timeout ]
+crbug.com/417529151 external/wpt/signed-exchange/subresource/sxg-subresource.tentative.html [ Failure Timeout ]
+

@@ -5129,5 +5129,16 @@
       "masonf@chromium.org"
     ],
     "expires": "Dec 1, 2027"
+  },
+  {
+    "prefix": "subresource-link-preload-enabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "http/tests/linkHeader/link-preload-in-js.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=RestrictLinkHeaderOnSubresource:disable_resource_load/false"],
+    "owners": ["tnak@chromium.org"],
+    "expires": "Jan 1, 2027"
   }
 ]
