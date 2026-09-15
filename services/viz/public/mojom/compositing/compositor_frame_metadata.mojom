@@ -46,6 +46,7 @@ struct CompositorFrameMetadata {
   uint32 frame_token;
   bool send_frame_token_to_embedder;
   float? top_controls_visible_height;
+  uint32? view_transition_deadline_in_frames;
 
   float min_page_scale_factor;
 

@@ -138,6 +138,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.top_controls_visible_height;
   }
 
+  static std::optional<uint32_t> view_transition_deadline_in_frames(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.view_transition_deadline_in_frames;
+  }
+
   static gfx::OverlayTransform display_transform_hint(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.display_transform_hint;

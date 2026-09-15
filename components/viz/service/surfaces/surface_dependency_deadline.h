@@ -29,11 +29,19 @@ class VIZ_SERVICE_EXPORT SurfaceDependencyDeadline {
 
   ~SurfaceDependencyDeadline();
 
-  // Sets up a deadline in wall time where
+  // Sets up the frame's global deadline in wall time where
   // deadline = frame_start_time + deadline_in_frames * frame_interval.
-  void Set(const FrameDeadline& frame_deadline);
+  void SetFrameDeadline(const FrameDeadline& frame_deadline);
+
+  // Sets up the view transition deadline in wall time. Pass base::TimeTicks()
+  // for the no deadline case.
+  void SetViewTransitionDeadline(base::TimeTicks view_transition_deadline);
 
   // Returns whether the deadline has passed.
+  // When kPerDependencyDeadlines is enabled:
+  //   effective deadline == max(global_deadline, view_transition_deadline)
+  // When kPerDependencyDeadlines is disabled:
+  //   effective deadline == global_deadline
   bool HasDeadlinePassed() const;
 
   // If a deadline had been set, then cancel the deadline and return the
@@ -47,12 +55,19 @@ class VIZ_SERVICE_EXPORT SurfaceDependencyDeadline {
     return deadline_;
   }
 
+  base::TimeTicks view_transition_deadline_for_testing() const {
+    return view_transition_deadline_;
+  }
+
   bool operator==(const SurfaceDependencyDeadline& other) const;
 
  private:
   raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks start_time_;
+  // TODO(crbug.com/540877772): remove the global deadline_ when
+  // kPerDependencyDeadlines is launched.
   std::optional<base::TimeTicks> deadline_;
+  base::TimeTicks view_transition_deadline_;
 };
 
 }  // namespace viz
