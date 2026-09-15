@@ -35,6 +35,7 @@ class AppMenuActionItem {
   static const ui::ClassProperty<ui::ColorId>* const kContainerColorKey;
   static const ui::ClassProperty<std::u16string*>* const kTextOverrideKey;
   static const ui::ClassProperty<ui::ImageModel*>* const kIconOverrideKey;
+  static const ui::ClassProperty<ui::ImageModel*>* const kMinorIconKey;
   static const ui::ClassProperty<ui::MenuSeparatorType>* const kSeparatorKey;
   static const ui::ClassProperty<std::u16string*>* const kChipTextKey;
 

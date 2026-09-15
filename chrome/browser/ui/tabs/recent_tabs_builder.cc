@@ -366,6 +366,7 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildLocalEntries(
         item.children().front().set_accelerator(accelerator);
       } else {
         item.set_accelerator(accelerator);
+        item.set_minor_icon(ui::ImageModel());
       }
     }
 

@@ -40,6 +40,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/menus/simple_menu_model.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(base::Uuid*)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::Uuid, kSavedTabGroupGuidKey)
@@ -87,6 +88,15 @@ void TabGroupDynamicMenu::BuildTabGroupsAction(
     auto group_builder = actions::ActionItem::Builder();
     group_builder.SetText(group_title).SetImage(group_icon);
     auto group_action = std::move(group_builder).Build();
+
+    if (group->is_shared_tab_group()) {
+      group_action->SetProperty(
+          AppMenuActionItem::kMinorIconKey,
+          std::make_unique<ui::ImageModel>(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kGroupCustomIcon
+                                                : kPeopleGroupOldIcon,
+              ui::kColorMenuIcon)));
+    }
 
     BuildTabGroupCommands(group, group_action.get(), uuid, profile);
     BuildTabGroupData(group, favicon_service, group_action.get());

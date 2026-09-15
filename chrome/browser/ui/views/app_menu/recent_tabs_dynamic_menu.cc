@@ -194,6 +194,12 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
         action_item = std::move(builder).Build();
       }
 
+      if (!recent_tab.minor_icon().IsEmpty()) {
+        action_item->SetProperty(
+            AppMenuActionItem::kMinorIconKey,
+            std::make_unique<ui::ImageModel>(recent_tab.minor_icon()));
+      }
+
       if (recent_tab.type() == RecentTabItem::Type::kTab &&
           !recent_tab.url().is_empty()) {
         FetchFavicon(action_item.get()->GetActionItem(), recent_tab);

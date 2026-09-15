@@ -316,6 +316,9 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // Sets the minor icon.
   void SetMinorIcon(const ui::ImageModel& minor_icon);
 
+  // Returns the icon that should be displayed to the left of the minor text.
+  ui::ImageModel GetMinorIcon() const;
+
   // Returns the type of this menu.
   const Type& GetType() const { return type_; }
 
@@ -579,9 +582,6 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
 
   // Returns true if the minor text should be rendered as a URL.
   bool GetMinorTextIsUrl() const;
-
-  // Returns the icon that should be displayed to the left of the minor text.
-  ui::ImageModel GetMinorIcon() const;
 
   // Returns the text color for the current state.  |minor| specifies if the
   // minor text or the normal text is desired.

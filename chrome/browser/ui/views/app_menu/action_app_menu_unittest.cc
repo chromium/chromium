@@ -14,6 +14,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -30,12 +31,14 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_block_button.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
+#include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
@@ -512,6 +515,16 @@ TEST_F(ActionAppMenuTest, PopulatesTabGroupsSubmenu) {
       /*position=*/std::nullopt, group_guid);
   sync_service->AddGroup(std::move(group));
 
+  base::Uuid shared_group_guid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab shared_tab(GURL("https://example.com/3"),
+                                          u"Shared Tab", shared_group_guid,
+                                          /*position=*/0);
+  tab_groups::SavedTabGroup shared_group(
+      u"My Shared Tab Group", tab_groups::TabGroupColorId::kRed, {shared_tab},
+      /*position=*/std::nullopt, shared_group_guid);
+  shared_group.SetCollaborationId(syncer::CollaborationId("collab"));
+  sync_service->AddGroup(std::move(shared_group));
+
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
@@ -539,14 +552,22 @@ TEST_F(ActionAppMenuTest, PopulatesTabGroupsSubmenu) {
   ASSERT_TRUE(tab_groups_submenu);
 
   views::MenuItemView* group_item = nullptr;
+  views::MenuItemView* shared_group_item = nullptr;
   for (views::MenuItemView* item : tab_groups_submenu->GetMenuItems()) {
     if (item->title() == u"My Test Tab Group") {
       group_item = item;
-      break;
+    } else if (item->title() == u"My Shared Tab Group") {
+      shared_group_item = item;
     }
   }
   ASSERT_NE(group_item, nullptr);
   EXPECT_TRUE(group_item->HasSubmenu());
+  ASSERT_NE(shared_group_item, nullptr);
+  EXPECT_TRUE(shared_group_item->HasSubmenu());
+
+  // Verify minor icon on shared tab group vs regular tab group.
+  EXPECT_TRUE(group_item->GetMinorIcon().IsEmpty());
+  EXPECT_FALSE(shared_group_item->GetMinorIcon().IsEmpty());
 
   // Verify group commands inside the group submenu.
   views::SubmenuView* group_submenu = group_item->GetSubmenu();
@@ -572,6 +593,34 @@ TEST_F(ActionAppMenuTest, PopulatesTabGroupsSubmenu) {
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, RecentTabsMinorIcon) {
+  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_);
+  auto parent = actions::ActionItem::Builder().Build();
+
+  RecentTabItem tab_with_group(RecentTabItem::Type::kTab, u"Grouped Tab");
+  tab_with_group.set_minor_icon(ui::ImageModel::FromVectorIcon(
+      kCircleFilledIcon, ui::kColorMenuIcon, 12));
+
+  RecentTabItem tab_without_group(RecentTabItem::Type::kTab, u"Regular Tab");
+
+  dynamic_menu.CreateRecentTabsActionForTesting(
+      parent.get(), {tab_with_group, tab_without_group});
+
+  ASSERT_EQ(parent->GetChildren().children().size(), 2u);
+
+  actions::ActionItem* grouped_action =
+      parent->GetChildren().children()[0]->GetActionItem();
+  ASSERT_TRUE(grouped_action);
+  EXPECT_NE(grouped_action->GetProperty(AppMenuActionItem::kMinorIconKey),
+            nullptr);
+
+  actions::ActionItem* regular_action =
+      parent->GetChildren().children()[1]->GetActionItem();
+  ASSERT_TRUE(regular_action);
+  EXPECT_EQ(regular_action->GetProperty(AppMenuActionItem::kMinorIconKey),
+            nullptr);
 }
 
 TEST_F(ActionAppMenuTest, PopulatesStaticSubmenus) {

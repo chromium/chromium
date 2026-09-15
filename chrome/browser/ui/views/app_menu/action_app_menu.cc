@@ -315,6 +315,11 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
     menu_item->SetIcon(StandardizeMenuIconSize(action_item->GetImage()));
   }
 
+  if (ui::ImageModel* minor_icon =
+          child_base->GetProperty(AppMenuActionItem::kMinorIconKey)) {
+    menu_item->SetMinorIcon(*minor_icon);
+  }
+
   // Display shortcut text if the ActionItem has one.
   const ui::Accelerator& accel = action_item->GetAccelerator();
   if (accel.key_code() != ui::VKEY_UNKNOWN) {

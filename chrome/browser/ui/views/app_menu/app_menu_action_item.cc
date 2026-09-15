@@ -33,6 +33,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::MenuSeparatorType,
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuMinorIconInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuChipTextInternal)
 
 const ui::ClassProperty<AppMenuActionItem::DisplayType>* const
@@ -46,6 +47,9 @@ const ui::ClassProperty<std::u16string*>* const
 
 const ui::ClassProperty<ui::ImageModel*>* const
     AppMenuActionItem::kIconOverrideKey = kAppMenuIconOverrideInternal;
+
+const ui::ClassProperty<ui::ImageModel*>* const
+    AppMenuActionItem::kMinorIconKey = kAppMenuMinorIconInternal;
 
 const ui::ClassProperty<ui::MenuSeparatorType>* const
     AppMenuActionItem::kSeparatorKey = kAppMenuSeparatorInternal;

@@ -31,6 +31,12 @@ class RecentTabsDynamicMenu {
 
   void BuildRecentTabsActions(actions::BaseAction* parent_item);
 
+  void CreateRecentTabsActionForTesting(
+      actions::BaseAction* parent_item,
+      const std::vector<RecentTabItem>& recent_tabs) {
+    CreateRecentTabsAction(parent_item, recent_tabs);
+  }
+
  private:
   void CreateRecentTabsAction(actions::BaseAction* parent_item,
                               const std::vector<RecentTabItem>& recent_tabs);
