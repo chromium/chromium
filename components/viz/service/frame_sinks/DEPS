@@ -30,6 +30,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*unittest\\.cc": [
+    "+gpu/config/gpu_finch_features.h",
     "+third_party/khronos/GLES2",
   ],
   "external_begin_frame_source_android.cc": [

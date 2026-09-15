@@ -49,6 +49,7 @@
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_shared_image_interface_provider.h"
 #include "components/viz/test/viz_test_suite.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -251,8 +252,11 @@ class CompositorFrameSinkSupportTestBase : public testing::Test {
     ASSERT_EQ(expected_returned_ids.size(), actual_resources.size());
     for (size_t i = 0; i < expected_returned_ids.size(); ++i) {
       const auto& resource = actual_resources[i];
-      EXPECT_TRUE(resource.shared_image_export_result.IsEqualForTesting(
-          expected_sync_token));
+      if (!base::FeatureList::IsEnabled(
+              features::kUseAutomaticSyncTokenManagement)) {
+        EXPECT_TRUE(resource.shared_image_export_result.IsEqualForTesting(
+            expected_sync_token));
+      }
       EXPECT_EQ(expected_returned_ids[i], resource.id);
       EXPECT_EQ(expected_returned_counts[i], resource.count);
     }

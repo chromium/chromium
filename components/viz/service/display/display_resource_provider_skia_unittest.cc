@@ -27,6 +27,7 @@
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -168,7 +169,10 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
       lock_set_->LockResource(parent_id, /*maybe_concurrent_reads=*/true,
                               /*is_video_plane=*/false);
   ASSERT_EQ(locked_image_context->mailbox(), gl_resource.mailbox());
-  ASSERT_EQ(locked_image_context->sync_tokens()[0], gl_resource.sync_token());
+  if (!base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    ASSERT_EQ(locked_image_context->sync_tokens()[0], gl_resource.sync_token());
+  }
 
   // Don't release while locked.
   EXPECT_CALL(client_, ReleaseImageContexts(_)).Times(0);
@@ -232,7 +236,10 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
       lock_set_->LockResource(parent_id, /*maybe_concurrent_reads=*/true,
                               /*is_video_plane=*/false);
   ASSERT_EQ(gl_resource.mailbox(), locked_image_context->mailbox());
-  ASSERT_EQ(gl_resource.sync_token(), locked_image_context->sync_tokens()[0]);
+  if (!base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    ASSERT_EQ(gl_resource.sync_token(), locked_image_context->sync_tokens()[0]);
+  }
 
   // Don't release while locked.
   EXPECT_CALL(client_, ReleaseImageContexts(_)).Times(0);
