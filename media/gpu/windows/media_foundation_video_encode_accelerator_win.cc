@@ -2997,6 +2997,14 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
       release_keyed_mutex.emplace(std::move(keyed_mutex), 0);
     }
 
+    D3D11_TEXTURE2D_DESC input_texture_desc = {};
+    input_texture->GetDesc(&input_texture_desc);
+    if (input_texture_desc.Format != DXGI_FORMAT_NV12) {
+      LOG(ERROR) << "Format mismatch: source format "
+                 << input_texture_desc.Format << " is not DXGI_FORMAT_NV12";
+      return E_INVALIDARG;
+    }
+
     // Setup |video_context_| for VPBlt operation.
     D3D11_VIDEO_PROCESSOR_INPUT_VIEW_DESC input_desc = {};
     input_desc.ViewDimension = D3D11_VPIV_DIMENSION_TEXTURE2D;
@@ -3013,9 +3021,6 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
                                            .PastFrames = 0,
                                            .FutureFrames = 0,
                                            .pInputSurface = input_view.Get()};
-
-    D3D11_TEXTURE2D_DESC input_texture_desc = {};
-    input_texture->GetDesc(&input_texture_desc);
 
     if (visible_rect.x() < 0 || visible_rect.y() < 0 ||
         visible_rect.right() > static_cast<int>(input_texture_desc.Width) ||
