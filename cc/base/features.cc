@@ -193,7 +193,7 @@ BASE_FEATURE(kThrottleMainFrameTo60HzDesktopAndroid,
 #endif
 
 BASE_FEATURE(kHighFramerateRequestFromClient,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 void SetIsEligibleForThrottleMainFrameTo60Hz(bool is_eligible) {
   s_is_eligible_for_throttle_main_frame_to_60hz.store(
