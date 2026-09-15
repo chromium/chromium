@@ -18,6 +18,7 @@ namespace infobars {
 BASE_DECLARE_FEATURE(kCentralizedInfoBarFramework);
 
 BASE_DECLARE_FEATURE_PARAM(bool, kEnableAll);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedAlternateNav);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedAutomation);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedBadFlags);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedCollectedCookies);

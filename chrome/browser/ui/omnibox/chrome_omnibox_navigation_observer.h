@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
+class GURL;
 class Profile;
 
 // Monitors omnibox navigations in order to trigger behaviors that depend on
@@ -68,7 +69,13 @@ class ChromeOmniboxNavigationObserver
 
   void OnAlternativeLoaderDone(bool success);
 
-  void CreateAlternativeNavInfoBar();
+  // Shows the alternate navigation infobar for `web_contents`. Dispatches to
+  // the centralized infobar framework when migrated, or falls back to
+  // AlternateNavInfoBarDelegate.
+  static void ShowAlternativeNavInfoBar(content::WebContents* web_contents,
+                                        const std::u16string& text,
+                                        const AutocompleteMatch& match,
+                                        const GURL& search_url);
 
  private:
   ChromeOmniboxNavigationObserver(

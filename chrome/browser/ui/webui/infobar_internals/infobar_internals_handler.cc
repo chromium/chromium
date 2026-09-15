@@ -35,7 +35,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
-#include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
+#include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
@@ -331,7 +331,7 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       AutocompleteMatch match;
       match.destination_url = GURL("https://google.com/");
 
-      AlternateNavInfoBarDelegate::CreateForOmniboxNavigation(
+      ChromeOmniboxNavigationObserver::ShowAlternativeNavInfoBar(
           web_contents, u"test", match, GURL("https://youtube.com/"));
       return true;
     }

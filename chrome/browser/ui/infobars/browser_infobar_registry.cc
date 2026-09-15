@@ -68,6 +68,19 @@ void RegisterInfoBars() {
     return;
   }
 
+  if (IsInfoBarMigrated(InfoBarDelegate::ALTERNATE_NAV_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(InfoBarDelegate::ALTERNATE_NAV_INFOBAR_DELEGATE)
+            .SetMessageTextTemplate(
+                l10n_util::GetStringUTF16(IDS_ALTERNATE_NAV_URL_VIEW_LABEL))
+            .SetIcon(features::IsRoundedIconsEnabled() ? kGlobeIcon
+                                                       : kGlobeOldIcon)
+            .SetScope(InfoBarScope::kTab)
+            .SetExpireOnNavigation(true)
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+
   if (IsInfoBarMigrated(InfoBarDelegate::COLLECTED_COOKIES_INFOBAR_DELEGATE)) {
     auto spec =
         InfoBarSpec::Builder(

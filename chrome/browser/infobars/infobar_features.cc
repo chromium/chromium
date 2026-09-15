@@ -17,6 +17,11 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kMigratedAlternateNav,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kMigratedAutomation,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -130,6 +135,8 @@ BASE_FEATURE_PARAM(bool,
 const base::FeatureParam<bool>* GetInfoBarMigrationParam(
     InfoBarDelegate::InfoBarIdentifier infobar_id) {
   switch (infobar_id) {
+    case InfoBarDelegate::ALTERNATE_NAV_INFOBAR_DELEGATE:
+      return &kMigratedAlternateNav;
     case InfoBarDelegate::AUTOMATION_INFOBAR_DELEGATE:
       return &kMigratedAutomation;
     case InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE:

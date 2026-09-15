@@ -7,25 +7,37 @@
 #include <optional>
 #include <string>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -36,6 +48,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -343,9 +357,71 @@ void ChromeOmniboxNavigationObserver::OnAlternativeLoaderDone(bool success) {
   // |this| might be deleted here.
 }
 
+// static
+void ChromeOmniboxNavigationObserver::ShowAlternativeNavInfoBar(
+    content::WebContents* web_contents,
+    const std::u16string& text,
+    const AutocompleteMatch& match,
+    const GURL& search_url) {
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::ALTERNATE_NAV_INFOBAR_DELEGATE)) {
+    // The omnibox can also drive navigations in WebContents that are not
+    // tabs (e.g. the DevTools window), which have no TabInterface and thus
+    // cannot host a centralized infobar.
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents);
+    if (!tab) {
+      return;
+    }
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    CHECK(browser_infobar_manager);
+    infobars::InfoBarShowParams params;
+    params.substitutions = {
+        MessageSubstitution(base::UTF8ToUTF16(match.destination_url.spec()),
+                            /*is_link=*/true, std::nullopt)};
+    params.inline_link_callback = base::BindRepeating(
+        [](const std::u16string& text, const AutocompleteMatch& match,
+           const GURL& search_url, content::WebContents* contents,
+           size_t /*index*/, WindowOpenDisposition disposition) {
+          if (!contents) {
+            return false;
+          }
+          Profile* profile =
+              Profile::FromBrowserContext(contents->GetBrowserContext());
+          history::HistoryService* const history_service =
+              HistoryServiceFactory::GetForProfile(
+                  profile, ServiceAccessType::IMPLICIT_ACCESS);
+          scoped_refptr<ShortcutsBackend> shortcuts_backend(
+              ShortcutsBackendFactory::GetForProfile(profile));
+          if (shortcuts_backend) {
+            shortcuts_backend->DeleteShortcutsWithURL(search_url);
+            shortcuts_backend->AddOrUpdateShortcut(text, match);
+          }
+          if (history_service) {
+            history_service->DeleteKeywordSearchTermForURL(search_url);
+          }
+          contents->OpenURL(
+              content::OpenURLParams(match.destination_url, content::Referrer(),
+                                     disposition, ui::PAGE_TRANSITION_TYPED,
+                                     /*is_renderer_initiated=*/false),
+              /*navigation_handle_callback=*/{});
+          return true;
+        },
+        text, match, search_url);
+    browser_infobar_manager->Show(
+        tab, infobars::InfoBarDelegate::ALTERNATE_NAV_INFOBAR_DELEGATE,
+        std::move(params));
+    return;
+  }
+
+  AlternateNavInfoBarDelegate::CreateForOmniboxNavigation(web_contents, text,
+                                                          match, search_url);
+}
+
 void ChromeOmniboxNavigationObserver::ShowAlternativeNavInfoBar() {
-  AlternateNavInfoBarDelegate::CreateForOmniboxNavigation(
-      web_contents(), text_, alternative_nav_match_, match_.destination_url);
+  ShowAlternativeNavInfoBar(web_contents(), text_, alternative_nav_match_,
+                            match_.destination_url);
 }
 
 // static
