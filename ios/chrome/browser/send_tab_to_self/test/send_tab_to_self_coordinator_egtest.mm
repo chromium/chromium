@@ -37,6 +37,13 @@ NSString* const kTargetDeviceName = @"My other device";
 NSString* const kRemoteDeviceName = @"remote_device";
 NSString* const kExampleURL = @"https://www.example.com/";
 
+constexpr std::string_view kActivePagePath =
+    "/send_tab_to_self/send_tab_to_self_active_page.html";
+constexpr std::string_view kScrollRestorationPagePath =
+    "/send_tab_to_self/send_tab_to_self_scroll_restoration.html";
+constexpr std::string_view kFormPropagationPagePath =
+    "/send_tab_to_self/send_tab_to_self_form_propagation.html";
+
 // Helpers for web element selectors.
 ElementSelector* TargetElement() {
   return [ElementSelector selectorWithElementID:"target"];
@@ -109,9 +116,7 @@ void TapSendTabToSelfInActivitySheet() {
 
 // Navigates to the active test page and waits for its target element to load.
 void LoadActivePage(net::EmbeddedTestServer* test_server) {
-  [ChromeEarlGrey
-      loadURL:test_server->GetURL(
-                  "/send_tab_to_self/send_tab_to_self_active_page.html")];
+  [ChromeEarlGrey loadURL:test_server->GetURL(kActivePagePath)];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 }
 
@@ -345,10 +350,8 @@ void DismissSendTabToSelfModal() {
 
   // Verify that the text fragment was successfully captured and attached to the
   // STTS entry in the model.
-  NSString* urlString = base::SysUTF8ToNSString(
-      self.testServer
-          ->GetURL("/send_tab_to_self/send_tab_to_self_active_page.html")
-          .spec());
+  NSString* urlString =
+      base::SysUTF8ToNSString(self.testServer->GetURL(kActivePagePath).spec());
   NSString* textFragment =
       [ChromeEarlGrey textFragmentForSendTabToSelfEntryWithURL:urlString];
   GREYAssertTrue(
@@ -399,10 +402,8 @@ void DismissSendTabToSelfModal() {
 // Tests that a text fragment is correctly consumed and scrolls the page
 // when passed internally during an OpenNewTabCommand, without highlighting.
 - (void)testRestoreScrollPosition {
-  NSString* urlString = base::SysUTF8ToNSString(
-      self.testServer
-          ->GetURL("/send_tab_to_self/send_tab_to_self_scroll_restoration.html")
-          .spec());
+  const GURL url = self.testServer->GetURL(kScrollRestorationPagePath);
+  NSString* urlString = base::SysUTF8ToNSString(url.spec());
 
   // Use the known text fragment for the page content.
   NSString* textFragment = @"This%20is%20a%20long,without%20any%20ambiguity.";
@@ -427,8 +428,7 @@ void DismissSendTabToSelfModal() {
   [ChromeEarlGrey openSendTabToSelfNewTabWithURL:urlString
                                     textFragment:textFragment
                                        entryGUID:guid];
-  [ChromeEarlGrey
-      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
+  [ChromeEarlGrey waitForWebStateVisibleURL:url];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Wait for the new tab to load and the fragment to be applied.
@@ -453,10 +453,8 @@ void DismissSendTabToSelfModal() {
 // scroll position restoration is deferred until the user switches to that tab
 // in the foreground.
 - (void)testRestoreScrollPositionInBackgroundTab {
-  NSString* urlString = base::SysUTF8ToNSString(
-      self.testServer
-          ->GetURL("/send_tab_to_self/send_tab_to_self_scroll_restoration.html")
-          .spec());
+  const GURL url = self.testServer->GetURL(kScrollRestorationPagePath);
+  NSString* urlString = base::SysUTF8ToNSString(url.spec());
   NSString* textFragment = @"This%20is%20a%20long,without%20any%20ambiguity.";
 
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
@@ -480,8 +478,7 @@ void DismissSendTabToSelfModal() {
 
   // Switch to the newly opened background tab.
   [ChromeEarlGrey selectTabAtIndex:1];
-  [ChromeEarlGrey
-      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
+  [ChromeEarlGrey waitForWebStateVisibleURL:url];
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   // Verify that after switching to the tab in the foreground, the page has
@@ -495,10 +492,8 @@ void DismissSendTabToSelfModal() {
 // Tests that an invalid text fragment is safely ignored and doesn't crash or
 // highlight.
 - (void)testRestoreScrollPositionInvalidFragment {
-  NSString* urlString = base::SysUTF8ToNSString(
-      self.testServer
-          ->GetURL("/send_tab_to_self/send_tab_to_self_scroll_restoration.html")
-          .spec());
+  const GURL url = self.testServer->GetURL(kScrollRestorationPagePath);
+  NSString* urlString = base::SysUTF8ToNSString(url.spec());
 
   // Use an invalid text fragment.
   NSString* textFragment = @"InvalidFragmentThatDoesNotMatchAnything";
@@ -523,8 +518,7 @@ void DismissSendTabToSelfModal() {
   [ChromeEarlGrey openSendTabToSelfNewTabWithURL:urlString
                                     textFragment:textFragment
                                        entryGUID:guid];
-  [ChromeEarlGrey
-      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
+  [ChromeEarlGrey waitForWebStateVisibleURL:url];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Wait for the new tab to load.
@@ -549,10 +543,8 @@ void DismissSendTabToSelfModal() {
 
 // Tests that an empty text fragment is safely ignored.
 - (void)testRestoreScrollPositionEmptyFragment {
-  NSString* urlString = base::SysUTF8ToNSString(
-      self.testServer
-          ->GetURL("/send_tab_to_self/send_tab_to_self_scroll_restoration.html")
-          .spec());
+  const GURL url = self.testServer->GetURL(kScrollRestorationPagePath);
+  NSString* urlString = base::SysUTF8ToNSString(url.spec());
 
   // Use an empty text fragment.
   NSString* textFragment = @"";
@@ -577,8 +569,7 @@ void DismissSendTabToSelfModal() {
   [ChromeEarlGrey openSendTabToSelfNewTabWithURL:urlString
                                     textFragment:textFragment
                                        entryGUID:guid];
-  [ChromeEarlGrey
-      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
+  [ChromeEarlGrey waitForWebStateVisibleURL:url];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Wait for the new tab to load.
@@ -598,10 +589,8 @@ void DismissSendTabToSelfModal() {
 // Tests that form fields are successfully restored when a page is opened
 // via Send Tab To Self with form field propagation enabled.
 - (void)testRestoreFormFields {
-  NSString* urlString = base::SysUTF8ToNSString(
-      self.testServer
-          ->GetURL("/send_tab_to_self/send_tab_to_self_form_propagation.html")
-          .spec());
+  const GURL url = self.testServer->GetURL(kFormPropagationPagePath);
+  NSString* urlString = base::SysUTF8ToNSString(url.spec());
 
   // 1. Sign in first. This ensures the keystore encryption keys (Nigori) are
   // generated and the local device cache GUID is registered.
@@ -622,8 +611,7 @@ void DismissSendTabToSelfModal() {
   [ChromeEarlGrey openSendTabToSelfNewTabWithURL:urlString
                                     textFragment:nil
                                        entryGUID:guid];
-  [ChromeEarlGrey
-      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
+  [ChromeEarlGrey waitForWebStateVisibleURL:url];
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateContainingElement:UsernameElement()];
 
@@ -644,8 +632,7 @@ void DismissSendTabToSelfModal() {
   // 3. Open the tab normally again (with the entry still active in the
   // database).
   [ChromeEarlGrey openNewTabWithURL:urlString textFragment:nil];
-  [ChromeEarlGrey
-      waitForWebStateVisibleURL:GURL(base::SysNSStringToUTF8(urlString))];
+  [ChromeEarlGrey waitForWebStateVisibleURL:url];
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateContainingElement:UsernameElement()];
 
@@ -729,9 +716,7 @@ void DismissSendTabToSelfModal() {
   // Simulate opening an external URL, which requires dismissing all modal
   // dialogs on the tab switcher.
   [ChromeEarlGrey simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:
-                      self.testServer->GetURL("/send_tab_to_self/"
-                                              "send_tab_to_self_active_page."
-                                              "html")];
+                      self.testServer->GetURL(kActivePagePath)];
 
   // Verify that the device picker modal was dismissed.
   [ChromeEarlGrey
@@ -1229,12 +1214,9 @@ void DismissSendTabToSelfModal() {
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
 
-  const GURL tab1URL = self.testServer->GetURL(
-      "/send_tab_to_self/send_tab_to_self_active_page.html");
-  const GURL tab2URL = self.testServer->GetURL(
-      "/send_tab_to_self/send_tab_to_self_form_propagation.html");
-  const GURL tab3URL = self.testServer->GetURL(
-      "/send_tab_to_self/send_tab_to_self_scroll_restoration.html");
+  const GURL tab1URL = self.testServer->GetURL(kActivePagePath);
+  const GURL tab2URL = self.testServer->GetURL(kFormPropagationPagePath);
+  const GURL tab3URL = self.testServer->GetURL(kScrollRestorationPagePath);
 
   // Open tab 1.
   [ChromeEarlGrey loadURL:tab1URL];
