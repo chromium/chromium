@@ -33,6 +33,7 @@ SystemSignalsServiceHostFactory::SystemSignalsServiceHostFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              .WithIsolatedMode(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
 SystemSignalsServiceHostFactory::~SystemSignalsServiceHostFactory() = default;
