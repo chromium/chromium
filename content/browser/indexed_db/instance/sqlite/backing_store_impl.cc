@@ -60,13 +60,16 @@ BackingStoreImpl::~BackingStoreImpl() = default;
 // static
 uint64_t BackingStoreImpl::SumSizesOfDatabaseFiles(
     const base::FilePath& directory,
+    bool include_legacy_blobs,
     base::FunctionRef<bool(const base::FilePath&)> filter) {
   uint64_t total_size = 0;
   EnumerateDatabasesInDirectory(directory, [&](const base::FilePath& path) {
     if (filter(path)) {
-      total_size += base::GetFileSize(path).value_or(0) +
-                    base::ComputeDirectorySize(
-                        DatabaseConnection::GetLegacyBlobDirectory(path));
+      total_size += base::GetFileSize(path).value_or(0);
+      if (include_legacy_blobs) {
+        total_size += base::ComputeDirectorySize(
+            DatabaseConnection::GetLegacyBlobDirectory(path));
+      }
     }
   });
   return total_size;
@@ -146,8 +149,9 @@ uint64_t BackingStoreImpl::EstimateSize(bool /*write_in_progress*/) const {
   }
 
   if (!in_memory()) {
-    total_size +=
-        SumSizesOfDatabaseFiles(directory_, [&](const base::FilePath& path) {
+    total_size += SumSizesOfDatabaseFiles(
+        directory_, /*include_legacy_blobs=*/true,
+        [&](const base::FilePath& path) {
           return !already_open_file_names.contains(path.BaseName());
         });
   }

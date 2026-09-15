@@ -360,7 +360,8 @@ uint64_t BucketContext::ReadUsageFromDisk(
       ShouldUseSqlite(GetSqliteRolloutStage(/*in_memory=*/false),
                       bucket_locator, data_path)
           ? sqlite::BackingStoreImpl::SumSizesOfDatabaseFiles(
-                data_path.Append(GetSqliteDbDirectory(bucket_locator)))
+                data_path.Append(GetSqliteDbDirectory(bucket_locator)),
+                /*include_legacy_blobs=*/true)
           : level_db::BackingStore::ReadSizeFromDisk(
                 data_path.Append(GetLevelDBFileName(bucket_locator)),
                 data_path.Append(GetBlobStoreFileName(bucket_locator)));
@@ -1369,24 +1370,39 @@ void BucketContext::ResetBackingStore(bool migrate) {
   if (backing_store_) {
     base::ElapsedTimer shutdown_timer;
     bool migrate_success = false;
+    base::FilePath sqlite_data_path;
+    base::ByteSize existing_leveldb_size;
     std::optional<base::TimeDelta> migration_duration;
     if (migrate && !IsUsingSqlite()) {
       CHECK(!in_memory());
 
-      base::FilePath sqlite_data_path =
+      sqlite_data_path =
           data_path_.Append(GetSqliteDbDirectory(bucket_locator()));
+      const base::FilePath leveldb_db_directory =
+          data_path_.Append(GetLevelDBFileName(bucket_locator()));
 
       std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
           base::SysInfo::AmountOfDiskSpace(data_path_);
 
+      // This workaround is necessary on Windows to get an accurate size
+      // calculation. See remarks in `BackingStore::EstimateSize()`.
+#if BUILDFLAG(IS_WIN)
+      base::FileEnumerator(leveldb_db_directory, /*recursive=*/false,
+                           base::FileEnumerator::FILES)
+          .ForEach([](const base::FilePath& file_path) {
+            base::File file(file_path, base::File::FLAG_OPEN |
+                                           base::File::FLAG_WIN_SHARE_DELETE);
+          });
+#endif
+
       if (!disk_space) {
         LogMigrationEvent(MigrationEvent::kDiskSpaceQueryFailed);
-      } else if (int64_t existing_size = base::ComputeDirectorySize(
-                     data_path_.Append(GetLevelDBFileName(bucket_locator())));
+      } else if (!(existing_leveldb_size = base::ByteSize(static_cast<uint64_t>(
+                       base::ComputeDirectorySize(leveldb_db_directory))))
+                      .is_zero() &&
                  disk_space->available <
-                 std::max(base::KiBS(72),
-                          2.5 * base::ByteSizeDelta(existing_size)) +
-                     disk_space->total / 100) {
+                     std::max(base::KiB(72), 2.5 * existing_leveldb_size) +
+                         disk_space->total / 100) {
         // To attempt migration, the disk must be less than 99% full after we
         // assume the new database will take up 72KiB, or 2.5x the space of the
         // old one, whichever is greater. 72KiB is currently the smallest size a
@@ -1475,6 +1491,32 @@ void BucketContext::ResetBackingStore(bool migrate) {
     LogDuration(shutdown_timer.Elapsed(),
                 "IndexedDB.BackendDuration.CloseBackingStore",
                 histogram_suffix);
+
+    // This comes after the `CloseBackingStore` histogram so the cost of
+    // computing the space used by SQLite, simply for logging, isn't included.
+    if (migrate_success) {
+      uint64_t sqlite_size = sqlite::BackingStoreImpl::SumSizesOfDatabaseFiles(
+          sqlite_data_path, /*include_legacy_blobs=*/false);
+      uint64_t ratio =
+          (base::CheckMul(sqlite_size, 100u) / existing_leveldb_size.InBytes())
+              .ValueOrDie();
+      if (existing_leveldb_size < base::MiB(1)) {
+        // LevelDB databases can be very small; near-empty ones are around 1KiB.
+        // In contrast, the lower bound for SQLite DBs is one page (4KiB) per
+        // table or index, plus one for the root page. Currently for IndexedDB,
+        // the minimum is 18 pages or 72KiB. So this ratio is expected to be
+        // higher for small databases.
+        // TODO(crbug.com/554055687): try to whittle this down.
+        base::UmaHistogramCounts10000(
+            "IndexedDB.SqliteMigration.SizeRatio.SmallDb", ratio);
+      } else if (existing_leveldb_size < base::MiB(10)) {
+        base::UmaHistogramCounts1000(
+            "IndexedDB.SqliteMigration.SizeRatio.MediumDb", ratio);
+      } else {
+        base::UmaHistogramCounts1000(
+            "IndexedDB.SqliteMigration.SizeRatio.LargeDb", ratio);
+      }
+    }
   }
 
   task_run_queued_ = false;

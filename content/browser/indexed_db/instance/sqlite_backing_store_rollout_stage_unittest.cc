@@ -484,6 +484,12 @@ TEST_P(SqliteBackingStoreRolloutStageTest, MigrateDataToSqliteGentle) {
         {kErrorBackingStoreInitFailed, kIsLevelDb}},
        {StoreType::kLevelDbInternalCorruption, kOpenedSqlite},
        {StoreType::kLevelDbBackingStoreCorruption, kOpenedSqlite}});
+
+  histograms.ExpectTotalCount("IndexedDB.SqliteMigration.SizeRatio.SmallDb", 2);
+  int64_t average_size_ratio =
+      histograms.GetTotalSum("IndexedDB.SqliteMigration.SizeRatio.SmallDb") / 2;
+  EXPECT_GT(average_size_ratio, 1000);
+  EXPECT_LT(average_size_ratio, 10000);
 }
 
 TEST_P(SqliteBackingStoreRolloutStageTest, FailedMigrationLeavesLevelDbUsable) {

@@ -839,6 +839,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.SqliteMigration.SizeRatio.{DatabaseSize}" units="%"
+    expires_after="2027-08-26">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the size of the SQLite database after a successful migration as a
+    percentage of the original LevelDB database size. A value of 100 means the
+    databases are the same size. A value of 50 means SQLite took half as much
+    space, and a value of 200 means SQLite took twice as much space. This is
+    recorded once per successful migration.
+
+    The size ratio ignores Blobs, which are standalone files that should not
+    change in size. Note that this histogram is not a true comparison of SQLite
+    and LevelDB usage for non-migrated DBs, since migrated DBs handle blobs
+    differently from those built from scratch.
+  </summary>
+  <token key="DatabaseSize">
+    <variant name="LargeDb"
+        summary="The original LevelDB database is at least 10 MiB."/>
+    <variant name="MediumDb"
+        summary="The original LevelDB database is at least 1 MiB and less
+                 than 10 MiB."/>
+    <variant name="SmallDb"
+        summary="The original LevelDB database is less than 1 MiB."/>
+  </token>
+</histogram>
+
 <histogram name="IndexedDB.SqliteMigration.Status" enum="IndexedDbStatusType"
     expires_after="2027-08-26">
   <owner>leimy@chromium.org</owner>

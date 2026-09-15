@@ -50,12 +50,13 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
   ~BackingStoreImpl() override;
 
   // Sums the sizes of all files in `directory` that appear to be SQLite
-  // databases and pass through `filter`. Legacy blob files associated with
-  // these DBs will also be counted. Note that free pages in the database do
-  // count towards this size, unlike the more real-time estimate provided by
-  // `DatabaseConnection::GetSize()`.
+  // databases and pass through `filter`. `include_legacy_blobs` controls
+  // whether to count legacy blob files associated with these DBs. Note that
+  // free pages in the database do count towards this size, unlike the more
+  // real-time estimate provided by `DatabaseConnection::GetSize()`.
   static uint64_t SumSizesOfDatabaseFiles(
       const base::FilePath& directory,
+      bool include_legacy_blobs,
       base::FunctionRef<bool(const base::FilePath&)> filter =
           [](const base::FilePath&) { return true; });
 

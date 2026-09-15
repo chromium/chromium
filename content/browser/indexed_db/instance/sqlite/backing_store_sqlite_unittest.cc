@@ -228,13 +228,17 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
 TEST_F(BackingStoreSqliteTest, SumSizesOfDatabaseFiles) {
   const base::FilePath directory = GetDatabasePath(u"").DirName();
   ASSERT_TRUE(base::CreateDirectory(directory));
-  EXPECT_EQ(BackingStoreImpl::SumSizesOfDatabaseFiles(directory), 0U);
+  EXPECT_EQ(BackingStoreImpl::SumSizesOfDatabaseFiles(
+                directory, /*include_legacy_blobs=*/true),
+            0U);
 
   const base::FilePath first_db = GetDatabasePath(u"");
   const base::FilePath second_db = GetDatabasePath(u"second");
   ASSERT_TRUE(base::WriteFile(first_db, std::string(10, 'd')));
   ASSERT_TRUE(base::WriteFile(second_db, std::string(20, 'd')));
-  EXPECT_EQ(BackingStoreImpl::SumSizesOfDatabaseFiles(directory), 30U);
+  EXPECT_EQ(BackingStoreImpl::SumSizesOfDatabaseFiles(
+                directory, /*include_legacy_blobs=*/true),
+            30U);
 
   const base::FilePath first_blob_dir =
       first_db.InsertBeforeExtensionASCII("_");
@@ -253,7 +257,12 @@ TEST_F(BackingStoreSqliteTest, SumSizesOfDatabaseFiles) {
   ASSERT_TRUE(base::WriteFile(second_blob_dir.AppendASCII("10"),
                               std::string(400, 'b')));
   ASSERT_TRUE(base::WriteFile(directory.AppendASCII("unrelated"), "ignored"));
-  EXPECT_EQ(BackingStoreImpl::SumSizesOfDatabaseFiles(directory), 730U);
+  EXPECT_EQ(BackingStoreImpl::SumSizesOfDatabaseFiles(
+                directory, /*include_legacy_blobs=*/true),
+            730U);
+  EXPECT_EQ(BackingStoreImpl::SumSizesOfDatabaseFiles(
+                directory, /*include_legacy_blobs=*/false),
+            30U);
 }
 
 TEST_F(BackingStoreSqliteTest, BlobBasics) {
