@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -83,14 +84,13 @@ std::optional<HatsSurveyStringData> GetUserPerceptionSurveyData(
 void MaybeTriggerFormSubmissionHatsSurveys(
     AutofillClient& client,
     const FormStructure& submitted_form) {
-  // The minimum required number of fields for a user perception survey for
-  // addresses is 4. This makes sure that for example forms that only contain
-  // a single email field do not prompt a survey. Such survey answer would
-  // likely taint our analysis.
+  // Use the same minimum required number of fields for a user perception survey
+  // that is required for running local heuristics. This makes the survey more
+  // consistent with recorded UMA metrics that rely on a type prediction.
   if (std::optional<HatsSurveyStringData> survey_data =
           GetUserPerceptionSurveyData(
               submitted_form, FormType::kAddressForm,
-              /*min_number_of_fields_of_type=*/4,
+              /*min_number_of_fields_of_type=*/kMinRequiredFieldsForHeuristics,
               features::kAutofillAddressUserPerceptionSurvey)) {
     client.TriggerUserPerceptionOfAutofillSurvey(FillingProduct::kAddress,
                                                  *survey_data);
