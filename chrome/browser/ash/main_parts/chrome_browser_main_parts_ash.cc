@@ -1467,16 +1467,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         base::BindOnce(ShillSetPropertyErrorCallback,
                        shill::kEnableSingleCACertVerificationPhase2Property));
 
-    ash::ShillManagerClient::Get()->SetProperty(
-        shill::kDisconnectWiFiOnEthernetProperty,
-        base::Value(base::FeatureList::IsEnabled(
-                        features::kDisconnectWiFiOnEthernetConnected)
-                        ? shill::kDisconnectWiFiOnEthernetConnected
-                        : shill::kDisconnectWiFiOnEthernetOff),
-        base::DoNothing(),
-        base::BindOnce(ShillSetPropertyErrorCallback,
-                       shill::kDisconnectWiFiOnEthernetProperty));
-
     // Notify patchpanel and shill about QoS feature enabled flag.
     // WiFi QoS is enabled by default for non-enterprise devices.
     const bool wifi_qos_enabled =

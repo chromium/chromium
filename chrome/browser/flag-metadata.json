@@ -2959,13 +2959,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "disconnect-wifi-on-ethernet-connected",
-    "owners": [
-      "taoyl@chromium.org", "cros-networking@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "discount-autofill",
     "owners": [
       "jennycho@google.com",

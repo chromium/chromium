@@ -7730,12 +7730,6 @@ inline constexpr char kEnableDisplayPerformanceModeDescription[] =
     "This option enables toggling different display features based on user "
     "setting and power state";
 
-inline constexpr char kDisconnectWiFiOnEthernetConnectedName[] =
-    "Disconnect WiFi on Ethernet";
-inline constexpr char kDisconnectWiFiOnEthernetConnectedDescription[] =
-    "Automatically disconnect WiFi and prevent it from auto connecting when "
-    "the device gets an Ethernet connection. User are still allowed to connect "
-    "to WiFi manually.";
 
 inline constexpr char kEnableRFC8925Name[] =
     "Enable RFC8925 (prefer IPv6-only on IPv6-only-capable network)";

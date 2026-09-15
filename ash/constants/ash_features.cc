@@ -544,9 +544,6 @@ BASE_FEATURE(kDiacriticsOnPhysicalKeyboardLongpressDefaultOn,
 BASE_FEATURE(kDisableBruschettaInstallChecks,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disconnect WiFi when the device get connected to Ethernet.
-BASE_FEATURE(kDisconnectWiFiOnEthernetConnected,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables indicators to hint where displays are connected.
 BASE_FEATURE(kDisplayAlignAssist, base::FEATURE_DISABLED_BY_DEFAULT);
