@@ -136,9 +136,7 @@ void LayoutBoxModelObject::StyleWillChange(
   // cached subsequences containing this object or descendant objects.
   if (old_style &&
       (IsStacked(*old_style) != IsStacked(new_style) ||
-       IsStackingContext(*old_style) != IsStackingContext(new_style)) &&
-      // ObjectPaintInvalidator requires this.
-      IsRooted()) {
+       IsStackingContext(*old_style) != IsStackingContext(new_style))) {
     ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
   }
 
@@ -283,11 +281,8 @@ void LayoutBoxModelObject::StyleDidChange(
     // |LayoutBoxModelObject::StyleWillChange| but changes to stacking can
     // change the PaintingContainer so we need to ensure the new
     // PaintingContainer is also marked for repaint.
-    if (old_style &&
-        (IsStacked() != IsStacked(*old_style) ||
-         IsStackingContext() != IsStackingContext(*old_style)) &&
-        // ObjectPaintInvalidator requires this.
-        IsRooted()) {
+    if (old_style && (IsStacked() != IsStacked(*old_style) ||
+                      IsStackingContext() != IsStackingContext(*old_style))) {
       ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
     }
 

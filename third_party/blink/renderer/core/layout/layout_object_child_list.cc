@@ -234,8 +234,6 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
 }
 
 void LayoutObjectChildList::InvalidatePaintOnRemoval(LayoutObject& old_child) {
-  if (!old_child.IsRooted())
-    return;
   if (old_child.View() &&
       (old_child.IsBody() || old_child.IsDocumentElement())) {
     old_child.View()->SetShouldDoFullPaintInvalidation();
