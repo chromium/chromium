@@ -24,6 +24,7 @@ try/win-arm64-rel
 try/win-clobber-rel
 try/win-official
 try/win-rel
+try/win-rel-compilator
 try/win10-dbg
 try/win11-rel
 try/win32-clobber-rel

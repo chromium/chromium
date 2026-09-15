@@ -19,6 +19,7 @@ try/linux-bfcache-rel
 try/linux-dcheck-off-rel
 try/linux-extended-tracing-rel
 try/linux-rel
+try/linux-rel-compilator
 try/linux-wayland-mutter-rel
 try/linux-wayland-weston-rel
 try/linux_chromium_compile_dbg_ng

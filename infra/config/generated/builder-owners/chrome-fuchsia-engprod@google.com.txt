@@ -13,4 +13,5 @@ try/fuchsia-fyi-x64-dbg-persistent-emulator
 try/fuchsia-x64-cast-receiver-dbg
 try/fuchsia-x64-cast-receiver-dbg-compile
 try/fuchsia-x64-cast-receiver-rel
+try/fuchsia-x64-cast-receiver-rel-compilator
 try/fuchsia-x64-perf-cast-receiver-rel

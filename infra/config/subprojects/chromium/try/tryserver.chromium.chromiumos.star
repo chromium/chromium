@@ -243,6 +243,7 @@ try_.compilator_builder(
     name = "linux-chromeos-rel-compilator",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     cores = 32,
+    contact_team_email = "chromeos-chrome-build@google.com",
     main_list_view = "try",
 )
 

@@ -77,6 +77,7 @@ try/android-17-x64-fyi-rel
 try/android-arm-compile-dbg
 try/android-arm64-compile-dbg
 try/android-arm64-rel
+try/android-arm64-rel-compilator
 try/android-bfcache-rel
 try/android-canary-x64-fyi-rel
 try/android-clobber-rel

@@ -50,11 +50,13 @@ try/linux-tsan-rel
 try/linux-ubsan-rel
 try/linux-ubsan-vptr-rel
 try/linux_chromium_asan_rel_ng
+try/linux_chromium_asan_rel_ng-compilator
 try/linux_chromium_cfi_rel_ng
 try/linux_chromium_chromeos_asan_rel_ng
 try/linux_chromium_chromeos_msan_rel_ng
 try/linux_chromium_msan_rel_ng
 try/linux_chromium_tsan_rel_ng
+try/linux_chromium_tsan_rel_ng-compilator
 try/linux_chromium_ubsan_rel_ng
 try/mac-arm64-asan-rel
 try/mac-asan-rel

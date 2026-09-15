@@ -226,6 +226,7 @@ try_.compilator_builder(
     name = "mac-rel-compilator",
     branch_selector = branches.selector.MAC_BRANCHES,
     cpu = cpu.ARM64,
+    contact_team_email = "bling-engprod@google.com",
     main_list_view = "try",
 )
 
@@ -808,6 +809,7 @@ try_.compilator_builder(
     builderless = False,
     cpu = cpu.ARM64,
     ssd = None,
+    contact_team_email = "bling-engprod@google.com",
     main_list_view = "try",
 )
 

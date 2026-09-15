@@ -89,7 +89,6 @@ reviver/win-launcher
 try/3pp-linux-amd64-packager
 try/3pp-mac-amd64-packager
 try/android-11-x86-rel
-try/android-arm64-rel-compilator
 try/android-binary-size
 try/android-clang-tidy-rel
 try/android-code-coverage
@@ -108,7 +107,6 @@ try/fuchsia-clang-tidy-rel
 try/fuchsia-code-coverage
 try/fuchsia-deterministic-dbg
 try/fuchsia-x64-accessibility-rel
-try/fuchsia-x64-cast-receiver-rel-compilator
 try/ios-angle-try-intel
 try/ios-blink-rel-fyi
 try/ios-catalyst
@@ -116,7 +114,6 @@ try/ios-device
 try/ios-fieldtrial-rel
 try/ios-simulator
 try/ios-simulator-code-coverage
-try/ios-simulator-compilator
 try/ios-simulator-full-configs
 try/ios-simulator-noncq
 try/ios26-beta-simulator
@@ -129,7 +126,6 @@ try/linux-blink-heap-verification-try
 try/linux-blink-web-tests-force-accessibility-rel
 try/linux-chromeos-clang-tidy-rel
 try/linux-chromeos-code-coverage
-try/linux-chromeos-rel-compilator
 try/linux-clang-tidy-rel
 try/linux-code-coverage
 try/linux-fieldtrial-rel
@@ -137,17 +133,9 @@ try/linux-headless-shell-rel
 try/linux-js-code-coverage
 try/linux-js-coverage-rel
 try/linux-perfetto-rel
-try/linux-rel-compilator
-try/linux-swangle-chromium-try-x64
-try/linux-swangle-chromium-try-x64-exp
-try/linux-swangle-try-tot-swiftshader-x64
-try/linux-swangle-try-x64
-try/linux-swangle-try-x64-exp
 try/linux-v4l2-codec-rel
 try/linux-viz-rel
-try/linux_chromium_asan_rel_ng-compilator
 try/linux_chromium_clobber_deterministic
-try/linux_chromium_tsan_rel_ng-compilator
 try/linux_upload_clang
 try/linux_upload_rust
 try/mac-asan-media-rel
@@ -157,8 +145,6 @@ try/mac-code-coverage
 try/mac-intel-on-arm64-rel
 try/mac-lsan-fyi-rel
 try/mac-perfetto-rel
-try/mac-rel-compilator
-try/mac-swangle-chromium-try-x64
 try/mac-ubsan-fyi-rel
 try/mac_upload_clang
 try/mac_upload_clang_arm
@@ -173,12 +159,6 @@ try/tricium-oilpan-analysis
 try/win-fieldtrial-rel
 try/win-perfetto-rel
 try/win-presubmit
-try/win-rel-compilator
-try/win-swangle-chromium-try-x86
-try/win-swangle-try-tot-swiftshader-x64
-try/win-swangle-try-tot-swiftshader-x86
-try/win-swangle-try-x64
-try/win-swangle-try-x86
 try/win10-clang-tidy-rel
 try/win10-code-coverage
 try/win_upload_clang

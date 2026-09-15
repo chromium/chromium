@@ -494,6 +494,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-rel-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
+    contact_team_email = "chrome-linux-engprod@google.com",
     main_list_view = "try",
 )
 
@@ -747,6 +748,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux_chromium_asan_rel_ng-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     main_list_view = "try",
 )
 
@@ -1011,6 +1013,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux_chromium_tsan_rel_ng-compilator",
     branch_selector = branches.selector.LINUX_BRANCHES,
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     main_list_view = "try",
 )
 

@@ -19,6 +19,7 @@ try_.defaults.set(
     cpu = cpu.X86_64,
     ssd = None,
     build_numbers = True,
+    contact_team_email = "chrome-gpu-infra@google.com",
     cq_group = "cq",
     execution_timeout = 2 * time.hour,
     experiments = {

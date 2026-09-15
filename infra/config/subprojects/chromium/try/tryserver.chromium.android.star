@@ -520,6 +520,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "android-arm64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    contact_team_email = "clank-engprod@google.com",
     main_list_view = "try",
 )
 

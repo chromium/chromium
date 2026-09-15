@@ -16,3 +16,4 @@ try/chromeos-arm64-generic-rel
 try/linux-chromeos-compile-dbg
 try/linux-chromeos-dbg
 try/linux-chromeos-rel
+try/linux-chromeos-rel-compilator
