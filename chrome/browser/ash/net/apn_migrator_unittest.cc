@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
-#include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -110,11 +109,11 @@ class ApnMigratorTest : public testing::Test {
         user_manager::UserManager::Get()->FindUser(account_id)->username_hash();
 
     managed_cellular_pref_handler_ =
-        base::WrapUnique(new testing::NiceMock<MockManagedCellularPrefHandler>);
-    managed_network_configuration_handler_ = base::WrapUnique(
-        new testing::NiceMock<MockManagedNetworkConfigurationHandler>);
+        std::make_unique<testing::NiceMock<MockManagedCellularPrefHandler>>();
+    managed_network_configuration_handler_ = std::make_unique<
+        testing::NiceMock<MockManagedNetworkConfigurationHandler>>();
     network_metadata_store_ =
-        base::WrapUnique(new testing::NiceMock<MockNetworkMetadataStore>());
+        std::make_unique<testing::NiceMock<MockNetworkMetadataStore>>();
     cros_network_config_ = std::make_unique<FakeCrosNetworkConfig>();
     OverrideInProcessInstanceForTesting(cros_network_config_.get());
 

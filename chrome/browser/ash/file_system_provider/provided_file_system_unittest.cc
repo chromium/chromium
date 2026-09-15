@@ -11,7 +11,6 @@
 
 #include "base/files/file.h"
 #include "base/functional/bind.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -227,7 +226,7 @@ class FileSystemProviderProvidedFileSystemTest : public testing::Test {
         render_process_host_.get(), kExtensionId);
     provided_file_system_->SetEventRouterForTesting(event_router_.get());
     provided_file_system_->SetNotificationManagerForTesting(
-        base::WrapUnique(new StubNotificationManager));
+        std::make_unique<StubNotificationManager>());
   }
 
   void TearDown() override {
@@ -405,7 +404,7 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, AddWatcher_PersistentIllegal) {
                                                    file_system_info);
     simple_provided_file_system.SetEventRouterForTesting(event_router_.get());
     simple_provided_file_system.SetNotificationManagerForTesting(
-        base::WrapUnique(new StubNotificationManager));
+        std::make_unique<StubNotificationManager>());
 
     simple_provided_file_system.AddObserver(&mock_observer);
 
@@ -820,7 +819,7 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, Notify) {
     Log log;
     provided_file_system_->Notify(
         base::FilePath(kDirectoryPath), /*recursive=*/false, change_type,
-        base::WrapUnique(new ProvidedFileSystemObserver::Changes), tag,
+        std::make_unique<ProvidedFileSystemObserver::Changes>(), tag,
         base::BindOnce(&LogStatus, base::Unretained(&log)));
     base::RunLoop().RunUntilIdle();
 
@@ -849,7 +848,7 @@ TEST_F(FileSystemProviderProvidedFileSystemTest, Notify) {
     Log log;
     provided_file_system_->Notify(
         base::FilePath(kDirectoryPath), /*recursive=*/false, change_type,
-        base::WrapUnique(new ProvidedFileSystemObserver::Changes), tag,
+        std::make_unique<ProvidedFileSystemObserver::Changes>(), tag,
         base::BindOnce(&LogStatus, base::Unretained(&log)));
     base::RunLoop().RunUntilIdle();
 

@@ -330,13 +330,13 @@ class TetherServiceTest : public testing::Test {
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
 
     test_tether_component_factory_ =
-        base::WrapUnique(new TestTetherComponentFactory());
+        std::make_unique<TestTetherComponentFactory>();
     TetherComponentImpl::Factory::SetFactoryForTesting(
         test_tether_component_factory_.get());
     shutdown_reason_verified_ = false;
 
     fake_remote_device_provider_factory_ =
-        base::WrapUnique(new FakeRemoteDeviceProviderFactory());
+        std::make_unique<FakeRemoteDeviceProviderFactory>();
     device_sync::RemoteDeviceProviderImpl::Factory::SetFactoryForTesting(
         fake_remote_device_provider_factory_.get());
 

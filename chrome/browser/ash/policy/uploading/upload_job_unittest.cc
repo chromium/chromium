@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -317,7 +316,7 @@ TEST_F(UploadFlowTest, SuccessfulUpload) {
   access_token_manager_.SetTokenValid(kTokenValid);
   access_token_manager_.AddTokenToQueue(kTokenValid);
   std::unique_ptr<UploadJob> upload_job = PrepareUploadJob(
-      base::WrapUnique(new UploadJobImpl::RandomMimeBoundaryGenerator));
+      std::make_unique<UploadJobImpl::RandomMimeBoundaryGenerator>());
   upload_job->Start();
   run_loop_.Run();
   ASSERT_EQ(1, upload_attempt_count_);
@@ -328,7 +327,7 @@ TEST_F(UploadFlowTest, TokenExpired) {
   access_token_manager_.AddTokenToQueue(kTokenExpired);
   access_token_manager_.AddTokenToQueue(kTokenValid);
   std::unique_ptr<UploadJob> upload_job = PrepareUploadJob(
-      base::WrapUnique(new UploadJobImpl::RandomMimeBoundaryGenerator));
+      std::make_unique<UploadJobImpl::RandomMimeBoundaryGenerator>());
   upload_job->Start();
   run_loop_.Run();
   ASSERT_EQ(2, upload_attempt_count_);
@@ -343,7 +342,7 @@ TEST_F(UploadFlowTest, TokenInvalid) {
       std::make_unique<UploadJob::ErrorCode>(UploadJob::AUTHENTICATION_ERROR));
 
   std::unique_ptr<UploadJob> upload_job = PrepareUploadJob(
-      base::WrapUnique(new UploadJobImpl::RandomMimeBoundaryGenerator));
+      std::make_unique<UploadJobImpl::RandomMimeBoundaryGenerator>());
   upload_job->Start();
   run_loop_.Run();
   ASSERT_EQ(4, upload_attempt_count_);
@@ -356,7 +355,7 @@ TEST_F(UploadFlowTest, TokenMultipleTries) {
   access_token_manager_.AddTokenToQueue(kTokenValid);
 
   std::unique_ptr<UploadJob> upload_job = PrepareUploadJob(
-      base::WrapUnique(new UploadJobImpl::RandomMimeBoundaryGenerator));
+      std::make_unique<UploadJobImpl::RandomMimeBoundaryGenerator>());
   upload_job->Start();
   run_loop_.Run();
   ASSERT_EQ(3, upload_attempt_count_);
@@ -367,7 +366,7 @@ TEST_F(UploadFlowTest, TokenFetchFailure) {
       std::make_unique<UploadJob::ErrorCode>(UploadJob::AUTHENTICATION_ERROR));
 
   std::unique_ptr<UploadJob> upload_job = PrepareUploadJob(
-      base::WrapUnique(new UploadJobImpl::RandomMimeBoundaryGenerator));
+      std::make_unique<UploadJobImpl::RandomMimeBoundaryGenerator>());
   upload_job->Start();
   run_loop_.Run();
   // Without a token we don't try to upload
@@ -383,7 +382,7 @@ TEST_F(UploadFlowTest, InternalServerError) {
       std::make_unique<UploadJob::ErrorCode>(UploadJob::SERVER_ERROR));
 
   std::unique_ptr<UploadJob> upload_job = PrepareUploadJob(
-      base::WrapUnique(new UploadJobImpl::RandomMimeBoundaryGenerator));
+      std::make_unique<UploadJobImpl::RandomMimeBoundaryGenerator>());
   upload_job->Start();
   run_loop_.Run();
   // kMaxAttempts

@@ -7,7 +7,6 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
@@ -599,7 +598,7 @@ class DevToolsUIBindingsDispatchHttpRequestTest : public testing::Test {
     bindings_ = std::make_unique<DevToolsUIBindings>(web_contents_);
 
     auto registry = std::make_unique<DevToolsHttpServiceRegistry>();
-    auto mock_handler = base::WrapUnique(new MockServiceHandler());
+    auto mock_handler = std::make_unique<MockServiceHandler>();
     mock_handler_ptr_ = mock_handler.get();
     registry->AddForTesting(DevToolsHttpServiceRegistry::Service(
         "mockService", {{"/getFoo", "GET"}, {"/postBar", "POST"}},
@@ -995,7 +994,7 @@ class DevToolsUIBindingsDispatchHttpRequestStreamingTest
     test_bindings_ = std::make_unique<TestDevToolsUIBindings>(web_contents_);
 
     auto registry = std::make_unique<DevToolsHttpServiceRegistry>();
-    auto mock_handler = base::WrapUnique(new MockServiceHandler());
+    auto mock_handler = std::make_unique<MockServiceHandler>();
     mock_handler_ptr_ = mock_handler.get();
     registry->AddForTesting(DevToolsHttpServiceRegistry::Service(
         "mockService", {{"/getFoo", "GET"}}, std::move(mock_handler)));
