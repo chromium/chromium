@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -962,9 +963,12 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
 
     state->remote_results.reserve(state->remote_results.size() +
                                   query_history_result->visits.size());
-    std::string host_name_utf8 = base::UTF16ToUTF8(state->search_text);
     const bool improved_suffix_matching = base::FeatureList::IsEnabled(
         kBrowsingHistoryImprovedHostnameSuffixMatching);
+    std::string host_name_utf8 = base::UTF16ToUTF8(state->search_text);
+    if (improved_suffix_matching) {
+      host_name_utf8 = base::ToLowerASCII(host_name_utf8);
+    }
     for (const WebHistoryService::QueryHistoryResult::Visit& visit :
          query_history_result->visits) {
       if (state->original_options.host_only) {

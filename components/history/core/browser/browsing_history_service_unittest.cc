@@ -590,8 +590,15 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemoteSuffixMatching) {
     feature_list.InitAndEnableFeature(
         kBrowsingHistoryImprovedHostnameSuffixMatching);
 
-    // With feature enabled, both sub.eight.com and eight.com match.
+    // With feature enabled, both sub.eight.com and eight.com match, and
+    // matching is case-insensitive.
     EXPECT_THAT(QueryHistory(u"eight.com", options),
+                MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
+                                   std::vector<TestResult>{
+                                       {kSubdomainUrl, 2, kRemote},
+                                       {kUrl8, 1, kRemote},
+                                   }));
+    EXPECT_THAT(QueryHistory(u"EiGhT.cOm", options),
                 MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
                                    std::vector<TestResult>{
                                        {kSubdomainUrl, 2, kRemote},
@@ -604,12 +611,16 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemoteSuffixMatching) {
     feature_list.InitAndDisableFeature(
         kBrowsingHistoryImprovedHostnameSuffixMatching);
 
-    // With feature disabled, only exact host eight.com matches.
+    // With feature disabled, only exact host eight.com matches, and matching
+    // is case-sensitive.
     EXPECT_THAT(QueryHistory(u"eight.com", options),
                 MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
                                    std::vector<TestResult>{
                                        {kUrl8, 1, kRemote},
                                    }));
+    EXPECT_THAT(QueryHistory(u"EiGhT.cOm", options),
+                MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
+                                   std::vector<TestResult>{}));
   }
 }
 

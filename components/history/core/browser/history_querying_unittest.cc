@@ -417,6 +417,11 @@ TEST_F(HistoryQueryTest, HostSearch) {
   EXPECT_TRUE(NthResultIs(results, 1, 9));
   EXPECT_TRUE(NthResultIs(results, 2, 10));
   EXPECT_TRUE(NthResultIs(results, 3, 11));
+
+  // Without kBrowsingHistoryImprovedHostnameSuffixMatching, host matching is
+  // case-sensitive.
+  QueryHistory("ExAmPlE.tEsT", options, &results);
+  EXPECT_EQ(0U, results.size());
 }
 
 // Tests max_count feature for text search queries.
@@ -549,6 +554,14 @@ TEST_F(HistoryQueryTest, HostnameSuffixMatching) {
     QueryHistory("somesite.com", options, &results);
     EXPECT_EQ(1U, results.size());
     EXPECT_EQ(GURL("http://www.somesite.com/"), results[0].url());
+  }
+
+  // With kBrowsingHistoryImprovedHostnameSuffixMatching enabled, matching is
+  // case-insensitive.
+  {
+    QueryResults results;
+    QueryHistory("ExAmPlE.cOm", options, &results);
+    EXPECT_EQ(3U, results.size());
   }
 }
 

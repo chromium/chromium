@@ -33,6 +33,7 @@
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -3016,9 +3017,12 @@ URLRows HistoryBackend::GetMatchesForHost(const std::u16string& host_name) {
 
   if (db_ && db_->InitURLEnumeratorForEverything(&iter)) {
     URLRow row;
-    std::string host_name_utf8 = base::UTF16ToUTF8(host_name);
     const bool improved_suffix_matching = base::FeatureList::IsEnabled(
         kBrowsingHistoryImprovedHostnameSuffixMatching);
+    std::string host_name_utf8 = base::UTF16ToUTF8(host_name);
+    if (improved_suffix_matching) {
+      host_name_utf8 = base::ToLowerASCII(host_name_utf8);
+    }
     while (iter.GetNextURL(&row)) {
       const bool matches_host = improved_suffix_matching
                                     ? row.url().DomainIs(host_name_utf8)
