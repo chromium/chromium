@@ -115,7 +115,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     base::FieldTrialParams auto_flush_params;
     auto_flush_params["max_pinned_image_kb"] = "1";
     print_feature_list_.InitAndEnableFeatureWithParameters(
-        kCanvas2DAutoFlushParams, auto_flush_params);
+        features::kCanvas2DAutoFlushParams, auto_flush_params);
   }
 
   void TearDown() override {

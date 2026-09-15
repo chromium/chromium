@@ -205,6 +205,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kCacheStorageCodeCacheHintHeaderName);
 
+// Flushes canvas if the recording limit has been exceeded.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvas2DAutoFlushParams);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kMaxRecordedOpKB;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kMaxPinnedImageKB;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kMaxRecordedOpGraphiteKB;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvas2DHibernation);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvas2DHibernationDefer);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCanvas2DHibernationNoSmallCanvas);

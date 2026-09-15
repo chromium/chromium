@@ -257,6 +257,34 @@ BASE_FEATURE_PARAM(std::string,
                    "name",
                    "x-CacheStorageCodeCacheHint");
 
+// Flushes canvas if the recording limit has been exceeded. This is a heuristic
+// based on memory and GPU performance:
+// - High memory usage causes discarded resources in low-end devices.
+// - PaintOpBuffers that grow indefinitely. The OOPR-related jank is caused by
+// long-running RasterCHROMIUM calls that monopolize the main thread
+// of the GPU process. By flushing periodically, we allow the rasterization
+// of canvas contents to be interleaved with other compositing and UI work.
+//
+// The default values for these parameters were initially determined
+// empirically. They were selected to maximize the MotionMark score on
+// desktop computers. Field trials may be used to tune these parameters
+// further by using metrics data from the field.
+BASE_FEATURE(kCanvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kMaxRecordedOpKB(&kCanvas2DAutoFlushParams,
+                                               "max_recorded_op_kb",
+                                               2 * 1024);
+
+const base::FeatureParam<int> kMaxPinnedImageKB(&kCanvas2DAutoFlushParams,
+                                                "max_pinned_image_kb",
+                                                32 * 1024);
+
+// Graphite can generally handle more ops, increase the size accordingly.
+const base::FeatureParam<int> kMaxRecordedOpGraphiteKB(
+    &kCanvas2DAutoFlushParams,
+    "max_recorded_op_graphite_kb",
+    6 * 1024);
+
 // Temporarily disabled due to issues:
 // - PDF blank previews
 // - Canvas corruption on ARM64 macOS

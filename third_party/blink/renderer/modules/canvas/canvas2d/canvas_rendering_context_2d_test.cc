@@ -510,8 +510,8 @@ void CanvasRenderingContext2DTestBase::SetUp() {
       base::NumberToString(kMaxPinnedImageKB);
   auto_flush_params["max_recorded_op_kb"] =
       base::NumberToString(kMaxRecordedOpKB);
-  feature_list_.InitAndEnableFeatureWithParameters(kCanvas2DAutoFlushParams,
-                                                   auto_flush_params);
+  feature_list_.InitAndEnableFeatureWithParameters(
+      features::kCanvas2DAutoFlushParams, auto_flush_params);
 
   // Create a `TestContextProvider` that automatically restores itself after a
   // GPU context loss.

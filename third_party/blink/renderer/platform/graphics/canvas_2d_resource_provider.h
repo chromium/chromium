@@ -50,17 +50,11 @@ class RasterInterface;
 }  // namespace raster
 }  // namespace gpu
 
-#include "base/metrics/field_trial_params.h"
-
 namespace blink {
 
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DAutoFlushParams);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvas2DReclaimUnusedResources);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kAppendCpuUsages);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasResourceIsWebGPUCompatible);
-
-PLATFORM_EXPORT extern const base::FeatureParam<int> kMaxRecordedOpKB;
-PLATFORM_EXPORT extern const base::FeatureParam<int> kMaxPinnedImageKB;
 
 class CanvasResource;
 class CanvasResourceSharedImage;

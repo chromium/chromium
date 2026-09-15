@@ -74,37 +74,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kCanvas2DAutoFlushParams, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The following parameters attempt to reach a compromise between not flushing
-// too often, and not accumulating an unreasonable backlog. Flushing too
-// often will hurt performance due to overhead costs. Accumulating large
-// backlogs, in the case of OOPR-Canvas, results in poor parallelism and
-// janky UI. With OOPR-Canvas disabled, it is still desirable to flush
-// periodically to guard against run-away memory consumption caused by
-// PaintOpBuffers that grow indefinitely. The OOPR-related jank is caused by
-// long-running RasterCHROMIUM calls that monopolize the main thread
-// of the GPU process. By flushing periodically, we allow the rasterization
-// of canvas contents to be interleaved with other compositing and UI work.
-//
-// The default values for these parameters were initially determined
-// empirically. They were selected to maximize the MotionMark score on
-// desktop computers. Field trials may be used to tune these parameters
-// further by using metrics data from the field.
-const base::FeatureParam<int> kMaxRecordedOpKB(&kCanvas2DAutoFlushParams,
-                                               "max_recorded_op_kb",
-                                               2 * 1024);
-
-const base::FeatureParam<int> kMaxPinnedImageKB(&kCanvas2DAutoFlushParams,
-                                                "max_pinned_image_kb",
-                                                32 * 1024);
-
-// Graphite can generally handle more ops, increase the size accordingly.
-const base::FeatureParam<int> kMaxRecordedOpGraphiteKB(
-    &kCanvas2DAutoFlushParams,
-    "max_recorded_op_graphite_kb",
-    6 * 1024);
-
 BASE_FEATURE(kAppendCpuUsages, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, unused resources (ready to be recycled) are reclaimed after a
@@ -913,8 +882,10 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       hdr_metadata_(hdr_metadata),
       delegate_(delegate),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
-  max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
-  max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
+  max_recorded_op_bytes_ =
+      static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024;
+  max_pinned_image_bytes_ =
+      static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024;
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
     raster_context_provider_ = base::WrapRefCounted(
@@ -922,7 +893,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     // Graphite can handle a large buffer size.
     if (IsGraphite()) {
       max_recorded_op_bytes_ =
-          static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
+          static_cast<size_t>(features::kMaxRecordedOpGraphiteKB.Get()) * 1024;
     }
   }
 
@@ -1051,8 +1022,10 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       hdr_metadata_(hdr_metadata),
       delegate_(delegate),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
-  max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
-  max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
+  max_recorded_op_bytes_ =
+      static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024;
+  max_pinned_image_bytes_ =
+      static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024;
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);
     if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {
