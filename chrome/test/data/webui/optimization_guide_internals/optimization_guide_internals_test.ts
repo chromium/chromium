@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('OptimizationGuideInternalsTest', function() {
   test('EmptyTest', function() {
@@ -98,5 +98,67 @@ suite('OptimizationGuideInternalsTest', function() {
     });
 
     return Promise.all([containerHasChildren, tableRowExists]);
+  });
+
+  test('FilterUrlParamsReflection', function() {
+    const includeInput =
+        document.getElementById('log-message-include') as HTMLInputElement;
+    const excludeInput =
+        document.getElementById('log-message-exclude') as HTMLInputElement;
+    assertTrue(!!includeInput);
+    assertTrue(!!excludeInput);
+
+    includeInput.value = 'test_include';
+    includeInput.dispatchEvent(new Event('input'));
+    let params = new URLSearchParams(window.location.search);
+    assertEquals('test_include', params.get('include'));
+
+    excludeInput.value = 'test_exclude';
+    excludeInput.dispatchEvent(new Event('input'));
+    params = new URLSearchParams(window.location.search);
+    assertEquals('test_include', params.get('include'));
+    assertEquals('test_exclude', params.get('exclude'));
+
+    includeInput.value = '';
+    includeInput.dispatchEvent(new Event('input'));
+    params = new URLSearchParams(window.location.search);
+    assertFalse(params.has('include'));
+    assertEquals('test_exclude', params.get('exclude'));
+
+    excludeInput.value = '';
+    excludeInput.dispatchEvent(new Event('input'));
+    params = new URLSearchParams(window.location.search);
+    assertFalse(params.has('include'));
+    assertFalse(params.has('exclude'));
+  });
+
+  test('FilterUrlParamsPopstate', function() {
+    const includeInput =
+        document.getElementById('log-message-include') as HTMLInputElement;
+    const excludeInput =
+        document.getElementById('log-message-exclude') as HTMLInputElement;
+    assertTrue(!!includeInput);
+    assertTrue(!!excludeInput);
+
+    window.history.pushState(null, '', '?include=hist_inc&exclude=hist_exc');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    assertEquals('hist_inc', includeInput.value);
+    assertEquals('hist_exc', excludeInput.value);
+
+    window.history.pushState(null, '', window.location.pathname);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    assertEquals('', includeInput.value);
+    assertEquals('', excludeInput.value);
+  });
+
+  test('FilterUrlParamsInitial', function() {
+    const includeInput =
+        document.getElementById('log-message-include') as HTMLInputElement;
+    const excludeInput =
+        document.getElementById('log-message-exclude') as HTMLInputElement;
+    assertTrue(!!includeInput);
+    assertTrue(!!excludeInput);
+    assertEquals('init_inc', includeInput.value);
+    assertEquals('init_exc', excludeInput.value);
   });
 });

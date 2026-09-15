@@ -80,6 +80,33 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsLoggerBrowserTest,
   RunTestCase("EmptyTest");
 }
 
+IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsBrowserTest,
+                       FilterUrlParamsReflection) {
+  RunTestCase("FilterUrlParamsReflection");
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsBrowserTest,
+                       FilterUrlParamsPopstate) {
+  RunTestCase("FilterUrlParamsPopstate");
+}
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideInternalsBrowserTest,
+                       FilterUrlParamsInitial) {
+  g_browser_process->local_state()->SetBoolean(
+      chrome_urls::kInternalOnlyUisEnabled, true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://optimization-guide-internals/"
+                      "?include=init_inc&exclude=init_exc")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(RunTestOnWebContents(
+      web_contents,
+      "optimization_guide_internals/optimization_guide_internals_test.js",
+      "runMochaTest('OptimizationGuideInternalsTest', "
+      "'FilterUrlParamsInitial')",
+      /*skip_test_loader=*/true));
+}
+
 class OptimizationGuideInternalsLogMessageBrowserTest
     : public OptimizationGuideInternalsBrowserTest {
  protected:
