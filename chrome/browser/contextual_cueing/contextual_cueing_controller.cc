@@ -1385,7 +1385,16 @@ void ContextualCueingController::OnCueInteraction(
       tab_->GetProfile(), cue_id, cue_type, cue, tab_, tabs_to_show,
       background_tabs, interaction_type, cuj);
 
-  HideCue();
+  if (interaction_type == ContextualCueingInteraction::kCueDismissed) {
+    CueTarget* target = GetTarget(cue_type);
+    if (target && target->DowngradesToQuietOnDismiss()) {
+      HideAnchoredMessage();
+    } else {
+      HideCue();
+    }
+  } else {
+    HideCue();
+  }
 
   switch (interaction_type) {
     case ContextualCueingInteraction::kCueDismissed:
@@ -1437,6 +1446,15 @@ void ContextualCueingController::HideCue() {
   page_action_controller->ClearOverrideTooltip(kActionAnchoredContextualCue);
   page_action_controller->HideAnchoredMessage(kActionAnchoredContextualCue);
   page_action_controller->Hide(kActionAnchoredContextualCue);
+#endif
+}
+
+void ContextualCueingController::HideAnchoredMessage() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (page_actions::PageActionController* page_action_controller =
+          tab_->GetTabFeatures()->page_action_controller()) {
+    page_action_controller->HideAnchoredMessage(kActionAnchoredContextualCue);
+  }
 #endif
 }
 

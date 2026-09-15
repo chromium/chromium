@@ -91,6 +91,10 @@ class CueTarget {
   // used by other targets.
   virtual bool OverridesUcbScoring() const;
 
+  // Whether this target should fall back to a suggestion chip instead of fully
+  // disappearing when the anchored message is dismissed.
+  virtual bool DowngradesToQuietOnDismiss() const;
+
   // Returns true if this target supports the given intrusiveness level.
   // Targets requiring MES are restricted to kLoud only. Non-MES targets
   // can override SupportsIntrusivenessImpl() to declare supported levels.

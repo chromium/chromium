@@ -31,6 +31,10 @@ bool TestCueTarget::OverridesUcbScoring() const {
   return overrides_ucb_scoring;
 }
 
+bool TestCueTarget::DowngradesToQuietOnDismiss() const {
+  return downgrades_to_quiet_on_dismiss;
+}
+
 bool TestCueTarget::SupportsIntrusivenessImpl(
     CueIntrusiveness intrusiveness) const {
   return supported_intrusiveness.contains(intrusiveness);
