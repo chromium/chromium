@@ -321,6 +321,12 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
       active_primary_accounts_metrics_recorder_(
           std::make_unique<signin::ActivePrimaryAccountsMetricsRecorder>(
               *local_state_)),
+      metrics_services_manager_(startup_data->chrome_feature_list_creator()
+                                    ->TakeMetricsServicesManager()),
+      metrics_services_manager_client_(
+          static_cast<ChromeMetricsServicesManagerClient*>(
+              startup_data->chrome_feature_list_creator()
+                  ->GetMetricsServicesManagerClient())),
 #if BUILDFLAG(IS_ANDROID)
       device_parental_controls_(
           std::make_unique<supervised_user::AndroidParentalControls>()),
@@ -334,6 +340,9 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
       features_(GlobalFeatures::CreateGlobalFeatures()) {
   CHECK(!g_browser_process);
   g_browser_process = this;
+
+  CHECK(metrics_services_manager_);
+  CHECK(metrics_services_manager_client_);
 
   features_->Init();
 
@@ -363,11 +372,7 @@ void BrowserProcessImpl::Init() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Forces creation of |metrics_services_manager_client_| if necessary
-  // (typically this call is a no-op as MetricsServicesManager has already been
-  // created).
-  GetMetricsServicesManager();
-  DCHECK(metrics_services_manager_client_);
+  CHECK(metrics_services_manager_client_);
   metrics_services_manager_client_->OnCrosSettingsCreated();
 #endif
 
@@ -774,14 +779,6 @@ void BrowserProcessImpl::PostDestroyThreads() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void BrowserProcessImpl::SetMetricsServices(
-    std::unique_ptr<metrics_services_manager::MetricsServicesManager> manager,
-    metrics_services_manager::MetricsServicesManagerClient* client) {
-  metrics_services_manager_ = std::move(manager);
-  metrics_services_manager_client_ =
-      static_cast<ChromeMetricsServicesManagerClient*>(client);
-}
-
 namespace {
 
 // Used at the end of session to block the UI thread for completion of sentinel
@@ -954,16 +951,6 @@ void BrowserProcessImpl::EndSession() {
 metrics_services_manager::MetricsServicesManager*
 BrowserProcessImpl::GetMetricsServicesManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Only create the objects if teardown hasn't started yet, as otherwise these
-  // may have already been destroyed.
-  if (!metrics_services_manager_ && !tearing_down_) {
-    auto client =
-        std::make_unique<ChromeMetricsServicesManagerClient>(local_state());
-    metrics_services_manager_client_ = client.get();
-    metrics_services_manager_ =
-        std::make_unique<metrics_services_manager::MetricsServicesManager>(
-            std::move(client));
-  }
   return metrics_services_manager_.get();
 }
 

@@ -164,8 +164,8 @@ class BrowserProcess {
   // shutdown.
   virtual void EndSession() = 0;
 
-  // Gets the manager for the various metrics-related services, constructing it
-  // if necessary.
+  // Gets the manager for the various metrics-related services. May return null
+  // during shutdown.
   virtual metrics_services_manager::MetricsServicesManager*
   GetMetricsServicesManager() = 0;
 

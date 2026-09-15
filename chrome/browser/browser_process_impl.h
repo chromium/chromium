@@ -163,12 +163,6 @@ class BrowserProcessImpl : public BrowserProcess,
   void PostDestroyThreads();
 #endif
 
-  // Sets |metrics_services_manager_| and |metrics_services_manager_client_|
-  // which is owned by it.
-  void SetMetricsServices(
-      std::unique_ptr<metrics_services_manager::MetricsServicesManager> manager,
-      metrics_services_manager::MetricsServicesManagerClient* client);
-
   // BrowserProcess implementation.
   void EndSession() override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()

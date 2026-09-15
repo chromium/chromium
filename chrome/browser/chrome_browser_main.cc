@@ -1020,15 +1020,6 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
   const int load_local_state_result =
       OnLocalStateLoaded(&failed_to_load_resource_bundle);
 
-  // Reuses the MetricsServicesManager and GetMetricsServicesManagerClient
-  // instances created in the FeatureListCreator so they won't be created
-  // again.
-  auto* chrome_feature_list_creator =
-      startup_data_->chrome_feature_list_creator();
-  browser_process_->SetMetricsServices(
-      chrome_feature_list_creator->TakeMetricsServicesManager(),
-      chrome_feature_list_creator->GetMetricsServicesManagerClient());
-
   if (load_local_state_result == CHROME_RESULT_CODE_MISSING_DATA &&
       failed_to_load_resource_bundle) {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
