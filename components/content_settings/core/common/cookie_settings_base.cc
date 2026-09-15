@@ -40,30 +40,8 @@ namespace content_settings {
 
 namespace {
 
-using net::cookie_util::StorageAccessResult;
 using ThirdPartyCookieAllowMechanism =
     CookieSettingsBase::ThirdPartyCookieAllowMechanism;
-
-constexpr StorageAccessResult GetStorageAccessResult(
-    ThirdPartyCookieAllowMechanism mechanism) {
-  using AllowMechanism = ThirdPartyCookieAllowMechanism;
-  switch (mechanism) {
-    case AllowMechanism::kNone:
-      return StorageAccessResult::ACCESS_BLOCKED;
-    case AllowMechanism::kAllowByExplicitSetting:
-    case AllowMechanism::kAllowByGlobalSetting:
-    case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
-      return StorageAccessResult::ACCESS_ALLOWED;
-    case AllowMechanism::kAllowByStorageAccess:
-      return StorageAccessResult::ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
-    case AllowMechanism::kAllowByTopLevelStorageAccess:
-      return StorageAccessResult::ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT;
-    case AllowMechanism::kAllowByScheme:
-      return StorageAccessResult::ACCESS_ALLOWED_SCHEME;
-    case AllowMechanism::kAllowBySandboxValue:
-      return StorageAccessResult::ACCESS_ALLOWED_SANDBOX_VALUE;
-  }
-}
 
 // Returns true iff the request is considered third-party.
 bool IsThirdPartyRequest(const GURL& url,
@@ -468,9 +446,6 @@ CookieSettingsBase::GetCookieSettingInternal(
     CHECK(is_third_party_request ||
           allow_cookies->mechanism == ThirdPartyCookieAllowMechanism::kNone);
 
-    FireStorageAccessHistogram(
-        GetStorageAccessResult(allow_cookies->mechanism));
-
     if (info) {
       *info = std::move(setting_info);
     }
@@ -491,8 +466,6 @@ CookieSettingsBase::GetCookieSettingInternal(
     CHECK(block_third_party_cookies);
     CHECK(!is_explicit_setting);
 
-    FireStorageAccessHistogram(StorageAccessResult::ACCESS_BLOCKED);
-
     if (info) {
       *info = std::move(setting_info);
     }
@@ -510,7 +483,6 @@ CookieSettingsBase::GetCookieSettingInternal(
 
   CHECK(std::holds_alternative<BlockAllCookies>(choice));
   CHECK_EQ(cookie_setting, CONTENT_SETTING_BLOCK);
-  FireStorageAccessHistogram(StorageAccessResult::ACCESS_BLOCKED);
 
   if (info) {
     *info = std::move(setting_info);

@@ -17,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -40,7 +39,6 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key.h"
-#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
@@ -347,13 +345,6 @@ constexpr CookiePrefixData kPrefixes[] = {
 };
 
 }  // namespace
-
-void FireStorageAccessHistogram(StorageAccessResult result) {
-  if (base::ShouldRecordSubsampledMetric(0.01)) {
-    UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests4.Subsampled",
-                              result);
-  }
-}
 
 bool DomainIsHostOnly(std::string_view domain_string) {
   return (domain_string.empty() || domain_string[0] != '.');

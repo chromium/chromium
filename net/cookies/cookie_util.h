@@ -16,7 +16,6 @@
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
-#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
@@ -47,25 +46,6 @@ namespace cookie_util {
 const int kVlogPerCookieMonster = 1;
 const int kVlogSetCookies = 7;
 const int kVlogGarbageCollection = 5;
-
-// This enum must match the numbering for StorageAccessResult in
-// histograms/metadata/storage/enums.xml. Do not reorder or remove items, only
-// add new items at the end.
-enum class StorageAccessResult {
-  ACCESS_BLOCKED = 0,
-  ACCESS_ALLOWED = 1,
-  ACCESS_ALLOWED_STORAGE_ACCESS_GRANT = 2,
-  // OBSOLETE_ACCESS_ALLOWED_FORCED = 3 /*(DEPRECATED)*/,
-  ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT = 4,
-  // ACCESS_ALLOWED_3PCD_TRIAL = 5,  // Deprecated
-  // ACCESS_ALLOWED_3PCD_METADATA_GRANT = 6,  // Deprecated
-  // ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT = 7,  // Deprecated
-  // ACCESS_ALLOWED_CORS_EXCEPTION = 8,  // Deprecated
-  // ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL = 9,  // Deprecated
-  ACCESS_ALLOWED_SCHEME = 10,
-  ACCESS_ALLOWED_SANDBOX_VALUE = 11,
-  kMaxValue = ACCESS_ALLOWED_SANDBOX_VALUE,
-};
 
 // This enum's values correspond to the values of the HTTP request header
 // `Sec-Fetch-Storage-Access`, which is applied to cross-site requests.
@@ -123,10 +103,6 @@ enum class ActivateStorageAccessLoadOutcome {
   kMaxValue = kSuccess
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:ActivateStorageAccessLoadOutcome)
-
-// Helper to fire telemetry indicating if a given request for storage was
-// allowed or not by the provided |result|.
-NET_EXPORT void FireStorageAccessHistogram(StorageAccessResult result);
 
 // Returns the effective TLD+1 for a given host. This only makes sense for http
 // and https schemes. For other schemes, the host will be returned unchanged
