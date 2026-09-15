@@ -302,7 +302,8 @@ public class TabBottomSheetCoordinator {
     }
 
     private void cleanupSheetResources() {
-        if (mSheetObserver != null && mBottomSheetController != null) {
+        if (mSheetObserver != null) {
+            assert mBottomSheetController != null;
             mBottomSheetController.removeObserver(mSheetObserver);
             mSheetObserver = null;
         }
@@ -340,14 +341,20 @@ public class TabBottomSheetCoordinator {
             mPeekViewChangeProcessor = null;
         }
         if (mPeekViewManager != null) {
-            mPeekViewManager.destroy();
+            // Destroy via CoBrowseViews so its cached reference is cleared too; otherwise the next
+            // setupPeekView() would hand back this destroyed manager, which no longer observes
+            // state changes.
+            mCoBrowseViews.destroyPeekViewManager();
             mPeekViewManager = null;
         }
         if (mResizingStrategy != null) {
             mResizingStrategy.destroy();
             mResizingStrategy = null;
         }
-        mPeekView = null;
+        if (mPeekView != null) {
+            mCoBrowseViews.removePeekView(mPeekView);
+            mPeekView = null;
+        }
         mSheetEventsCallback = null;
 
         mIsShowingTabBottomSheet = false;

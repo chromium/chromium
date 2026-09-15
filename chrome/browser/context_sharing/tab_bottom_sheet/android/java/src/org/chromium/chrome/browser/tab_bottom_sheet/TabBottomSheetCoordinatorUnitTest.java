@@ -293,6 +293,23 @@ public class TabBottomSheetCoordinatorUnitTest {
     }
 
     @Test
+    public void testDestroy_TearsDownPeekViewManagerThroughCoBrowseViews() {
+        PeekViewManager peekViewManager = mock(PeekViewManager.class);
+        when(peekViewManager.getModel())
+                .thenReturn(new PropertyModel.Builder(TabBottomSheetPeekProperties.ALL_KEYS)
+                        .build());
+        doReturn(peekViewManager).when(mCoBrowseViews).getOrCreatePeekViewManager();
+        simulateShowSuccessAndGetObserver();
+
+        mCoordinator.destroy();
+
+        // The manager must be torn down through CoBrowseViews so that its cached reference is
+        // cleared as well; otherwise the next show would reuse a destroyed manager that no longer
+        // observes state changes. See b/559305257.
+        verify(mCoBrowseViews).destroyPeekViewManager();
+    }
+
+    @Test
     public void testDestroy_WhenNotShown_CleansUp() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);
