@@ -355,8 +355,10 @@ class PasswordAutofillManagerTest : public testing::Test {
                                          MockAutofillClient* autofill_client) {
     password_autofill_manager_ = std::make_unique<PasswordAutofillManager>(
         client->mock_driver(), autofill_client, client);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     password_autofill_manager_->SetManualFallbackFlowForTest(
         std::make_unique<NiceMock<MockPasswordSuggestionFlow>>());
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     favicon::MockFaviconService favicon_service;
     EXPECT_CALL(*client, GetFaviconService())
         .WillOnce(Return(&favicon_service));
@@ -403,10 +405,12 @@ class PasswordAutofillManagerTest : public testing::Test {
     EXPECT_CALL(*authenticator, AuthenticateWithMessage);
   }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MockPasswordSuggestionFlow& manual_fallback_flow() {
     return *static_cast<MockPasswordSuggestionFlow*>(
         password_autofill_manager_->manual_fallback_flow());
   }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   PasskeyCredential MakeTestPasskeyCredential() {
     return PasskeyCredential(PasskeyCredential::Source::kAndroidPhone,
@@ -2085,6 +2089,7 @@ TEST_F(PasswordAutofillManagerTest, NoPreviewSuggestionWithAuthBeforeFilling) {
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(PasswordAutofillManagerTest, ManualFallback_InvokesFlow) {
   base::test::ScopedFeatureList security_checks_feature_list{
       features::kPasswordManualFallbackSecurityChecks};
@@ -2169,6 +2174,7 @@ TEST_F(PasswordAutofillManagerTest, ManualFallback_FlowResetOnNavigation) {
 
   EXPECT_FALSE(password_autofill_manager_->manual_fallback_flow());
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(PasswordAutofillManagerTest,
        WebAuthnCredentialSuggestionsPersistLoadingStateUntilHidePopup) {

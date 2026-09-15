@@ -124,10 +124,6 @@ static_library("browser") {
     "password_manager_settings_service_impl.h",
     "password_manager_util.cc",
     "password_manager_util.h",
-    "password_manual_fallback_flow.cc",
-    "password_manual_fallback_flow.h",
-    "password_manual_fallback_metrics_recorder.cc",
-    "password_manual_fallback_metrics_recorder.h",
     "password_requirements_service.cc",
     "password_requirements_service.h",
     "password_reuse_detector.cc",
@@ -241,6 +237,15 @@ static_library("browser") {
       "os_crypt_async_migrator.h",
     ]
     deps += [ "//components/webauthn/core/browser:passkey_model" ]
+  }
+
+  if (!is_android && !is_ios) {
+    sources += [
+      "password_manual_fallback_flow.cc",
+      "password_manual_fallback_flow.h",
+      "password_manual_fallback_metrics_recorder.cc",
+      "password_manual_fallback_metrics_recorder.h",
+    ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
@@ -436,8 +441,6 @@ static_library("test_support") {
     "mock_password_manager_settings_service.h",
     "mock_password_reuse_manager.cc",
     "mock_password_reuse_manager.h",
-    "mock_password_suggestion_flow.cc",
-    "mock_password_suggestion_flow.h",
     "mock_webauthn_credentials_delegate.cc",
     "mock_webauthn_credentials_delegate.h",
     "password_manager_test_utils.cc",
@@ -458,6 +461,13 @@ static_library("test_support") {
     sources += [
       "mock_password_credential_filler.cc",
       "mock_password_credential_filler.h",
+    ]
+  }
+
+  if (!is_android && !is_ios) {
+    sources += [
+      "mock_password_suggestion_flow.cc",
+      "mock_password_suggestion_flow.h",
     ]
   }
 
@@ -539,8 +549,6 @@ source_set("unit_tests") {
     "password_manager_settings_service_impl_unittest.cc",
     "password_manager_unittest.cc",
     "password_manager_util_unittest.cc",
-    "password_manual_fallback_flow_unittest.cc",
-    "password_manual_fallback_metrics_recorder_unittest.cc",
     "password_requirements_service_unittest.cc",
     "password_reuse_detector_impl_unittest.cc",
     "password_reuse_manager_impl_unittest.cc",
@@ -568,6 +576,13 @@ source_set("unit_tests") {
   }
   if (use_blink) {
     sources += [ "http_credentials_cleaner_unittest.cc" ]
+  }
+
+  if (!is_android && !is_ios) {
+    sources += [
+      "password_manual_fallback_flow_unittest.cc",
+      "password_manual_fallback_metrics_recorder_unittest.cc",
+    ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {

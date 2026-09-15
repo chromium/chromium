@@ -123,6 +123,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   // Called when main frame navigates. Not called for in-page navigations.
   void DidNavigateMainFrame();
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   PasswordManualFallbackMetricsRecorder&
   GetPasswordManualFallbackMetricsRecorder() {
     return CHECK_DEREF(manual_fallback_metrics_recorder_.get());
@@ -134,6 +135,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   inline PasswordSuggestionFlow* manual_fallback_flow() {
     return manual_fallback_flow_.get();
   }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // If there is a popup waiting to be displayed with a delay, this cancels it.
   void FocusedInputChanged();
@@ -249,6 +251,11 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
       ShowWebAuthnCredentials show_webauthn_credentials,
       ShowIdentityCredentials show_identity_credentials);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  bool MaybeTriggerPasswordManualFallback(
+      const autofill::TriggeringField& field);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;
 
   password_manager::PasswordSuggestionGenerator suggestion_generator_;
@@ -281,6 +288,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   // on Android, Mac and Windows.
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Initialized when the user triggers the password manual fallback. This flow
   // reads all user passwords upon initialization. Hence it's reset upon main
   // frame navigation or if this `PasswordAutofillManager` is destroyed.
@@ -296,6 +304,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   // `manual_fallback_flow_` and dies when `manual_fallback_flow_` dies.
   std::unique_ptr<PasswordManualFallbackMetricsRecorder>
       manual_fallback_metrics_recorder_;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // This timer is used to delay showing the suggestions popup if passkey
   // suggestions are allowed but the passkey list has not yet arrived.
