@@ -158,8 +158,12 @@ TEST_F(OpusDecoderHelperTest, DecodeValidOggOpusStream) {
                                            .end_time = base::Milliseconds(120),
                                            .start_character_offset = 0u,
                                            .end_character_offset = 5u};
+            ASSERT_TRUE(segments[1]->audio_buffer());
+            base::TimeDelta word1_duration =
+                segments[1]->audio_buffer()->duration();
+            EXPECT_GT(word1_duration, base::TimeDelta());
             WordTiming expected_timing1 = {.start_time = base::Milliseconds(0),
-                                           .end_time = base::Milliseconds(150),
+                                           .end_time = word1_duration,
                                            .start_character_offset = 6u,
                                            .end_character_offset = 11u};
             EXPECT_THAT(
@@ -170,13 +174,72 @@ TEST_F(OpusDecoderHelperTest, DecodeValidOggOpusStream) {
                         /*timings_matcher=*/ElementsAre(
                             MatchesWordTiming(expected_timing0))),
                     MatchesSegment(
-                        /*duration_matcher=*/Eq(base::Milliseconds(150)),
+                        /*duration_matcher=*/Eq(word1_duration),
                         /*timings_matcher=*/ElementsAre(
                             MatchesWordTiming(expected_timing1)))));
 
             std::move(quit_closure).Run();
           },
           run_loop.QuitClosure(), timings));
+
+  run_loop.Run();
+}
+
+TEST_F(OpusDecoderHelperTest, DecodeSlicesContiguouslyBetweenWordStarts) {
+  base::FilePath file_path = media::GetTestDataFilePath("sfx-opus.ogg");
+  base::MemoryMappedFile file;
+  ASSERT_TRUE(file.Initialize(file_path));
+
+  scoped_refptr<media::DecoderBuffer> container_buffer =
+      media::DecoderBuffer::CopyFrom(file.bytes());
+  ASSERT_NE(container_buffer, nullptr);
+
+  OpusDecoderHelper helper;
+  // Notice the gap between Hello (0-80ms) and World (120-270ms).
+  // The slicer should extend "Hello" to 120ms (World's start time).
+  std::vector<WordTiming> timings = {{.start_time = base::Milliseconds(0),
+                                      .end_time = base::Milliseconds(80),
+                                      .start_character_offset = 0u,
+                                      .end_character_offset = 5u},
+                                     {.start_time = base::Milliseconds(120),
+                                      .end_time = base::Milliseconds(270),
+                                      .start_character_offset = 6u,
+                                      .end_character_offset = 11u}};
+  base::RunLoop run_loop;
+
+  helper.DecodeAndSlice(
+      container_buffer, timings,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             std::vector<scoped_refptr<DecodedAudioSegment>> segments) {
+            ASSERT_EQ(segments.size(), 2u);
+            WordTiming expected_timing0 = {.start_time = base::Milliseconds(0),
+                                           .end_time = base::Milliseconds(120),
+                                           .start_character_offset = 0u,
+                                           .end_character_offset = 5u};
+            ASSERT_TRUE(segments[1]->audio_buffer());
+            base::TimeDelta word1_duration =
+                segments[1]->audio_buffer()->duration();
+            EXPECT_GT(word1_duration, base::TimeDelta());
+            WordTiming expected_timing1 = {.start_time = base::Milliseconds(0),
+                                           .end_time = word1_duration,
+                                           .start_character_offset = 6u,
+                                           .end_character_offset = 11u};
+            EXPECT_THAT(
+                segments,
+                ElementsAre(
+                    MatchesSegment(
+                        /*duration_matcher=*/Eq(base::Milliseconds(120)),
+                        /*timings_matcher=*/ElementsAre(
+                            MatchesWordTiming(expected_timing0))),
+                    MatchesSegment(
+                        /*duration_matcher=*/Eq(word1_duration),
+                        /*timings_matcher=*/ElementsAre(
+                            MatchesWordTiming(expected_timing1)))));
+
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
 
   run_loop.Run();
 }

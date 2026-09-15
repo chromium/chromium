@@ -136,11 +136,15 @@ void OpusDecoderHelper::OnDecodeFinished(
   std::unique_ptr<media::AudioBus> decoded_bus =
       media::AudioBuffer::WrapOrCopyToAudioBus(decoded_buffer);
 
-  for (const WordTiming& timing : timings) {
+  for (size_t i = 0; i < timings.size(); ++i) {
+    const WordTiming& timing = timings[i];
     int64_t start_frame = media::AudioTimestampHelper::TimeToFrames(
         timing.start_time, sample_rate);
-    int64_t end_frame =
-        media::AudioTimestampHelper::TimeToFrames(timing.end_time, sample_rate);
+    int64_t end_frame = decoded_bus->frames();
+    if (i + 1 < timings.size()) {
+      end_frame = media::AudioTimestampHelper::TimeToFrames(
+          timings[i + 1].start_time, sample_rate);
+    }
 
     start_frame = std::max<int64_t>(0, start_frame);
     end_frame = std::min<int64_t>(end_frame, decoded_bus->frames());
