@@ -2650,7 +2650,6 @@ static_library("ui") {
     deps += [
       ":network_profile_bubble",
       "//chrome/browser:font_prewarmer_tab_helper",
-      "//chrome/browser:titlebar_config",
       "//chrome/browser/taskbar",
       "//chrome/browser/ui/views:certificate_viewer_win",
       "//chrome/browser/ui/views:critical_notification_bubble_view",

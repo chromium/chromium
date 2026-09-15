@@ -612,7 +612,6 @@ if (is_win) {
       ":windows_caption_button",
       "//base",
       "//chrome/browser:browser_process",
-      "//chrome/browser:titlebar_config",
       "//chrome/browser/lifetime",
       "//chrome/browser/profiles:profile_manager",
       "//chrome/browser/profiles:profile_util",
@@ -1047,9 +1046,9 @@ if (is_win) {
     deps = [
       ":windows_caption_button",
       "//chrome/app:command_ids",
-      "//chrome/browser:titlebar_config",
       "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/frame",
+      "//chrome/browser/win",
       "//ui/strings:ui_strings",
     ]
   }

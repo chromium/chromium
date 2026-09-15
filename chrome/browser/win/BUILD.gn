@@ -27,6 +27,7 @@ source_set("win") {
     "parental_controls.h",
     "remove_app_compat_entries.h",
     "taskbar_manager.h",
+    "titlebar_config.h",
     "uninstallation_via_os_settings.h",
     "util_win_service.h",
   ]
@@ -102,7 +103,6 @@ source_set("impl") {
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser:shell_integration",
-    "//chrome/browser:titlebar_config",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
     "//chrome/browser/policy:path_parser",
