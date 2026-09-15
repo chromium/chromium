@@ -5,7 +5,9 @@
 #ifndef CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_DRAG_SECURITY_INFO_H_
 #define CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_DRAG_SECURITY_INFO_H_
 
+#include "base/memory/weak_ptr.h"
 #include "content/browser/site_instance_group.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
@@ -20,7 +22,7 @@ class RenderWidgetHostImpl;
 // the same one that initiated that drag?" The answer to that question may be
 // directly obtained via `did_initiate()`, and that answer will affect every
 // other member function's return value.
-class WebContentsViewDragSecurityInfo {
+class CONTENT_EXPORT WebContentsViewDragSecurityInfo {
  public:
   WebContentsViewDragSecurityInfo();
   ~WebContentsViewDragSecurityInfo();
@@ -43,12 +45,16 @@ class WebContentsViewDragSecurityInfo {
   // Returns whether `target_rwh` is a valid RenderWidgetHost to be dragging
   // over. This enforces that same-page, cross-site drags are not allowed. See
   // https://crbug.com/666858, https://crbug.com/1266953,
-  // https://crbug.com/1485266.
+  // https://crbug.com/1485266. Drags between a guest and its embedder, or
+  // between two guests, cross pages and are allowed.
   bool IsValidDragTarget(RenderWidgetHostImpl* target_rwh) const;
 
  private:
   // See `did_initiate()`, above.
   bool did_initiate_ = false;
+
+  // The widget the drag started from, while `did_initiate_`.
+  base::WeakPtr<RenderWidgetHostImpl> source_rwh_;
 
   // The site instance of the drag origin.
   SiteInstanceGroupId site_instance_group_id_;

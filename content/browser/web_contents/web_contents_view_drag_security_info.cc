@@ -4,11 +4,31 @@
 
 #include "content/browser/web_contents/web_contents_view_drag_security_info.h"
 
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/site_instance_group.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/drop_data.h"
 
 namespace content {
+
+namespace {
+
+// True when `a` and `b` belong to different pages shown in the same view: an
+// inner WebContents and its embedder (or a sibling), or an MPArch guest page.
+bool IsDragBetweenGuestAndOtherPage(RenderWidgetHostImpl* a,
+                                    RenderWidgetHostImpl* b) {
+  if (WebContentsImpl::FromRenderWidgetHostImpl(a) !=
+      WebContentsImpl::FromRenderWidgetHostImpl(b)) {
+    return true;
+  }
+  FrameTree* a_tree = a->frame_tree();
+  FrameTree* b_tree = b->frame_tree();
+  return a_tree && b_tree && a_tree != b_tree &&
+         (a_tree->is_guest() || b_tree->is_guest());
+}
+
+}  // namespace
 
 WebContentsViewDragSecurityInfo::WebContentsViewDragSecurityInfo() = default;
 WebContentsViewDragSecurityInfo::~WebContentsViewDragSecurityInfo() = default;
@@ -17,12 +37,14 @@ void WebContentsViewDragSecurityInfo::OnDragInitiated(
     RenderWidgetHostImpl* source_rwh,
     const DropData& drop_data) {
   did_initiate_ = true;
+  source_rwh_ = source_rwh->GetWeakPtr();
   site_instance_group_id_ = source_rwh->GetSiteInstanceGroup()->GetId();
   image_accessible_from_frame_ = drop_data.file_contents_image_accessible;
 }
 
 void WebContentsViewDragSecurityInfo::OnDragEnded() {
   did_initiate_ = false;
+  source_rwh_ = nullptr;
   site_instance_group_id_ = SiteInstanceGroupId();
   image_accessible_from_frame_ = true;
 }
@@ -48,6 +70,14 @@ bool WebContentsViewDragSecurityInfo::IsValidDragTarget(
   // from a different top-level WebContents. The drag is allowed if that is the
   // case.
   if (!did_initiate_) {
+    return true;
+  }
+
+  // Guests route drags through their embedder's view, so a drag between two
+  // pages can arrive here with `did_initiate_` set. Treat it like a drag
+  // between two tabs.
+  RenderWidgetHostImpl* source_rwh = source_rwh_.get();
+  if (source_rwh && IsDragBetweenGuestAndOtherPage(source_rwh, target_rwh)) {
     return true;
   }
 
