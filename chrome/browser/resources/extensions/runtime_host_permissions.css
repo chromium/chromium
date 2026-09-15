@@ -90,6 +90,11 @@ cr-icon {
   margin-top: 3px;
 }
 
+#new-section-heading-override-warning {
+  color: var(--cr-secondary-text-color);
+  margin-top: 3px;
+}
+
 #host-access-row {
   display: flex;
   justify-content: space-between;

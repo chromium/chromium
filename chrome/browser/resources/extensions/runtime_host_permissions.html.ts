@@ -68,6 +68,9 @@ ${!this.enableEnhancedSiteControls ? html`
       <span id="new-section-heading-subtext">
         $i18n{hostPermissionsSubHeading}
       </span>
+      <span id="new-section-heading-override-warning">
+        $i18n{hostPermissionsOverrideWarning}
+      </span>
       <div id="host-access-row">
         <select id="newHostAccess" class="md-select"
             @change="${this.onHostAccessChange_}"

@@ -160,6 +160,9 @@
   <message name="IDS_EXTENSIONS_HOST_PERMISSIONS_SUB_HEADING" desc="The heading above the details of which websites an extension is allowed to run on, for the new site access settings.">
     You can always click the extension to use it on any site
   </message>
+  <message name="IDS_EXTENSIONS_HOST_PERMISSIONS_OVERRIDE_WARNING" desc="Warning text shown in the extension details page informing that site access settings can be overridden.">
+    Note: These site access settings may be overridden by enterprise policies or powerful APIs.
+  </message>
   <message name="IDS_EXTENSIONS_HOST_ACCESS_ON_CLICK" desc="The text for the option to only allow an extension to read and change data when the user clicks on the extension.">
     On click
   </message>
