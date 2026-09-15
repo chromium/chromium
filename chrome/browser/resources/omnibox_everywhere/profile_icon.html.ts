@@ -8,8 +8,10 @@ import type {OmniboxEverywhereProfileIconElement} from './profile_icon.js';
 
 export function getHtml(this: OmniboxEverywhereProfileIconElement) {
   return html`
-    <div id="profileContainer"
+    <button id="profileContainer"
         class="${this.profilePickerEnabled_ ? 'clickable' : ''}"
+        aria-disabled="${!this.profilePickerEnabled_}"
+        aria-label="${this.getProfileAriaLabel_()}"
         title="${this.getProfileTooltip_()}"
         @click="${this.onProfileIconClick_}">
       ${this.isEnterpriseProfile_ ? html`
@@ -20,7 +22,7 @@ export function getHtml(this: OmniboxEverywhereProfileIconElement) {
       ` : ''}
       <img id="profileIcon" src="${this.profileAvatarUrl_}"
           alt="${this.i18n('profileButtonLabel')}">
-    </div>
+    </button>
     <cr-action-menu id="profileMenu">
       <div class="profile-card">
         <div class="profile-card-header">
