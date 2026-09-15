@@ -18,9 +18,7 @@ import {OncMojo} from './onc_mojo.js';
 
 /**
  * @enum {string}
-// <if expr="use_typescript_go">
  * @typedef {string} ApnDetailDialogMode
-// </if>
  */
 export const ApnDetailDialogMode = {
   CREATE: 'create',

@@ -35,12 +35,7 @@ def __step_config(ctx, step_config):
         if runtime.os == "windows":
             remote_run = False
 
-    use_ts_go = gn.args(ctx).get("use_typescript_go") != "false"
     ts_compiler_deps = [
-        "third_party/node/node_modules:node_modules",
-    ] if use_ts_go else [
-        "third_party/node/linux/node-linux-x64/bin/node",
-        "third_party/node/node.py",
         "third_party/node/node_modules:node_modules",
     ]
 
