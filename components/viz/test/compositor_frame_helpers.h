@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -287,8 +288,12 @@ class CompositorFrameBuilder {
       std::vector<ui::LatencyInfo> latency_info);
   CompositorFrameBuilder& SetReferencedSurfaces(
       std::vector<SurfaceRange> referenced_surfaces);
+  // TODO(crbug.com/540877772): Remove this overload once all callers are
+  // migrated to SetActivationDependencies(std::vector<SurfaceIdAndDeadline>).
   CompositorFrameBuilder& SetActivationDependencies(
       std::vector<SurfaceId> activation_dependencies);
+  CompositorFrameBuilder& SetActivationDependencies(
+      std::vector<SurfaceIdAndDeadline> activation_dependencies);
   CompositorFrameBuilder& SetDeadline(const FrameDeadline& deadline);
   CompositorFrameBuilder& SetSendFrameTokenToEmbedder(bool send);
   CompositorFrameBuilder& SetIsHandlingInteraction(

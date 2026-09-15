@@ -350,7 +350,8 @@ TEST_F(ImmediateActivationSurfaceTest, WithNoInteraction) {
 
   {
     CompositorFrame frame = MakeCompositorFrame(root_render_pass->DeepCopy());
-    frame.metadata.activation_dependencies.push_back(child_surface_id);
+    frame.metadata.activation_dependencies.emplace_back(
+        SurfaceId(child_surface_id), 4u);
     frame.metadata.deadline =
         FrameDeadline(Now(), 4u, BeginFrameArgs::DefaultInterval(), false);
     EXPECT_THAT(frame.metadata.referenced_surfaces,
@@ -388,7 +389,8 @@ TEST_F(ImmediateActivationSurfaceTest, WithInteraction) {
 
   {
     CompositorFrame frame = MakeCompositorFrame(root_render_pass->DeepCopy());
-    frame.metadata.activation_dependencies.push_back(child_surface_id);
+    frame.metadata.activation_dependencies.emplace_back(
+        SurfaceId(child_surface_id), 4u);
     frame.metadata.deadline =
         FrameDeadline(Now(), 4u, BeginFrameArgs::DefaultInterval(), false);
     frame.metadata.is_handling_interaction = true;
@@ -684,107 +686,131 @@ TEST_F(SurfaceTest, ReentrantSurfaceActivationStaleAllocationGroup) {
   s_support->SubmitCompositorFrame(s_lsid, build_frame({}, {}));
 }
 
-class SurfaceDependencyDeadlineTest : public testing::Test {
- public:
-  SurfaceDependencyDeadlineTest() : deadline_(&test_clock_) {}
-  ~SurfaceDependencyDeadlineTest() override { deadline_.Cancel(); }
-
- protected:
-  base::SimpleTestTickClock test_clock_;
-  SurfaceDependencyDeadline deadline_;
-};
-
-TEST_F(SurfaceDependencyDeadlineTest, DisabledFeatureOnlyUsesGlobalDeadline) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kPerDependencyDeadlines);
-
-  base::TimeTicks start_time = test_clock_.NowTicks();
-  FrameDeadline frame_deadline(start_time, 5u, base::Milliseconds(10),
-                               /*use_default_lower_bound_deadline=*/false);
-
-  deadline_.SetFrameDeadline(frame_deadline);
-
-  // At 40ms (before 50ms):
-  test_clock_.Advance(base::Milliseconds(40));
-  EXPECT_FALSE(deadline_.HasDeadlinePassed());
-
-  // At 50ms (global deadline expires):
-  test_clock_.Advance(base::Milliseconds(10));
-  EXPECT_TRUE(deadline_.HasDeadlinePassed());
-}
-
-TEST_F(SurfaceDependencyDeadlineTest, NoDeadlineSetReturnsTrue) {
-  // When no deadline is set (deadline_ is std::nullopt), HasDeadlinePassed()
-  // returns true.
-  EXPECT_FALSE(deadline_.has_deadline());
-  EXPECT_TRUE(deadline_.HasDeadlinePassed());
-}
-
-TEST_F(SurfaceDependencyDeadlineTest, RespectsViewTransitionDeadline) {
+TEST_F(SurfaceTest, PerDependencyDeadlines) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kPerDependencyDeadlines);
 
-  base::TimeTicks start_time = test_clock_.NowTicks();
-  // Global deadline is 20ms.
-  FrameDeadline frame_deadline(start_time, 2u, base::Milliseconds(10),
+  constexpr FrameSinkId fs_parent(1, 1);
+  constexpr FrameSinkId fs_child1(2, 1);
+  constexpr FrameSinkId fs_child2(3, 1);
+
+  auto parent_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, fs_parent, /*is_root=*/true);
+  auto child1_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, fs_child1, /*is_root=*/false);
+  auto child2_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, fs_child2, /*is_root=*/false);
+
+  LocalSurfaceId child1_lsid(1, 1, base::UnguessableToken::Create());
+  LocalSurfaceId child2_lsid(1, 1, base::UnguessableToken::Create());
+  SurfaceId child1_id(fs_child1, child1_lsid);
+  SurfaceId child2_id(fs_child2, child2_lsid);
+
+  // Step 1: Submit an active frame for child1 so it is already active.
+  child1_support->SubmitCompositorFrame(
+      child1_lsid, CompositorFrameBuilder()
+                       .AddRenderPass(gfx::Rect(10, 10), gfx::Rect(10, 10))
+                       .Build());
+
+  SurfaceManager* surface_manager = frame_sink_manager_.surface_manager();
+  Surface* child1_surface = surface_manager->GetSurfaceForId(child1_id);
+  ASSERT_TRUE(child1_surface);
+  EXPECT_TRUE(child1_surface->HasActiveFrame());
+
+  // Step 2: Submit a parent frame depending on child1 (already active) with
+  // deadline 2 frames, and child2 (inactive) with deadline 5 frames.
+  base::TimeTicks frame_start_time = base::TimeTicks::Now();
+  base::TimeDelta frame_interval = base::Milliseconds(16);
+  FrameDeadline frame_deadline(frame_start_time, 100u, frame_interval,
                                /*use_default_lower_bound_deadline=*/false);
 
-  deadline_.SetFrameDeadline(frame_deadline);
-  // View transition deadline is 50ms.
-  deadline_.SetViewTransitionDeadline(start_time + base::Milliseconds(50));
+  LocalSurfaceId parent_lsid(1, 1, base::UnguessableToken::Create());
+  SurfaceId parent_id(fs_parent, parent_lsid);
 
-  EXPECT_FALSE(deadline_.HasDeadlinePassed());
+  CompositorFrame parent_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(gfx::Rect(10, 10), gfx::Rect(10, 10))
+          .SetActivationDependencies(std::vector<SurfaceIdAndDeadline>{
+              SurfaceIdAndDeadline(child1_id, 2u),
+              SurfaceIdAndDeadline(child2_id, 5u)})
+          .SetDeadline(frame_deadline)
+          .Build();
 
-  // At 20ms: global deadline passes, but view transition deadline is still
-  // pending.
-  test_clock_.Advance(base::Milliseconds(20));
-  EXPECT_FALSE(deadline_.HasDeadlinePassed());
+  parent_support->SubmitCompositorFrame(parent_lsid, std::move(parent_frame));
 
-  // At 50ms: view transition deadline expires.
-  test_clock_.Advance(base::Milliseconds(30));
-  EXPECT_TRUE(deadline_.HasDeadlinePassed());
+  Surface* parent_surface = surface_manager->GetSurfaceForId(parent_id);
+  ASSERT_TRUE(parent_surface);
+  // The frame should not immediately activate because child2 is not active.
+  EXPECT_FALSE(parent_surface->HasActiveFrame());
+  EXPECT_TRUE(parent_surface->HasPendingFrame());
+
+  // Check deadline_: child1 is already active so it should not be in
+  // dependency_deadlines_. child2 is still pending, so its deadline is
+  // converted to wall time and tracked in dependency_deadlines_.
+  ASSERT_TRUE(parent_surface->deadline_for_testing());
+  EXPECT_FALSE(parent_surface->deadline_for_testing()->HasDeadlinePassed());
+  const auto& dep_deadlines =
+      parent_surface->deadline_for_testing()->dependency_deadlines_for_testing();
+  EXPECT_EQ(dep_deadlines.size(), 1u);
+  EXPECT_FALSE(dep_deadlines.contains(child1_id));
+  ASSERT_TRUE(dep_deadlines.contains(child2_id));
+  base::TimeTicks expected_child2_deadline =
+      frame_start_time + 5u * frame_interval;
+  EXPECT_EQ(dep_deadlines.at(child2_id), expected_child2_deadline);
 }
 
-TEST_F(SurfaceDependencyDeadlineTest,
-       ActivatesEarlyWhenViewTransitionResolvedEarly) {
+TEST_F(SurfaceTest, DuplicateActivationDependenciesWithDifferentDeadlines) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kPerDependencyDeadlines);
 
-  base::TimeTicks start_time = test_clock_.NowTicks();
-  // Global deadline is 20ms.
-  FrameDeadline frame_deadline(start_time, 2u, base::Milliseconds(10),
+  constexpr FrameSinkId fs_parent(1, 1);
+  constexpr FrameSinkId fs_child(2, 1);
+
+  auto parent_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &frame_sink_manager_, fs_parent, /*is_root=*/true);
+
+  LocalSurfaceId child_lsid(1, 1, base::UnguessableToken::Create());
+  SurfaceId child_id(fs_child, child_lsid);
+
+  base::TimeTicks frame_start_time = base::TimeTicks::Now();
+  base::TimeDelta frame_interval = base::Milliseconds(16);
+  FrameDeadline frame_deadline(frame_start_time, 100u, frame_interval,
                                /*use_default_lower_bound_deadline=*/false);
 
-  deadline_.SetFrameDeadline(frame_deadline);
-  // View transition deadline is 80ms.
-  deadline_.SetViewTransitionDeadline(start_time + base::Milliseconds(80));
+  LocalSurfaceId parent_lsid(1, 1, base::UnguessableToken::Create());
+  SurfaceId parent_id(fs_parent, parent_lsid);
 
-  // At 25ms: global deadline has passed, but view transition is still
-  // pending.
-  test_clock_.Advance(base::Milliseconds(25));
-  EXPECT_FALSE(deadline_.HasDeadlinePassed());
+  // Submit a frame with duplicate activation dependencies having different
+  // deadlines.
+  CompositorFrame parent_frame =
+      CompositorFrameBuilder()
+          .AddRenderPass(gfx::Rect(10, 10), gfx::Rect(10, 10))
+          .SetActivationDependencies(std::vector<SurfaceIdAndDeadline>{
+              SurfaceIdAndDeadline(child_id, 2u),
+              SurfaceIdAndDeadline(child_id, 5u)})
+          .SetDeadline(frame_deadline)
+          .Build();
 
-  // At 30ms: view transition is resolved early.
-  test_clock_.Advance(base::Milliseconds(5));
-  deadline_.SetViewTransitionDeadline(base::TimeTicks());
-  EXPECT_TRUE(deadline_.HasDeadlinePassed());
+  parent_support->SubmitCompositorFrame(parent_lsid, std::move(parent_frame));
+
+  SurfaceManager* surface_manager = frame_sink_manager_.surface_manager();
+  Surface* parent_surface = surface_manager->GetSurfaceForId(parent_id);
+  ASSERT_TRUE(parent_surface);
+  EXPECT_FALSE(parent_surface->HasActiveFrame());
+  EXPECT_TRUE(parent_surface->HasPendingFrame());
+
+  // Verify that the duplicate dependency was deduplicated and the last deadline
+  // was used.
+  ASSERT_TRUE(parent_surface->deadline_for_testing());
+  EXPECT_FALSE(parent_surface->deadline_for_testing()->HasDeadlinePassed());
+  const auto& dep_deadlines =
+      parent_surface->deadline_for_testing()->dependency_deadlines_for_testing();
+  EXPECT_EQ(dep_deadlines.size(), 1u);
+  ASSERT_TRUE(dep_deadlines.contains(child_id));
+  base::TimeTicks expected_deadline = frame_start_time + 5u * frame_interval;
+  EXPECT_EQ(dep_deadlines.at(child_id), expected_deadline);
 }
 
-TEST_F(SurfaceDependencyDeadlineTest, CancelResetsViewTransitionDeadline) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kPerDependencyDeadlines);
-
-  base::TimeTicks start_time = test_clock_.NowTicks();
-  FrameDeadline frame_deadline(start_time, 10u, base::Milliseconds(10),
-                               /*use_default_lower_bound_deadline=*/false);
-  deadline_.SetFrameDeadline(frame_deadline);
-  deadline_.SetViewTransitionDeadline(start_time + base::Milliseconds(50));
-  EXPECT_FALSE(deadline_.view_transition_deadline_for_testing().is_null());
-
-  deadline_.Cancel();
-  EXPECT_TRUE(deadline_.view_transition_deadline_for_testing().is_null());
-  EXPECT_TRUE(deadline_.HasDeadlinePassed());
-}
 
 }  // namespace
 }  // namespace viz

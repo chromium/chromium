@@ -58,8 +58,13 @@ void CompositorFrameMetadata::AsValueInto(
   value->EndArray();
 
   value->BeginArray("activation_dependencies");
-  for (const auto& surface_id : activation_dependencies) {
-    value->AppendString(surface_id.ToString());
+  for (const auto& dep : activation_dependencies) {
+    value->BeginDictionary();
+    value->SetString("surface_id", dep.surface_id.ToString());
+    if (dep.deadline_in_frames.has_value()) {
+      value->SetInteger("deadline_in_frames", *dep.deadline_in_frames);
+    }
+    value->EndDictionary();
   }
   value->EndArray();
 

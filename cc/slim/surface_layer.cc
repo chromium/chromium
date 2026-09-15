@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "cc/slim/layer_tree_impl.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/offset_tag.h"
@@ -151,7 +152,10 @@ void SurfaceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
                  quad_state->visible_quad_layer_rect, surface_range_,
                  background_color(), stretch_content_to_fill_bounds_);
 
-    data.activation_dependencies.insert(surface_range_.end());
+    data.activation_dependencies.emplace_back(
+        surface_range_.end(), features::UsePerDependencyDeadlines()
+                                  ? deadline_in_frames_
+                                  : std::nullopt);
 
     if (deadline_in_frames_) {
       if (!data.deadline_in_frames) {

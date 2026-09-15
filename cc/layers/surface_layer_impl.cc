@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/traced_value.h"
@@ -16,6 +17,7 @@
 #include "cc/layers/append_quads_data.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
@@ -227,7 +229,10 @@ void SurfaceLayerImpl::AppendQuads(const AppendQuadsContext& context,
       quad->override_child_dynamic_range_limit = GetDynamicRangeLimit();
     }
     // Add the primary surface ID as a dependency.
-    append_quads_data->activation_dependencies.push_back(surface_range_.end());
+    append_quads_data->activation_dependencies.emplace_back(
+        surface_range_.end(), features::UsePerDependencyDeadlines()
+                                  ? deadline_in_frames_
+                                  : std::nullopt);
     if (deadline_in_frames_) {
       if (!append_quads_data->deadline_in_frames)
         append_quads_data->deadline_in_frames = 0u;

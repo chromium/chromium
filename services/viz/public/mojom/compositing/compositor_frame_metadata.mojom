@@ -23,6 +23,11 @@ import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
 import "ui/latency/mojom/latency_info.mojom";
 
+struct SurfaceIdAndDeadline {
+  SurfaceId surface_id;
+  uint32? deadline_in_frames;
+};
+
 // See cc/trees/render_frame_metadata.h
 // This is sent from viz clients such as the browser and renderer to the viz
 // compositor in the GPU process.
@@ -41,7 +46,7 @@ struct CompositorFrameMetadata {
   array<ui.mojom.LatencyInfo> latency_info;
   array<SurfaceRange> referenced_surfaces;
   FrameDeadline deadline;
-  array<SurfaceId> activation_dependencies;
+  array<SurfaceIdAndDeadline> activation_dependencies;
   BeginFrameAck begin_frame_ack;
   uint32 frame_token;
   bool send_frame_token_to_embedder;

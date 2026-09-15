@@ -362,6 +362,8 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
     deadline_->SetFrameDeadline(
         ResolveFrameDeadline(pending_frame_data_->frame));
     if (features::UsePerDependencyDeadlines()) {
+      deadline_->SetDependencyDeadlines(
+          ResolveDependencyDeadlines(pending_frame_data_->frame));
       deadline_->SetViewTransitionDeadline(
           ResolveViewTransitionDeadline(pending_frame_data_->frame));
     }
@@ -448,6 +450,8 @@ void Surface::OnActivationDependencyResolved(
   size_t erased = activation_dependencies_.erase(activation_dependency);
   CHECK_EQ(erased, 1u);
   blocking_allocation_groups_.erase(group);
+  // Notify SurfaceDependencyDeadline to prune the resolved dependency.
+  deadline_->OnActivationDependencyResolved(activation_dependency);
   if (!activation_dependencies_.empty() ||
       !view_transition_dependencies_.empty()) {
     return;
@@ -785,6 +789,41 @@ FrameDeadline Surface::ResolveFrameDeadline(
                        false /* use_default_lower_bound_deadline */);
 }
 
+base::flat_map<SurfaceId, base::TimeTicks> Surface::ResolveDependencyDeadlines(
+    const CompositorFrame& current_frame) {
+  base::flat_map<SurfaceId, base::TimeTicks> dependency_deadlines;
+  const auto& deps = current_frame.metadata.activation_dependencies;
+  const FrameDeadline& deadline = current_frame.metadata.deadline;
+
+  for (const auto& dep : deps) {
+    const SurfaceId& surface_id = dep.surface_id;
+    // Skip dependencies that are not blocking this surface. This can happen
+    // when the dependency is already active, or is outdated when
+    // `BypassOutdatedSurfaceActivation is enabled.
+    if (!activation_dependencies_.contains(surface_id)) {
+      continue;
+    }
+
+    uint32_t dep_deadline_in_frames;
+    if (dep.deadline_in_frames.has_value()) {
+      dep_deadline_in_frames = *dep.deadline_in_frames;
+    } else {
+      // Fall back to system default deadline, or effectively infinite if no
+      // default deadline is configured (e.g. in full-pipeline mode).
+      const std::optional<uint32_t>& default_deadline =
+          surface_manager_->activation_deadline_in_frames();
+      dep_deadline_in_frames =
+          default_deadline.value_or(std::numeric_limits<uint32_t>::max());
+    }
+
+    base::TimeTicks dep_wall_time =
+        deadline.frame_start_time() +
+        dep_deadline_in_frames * deadline.frame_interval();
+    dependency_deadlines[surface_id] = dep_wall_time;
+  }
+  return dependency_deadlines;
+}
+
 base::TimeTicks Surface::ResolveViewTransitionDeadline(
     const CompositorFrame& current_frame) {
   if (view_transition_dependencies_.empty()) {
@@ -825,7 +864,7 @@ void Surface::UpdateActivationDependencies(
   // may trigger fallback or deadline inheritance activations in those
   // allocation groups. This surface isn't registered as a blocked embedder
   // while this happens to avoid re-entrancy.
-  for (const SurfaceId& surface_id :
+  for (const auto& [surface_id, deadline] :
        current_frame.metadata.activation_dependencies) {
     SurfaceAllocationGroup* group =
         surface_manager_->GetOrCreateAllocationGroupForSurfaceId(surface_id);
@@ -842,7 +881,7 @@ void Surface::UpdateActivationDependencies(
   std::vector<SurfaceId> new_activation_dependencies;
   bool bypass_outdated_surface_activation =
       base::FeatureList::IsEnabled(features::kBypassOutdatedSurfaceActivation);
-  for (const SurfaceId& surface_id :
+  for (const auto& [surface_id, deadline] :
        current_frame.metadata.activation_dependencies) {
     SurfaceAllocationGroup* group =
         surface_manager_->GetOrCreateAllocationGroupForSurfaceId(surface_id);

@@ -45,6 +45,25 @@ class TracedValue;
 
 namespace viz {
 
+struct VIZ_COMMON_EXPORT SurfaceIdAndDeadline {
+  constexpr SurfaceIdAndDeadline() = default;
+  constexpr explicit SurfaceIdAndDeadline(SurfaceId surface_id)
+      : surface_id(surface_id), deadline_in_frames(std::nullopt) {}
+  constexpr SurfaceIdAndDeadline(SurfaceId surface_id,
+                                 std::optional<uint32_t> deadline_in_frames)
+      : surface_id(surface_id), deadline_in_frames(deadline_in_frames) {}
+
+  SurfaceId surface_id;
+  // An empty optional means "use the default deadline".
+  std::optional<uint32_t> deadline_in_frames;
+
+  friend bool operator==(const SurfaceIdAndDeadline&,
+                         const SurfaceIdAndDeadline&) = default;
+  friend bool operator==(const SurfaceIdAndDeadline& a, const SurfaceId& b) {
+    return a.surface_id == b;
+  }
+};
+
 // A frame token value of 0 indicates an invalid token.
 inline constexpr uint32_t kInvalidFrameToken = 0;
 
@@ -130,12 +149,14 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // dependencies, each member of referenced_surfaces can have a boolean flag
   // that determines whether activation of this particular SurfaceId blocks the
   // activation of the CompositorFrame.
-  std::vector<SurfaceId> activation_dependencies;
+  std::vector<SurfaceIdAndDeadline> activation_dependencies;
 
   // This specifies a deadline for this CompositorFrame to synchronize with its
   // activation dependencies. Once this deadline passes, this CompositorFrame
   // should be forcibly activated. This deadline may be lower-bounded by the
   // default synchronization deadline specified by the system.
+  // TODO(crbug.com/540877772): remove the global `deadline` when
+  // kPerDependencyDeadlines is launched.
   FrameDeadline deadline;
 
   // BeginFrameAck for the BeginFrame that this CompositorFrame answers.

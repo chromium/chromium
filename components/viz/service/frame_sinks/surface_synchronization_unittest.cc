@@ -48,8 +48,12 @@ std::vector<SurfaceRange> empty_surface_ranges() {
   return std::vector<SurfaceRange>();
 }
 
+// Templated on `T` (defaulting to `SurfaceId`) to accept both
+// `std::vector<SurfaceId>` (e.g. from `empty_surface_ids()` or initializer
+// lists) and `std::vector<SurfaceIdAndDeadline>` for per-dependency deadlines.
+template <typename T = SurfaceId>
 CompositorFrame MakeCompositorFrame(
-    std::vector<SurfaceId> activation_dependencies,
+    std::vector<T> activation_dependencies,
     std::vector<SurfaceRange> referenced_surfaces,
     std::vector<TransferableResource> resource_list,
     const FrameDeadline& deadline = FrameDeadline(),
@@ -1944,6 +1948,213 @@ TEST_F(SurfaceSynchronizationTest, IndependentDeadlines) {
   EXPECT_FALSE(child_surface2()->has_deadline());
   EXPECT_FALSE(child_surface2()->HasPendingFrame());
   EXPECT_TRUE(child_surface2()->HasActiveFrame());
+}
+
+// This test verifies that we can define different deadlines for the
+// dependencies and that their deadlines are tracked independently.
+TEST_F(SurfaceSynchronizationTest, PerDependencyDeadlines) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPerDependencyDeadlines);
+
+  const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1);
+  const SurfaceId child_id_long = MakeSurfaceId(kChildFrameSink1, 1);
+  const SurfaceId child_id_short = MakeSurfaceId(kChildFrameSink2, 1);
+
+  // Submit compositor frame for parent blocking on A and B.
+  // A has a deadline of 100 frames.
+  // B has a deadline of 3 frames.
+  CompositorFrame parent_frame = MakeCompositorFrame(
+      std::vector<SurfaceIdAndDeadline>{{child_id_long, 100u},
+                                        {child_id_short, 3u}},
+      empty_surface_ranges(), std::vector<TransferableResource>(),
+      MakeDeadline(100u));
+
+  parent_support().SubmitCompositorFrame(parent_id.local_surface_id(),
+                                         std::move(parent_frame));
+
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+  EXPECT_FALSE(parent_surface()->HasActiveFrame());
+
+  // Frame 1 passes. Both should still block.
+  SendNextBeginFrame();
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+
+  // Frame 2 passes. Both should still block.
+  SendNextBeginFrame();
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+
+  // Frame 3 passes. Child B's deadline (3 frames) has passed.
+  // Child A (100 frames deadline) is not active and hasn't passed, so parent
+  // is still pending.
+  SendNextBeginFrame();
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+
+  // Now submit child_id_long frame. This satisfies Child A.
+  // Child B's deadline has already passed, but deadline expiration is evaluated
+  // on BeginFrame. So the parent remains pending until the next BeginFrame.
+  child_support1().SubmitCompositorFrame(
+      child_id_long.local_surface_id(),
+      MakeDefaultInteractiveCompositorFrame(kBeginFrameSourceId));
+
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+  EXPECT_FALSE(parent_surface()->HasActiveFrame());
+
+  // Next BeginFrame triggers deadline expiration and activates the parent.
+  SendNextBeginFrame();
+
+  EXPECT_FALSE(parent_surface()->HasPendingFrame());
+  EXPECT_TRUE(parent_surface()->HasActiveFrame());
+}
+
+// This test verifies that if Child B's deadline has passed, but the parent is
+// still waiting for Child A, a subsequent submission by B before A resolves is
+// still correctly integrated when the parent eventually activates.
+TEST_F(SurfaceSynchronizationTest,
+       DeadlinePassedDependencySubmitsBeforeActivation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPerDependencyDeadlines);
+
+  const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1);
+  const SurfaceId child_id_long = MakeSurfaceId(kChildFrameSink1, 1);
+  const SurfaceId child_id_short = MakeSurfaceId(kChildFrameSink2, 1);
+
+  // Parent blocks on both children.
+  // A (long): 100 frames.
+  // B (short): 3 frames.
+  CompositorFrame parent_frame = MakeCompositorFrame(
+      std::vector<SurfaceIdAndDeadline>{{child_id_long, 100u},
+                                        {child_id_short, 3u}},
+      empty_surface_ranges(), std::vector<TransferableResource>(),
+      MakeDeadline(100u));
+
+  parent_support().SubmitCompositorFrame(parent_id.local_surface_id(),
+                                         std::move(parent_frame));
+
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+  EXPECT_FALSE(parent_surface()->HasActiveFrame());
+
+  // Step 3 frames. Child B's deadline has passed. Parent remains pending
+  // because of Child A.
+  SendNextBeginFrame();
+  SendNextBeginFrame();
+  SendNextBeginFrame();
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+
+  // Child B submits a new frame at frame 5.
+  child_support2().SubmitCompositorFrame(
+      child_id_short.local_surface_id(),
+      MakeDefaultInteractiveCompositorFrame(kBeginFrameSourceId));
+
+  // Since B submitted, B has an active frame.
+  EXPECT_TRUE(child_surface2()->HasActiveFrame());
+
+  // Parent is still pending since A hasn't submitted yet.
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+
+  // Child A submits its new frame at frame 6.
+  child_support1().SubmitCompositorFrame(
+      child_id_long.local_surface_id(),
+      MakeDefaultInteractiveCompositorFrame(kBeginFrameSourceId));
+
+  // Since A is resolved, the parent activates now!
+  EXPECT_FALSE(parent_surface()->HasPendingFrame());
+  EXPECT_TRUE(parent_surface()->HasActiveFrame());
+
+  // Verify that both child surfaces have active frames correctly.
+  EXPECT_TRUE(child_surface1()->HasActiveFrame());
+  EXPECT_TRUE(child_surface2()->HasActiveFrame());
+}
+
+// This test verifies that if multiple dependencies have different deadlines,
+// the parent activates when the longest deadline expires even if no child
+// submits.
+TEST_F(SurfaceSynchronizationTest,
+       AllPerDependencyDeadlinesExpireActivatesParent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPerDependencyDeadlines);
+
+  const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1);
+  const SurfaceId child_id_long = MakeSurfaceId(kChildFrameSink1, 1);
+  const SurfaceId child_id_short = MakeSurfaceId(kChildFrameSink2, 1);
+
+  // Parent blocks on both children:
+  // A: 5 frames.
+  // B: 2 frames.
+  CompositorFrame parent_frame = MakeCompositorFrame(
+      std::vector<SurfaceIdAndDeadline>{{child_id_long, 5u},
+                                        {child_id_short, 2u}},
+      empty_surface_ranges(), std::vector<TransferableResource>(),
+      MakeDeadline(5u));
+
+  parent_support().SubmitCompositorFrame(parent_id.local_surface_id(),
+                                         std::move(parent_frame));
+
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+  EXPECT_FALSE(parent_surface()->HasActiveFrame());
+
+  // Frame 1: both pending.
+  SendNextBeginFrame();
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+
+  // Frame 2: B's deadline (2) expires, but A (5) is still pending.
+  SendNextBeginFrame();
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+
+  // Frame 3 & 4: still pending.
+  SendNextBeginFrame();
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+  SendNextBeginFrame();
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+
+  // Frame 5: A's deadline (5) expires. Now all dependencies have passed
+  // deadline, so parent activates!
+  SendNextBeginFrame();
+  EXPECT_FALSE(parent_surface()->HasPendingFrame());
+  EXPECT_TRUE(parent_surface()->HasActiveFrame());
+}
+
+// This test verifies that the global deadline is ignored when
+// kPerDependencyDeadlines is enabled, and the parent only activates when the
+// dependency's deadline passes.
+TEST_F(SurfaceSynchronizationTest,
+       GlobalDeadlineIgnoredWithPerDependencyDeadlines) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPerDependencyDeadlines);
+
+  const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1);
+  const SurfaceId child_id_long = MakeSurfaceId(kChildFrameSink1, 1);
+
+  // Parent has an explicit global deadline of 2 frames (use_default_lower_bound
+  // = false), but the dependency has a deadline of 4 frames.
+  CompositorFrame parent_frame = MakeCompositorFrame(
+      std::vector<SurfaceIdAndDeadline>{{child_id_long, 4u}},
+      empty_surface_ranges(), std::vector<TransferableResource>(),
+      FrameDeadline(Now(), 2u, BeginFrameArgs::DefaultInterval(), false));
+
+  parent_support().SubmitCompositorFrame(parent_id.local_surface_id(),
+                                         std::move(parent_frame));
+
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+  EXPECT_FALSE(parent_surface()->HasActiveFrame());
+
+  // Frame 1: parent is still pending.
+  SendNextBeginFrame();
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+
+  // Frame 2: global deadline (2 frames) passes, but is ignored. Parent
+  // remains pending.
+  SendNextBeginFrame();
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+  EXPECT_FALSE(parent_surface()->HasActiveFrame());
+
+  // Frame 3: still pending.
+  SendNextBeginFrame();
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+
+  // Frame 4: child dependency deadline (4 frames) passes. Parent activates.
+  SendNextBeginFrame();
+  EXPECT_FALSE(parent_surface()->HasPendingFrame());
+  EXPECT_TRUE(parent_surface()->HasActiveFrame());
 }
 
 // This test verifies that a child inherits its deadline from its dependent

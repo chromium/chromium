@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
@@ -495,6 +496,15 @@ CompositorFrameBuilder& CompositorFrameBuilder::AddLatencyInfos(
 
 CompositorFrameBuilder& CompositorFrameBuilder::SetActivationDependencies(
     std::vector<SurfaceId> activation_dependencies) {
+  frame_->metadata.activation_dependencies.clear();
+  for (auto& dep : activation_dependencies) {
+    frame_->metadata.activation_dependencies.emplace_back(std::move(dep));
+  }
+  return *this;
+}
+
+CompositorFrameBuilder& CompositorFrameBuilder::SetActivationDependencies(
+    std::vector<SurfaceIdAndDeadline> activation_dependencies) {
   frame_->metadata.activation_dependencies = std::move(activation_dependencies);
   return *this;
 }
@@ -502,6 +512,13 @@ CompositorFrameBuilder& CompositorFrameBuilder::SetActivationDependencies(
 CompositorFrameBuilder& CompositorFrameBuilder::SetDeadline(
     const FrameDeadline& deadline) {
   frame_->metadata.deadline = deadline;
+  if (features::UsePerDependencyDeadlines()) {
+    for (auto& dep : frame_->metadata.activation_dependencies) {
+      if (!dep.deadline_in_frames.has_value()) {
+        dep.deadline_in_frames = deadline.deadline_in_frames();
+      }
+    }
+  }
   return *this;
 }
 
