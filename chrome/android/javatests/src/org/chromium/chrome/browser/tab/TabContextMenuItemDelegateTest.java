@@ -16,7 +16,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
@@ -184,9 +183,9 @@ public class TabContextMenuItemDelegateTest {
                             /* preferNew= */ false,
                             /* additionalNavigationParams= */ null);
                 });
-        assertTrue(
-                "Dialog should be visible when there are at least two other windows.",
-                mModalDialogManager.isShowing());
+        CriteriaHelper.pollUiThread(
+                () -> mModalDialogManager.isShowing(),
+                "Dialog should be visible when there are at least two other windows.");
     }
 
     @Test

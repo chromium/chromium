@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -200,6 +201,7 @@ public class TabReparentingDelegateUnitTest {
     @Test
     public void testCreateNewWindowFromWebContents_success_withExtrasAndOptions() {
         // Setup.
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         when(mProfile.isIncognitoBranded()).thenReturn(true);
 
         Bundle extras = new Bundle();

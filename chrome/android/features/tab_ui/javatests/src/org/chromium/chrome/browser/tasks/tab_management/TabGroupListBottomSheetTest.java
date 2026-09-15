@@ -14,6 +14,7 @@ import android.util.Pair;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +32,7 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -66,6 +68,17 @@ public class TabGroupListBottomSheetTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
+
+    @Before
+    public void setUp() {
+        // Before the RobustWindowManagementExperimental ramp-down these tests ran with a
+        // full-screen new-window default, supplied implicitly by the
+        // SplitscreenVersusFullScreenForNewWindows fieldtrial testing config. Public Transit view
+        // conditions are not yet reliable for a window opened in split-screen, so keep the old
+        // behavior here.
+        // TODO(crbug.com/561698573): Remove once Public Transit supports split-screen.
+        MultiWindowUtils.setOpenAdjacentlyForTesting(false);
+    }
 
     @Test
     @MediumTest
