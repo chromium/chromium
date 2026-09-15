@@ -13,7 +13,7 @@ from telemetry.web_perf import timeline_based_measurement
 
 
 @benchmark.Info(
-  emails=['brucedawson@chromium.org'],
+  emails=['olivierli@google.com'],
   documentation_url='https://bit.ly/power-benchmarks',
 )
 class PowerDesktop(perf_benchmark.PerfBenchmark):
