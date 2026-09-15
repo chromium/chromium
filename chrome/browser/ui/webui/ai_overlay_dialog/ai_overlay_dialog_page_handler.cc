@@ -113,28 +113,6 @@ class AnimatedIconSource : public gfx::CanvasImageSource {
 };
 #endif
 
-void SaveDebugFileAsync(base::FilePath dir_path,
-                        base::FilePath file_path,
-                        std::string content,
-                        bool is_image) {
-  std::string data_to_write = std::move(content);
-  const std::string base64_prefix = "data:image/jpeg;base64,";
-  if (base::StartsWith(data_to_write, base64_prefix)) {
-    std::string decoded;
-    if (base::Base64Decode(data_to_write.substr(base64_prefix.size()),
-                           &decoded)) {
-      data_to_write = std::move(decoded);
-    }
-  } else if (is_image) {
-    std::string decoded;
-    if (base::Base64Decode(data_to_write, &decoded)) {
-      data_to_write = std::move(decoded);
-    }
-  }
-
-  base::CreateDirectory(dir_path);
-  base::WriteFile(file_path, data_to_write);
-}
 
 }  // namespace
 
@@ -405,33 +383,7 @@ void AiOverlayDialogPageHandler::GetRememberedNotes(
 
 void AiOverlayDialogPageHandler::SaveDebugFile(
     ai_overlay_dialog::mojom::DebugFileType type,
-    const std::string& content) {
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kEnableTtcDebugLogs)) {
-    return;
-  }
-
-  base::FilePath filename;
-  bool is_image = false;
-  switch (type) {
-    case ai_overlay_dialog::mojom::DebugFileType::kPrimingTurnMarkdown:
-      filename = base::FilePath(FILE_PATH_LITERAL("priming_turn.md"));
-      break;
-    case ai_overlay_dialog::mojom::DebugFileType::kImage:
-      filename = base::FilePath(FILE_PATH_LITERAL("image.jpg"));
-      is_image = true;
-      break;
-  }
-
-  base::FilePath dir_path(FILE_PATH_LITERAL("/tmp/ttc"));
-  base::FilePath file_path = dir_path.Append(filename);
-
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&SaveDebugFileAsync, dir_path, file_path, content,
-                     is_image));
-}
+    const std::string& content) {}
 
 void AiOverlayDialogPageHandler::GetImageBytes(
     const blink::DOMNodeIdType& dom_node_id,

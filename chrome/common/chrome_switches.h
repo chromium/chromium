@@ -347,9 +347,6 @@ inline constexpr char kEnablePotentiallyAnnoyingSecurityFeatures[] =
 inline constexpr char kAiOverlayDialogTestMode[] =
     "ai-overlay-dialog-test-mode";
 
-// Enables verbose debug logs for Talk to Chrome (TTC).
-inline constexpr char kEnableTtcDebugLogs[] = "enable-ttc-debug-logs";
-
 // Allows experimental ai extension APIs to be used in stable channel.
 // This disables chrome sign-in if set, regardless of channel.
 inline constexpr char kExperimentalAiStableChannel[] =

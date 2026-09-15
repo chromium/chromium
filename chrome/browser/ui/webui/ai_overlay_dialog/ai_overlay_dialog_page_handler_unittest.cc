@@ -265,29 +265,6 @@ TEST_F(AiOverlayDialogPageHandlerTest, SaveDebugFile) {
   handler_remote().FlushForTesting();
 }
 
-TEST_F(AiOverlayDialogPageHandlerTest, SaveDebugFile_WithDebugLogsEnabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableTtcDebugLogs);
-
-  handler_remote()->SaveDebugFile(
-      ai_overlay_dialog::mojom::DebugFileType::kPrimingTurnMarkdown,
-      "# test markdown");
-  handler_remote()->SaveDebugFile(
-      ai_overlay_dialog::mojom::DebugFileType::kImage,
-      "data:image/jpeg;base64,dGVzdA==");
-  handler_remote().FlushForTesting();
-
-  EXPECT_TRUE(base::test::RunUntil([]() {
-    base::FilePath md_path(FILE_PATH_LITERAL("/tmp/ttc/priming_turn.md"));
-    base::FilePath img_path(FILE_PATH_LITERAL("/tmp/ttc/image.jpg"));
-    std::string md_contents;
-    std::string img_contents;
-    return base::ReadFileToString(md_path, &md_contents) &&
-           md_contents == "# test markdown" &&
-           base::ReadFileToString(img_path, &img_contents) &&
-           img_contents == "test";
-  }));
-}
 
 TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_DisabledByDefault) {
   // When kAiOverlayDialogUseMes is not enabled, calling StartStreamingSession
