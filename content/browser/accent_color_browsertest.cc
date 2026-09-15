@@ -19,6 +19,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/test/run_until.h"
 #import "content/browser/theme_helper_mac.h"
 #include "third_party/blink/public/common/sandbox_support/sandbox_support_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
@@ -86,6 +87,16 @@ class SystemAccentColorTest : public ContentBrowserTest {
     ASSERT_TRUE(NavigateToURL(shell(), web_app_scope));
     ASSERT_EQ("System Accent Color",
               EvalJs(shell(), "document.body.innerText"));
+
+#if BUILDFLAG(IS_MAC)
+    if (type == TestType::InstalledWebApp) {
+      ASSERT_TRUE(base::test::RunUntil([this] {
+        // WebSandboxSupportMac returns magenta until its asynchronously
+        // requested system-color map arrives from the browser process.
+        return GetBodyBackgroundColor().ExtractString() != "rgb(255, 0, 255)";
+      }));
+    }
+#endif  // BUILDFLAG(IS_MAC)
   }
 
   EvalJsResult GetBodyBackgroundColor() {
