@@ -8,6 +8,7 @@
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/commerce/ios/browser/commerce_tab_helper.h"
 #import "components/data_sharing/public/features.h"
+#import "components/enterprise/browser/reporting/reporting_features.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/history/core/browser/top_sites.h"
@@ -94,6 +95,8 @@
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/well_known_change_password_tab_helper.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
+#import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_reporting_controller_factory_ios.h"
+#import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_tab_helper.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
@@ -292,6 +295,12 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<TailoredSecurityTabHelper>(
       TailoredSecurityServiceFactory::GetForProfile(profile));
   attacher.Create<PolicyUrlBlockingTabHelper>();
+  if (base::FeatureList::IsEnabled(enterprise_reporting::kSaasUsageReporting)) {
+    if (auto* controller = enterprise_reporting::
+            SaasUsageReportingControllerFactoryIOS::GetForProfile(profile)) {
+      attacher.Create<enterprise_reporting::SaasUsageTabHelper>(controller);
+    }
+  }
 
   // Supervised user services are not supported for off-the-record.
   attacher.CreateWhen<SupervisedUserURLFilterTabHelper>(
