@@ -445,6 +445,11 @@ void ContextualTasksButton::UpdateColorsAndInsets() {
   }
 
   const Shape shape = GetShape();
+  if (shape == Shape::kCircle) {
+    ClearProperty(views::kMarginsKey);
+  } else {
+    SetProperty(views::kMarginsKey, gfx::Insets());
+  }
   gfx::Insets insets;
   switch (shape) {
     case Shape::kCircle: {
@@ -512,6 +517,12 @@ ContextualTasksButton::Shape ContextualTasksButton::GetShape() const {
     return Shape::kCircle;
   }
 
+  if (contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
+          .Get() &&
+      IsSidePanelRightAligned()) {
+    return Shape::kCircle;
+  }
+
   return IsSidePanelRightAligned() ? Shape::kFlatEdgeRight
                                    : Shape::kFlatEdgeLeft;
 }
@@ -554,6 +565,9 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
   CHECK(controller);
 
   const bool matches_dock =
+      (contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
+           .Get() &&
+       IsSidePanelRightAligned()) ||
       !IsTrailing() ||
       contextual_tasks::GetEnableRightHandContextualTasksEphemeralButton();
 

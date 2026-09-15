@@ -47,6 +47,7 @@ class ContextualTasksButton
   Shape GetShape() const;
   float GetCornerRadiusFor(ToolbarButton::Edge edge) const override;
   bool IsTrailing() const;
+  bool IsSidePanelRightAligned() const;
   ui::Layer* GetDropShadowLayerForTesting() const;
   // contextual_tasks::ContextualTasksPanelController::Observer:
   void OnSurfaceStateChanged(
@@ -78,7 +79,6 @@ class ContextualTasksButton
   void AnimateShow();
   void ClearDropShadow();
   ui::ImageModel GetButtonImage();
-  bool IsSidePanelRightAligned() const;
 
   base::CallbackListSubscription should_update_visibility_subscription_;
   base::CallbackListSubscription should_update_position_subscription_;

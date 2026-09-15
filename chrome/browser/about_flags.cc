@@ -4573,11 +4573,22 @@ const FeatureEntry::FeatureParam kEphemeralBrandedEntryPointWithRightDock[] = {
     {"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"},
     {"enable-right-hand-contextual-tasks-ephemeral-button", "true"}};
 
+const FeatureEntry::FeatureParam
+    kEphemeralBrandedEntryPointWithCircularNextToBatterySaver[] = {
+        {"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"},
+        // contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
+        // .name. Spelled out as a literal because reading `.name` from another
+        // translation unit forces dynamic initialization of this array, which
+        // adds a static initializer to the binary.
+        {"EnableCircularEphemeralButtonNextToBatterySaver", "true"}};
+
 const FeatureEntry::FeatureVariation kEphemeralBrandedEntryPointVariations[] = {
     {"Enabled with branded entry point", kEphemeralBrandedEntryPointEnabled,
      nullptr},
     {"Enabled with right dock button",
-     kEphemeralBrandedEntryPointWithRightDock, nullptr}};
+     kEphemeralBrandedEntryPointWithRightDock, nullptr},
+    {"Enabled with circular button next to battery saver",
+     kEphemeralBrandedEntryPointWithCircularNextToBatterySaver, nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAnimatedProgressBar30FpsCap[] = {
