@@ -1632,9 +1632,17 @@ ComposeboxQueryController::CreateSuggestInputs(
         lens::Base64EncodeRequestId(file_info->request_id.value()));
     // TODO(crbug.com/445777189): Support multi-context input id flow for
     // suggest.
-    suggest_inputs->set_contextual_visual_input_type(
-        lens::VitQueryParamValueForMediaType(
-            file_info->request_id->media_type()));
+    std::string vit_value;
+    if (file_info->request_id->media_type() ==
+            lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE &&
+        file_info->mime_type_string.has_value()) {
+      vit_value = lens::VitQueryParamValueForMimeTypeString(
+          file_info->mime_type_string.value());
+    } else {
+      vit_value = lens::VitQueryParamValueForMediaType(
+          file_info->request_id->media_type());
+    }
+    suggest_inputs->set_contextual_visual_input_type(vit_value);
   }
 
   if (file_info && attach_page_title_and_url_to_suggest_requests_) {
