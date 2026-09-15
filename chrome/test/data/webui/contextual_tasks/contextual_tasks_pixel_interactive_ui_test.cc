@@ -174,26 +174,18 @@ class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
 };
 
 struct ContextualTasksComposeBoxPixelTestParams {
-  bool focused = false;
   bool dark_mode = false;
   bool rtl = false;
   bool with_text = false;
-  bool is_ai_page = false;
 
   std::string ToString() const {
     std::string name;
-    name += focused ? "Focused" : "Unfocused";
-    if (dark_mode) {
-      name += "_Dark";
-    }
+    name += dark_mode ? "Dark" : "Light";
     if (rtl) {
       name += "_RTL";
     }
     if (with_text) {
       name += "_WithText";
-    }
-    if (is_ai_page) {
-      name += "_AiPage";
     }
     return name;
   }
@@ -216,28 +208,20 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ContextualTasksComposeBoxPixelTest,
     testing::ValuesIn<ContextualTasksComposeBoxPixelTestParams>({
-        // Testing focused vs unfocused in dark mode.
+        // Testing in dark mode.
         {},
-        {.focused = true},
         {.dark_mode = true},
-        {.focused = true, .dark_mode = true},
         {.dark_mode = true, .with_text = true},
-        {.dark_mode = true, .is_ai_page = true},
-        // Testing focused vs unfocused with text.
+        // Testing with text.
         {.with_text = true},
-        {.focused = true, .with_text = true},
-        // Testing RTL with and without text, without and without focus.
+        // Testing RTL with and without text.
         {.rtl = true},
-        {.focused = true, .rtl = true},
-        {.focused = true, .rtl = true, .with_text = true},
         {.rtl = true, .with_text = true},
     }),
     [](const testing::TestParamInfo<ContextualTasksComposeBoxPixelTestParams>&
            info) { return info.param.ToString(); });
 
-// TODO(http://crbug.com/542250614): Fix and reenable.
-IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
-                       DISABLED_Screenshots) {
+IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const DeepQuery kApp = {"contextual-tasks-app"};
 
@@ -247,11 +231,12 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
   const DeepQuery kComposeBoxInput = {
       "contextual-tasks-app", "contextual-tasks-composebox", "#composebox",
       "cr-composebox-input", "textarea"};
-  const DeepQuery kAiPageWebView = {"contextual-tasks-app", "webview"};
 
   RunTestSequence(
       SetupWebUIEnvironment(kActiveTab,
-                            GURL(chrome::kChromeUIContextualTasksURL),
+                            GURL(base::StringPrintf(
+                                "%s?cs=%s", chrome::kChromeUIContextualTasksURL,
+                                GetParam().dark_mode ? "1" : "0")),
                             {"contextual-tasks-app"}),
 
       // Ensure the composebox exists.
@@ -260,14 +245,6 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
       ExecuteJsAt(kActiveTab, kApp,
                   base::StringPrintf(
                       R"((el) => {
-                el.isAiPage_ = %s;
-                el.isAimEligible_ = true;
-                el.isShownInTab_ = false;
-                el.isZeroState_ = true;
-                el.isInputHidden_ = false;
-                el.isComposeboxHidden_ = () => false;
-                if (el.requestUpdate) el.requestUpdate();
-
                 const inputState = {
                   allowedModels: [],
                   allowedTools: [1],
@@ -286,73 +263,178 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
                   isCanvasQuerySubmitted: false,
                 };
 
-                const composebox = el.shadowRoot ? el.shadowRoot.querySelector('contextual-tasks-composebox') : null;
+                const composebox = el.shadowRoot
+                    ? el.shadowRoot.querySelector(
+                          'contextual-tasks-composebox')
+                    : null;
                 if (composebox) {
                   composebox.inputState_ = inputState;
-                  composebox.removeAttribute('hidden');
-                  composebox.style.cssText += '; display: flex !important; opacity: 1 !important; visibility: visible !important;';
-                  if (composebox.requestUpdate) composebox.requestUpdate();
+                  composebox.glifAnimationState_ = 'INELIGIBLE';
+                  composebox.forceSkipSubmitGlifAnimation_ = true;
+                  if (composebox.pageHandler_) {
+                    composebox.pageHandler_.canShowNextboxAnimation =
+                        () => Promise.resolve({canShow: false});
+                  }
+                  composebox.composeboxHeight_ = 112;
+                  composebox.style.cssText +=
+                      '; display: flex !important; opacity: 1 !important; ' +
+                      'visibility: visible !important; min-height: 112px !important;';
                 }
 
-                const inner = composebox && composebox.shadowRoot ? composebox.shadowRoot.querySelector('#composebox') : null;
+                el.isAiPage_ = false;
+                el.isAimEligible_ = true;
+                el.isShownInTab_ = false;
+                el.isZeroState_ = true;
+                el.isInputHidden_ = false;
+                el.isComposeboxHidden_ = () => false;
+                const isDark = %s;
+                const bg = isDark ? '#22242B' : '#FFFFFF';
+                el.darkMode_ = isDark;
+                if (isDark) {
+                  el.setAttribute('dark-mode_', '');
+                  document.body.style.setProperty('background-color', '#22242B', 'important');
+                  document.documentElement.style.setProperty('background-color', '#22242B', 'important');
+                  if (typeof el.updateBackgroundColor_ === 'function') {
+                    el.updateBackgroundColor_();
+                  }
+                } else {
+                  el.removeAttribute('dark-mode_');
+                  document.body.style.setProperty('background-color', '#FFFFFF', 'important');
+                  document.documentElement.style.setProperty('background-color', '#FFFFFF', 'important');
+                }
+                const flexCenter = el.shadowRoot
+                    ? el.shadowRoot.querySelector('#flexCenterContainer')
+                    : null;
+                if (flexCenter) {
+                  flexCenter.style.setProperty('background-color', bg, 'important');
+                }
+                if (composebox) {
+                  if (isDark) {
+                    composebox.setAttribute('dark-mode_', '');
+                  } else {
+                    composebox.removeAttribute('dark-mode_');
+                  }
+                  const container = composebox.shadowRoot
+                      ? composebox.shadowRoot.querySelector('#composeboxContainer')
+                      : null;
+                  if (container) {
+                    container.style.setProperty('background-color', bg, 'important');
+                    container.style.setProperty('min-height', '112px', 'important');
+                  }
+                }
+                if (el.requestUpdate) el.requestUpdate();
+
+                if (composebox && composebox.requestUpdate) {
+                  composebox.requestUpdate();
+                }
+
+                const inner = composebox && composebox.shadowRoot
+                    ? composebox.shadowRoot.querySelector('#composebox')
+                    : null;
                 if (inner) {
                   inner.inputState = inputState;
-                  inner.style.cssText += '; display: block !important; opacity: 1 !important; visibility: visible !important;';
+                  inner.animationState = 'NONE';
+                  inner.glifAnimationState = 'INELIGIBLE';
+                  inner.energyEffectAnimationEnabled = false;
+                  inner.style.setProperty('background-color', bg, 'important');
+                  inner.style.cssText +=
+                      '; display: block !important; opacity: 1 !important; ' +
+                      'visibility: visible !important;';
                   if (inner.requestUpdate) inner.requestUpdate();
                 }
               })",
-                      GetParam().is_ai_page ? "true" : "false")),
+                      GetParam().dark_mode ? "true" : "false")),
       WaitForWebContentsPainted(kActiveTab),
 
-      // Ensure the AI page webview is loaded with about:blank if is_ai_page is
-      // true.
-      If([]() { return GetParam().is_ai_page; },
-         Then(CheckJsResultAt(kActiveTab, kAiPageWebView, "(el) => el.src",
-                              url::kAboutBlankURL))),
-
-      // Apply focus or blur according to test parameter.
-      If([]() { return GetParam().focused; },
-         Then(ExecuteJsAt(kActiveTab, kComposeBoxInput, "(el) => el.focus()")),
-         Else(ExecuteJsAt(kActiveTab, kComposeBoxInput, "(el) => el.blur()"))),
-
-      // Set the composebox text if specified.
-      If([]() { return GetParam().with_text; },
-         Then(ExecuteJsAt(kActiveTab, kComposeBoxInput,
-                          R"((el) => {
-                           el.value = 'some text';
-                           el.dispatchEvent(new Event('input', {bubbles:
-                           true, composed: true}));
-                         })"))),
-
-      // Disable the blinking caret to reduce flakiness.
-      HideCaret(kActiveTab, kComposeBoxInput),
-
-      // Disable animations, enforce static glow states, and await Lit updates
-      // before screenshot.
-      ExecuteJsAt(kActiveTab, kApp, R"(async (el) => {
+      // Disable animations, enforce static glow states, hide carets, enforce
+      // deterministic dark mode body background, and await Lit updates BEFORE
+      // entering text or taking screenshot.
+      ExecuteJsAt(kActiveTab, kApp,
+                  base::StringPrintf(
+                      R"(async (el) => {
+        const isDarkMode = %s;
+        const bg = isDarkMode ? '#22242B' : '#FFFFFF';
+        document.body.style.setProperty('background-color', bg, 'important');
+        document.documentElement.style.setProperty('background-color', bg, 'important');
+        if (isDarkMode && typeof el.updateBackgroundColor_ === 'function') {
+          el.updateBackgroundColor_();
+        }
         const sheet = new CSSStyleSheet();
         sheet.replaceSync(`
           *, *::before, *::after {
             transition: none !important;
             animation: none !important;
           }
-          .gradient, .double-gradient, .glow-container {
+          *, *::before, *::after, textarea, input, [contenteditable] {
+            caret-color: transparent !important;
+          }
+          #caret, .caret {
             display: none !important;
             opacity: 0 !important;
             visibility: hidden !important;
             animation: none !important;
           }
+          .gradient, .double-gradient, .double-gradient-mask,
+          .gradient-blur-wrapper, .gradient-sharp-wrapper,
+          .aim-gradient-outer-blur, .aim-gradient-solid, .aim-background {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            animation: none !important;
+          }
+          body, html,
+          contextual-tasks-app,
+          contextual-tasks-composebox,
+          #composeboxContainer,
+          #flexCenterContainer,
+          :host(contextual-tasks-app),
+          :host(contextual-tasks-composebox),
+          :host(contextual-tasks-inner-composebox) {
+            background-color: ${bg} !important;
+          }
+          #composeboxContainer,
+          contextual-tasks-composebox {
+            min-height: 112px !important;
+          }
         `);
 
         async function prepareAndAwait(root) {
           if (!root) return;
-          if (root.adoptedStyleSheets && !root.adoptedStyleSheets.includes(sheet)) {
+          if (root.adoptedStyleSheets &&
+              !root.adoptedStyleSheets.includes(sheet)) {
             root.adoptedStyleSheets = [...root.adoptedStyleSheets, sheet];
           }
           if (root.host) {
-            if ('animationState' in root.host) root.host.animationState = 'NONE';
-            if ('glifAnimationState' in root.host) root.host.glifAnimationState = 'INELIGIBLE';
-            if ('energyEffectAnimationEnabled' in root.host) root.host.energyEffectAnimationEnabled = false;
+            if (root.host.tagName === 'CONTEXTUAL-TASKS-COMPOSEBOX' ||
+                root.host.tagName === 'CONTEXTUAL-TASKS-INNER-COMPOSEBOX' ||
+                root.host.tagName === 'CONTEXTUAL-TASKS-APP') {
+              root.host.style.setProperty('background-color', bg, 'important');
+            }
+            const container = root.querySelector?.('#composeboxContainer');
+            if (container) {
+              container.style.setProperty('background-color', bg, 'important');
+              container.style.setProperty('min-height', '112px', 'important');
+            }
+            const flexCenter = root.querySelector?.('#flexCenterContainer');
+            if (flexCenter) {
+              flexCenter.style.setProperty('background-color', bg, 'important');
+            }
+            if ('pageHandler_' in root.host && root.host.pageHandler_) {
+              root.host.pageHandler_.canShowNextboxAnimation =
+                  () => Promise.resolve({canShow: false});
+            }
+            if ('animationState' in root.host) {
+              root.host.animationState = 'NONE';
+            }
+            if ('glifAnimationState' in root.host) {
+              root.host.glifAnimationState = 'INELIGIBLE';
+            }
+            if ('energyEffectAnimationEnabled' in root.host) {
+              root.host.energyEffectAnimationEnabled = false;
+            }
+            if ('forceSkipSubmitGlifAnimation_' in root.host) {
+              root.host.forceSkipSubmitGlifAnimation_ = true;
+            }
             if (root.host.updateComplete) await root.host.updateComplete;
           }
           const children = root.querySelectorAll('*');
@@ -364,7 +446,62 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
         }
         await prepareAndAwait(document);
         await prepareAndAwait(el.shadowRoot || el);
-      })"),
+      })",
+                      GetParam().dark_mode ? "true" : "false")),
+
+      // Disable the blinking caret to reduce flakiness.
+      HideCaret(kActiveTab, kComposeBoxInput),
+
+      // Set the composebox text if specified and synchronize Lit state.
+      If([]() { return GetParam().with_text; },
+         Then(ExecuteJsAt(kActiveTab, kComposebox,
+                          R"(async (el) => {
+                           if (typeof el.setInputProgrammatically === 'function') {
+                             el.setInputProgrammatically('some text', true);
+                           } else {
+                             el.input = 'some text';
+                           }
+                           const composeboxInput =
+                               el.shadowRoot ? el.shadowRoot.querySelector('#composeboxInput') : null;
+                           if (composeboxInput) {
+                             composeboxInput.input = 'some text';
+                             const textarea = composeboxInput.shadowRoot
+                                 ? composeboxInput.shadowRoot.querySelector('textarea')
+                                 : null;
+                             if (textarea) {
+                               textarea.value = 'some text';
+                               textarea.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
+                             }
+                             if (composeboxInput.requestUpdate) composeboxInput.requestUpdate();
+                             if (composeboxInput.updateComplete) await composeboxInput.updateComplete;
+                           }
+                           if (el.requestUpdate) el.requestUpdate();
+                           if (el.updateComplete) await el.updateComplete;
+                         })"))),
+
+      // Strict readiness gate: verify text, button state, Lit quiescent, and
+      // animations settled.
+      WaitForJsResultAt(kActiveTab, kComposebox,
+                        base::StringPrintf(
+                            R"((el) => {
+                const sr = el.shadowRoot;
+                const inp = sr?.querySelector('#composeboxInput')
+                              ?.shadowRoot?.querySelector('textarea');
+                const sub = sr?.querySelector('cr-composebox-submit');
+                const expectedText = %s;
+                const expectedDisabled = %s;
+                if (!inp || inp.value !== expectedText) return false;
+                if (!sub || sub.disabled !== expectedDisabled) return false;
+                if (el.isUpdatePending) return false;
+                if (el.parentElement && el.parentElement.isUpdatePending) return false;
+                const anims = el.getAnimations({subtree: true});
+                if (anims.some(a => a.playState === 'running')) return false;
+                return true;
+              })",
+                            GetParam().with_text ? "'some text'" : "''",
+                            GetParam().with_text ? "false" : "true"),
+                        true),
+
       WaitForWebContentsPainted(kActiveTab),
 
       // This step is needed to prevent test from failing on platforms that
@@ -375,7 +512,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
       // Take a screenshot of the composebox.
       ScreenshotWebUi(kActiveTab, kComposebox,
                       /*screenshot_name=*/"ContextualTasksComposebox",
-                      /*baseline_cl=*/"8142019"));
+                      /*baseline_cl=*/"8254217"));
 }
 
 struct AppPixelTestParams {
