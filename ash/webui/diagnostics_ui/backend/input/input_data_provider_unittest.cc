@@ -2762,5 +2762,40 @@ TEST_F(InputDataProviderTest, SetA11yTouchPassthrough) {
       aura::client::kAccessibilityTouchExplorationPassThrough));
 }
 
+TEST_F(InputDataProviderTest, DestructorDoesNotCrashWhenObserving) {
+  std::unique_ptr<FakeKeyboardObserver> fake_observer1 =
+      std::make_unique<FakeKeyboardObserver>();
+  std::unique_ptr<FakeKeyboardObserver> fake_observer2 =
+      std::make_unique<FakeKeyboardObserver>();
+
+  // Widget must be active and visible.
+  provider_->attached_widget_->Show();
+  provider_->attached_widget_->Activate();
+
+  // Add TWO keyboards (event6 and event4).
+  const ui::DeviceEvent event0(ui::DeviceEvent::DeviceType::INPUT,
+                               ui::DeviceEvent::ActionType::ADD,
+                               base::FilePath("/dev/input/event6"));
+  const ui::DeviceEvent event1(ui::DeviceEvent::DeviceType::INPUT,
+                               ui::DeviceEvent::ActionType::ADD,
+                               base::FilePath("/dev/input/event4"));
+  provider_->OnDeviceEvent(event0);
+  provider_->OnDeviceEvent(event1);
+  base::RunLoop().RunUntilIdle();
+
+  // Attach observers to BOTH keyboards.
+  provider_->ObserveKeyEvents(
+      6u, fake_observer1->receiver.BindNewPipeAndPassRemote());
+  provider_->ObserveKeyEvents(
+      4u, fake_observer2->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  // Ensure the watchers were successfully registered.
+  ASSERT_TRUE((*provider_->watchers_)[6]);
+  ASSERT_TRUE((*provider_->watchers_)[4]);
+
+  provider_.reset();
+}
+
 }  // namespace diagnostics
 }  // namespace ash

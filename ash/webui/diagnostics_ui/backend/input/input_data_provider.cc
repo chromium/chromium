@@ -95,7 +95,15 @@ InputDataProvider::InputDataProvider(
 
 InputDataProvider::~InputDataProvider() {
   // Cleanup all the keyboard watchers/observers.
-  for (const auto& [id, _] : keyboard_watchers_) {
+  // We must copy the keys to a separate vector before erasing them.
+  std::vector<uint32_t> keyboard_ids_to_remove;
+  keyboard_ids_to_remove.reserve(keyboard_watchers_.size());
+
+  for (const auto& [id, watcher] : keyboard_watchers_) {
+    keyboard_ids_to_remove.push_back(id);
+  }
+
+  for (uint32_t id : keyboard_ids_to_remove) {
     UnforwardKeyboardInput(id);
   }
 
