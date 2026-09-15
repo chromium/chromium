@@ -42,7 +42,7 @@
 //! This bridge is built using the `cxx` crate, which automates the generation
 //! of safe FFI bindings between the two languages.
 
-use symphonia::core::audio::{Audio, Channels, GenericAudioBufferRef, Position};
+use symphonia::core::audio::{Channels, GenericAudioBufferRef, Position};
 use symphonia::core::codecs::audio::{AudioCodecId, AudioCodecParameters, AudioDecoder};
 use symphonia::core::errors::Error;
 use symphonia::core::packet::PacketRef;
@@ -347,34 +347,22 @@ impl SymphoniaRawSampleBuffer {
                 }
             }
             GenericAudioBufferRef::F32(_) => {
+                src.copy_bytes_to_vec_interleaved_as::<f32>(&mut self.data);
                 if matches!(self.codec, ffi::SymphoniaAudioCodec::Mp3) {
-                    let buf = match src {
-                        GenericAudioBufferRef::F32(buf) => buf,
-                        _ => unreachable!(),
-                    };
-                    let num_frames = buf.frames();
-                    let num_channels = buf.spec().channels().count();
-
-                    self.data.reserve(num_frames * num_channels * std::mem::size_of::<f32>());
-
-                    let planes: Vec<&[f32]> =
-                        (0..num_channels).map(|ch| buf.plane(ch).unwrap()).collect();
-
-                    for i in 0..num_frames {
-                        for plane in &planes {
-                            // Symphonia v0.6+ does not clamp float samples to
-                            // a valid range. While some codecs like Opus and
-                            // Vorbis can legitimately exceed [-1.0, 1.0],
-                            // Symphonia's MP3 decoder can produce extreme
-                            // values on corrupted streams. We clamp MP3 only
-                            // to maintain parity with the
-                            // FFmpegAudioDecoder's handling of corrupt files.
-                            let sample = plane[i].clamp(-1.0, 1.0);
-                            self.data.extend_from_slice(&sample.to_le_bytes());
+                    // Symphonia v0.6+ does not clamp float samples to a valid
+                    // range. While some codecs like Opus and Vorbis can
+                    // legitimately exceed [-1.0, 1.0], Symphonia's MP3 decoder
+                    // can produce extreme values on corrupted streams. We clamp
+                    // MP3 in-place to maintain parity with FFmpegAudioDecoder's
+                    // handling of corrupt files.
+                    for chunk in self.data.chunks_exact_mut(std::mem::size_of::<f32>()) {
+                        let sample = f32::from_ne_bytes(chunk.try_into().unwrap());
+                        if sample < -1.0 {
+                            chunk.copy_from_slice(&(-1.0_f32).to_ne_bytes());
+                        } else if sample > 1.0 {
+                            chunk.copy_from_slice(&1.0_f32.to_ne_bytes());
                         }
                     }
-                } else {
-                    src.copy_bytes_to_vec_interleaved_as::<f32>(&mut self.data)
                 }
             }
             _ => {
