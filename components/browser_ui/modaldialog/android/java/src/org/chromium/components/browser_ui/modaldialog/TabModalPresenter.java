@@ -258,9 +258,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
             int horizontalMargin =
                     resources.getDimensionPixelSize(
                             R.dimen.modal_dialog_view_horizontal_margin_lff);
-            int verticalMargin =
-                    resources.getDimensionPixelSize(R.dimen.modal_dialog_view_vertical_margin_lff);
-            params.setMargins(horizontalMargin, verticalMargin, horizontalMargin, verticalMargin);
+            params.setMargins(horizontalMargin, /* top= */ 0, horizontalMargin, /* bottom= */ 0);
         }
 
         assumeNonNull(mDialogView).setBackgroundResource(R.drawable.dialog_bg_no_shadow);
