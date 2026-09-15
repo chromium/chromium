@@ -38,26 +38,27 @@ import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
-import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Spy;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.Token;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -72,8 +73,8 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.RecentTabsPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -107,15 +108,15 @@ import java.util.concurrent.TimeUnit;
 /** Instrumentation tests for {@link RecentTabsPage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DoNotBatch(reason = "Tests manipulate UI which can interfere between tests.")
+@Batch(Batch.PER_CLASS)
 public class RecentTabsPageTest {
     private static final int COLOR_ID = TabGroupColorId.YELLOW;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     // FakeAccountInfoService is required to create the ProfileDataCache entry with sync_off badge
     // for Sync promo.
@@ -128,14 +129,30 @@ public class RecentTabsPageTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_RECENT_TABS)
                     .build();
 
-    @Spy private FakeRecentlyClosedTabManager mManager = new FakeRecentlyClosedTabManager();
+    private static FakeRecentlyClosedTabManager sManager;
+    private FakeRecentlyClosedTabManager mManager;
     private ChromeTabbedActivity mActivity;
     private TabModel mTabModel;
     private RecentTabsPage mPage;
     private CtaPageStation mPageStation;
 
+    @BeforeClass
+    public static void setUpClass() {
+        sManager = Mockito.spy(new FakeRecentlyClosedTabManager());
+        RecentlyClosedEntriesManager.setRecentlyClosedTabManagerForTests(sManager);
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+        RecentlyClosedEntriesManager.setRecentlyClosedTabManagerForTests(null);
+        sManager = null;
+    }
+
     @Before
     public void setUp() throws Exception {
+        mManager = sManager;
+        Mockito.clearInvocations(mManager);
+        mManager.clearRecentlyClosedEntries();
         RecentlyClosedEntriesManager.setRecentlyClosedTabManagerForTests(mManager);
         mPageStation = mActivityTestRule.startOnBlankPage();
         mActivity = mPageStation.getActivity();
@@ -147,6 +164,19 @@ public class RecentTabsPageTest {
         leaveRecentTabsPage();
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
+        if (sManager != null) {
+            sManager.clearRecentlyClosedEntries();
+        }
+        if (mActivity != null && mActivity.getRecentlyClosedEntriesManagerForTesting() != null) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () ->
+                            mActivity
+                                    .getRecentlyClosedEntriesManagerForTesting()
+                                    .clearRecentlyClosedEntries());
+        }
+        if (mSigninTestRule.getPrimaryAccount() != null) {
+            mSigninTestRule.forceSignOut();
+        }
     }
 
     @Test
@@ -790,19 +820,6 @@ public class RecentTabsPageTest {
         mPage = loadRecentTabsPage();
 
         mRenderTestRule.render(mPage.getView(), "signin_promo");
-    }
-
-    @Test
-    @SmallTest
-    public void testTabStripHeightChangeCallback() {
-        mPage = loadRecentTabsPage();
-        var tabStripHeightChangeCallback = mPage.getTabStripHeightChangeCallbackForTesting();
-        int newTabStripHeight = 40;
-        ThreadUtils.runOnUiThreadBlocking(tabStripHeightChangeCallback.bind(newTabStripHeight));
-        assertEquals(
-                "Top padding of page view should be updated when tab strip height changes.",
-                newTabStripHeight,
-                mPage.getView().getPaddingTop());
     }
 
     /**

@@ -322,4 +322,16 @@ public class RecentTabsPageUnitTest {
 
         page.destroy();
     }
+
+    @Test
+    public void testTabStripHeightChangeCallback() {
+        var tabStripHeightChangeCallback =
+                mRecentTabsPage.getTabStripHeightChangeCallbackForTesting();
+        int newTabStripHeight = 40;
+        tabStripHeightChangeCallback.onResult(newTabStripHeight);
+        assertEquals(
+                "Top padding of page view should be updated when tab strip height changes.",
+                newTabStripHeight,
+                mRecentTabsPage.getView().getPaddingTop());
+    }
 }
