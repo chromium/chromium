@@ -15,10 +15,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Looper;
 import android.view.textclassifier.TextClassification;
 import android.view.textclassifier.TextClassificationManager;
 import android.view.textclassifier.TextClassifier;
+import android.view.textclassifier.TextSelection;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -32,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureListJni;
@@ -172,5 +175,95 @@ public class SmartSelectionProviderTest {
         // Verify onClassified (normal) was NOT called (because timeout was cancelled before it
         // ran).
         verify(mResultCallback, never()).onClassified(any());
+    }
+
+    @Test
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
+    @DisableFeatures(ContentFeatureList.TEXT_CLASSIFIER_TIMEOUT)
+    public void testSendClassifyRequest_onAndroidS_doesNotThrowNpe() {
+        when(mTextClassifier.classifyText(any(), anyInt(), anyInt(), any()))
+                .thenReturn(new TextClassification.Builder().setText("classified").build());
+
+        mProvider.sendClassifyRequest("test text", 0, 9);
+        RobolectricUtil.runOneBackgroundTask();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mResultCallback).onClassified(mResultCaptor.capture());
+        SelectionClient.Result result = mResultCaptor.getValue();
+        assertNotNull(result);
+        assertEquals("test text", result.text);
+        assertNull(result.textSelection);
+        assertNotNull(result.textClassification);
+        assertEquals("classified", result.textClassification.getText());
+        verify(mTextClassifier).classifyText(any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
+    @DisableFeatures(ContentFeatureList.TEXT_CLASSIFIER_TIMEOUT)
+    public void testSendSuggestAndClassifyRequest_onAndroidS_usesClassificationFromSelection() {
+        TextClassification tc =
+                new TextClassification.Builder().setText("classified_in_selection").build();
+        TextSelection ts = new TextSelection.Builder(0, 9).setTextClassification(tc).build();
+        when(mTextClassifier.suggestSelection(any(TextSelection.Request.class))).thenReturn(ts);
+
+        mProvider.sendSuggestAndClassifyRequest("test text", 0, 4);
+        RobolectricUtil.runOneBackgroundTask();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mResultCallback).onClassified(mResultCaptor.capture());
+        SelectionClient.Result result = mResultCaptor.getValue();
+        assertNotNull(result);
+        assertEquals("test text", result.text);
+        assertEquals(ts, result.textSelection);
+        assertEquals(tc, result.textClassification);
+        verify(mTextClassifier, never()).classifyText(any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = {Build.VERSION_CODES.S, BaseRobolectricTestRunner.MAX_SDK})
+    @DisableFeatures(ContentFeatureList.TEXT_CLASSIFIER_TIMEOUT)
+    public void testSendSuggestAndClassifyRequest_onAndroidS_fallbackToClassifyTextWhenNull() {
+        TextSelection ts = new TextSelection.Builder(0, 9).build();
+        TextClassification tc =
+                new TextClassification.Builder().setText("fallback_classified").build();
+        when(mTextClassifier.suggestSelection(any(TextSelection.Request.class))).thenReturn(ts);
+        when(mTextClassifier.classifyText(any(), anyInt(), anyInt(), any())).thenReturn(tc);
+
+        mProvider.sendSuggestAndClassifyRequest("test text", 0, 4);
+        RobolectricUtil.runOneBackgroundTask();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mResultCallback).onClassified(mResultCaptor.capture());
+        SelectionClient.Result result = mResultCaptor.getValue();
+        assertNotNull(result);
+        assertEquals(ts, result.textSelection);
+        assertEquals(tc, result.textClassification);
+        verify(mTextClassifier).classifyText(any(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, Build.VERSION_CODES.R})
+    @DisableFeatures(ContentFeatureList.TEXT_CLASSIFIER_TIMEOUT)
+    public void testSendSuggestAndClassifyRequest_preAndroidS() {
+        TextSelection ts = new TextSelection.Builder(0, 9).build();
+        TextClassification tc =
+                new TextClassification.Builder().setText("pre_s_classified").build();
+        when(mTextClassifier.suggestSelection(any(CharSequence.class), anyInt(), anyInt(), any()))
+                .thenReturn(ts);
+        when(mTextClassifier.classifyText(any(), anyInt(), anyInt(), any())).thenReturn(tc);
+
+        mProvider.sendSuggestAndClassifyRequest("test text", 0, 4);
+        RobolectricUtil.runOneBackgroundTask();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mResultCallback).onClassified(mResultCaptor.capture());
+        SelectionClient.Result result = mResultCaptor.getValue();
+        assertNotNull(result);
+        assertEquals(ts, result.textSelection);
+        assertEquals(tc, result.textClassification);
+        verify(mTextClassifier)
+                .suggestSelection(any(CharSequence.class), anyInt(), anyInt(), any());
+        verify(mTextClassifier).classifyText(any(), anyInt(), anyInt(), any());
     }
 }
