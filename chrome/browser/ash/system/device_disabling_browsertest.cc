@@ -170,7 +170,6 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingTest, DisableWithEphemeralUsers) {
       NetworkPortalDetectorMixin::NetworkStatus::kOffline);
   network_state_change_wait_run_loop_->Run();
   network_state_informer->RemoveObserver(this);
-  base::RunLoop().RunUntilIdle();
 
   // Verify that the offline error screen was not shown and the device disabled
   // screen is still being shown instead.
