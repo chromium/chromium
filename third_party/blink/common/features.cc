@@ -856,6 +856,9 @@ const char kIntensiveWakeUpThrottling_GracePeriodSeconds_Name[] =
 
 BASE_FEATURE(kInteractiveDetectorIgnoreFcp, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIsolatedWorldEventSourceAndBeaconsSkipServiceWorker,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allow process isolation of iframes with the 'sandbox' attribute set. Whether
 // or not such an iframe will be isolated may depend on options specified with
 // the attribute. Note: At present, only iframes with origin-restricted

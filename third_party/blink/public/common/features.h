@@ -616,6 +616,13 @@ BLINK_COMMON_EXPORT extern const char
 // Don't require FCP for the page to turn interactive. Useful for testing.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInteractiveDetectorIgnoreFcp);
 
+// When enabled, EventSource connections and navigator.sendBeacon() requests
+// issued from an isolated world skip the page's service worker, matching
+// fetch(), XMLHttpRequest and dynamic module imports.
+// Kill switch for crbug.com/501419037.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kIsolatedWorldEventSourceAndBeaconsSkipServiceWorker);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIsolateSandboxedIframes);
 enum class IsolateSandboxedIframesGrouping {
   // In this grouping, all isolated sandboxed iframes whose URLs share the same

@@ -79,6 +79,11 @@ bool SendBeaconCommon(const ScriptState& state,
   request.SetHttpMethod(http_names::kPOST);
   request.SetKeepalive(true);
   request.SetRequestContext(mojom::blink::RequestContextType::BEACON);
+  // Prevents web service workers from observing isolated world beacons.
+  if (base::FeatureList::IsEnabled(
+          features::kIsolatedWorldEventSourceAndBeaconsSkipServiceWorker)) {
+    request.SetSkipServiceWorker(state.World().IsIsolatedWorld());
+  }
   beacon.Serialize(request);
   FetchParameters params(std::move(request),
                          ResourceLoaderOptions(&state.World()));

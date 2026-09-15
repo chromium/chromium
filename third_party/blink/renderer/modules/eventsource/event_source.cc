@@ -35,7 +35,9 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -160,6 +162,11 @@ void EventSource::Connect() {
   request.SetCacheMode(blink::mojom::FetchCacheMode::kNoStore);
   request.SetCorsPreflightPolicy(
       network::mojom::CorsPreflightPolicy::kPreventPreflight);
+  // Prevents web service workers from intercepting isolated world requests.
+  if (base::FeatureList::IsEnabled(
+          features::kIsolatedWorldEventSourceAndBeaconsSkipServiceWorker)) {
+    request.SetSkipServiceWorker(world_ && world_->IsIsolatedWorld());
+  }
   if (parser_ && !parser_->LastEventId().empty()) {
     request.SetEventSourceLastEventId(parser_->LastEventId());
   }
