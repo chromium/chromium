@@ -87,24 +87,42 @@ class ClientReportUtilTest : public testing::Test {
         ClientSafeBrowsingReportRequest::InterstitialInteraction::CMD_PROCEED,
         kExpectedProceed);
   }
+
+  void TestFillBasicReport(const GURL& resource_url,
+                           bool expected_url_is_reportable) {
+    auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+    security_interstitials::UnsafeResource resource = GetPhishingResource();
+    resource.url = resource_url;
+    client_report_utils::FillReportBasicResourceDetails(report.get(), resource);
+    ASSERT_EQ(report->type(),
+              safe_browsing::ClientSafeBrowsingReportRequest::URL_PHISHING);
+    if (expected_url_is_reportable) {
+      ASSERT_EQ(report->url(), resource_url.spec());
+      ASSERT_EQ(report->url_request_destination(),
+                ClientSafeBrowsingReportRequest::DOCUMENT);
+    } else {
+      ASSERT_FALSE(report->has_url());
+      ASSERT_FALSE(report->has_url_request_destination());
+    }
+    ASSERT_TRUE(report->has_client_properties());
+    ASSERT_TRUE(report->client_properties().has_url_api_type());
+    ASSERT_TRUE(report->client_properties().has_is_async_check());
+    ASSERT_EQ(report->client_properties().url_api_type(),
+              ClientSafeBrowsingReportRequest::
+                  SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED);
+    ASSERT_FALSE(report->client_properties().is_async_check());
+  }
 };
 
-TEST_F(ClientReportUtilTest, FillBasicReport) {
-  auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
-  client_report_utils::FillReportBasicResourceDetails(report.get(),
-                                                      GetPhishingResource());
-  ASSERT_EQ(report->url(), kPhishingUrl);
-  ASSERT_EQ(report->type(),
-            safe_browsing::ClientSafeBrowsingReportRequest::URL_PHISHING);
-  ASSERT_EQ(report->url_request_destination(),
-            ClientSafeBrowsingReportRequest::DOCUMENT);
-  ASSERT_TRUE(report->has_client_properties());
-  ASSERT_TRUE(report->client_properties().has_url_api_type());
-  ASSERT_TRUE(report->client_properties().has_is_async_check());
-  ASSERT_EQ(
-      report->client_properties().url_api_type(),
-      ClientSafeBrowsingReportRequest::SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED);
-  ASSERT_FALSE(report->client_properties().is_async_check());
+TEST_F(ClientReportUtilTest, FillBasicReport_ReportableUrl) {
+  TestFillBasicReport(/*resource_url=*/GURL(kPhishingUrl),
+                      /*expected_url_is_reportable=*/true);
+}
+
+TEST_F(ClientReportUtilTest, FillBasicReport_UnreportableUrl) {
+  TestFillBasicReport(
+      /*resource_url=*/GURL("data:text/html,<div>phishing</div>"),
+      /*expected_url_is_reportable=*/false);
 }
 
 TEST_F(ClientReportUtilTest, FillInterstitialInteractionsOfReport) {

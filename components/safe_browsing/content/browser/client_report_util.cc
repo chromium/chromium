@@ -222,9 +222,9 @@ GURL GetReferrerUrl(const security_interstitials::UnsafeResource& resource) {
 void FillReportBasicResourceDetails(
     CSBRR* report,
     const security_interstitials::UnsafeResource& resource) {
+  report->set_type(GetReportTypeFromSBThreatType(resource.threat_type));
   if (IsReportableUrl(resource.url)) {
     report->set_url(resource.url.spec());
-    report->set_type(GetReportTypeFromSBThreatType(resource.threat_type));
     report->set_url_request_destination(CSBRR::DOCUMENT);
   }
 
