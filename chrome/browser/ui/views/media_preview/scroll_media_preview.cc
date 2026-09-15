@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
 
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 #include "ui/views/view.h"
@@ -70,11 +68,9 @@ views::View* CreateScrollViewAndGetContents(views::View& parent_view,
       views::ScrollBar::Orientation::kVertical));
   scroll_view->SetDrawOverflowIndicator(false);
 
-  const int kRoundedRadius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::ShapeContextTokens::kOmniboxExpandedRadius);
-  scroll_view->SetViewportRoundedCornerRadius(
-      gfx::RoundedCornersF(kRoundedRadius));
-
+  // The media view paints its own rounded border and background, so rounding
+  // the scroll viewport on top of it is redundant and clips the corners,
+  // exposing the container background behind the preview.
   scroll_view->ClipHeightTo(0, kMaxScrollViewHeight);
   return contents;
 }
