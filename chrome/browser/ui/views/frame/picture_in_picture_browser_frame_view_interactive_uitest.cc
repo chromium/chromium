@@ -1519,31 +1519,41 @@ IN_PROC_BROWSER_TEST_P(
 
 #endif
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+class PictureInPictureReturnToOpenerTest
+    : public PictureInPictureTitleActivationTest {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PictureInPictureReturnToOpenerTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+IN_PROC_BROWSER_TEST_P(PictureInPictureReturnToOpenerTest,
                        RespectsDisallowReturnToOpenerWhenDefault) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
   // The back-to-tab button should exist when `disallowReturnToOpener` is not
   // specified.
-  EXPECT_NE(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
+  EXPECT_NE(nullptr, GetBackToTabButton());
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureReturnToOpenerTest,
                        RespectsDisallowReturnToOpenerWhenTrue) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP(/*disallow_return_to_opener=*/true));
 
   // The back-to-tab button should not exist when `disallowReturnToOpener` is
   // true.
-  EXPECT_EQ(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
+  EXPECT_EQ(nullptr, GetBackToTabButton());
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureReturnToOpenerTest,
                        RespectsDisallowReturnToOpenerWhenFalse) {
   ASSERT_NO_FATAL_FAILURE(
       SetUpDocumentPIP(/*disallow_return_to_opener=*/false));
 
   // The back-to-tab button should exist when `disallowReturnToOpener` is false.
-  EXPECT_NE(nullptr, pip_frame_view()->GetBackToTabButtonForTesting());
+  EXPECT_NE(nullptr, GetBackToTabButton());
 }
 
 #if !BUILDFLAG(IS_WIN)
