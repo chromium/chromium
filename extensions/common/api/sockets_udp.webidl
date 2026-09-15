@@ -11,7 +11,7 @@ dictionary SocketProperties {
   // Flag indicating if the socket is left open when the event page of the
   // application is unloaded (see
   // <a href="http://developer.chrome.com/apps/app_lifecycle.html">Manage App
-  // Lifecycle</a>). The default value is "false." When the application is
+  // Lifecycle</a>). The default value is "false". When the application is
   // loaded, any sockets previously opened with persistent=true can be fetched
   // with <code>getSockets</code>.
   boolean persistent;
@@ -64,7 +64,7 @@ dictionary SocketInfo {
   DOMString name;
 
   // The size of the buffer used to receive data. If no buffer size has been
-  // specified explictly, the value is not provided.
+  // specified explicitly, the value is not provided.
   long bufferSize;
 
   // Flag indicating whether the socket is blocked from firing onReceive
@@ -167,7 +167,7 @@ interface Udp {
 
   // Pauses or unpauses a socket. A paused socket is blocked from firing
   // <code>onReceive</code> events.
-  // |connectionId|: The socket ID.
+  // |socketId|: The socket ID.
   // |paused|: Flag to indicate whether to pause or unpause.
   // |Returns|: Called when the socket has been successfully paused or
   // unpaused.
@@ -309,7 +309,7 @@ interface Udp {
   // Event raised when a UDP packet has been received for the given socket.
   static attribute OnReceiveEvent onReceive;
 
-  // Event raised when a network error occured while the runtime was waiting
+  // Event raised when a network error occurred while the runtime was waiting
   // for data on the socket address and port. Once this event is raised, the
   // socket is paused and no more <code>onReceive</code> events will be raised
   // for this socket until the socket is resumed.
