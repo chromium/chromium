@@ -2245,40 +2245,53 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 #pragma mark - AutofillSettingsNavigator
 
 - (void)openSettingsForPage:(AutofillSettingsPage)page {
+  [self openSettingsForPage:page completion:nil];
+}
+
+- (void)openSettingsForPage:(AutofillSettingsPage)page
+                 completion:(ProceduralBlock)completion {
+  // Only Enhanced Autofill settings report their dismissal; a completion for
+  // any other page would silently never run.
+  CHECK(!completion || page == AutofillSettingsPage::kEnhancedAutofill);
+
+  id<SettingsCommands> settingsHandler =
+      HandlerForProtocol(self.dispatcher, SettingsCommands);
   switch (page) {
     case AutofillSettingsPage::kPasswordManager:
-      [HandlerForProtocol(self.dispatcher, SettingsCommands)
+      [settingsHandler
           showSavedPasswordsSettingsFromViewController:self.viewController];
       break;
     case AutofillSettingsPage::kPasswordSettings:
-      [HandlerForProtocol(self.dispatcher, SettingsCommands)
+      [settingsHandler
           showPasswordSettingsFromViewController:self.viewController];
       break;
     case AutofillSettingsPage::kAddresses:
-      [HandlerForProtocol(self.dispatcher, SettingsCommands)
+      [settingsHandler
           showProfileSettingsFromViewController:self.viewController];
       break;
     case AutofillSettingsPage::kCreditCards:
-      [HandlerForProtocol(self.dispatcher, SettingsCommands)
-          showCreditCardSettings];
+      [settingsHandler showCreditCardSettings];
       break;
     case AutofillSettingsPage::kIdentityDocs:
-      [HandlerForProtocol(self.dispatcher, SettingsCommands)
-          showIdentityDocsWithReferrer:autofill::autofill_metrics::
-                                           AutofillSettingsReferrer::
-                                               kFillingFlowDropdown];
+      [settingsHandler showIdentityDocsWithReferrer:
+                           autofill::autofill_metrics::
+                               AutofillSettingsReferrer::kFillingFlowDropdown];
       break;
     case AutofillSettingsPage::kShopping:
-      [HandlerForProtocol(self.dispatcher, SettingsCommands)
-          showShoppingWithReferrer:autofill::autofill_metrics::
-                                       AutofillSettingsReferrer::
-                                           kFillingFlowDropdown];
+      [settingsHandler showShoppingWithReferrer:autofill::autofill_metrics::
+                                                    AutofillSettingsReferrer::
+                                                        kFillingFlowDropdown];
       break;
     case AutofillSettingsPage::kTravel:
-      [HandlerForProtocol(self.dispatcher, SettingsCommands)
-          showTravelWithReferrer:autofill::autofill_metrics::
-                                     AutofillSettingsReferrer::
-                                         kFillingFlowDropdown];
+      [settingsHandler showTravelWithReferrer:autofill::autofill_metrics::
+                                                  AutofillSettingsReferrer::
+                                                      kFillingFlowDropdown];
+      break;
+    case AutofillSettingsPage::kEnhancedAutofill:
+      [settingsHandler showEnhancedAutofillSettingsWithCompletion:completion];
+      break;
+    case AutofillSettingsPage::kSuggestionsFromGeminiHelpImprove:
+      [settingsHandler showSuggestionsFromGeminiHelpImprove];
       break;
   }
 }
