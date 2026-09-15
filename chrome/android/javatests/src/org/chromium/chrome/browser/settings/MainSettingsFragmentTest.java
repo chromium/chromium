@@ -75,15 +75,16 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
@@ -147,7 +148,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Test for {@link MainSettings}. Main purpose is to have a quick confidence check on the xml. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
-@DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
+@Batch(Batch.PER_CLASS)
 @DisableFeatures({ChromeFeatureList.DATA_SHARING, ChromeFeatureList.SETTINGS_MULTI_COLUMN})
 @EnableFeatures(
         ChromeFeatureList.HOME_BUTTON_REMOVAL
@@ -200,7 +201,9 @@ public class MainSettingsFragmentTest {
     @Before
     public void setup() {
         // ObservableSupplier needs a Looper.
-        Looper.prepare();
+        if (Looper.myLooper() == null) {
+            Looper.prepare();
+        }
         InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         SigninAndHistorySyncActivityLauncherImpl.setLauncherForTest(
@@ -226,6 +229,9 @@ public class MainSettingsFragmentTest {
     @After
     public void tearDown() {
         Intents.release();
+        if (mSyncTestRule.getSigninTestRule().getPrimaryAccount() != null) {
+            mSyncTestRule.getSigninTestRule().forceSignOut();
+        }
     }
 
     @Test
@@ -233,6 +239,7 @@ public class MainSettingsFragmentTest {
     @Feature({"RenderTest"})
     @Policies.Add({@Policies.Item(key = "BrowserSignin", string = "0")})
     @DisabledTest(message = "https://crbug.com/433576895")
+    @RequiresRestart("Uses enterprise policy annotation")
     public void testRenderSigninDisabledByPolicyAccountRow() throws IOException {
         startSettings();
         waitForOptionsMenu();
@@ -531,6 +538,9 @@ public class MainSettingsFragmentTest {
     // is the min version that supports split stores UPM backend, to avoid
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @RequiresRestart(
+            "SigninManagerImpl only observes the AccountManagerFacade installed for the first test"
+                    + " of a batched process, so accounts added later are never seeded into native")
     public void testSigninRowShowsNoAlertWhenNoIdentityErrors() {
         // Sign-in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -544,6 +554,9 @@ public class MainSettingsFragmentTest {
     // signed-in non-syncing user.
     @Test
     @SmallTest
+    @RequiresRestart(
+            "SigninManagerImpl only observes the AccountManagerFacade installed for the first test"
+                    + " of a batched process, so accounts added later are never seeded into native")
     public void testSigninRowShowsAlertForIdentityErrors() {
         FakeSyncServiceImpl fakeSyncService =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -738,6 +751,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @RequiresRestart("Child accounts alter device account state and automatically sign in")
     public void testAccountManagementRowForChildAccountWithNonDisplayableAccountEmail()
             throws InterruptedException {
         startSettings();
@@ -769,6 +783,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @RequiresRestart("Child accounts alter device account state and automatically sign in")
     public void testAccountManagementRowForChildAccountWithNonDisplayableEmailWithEmptyDisplayName()
             throws InterruptedException {
         startSettings();
@@ -820,6 +835,7 @@ public class MainSettingsFragmentTest {
         @Policies.Item(key = "BrowserSignin", string = "0")
     })
     @DisabledTest(message = "Proabably never worked. crbug.com/446200399")
+    @RequiresRestart("Uses enterprise policy annotations")
     public void testPasswordsItemClickableWhenManaged() {
         startSettings();
         var managedStrMatcher =
@@ -845,6 +861,7 @@ public class MainSettingsFragmentTest {
     // is visible without scrolling.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     @DisabledTest(message = "Proabably never worked. crbug.com/446200399")
+    @RequiresRestart("Uses enterprise policy annotations")
     public void testPasswordsItemEnabledWhenNotManaged() throws InterruptedException {
         startSettings();
         var managedStrMatcher =
