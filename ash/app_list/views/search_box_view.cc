@@ -731,7 +731,7 @@ void SearchBoxView::UpdateSearchBoxBorder() {
 }
 
 void SearchBoxView::OnPaintBackground(gfx::Canvas* canvas) {
-  // Paint the SearchBoxBackground defined in SearchBoxViewBase first.
+  // Paint the background defined in SearchBoxViewBase first.
   views::View::OnPaintBackground(canvas);
 
   if (is_app_list_bubble_) {

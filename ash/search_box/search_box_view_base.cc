@@ -18,7 +18,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -28,6 +27,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
@@ -35,6 +35,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/image_button.h"
@@ -106,34 +107,6 @@ void SetupLabelView(views::Label* label,
 }
 
 }  // namespace
-
-// A background that paints a solid white rounded rect with a thin grey
-// border.
-class SearchBoxBackground : public views::Background {
- public:
-  SearchBoxBackground(SkColor color, int corner_radius)
-      : corner_radius_(corner_radius) {
-    set_color(color);
-  }
-
-  SearchBoxBackground(const SearchBoxBackground&) = delete;
-  SearchBoxBackground& operator=(const SearchBoxBackground&) = delete;
-
-  ~SearchBoxBackground() override = default;
-
- private:
-  // views::Background overrides:
-  void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    gfx::Rect bounds = view->GetContentsBounds();
-
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
-    canvas->DrawRoundRect(bounds, corner_radius_, flags);
-  }
-
-  const int corner_radius_;
-};
 
 // To paint grey background on mic and back buttons, and close buttons for
 // fullscreen launcher.
@@ -887,7 +860,8 @@ void SearchBoxViewBase::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
 void SearchBoxViewBase::UpdateSearchBoxBackground(int corner_radius,
                                                   SkColor color) {
   if (has_background_) {
-    SetBackground(std::make_unique<SearchBoxBackground>(color, corner_radius));
+    SetBackground(views::CreateRoundedRectBackground(
+        color, gfx::RoundedCornersF(corner_radius), GetInsets()));
   }
   if (close_button_)
     close_button_->UpdateInkDropColorAndOpacity(color);
