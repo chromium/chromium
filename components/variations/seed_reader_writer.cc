@@ -466,8 +466,6 @@ void SeedReaderWriter::ClearSeedInfo() {
     local_state_->ClearPref(fields_prefs_->seed);
     local_state_->ClearPref(fields_prefs_->signature);
     local_state_->ClearPref(fields_prefs_->milestone);
-    local_state_->ClearPref(fields_prefs_->seed_date);
-    local_state_->ClearPref(fields_prefs_->client_fetch_time);
     // Although only clients in the treatment group write seeds to dedicated
     // seed files, attempt to delete the seed file for clients with
     // Local-State-based seeds. If a client switches experiment groups or
@@ -476,6 +474,8 @@ void SeedReaderWriter::ClearSeedInfo() {
       DeleteSeedFile();
     }
   }
+  local_state_->ClearPref(fields_prefs_->seed_date);
+  local_state_->ClearPref(fields_prefs_->client_fetch_time);
 }
 
 void SeedReaderWriter::ClearSessionCountry() {
@@ -497,9 +497,9 @@ SeedInfo SeedReaderWriter::GetSeedInfo() const {
     return SeedInfo(
         /*signature=*/stored_seed_info_.signature(),
         /*milestone=*/stored_seed_info_.milestone(),
-        /*seed_date=*/ProtoTimeToTime(stored_seed_info_.seed_date()),
+        /*seed_date=*/local_state_->GetTime(fields_prefs_->seed_date),
         /*client_fetch_time=*/
-        ProtoTimeToTime(stored_seed_info_.client_fetch_time()),
+        local_state_->GetTime(fields_prefs_->client_fetch_time),
         /*session_country_code=*/stored_seed_info_.session_country_code(),
         /*session_geo_level1=*/stored_seed_info_.session_geo_level1(),
         /*permanent_country_code=*/stored_seed_info_.permanent_country_code(),
@@ -532,25 +532,17 @@ void SeedReaderWriter::SetTimerForTesting(base::OneShotTimer* timer_override) {
 
 void SeedReaderWriter::SetSeedDate(base::Time server_date_fetched) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Both groups write the seed date to local state.
-  // TODO(crbug.com/380465790): Update seed date in seed files instead of local
-  // state if the client is in the treatment group.
-  if (ShouldUseSeedFile()) {
-    stored_seed_info_.set_seed_date(TimeToProtoTime(server_date_fetched));
-    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
-  }
+  // Both groups store the seed date in local state. It is updated after every
+  // successful seed fetch, including "HTTP 304 Not Modified" responses, so
+  // avoid rewriting the whole seed file just to refresh a timestamp.
   local_state_->SetTime(fields_prefs_->seed_date, server_date_fetched);
 }
 
 void SeedReaderWriter::SetFetchTime(base::Time fetch_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Both groups write the fetch time to local state.
-  // TODO(crbug.com/380465790): Update fetch time in seed files instead of local
-  // state if the client is in the treatment group.
-  if (ShouldUseSeedFile()) {
-    stored_seed_info_.set_client_fetch_time(TimeToProtoTime(fetch_time));
-    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
-  }
+  // Both groups store the fetch time in local state. It is updated after every
+  // successful seed fetch, including "HTTP 304 Not Modified" responses, so
+  // avoid rewriting the whole seed file just to refresh a timestamp.
   local_state_->SetTime(fields_prefs_->client_fetch_time, fetch_time);
 }
 
@@ -768,9 +760,16 @@ StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
   stored_seed_info_.set_data(seed_info.seed_data);
   stored_seed_info_.set_signature(seed_info.signature);
   stored_seed_info_.set_milestone(seed_info.milestone);
+
+  // The timestamps are read from local state, see SetSeedDate(). Keep the copy
+  // in the seed file up to date too, since it is written anyway.
   stored_seed_info_.set_seed_date(TimeToProtoTime(seed_info.seed_date));
   stored_seed_info_.set_client_fetch_time(
       TimeToProtoTime(seed_info.client_fetch_time));
+  local_state_->SetTime(fields_prefs_->seed_date, seed_info.seed_date);
+  local_state_->SetTime(fields_prefs_->client_fetch_time,
+                        seed_info.client_fetch_time);
+
   // Only update the latest country code and geo level if country code is not
   // empty.
   if (!seed_info.session_country_code.empty()) {
@@ -826,6 +825,7 @@ void SeedReaderWriter::ScheduleSeedFileClear() {
   stored_seed_info_.clear_milestone();
   stored_seed_info_.clear_seed_date();
   stored_seed_info_.clear_client_fetch_time();
+
   // `seed_writer_` will eventually call
   // GetSerializedDataProducerForBackgroundSequence() on *this* object to get
   // a callback that will be run asynchronously. This callback will be used to
@@ -859,6 +859,28 @@ void SeedReaderWriter::ReadSeedFile() {
     // as it will no longer be used. If it doesn't exist, this is a
     // no-op.
     local_state_->ClearPref(fields_prefs_->seed);
+    // Migrate the timestamps from the seed file to local state, which is now
+    // where they are read from and updated. Keep the most recent value: local
+    // state may be unset (in which case it reads back as a null base::Time) or
+    // stale, e.g. if the seed file was written by a more recent version of the
+    // browser.
+    if (stored_seed_info_.has_seed_date()) {
+      const base::Time seed_file_seed_date =
+          ProtoTimeToTime(stored_seed_info_.seed_date());
+      if (seed_file_seed_date >
+          local_state_->GetTime(fields_prefs_->seed_date)) {
+        local_state_->SetTime(fields_prefs_->seed_date, seed_file_seed_date);
+      }
+    }
+    if (stored_seed_info_.has_client_fetch_time()) {
+      const base::Time seed_file_client_fetch_time =
+          ProtoTimeToTime(stored_seed_info_.client_fetch_time());
+      if (seed_file_client_fetch_time >
+          local_state_->GetTime(fields_prefs_->client_fetch_time)) {
+        local_state_->SetTime(fields_prefs_->client_fetch_time,
+                              seed_file_client_fetch_time);
+      }
+    }
   } else if (read_seed_info_result.error() !=
                  LoadSeedResult::kErrorReadingFile &&
              read_seed_info_result.error() != LoadSeedResult::kFileNotFound) {

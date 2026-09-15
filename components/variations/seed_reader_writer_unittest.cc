@@ -72,6 +72,12 @@ std::string CreateCompressedVariationsSeed() {
   return Gzip(CreateVariationsSeed());
 }
 
+// Converts a base::Time to the format used in StoredSeedInfo. This is the
+// inverse of SeedReaderWriter::ProtoTimeToTime().
+int64_t TimeToProtoTime(base::Time time) {
+  return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
 // Creates a test StoredSeedInfo to be stored in a seed file.
 StoredSeedInfo CreateStoredSeedInfo() {
   StoredSeedInfo stored_seed_info;
@@ -511,30 +517,37 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, UpdateStoredSeedInfoFields) {
   timer_.Fire();
   file_writer_thread_.FlushForTesting();
 
-  // 1. Verify updating seed date.
+  // 1. Verify updating seed date. It is stored in local state only, so it
+  // should not schedule a seed file write.
   // Add a non-zero offset to ensure the new time is distinct from base::Time()
   // and seed_date.
   base::Time new_seed_date = seed_date + base::Days(1);
   seed_reader_writer.SetSeedDate(new_seed_date);
-  timer_.Fire();
-  file_writer_thread_.FlushForTesting();
+  EXPECT_FALSE(timer_.IsRunning());
 
   StoredSeedInfo seed_info_after_date = ReadStoredSeedInfo();
   EXPECT_EQ(seed_reader_writer.GetSeedInfo().seed_date, new_seed_date);
-  EXPECT_EQ(SeedReaderWriter::ProtoTimeToTime(seed_info_after_date.seed_date()),
+  EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.seed_date),
             new_seed_date);
+  // The seed file still holds the date from the last seed write.
+  EXPECT_EQ(SeedReaderWriter::ProtoTimeToTime(seed_info_after_date.seed_date()),
+            seed_date);
 
-  // 2. Verify updating fetch time.
+  // 2. Verify updating fetch time. It is stored in local state only, so it
+  // should not schedule a seed file write.
   base::Time new_fetch_time = fetch_time + base::Days(2);
   seed_reader_writer.SetFetchTime(new_fetch_time);
-  timer_.Fire();
-  file_writer_thread_.FlushForTesting();
+  EXPECT_FALSE(timer_.IsRunning());
 
   StoredSeedInfo seed_info_after_fetch = ReadStoredSeedInfo();
   EXPECT_EQ(seed_reader_writer.GetSeedInfo().client_fetch_time, new_fetch_time);
+  EXPECT_EQ(
+      local_state_.GetTime(GetParam().seed_fields_prefs.client_fetch_time),
+      new_fetch_time);
+  // The seed file still holds the fetch time from the last seed write.
   EXPECT_EQ(SeedReaderWriter::ProtoTimeToTime(
                 seed_info_after_fetch.client_fetch_time()),
-            new_fetch_time);
+            fetch_time);
 
   // 3. Verify setting permanent consistency country and version.
   seed_reader_writer.SetPermanentConsistencyCountryAndVersion("ca", "1.2.3");
@@ -597,33 +610,40 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest,
   seed_reader_writer.AllowToPurgeSeedDataFromMemory();
   ASSERT_FALSE(seed_reader_writer.stored_seed_data_for_testing().has_value());
 
-  // 1. Verify updating seed date.
+  // 1. Verify updating seed date. It is stored in local state only, so it
+  // should not schedule a seed file write.
   // Add a non-zero offset to ensure the new time is distinct from base::Time()
   // and seed_date.
   base::Time new_seed_date = seed_date + base::Days(1);
   seed_reader_writer.SetSeedDate(new_seed_date);
-  timer_.Fire();
-  file_writer_thread_.FlushForTesting();
+  EXPECT_FALSE(timer_.IsRunning());
 
   StoredSeedInfo seed_info_after_date = ReadStoredSeedInfo();
   EXPECT_EQ(seed_reader_writer.GetSeedInfo().seed_date, new_seed_date);
-  EXPECT_EQ(SeedReaderWriter::ProtoTimeToTime(seed_info_after_date.seed_date()),
+  EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.seed_date),
             new_seed_date);
+  // The seed file still holds the date from the last seed write.
+  EXPECT_EQ(SeedReaderWriter::ProtoTimeToTime(seed_info_after_date.seed_date()),
+            seed_date);
   // Verify that seed data and signature are preserved and not empty.
   EXPECT_EQ(seed_info_after_date.data(), seed_data);
   EXPECT_EQ(seed_info_after_date.signature(), "signature");
 
-  // 2. Verify updating fetch time.
+  // 2. Verify updating fetch time. It is stored in local state only, so it
+  // should not schedule a seed file write.
   base::Time new_fetch_time = fetch_time + base::Days(2);
   seed_reader_writer.SetFetchTime(new_fetch_time);
-  timer_.Fire();
-  file_writer_thread_.FlushForTesting();
+  EXPECT_FALSE(timer_.IsRunning());
 
   StoredSeedInfo seed_info_after_fetch = ReadStoredSeedInfo();
   EXPECT_EQ(seed_reader_writer.GetSeedInfo().client_fetch_time, new_fetch_time);
+  EXPECT_EQ(
+      local_state_.GetTime(GetParam().seed_fields_prefs.client_fetch_time),
+      new_fetch_time);
+  // The seed file still holds the fetch time from the last seed write.
   EXPECT_EQ(SeedReaderWriter::ProtoTimeToTime(
                 seed_info_after_fetch.client_fetch_time()),
-            new_fetch_time);
+            fetch_time);
   EXPECT_EQ(seed_info_after_fetch.data(), seed_data);
 
   // 3. Verify setting permanent consistency country and version.
@@ -689,6 +709,78 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedFileBasedSeed) {
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Variations.SeedFileRead.", histogram_suffix}),
       /*sample=*/1, /*expected_bucket_count=*/1);
+}
+
+// Verifies that the timestamps stored in a seed file are migrated to local
+// state.
+TEST_P(SeedReaderWriterSeedFilesGroupTest, MigrateSeedFileTimestamps) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Create and store a seed with timestamps.
+  const base::Time seed_date = base::Time::Now();
+  const base::Time fetch_time = seed_date + base::Days(1);
+  StoredSeedInfo stored_seed_info = CreateStoredSeedInfo();
+  stored_seed_info.set_seed_date(TimeToProtoTime(seed_date));
+  stored_seed_info.set_client_fetch_time(TimeToProtoTime(fetch_time));
+  ASSERT_TRUE(
+      base::WriteFile(temp_seed_file_path_, Compress(stored_seed_info)));
+  ASSERT_TRUE(
+      local_state_.FindPreference(GetParam().seed_fields_prefs.seed_date)
+          ->IsDefaultValue());
+
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), GetHistogramSuffix(),
+      file_writer_thread_.task_runner());
+
+  EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.seed_date),
+            seed_date);
+  EXPECT_EQ(
+      local_state_.GetTime(GetParam().seed_fields_prefs.client_fetch_time),
+      fetch_time);
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().seed_date, seed_date);
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().client_fetch_time, fetch_time);
+}
+
+// Verifies that when migrating the timestamps stored in a seed file, the most
+// recent value takes precedence.
+TEST_P(SeedReaderWriterSeedFilesGroupTest,
+       MigrateSeedFileTimestampsKeepsMostRecent) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Create and store a seed with timestamps.
+  const base::Time seed_file_seed_date = base::Time::Now();
+  const base::Time seed_file_fetch_time = seed_file_seed_date + base::Days(1);
+  StoredSeedInfo stored_seed_info = CreateStoredSeedInfo();
+  stored_seed_info.set_seed_date(TimeToProtoTime(seed_file_seed_date));
+  stored_seed_info.set_client_fetch_time(TimeToProtoTime(seed_file_fetch_time));
+  ASSERT_TRUE(
+      base::WriteFile(temp_seed_file_path_, Compress(stored_seed_info)));
+
+  // Local state holds a more recent seed date, but a staler fetch time.
+  const base::Time local_state_seed_date = seed_file_seed_date + base::Days(2);
+  const base::Time local_state_fetch_time =
+      seed_file_fetch_time - base::Days(2);
+  local_state_.SetTime(GetParam().seed_fields_prefs.seed_date,
+                       local_state_seed_date);
+  local_state_.SetTime(GetParam().seed_fields_prefs.client_fetch_time,
+                       local_state_fetch_time);
+
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), GetHistogramSuffix(),
+      file_writer_thread_.task_runner());
+
+  EXPECT_EQ(local_state_.GetTime(GetParam().seed_fields_prefs.seed_date),
+            local_state_seed_date);
+  EXPECT_EQ(
+      local_state_.GetTime(GetParam().seed_fields_prefs.client_fetch_time),
+      seed_file_fetch_time);
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().seed_date, local_state_seed_date);
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().client_fetch_time,
+            seed_file_fetch_time);
 }
 
 // Verifies clients in SeedFiles group do not crash if reading empty seed file.
