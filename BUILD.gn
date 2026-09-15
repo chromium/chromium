@@ -410,6 +410,9 @@ group("gn_all") {
         "//net:net_perftests",
         "//url:url_unittests",
       ]
+      if (is_java_debug) {
+        deps += [ "//chrome/android/javatests:check_settings_enums" ]
+      }
 
       if (!is_cast_android) {
         deps += [

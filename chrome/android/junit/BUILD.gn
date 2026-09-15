@@ -1610,7 +1610,6 @@ if (is_android) {
 
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.settings") {
-    data = [ "//tools/metrics/histograms/metadata/settings/enums.xml" ]
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/settings/MultiColumnTitleUpdaterTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsMenuHelperUnitTest.java",
@@ -1621,7 +1620,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/settings/SettingsActivityUnitTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsBreadcrumbUtilTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsContainmentHelperTest.java",
-      "src/org/chromium/chrome/browser/settings/SettingsEnumsTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsFragmentRegistryTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsHostFragmentTest.java",
       "src/org/chromium/chrome/browser/settings/SettingsInTabNavigationDelegateTest.java",
