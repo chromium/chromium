@@ -18,8 +18,6 @@
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/common/extensions/api/processes.h"
 #include "components/sessions/core/session_id.h"
@@ -33,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
 #include "extensions/browser/api/constants.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/error_utils.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
@@ -462,9 +461,9 @@ ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
 
   const int tab_id = params->tab_id;
   content::WebContents* contents = nullptr;
-  if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
-                                    include_incognito_information(),
-                                    &contents)) {
+  if (!ExtensionsBrowserClient::Get()->IsValidTabId(
+          browser_context(), tab_id, include_incognito_information(),
+          &contents)) {
     return RespondNow(Error(kTabNotFoundError, base::NumberToString(tab_id)));
   }
 

@@ -21,8 +21,6 @@ source_set("processes") {
   ]
 
   deps = [
-    "//chrome/browser/extensions",
-    "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
     "//content/public/browser",
     "//content/public/common",
