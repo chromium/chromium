@@ -23,6 +23,7 @@ class SingleModuleClient;
 enum class ModuleGraphLevel;
 enum class ModuleScriptCustomFetchType;
 enum class ModuleType;
+struct IntegrityMetadataSet;
 
 // A ModuleMap implements "module map" spec.
 // https://html.spec.whatwg.org/C/#module-map
@@ -66,7 +67,9 @@ class CORE_EXPORT ModuleMap final : public GarbageCollected<ModuleMap>,
   // fetch, which may synchronously evict the entry from `map_` (failures aren't
   // cached), and a live AddResult would then dangle and trip its
   // modification-count check.
-  Entry* GetOrCreateEntry(const Key& key, bool* is_new_entry);
+  Entry* GetOrCreateEntry(const Key& key,
+                          const IntegrityMetadataSet& integrity_metadata,
+                          bool* is_new_entry);
 
   // Removes the entry under `key`. Used by an Entry to evict itself on a failed
   // fetch, so failures are not cached. `entry_to_remove` must be the entry

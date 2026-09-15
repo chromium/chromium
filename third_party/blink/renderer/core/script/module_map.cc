@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/script/module_map.h"
 
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader_client.h"
@@ -11,9 +13,34 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+namespace {
+
+// <specdef
+// href="https://html.spec.whatwg.org/C/#match-integrity-metadata">
+bool MatchIntegrityMetadata(
+    const IntegrityMetadataSet& consumer_integrity_metadata,
+    const IntegrityMetadataSet& existing_integrity_metadata) {
+  // <spec step="3">If parsedConsumerIntegrityMetadata is no metadata, then
+  // return true.</spec>
+  if (consumer_integrity_metadata.empty()) {
+    return true;
+  }
+  // <spec step="4">If parsedConsumerIntegrityMetadata is equal to
+  // parsedExistingIntegrityMetadata, then return true.</spec>
+  if (consumer_integrity_metadata == existing_integrity_metadata) {
+    return true;
+  }
+  // <spec step="5">Return false.</spec>
+  return false;
+}
+
+}  // namespace
 
 // Entry struct represents a value in "module map" spec object.
 // https://html.spec.whatwg.org/C/#module-map
@@ -22,7 +49,9 @@ class ModuleMap::Entry final : public GarbageCollected<Entry>,
                                public ModuleScriptLoaderClient {
 
  public:
-  Entry(ModuleMap*, const Key& key);
+  Entry(ModuleMap*,
+        const Key& key,
+        const IntegrityMetadataSet& integrity_metadata);
   ~Entry() override = default;
 
   void Trace(Visitor*) const override;
@@ -39,6 +68,8 @@ class ModuleMap::Entry final : public GarbageCollected<Entry>,
   // This is only to be used from ModuleRecordResolver implementations.
   ModuleScript* GetModuleScript() const;
 
+  const IntegrityMetadataSet& GetIntegrityMetadata() const;
+
  private:
   void DispatchFinishedNotificationAsync(SingleModuleClient*,
                                          ModuleImportPhase);
@@ -52,13 +83,21 @@ class ModuleMap::Entry final : public GarbageCollected<Entry>,
   // Key under which this entry is stored in `map_`; used to evict on failure.
   const Key key_;
 
+  // The integrity metadata of either
+  // - https://html.spec.whatwg.org/C/#module-script's fetch option, or
+  // - https://html.spec.whatwg.org/C/#in-progress-module-fetch-record.
+  const IntegrityMetadataSet integrity_metadata_;
+
   // Correspond to the HTML spec: "fetching" state.
   bool is_fetching_ = true;
 
   HeapHashSet<Member<SingleModuleClient>> clients_;
 };
 
-ModuleMap::Entry::Entry(ModuleMap* map, const Key& key) : map_(map), key_(key) {
+ModuleMap::Entry::Entry(ModuleMap* map,
+                        const Key& key,
+                        const IntegrityMetadataSet& integrity_metadata)
+    : map_(map), key_(key), integrity_metadata_(integrity_metadata) {
   DCHECK(map_);
 }
 
@@ -127,6 +166,20 @@ ModuleScript* ModuleMap::Entry::GetModuleScript() const {
   return module_script_.Get();
 }
 
+const IntegrityMetadataSet& ModuleMap::Entry::GetIntegrityMetadata() const {
+  if (module_script_) {
+    // In the spec, if the entry is a module script, the integrity metadata is
+    // stored in module script's fetch options. Anyway the integrity remains
+    // the same before and after module script is loaded, so we primarily keep
+    // and use `integrity_metadata_` for the entire lifetime of `Entry` and
+    // requires it to be the same as module script's integrity.
+    CHECK(module_script_->FetchOptions().GetIntegrityMetadata() ==
+          integrity_metadata_);
+  }
+
+  return integrity_metadata_;
+}
+
 ModuleMap::ModuleMap(Modulator* modulator)
     : modulator_(modulator),
       loader_registry_(MakeGarbageCollected<ModuleScriptLoaderRegistry>()) {
@@ -139,14 +192,16 @@ void ModuleMap::Trace(Visitor* visitor) const {
   visitor->Trace(loader_registry_);
 }
 
-ModuleMap::Entry* ModuleMap::GetOrCreateEntry(const Key& key,
-                                              bool* is_new_entry) {
+ModuleMap::Entry* ModuleMap::GetOrCreateEntry(
+    const Key& key,
+    const IntegrityMetadataSet& integrity_metadata,
+    bool* is_new_entry) {
   MapImpl::AddResult result = map_.insert(key, nullptr);
   *is_new_entry = result.is_new_entry;
   if (!result.is_new_entry) {
     return result.stored_value->value.Get();
   }
-  Entry* entry = MakeGarbageCollected<Entry>(this, key);
+  Entry* entry = MakeGarbageCollected<Entry>(this, key, integrity_metadata);
   result.stored_value->value = entry;
   return entry;
 }
@@ -171,7 +226,8 @@ void ModuleMap::FetchSingleModuleScript(
   // `entry` stays valid across the Fetch() below (which may synchronously evict
   // it from `map_`) because it is an on-stack strong reference.
   bool is_new_entry = false;
-  Entry* entry = GetOrCreateEntry(key, &is_new_entry);
+  Entry* entry = GetOrCreateEntry(key, request.Options().GetIntegrityMetadata(),
+                                  &is_new_entry);
   if (is_new_entry) {
     // Steps 4-9 loads a new single module script.
     // Delegates to ModuleScriptLoader via Modulator. This may synchronously
@@ -179,6 +235,15 @@ void ModuleMap::FetchSingleModuleScript(
     ModuleScriptLoader::Fetch(request, fetch_client_settings_object_fetcher,
                               level, modulator_, custom_fetch_type,
                               loader_registry_, entry);
+  } else {
+    // https://github.com/whatwg/html/pull/12922
+    if (!MatchIntegrityMetadata(request.Options().GetIntegrityMetadata(),
+                                entry->GetIntegrityMetadata())) {
+      if (modulator_->HasValidContext()) {
+        UseCounter::Count(ExecutionContext::From(modulator_->GetScriptState()),
+                          WebFeature::kSRIModuleMapIntegrityMismatch);
+      }
+    }
   }
   DCHECK(entry);
 
@@ -203,7 +268,9 @@ void ModuleMap::AddEntry(const KURL& url,
                          ModuleType type,
                          ModuleScript* script) {
   const Key key = std::make_pair(url, type);
-  Entry* entry = MakeGarbageCollected<Entry>(this, key);
+  // `AddEntry()` is used to insert inline CSS modules and thus there are
+  // no subresource integrity check for such inline modules.
+  Entry* entry = MakeGarbageCollected<Entry>(this, key, IntegrityMetadataSet());
   entry->SetModuleScript(script);
 
   // TODO(crbug.com/448174611) - what should happen with duplicate entries?
