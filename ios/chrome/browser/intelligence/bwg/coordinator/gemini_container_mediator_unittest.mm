@@ -494,26 +494,35 @@ TEST_F(GeminiContainerMediatorTest, TestGeminiLiveUserDidPressStopButton) {
   EXPECT_TRUE(delegate_.stop_button_pressed_called_);
 }
 
-// Tests that setConsumer configures initial UI state and notifies
-// containerHandler.
-TEST_F(GeminiContainerMediatorTest, TestSetConsumerTriggersInitialUIState) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+// Tests that connect configures initial UI state, notifies
+// containerHandler, and requests active page context generation.
+TEST_F(GeminiContainerMediatorTest, TestConnectTriggersInitialUIState) {
+  @autoreleasepool {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
 
-  FakeGeminiContainerConsumer* consumer =
-      [[FakeGeminiContainerConsumer alloc] init];
-  OCMExpect([mock_container_handler_
-      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium]);
-  OCMExpect([mock_container_handler_ setAssistantContainerGrabberHidden:NO
-                                                               animated:YES]);
+    FakeGeminiContainerConsumer* consumer =
+        [[FakeGeminiContainerConsumer alloc] init];
+    mediator_.consumer = consumer;
 
-  mediator_.consumer = consumer;
+    OCMExpect([mock_container_handler_
+        animateAssistantContainerToDetent:AssistantContainerDetent::kMedium]);
+    OCMExpect([mock_container_handler_ setAssistantContainerGrabberHidden:NO
+                                                                 animated:YES]);
 
-  EXPECT_TRUE(consumer.isZeroState);
-  EXPECT_EQ(1, consumer.zeroStateChangeCount);
-  EXPECT_TRUE(consumer.dismissKeyboardCalled);
-  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+    id mediator_mock = OCMPartialMock(mediator_);
+    OCMExpect([mediator_mock requestActivePageContextGeneration]);
+
+    [mediator_mock connect];
+
+    EXPECT_TRUE(consumer.isZeroState);
+    EXPECT_EQ(1, consumer.zeroStateChangeCount);
+    EXPECT_TRUE(consumer.dismissKeyboardCalled);
+    EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+    EXPECT_OCMOCK_VERIFY(mediator_mock);
+    [mediator_mock stopMocking];
+  }
 }
 
 // Tests that blockQuerySubmissionWhileLoading and
@@ -613,6 +622,7 @@ TEST_F(GeminiContainerMediatorTest,
   FakeGeminiContainerConsumer* consumer =
       [[FakeGeminiContainerConsumer alloc] init];
   mediator_.consumer = consumer;
+  [mediator_ connect];
 
   OCMExpect([mock_gemini_handler_ dismissGeminiFlowWithCompletion:nil]);
   [mediator_ assistantContainer:nil
@@ -641,6 +651,7 @@ TEST_F(GeminiContainerMediatorTest, TestDidChangeDetentNextIaDisabled) {
   FakeGeminiContainerConsumer* consumer =
       [[FakeGeminiContainerConsumer alloc] init];
   mediator_.consumer = consumer;
+  [mediator_ connect];
 
   [[mock_gemini_handler_ reject] dismissGeminiFlowWithCompletion:nil];
   [mediator_ assistantContainer:nil
@@ -667,6 +678,7 @@ TEST_F(GeminiContainerMediatorTest,
   FakeGeminiContainerConsumer* consumer =
       [[FakeGeminiContainerConsumer alloc] init];
   mediator_.consumer = consumer;
+  [mediator_ connect];
 
   OCMStub([mock_container_handler_ animateAssistantContainerToDetent:
                                        AssistantContainerDetent::kMinimized])

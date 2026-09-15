@@ -99,6 +99,10 @@ class WebStateList;
 - (BOOL)shouldShowPageLoadingSnackbarOnOpeningInvocationForEntryPoint:
     (gemini::EntryPoint)entryPoint;
 
+// Handles initial setup for UI state and page context generation when the
+// container session starts.
+- (void)connect;
+
 // Currently, `GeminiBrowserAgent` does some of the state cleanup after each
 // floaty dismissal, but some of the cleanup such as releasing the handlers
 // happens on GeminiBrowserAgent destruction.

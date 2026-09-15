@@ -71,6 +71,7 @@
   _viewController = [[GeminiContainerViewController alloc]
       initWithGeminiViewController:geminiViewController];
   _viewController.delegate = self;
+  _mediator.consumer = _viewController;
 
   // Initialize and attach GeminiZeroStateViewController.
   _geminiZeroStateViewController = [[GeminiZeroStateViewController alloc] init];
@@ -80,8 +81,10 @@
 
   [_containerHandler showAssistantContainerWithContent:_viewController
                                               delegate:_mediator];
-  // Set the consumer only after the bottom sheet is presenting.
-  _mediator.consumer = _viewController;
+
+  // Calling connect will result in setting the initial detent
+  // which only works after assistant container is presenting.
+  [_mediator connect];
 }
 
 - (void)dismissWithCompletion:(void (^)(void))completion {

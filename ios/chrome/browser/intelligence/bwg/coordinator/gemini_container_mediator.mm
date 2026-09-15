@@ -177,6 +177,11 @@ using ios::provider::GeminiViewState;
          IsAppSwitcherAISummarizationEnabled();
 }
 
+- (void)connect {
+  [self setupInitialUIState];
+  [self requestActivePageContextGeneration];
+}
+
 - (void)onFloatyDismiss {
   feature_engagement::Tracker* tracker =
       _profile ? feature_engagement::TrackerFactory::GetForProfile(_profile)
@@ -198,9 +203,6 @@ using ios::provider::GeminiViewState;
 - (void)setConsumer:(id<GeminiContainerConsumer>)consumer {
   CHECK(IsIOSGeminiBottomSheetMigrationEnabled());
   _consumer = consumer;
-  if (_consumer) {
-    [self setupInitialUIState];
-  }
 }
 
 - (void)disconnect {
