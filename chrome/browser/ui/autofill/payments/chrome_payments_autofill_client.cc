@@ -930,7 +930,9 @@ void ChromePaymentsAutofillClient::UpdateOfferNotification(
                                      .GetCreditCardByInstrumentId(
                                          offer.GetEligibleInstrumentIds()[0]);
 
-  if (offer.IsCardLinkedOffer() && !card) {
+  if (offer.GetOfferType() ==
+          AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER &&
+      !card) {
     return;
   }
 

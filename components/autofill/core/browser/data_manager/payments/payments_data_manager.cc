@@ -962,37 +962,23 @@ PaymentsDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
   if (!IsAutofillWalletImportEnabled() || !IsAutofillPaymentMethodsEnabled()) {
     return {};
   }
-  std::vector<const AutofillOfferData*> promo_code_offers_for_origin;
-  std::ranges::for_each(
-      autofill_offer_data_,
-      [&](const std::unique_ptr<AutofillOfferData>& autofill_offer_data) {
-        if (autofill_offer_data.get()->IsGPayPromoCodeOffer() &&
-            autofill_offer_data.get()->IsActiveAndEligibleForOrigin(origin)) {
-          promo_code_offers_for_origin.push_back(autofill_offer_data.get());
-        }
-      });
-  return promo_code_offers_for_origin;
-}
-
-std::vector<const AutofillOfferData*>
-PaymentsDataManager::GetActiveAutofillWalletDirectOffersForOrigin(
-    GURL origin) const {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableWalletDirectOffers)) {
     return {};
   }
-  // TODO(crbug.com/546252995): Add filtering logic for direct offer data from
-  // `autofill_offer_data_` after Chrome Sync logic is added.
-  std::vector<const AutofillOfferData*> wallet_direct_offers_for_origin;
-  wallet_direct_offers_for_origin.reserve(autofill_offer_data_.size());
+  std::vector<const AutofillOfferData*> promo_code_offers_for_origin;
+  promo_code_offers_for_origin.reserve(autofill_offer_data_.size());
   std::ranges::for_each(
       autofill_offer_data_,
       [&](const std::unique_ptr<AutofillOfferData>& autofill_offer_data) {
-        if (autofill_offer_data->IsActiveAndEligibleForOrigin(origin)) {
-          wallet_direct_offers_for_origin.push_back(autofill_offer_data.get());
+        // TODO(crbug.com/546252995): Drop empty promo codes at the sync
+        // bridge / disk loading level instead of filtering them here.
+        if (!autofill_offer_data->GetPromoCode().empty() &&
+            autofill_offer_data->IsActiveAndEligibleForOrigin(origin)) {
+          promo_code_offers_for_origin.push_back(autofill_offer_data.get());
         }
       });
-  return wallet_direct_offers_for_origin;
+  return promo_code_offers_for_origin;
 }
 
 GURL PaymentsDataManager::GetCardArtURL(const CreditCard& credit_card) const {

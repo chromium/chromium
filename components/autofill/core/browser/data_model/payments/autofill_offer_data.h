@@ -85,15 +85,6 @@ class AutofillOfferData {
   // result of first found difference.
   int Compare(const AutofillOfferData& other_offer_data) const;
 
-  // Returns true if the current offer is a card-linked offer.
-  bool IsCardLinkedOffer() const;
-
-  // Returns true if the current offer is a GPay promo code offer.
-  bool IsGPayPromoCodeOffer() const;
-
-  // Returns true if the current offer is a Google Wallet direct offer.
-  bool IsWalletDirectOffer() const;
-
   // Returns true if the current offer is 1) not expired and 2) contains the
   // given |origin| in the list of |merchant_origins|.
   bool IsActiveAndEligibleForOrigin(const GURL& origin) const;

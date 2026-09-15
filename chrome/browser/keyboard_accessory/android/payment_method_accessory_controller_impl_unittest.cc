@@ -539,6 +539,8 @@ TEST_F(PaymentMethodAccessoryControllerTest,
 // Tests that promo codes are shown.
 TEST_F(PaymentMethodAccessoryControllerTest,
        RefreshSuggestionsWithPromoCodeOffers) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
   CreditCard card = test::GetCreditCard();
   paydm().AddCreditCard(card);
   // Getting a promo code whose |merchant_origins| contains AutofillClient's

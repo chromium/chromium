@@ -124,6 +124,7 @@ enum class SuggestionType {
 
   // Promotion suggestions.
   kMerchantPromoCodeEntry = 41,
+  // TODO(crbug.com/546252995): Deprecate `kSeePromoCodeDetails`.
   kSeePromoCodeDetails = 42,
 
   // Federated profiles suggestions.

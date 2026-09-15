@@ -20,9 +20,6 @@
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
-#include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 namespace autofill {
 namespace {
@@ -36,7 +33,7 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
   }
 
   std::vector<Suggestion> suggestions;
-  GURL footer_offer_details_url;
+  suggestions.reserve(promo_code_offers.size());
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
     // For each promo code, create a suggestion.
     suggestions.emplace_back(
@@ -49,37 +46,6 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
     }
     suggestion.payload =
         Suggestion::Guid(base::NumberToString(promo_code_offer->GetOfferId()));
-
-    // Every offer for a given merchant leads to the same GURL, so we grab the
-    // first offer's offer details url as the payload for the footer to set
-    // later.
-    if (footer_offer_details_url.is_empty() &&
-        !promo_code_offer->GetOfferDetailsUrl().is_empty() &&
-        promo_code_offer->GetOfferDetailsUrl().is_valid()) {
-      footer_offer_details_url = promo_code_offer->GetOfferDetailsUrl();
-    }
-  }
-
-  CHECK(!suggestions.empty());
-  if (!footer_offer_details_url.is_empty()) {
-    // Add the footer separator since we will now have a footer in the offers
-    // suggestions popup.
-    suggestions.emplace_back(SuggestionType::kSeparator);
-
-    // Add the footer suggestion that navigates the user to the promo code
-    // details page in the offers suggestions popup.
-    suggestions.emplace_back(
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT),
-        SuggestionType::kSeePromoCodeDetails);
-    Suggestion& suggestion = suggestions.back();
-
-    // We set the payload for the footer as |footer_offer_details_url|, which is
-    // the offer details url of the first offer we had for this merchant. We
-    // will navigate to the url in |footer_offer_details_url| if the footer is
-    // selected in AutofillExternalDelegate::DidAcceptSuggestion().
-    suggestion.payload = std::move(footer_offer_details_url);
-    suggestion.trailing_icon = Suggestion::Icon::kGoogle;
   }
   return suggestions;
 }

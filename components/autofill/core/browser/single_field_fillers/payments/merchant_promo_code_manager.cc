@@ -66,7 +66,7 @@ void MerchantPromoCodeManager::OnFieldTypesDetermined(
       manager.client()
           .GetPaymentsAutofillClient()
           ->GetPaymentsDataManager()
-          .GetActiveAutofillWalletDirectOffersForOrigin(
+          .GetActiveAutofillPromoCodeOffersForOrigin(
               manager.client()
                   .GetLastCommittedPrimaryMainFrameOrigin()
                   .GetURL());

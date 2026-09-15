@@ -16,11 +16,10 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/form_data_test_api.h"
-#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 namespace {
@@ -31,8 +30,10 @@ using ::testing::Field;
 class MerchantPromoCodeSuggestionGeneratorTest : public testing::Test {
  protected:
   MerchantPromoCodeSuggestionGeneratorTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kAutofillNewSuggestionGeneration);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillNewSuggestionGeneration,
+                              features::kAutofillEnableWalletDirectOffers},
+        /*disabled_features=*/{});
     FormData form_data;
     form_data.set_fields(
         {test::CreateTestFormField(/*label=*/"", "Some Field Name",
@@ -94,11 +95,6 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
 
   Suggestion promo_code_suggestion = Suggestion(
       base::ASCIIToUTF16(promo_code), SuggestionType::kMerchantPromoCodeEntry);
-  Suggestion separator_suggestion = Suggestion(SuggestionType::kSeparator);
-  Suggestion footer_suggestion =
-      Suggestion(l10n_util::GetStringUTF16(
-                     IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT),
-                 SuggestionType::kSeePromoCodeDetails);
 
   base::MockCallback<
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
@@ -110,10 +106,8 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       suggestions_generated_callback,
       Run(testing::Pair(
           SuggestionGenerator::SuggestionDataSource::kMerchantPromoCode,
-          UnorderedElementsAre(
-              Field(&Suggestion::main_text, promo_code_suggestion.main_text),
-              Field(&Suggestion::type, SuggestionType::kSeparator),
-              Field(&Suggestion::main_text, footer_suggestion.main_text)))));
+          UnorderedElementsAre(Field(&Suggestion::main_text,
+                                     promo_code_suggestion.main_text)))));
   generator.GenerateSuggestions(form().ToFormData(), field(), &form(), &field(),
                                 client(), suggestions_generated_callback.Get());
 }
@@ -146,7 +140,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
   payments_data_manager().AddAutofillOfferData(offer2);
 
   std::vector<Suggestion> promo_code_suggestions = GetPromoCodeSuggestions();
-  ASSERT_EQ(promo_code_suggestions.size(), 4u);
+  ASSERT_EQ(promo_code_suggestions.size(), 2u);
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
   EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::Guid>(),
@@ -170,16 +164,6 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
             Suggestion::Guid("2"));
   EXPECT_EQ(promo_code_suggestions[1].type,
             SuggestionType::kMerchantPromoCodeEntry);
-
-  EXPECT_EQ(promo_code_suggestions[2].type, SuggestionType::kSeparator);
-
-  EXPECT_EQ(promo_code_suggestions[3].main_text.value,
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT));
-  EXPECT_EQ(promo_code_suggestions[3].GetPayload<GURL>(),
-            offer1.GetOfferDetailsUrl().spec());
-  EXPECT_EQ(promo_code_suggestions[3].type,
-            SuggestionType::kSeePromoCodeDetails);
 }
 
 }  // namespace

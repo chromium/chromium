@@ -1050,6 +1050,9 @@ TEST_P(PaymentsDataManagerServerTest, GetAutofillOffers) {
 // site-relevant promo code offers.
 TEST_P(PaymentsDataManagerServerTest,
        GetActiveAutofillPromoCodeOffersForOrigin) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+
   // Card-linked offers should not be returned.
   AddOfferDataForTest(test::GetCardLinkedOfferData1());
   // Expired promo code offers should not be returned.
@@ -1106,6 +1109,9 @@ TEST_P(PaymentsDataManagerServerTest,
 // promo code offers if |IsAutofillWalletImportEnabled()| returns |false|.
 TEST_P(PaymentsDataManagerServerTest,
        GetActiveAutofillPromoCodeOffersForOrigin_WalletImportDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+
   // Add an active promo code offer.
   AddOfferDataForTest(test::GetPromoCodeOfferData(
       /*origin=*/GURL("http://www.example.com")));
@@ -1131,6 +1137,9 @@ TEST_P(PaymentsDataManagerServerTest,
 // promo code offers if `IsAutofillPaymentMethodsEnabled()` returns `false`.
 TEST_P(PaymentsDataManagerServerTest,
        GetActiveAutofillPromoCodeOffersForOrigin_AutofillCreditCardDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+
   // Add an active promo code offer.
   AddOfferDataForTest(test::GetPromoCodeOfferData(
       /*origin=*/GURL("http://www.example.com")));
@@ -1138,11 +1147,28 @@ TEST_P(PaymentsDataManagerServerTest,
   prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
 
   // Should not return the offer as the autofill credit card pref is disabled.
-  EXPECT_EQ(payments_data_manager()
-                .GetActiveAutofillPromoCodeOffersForOrigin(
-                    GURL("http://www.example.com"))
-                .size(),
-            0U);
+  EXPECT_TRUE(payments_data_manager()
+                  .GetActiveAutofillPromoCodeOffersForOrigin(
+                      GURL("http://www.example.com"))
+                  .empty());
+}
+
+// Tests that GetActiveAutofillPromoCodeOffersForOrigin does not return any
+// promo code offers if `kAutofillEnableWalletDirectOffers` is disabled.
+TEST_P(PaymentsDataManagerServerTest,
+       GetActiveAutofillPromoCodeOffersForOrigin_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableWalletDirectOffers);
+
+  // Add an active promo code offer.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      /*origin=*/GURL("http://www.example.com")));
+
+  EXPECT_TRUE(payments_data_manager()
+                  .GetActiveAutofillPromoCodeOffersForOrigin(
+                      GURL("http://www.example.com"))
+                  .empty());
 }
 
 // Test that local credit cards are ordered as expected.

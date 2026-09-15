@@ -150,18 +150,6 @@ int AutofillOfferData::Compare(
   return 0;
 }
 
-bool AutofillOfferData::IsCardLinkedOffer() const {
-  return GetOfferType() == OfferType::GPAY_CARD_LINKED_OFFER;
-}
-
-bool AutofillOfferData::IsGPayPromoCodeOffer() const {
-  return GetOfferType() == OfferType::GPAY_PROMO_CODE_OFFER;
-}
-
-bool AutofillOfferData::IsWalletDirectOffer() const {
-  return GetOfferType() == OfferType::WALLET_DIRECT_OFFER;
-}
-
 bool AutofillOfferData::IsActiveAndEligibleForOrigin(const GURL& origin) const {
   return expiry_ > AutofillClock::Now() &&
          std::ranges::count(merchant_origins_, origin) > 0;
