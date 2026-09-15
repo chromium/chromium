@@ -7,14 +7,14 @@
 
 #include <stdint.h>
 
-#include <string>
-#include <utility>
 #include <vector>
 
 #include "third_party/rust/cxx/v1/cxx.h"
 
 namespace quiche::structured_headers {
 class Dictionary;
+class Item;
+struct InnerList;
 struct ParameterizedItem;
 struct ParameterizedMember;
 } // namespace quiche::structured_headers
@@ -23,32 +23,32 @@ namespace sfv {
 
 class Parameters;
 
+using BareItem = quiche::structured_headers::Item;
 using Dictionary = quiche::structured_headers::Dictionary;
+using InnerList = quiche::structured_headers::InnerList;
+using Item = quiche::structured_headers::ParameterizedItem;
 using List = std::vector<quiche::structured_headers::ParameterizedMember>;
-using Member = quiche::structured_headers::ParameterizedMember;
 
-Member& list_append_member(List&);
+Item& list_append_item(List&);
+InnerList& list_append_inner_list(List&);
 
-Member& dictionary_reset_key(Dictionary&, rust::Str key);
+Item& dictionary_set_item(Dictionary&, rust::Str key);
+InnerList& dictionary_set_inner_list(Dictionary&, rust::Str key);
 
-void set_member_boolean(Member&, bool);
-void set_member_integer(Member&, int64_t);
-void set_member_decimal(Member&, double);
-void set_member_string(Member&, rust::Str);
-void set_member_token(Member&, rust::Str);
-void set_member_byte_sequence(Member&, rust::Slice<const uint8_t>);
+void set_bare_item_boolean(BareItem&, bool);
+void set_bare_item_integer(BareItem&, int64_t);
+void set_bare_item_decimal(BareItem&, double);
+void set_bare_item_string(BareItem&, rust::Str);
+void set_bare_item_token(BareItem&, rust::Str);
+void set_bare_item_byte_sequence(BareItem&, rust::Slice<const uint8_t>);
 
-void set_member_inner_list(Member&);
+Item& inner_list_append_item(InnerList&);
+Parameters& get_inner_list_params(InnerList&);
 
-Parameters& get_member_params(Member&);
-Parameters& get_item_params(Member&);
+BareItem& get_item_bare_item(Item&);
+Parameters& get_item_params(Item&);
 
-void set_parameter_boolean(Parameters&, rust::Str key, bool);
-void set_parameter_integer(Parameters&, rust::Str key, int64_t);
-void set_parameter_decimal(Parameters&, rust::Str key, double);
-void set_parameter_string(Parameters&, rust::Str key, rust::Str);
-void set_parameter_token(Parameters&, rust::Str key, rust::Str);
-void set_parameter_byte_sequence(Parameters&, rust::Str key, rust::Slice<const uint8_t>);
+BareItem& get_or_insert_param(Parameters&, rust::Str key);
 
 }  // namespace sfv
 
