@@ -26,6 +26,10 @@ declare_args() {
 #     The name of the exported value or namespace. For more details, see
 #     https://rollupjs.org/guide/en/#outputname
 #
+#   output_dir (optional):
+#     The path within the bundle resources directory to place the output file.
+#     If unset, the file is placed directly in the bundle resources directory.
+#
 #   deps (optional):
 #     The dependent targets which produce typescript compiler manifest files.
 #     These manifest files will be used to resolve script imports.
@@ -108,6 +112,12 @@ template("optimize_js") {
     public_deps = [ ":$optimize_target_name" ]
 
     sources = get_target_outputs(":$optimize_target_name")
-    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+    if (defined(invoker.output_dir)) {
+      outputs = [
+        "{{bundle_resources_dir}}/${invoker.output_dir}/{{source_file_part}}",
+      ]
+    } else {
+      outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+    }
   }
 }

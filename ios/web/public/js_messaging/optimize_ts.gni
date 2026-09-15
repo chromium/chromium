@@ -20,6 +20,10 @@ import("//ios/web/public/js_messaging/optimize_js.gni")
 #     The name of the exported value or namespace. For more details, see
 #     https://rollupjs.org/guide/en/#outputname
 #
+#   output_dir (optional):
+#     The path within the bundle resources directory to place the output file.
+#     If unset, the file is placed directly in the bundle resources directory.
+#
 template("optimize_ts") {
   assert(defined(invoker.sources), "sources must be set")
   _sources_count = 0
@@ -43,6 +47,7 @@ template("optimize_ts") {
   optimize_js(target_name) {
     forward_variables_from(invoker,
                            [
+                             "output_dir",
                              "testonly",
                              "visibility",
                            ])
