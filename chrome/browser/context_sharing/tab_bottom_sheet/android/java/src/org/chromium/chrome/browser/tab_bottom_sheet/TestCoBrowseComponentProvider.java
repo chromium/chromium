@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -26,6 +27,7 @@ import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawab
 public class TestCoBrowseComponentProvider implements CoBrowseComponentProvider {
     static boolean sUsePlaceholder;
     static @Nullable PeekViewManager sPeekViewManager;
+    static @Nullable ResizingPlaceholderCoordinator sResizingPlaceholderCoordinator;
 
     public static void setUsePlaceholderForTesting(boolean usePlaceholder) {
         ResettersForTesting.register(() -> sUsePlaceholder = false);
@@ -37,12 +39,29 @@ public class TestCoBrowseComponentProvider implements CoBrowseComponentProvider 
         sPeekViewManager = peekViewManager;
     }
 
+    /**
+     * Sets the test {@link ResizingPlaceholderCoordinator} instance to return.
+     *
+     * @param coordinator The coordinator to return, or null to clear.
+     */
+    public static void setResizingPlaceholderCoordinator(
+            @Nullable ResizingPlaceholderCoordinator coordinator) {
+        ResettersForTesting.register(() -> sResizingPlaceholderCoordinator = null);
+        sResizingPlaceholderCoordinator = coordinator;
+    }
+
     @CalledByNative
     public TestCoBrowseComponentProvider() {}
 
     @Override
     public boolean setupPlaceholderView(TextViewWithCompoundDrawables placeholder) {
         return sUsePlaceholder;
+    }
+
+    @Override
+    public @Nullable ResizingPlaceholderCoordinator createResizingPlaceholderCoordinator(
+            Context context, @ColorInt int backgroundColor) {
+        return sResizingPlaceholderCoordinator;
     }
 
     @Override

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -41,6 +42,18 @@ public interface CoBrowseComponentProvider {
      */
     default boolean setupPlaceholderView(TextViewWithCompoundDrawables placeholder) {
         return false;
+    }
+
+    /**
+     * Instantiates a new instance of {@link ResizingPlaceholderCoordinator}.
+     *
+     * @param context The {@link Context} used to inflate placeholder views.
+     * @param backgroundColor The background color of the sheet / placeholder.
+     * @return A custom {@link ResizingPlaceholderCoordinator}, or null to use default.
+     */
+    default @Nullable ResizingPlaceholderCoordinator createResizingPlaceholderCoordinator(
+            Context context, @ColorInt int backgroundColor) {
+        return null;
     }
 
     /**
