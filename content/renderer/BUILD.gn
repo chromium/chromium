@@ -323,7 +323,6 @@ target(link_target_type, "renderer") {
     "//url",
     "//v8",
   ]
-  allow_circular_includes_from = []
 
   if (is_android) {
     deps += [

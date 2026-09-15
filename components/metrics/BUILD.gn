@@ -487,7 +487,6 @@ if (!is_cronet_build) {
     ]
 
     public_deps = [ ":metrics" ]
-    allow_circular_includes_from = [ ":metrics" ]
 
     deps = [
       "//base",

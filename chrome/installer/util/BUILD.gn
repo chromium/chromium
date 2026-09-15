@@ -119,10 +119,6 @@ static_library("with_no_strings") {
     "//third_party/abseil-cpp:absl",
   ]
 
-  # The constants target checks the Chrome distribution from this target. Both
-  # targets have to be linked together in practice.
-  allow_circular_includes_from = [ "//chrome/common:constants" ]
-
   if (is_win) {
     sources += [
       "additional_parameters.cc",

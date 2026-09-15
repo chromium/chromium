@@ -98,7 +98,6 @@ static_library("libwebp_dec") {
     ":libwebp_webp",
   ]
   public_configs = [ ":libwebp_public_config" ]
-  allow_circular_includes_from = [ ":libwebp_dsp_headers" ]
 }
 
 static_library("libwebp_demux") {
@@ -227,14 +226,6 @@ static_library("libwebp_dsp") {
       "WEBP_HAVE_SSE41",
       "WEBP_HAVE_AVX2",
     ]
-  }
-  allow_circular_includes_from = [
-    ":libwebp_dsp_sse2",
-    ":libwebp_dsp_sse41",
-    ":libwebp_utils",
-  ]
-  if (use_dsp_neon) {
-    allow_circular_includes_from += [ ":libwebp_dsp_neon" ]
   }
 }
 
@@ -424,8 +415,6 @@ static_library("libwebp_enc") {
     ":libwebp_utils",
     ":libwebp_webp",
   ]
-
-  allow_circular_includes_from = [ ":libwebp_dsp_headers" ]
 }
 
 source_set("libwebp_sharpyuv_dsp_headers") {

@@ -14,8 +14,6 @@ source_set("app_service") {
     "web_apps.h",
   ]
 
-  allow_circular_includes_from = []
-
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/badging",

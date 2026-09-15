@@ -41,7 +41,6 @@ rust_static_library("bindings") {
     "//third_party/rust/anyhow/v1:lib",
     "//third_party/rust/bitflags/v2:lib",
   ]
-  allow_circular_includes_from = [ ":cpp_router_handle_cc" ]
 }
 
 source_set("cpp_router_handle_cc") {
