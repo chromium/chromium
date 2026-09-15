@@ -43,9 +43,10 @@ class TestReceivingUiHandler : public ReceivingUiHandler {
 TEST(SendTabToSelfClientServiceTest, MultipleEntriesAdded) {
   // Set up the test objects.
   FakeSendTabToSelfModel test_model;
-  TestReceivingUiHandler* test_handler = new TestReceivingUiHandler();
-  SendTabToSelfClientService client_service(
-      std::unique_ptr<TestReceivingUiHandler>(test_handler), &test_model);
+  auto test_handler = std::make_unique<TestReceivingUiHandler>();
+  TestReceivingUiHandler* test_handler_ptr = test_handler.get();
+  SendTabToSelfClientService client_service(std::move(test_handler),
+                                            &test_model);
 
   // Create 2 entries and simulated that they were both added remotely.
   SendTabToSelfEntry entry1("a", GURL("http://www.example-a.com"), "a site",
@@ -56,7 +57,7 @@ TEST(SendTabToSelfClientServiceTest, MultipleEntriesAdded) {
                             NavigationHistory());
   client_service.OnEntriesAddedRemotely({&entry1, &entry2});
 
-  EXPECT_EQ(2u, test_handler->number_displayed_entries());
+  EXPECT_EQ(2u, test_handler_ptr->number_displayed_entries());
 }
 
 }  // namespace

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -95,9 +96,11 @@ class SendTabToSelfDevicePickerBubbleViewTest : public ChromeViewsTestBase {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     // Owned by WebContents.
-    controller_ = new SendTabToSelfBubbleControllerMock(web_contents_.get());
+    auto controller = std::make_unique<SendTabToSelfBubbleControllerMock>(
+        web_contents_.get());
+    controller_ = controller.get();
     web_contents_->SetUserData(SendTabToSelfBubbleControllerMock::UserDataKey(),
-                               base::WrapUnique(controller_.get()));
+                               std::move(controller));
 
     bubble_ = new SendTabToSelfDevicePickerBubbleView(
         views::BubbleAnchor(anchor_widget_->GetContentsView()),
