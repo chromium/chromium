@@ -296,9 +296,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       base::RepeatingCallback<void(const CacheEntryKey&)>
           on_entry_copied_callback);
 
-  size_t GetSharedCacheEligibleEntriesCountForTest() {
-    return shared_cache_eligible_entries_.size();
-  }
+  size_t GetSharedCacheEligibleEntriesCountForTest() const override;
 
   const absl::flat_hash_map<CacheEntryKey,
                             SqlPersistentStore::SharedCacheEligibleEntry>&

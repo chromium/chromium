@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -15,10 +16,17 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/mock_network_change_notifier.h"
+#include "net/disk_cache/buildflags.h"
+#include "net/disk_cache/disk_cache.h"
+#include "net/http/http_cache.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -36,6 +44,7 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "services/network/test/test_url_loader_client.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -49,10 +58,10 @@ constexpr int kRequestId = 456;
 
 }  // namespace
 
-class CorsURLLoaderFactoryTest : public testing::Test {
+class CorsURLLoaderFactoryTest : public testing::Test,
+                                 public net::WithTaskEnvironment {
  public:
-  CorsURLLoaderFactoryTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+  CorsURLLoaderFactoryTest() {
     net::URLRequestContextBuilder context_builder;
     context_builder.set_proxy_resolution_service(
         net::ConfiguredProxyResolutionService::CreateDirect());
@@ -158,6 +167,12 @@ class CorsURLLoaderFactoryTest : public testing::Test {
 
   net::test_server::EmbeddedTestServer* test_server() { return &test_server_; }
 
+  NetworkContext* network_context() { return network_context_.get(); }
+
+  std::vector<mojo::Remote<mojom::URLLoader>>& url_loaders() {
+    return url_loaders_;
+  }
+
   net::test::MockNetworkChangeNotifier* mock_network_change_notifier() {
     return scoped_mock_network_change_notifier_->mock_network_change_notifier();
   }
@@ -176,8 +191,6 @@ class CorsURLLoaderFactoryTest : public testing::Test {
   }
 
  private:
-  // Test environment.
-  base::test::TaskEnvironment task_environment_;
   mojo::FakeMessageDispatchContext mojo_context_;
   // This is required by NetworkBoundCorsURLLoaderFactoryTest but has to live
   // here to destruct things in the right order (it must outlive
@@ -282,8 +295,7 @@ TEST_F(CorsURLLoaderFactoryTest, DisallowedLoadFlagToUntrustedLoader) {
 }
 
 TEST_F(CorsURLLoaderFactoryTest, DocumentDestinationRequiresNavigateMode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
+  AddScopedFeatureList().InitAndEnableFeature(
       features::kRestrictFrameDestinationsToNavigate);
 
   ResourceRequest request;
@@ -667,5 +679,120 @@ TEST_F(BrowserProcessCorsURLLoaderFactoryTest, OutermostMainFrameNotClamped) {
   histogram_tester.ExpectTotalCount(
       "NetworkService.CorsURLLoaderFactory.IsOutermostMainFrameClamped", 0);
 }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+class SharedHttpCacheCorsURLLoaderFactoryTest
+    : public CorsURLLoaderFactoryTest {
+ public:
+  SharedHttpCacheCorsURLLoaderFactoryTest() {
+    AddScopedFeatureList().InitWithFeaturesAndParameters(
+        {{net::features::kDiskCacheBackendExperiment,
+          {{net::features::kDiskCacheBackendParam.name, "sql"}}},
+         {net::features::kRendererAccessibleHttpCache, {}}},
+        {});
+  }
+
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    auto context_params = CreateNetworkContextParamsForTesting();
+    context_params->http_cache_enabled = true;
+    context_params->file_paths->http_cache_directory = temp_dir_.GetPath();
+
+    const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+    auto factory_params = network::mojom::URLLoaderFactoryParams::New();
+    factory_params->renderer_accessible_http_cache_write_enabled = true;
+    factory_params->isolation_info = net::IsolationInfo::Create(
+        net::IsolationInfo::RequestType::kOther, origin, origin,
+        net::SiteForCookies::FromOrigin(origin));
+
+    BaseSetup(std::move(factory_params), std::move(context_params));
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+};
+
+TEST_F(SharedHttpCacheCorsURLLoaderFactoryTest, RedirectNotCached) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/script.js" ||
+            request.relative_url == "/script2.js") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("application/javascript");
+          response->AddCustomHeader("Cache-Control", "max-age=3600");
+          response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+          response->set_content("console.log('ok');");
+          return response;
+        }
+        if (request.relative_url == "/redirect.js") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_FOUND);
+          response->AddCustomHeader("Location", "/script2.js");
+          response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(https_server.Start());
+
+  const url::Origin initiator_origin =
+      url::Origin::Create(test_server()->base_url());
+
+  // 1. Direct request without redirect should be marked eligible for shared
+  // cache.
+  {
+    ResourceRequest request;
+    request.mode = mojom::RequestMode::kCors;
+    request.credentials_mode = mojom::CredentialsMode::kOmit;
+    request.method = net::HttpRequestHeaders::kGetMethod;
+    request.url = https_server.GetURL("/script.js");
+    request.destination = mojom::RequestDestination::kScript;
+    request.request_initiator = initiator_origin;
+
+    CreateLoaderAndStart(request);
+    test_cors_loader_clients().back()->RunUntilComplete();
+    EXPECT_EQ(
+        net::OK,
+        test_cors_loader_clients().back()->completion_status().error_code);
+
+    disk_cache::Backend* backend =
+        network_context()->GetHttpCache()->GetCurrentBackend();
+    ASSERT_TRUE(backend);
+    EXPECT_EQ(1u, backend->GetSharedCacheEligibleEntriesCountForTest());
+  }
+
+  // 2. Redirected request (302 -> 200 OK) must NOT be marked eligible for
+  // shared cache.
+  {
+    ResourceRequest request;
+    request.mode = mojom::RequestMode::kCors;
+    request.credentials_mode = mojom::CredentialsMode::kOmit;
+    request.method = net::HttpRequestHeaders::kGetMethod;
+    request.url = https_server.GetURL("/redirect.js");
+    request.destination = mojom::RequestDestination::kScript;
+    request.request_initiator = initiator_origin;
+
+    CreateLoaderAndStart(request);
+    test_cors_loader_clients().back()->RunUntilRedirectReceived();
+    url_loaders().back()->FollowRedirect({}, std::nullopt);
+    test_cors_loader_clients().back()->RunUntilComplete();
+    EXPECT_EQ(
+        net::OK,
+        test_cors_loader_clients().back()->completion_status().error_code);
+
+    disk_cache::Backend* backend =
+        network_context()->GetHttpCache()->GetCurrentBackend();
+    ASSERT_TRUE(backend);
+    EXPECT_EQ(1u, backend->GetSharedCacheEligibleEntriesCountForTest());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
 }  // namespace network::cors

@@ -84,6 +84,13 @@ std::unique_ptr<net::test_server::HttpResponse> HandleCustomResponse(
     response->AddCustomHeader("Content-Range", "bytes 0-21/22");
     return response;
   }
+  if (path == "/custom_resource/redirect.js") {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_FOUND);
+    response->AddCustomHeader("Location", "/custom_resource/acao_wildcard.js");
+    response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    return response;
+  }
   return nullptr;
 }
 
@@ -438,6 +445,23 @@ IN_PROC_BROWSER_TEST_P(RendererAccessibleHttpCacheBrowserTest, RangeRequest) {
   // TODO(crbug.com/473666511): Once reading from the Renderer Accessible HTTP
   // Cache (RegisterHttpCacheClient) is implemented, verify that responses for
   // range requests are not stored in the Renderer Accessible HTTP Cache.
+}
+
+IN_PROC_BROWSER_TEST_P(RendererAccessibleHttpCacheBrowserTest,
+                       RedirectedResponse) {
+  GURL page_url = GetURL("/loader/blank.html");
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), page_url));
+
+  GURL redirect_url = GetURL("/custom_resource/redirect.js");
+  FetchScript(redirect_url);
+
+  FlushSharedCacheEligibleEntries();
+
+  // TODO(crbug.com/473666511): Once reading from the Renderer Accessible HTTP
+  // Cache (RegisterHttpCacheClient) is implemented, verify that redirected
+  // responses are not stored in the Renderer Accessible HTTP Cache.
+  ReloadInNewProcess(page_url);
+  FetchScript(redirect_url);
 }
 
 }  // namespace

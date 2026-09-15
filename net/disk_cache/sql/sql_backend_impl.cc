@@ -1060,6 +1060,11 @@ void SqlBackendImpl::ProcessAllSharedCacheEligibleEntriesForTest(
       /*on_entry_copied_callback=*/base::NullCallback());
 }
 
+size_t SqlBackendImpl::GetSharedCacheEligibleEntriesCountForTest()  // IN-TEST
+    const {
+  return shared_cache_eligible_entries_.size();
+}
+
 void SqlBackendImpl::ProcessSharedCacheEligibleEntriesForTest(  // IN-TEST
     base::ScopedClosureRunner scoped_closure_runner,
     base::RepeatingCallback<void(const CacheEntryKey&)>

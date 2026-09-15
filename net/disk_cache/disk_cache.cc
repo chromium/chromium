@@ -598,6 +598,10 @@ void Backend::ProcessAllSharedCacheEligibleEntriesForTest(  // IN-TEST
     base::ScopedClosureRunner scoped_closure_runner) {
   NOTREACHED();
 }
+
+size_t Backend::GetSharedCacheEligibleEntriesCountForTest() const {  // IN-TEST
+  NOTREACHED();
+}
 #endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
 void Entry::SetEntryInMemoryData(uint8_t data) {}

@@ -387,6 +387,10 @@ class NET_EXPORT Backend {
   // empty and calls the callback when done.
   virtual void ProcessAllSharedCacheEligibleEntriesForTest(
       base::ScopedClosureRunner scoped_closure_runner);
+
+  // For testing only: returns the number of entries currently queued as
+  // eligible for the shared cache.
+  virtual size_t GetSharedCacheEligibleEntriesCountForTest() const;
 #endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
  private:

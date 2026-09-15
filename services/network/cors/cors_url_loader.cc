@@ -307,7 +307,17 @@ MaybeCreateHttpResponseInfoForRendererAccessibleCache(
     const mojom::URLResponseHead& response_head,
     const ResourceRequest& request,
     const GURL& last_response_url,
+    int redirect_count,
     SharedResourceChecker& shared_resource_checker) {
+  // Redirected responses must not be cached in the Renderer Accessible HTTP
+  // Cache. Redirects involve multi-hop CORS checks, Timing-Allow-Origin
+  // propagation, tainted origin flags, and URL changes (request.url becomes the
+  // target URL rather than the initial requested URL), which are not preserved
+  // or validated when serving directly from the shared cache.
+  if (redirect_count > 0) {
+    return nullptr;
+  }
+
   const net::NetworkIsolationKey& network_isolation_key =
       isolation_info.network_isolation_key();
 
@@ -911,7 +921,7 @@ void CorsURLLoader::OnReceiveResponse(
     response_info_for_renderer_accessible_cache_ =
         MaybeCreateHttpResponseInfoForRendererAccessibleCache(
             isolation_info_, *response_head, request_, last_response_url_,
-            *context_->GetSharedResourceChecker());
+            redirect_count_, *context_->GetSharedResourceChecker());
   }
 #endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
