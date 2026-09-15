@@ -837,20 +837,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_SetDefaultSuggestion) {
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
-#if BUILDFLAG(IS_ANDROID)
-  AutocompleteInput input(u"word d", metrics::OmniboxEventProto::NTP,
-                          ChromeAutocompleteSchemeClassifier(profile()));
-  autocomplete_controller->Start(input);
-#else
-  chrome::FocusLocationBar(browser());
-  ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-
   // Input a keyword query and wait for suggestions from the extension.
   // Note that we need to add a character after the keyword for the service to
   // trigger the extension.
-  InputKeys(browser(), {ui::VKEY_W, ui::VKEY_O, ui::VKEY_R, ui::VKEY_D,
-                        ui::VKEY_SPACE, ui::VKEY_D});
-#endif
+  AutocompleteInput input(u"word d", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  input.set_in_keyword_mode(true);
+  autocomplete_controller->Start(input);
   WaitForAutocompleteDone();
   EXPECT_TRUE(autocomplete_controller->done());
 
@@ -916,12 +909,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
-  chrome::FocusLocationBar(browser());
-  ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
-
   // Enter "alpha d" into the omnibox to trigger the extension.
-  InputKeys(browser(), {ui::VKEY_A, ui::VKEY_L, ui::VKEY_P, ui::VKEY_H,
-                        ui::VKEY_A, ui::VKEY_SPACE, ui::VKEY_D});
+  AutocompleteInput input(u"alpha d", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  input.set_in_keyword_mode(true);
+  autocomplete_controller->Start(input);
   WaitForAutocompleteDone();
   EXPECT_TRUE(autocomplete_controller->done());
 
@@ -940,9 +932,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
               result.match_at(1).provider->type());
   }
 
-  // Now, hit the backspace key, so that the only text is "alpha ". The
-  // extension should still be receiving input.
-  InputKeys(browser(), {ui::VKEY_BACK});
+  // Now, test with only "alpha " (as if the user hit backspace while remaining
+  // in keyword mode). The extension should still be receiving input.
+  AutocompleteInput backspace_input(
+      u"alpha ", metrics::OmniboxEventProto::NTP,
+      ChromeAutocompleteSchemeClassifier(profile()));
+  backspace_input.set_in_keyword_mode(true);
+  backspace_input.set_prevent_inline_autocomplete(true);
+  autocomplete_controller->Start(backspace_input);
 
   WaitForAutocompleteDone();
   EXPECT_TRUE(autocomplete_controller->done());
