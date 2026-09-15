@@ -81,7 +81,7 @@ Vector<EchoCancellationMode> GetSupportedEchoCancellationModes(
     mojom::blink::MediaStreamType);
 
 // Returns the set of supported values for the voiceIsolation constraint on a
-// specific device, given its hardware platform effects.
+// specific device, given its platform effects.
 // If voice isolation is supported by the platform and the device, returns
 // {true, false}. Otherwise, returns {false} (only disabled state is supported).
 Vector<bool> GetSupportedVoiceIsolationValues(int platform_effects);

@@ -211,16 +211,18 @@ class MEDIA_EXPORT AudioParameters {
 
     IGNORE_UI_GAINS = 1 << 16,
 
-    VOICE_ISOLATION_SUPPORTED = 1 << 17,  // Set when system voice isolation is
-                                          // supported.
-    CLIENT_CONTROLLED_VOICE_ISOLATION =
-        1 << 18,                // Set when client forces to
-                                // enable/disable the platform voice
-                                // isolation effects. False indicates
-                                // to use platform default state.
-    VOICE_ISOLATION = 1 << 19,  // Enable/Disable platform voice isolation.
-                                // Only meaningful when
-                                // CLIENT_CONTROLLED_VOICE_ISOLATION is set.
+    // Set when voice isolation is supported for the stream/device (either by
+    // the system, e.g. on ChromeOS, or by software within Chrome, e.g. on
+    // desktop platforms).
+    VOICE_ISOLATION_SUPPORTED = 1 << 17,
+
+    // Controls whether platform-level voice isolation is client-configurable
+    // (used on ChromeOS). False indicates platform default state.
+    CLIENT_CONTROLLED_VOICE_ISOLATION = 1 << 18,
+
+    // Enable/Disable platform voice isolation. Only meaningful when
+    // CLIENT_CONTROLLED_VOICE_ISOLATION is set.
+    VOICE_ISOLATION = 1 << 19,
 
     DEEP_NOISE_SUPPRESSION = 1 << 20,  // Also called Voice Focus on Windows.
   };
