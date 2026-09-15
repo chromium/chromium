@@ -44,6 +44,12 @@ std::optional<ByteSize> CalculateProcessMemoryFootprint(
     return std::nullopt;
   }
 
+  if (resident_pages < shared_pages) {
+    // Invalid: supposedly resident_pages = VmRss = RssAnon + RssFile +
+    // RssShmem >= RssFile + RssShmem = shared_pages.
+    return std::nullopt;
+  }
+
   // Get swap size from status file. The format is: VmSwap :  10 kB.
   n = status_file.ReadAtCurrentPos(line_span.first<kMaxLineSize - 1>());
   if (n.value_or(0) == 0) {
