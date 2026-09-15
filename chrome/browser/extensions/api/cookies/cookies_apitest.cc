@@ -7,9 +7,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/cookies/cookies_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -27,6 +30,8 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_options.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -513,6 +518,70 @@ IN_PROC_BROWSER_TEST_F(CookiesCrashApiTest, CookiesRemoveNetworkServiceCrash) {
       chrome.test.sendMessage('api_called');
     });
   )");
+}
+
+using CookiesPolicyApiTest = ExtensionApiTestWithManagementPolicy;
+
+// Tests that cookies.onChanged is not dispatched for hosts blocked by the
+// ExtensionSettings `runtime_blocked_hosts` policy. The cookies API functions
+// already reject such hosts. Regression test for https://crbug.com/517094892.
+IN_PROC_BROWSER_TEST_F(CookiesPolicyApiTest,
+                       OnChangedRespectsPolicyBlockedHosts) {
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://blocked.example");
+  }
+
+  static constexpr char kManifest[] = R"({
+    "name": "Cookies policy test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["cookies"],
+    "host_permissions": ["<all_urls>"],
+    "background": {"service_worker": "background.js"}
+  })";
+  static constexpr char kBackgroundJs[] = R"(
+    chrome.cookies.onChanged.addListener((changeInfo) => {
+      chrome.test.sendMessage('changed:' + changeInfo.cookie.domain);
+    });
+    chrome.test.sendMessage('ready');
+  )";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  ExtensionTestMessageListener ready_listener("ready");
+  ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  ExtensionTestMessageListener blocked_listener("changed:blocked.example");
+  ExtensionTestMessageListener allowed_listener("changed:allowed.example");
+
+  auto set_cookie = [this](const GURL& url) {
+    std::unique_ptr<net::CanonicalCookie> cookie = net::CanonicalCookie::Create(
+        url, "sid=secret; Path=/; HttpOnly", base::Time::Now(),
+        /*server_time=*/std::nullopt, /*cookie_partition_key=*/std::nullopt,
+        net::CookieSourceType::kOther, /*status=*/nullptr);
+    ASSERT_TRUE(cookie);
+    base::test::TestFuture<net::CookieAccessResult> future;
+    profile()
+        ->GetDefaultStoragePartition()
+        ->GetCookieManagerForBrowserProcess()
+        ->SetCanonicalCookie(*cookie, url,
+                             net::CookieOptions::MakeAllInclusive(),
+                             future.GetCallback());
+    EXPECT_TRUE(future.Take().status.IsInclude());
+  };
+
+  // Cookie changes reach the extension in the order they happen, so once the
+  // event for the allowed host has arrived, the event for the blocked host
+  // would have arrived too if it had leaked.
+  set_cookie(GURL("http://blocked.example/"));
+  set_cookie(GURL("http://allowed.example/"));
+
+  EXPECT_TRUE(allowed_listener.WaitUntilSatisfied());
+  EXPECT_FALSE(blocked_listener.was_satisfied());
 }
 
 }  // namespace extensions

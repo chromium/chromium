@@ -40,6 +40,9 @@
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
+#include "extensions/common/permissions/permissions_data.h"
+#include "extensions/common/url_pattern.h"
+#include "extensions/common/url_pattern_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-blink-forward.h"
 
@@ -1811,6 +1814,43 @@ TEST_F(EventRouterDispatchTest, DispatchedEventPreservesFilterInfo) {
   EXPECT_EQ(42, dispatched_event->filter_info->instance_id);
   EXPECT_EQ(EventRouter::UserGestureState::kEnabled,
             dispatched_event->user_gesture);
+}
+
+// Tests that an event scoped to a URL isn't dispatched for hosts blocked by
+// enterprise policy, even if the extension has host permissions for them.
+// Regression test for https://crbug.com/517094892.
+TEST_F(EventRouterDispatchTest, EventURLRespectsPolicyBlockedHosts) {
+  const ExtensionId ext1 = "ext1";
+  RegisterTestApiFeature(StaticFeatureData(kTestEventFeatureData));
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("test extension")
+          .SetID(ext1)
+          .AddHostPermission("<all_urls>")
+          .Build();
+  ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+
+  URLPatternSet policy_blocked_hosts;
+  policy_blocked_hosts.AddPattern(
+      URLPattern(URLPattern::SCHEME_ALL, "*://blocked.example/*"));
+  extension->permissions_data()->SetPolicyHostRestrictions(
+      policy_blocked_hosts, /*policy_allowed_hosts=*/URLPatternSet());
+
+  TestEventRouterObserver observer(event_router());
+  event_router()->AddEventListenerForTesting(kTestEventName, process(), ext1);
+
+  auto create_event = [&](const char* url) {
+    auto event = std::make_unique<Event>(events::FOR_TEST, kTestEventName,
+                                         base::ListValue(), browser_context());
+    event->event_url = GURL(url);
+    return event;
+  };
+
+  event_router()->BroadcastEvent(create_event("http://blocked.example/"));
+  EXPECT_EQ(0u, observer.dispatched_events().size());
+
+  event_router()->BroadcastEvent(create_event("http://allowed.example/"));
+  EXPECT_EQ(1u, observer.dispatched_events().size());
 }
 
 }  // namespace extensions

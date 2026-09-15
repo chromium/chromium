@@ -23,6 +23,7 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 
 using content::BrowserContext;
@@ -55,6 +56,27 @@ bool CanDispatchEventToBrowserContext(BrowserContext& context,
                                                                     &context);
 }
 
+// Returns whether `extension` may receive an event scoped to `url`. It needs
+// host permissions for `url`, and `url` must not be blocked by the user or by
+// enterprise policy.
+// TODO(andreaorru): This matches effective hosts, so an extension whose only
+// match for `url` is a content script pattern still receives the event, while
+// PermissionsData::GetPageAccess(), which the cookies API uses, matches
+// explicit hosts and would refuse it. Consider sharing one method.
+bool CanAccessEventURL(const Extension& extension, const GURL& url) {
+  const PermissionsData& permissions_data = *extension.permissions_data();
+  if (!permissions_data.active_permissions().HasEffectiveAccessToURL(url)) {
+    return false;
+  }
+  // Component extensions ship with the browser, so neither user nor admin
+  // host restrictions apply to them, as in PermissionsData::GetPageAccess().
+  if (extension.location() == mojom::ManifestLocation::kComponent) {
+    return true;
+  }
+  return !permissions_data.IsUrlBlockedByUser(url) &&
+         !permissions_data.IsPolicyBlockedHost(url);
+}
+
 // Returns true if the listener has permission to receive the given `event`.
 //
 // For extensions, this checks for host permissions to the event's URL and
@@ -73,9 +95,7 @@ bool CheckPermissions(const Extension* extension,
     // to access that URL.
     if (!event.event_url.is_empty() &&
         event.event_url.GetHost() != extension->id() &&  // event for self is ok
-        !extension->permissions_data()
-             ->active_permissions()
-             .HasEffectiveAccessToURL(event.event_url)) {
+        !CanAccessEventURL(*extension, event.event_url)) {
       return false;
     }
     // Secondly, if the event is for incognito mode, the Extension must be
