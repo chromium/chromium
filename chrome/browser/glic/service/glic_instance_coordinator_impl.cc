@@ -197,9 +197,16 @@ bool GlicInstanceCoordinatorImpl::IsInvoking(
 }
 
 void GlicInstanceCoordinatorImpl::CancelInvoke(GlicInstanceImpl* instance) {
-  if (auto it = invoke_handlers_.find(instance); it != invoke_handlers_.end()) {
-    auto handler = std::move(it->second);
-    invoke_handlers_.erase(it);
+  // Take ownership of the handlers first, as cancelling them re-enters
+  // OnInvokeHandlerComplete().
+  auto [begin, end] = invoke_handlers_.equal_range(instance);
+  std::vector<std::unique_ptr<GlicInvokeHandler>> handlers;
+  for (auto it = begin; it != end; ++it) {
+    handlers.push_back(std::move(it->second));
+  }
+  invoke_handlers_.erase(begin, end);
+
+  for (auto& handler : handlers) {
     if (handler) {
       handler->Cancel(GlicInvokeError::kCancelled);
     }
@@ -565,10 +572,11 @@ bool GlicInstanceCoordinatorImpl::MaybeStartWarming(
 }
 
 void GlicInstanceCoordinatorImpl::Shutdown() {
-  // Extract handlers to avoid iterator invalidation when Cancel() removes them
-  // from invoke_handlers_.
-  base::flat_map<GlicInstance*, std::unique_ptr<GlicInvokeHandler>> handlers(
+  // Take ownership of the handlers to avoid iterator invalidation when
+  // Cancel() removes them from invoke_handlers_.
+  std::multimap<GlicInstance*, std::unique_ptr<GlicInvokeHandler>> handlers(
       std::move(invoke_handlers_));
+  invoke_handlers_.clear();
 
   for (auto& [instance, handler] : handlers) {
     if (handler) {
@@ -767,39 +775,73 @@ base::WeakPtr<GlicInstanceImpl> GlicInstanceCoordinatorImpl::InvokeInternal(
     return instance->GetWeakPtr();
   }
 
-  if (auto it = invoke_handlers_.find(instance); it != invoke_handlers_.end()) {
-    if (options.supersede_if_in_progress) {
-      // If requested by `options.supersede_if_in_progress` (e.g. for a
-      // continuation prompt from the server during actuation), cancel the
-      // previous handler so this invocation can proceed without being
-      // rejected with kInvokeInProgress.
-      std::unique_ptr<GlicInvokeHandler> old_handler = std::move(it->second);
-      invoke_handlers_.erase(it);
-      old_handler->Cancel(GlicInvokeError::kSuperseded);
-    } else {
-      metrics->RecordError(GlicInvokeError::kInvokeInProgress);
-      if (options.on_error) {
-        std::move(options.on_error).Run(GlicInvokeError::kInvokeInProgress);
+  // Only invocations that send an invoke message to the web client conflict
+  // with each other. Invocations that merely show the UI can safely run
+  // simultaneously with any other invocation on the same instance.
+  if (GlicInvokeHandler::RequiresClientInvoke(
+          options, auto_submit_passkey.has_value())) {
+    if (GlicInvokeHandler* in_progress = FindClientInvokeHandler(instance)) {
+      if (options.supersede_if_in_progress) {
+        // If requested by `options.supersede_if_in_progress` (e.g. for a
+        // continuation prompt from the server during actuation), cancel the
+        // previous handler so this invocation can proceed without being
+        // rejected with kInvokeInProgress.
+        std::unique_ptr<GlicInvokeHandler> old_handler =
+            RemoveInvokeHandler(instance, in_progress);
+        old_handler->Cancel(GlicInvokeError::kSuperseded);
+      } else {
+        metrics->RecordError(GlicInvokeError::kInvokeInProgress);
+        if (options.on_error) {
+          std::move(options.on_error).Run(GlicInvokeError::kInvokeInProgress);
+        }
+        // TODO(crbug.com/483387751): Show default toast here once implemented.
+        return nullptr;
       }
-      // TODO(crbug.com/483387751): Show default toast here once implemented.
-      return nullptr;
     }
   }
 
-  invoke_handlers_[instance] = std::make_unique<GlicInvokeHandler>(
+  auto handler = std::make_unique<GlicInvokeHandler>(
       *instance, resolved_target, std::move(options),
       std::move(auto_submit_options), auto_submit_passkey, std::move(metrics),
       base::BindOnce(&GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete,
                      base::Unretained(this)));
-  invoke_handlers_[instance]->Invoke();
+  GlicInvokeHandler* handler_ptr = handler.get();
+  invoke_handlers_.emplace(instance, std::move(handler));
+  handler_ptr->Invoke();
 
   return instance->GetWeakPtr();
+}
+
+GlicInvokeHandler* GlicInstanceCoordinatorImpl::FindClientInvokeHandler(
+    GlicInstance* instance) const {
+  auto [begin, end] = invoke_handlers_.equal_range(instance);
+  for (auto it = begin; it != end; ++it) {
+    if (it->second && it->second->requires_client_invoke()) {
+      return it->second.get();
+    }
+  }
+  return nullptr;
+}
+
+std::unique_ptr<GlicInvokeHandler>
+GlicInstanceCoordinatorImpl::RemoveInvokeHandler(GlicInstance* instance,
+                                                 GlicInvokeHandler* handler) {
+  auto [begin, end] = invoke_handlers_.equal_range(instance);
+  auto it = std::ranges::find(begin, end, handler, [](const auto& entry) {
+    return entry.second.get();
+  });
+  if (it == end) {
+    return nullptr;
+  }
+  return std::move(invoke_handlers_.extract(it).mapped());
 }
 
 void GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete(
     GlicInstance* instance,
     GlicInvokeHandler* handler) {
-  invoke_handlers_.erase(instance);
+  // This destroys `handler`, which is what the completion callback contract
+  // requires.
+  RemoveInvokeHandler(instance, handler);
 }
 
 void GlicInstanceCoordinatorImpl::CloseAndShutdownInstanceWithFrame(

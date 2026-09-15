@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_COORDINATOR_IMPL_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_COORDINATOR_IMPL_H_
 
+#include <map>
 #include <optional>
 #include <vector>
 
@@ -302,6 +303,17 @@ class GlicInstanceCoordinatorImpl
   void OnInvokeHandlerComplete(GlicInstance* instance,
                                GlicInvokeHandler* handler);
 
+  // Returns the in-progress invocation for `instance` that requires a client
+  // invoke, or nullptr if there is none. At most one such invocation can be in
+  // progress for a given instance.
+  GlicInvokeHandler* FindClientInvokeHandler(GlicInstance* instance) const;
+
+  // Removes `handler` from `invoke_handlers_` and returns ownership of it, or
+  // nullptr if it isn't tracked.
+  std::unique_ptr<GlicInvokeHandler> RemoveInvokeHandler(
+      GlicInstance* instance,
+      GlicInvokeHandler* handler);
+
   GlicInstanceImpl* GetOrRestoreInstanceImpl(
       const GlicRestoredState::InstanceInfo& instance_info);
   void RestoreTab(content::WebContents* web_contents,
@@ -323,7 +335,11 @@ class GlicInstanceCoordinatorImpl
   base::flat_map<InstanceId, base::CallbackListSubscription>
       actuating_changed_subscriptions_;
 
-  base::flat_map<GlicInstance*, std::unique_ptr<GlicInvokeHandler>>
+  // In-progress invocations, keyed by the instance they target. An instance
+  // may have several simultaneous invocations, but at most one of them
+  // requires a client invoke (see
+  // `GlicInvokeHandler::RequiresClientInvoke()`).
+  std::multimap<GlicInstance*, std::unique_ptr<GlicInvokeHandler>>
       invoke_handlers_;
 
   raw_ptr<GlicInstanceImpl> active_instance_ = nullptr;

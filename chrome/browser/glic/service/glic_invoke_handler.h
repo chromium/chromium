@@ -46,7 +46,11 @@ class GlicInvokeHandler {
 
   using ResolvedTarget = std::variant<TabSurface, Floating>;
 
-  static bool RequiresClientInvoke(const mojom::InvokeOptionsPtr& mojo_options,
+  // Returns whether the invocation described by `options` will send an invoke
+  // message to the web client, as opposed to only showing the UI. Two
+  // invocations that both require a client invoke cannot run simultaneously on
+  // the same instance.
+  static bool RequiresClientInvoke(const GlicInvokeOptions& options,
                                    bool has_auto_submit_passkey);
 
   // Resolves the target surface to a specific tab.
@@ -84,6 +88,10 @@ class GlicInvokeHandler {
   // started or if the `main_task_` is not present.
   std::optional<GlicTaskType> GetLastActiveTaskType() const;
 
+  // Whether this invocation will send an invoke message to the web client.
+  // See RequiresClientInvoke().
+  bool requires_client_invoke() const { return requires_client_invoke_; }
+
  private:
   bool IsFloatingTarget() const;
   bool IsTabTarget() const;
@@ -107,6 +115,7 @@ class GlicInvokeHandler {
   // Calling this synchronously destroys `this`.
   GlicInvokeWithAutoSubmitOptions auto_submit_options_;
   CompletionCallback completion_callback_;
+  const bool requires_client_invoke_;
 
   bool should_wait_for_load_ = false;
   base::CallbackListSubscription instance_destruction_subscription_;
