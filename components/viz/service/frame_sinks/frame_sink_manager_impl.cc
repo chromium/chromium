@@ -831,26 +831,33 @@ void FrameSinkManagerImpl::RecursivelyDetachBeginFrameSource(
 
 CapturableFrameSink* FrameSinkManagerImpl::FindCapturableFrameSink(
     const VideoCaptureTarget& target) {
+  if (!target.frame_sink_id.is_valid()) {
+    return nullptr;
+  }
+
   // Search the known CompositorFrameSinkSupport objects for region capture
-  // bounds matching the crop ID specified by |target| (if one was set), and
-  // return the corresponding frame sink.
+  // bounds matching the crop ID specified by `target` (if one was set), and
+  // return the corresponding frame sink. The search must be restricted to
+  // `target.frame_sink_id` and its child frame sinks (e.g. Out-Of-Process
+  // iframes) to prevent capturing an unrelated frame sink (such as an
+  // unselected tab).
   if (IsRegionCapture(target.sub_target)) {
     const auto crop_id = std::get<RegionCaptureCropId>(target.sub_target);
     for (const auto& id_and_sink : support_map_) {
       const RegionCaptureBounds& bounds =
           id_and_sink.second->current_capture_bounds();
-      if (bounds.bounds().contains(crop_id)) {
+      if (!bounds.bounds().contains(crop_id)) {
+        continue;
+      }
+      if (id_and_sink.first == target.frame_sink_id ||
+          ChildContains(target.frame_sink_id, id_and_sink.first)) {
         return id_and_sink.second;
       }
     }
     return nullptr;
   }
 
-  FrameSinkId frame_sink_id = target.frame_sink_id;
-  if (!frame_sink_id.is_valid())
-    return nullptr;
-
-  return base::FindPtrOrNull(support_map_, frame_sink_id);
+  return base::FindPtrOrNull(support_map_, target.frame_sink_id);
 }
 
 void FrameSinkManagerImpl::OnCapturerConnectionLost(

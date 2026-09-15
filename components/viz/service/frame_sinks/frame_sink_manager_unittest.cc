@@ -14,6 +14,7 @@
 #include "components/viz/common/constants.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/gl/mock_gpu_service_impl.h"
 #include "components/viz/service/input/mock_input_manager.h"
@@ -113,6 +114,11 @@ class FrameSinkManagerTest : public testing::Test {
 
   CapturableFrameSink* FindCapturableFrameSink(const FrameSinkId& id) {
     return manager_->FindCapturableFrameSink(VideoCaptureTarget(id));
+  }
+
+  CapturableFrameSink* FindCapturableFrameSink(
+      const VideoCaptureTarget& target) {
+    return manager_->FindCapturableFrameSink(target);
   }
 
   // Verifies the frame sinks with provided id in |ids| are throttled at
@@ -2189,6 +2195,82 @@ TEST_F(FrameSinkManagerTest, DeepHierarchyThrottleInheritanceOnRegistration) {
   manager_->InvalidateFrameSinkId(kFrameSinkIdC, {});
 }
 
+TEST_F(FrameSinkManagerTest,
+       FindCapturableFrameSinkRegionCaptureRestrictedToHierarchy) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdRoot, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdB, true);
 
+  // Set up hierarchy: Root -> Child (A).
+  // B is an unrelated frame sink (e.g. another tab).
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdA);
+
+  auto sink_root = CreateCompositorFrameSinkSupport(kFrameSinkIdRoot);
+  auto sink_a = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  auto sink_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+
+  ParentLocalSurfaceIdAllocator allocator_root;
+  ParentLocalSurfaceIdAllocator allocator_a;
+  ParentLocalSurfaceIdAllocator allocator_b;
+  allocator_root.GenerateId();
+  allocator_a.GenerateId();
+  allocator_b.GenerateId();
+  LocalSurfaceId surface_id_root = allocator_root.GetCurrentLocalSurfaceId();
+  LocalSurfaceId surface_id_a = allocator_a.GetCurrentLocalSurfaceId();
+  LocalSurfaceId surface_id_b = allocator_b.GetCurrentLocalSurfaceId();
+
+  const auto crop_id = RegionCaptureCropId::CreateRandom();
+  RegionCaptureBounds bounds;
+  bounds.Set(crop_id, gfx::Rect(0, 0, 100, 100));
+
+  constexpr gfx::Rect kDamageRect(0, 0, 100, 100);
+
+  // Set crop ID on sink_b.
+  auto frame_b = MakeDefaultCompositorFrame();
+  frame_b.metadata.capture_bounds = bounds;
+  sink_b->OnSurfaceAggregatedDamage(nullptr, surface_id_b, frame_b, kDamageRect,
+                                    base::TimeTicks::Now());
+
+  // Set empty capture bounds on root and child A.
+  auto empty_frame = MakeDefaultCompositorFrame();
+  sink_root->OnSurfaceAggregatedDamage(nullptr, surface_id_root, empty_frame,
+                                       kDamageRect, base::TimeTicks::Now());
+  sink_a->OnSurfaceAggregatedDamage(nullptr, surface_id_a, empty_frame,
+                                    kDamageRect, base::TimeTicks::Now());
+
+  // Searching for crop_id targeting kFrameSinkIdRoot must NOT return sink_b,
+  // since B is not in the hierarchy of Root.
+  VideoCaptureTarget target_root(kFrameSinkIdRoot, crop_id);
+  EXPECT_EQ(FindCapturableFrameSink(target_root), nullptr);
+
+  // Now set the crop ID on child A.
+  auto frame_a = MakeDefaultCompositorFrame();
+  frame_a.metadata.capture_bounds = bounds;
+  sink_a->OnSurfaceAggregatedDamage(nullptr, surface_id_a, frame_a, kDamageRect,
+                                    base::TimeTicks::Now());
+
+  // Searching for crop_id targeting kFrameSinkIdRoot should find child A.
+  EXPECT_EQ(FindCapturableFrameSink(target_root), sink_a.get());
+
+  // Clear crop ID from child A and set on root itself.
+  sink_a->OnSurfaceAggregatedDamage(nullptr, surface_id_a, empty_frame,
+                                    kDamageRect, base::TimeTicks::Now());
+  auto frame_root = MakeDefaultCompositorFrame();
+  frame_root.metadata.capture_bounds = bounds;
+  sink_root->OnSurfaceAggregatedDamage(nullptr, surface_id_root, frame_root,
+                                       kDamageRect, base::TimeTicks::Now());
+
+  // Searching for crop_id targeting kFrameSinkIdRoot should find root.
+  EXPECT_EQ(FindCapturableFrameSink(target_root), sink_root.get());
+
+  // An invalid target frame sink id must return nullptr.
+  VideoCaptureTarget invalid_target;
+  EXPECT_EQ(FindCapturableFrameSink(invalid_target), nullptr);
+
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+}
 
 }  // namespace viz
