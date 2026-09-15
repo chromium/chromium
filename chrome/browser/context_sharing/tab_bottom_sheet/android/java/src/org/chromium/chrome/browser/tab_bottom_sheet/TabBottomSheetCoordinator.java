@@ -345,6 +345,7 @@ public class TabBottomSheetCoordinator {
         }
         if (mResizingStrategy != null) {
             mResizingStrategy.destroy();
+            mResizingStrategy = null;
         }
         mPeekView = null;
         mSheetEventsCallback = null;
@@ -426,7 +427,8 @@ public class TabBottomSheetCoordinator {
 
                 if (canResizeWebView()) {
                     assert mResizingStrategy != null;
-                    mResizingStrategy.onSheetResizingStatusChanged(state == SheetState.SCROLLING);
+                    mResizingStrategy.onSheetResizingStatusChanged(
+                            state == SheetState.SCROLLING && !mBottomSheetController.isSmallScreen());
                 }
 
                 if (state != SheetState.SCROLLING && state != SheetState.NONE) {
@@ -741,5 +743,9 @@ public class TabBottomSheetCoordinator {
 
     @Nullable TabBottomSheetContent getSheetContentForTesting() {
         return mSheetContent;
+    }
+
+    @Nullable ResizingStrategy getResizingStrategyForTesting() {
+        return mResizingStrategy;
     }
 }
