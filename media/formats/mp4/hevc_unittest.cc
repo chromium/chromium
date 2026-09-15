@@ -114,4 +114,14 @@ TEST(HEVCAnalyzeAnnexBTest, HEVCDecoderConfigurationRecordTakenFromStream) {
   EXPECT_TRUE(test_data == output);
 }
 
+TEST(HEVCAnalyzeAnnexBTest, HEVCDecoderConfigurationRecordDefaultValues) {
+  HEVCDecoderConfigurationRecord record;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  EXPECT_FALSE(record.GetColorSpace().IsSpecified());
+  EXPECT_EQ(record.GetChromaSampling(), VideoChromaSampling::kUnknown);
+  EXPECT_FALSE(record.GetHDRMetadata().IsValid());
+  EXPECT_EQ(record.GetAlphaMode(), VideoDecoderConfig::AlphaMode::kIsOpaque);
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+}
+
 }  // namespace media::mp4
