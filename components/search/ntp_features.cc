@@ -324,7 +324,7 @@ BASE_FEATURE(kNtpShortcutsRedesign, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the bookmark bar may be auto-removed on the NTP and new
 // visibility settings are added.
-BASE_FEATURE(kNtpSimplificationBookmarkBar, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNtpSimplificationBookmarkBar, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the bookmark bar time interval and number of times it's shown on
 // the NTP before auto-hiding is decreased for testing.
