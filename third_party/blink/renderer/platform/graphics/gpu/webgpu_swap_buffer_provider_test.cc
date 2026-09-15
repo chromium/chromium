@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -382,7 +383,14 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyInsertAndWaitSyncTokenCorrectly) {
   // synchronize properly
   EXPECT_TRUE(
       provider_->PrepareTransferableResource(&resource, &release_callback));
-  EXPECT_EQ(webgpu_->most_recent_generated_token, resource.sync_token());
+  if (!base::FeatureList::IsEnabled(
+          ::features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_EQ(webgpu_->most_recent_generated_token, resource.sync_token());
+  } else {
+    // Under automatic SyncToken management, ClientSharedImage manages
+    // SyncTokens internally and the client-visible SyncToken is empty.
+    EXPECT_FALSE(resource.sync_token().HasData());
+  }
 
   // Check that the release token is used to synchronize the shared image
   // destruction

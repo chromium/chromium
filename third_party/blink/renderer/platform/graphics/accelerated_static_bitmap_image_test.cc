@@ -11,6 +11,7 @@
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -94,20 +95,22 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
 
   InSequence s;  // Indicate to gmock that order of EXPECT_CALLs is important
 
-  // Anterior synchronization. Wait on the sync token for the mailbox on the
-  // dest context.
-  EXPECT_CALL(
-      destination_gl,
-      WaitSyncTokenCHROMIUM(Pointee(SyncTokenMatcher(bitmap->GetSyncToken()))))
-      .Times(testing::Between(1, 2));
-
-  // Posterior synchronization. Generate a sync token on the destination context
-  // to ensure mailbox is destroyed after the copy.
   const gpu::SyncToken sync_token2 = GenTestSyncToken(2);
-  EXPECT_CALL(destination_gl, GenUnverifiedSyncTokenCHROMIUM(_))
-      .WillOnce(SetArrayArgument<0>(
-          sync_token2.GetConstData(),
-          UNSAFE_TODO(sync_token2.GetConstData() + sizeof(gpu::SyncToken))));
+  if (!base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    // Anterior synchronization. Wait on the sync token for the mailbox on the
+    // dest context.
+    EXPECT_CALL(destination_gl, WaitSyncTokenCHROMIUM(Pointee(
+                                    SyncTokenMatcher(bitmap->GetSyncToken()))))
+        .Times(testing::Between(1, 2));
+
+    // Posterior synchronization. Generate a sync token on the destination
+    // context to ensure mailbox is destroyed after the copy.
+    EXPECT_CALL(destination_gl, GenUnverifiedSyncTokenCHROMIUM(_))
+        .WillOnce([&sync_token2](GLbyte* out_token) {
+          *reinterpret_cast<gpu::SyncToken*>(out_token) = sync_token2;
+        });
+  }
 
   gfx::Point dest_point(0, 0);
   gfx::Rect source_sub_rectangle(0, 0, 10, 10);
@@ -119,7 +122,14 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
   testing::Mock::VerifyAndClearExpectations(&destination_gl);
 
   // Final wait is postponed until destruction.
-  EXPECT_EQ(bitmap->GetSyncToken(), sync_token2);
+  if (!base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_EQ(bitmap->GetSyncToken(), sync_token2);
+  } else {
+    // Under automatic SyncToken management, ClientSharedImage manages
+    // SyncTokens internally and the client-visible SyncToken is empty.
+    EXPECT_FALSE(bitmap->GetSyncToken().HasData());
+  }
 }
 
 }  // namespace
