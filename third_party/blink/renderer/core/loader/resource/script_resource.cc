@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/webui_bundled_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -411,6 +412,10 @@ void ScriptResource::ResponseReceived(const ResourceResponse& response) {
   }
 
   cached_metadata_handler_ = nullptr;
+  if (response.WasFetchedViaServiceWorker() &&
+      !RuntimeEnabledFeatures::ServiceWorkerCodeCacheEnabled()) {
+    return;
+  }
   // Currently we support the metadata caching only for HTTP family and any
   // schemes defined by SchemeRegistry as requiring a hash check.
   bool http_family = GetResourceRequest().Url().ProtocolIsInHttpFamily() &&
