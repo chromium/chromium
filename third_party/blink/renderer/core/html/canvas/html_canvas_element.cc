@@ -289,7 +289,8 @@ bool HTMLCanvasElement::PrepareTransferableResource(
 
   if (!frame->PrepareTransferableResource(out_resource,
                                           /*needs_verified_synctoken=*/false)) {
-    CanvasResource::DropRefOnOwningThread(std::move(frame));
+    auto exported_resource =
+        base::MakeRefCounted<ExportedCanvasResource>(std::move(frame));
     return false;
   }
   // TODO(https://crbug.com/1475955): HDR metadata should be propagated to
@@ -303,7 +304,8 @@ bool HTMLCanvasElement::PrepareTransferableResource(
     // If the resource did not change, the release will be handled correctly
     // when the callback from the previous frame is dispatched. But we need to
     // drop ref to the current resource.
-    CanvasResource::DropRefOnOwningThread(std::move(frame));
+    auto exported_resource =
+        base::MakeRefCounted<ExportedCanvasResource>(std::move(frame));
     return false;
   }
   // Note: frame is kept alive via a reference kept in out_release_callback.
