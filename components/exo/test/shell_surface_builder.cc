@@ -473,6 +473,14 @@ bool ShellSurfaceBuilder::
 
 void ShellSurfaceBuilder::SetCommonPropertiesAndCommitIfNecessary(
     ShellSurfaceBase* shell_surface) {
+  if (security_delegate_) {
+    shell_surface->SetSecurityDelegate(security_delegate_);
+  } else {
+    auto* holder =
+        shell_surface->host_window()->GetProperty(kBuilderResourceHolderKey);
+    shell_surface->SetSecurityDelegate(holder->CreateTestSecurityDelegate());
+  }
+
   if (display_id_ != display::kInvalidDisplayId) {
     shell_surface->SetDisplay(display_id_);
   }
@@ -508,14 +516,6 @@ void ShellSurfaceBuilder::SetCommonPropertiesAndCommitIfNecessary(
 
   if (system_modal_) {
     shell_surface->SetSystemModal(true);
-  }
-
-  if (security_delegate_) {
-    shell_surface->SetSecurityDelegate(security_delegate_);
-  } else {
-    auto* holder =
-        shell_surface->host_window()->GetProperty(kBuilderResourceHolderKey);
-    shell_surface->SetSecurityDelegate(holder->CreateTestSecurityDelegate());
   }
 
   if (commit_on_build_) {
