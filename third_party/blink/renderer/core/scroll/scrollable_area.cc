@@ -938,6 +938,16 @@ bool ScrollableArea::UsesCompositedOverlayScrollbars() const {
       !UsesCompositedScrolling()) {
     return false;
   }
+  if (const auto* box = GetLayoutBox()) {
+    // Some overlay scrollbar themes (e.g. Aura) needs the non-composited code
+    // path to initially show overlay scrollbars before the actual composited
+    // scrollbar is created. Only observed a difference in browser test
+    // SitePerProcessHitTestBrowserTest.CrossProcessMouseCapture on ChromeOS,
+    // but this is a safe check to have in place.
+    if (!box->GetFrameView()->GetPaintArtifactCompositor()) {
+      return false;
+    }
+  }
   if (const auto* scrollbar = HorizontalScrollbar()) {
     if (MayCompositeScrollbar(*scrollbar)) {
       return true;
