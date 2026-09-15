@@ -913,10 +913,11 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   window->RouteMouseWheelEvent(event);
   RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
 
-  EXPECT_GT(EvalJs(primary_main_frame_host(),
-                   "document.getElementById('scroller').scrollTop")
-                .ExtractInt(),
-            0);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJs(primary_main_frame_host(),
+                  "document.getElementById('scroller').scrollTop")
+               .ExtractDouble() > 0.0;
+  }));
   EXPECT_EQ(0, EvalJs(primary_main_frame_host(), "window.scrollY"));
 }
 
