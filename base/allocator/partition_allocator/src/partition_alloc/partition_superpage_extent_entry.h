@@ -8,7 +8,6 @@
 #include <cstdint>
 
 #include "partition_alloc/partition_alloc_constants.h"
-#include "partition_alloc/partition_alloc_forward.h"
 // Should not include partition_root.h, partition_bucket.h, partition_page.h.
 
 namespace partition_alloc::internal {

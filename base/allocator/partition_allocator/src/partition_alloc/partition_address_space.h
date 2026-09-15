@@ -18,7 +18,6 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
-#include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_isolation/alignment.h"
 

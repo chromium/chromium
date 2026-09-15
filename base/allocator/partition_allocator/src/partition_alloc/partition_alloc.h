@@ -7,7 +7,6 @@
 
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_oom.h"
 #include "partition_alloc/partition_root.h"
 

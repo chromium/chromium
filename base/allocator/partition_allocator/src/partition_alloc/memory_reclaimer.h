@@ -20,6 +20,8 @@
 
 namespace partition_alloc {
 
+class PartitionRoot;
+
 // Posts and handles memory reclaim tasks for PartitionAlloc.
 //
 // PartitionAlloc users are responsible for scheduling and calling the

@@ -14,7 +14,6 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
-#include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_config.h"
 
 namespace partition_alloc {
@@ -48,8 +47,6 @@ static_assert(kBitsPerSizeT == 64);
 static_assert(kBitsPerSizeT == 32);
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
-class PA_LOCKABLE Lock;
-
 // This type trait verifies a type can be used as a pointer offset.
 //
 // We support pointer offsets in signed (ptrdiff_t) or unsigned (size_t) values.
@@ -63,8 +60,6 @@ struct SlotSpanMetadata;
 }  // namespace internal
 
 class PartitionStatsDumper;
-
-class PartitionRoot;
 
 struct PurgeState {
   uint16_t generation = 0;
@@ -80,12 +75,6 @@ struct PurgeResult {
   // PurgeFlags::kDecommitEmptySlotSpans. Zero without that flag.
   size_t decommitted_empty_slot_spans_bytes = 0;
 };
-
-namespace internal {
-// Declare PartitionRootLock() for thread analysis. Its implementation
-// is defined in partition_root.h.
-Lock& PartitionRootLock(PartitionRoot*);
-}  // namespace internal
 
 }  // namespace partition_alloc
 

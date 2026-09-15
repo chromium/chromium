@@ -9,7 +9,6 @@
 #include <type_traits>
 
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_forward.h"
 
 // Internal Allocator can be used to get heap allocations required to
 // implement PartitionAlloc's feature.
@@ -18,7 +17,11 @@
 // reentrancy issues. Also don't use this when satisfying the very first PA-E
 // allocation of the process.
 
-namespace partition_alloc::internal {
+namespace partition_alloc {
+
+class PartitionRoot;
+
+namespace internal {
 
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 PartitionRoot& InternalAllocatorRoot();
@@ -76,6 +79,8 @@ struct InternalPartitionDeleter final {
   void operator()(T* ptr) const { DestroyAtInternalPartition(ptr); }
 };
 
-}  // namespace partition_alloc::internal
+}  // namespace internal
+
+}  // namespace partition_alloc
 
 #endif  // PARTITION_ALLOC_INTERNAL_ALLOCATOR_FORWARD_H_

@@ -12,6 +12,7 @@
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/internal/partition_root_internal_forward.h"
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_page_constants.h"
 #include "partition_alloc/partition_superpage_extent_entry.h"

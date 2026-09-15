@@ -11,7 +11,6 @@
 #include "partition_alloc/address_pool_manager_types.h"
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_constants.h"
-#include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_dcheck_helper.h"
 #include "partition_alloc/partition_superpage_extent_entry.h"
 #include "partition_alloc/reservation_offset_table.h"

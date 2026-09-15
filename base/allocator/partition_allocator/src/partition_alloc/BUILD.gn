@@ -421,6 +421,7 @@ if (is_clang_or_gcc) {
       "internal/partition_page_internal.h",
       "internal/partition_root_exports.h",
       "internal/partition_root_internal.h",
+      "internal/partition_root_internal_forward.h",
       "internal/partition_superpage_extent_entry_internal.h",
       "internal/reservation_offset_table_internal.h",
       "internal/thread_cache_internal.h",

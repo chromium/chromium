@@ -18,7 +18,6 @@
 #include "partition_alloc/page_allocator_constants.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/partition_alloc_forward.h"
 
 #if PA_BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 #include <mach/vm_page_size.h>

@@ -14,6 +14,7 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/internal/partition_page_internal.h"
+#include "partition_alloc/internal/partition_root_internal_forward.h"
 #include "partition_alloc/internal/reservation_offset_table_internal.h"
 #include "partition_alloc/internal/thread_cache_internal.h"
 #include "partition_alloc/partition_address_space.h"

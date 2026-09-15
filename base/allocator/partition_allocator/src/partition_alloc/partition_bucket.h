@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "partition_alloc/internal/partition_root_internal_forward.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
