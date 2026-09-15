@@ -55,7 +55,7 @@ namespace {
 base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
 // Total number of pages in the Level Up Password Checkup walkthrough sequence.
-const NSInteger kLevelUpPasswordCheckupWalkthroughTotalPages = 4;
+const NSInteger kLevelUpPasswordCheckupWalkthroughTotalPages = 3;
 
 // Total number of pages in the Level Up Quick Delete walkthrough sequence.
 const NSInteger kLevelUpQuickDeleteWalkthroughTotalPages = 2;
@@ -772,6 +772,8 @@ enum class PopupMenuIPHSessionType {
                                            bubbleType:(BubbleViewType)bubbleType
                                       pageControlPage:
                                           (BubblePageControlPage)pageControlPage
+                                totalPageControlPages:
+                                    (NSInteger)totalPageControlPages
                                     dismissalCallback:
                                         (CallbackWithIPHDismissalReasonType)
                                             dismissalCallback {
@@ -786,6 +788,8 @@ enum class PopupMenuIPHSessionType {
                                                 alignment:alignment
                                                bubbleType:bubbleType
                                           pageControlPage:pageControlPage
+                                    totalPageControlPages:totalPageControlPages
+                                    customNextButtonTitle:nil
                                         dismissalCallback:dismissalCallback];
   return bubbleViewControllerPresenter;
 }
@@ -811,6 +815,7 @@ enum class PopupMenuIPHSessionType {
                                              bubbleType:BubbleViewTypeDefault
                                         pageControlPage:
                                             BubblePageControlPageNone
+                                  totalPageControlPages:0
                                       dismissalCallback:dismissalCallback];
   std::u16string historyButtonA11yLabel = base::SysNSStringToUTF16(
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_HISTORY));
@@ -847,6 +852,8 @@ enum class PopupMenuIPHSessionType {
                                                  BubbleViewTypeRichWithNext
                                         pageControlPage:
                                             BubblePageControlPageSecond
+                                  totalPageControlPages:
+                                      kLevelUpPasswordCheckupWalkthroughTotalPages
                                       dismissalCallback:dismissalCallback];
   bubbleViewControllerPresenter.dismissalTimerDisabled = YES;
   return bubbleViewControllerPresenter;

@@ -62,6 +62,13 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+// Total number of pages in the Level Up Password Checkup walkthrough sequence.
+constexpr NSInteger kLevelUpPasswordCheckupWalkthroughTotalPages = 3;
+
+}  // namespace
+
 @interface PasswordsCoordinator () <
     AddPasswordCoordinatorDelegate,
     CredentialImportCoordinatorDelegate,
@@ -467,13 +474,15 @@
 
   BubbleViewControllerPresenter* presenter =
       [[BubbleViewControllerPresenter alloc]
-               initWithText:text
-                      title:nil
-             arrowDirection:arrowDirection
-                  alignment:BubbleAlignmentBottomOrTrailing
-                 bubbleType:BubbleViewTypeRichWithNext
-            pageControlPage:BubblePageControlPageThird
-          dismissalCallback:dismissalCallback];
+                   initWithText:text
+                          title:nil
+                 arrowDirection:arrowDirection
+                      alignment:BubbleAlignmentBottomOrTrailing
+                     bubbleType:BubbleViewTypeRichWithNext
+                pageControlPage:BubblePageControlPageThird
+          totalPageControlPages:kLevelUpPasswordCheckupWalkthroughTotalPages
+          customNextButtonTitle:nil
+              dismissalCallback:dismissalCallback];
   presenter.dismissalTimerDisabled = YES;
 
   if ([presenter canPresentInView:targetView anchorPoint:anchorPoint]) {
