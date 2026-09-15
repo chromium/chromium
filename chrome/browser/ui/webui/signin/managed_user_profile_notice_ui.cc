@@ -302,75 +302,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
 
   const std::string domain =
       enterprise_util::GetDomainFromEmail(account_info.GetEmail());
-  if (type == ScreenType::kDeviceSignalsDisclaimer) {
-    source->AddBoolean("isModalDialog",
-                       create_param->is_device_signals_disclaimer_modal);
-    source->AddInteger(
-        "initialState",
-        ManagedUserProfileNoticeHandler::State::kSignalsDisclaimer);
-  } else if (type == ScreenType::kEnterpriseAccountCreation) {
-    source->AddBoolean("isModalDialog", true);
-
-    int title_id = create_param->profile_creation_required_by_policy
-                       ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
-                       : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE;
-    if (create_param->profile_creation_required_by_policy) {
-      std::string manager =
-          signin_util::IsProfileSeparationEnforcedByProfile(
-              profile, account_info.GetEmail())
-              ? GetEnterpriseAccountDomain(*profile).value_or(std::string())
-              : domain;
-      source->AddString(
-          "valuePropTitle",
-          manager.empty()
-              ? l10n_util::GetStringUTF16(
-                    IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE)
-              : l10n_util::GetStringFUTF16(
-                    IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_KNOWN_DOMAIN_TITLE,
-                    base::UTF8ToUTF16(manager)));
-    }
-    source->AddString("enterpriseProfileWelcomeTitle",
-                      l10n_util::GetStringUTF16(title_id));
-
-    source->AddBoolean("showLinkDataCheckbox",
-                       create_param->show_link_data_option);
-    // If the user is already signed in and is trying to turn sync on, we can
-    // skip the value proposition screen since they are already signed in.
-    if (create_param->user_already_signed_in) {
-      source->AddInteger("initialState",
-                         ManagedUserProfileNoticeHandler::State::kDisclosure);
-    } else {
-      source->AddInteger(
-          "initialState",
-          ManagedUserProfileNoticeHandler::State::kValueProposition);
-    }
-    source->AddBoolean("enforcedByPolicy",
-                       create_param->profile_creation_required_by_policy);
-  } else if (type == ScreenType::kEnterpriseOIDC) {
-    source->AddInteger("initialState",
-                       ManagedUserProfileNoticeHandler::State::kDisclosure);
-    source->AddBoolean("isModalDialog", true);
-    source->AddString(
-        "enterpriseProfileWelcomeTitle",
-        l10n_util::GetStringUTF16(IDS_ENTERPRISE_WELCOME_PROFILE_SETUP_TITLE));
-    source->AddString(
-        "profileDisclosureTitle",
-        l10n_util::GetStringUTF16(
-            IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE));
-
-    source->AddBoolean("showLinkDataCheckbox", false);
-  } else if (type == ScreenType::kFirstRun) {
-    const std::string_view given_name =
-        account_info.GetGivenName().value_or(account_info.GetEmail());
-
-    if (!given_name.empty()) {
-      source->AddString(
-          "profileDisclosureTitle",
-          l10n_util::GetStringFUTF16(IDS_FRE_SIGN_IN_CELEBRATION_WELCOME_TITLE,
-                                     base::UTF8ToUTF16(given_name)));
-    }
-  }
-
   if (account_info.IsManaged() == signin::Tribool::kTrue) {
     source->AddString(
         "profileDisclosureSubtitle",
@@ -451,6 +382,75 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
         "separateBrowsingDataChoiceTitle",
         l10n_util::GetStringUTF16(
             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_SCHOOL_CHOICE));
+  }
+
+  if (type == ScreenType::kDeviceSignalsDisclaimer) {
+    source->AddBoolean("isModalDialog",
+                       create_param->is_device_signals_disclaimer_modal);
+    source->AddInteger(
+        "initialState",
+        ManagedUserProfileNoticeHandler::State::kSignalsDisclaimer);
+  } else if (type == ScreenType::kEnterpriseAccountCreation) {
+    source->AddBoolean("isModalDialog", true);
+
+    int title_id = create_param->profile_creation_required_by_policy
+                       ? IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE
+                       : IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE;
+    if (create_param->profile_creation_required_by_policy) {
+      std::string manager =
+          signin_util::IsProfileSeparationEnforcedByProfile(
+              profile, account_info.GetEmail())
+              ? GetEnterpriseAccountDomain(*profile).value_or(std::string())
+              : domain;
+      source->AddString(
+          "valuePropTitle",
+          manager.empty()
+              ? l10n_util::GetStringUTF16(
+                    IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE)
+              : l10n_util::GetStringFUTF16(
+                    IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_KNOWN_DOMAIN_TITLE,
+                    base::UTF8ToUTF16(manager)));
+    }
+    source->AddString("enterpriseProfileWelcomeTitle",
+                      l10n_util::GetStringUTF16(title_id));
+
+    source->AddBoolean("showLinkDataCheckbox",
+                       create_param->show_link_data_option);
+    // If the user is already signed in and is trying to turn sync on, we can
+    // skip the value proposition screen since they are already signed in.
+    if (create_param->user_already_signed_in) {
+      source->AddInteger("initialState",
+                         ManagedUserProfileNoticeHandler::State::kDisclosure);
+    } else {
+      source->AddInteger(
+          "initialState",
+          ManagedUserProfileNoticeHandler::State::kValueProposition);
+    }
+    source->AddBoolean("enforcedByPolicy",
+                       create_param->profile_creation_required_by_policy);
+  } else if (type == ScreenType::kEnterpriseOIDC) {
+    source->AddInteger("initialState",
+                       ManagedUserProfileNoticeHandler::State::kDisclosure);
+    source->AddBoolean("isModalDialog", true);
+    source->AddString(
+        "enterpriseProfileWelcomeTitle",
+        l10n_util::GetStringUTF16(IDS_ENTERPRISE_WELCOME_PROFILE_SETUP_TITLE));
+    source->AddString(
+        "profileDisclosureTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE));
+
+    source->AddBoolean("showLinkDataCheckbox", false);
+  } else if (type == ScreenType::kFirstRun) {
+    const std::string_view given_name =
+        account_info.GetGivenName().value_or(account_info.GetEmail());
+
+    if (!given_name.empty()) {
+      source->AddString(
+          "profileDisclosureTitle",
+          l10n_util::GetStringFUTF16(IDS_FRE_SIGN_IN_CELEBRATION_WELCOME_TITLE,
+                                     base::UTF8ToUTF16(given_name)));
+    }
   }
 
   // Change the text so that the "(Recommended)" label is not shown when the
