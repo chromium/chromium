@@ -81,6 +81,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/url_constants.h"
@@ -1369,17 +1370,24 @@ void BrowserWebContentsDelegate::RegisterProtocolHandler(
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   if (permission_request_manager) {
+    // ForSecurityDropFullscreen() can exit fullscreen across related
+    // WebContents, which can execute observers or spin a nested event pump that
+    // synchronously destroys the requesting frame (e.g. if an iframe is
+    // detached). Track the frame weakly and ensure it is still alive and active
+    // before adding the request.
+    content::WeakDocumentPtr weak_document =
+        requesting_frame->GetWeakDocumentPtr();
     auto blocker = web_contents->ForSecurityDropFullscreen(
         /*display_id=*/display::kInvalidDisplayId);
-    if (!blocker) {
+    content::RenderFrameHost* rfh = weak_document.AsRenderFrameHostIfValid();
+    if (!blocker || !rfh || !rfh->IsActive()) {
       return;
     }
 
     permission_request_manager->AddRequest(
-        requesting_frame,
-        std::make_unique<
-            custom_handlers::RegisterProtocolHandlerPermissionRequest>(
-            registry, handler, url, std::move(*blocker)));
+        rfh, std::make_unique<
+                 custom_handlers::RegisterProtocolHandlerPermissionRequest>(
+                 registry, handler, url, std::move(*blocker)));
   }
 }
 

@@ -32,12 +32,17 @@
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "url/url_util.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -83,6 +88,43 @@ class ProtocolHandlerChangeWaiter : public ProtocolHandlerRegistry::Observer {
                           custom_handlers::ProtocolHandlerRegistry::Observer>
       registry_observation_{this};
   base::RunLoop run_loop_;
+};
+
+class DetachFrameOnFullscreenExitDelegate
+    : public content::WebContentsDelegate {
+ public:
+  DetachFrameOnFullscreenExitDelegate(
+      content::WebContentsDelegate* original_delegate,
+      content::WebContents* target_contents)
+      : original_delegate_(original_delegate),
+        target_contents_(target_contents) {}
+
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
+    if (target_contents_) {
+      EXPECT_TRUE(content::ExecJs(
+          target_contents_, "document.querySelector('iframe').remove();"));
+      target_contents_ = nullptr;
+    }
+    if (original_delegate_) {
+      original_delegate_->ExitFullscreenModeForTab(web_contents);
+    }
+  }
+
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const override {
+    content::FullscreenState state;
+    state.target_mode = content::FullscreenMode::kContent;
+    return state;
+  }
+
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override {
+    return true;
+  }
+
+ private:
+  raw_ptr<content::WebContentsDelegate> original_delegate_;
+  raw_ptr<content::WebContents, DisableDanglingPtrDetection> target_contents_;
 };
 
 }  // namespace
@@ -284,6 +326,57 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest, FencedFrame) {
 
   // Ensure the registry is still empty.
   ASSERT_EQ(0u, registry->GetHandlersFor(url.GetScheme()).size());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
+                       RegisterProtocolHandlerFrameDetachOnFullscreenExit) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* opener_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  opener_contents->GetDelegate()->EnterFullscreenModeForTab(
+      opener_contents->GetPrimaryMainFrame(), {});
+  ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
+  EXPECT_TRUE(opener_contents->IsFullscreen());
+
+  content::WebContentsAddedObserver new_tab_observer;
+  ASSERT_TRUE(content::ExecJs(opener_contents, "window.open('about:blank')"));
+  content::WebContents* popup_contents = new_tab_observer.GetWebContents();
+  ASSERT_TRUE(popup_contents);
+
+  EXPECT_EQ(opener_contents,
+            popup_contents->GetFirstWebContentsInLiveOriginalOpenerChain());
+
+  EXPECT_TRUE(content::ExecJs(popup_contents, R"(
+    new Promise(resolve => {
+      let iframe = document.createElement('iframe');
+      iframe.src = 'about:blank';
+      iframe.onload = resolve;
+      document.body.appendChild(iframe);
+    });
+  )"));
+
+  content::RenderFrameHost* child_rfh =
+      content::ChildFrameAt(popup_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+  content::WeakDocumentPtr weak_child_rfh = child_rfh->GetWeakDocumentPtr();
+
+  content::WebContentsDelegate* original_delegate =
+      opener_contents->GetDelegate();
+  DetachFrameOnFullscreenExitDelegate intercepting_delegate(original_delegate,
+                                                            popup_contents);
+  opener_contents->SetDelegate(&intercepting_delegate);
+
+  GURL handler_url = embedded_test_server()->GetURL("/custom_handler.html?%s");
+  popup_contents->GetDelegate()->RegisterProtocolHandler(
+      child_rfh, "web+test", handler_url, /*user_gesture=*/true);
+
+  EXPECT_EQ(weak_child_rfh.AsRenderFrameHostIfValid(), nullptr);
+
+  opener_contents->SetDelegate(original_delegate);
 }
 
 class RegisterProtocolHandlerExtensionBrowserTest
