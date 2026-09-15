@@ -441,6 +441,8 @@ used when committed.
 ### Security
 *   [The Rule Of 2](security/rule-of-2.md) - An important security rule when
     handling untrustworthy contents (like anything downloaded from the web).
+*   [SECURITY.md Guidelines](security/security_md_guidelines.md) - Guidelines for writing
+    an effective SECURITY.md for Chromium components.
 
 ### Speed
 *   [Chrome Speed](speed/README.md) - Documentation for performance measurements and regressions in Chrome.
