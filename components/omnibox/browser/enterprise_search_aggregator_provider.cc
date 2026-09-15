@@ -51,6 +51,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
 
@@ -921,7 +922,8 @@ EnterpriseSearchAggregatorProvider::ParseResultList(
       continue;
     }
 
-    // Some matches are supplied with an associated icon or image URL.
+    // Some matches are supplied with an associated icon or image URL. These are
+    // fetched from the browser process so only HTTPS URLs are accepted.
     std::string image_url;
     std::string icon_url;
     if (suggestion_type == SuggestionType::PEOPLE) {
@@ -930,6 +932,9 @@ EnterpriseSearchAggregatorProvider::ParseResultList(
       // used for the match icon, falling back to the favicon if not present.
       image_url = ptr_to_string(result.FindStringByDottedPath(
           "document.derivedStructData.displayPhoto.url"));
+      if (!GURL(image_url).SchemeIs(url::kHttpsScheme)) {
+        image_url.clear();
+      }
       // Ensure that image URLs from lh3.googleusercontent.com include an image
       // size parameter.
       if (base::StartsWith(image_url, "https://lh3.googleusercontent.com")) {
@@ -942,6 +947,9 @@ EnterpriseSearchAggregatorProvider::ParseResultList(
       icon_url = template_url_->favicon_url().spec();
     } else if (suggestion_type == SuggestionType::CONTENT) {
       icon_url = ptr_to_string(result.FindString("iconUri"));
+      if (!GURL(icon_url).SchemeIs(url::kHttpsScheme)) {
+        icon_url.clear();
+      }
     } else if (suggestion_type == SuggestionType::QUERY &&
                !adjusted_input_.in_keyword_mode()) {
       icon_url = template_url_->favicon_url().spec();

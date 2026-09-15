@@ -41,6 +41,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace {
 using testing::_;
@@ -565,6 +566,63 @@ const std::string kInvalidJsonResponse = R"invalid({
       }
     ]
   })invalid";
+
+const std::string kNonHttpsImageUrlJsonResponse = R"json({
+    "contentSuggestions": [
+      {
+        "document": {
+          "derivedStructData": {
+            "title": "John's Document 1"
+          }
+        },
+        "destinationUri": "https://www.example.com/1",
+        "iconUri": "javascript:alert(1)",
+        "score": 0.8
+      },
+      {
+        "document": {
+          "derivedStructData": {
+            "title": "John's Document 2"
+          }
+        },
+        "destinationUri": "https://www.example.com/2",
+        "iconUri": "http://www.example.com/icon.png",
+        "score": 0.8
+      }
+    ],
+    "peopleSuggestions": [
+      {
+        "suggestion": "john@example.com",
+        "document": {
+          "derivedStructData": {
+            "name": {
+              "displayName": "John Doe"
+            },
+            "displayPhoto": {
+              "url": "javascript:alert(2)"
+            }
+          }
+        },
+        "destinationUri": "https://example.com/people/jdoe",
+        "score": 0.8
+      },
+      {
+        "suggestion": "john2@example.com",
+        "document": {
+          "derivedStructData": {
+            "name": {
+              "displayName": "John Doe2"
+            },
+            "displayPhoto": {
+              "url": "http://example.com/image.png"
+            }
+          }
+        },
+        "destinationUri": "https://example.com/people/jdoe2",
+        "score": 0.8
+      }
+    ]
+  })json";
 
 // Helper methods to dynamically generate valid responses.
 std::string CreateQueryResult(const std::string& query,
@@ -2017,6 +2075,24 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, DiscardsInvalidJavascriptUrl) {
   ACMatches matches = provider_->matches_;
   // After fix, it should have 0 matches because javascript: URLs are discarded.
   EXPECT_EQ(matches.size(), 0u);
+}
+
+TEST_F(EnterpriseSearchAggregatorProviderTest,
+       DiscardsNonHttpsImageAndIconUrls) {
+  provider_->adjusted_input_ = CreateInput(u"john d", true);
+  StartAndComplete3Requests(200, kNonHttpsImageUrlJsonResponse);
+
+  ACMatches matches = provider_->matches_;
+  ASSERT_EQ(matches.size(), 4u);
+  // Matches are kept but `image_url` and `icon_url` are cleared because the
+  // supplied `displayPhoto.url` and `iconUri` values do not use the HTTPS
+  // scheme. People suggestions still use the engine favicon as `icon_url`.
+  for (const auto& match : matches) {
+    EXPECT_EQ(match.image_url, GURL()) << match.destination_url;
+    EXPECT_TRUE(match.icon_url.is_empty() ||
+                match.icon_url.SchemeIs(url::kHttpsScheme))
+        << match.icon_url;
+  }
 }
 
 TEST_F(EnterpriseSearchAggregatorProviderSingleRequestTest,
