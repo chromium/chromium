@@ -1240,146 +1240,169 @@ suite('OmniboxPopupSearchboxTest', function() {
  });
 
  test('EscapeStagedUnwinding', async () => {
-   // Stage 1 (`kRevertTemporaryText`):
-   searchbox.getInputElement().inputElement.value = 'a';
-   searchbox.lastQueriedInput = 'a';
-   searchbox.activeQueryId = 0;
-   testProxy.page.autocompleteResultChanged(createAutocompleteResultForTesting({
-     input: 'a',
-     matches: [
-       createSearchMatchForTesting({
-         allowedToBeDefaultMatch: true,
-         fillIntoEdit: 'a',
-         inlineAutocompletion: '',
-       }),
-       createSearchMatchForTesting({
-         allowedToBeDefaultMatch: false,
-         fillIntoEdit: 'suggestion-1',
-       }),
-     ],
-   }));
-   await microtasksFinished();
-   assertTrue(searchbox.dropdownIsVisible);
+   for (const virtualFocus of [false, true]) {
+     searchbox.virtualFocusEnabled = virtualFocus;
+     handler.reset();
+     testProxy.handler.reset();
 
-   searchbox.selectedMatchIndex = 1;
-   searchbox.getInputElement().inputElement.value = 'suggestion-1';
-   await microtasksFinished();
+     // Stage 1 (`kRevertTemporaryText`):
+     searchbox.getInputElement().inputElement.value = 'a';
+     searchbox.lastQueriedInput = 'a';
+     searchbox.activeQueryId = 0;
+     testProxy.page.autocompleteResultChanged(
+         createAutocompleteResultForTesting({
+           input: 'a',
+           matches: [
+             createSearchMatchForTesting({
+               allowedToBeDefaultMatch: true,
+               fillIntoEdit: 'a',
+               inlineAutocompletion: '',
+             }),
+             createSearchMatchForTesting({
+               allowedToBeDefaultMatch: false,
+               fillIntoEdit: 'suggestion-1',
+             }),
+           ],
+         }));
+     await microtasksFinished();
+     assertTrue(searchbox.dropdownIsVisible);
 
-   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
-     key: 'Escape',
-     cancelable: true,
-   }));
-   await microtasksFinished();
+     if (virtualFocus) {
+       searchbox.setSelection({
+         line: 1,
+         state: SelectionLineState.kNormal,
+         actionIndex: 0,
+       });
+     } else {
+       searchbox.selectedMatchIndex = 1;
+     }
+     searchbox.getInputElement().inputElement.value = 'suggestion-1';
+     await microtasksFinished();
 
-   assertEquals('a', searchbox.getInputElement().inputElement.value);
-   assertEquals(0, searchbox.selectedMatchIndex);
-   assertTrue(searchbox.dropdownIsVisible);
-   assertEquals(1, handler.getCallCount('logEscapeAction'));
-   assertEquals(
-       OmniboxEscapeAction.kRevertTemporaryText,
-       handler.getArgs('logEscapeAction')[0]);
+     await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+       key: 'Escape',
+       cancelable: true,
+     }));
+     await microtasksFinished();
 
-   handler.reset();
-   testProxy.handler.reset();
+     assertEquals('a', searchbox.getInputElement().inputElement.value);
+     if (virtualFocus) {
+       assertEquals(0, searchbox.selection.line);
+       assertEquals(SelectionLineState.kNormal, searchbox.selection.state);
+       assertEquals(0, searchbox.selection.actionIndex);
+     } else {
+       assertEquals(0, searchbox.selectedMatchIndex);
+     }
+     assertTrue(searchbox.dropdownIsVisible);
+     assertEquals(1, handler.getCallCount('logEscapeAction'));
+     assertEquals(
+         OmniboxEscapeAction.kRevertTemporaryText,
+         handler.getArgs('logEscapeAction')[0]);
 
-   // Stage 2 (`kClosePopup`):
-   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
-     key: 'Escape',
-     cancelable: true,
-   }));
-   await microtasksFinished();
+     handler.reset();
+     testProxy.handler.reset();
 
-   assertFalse(searchbox.dropdownIsVisible);
-   assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
-   assertTrue(testProxy.handler.getArgs('stopAutocomplete')[0]);
-   assertEquals(1, handler.getCallCount('logEscapeAction'));
-   assertEquals(
-       OmniboxEscapeAction.kClosePopup, handler.getArgs('logEscapeAction')[0]);
+     // Stage 2 (`kClosePopup`):
+     await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+       key: 'Escape',
+       cancelable: true,
+     }));
+     await microtasksFinished();
 
-   handler.reset();
-   testProxy.handler.reset();
+     assertFalse(searchbox.dropdownIsVisible);
+     assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
+     assertTrue(testProxy.handler.getArgs('stopAutocomplete')[0]);
+     assertEquals(1, handler.getCallCount('logEscapeAction'));
+     assertEquals(
+         OmniboxEscapeAction.kClosePopup,
+         handler.getArgs('logEscapeAction')[0]);
 
-   // Stage 3 (`kClearUserInput` - elided URL where showFullUrl is false):
-   const permanentDisplayText = 'example.com';
-   const fullUrl = 'https://example.com/';
-   callbackRouter.setInputState(createDefaultOmniboxInputState({
-     sequenceNumber: 5,
-     text: 'dirty input',
-     selection: {start: 1, end: 1},
-     userInputInProgress: true,
-     fullUrl: fullUrl,
-     isFocused: true,
-     permanentDisplayText: permanentDisplayText,
-   }));
-   await microtasksFinished();
+     handler.reset();
+     testProxy.handler.reset();
 
-   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
-     key: 'Escape',
-     cancelable: true,
-   }));
-   await microtasksFinished();
+     // Stage 3 (`kClearUserInput` - elided URL where showFullUrl is false):
+     const permanentDisplayText = 'example.com';
+     const fullUrl = 'https://example.com/';
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       sequenceNumber: 5,
+       text: 'dirty input',
+       selection: {start: 1, end: 1},
+       userInputInProgress: true,
+       fullUrl: fullUrl,
+       isFocused: true,
+       permanentDisplayText: permanentDisplayText,
+     }));
+     await microtasksFinished();
 
-   assertEquals(
-       permanentDisplayText, searchbox.getInputElement().inputElement.value);
-   assertEquals(0, searchbox.getInputElement().inputElement.selectionStart);
-   assertEquals(
-       permanentDisplayText.length,
-       searchbox.getInputElement().inputElement.selectionEnd);
-   assertEquals(1, handler.getCallCount('revert'));
-   assertEquals(5, handler.getArgs('revert')[0]);
-   assertEquals(1, handler.getCallCount('logEscapeAction'));
-   assertEquals(
-       OmniboxEscapeAction.kClearUserInput,
-       handler.getArgs('logEscapeAction')[0]);
+     await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+       key: 'Escape',
+       cancelable: true,
+     }));
+     await microtasksFinished();
 
-   handler.reset();
-   testProxy.handler.reset();
+     assertEquals(
+         permanentDisplayText, searchbox.getInputElement().inputElement.value);
+     assertEquals(0, searchbox.getInputElement().inputElement.selectionStart);
+     assertEquals(
+         permanentDisplayText.length,
+         searchbox.getInputElement().inputElement.selectionEnd);
+     assertEquals(1, handler.getCallCount('revert'));
+     assertEquals(5, handler.getArgs('revert')[0]);
+     assertEquals(1, handler.getCallCount('logEscapeAction'));
+     assertEquals(
+         OmniboxEscapeAction.kClearUserInput,
+         handler.getArgs('logEscapeAction')[0]);
 
-   // Stage 3 (`kClearUserInput` - unelided URL where showFullUrl is true):
-   callbackRouter.setInputState(createDefaultOmniboxInputState({
-     sequenceNumber: 6,
-     text: 'dirty input',
-     selection: {start: 1, end: 1},
-     userInputInProgress: true,
-     fullUrl: fullUrl,
-     isFocused: true,
-     permanentDisplayText: permanentDisplayText,
-     showFullUrl: true,
-   }));
-   await microtasksFinished();
+     handler.reset();
+     testProxy.handler.reset();
 
-   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
-     key: 'Escape',
-     cancelable: true,
-   }));
-   await microtasksFinished();
+     // Stage 3 (`kClearUserInput` - unelided URL where showFullUrl is true):
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       sequenceNumber: 6,
+       text: 'dirty input',
+       selection: {start: 1, end: 1},
+       userInputInProgress: true,
+       fullUrl: fullUrl,
+       isFocused: true,
+       permanentDisplayText: permanentDisplayText,
+       showFullUrl: true,
+     }));
+     await microtasksFinished();
 
-   assertEquals('example.com', searchbox.getInputElement().inputElement.value);
-   assertEquals(0, searchbox.getInputElement().inputElement.selectionStart);
-   assertEquals(
-       permanentDisplayText.length,
-       searchbox.getInputElement().inputElement.selectionEnd);
-   assertEquals(1, handler.getCallCount('revert'));
-   assertEquals(6, handler.getArgs('revert')[0]);
-   assertEquals(1, handler.getCallCount('logEscapeAction'));
-   assertEquals(
-       OmniboxEscapeAction.kClearUserInput,
-       handler.getArgs('logEscapeAction')[0]);
+     await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+       key: 'Escape',
+       cancelable: true,
+     }));
+     await microtasksFinished();
 
-   handler.reset();
-   testProxy.handler.reset();
+     assertEquals(
+         'example.com', searchbox.getInputElement().inputElement.value);
+     assertEquals(0, searchbox.getInputElement().inputElement.selectionStart);
+     assertEquals(
+         permanentDisplayText.length,
+         searchbox.getInputElement().inputElement.selectionEnd);
+     assertEquals(1, handler.getCallCount('revert'));
+     assertEquals(6, handler.getArgs('revert')[0]);
+     assertEquals(1, handler.getCallCount('logEscapeAction'));
+     assertEquals(
+         OmniboxEscapeAction.kClearUserInput,
+         handler.getArgs('logEscapeAction')[0]);
 
-   // Stage 4 (`kBlur`):
-   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
-     key: 'Escape',
-     cancelable: true,
-   }));
-   await microtasksFinished();
+     handler.reset();
+     testProxy.handler.reset();
 
-   assertEquals(1, handler.getCallCount('closeUI'));
-   assertEquals(1, handler.getCallCount('logEscapeAction'));
-   assertEquals(
-       OmniboxEscapeAction.kBlur, handler.getArgs('logEscapeAction')[0]);
+     // Stage 4 (`kBlur`):
+     await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+       key: 'Escape',
+       cancelable: true,
+     }));
+     await microtasksFinished();
+
+     assertEquals(1, handler.getCallCount('closeUI'));
+     assertEquals(1, handler.getCallCount('logEscapeAction'));
+     assertEquals(
+         OmniboxEscapeAction.kBlur, handler.getArgs('logEscapeAction')[0]);
+   }
  });
 
  test('EscapeStagedUnwinding_ClearedInputNonEmptyUrl', async () => {
