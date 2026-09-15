@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.share.ShareHistoryBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
@@ -71,7 +70,6 @@ public class ShareSheetTest {
 
     private Profile mProfile;
     private List<ResolveInfo> mAvailableResolveInfos;
-    private WebPageStation mPage;
 
     // foo.bar.baz -> baz
     private String labelFromPackageName(String packageName) {
@@ -153,7 +151,7 @@ public class ShareSheetTest {
         ContextUtils.initApplicationContextForTests(
                 new PackageManagerReplacingContext(ContextUtils.getApplicationContext(), this));
 
-        mPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile = ProfileManager.getLastUsedRegularProfile();
