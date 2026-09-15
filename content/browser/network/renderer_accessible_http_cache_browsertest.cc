@@ -140,7 +140,11 @@ class RendererAccessibleHttpCacheBrowserTestBase : public ContentBrowserTest {
         // Need to disable kNetworkServiceInProcess feature to run the tests on
         // Android, as we crash the network service in SetUpOnMainThread() to
         // enable the on-disk HTTP Cache.
-        features::kNetworkServiceInProcess};
+        features::kNetworkServiceInProcess,
+        // Origin-keyed agent clusters are not eligible for the renderer
+        // accessible HTTP cache. Disable kOriginKeyedProcessesByDefault so
+        // HTTPS test origins remain site-keyed on builders like linux-oi-rel.
+        features::kOriginKeyedProcessesByDefault};
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
