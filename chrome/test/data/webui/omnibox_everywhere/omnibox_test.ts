@@ -13,6 +13,7 @@ import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
+import {browserProxyFactory, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -20,6 +21,7 @@ import {SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://re
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FreStage} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -1132,11 +1134,17 @@ suite('OmniboxEverywhereAppTest', () => {
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
-      omniboxEverywhereShowShortcuts: true,
       initialFreStage: 0,
       composeboxCancelButtonTitle: 'Close AI Mode',
       composeboxCancelButtonTitleInput: 'Clear text',
     });
+
+    const mostVisitedHandler = TestMock.fromClass(MostVisitedPageHandlerRemote);
+    const {instance: mostVisitedInstance} =
+        browserProxyFactory.createForTest(mostVisitedHandler);
+    browserProxyFactory.setInstance(mostVisitedInstance);
+    mostVisitedHandler.setResultFor(
+        'getMostVisitedExpandedState', Promise.resolve({isExpanded: false}));
 
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -1657,11 +1665,37 @@ suite('OmniboxEverywhereAppTest', () => {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         loadTimeData.overrideValues({
           omniboxEverywhereMostVisitedEnabled: true,
-          omniboxEverywhereShowShortcuts: true,
           initialFreStage: 0,
         });
+        const mvHandler = TestMock.fromClass(MostVisitedPageHandlerRemote);
+        const {instance: mvInstance, remote: mvRemote} =
+            browserProxyFactory.createForTest(mvHandler);
+        browserProxyFactory.setInstance(mvInstance);
+        mvHandler.setResultFor(
+            'getMostVisitedExpandedState',
+            Promise.resolve({isExpanded: false}));
+
         const appWithMv = document.createElement('omnibox-everywhere-app');
         document.body.appendChild(appWithMv);
+        await microtasksFinished();
+
+        const testTiles = [{
+          title: 'Google',
+          titleDirection: TextDirection.LEFT_TO_RIGHT,
+          url: 'https://www.google.com/',
+          source: 0,
+          titleSource: 0,
+          isQueryTile: false,
+          allowUserEdit: false,
+          allowUserDelete: false,
+        }];
+        mvRemote.setMostVisitedInfo({
+          customLinksEnabled: false,
+          enterpriseShortcutsEnabled: false,
+          tiles: testTiles,
+          visible: true,
+        });
+        await mvRemote.$.flushForTesting();
         await microtasksFinished();
 
         const searchbox =
@@ -1703,6 +1737,126 @@ suite('OmniboxEverywhereAppTest', () => {
         assertEquals('flex', window.getComputedStyle(mvContainer).display);
       });
   // </if>
+
+  test('dynamic MVT visibility updates container visibility', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      omniboxEverywhereMostVisitedEnabled: true,
+      initialFreStage: 0,
+    });
+    const mvHandler = TestMock.fromClass(MostVisitedPageHandlerRemote);
+    const {instance: mvInstance, remote: mvRemote} =
+        browserProxyFactory.createForTest(mvHandler);
+    browserProxyFactory.setInstance(mvInstance);
+    mvHandler.setResultFor(
+        'getMostVisitedExpandedState', Promise.resolve({isExpanded: false}));
+
+    const appWithMv = document.createElement('omnibox-everywhere-app');
+    document.body.appendChild(appWithMv);
+    await microtasksFinished();
+
+    const mvContainer = appWithMv.shadowRoot.querySelector<HTMLElement>(
+        '#mostVisitedContainer');
+    const mostVisited = appWithMv.shadowRoot.querySelector('cr-most-visited');
+    assertTrue(!!mvContainer);
+    assertTrue(!!mostVisited);
+    assertTrue(mvContainer.hidden);
+
+    const testTiles = [{
+      title: 'Google',
+      titleDirection: TextDirection.LEFT_TO_RIGHT,
+      url: 'https://www.google.com/',
+      source: 0,
+      titleSource: 0,
+      isQueryTile: false,
+      allowUserEdit: false,
+      allowUserDelete: false,
+    }];
+
+    mvRemote.setMostVisitedInfo({
+      customLinksEnabled: false,
+      enterpriseShortcutsEnabled: false,
+      tiles: testTiles,
+      visible: true,
+    });
+    await mvRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertFalse(mvContainer.hidden);
+
+    mvRemote.setMostVisitedInfo({
+      customLinksEnabled: false,
+      enterpriseShortcutsEnabled: false,
+      tiles: testTiles,
+      visible: false,
+    });
+    await mvRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    assertTrue(mvContainer.hidden);
+  });
+
+  test(
+      'MVT remains mounted and hidden during FRE, unhiding when FRE dismissed',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          initialFreStage: FreStage.kIntroModal,
+        });
+        const mvHandler = TestMock.fromClass(MostVisitedPageHandlerRemote);
+        const {instance: mvInstance, remote: mvRemote} =
+            browserProxyFactory.createForTest(mvHandler);
+        browserProxyFactory.setInstance(mvInstance);
+        mvHandler.setResultFor(
+            'getMostVisitedExpandedState',
+            Promise.resolve({isExpanded: false}));
+
+        const appWithMv = document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(appWithMv);
+        await microtasksFinished();
+
+        const mvContainer = appWithMv.shadowRoot.querySelector<HTMLElement>(
+            '#mostVisitedContainer');
+        const mostVisited =
+            appWithMv.shadowRoot.querySelector('cr-most-visited');
+        assertTrue(!!mvContainer);
+        assertTrue(!!mostVisited);
+        assertTrue(mvContainer.hidden);
+
+        const testTiles = [{
+          title: 'Google',
+          titleDirection: TextDirection.LEFT_TO_RIGHT,
+          url: 'https://www.google.com/',
+          source: 0,
+          titleSource: 0,
+          isQueryTile: false,
+          allowUserEdit: false,
+          allowUserDelete: false,
+        }];
+
+        mvRemote.setMostVisitedInfo({
+          customLinksEnabled: false,
+          enterpriseShortcutsEnabled: false,
+          tiles: testTiles,
+          visible: true,
+        });
+        await mvRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Still hidden because FRE modal is active.
+        assertTrue(mvContainer.hidden);
+
+        // Transition FRE to kNone.
+        testProxy.page.setFreState({
+          stage: FreStage.kNone,
+          currentHotkeyTokens: [],
+        });
+        await microtasksFinished();
+
+        // Now unhidden.
+        assertFalse(mvContainer.hidden);
+      });
 
   test(
       'close-composebox event exits composebox mode and focuses searchbox',

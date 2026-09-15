@@ -38,10 +38,8 @@ export function getHtml(this: OmniboxEverywhereAppElement) {
                                    this.contextManagementInComposeboxEnabled_}">
     </omnibox-everywhere-omnibox>
   `}
-  ${
-      this.mostVisitedEnabled_ && this.showShortcuts_ &&
-      !this.isFreIntroModal_() && !this.isFreChin_() ? html`
-    <div id="mostVisitedContainer" ?hidden="${!this.hasMostVisitedTiles_}">
+  ${this.mostVisitedEnabled_ ? html`
+    <div id="mostVisitedContainer" ?hidden="${this.isMostVisitedHidden_()}">
       <cr-most-visited id="mostVisited" single-row non-editable hide-title
           max-tiles="7"></cr-most-visited>
     </div>
