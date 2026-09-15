@@ -330,6 +330,9 @@ source_set("impl") {
   if (enable_compose) {
     deps += [ "//chrome/browser/compose" ]
   }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -509,6 +512,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/browser_window",

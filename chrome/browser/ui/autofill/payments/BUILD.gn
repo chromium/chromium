@@ -203,6 +203,9 @@ source_set("impl") {
       "//chrome/browser/ui/location_bar",
     ]
   }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
+  }
 }
 
 if (!is_android) {
@@ -248,6 +251,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/autofill",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/page_action:icon_type",
@@ -396,6 +400,7 @@ if (!is_android && !is_chromeos_device) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views/autofill/payments:payments_window_user_consent_dialog_view",

@@ -206,6 +206,7 @@ if (!is_android) {
     deps = [
       ":browser_actions",
       ":browser_select_file_dialog_controller",
+      ":browser_window_header",
       ":bubble_anchor_util",
       ":chrome_pages",
       ":ui",
@@ -4057,6 +4058,7 @@ if (!is_android) {
       ":browser_instant_controller",
       ":browser_tabrestore",
       ":browser_ui_prefs",
+      ":browser_window_header",
       ":confirm_bubble",
       ":managed_ui",
       ":tab_ui_helper",
@@ -4365,6 +4367,7 @@ if (!is_android && !is_chromeos_device) {
     ]
 
     deps = [
+      ":browser_window_header",
       ":chrome_pages",
       ":test_support",
       ":ui",

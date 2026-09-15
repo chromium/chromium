@@ -57,6 +57,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/apps/platform_apps:browser_test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/test:test_support",
     "//chrome/test/base/ash/util:test_support",
     "//components/prefs",
