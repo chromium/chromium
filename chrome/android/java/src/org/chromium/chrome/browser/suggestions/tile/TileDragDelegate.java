@@ -81,8 +81,18 @@ interface TileDragDelegate {
      */
     void hideDivider(boolean isAnimated);
 
-    /** Forces tile drag session to end. */
+    /**
+     * Resets the active gesture states. This is called internally when transitioning to a new
+     * gesture or touch down, ensuring any pending finalization (such as committing an in-flight
+     * keyboard swap) completes and applies before clearing the old session.
+     */
     void reset();
+
+    /**
+     * Forcibly cancels any active tile drag-and-drop or swap session, immediately restoring
+     * original visual positions and properties without animation.
+     */
+    void cancelActiveSession();
 
     /** Returns whether the {@code tileView} is the first among draggable tiles. */
     boolean isFirstDraggableTile(View tileView);

@@ -223,7 +223,7 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
 
     @Override
     public boolean hasTileDragSession() {
-        return mPhase != DragPhase.NONE;
+        return mPhase != DragPhase.NONE || mPendingChangeFinalizer != null;
     }
 
     @Override
@@ -244,7 +244,10 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
 
     @Override
     public void reset() {
-        // Clean up in-flight states.
+        // Clean up in-flight states. This is a soft clear used when a new user gesture starts;
+        // it finalizes and commits any pending Swap Flow changes before clearing session variables.
+        // For forced cancellations (e.g. on external database updates), use cancelActiveSession()
+        // instead.
         if (mTileDragSession != null) {
             mMvTilesLayout.requestDisallowInterceptTouchEvent(false);
         }
@@ -255,6 +258,35 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
         // Clear main flow variables.
         mTileDragSession = null;
         mTileMovementForSwap = null;
+    }
+
+    @Override
+    public void cancelActiveSession() {
+        if (mTileDragSession != null) {
+            mMvTilesLayout.requestDisallowInterceptTouchEvent(false);
+            Runnable cancelVisuals = mTileDragSession.finish(/* accept= */ false);
+            if (cancelVisuals != null) {
+                cancelVisuals.run();
+            }
+        } else if (mPendingChangeFinalizer != null) {
+            // mPendingChangeFinalizer != null guarantees an active in-flight finalization
+            // animation is running (either for Drag Flow or Swap Flow).
+            if (mTileMovementForSwap == null) {
+                // Drag Flow: Runs the finish() runnable to stop animators and immediately restore
+                // visuals.
+                mPendingChangeFinalizer.run();
+            } else {
+                // Swap Flow: Directly cancels the swap movement.
+                mTileMovementForSwap.cancelIfActive();
+            }
+        }
+        mTimer.cancelTimer();
+        mPhase = DragPhase.NONE;
+
+        // Clear main flow variables.
+        mTileDragSession = null;
+        mTileMovementForSwap = null;
+        mPendingChangeFinalizer = null;
     }
 
     @Override
