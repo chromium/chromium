@@ -17,6 +17,8 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/thread_pool.h"
 #import "base/test/allow_check_is_test_for_testing.h"
 #import "base/time/time.h"
 #import "components/commerce/core/mock_shopping_service.h"
@@ -24,6 +26,8 @@
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "components/data_sharing/test_support/mock_preview_server_proxy.h"
 #import "components/feature_engagement/public/feature_activation.h"
+#import "components/gcm_driver/gcm_profile_service.h"
+#import "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
 #import "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
@@ -36,6 +40,7 @@
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#import "components/sync/test/fake_server_sync_invalidation_sender.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/composebox/model/mock_ios_contextual_search_service.h"
@@ -65,6 +70,17 @@
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
+
+namespace {
+
+class FakeGCMProfileService : public gcm::GCMProfileService {
+ public:
+  explicit FakeGCMProfileService(std::unique_ptr<gcm::GCMDriver> driver)
+      : gcm::GCMProfileService(std::move(driver)) {}
+  ~FakeGCMProfileService() override = default;
+};
+
+}  // namespace
 
 namespace tests_hook {
 
@@ -297,6 +313,21 @@ std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
   }
 
   return service;
+}
+
+std::unique_ptr<gcm::GCMProfileService> CreateGCMProfileService(
+    ProfileIOS* profile) {
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
+  auto fake_gcm_driver =
+      std::make_unique<instance_id::FakeGCMDriverForInstanceID>(
+          profile->GetStatePath().Append(FILE_PATH_LITERAL("gcm_test_store")),
+          blocking_task_runner);
+  fake_gcm_driver->WaitForAppIdBeforeConnection(
+      fake_server::FakeServerSyncInvalidationSender::kSyncInvalidationsAppId);
+  return std::make_unique<FakeGCMProfileService>(std::move(fake_gcm_driver));
 }
 
 void DataSharingServiceHooks(

@@ -49,6 +49,7 @@ specific_include_rules = {
    "+components/data_sharing/public",
    "+components/data_sharing/test_support",
    "+components/feature_engagement/public/feature_activation.h",
+   "+components/gcm_driver",
    "+components/password_manager/core/browser/sharing/fake_recipients_fetcher.h",
    "+components/password_manager/ios",
    "+components/saved_tab_groups",

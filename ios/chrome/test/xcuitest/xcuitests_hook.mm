@@ -109,6 +109,11 @@ std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
   return nullptr;
 }
 
+std::unique_ptr<gcm::GCMProfileService> CreateGCMProfileService(
+    ProfileIOS* profile) {
+  return nullptr;
+}
+
 void DataSharingServiceHooks(
     data_sharing::DataSharingService* data_sharing_service) {}
 

@@ -11,6 +11,7 @@ source_set("model") {
     "//base",
     "//build:branding_buildflags",
     "//components/gcm_driver",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",

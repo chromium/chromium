@@ -51,6 +51,10 @@ namespace feature_engagement {
 class FeatureActivation;
 }  // namespace feature_engagement
 
+namespace gcm {
+class GCMProfileService;
+}  // namespace gcm
+
 namespace policy {
 class ConfigurationPolicyProvider;
 }  // namespace policy
@@ -170,6 +174,11 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
 // Allows overriding the ShoppingService factory. The real factory will be used
 // if this hook returns null.
 std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
+    ProfileIOS* profile);
+
+// Allows overriding the GCMProfileService factory. The real factory will be
+// used if this hook returns null.
+std::unique_ptr<gcm::GCMProfileService> CreateGCMProfileService(
     ProfileIOS* profile);
 
 // Allows additional test setup for the DataSharingService.
