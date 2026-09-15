@@ -211,6 +211,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="OnRefreshTokenUpdated"/>
   <int value="4" label="MaybeSyncCookiesOnError"/>
   <int value="5" label="GlicClient"/>
+  <int value="6" label="InstanceCreated"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/auth_controller.h:GlicCookieSyncTrigger) -->
