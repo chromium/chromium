@@ -8,6 +8,7 @@
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "build/buildflag.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
@@ -618,7 +619,16 @@ enum class ItemIdentifier {
   cell.accessibilityIdentifier =
       GetAtMemorySearchResultCellAccessibilityIdentifier(itemIdentifier.title);
 
-  cell.accessoryView = [self infoButtonForSearchItem:itemIdentifier];
+  UIButton* infoButton = [self infoButtonForSearchItem:itemIdentifier];
+  cell.accessoryView = infoButton;
+
+  // Make the cell a container so both the suggestion row and the info button
+  // are accessible to VoiceOver.
+  cell.isAccessibilityElement = NO;
+  cell.contentView.isAccessibilityElement = YES;
+  cell.contentView.accessibilityLabel = configuration.accessibilityLabel;
+  cell.contentView.accessibilityTraits = UIAccessibilityTraitButton;
+  cell.accessibilityElements = @[ cell.contentView, infoButton ];
 
   return cell;
 }
@@ -632,6 +642,9 @@ enum class ItemIdentifier {
   infoButton.tag = item.index;
   infoButton.accessibilityIdentifier =
       GetAtMemorySearchResultInfoButtonAccessibilityIdentifier(item.title);
+  infoButton.accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(item.title));
   [infoButton addTarget:self
                  action:@selector(handleInfoButtonTap:)
        forControlEvents:UIControlEventTouchUpInside];
