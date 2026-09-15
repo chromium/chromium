@@ -72,6 +72,8 @@ class ContactsManagerImplTest : public RenderViewHostImplTestHarness {
 };
 
 TEST_F(ContactsManagerImplTest, SelectActivePrimaryMainFrame) {
+  static_cast<TestRenderFrameHost*>(main_rfh())->SimulateUserActivation();
+
   auto mock_provider = std::make_unique<MockContactsProvider>();
   MockContactsProvider* mock_provider_ptr = mock_provider.get();
 
@@ -101,6 +103,109 @@ TEST_F(ContactsManagerImplTest, SelectActivePrimaryMainFrame) {
   EXPECT_EQ(future.Get()->at(0)->name->at(0), "John Doe");
 }
 
+TEST_F(ContactsManagerImplTest, SelectWithoutUserActivation) {
+  auto mock_provider = std::make_unique<MockContactsProvider>();
+  MockContactsProvider* mock_provider_ptr = mock_provider.get();
+
+  EXPECT_CALL(*mock_provider_ptr, Select).Times(0);
+
+  InitService(std::move(mock_provider));
+
+  base::test::TestFuture<
+      std::optional<std::vector<blink::mojom::ContactInfoPtr>>>
+      future;
+  remote()->Select(/*multiple=*/false, /*include_names=*/true,
+                   /*include_emails=*/false, /*include_tel=*/false,
+                   /*include_addresses=*/false, /*include_icons=*/false,
+                   future.GetCallback());
+
+  EXPECT_EQ(future.Get(), std::nullopt);
+}
+
+TEST_F(ContactsManagerImplTest, SelectConsumesUserActivation) {
+  static_cast<TestRenderFrameHost*>(main_rfh())->SimulateUserActivation();
+
+  auto mock_provider = std::make_unique<MockContactsProvider>();
+  MockContactsProvider* mock_provider_ptr = mock_provider.get();
+
+  std::vector<blink::mojom::ContactInfoPtr> expected_contacts;
+  auto contact = blink::mojom::ContactInfo::New();
+  contact->name = std::vector<std::string>{"John Doe"};
+  expected_contacts.push_back(std::move(contact));
+
+  EXPECT_CALL(*mock_provider_ptr, Select)
+      .WillOnce(base::test::RunOnceCallback<6>(std::move(expected_contacts),
+                                               /*percentage_shared=*/100,
+                                               ContactsPickerProperties()));
+
+  InitService(std::move(mock_provider));
+
+  base::test::TestFuture<
+      std::optional<std::vector<blink::mojom::ContactInfoPtr>>>
+      future1;
+  remote()->Select(/*multiple=*/false, /*include_names=*/true,
+                   /*include_emails=*/false, /*include_tel=*/false,
+                   /*include_addresses=*/false, /*include_icons=*/false,
+                   future1.GetCallback());
+
+  ASSERT_TRUE(future1.Get().has_value());
+  EXPECT_EQ(future1.Get()->size(), 1u);
+  EXPECT_EQ(future1.Get()->at(0)->name->at(0), "John Doe");
+
+  // A second call without renewed user activation should be rejected because
+  // the previous call consumed transient user activation.
+  base::test::TestFuture<
+      std::optional<std::vector<blink::mojom::ContactInfoPtr>>>
+      future2;
+  remote()->Select(/*multiple=*/false, /*include_names=*/true,
+                   /*include_emails=*/false, /*include_tel=*/false,
+                   /*include_addresses=*/false, /*include_icons=*/false,
+                   future2.GetCallback());
+
+  EXPECT_EQ(future2.Get(), std::nullopt);
+
+  // Renewing user activation should allow subsequent selections to succeed.
+  static_cast<TestRenderFrameHost*>(main_rfh())->SimulateUserActivation();
+  std::vector<blink::mojom::ContactInfoPtr> expected_contacts2;
+  auto contact2 = blink::mojom::ContactInfo::New();
+  contact2->name = std::vector<std::string>{"Jane Doe"};
+  expected_contacts2.push_back(std::move(contact2));
+
+  EXPECT_CALL(*mock_provider_ptr, Select)
+      .WillOnce(base::test::RunOnceCallback<6>(std::move(expected_contacts2),
+                                               /*percentage_shared=*/100,
+                                               ContactsPickerProperties()));
+
+  base::test::TestFuture<
+      std::optional<std::vector<blink::mojom::ContactInfoPtr>>>
+      future3;
+  remote()->Select(/*multiple=*/false, /*include_names=*/true,
+                   /*include_emails=*/false, /*include_tel=*/false,
+                   /*include_addresses=*/false, /*include_icons=*/false,
+                   future3.GetCallback());
+
+  ASSERT_TRUE(future3.Get().has_value());
+  EXPECT_EQ(future3.Get()->size(), 1u);
+  EXPECT_EQ(future3.Get()->at(0)->name->at(0), "Jane Doe");
+}
+
+TEST_F(ContactsManagerImplTest, SelectNullProviderConsumesUserActivation) {
+  static_cast<TestRenderFrameHost*>(main_rfh())->SimulateUserActivation();
+
+  InitService(/*provider=*/nullptr);
+
+  base::test::TestFuture<
+      std::optional<std::vector<blink::mojom::ContactInfoPtr>>>
+      future;
+  remote()->Select(/*multiple=*/false, /*include_names=*/true,
+                   /*include_emails=*/false, /*include_tel=*/false,
+                   /*include_addresses=*/false, /*include_icons=*/false,
+                   future.GetCallback());
+
+  EXPECT_EQ(future.Get(), std::nullopt);
+  EXPECT_FALSE(main_rfh()->HasTransientUserActivation());
+}
+
 TEST_F(ContactsManagerImplTest, SelectBFCachedFrame) {
   auto mock_provider = std::make_unique<MockContactsProvider>();
   MockContactsProvider* mock_provider_ptr = mock_provider.get();
@@ -108,6 +213,8 @@ TEST_F(ContactsManagerImplTest, SelectBFCachedFrame) {
   EXPECT_CALL(*mock_provider_ptr, Select).Times(0);
 
   InitService(std::move(mock_provider));
+
+  static_cast<TestRenderFrameHost*>(main_rfh())->SimulateUserActivation();
 
   // Put the frame into BFCache.
   static_cast<TestRenderFrameHost*>(main_rfh())->DidEnterBackForwardCache();
@@ -138,6 +245,8 @@ TEST_F(ContactsManagerImplTest, SelectSubframe) {
       GURL("https://example.com/subframe"), subframe);
   navigation->Commit();
   subframe = navigation->GetFinalRenderFrameHost();
+
+  static_cast<TestRenderFrameHost*>(subframe)->SimulateUserActivation();
 
   mojo::Remote<blink::mojom::ContactsManager> subframe_remote;
   auto subframe_mock_provider = std::make_unique<MockContactsProvider>();
