@@ -1890,13 +1890,24 @@ String StylePropertySerializer::GetLayeredShorthandValue(
   // If the below loop succeeds, there should always be at minimum 1 layer.
   wtf_size_t num_layers = 1U;
 
-  // TODO(timloh): Shouldn't we fail if the lists are differently sized, with
-  // the exception of background-color?
+  // TODO(crbug.com/559456620): Other shorthands such as 'transition' need to
+  // require same-length longhands to round-trip.
+  bool require_same_length = shorthand.id() == CSSPropertyID::kTimelineTrigger;
+  wtf_size_t required_length = 0;
+
   for (unsigned i = 0; i < size; i++) {
     values[i] = property_set_.GetPropertyCSSValue(*shorthand.properties()[i]);
     if (values[i]->IsBaseValueList()) {
       const CSSValueList* value_list = To<CSSValueList>(values[i].Get());
-      num_layers = std::max(num_layers, value_list->length());
+      wtf_size_t length = value_list->length();
+      if (require_same_length) {
+        if (required_length == 0) {
+          required_length = length;
+        } else if (length != required_length) {
+          return g_empty_string;
+        }
+      }
+      num_layers = std::max(num_layers, length);
     }
   }
 
