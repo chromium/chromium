@@ -88,6 +88,10 @@ class MockContentClient : public TestContentClient {
         return u"Options available";
       case IDS_AX_COMBOBOX_EXPANDED:
         return u"Expanded";
+      case IDS_AX_MULTISELECTABLE_STATE_DESCRIPTION:
+        return u"multiselectable, $1 of $2 selected.";
+      case IDS_AX_MULTISELECTABLE_STATE_DESCRIPTION_NONE:
+        return u"multiselectable, none selected.";
       default:
         return std::u16string();
     }
@@ -3002,6 +3006,134 @@ TEST_F(BrowserAccessibilityAndroidTest,
   EXPECT_CALL(wcaa, HandlePaneClosed(dialog_uid)).Times(1);
 
   wcaa.MoveAccessibilityFocus(nullptr, inside_uid, outside_uid);
+}
+
+// Regression test for crbug.com/433149078. A multiselectable listbox
+// can end up with extra non-selectable children (e.g. <span id="...">)
+// in its platform children. Those extra children must not inflate
+// the total count in the state description.
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestMultiselectableStateDescriptionIgnoresNonSelectableChildren) {
+  // Three options, only the first of which is selected.
+  ui::AXNodeData option1;
+  option1.id = 10;
+  option1.role = ax::mojom::Role::kListBoxOption;
+  option1.SetName("Option 1");
+  option1.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+
+  ui::AXNodeData option2;
+  option2.id = 11;
+  option2.role = ax::mojom::Role::kListBoxOption;
+  option2.SetName("Option 2");
+  option2.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+
+  ui::AXNodeData option3;
+  option3.id = 12;
+  option3.role = ax::mojom::Role::kListBoxOption;
+  option3.SetName("Option 3");
+  option3.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+
+  // The spans are not selectable, so they must not be counted.
+  ui::AXNodeData span1;
+  span1.id = 20;
+  span1.role = ax::mojom::Role::kGenericContainer;
+
+  ui::AXNodeData span2;
+  span2.id = 21;
+  span2.role = ax::mojom::Role::kGenericContainer;
+
+  ui::AXNodeData span3;
+  span3.id = 22;
+  span3.role = ax::mojom::Role::kGenericContainer;
+
+  ui::AXNodeData listbox;
+  listbox.id = 2;
+  listbox.role = ax::mojom::Role::kListBox;
+  listbox.AddState(ax::mojom::State::kMultiselectable);
+  listbox.SetName("Some options");
+  listbox.child_ids = {option1.id, span1.id,   option2.id,
+                       span2.id,   option3.id, span3.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {listbox.id};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager =
+      CreateManager(MakeAXTreeUpdateForTesting(root, listbox, option1, span1,
+                                               option2, span2, option3, span3));
+
+  auto* listbox_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(listbox.id));
+  ASSERT_NE(nullptr, listbox_node);
+
+  // The listbox has 6 platform children, but only 3 of them are options, which
+  // is what the set size reflects.
+  ASSERT_EQ(6U, listbox_node->PlatformChildCount());
+  ASSERT_EQ(3, listbox_node->GetSetSize());
+  EXPECT_EQ(u"multiselectable, 1 of 3 selected.",
+            listbox_node->GetAndroidStateDescription());
+}
+
+// Roles that do not compute a set size (e.g. role="grid", which is neither
+// item-like nor set-like, so `AXTree::GetSetSize()` returns std::nullopt) fall
+// back to counting platform children, which must also exclude non-selectable
+// children.
+TEST_F(BrowserAccessibilityAndroidTest,
+       TestMultiselectableStateDescriptionGridFallback) {
+  // Three rows, the first and last of which are selected.
+  ui::AXNodeData row1;
+  row1.id = 10;
+  row1.role = ax::mojom::Role::kRow;
+  row1.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+
+  ui::AXNodeData row2;
+  row2.id = 11;
+  row2.role = ax::mojom::Role::kRow;
+  row2.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
+
+  ui::AXNodeData row3;
+  row3.id = 12;
+  row3.role = ax::mojom::Role::kRow;
+  row3.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+
+  // The generic containers are not selectable, so they must not be counted.
+  ui::AXNodeData generic1;
+  generic1.id = 20;
+  generic1.role = ax::mojom::Role::kGenericContainer;
+
+  ui::AXNodeData generic2;
+  generic2.id = 21;
+  generic2.role = ax::mojom::Role::kGenericContainer;
+
+  ui::AXNodeData grid;
+  grid.id = 2;
+  grid.role = ax::mojom::Role::kGrid;
+  grid.AddState(ax::mojom::State::kMultiselectable);
+  grid.child_ids = {row1.id, generic1.id, row2.id, generic2.id, row3.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {grid.id};
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager =
+      CreateManager(MakeAXTreeUpdateForTesting(root, grid, row1, generic1, row2,
+                                               generic2, row3));
+
+  auto* grid_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(grid.id));
+  ASSERT_NE(nullptr, grid_node);
+
+  // A grid has no set size, so the state description below cannot come from
+  // `GetSetSize()`; it must come from the platform children loop.
+  ASSERT_EQ(std::nullopt, grid_node->GetSetSize());
+
+  // The grid has 5 platform children, but only the 3 rows are selectable, so
+  // the denominator must be 3 rather than 5.
+  ASSERT_EQ(5U, grid_node->PlatformChildCount());
+  EXPECT_EQ(u"multiselectable, 2 of 3 selected.",
+            grid_node->GetAndroidStateDescription());
 }
 
 }  // namespace content

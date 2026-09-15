@@ -1356,16 +1356,25 @@ std::u16string BrowserAccessibilityAndroid::GetAndroidSupplementalDescription()
 
 std::u16string BrowserAccessibilityAndroid::GetMultiselectableStateDescription()
     const {
-  // Count the number of children and selected children.
+  // Count the number of selectable children and selected children.
   int child_count = 0;
   int selected_count = 0;
   for (const auto& child : PlatformChildren()) {
-    child_count++;
     const BrowserAccessibilityAndroid& android_child =
         static_cast<const BrowserAccessibilityAndroid&>(child);
+    if (ui::IsSelectSupported(android_child.GetRole())) {
+      child_count++;
+    }
     if (android_child.IsSelected()) {
       selected_count++;
     }
+  }
+
+  // Prefer the set size when available, since it properly accounts for
+  // ordered sets and aria-setsize. Roles that do not compute a set size
+  // (e.g. role="grid") fall back to the count computed above.
+  if (std::optional<int> set_size = GetSetSize()) {
+    child_count = *set_size;
   }
 
   // If none are selected, return special case.
