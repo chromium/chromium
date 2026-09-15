@@ -1060,6 +1060,29 @@ def main():
     if not args.skip_llvm_build:
         BuildLLVMLibraries(args.skip_checkout, args.llvm_force_head_revision)
 
+    # These cherry-picks are placed here rather than GitApplyCherryPicks()
+    # because they depend on the LLVM revision.
+    # TODO(crbug.com/561655393): Remove once
+    # https://github.com/rust-lang/rust/pull/162783 rolls into rust.
+    if IsGitAncestorToHead(
+        LLVM_DIR, '105ff16f816ffdce14b1d4895d8584971ef5192c'
+    ):
+        GitCherryPick(
+            RUST_SRC_DIR,
+            'f0843be18bc97a38ae567c2fc620c15fdd5b1fef',
+            'https://github.com/rust-lang/rust.git',
+        )
+    # TODO(crbug.com/562057029): Remove once
+    # https://github.com/rust-lang/rust/pull/162817 rolls into rust.
+    if IsGitAncestorToHead(
+        LLVM_DIR, 'e733cebdf7c9c87bec77547f3c377f514a22c9b3'
+    ):
+        GitCherryPick(
+            RUST_SRC_DIR,
+            '5dd46310416da1074f652d3935956d6b1f03df4e',
+            'https://github.com/rust-lang/rust.git',
+        )
+
     AddCMakeToPath()
 
     # Set up config.toml in Rust source tree.
