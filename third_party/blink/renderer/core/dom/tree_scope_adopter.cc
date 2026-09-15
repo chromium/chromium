@@ -291,6 +291,8 @@ inline void TreeScopeAdopter::UpdateTreeScope(Node& node) const {
   DCHECK(!node.IsTreeScope());
   DCHECK(node.GetTreeScope() == OldScope());
   node.SetTreeScope(new_scope_);
+  node.SetFlag(new_scope_->RootNode().IsShadowRoot(),
+               Node::kIsInShadowTreeFlag);
 }
 
 inline void TreeScopeAdopter::MoveNodeToNewDocument(

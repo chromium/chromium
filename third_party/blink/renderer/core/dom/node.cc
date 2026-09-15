@@ -2634,8 +2634,6 @@ Node::InsertionNotificationRequest Node::InsertedInto(
     insertion_point.GetDocument().IncrementNodeCount();
 #endif
   }
-  if (ParentOrShadowHostNode()->IsInShadowTree())
-    SetFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
     cache->NodeIsConnected(this);
   }
@@ -2660,9 +2658,6 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
 #if DCHECK_IS_ON()
     insertion_point.GetDocument().DecrementNodeCount();
 #endif
-  }
-  if (IsInShadowTree() && !GetTreeScope().RootNode().IsShadowRoot()) {
-    ClearFlag(kIsInShadowTreeFlag);
   }
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
     cache->Remove(this);

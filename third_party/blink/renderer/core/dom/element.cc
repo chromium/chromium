@@ -11983,7 +11983,7 @@ inline void Element::UpdateId(const AtomicString& old_id,
 inline void Element::UpdateId(TreeScope& scope,
                               const AtomicString& old_id,
                               const AtomicString& new_id) {
-  DCHECK(IsInTreeScope());
+  DCHECK(IsInTreeScope() || scope.RootNode().IsInShadowTree());
   DCHECK_NE(old_id, new_id);
 
   if (!old_id.empty()) {
