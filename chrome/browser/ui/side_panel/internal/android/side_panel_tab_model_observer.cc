@@ -31,50 +31,39 @@ void SidePanelTabModelObserver::DidSelectTab(TabAndroid* tab,
                                              TabModel::TabSelectionType type) {
   CHECK(tab) << "New active tab should never be null.";
 
-  tabs::TabInterface* old_tab = active_tab_handle_.Get();
+  TabAndroid* old_tab = TabAndroid::FromTabHandle(active_tab_handle_);
 
   // For some reason DidSelectTab() is triggered _twice_ when we call
   // `TabListInterface::ActivateTab` in tests, so here we check whether
   // `DidSelectTab` is called for the first time. If not, we should not
-  // invoke OnActiveTabChanged() on the coordinator.
+  // update the coordinator.
   //
   // TODO(crbug.com/497986571): Investigate.
   if (old_tab == tab) {
     return;
   }
 
-  content::WebContents* old_contents =
-      old_tab ? old_tab->GetContents() : nullptr;
-  content::WebContents* new_contents = tab->GetContents();
-  // `old_tab` is evaluated from `active_tab_handle_.Get()`.
-  //
-  // 1. Tab Closure Case:
-  // If the underlying tab was destroyed (e.g., normal tab closure), `Get()`
-  // returns `nullptr` and `tab_removed_for_deletion` evaluates to `true`.
-  //
-  // 2. Tab Reparenting Case:
-  // When a tab is reparented out, the outgoing tab object still exists in
-  // memory (moving to another window), so `old_tab` remains valid and
-  // `tab_removed_for_deletion` evaluates to `false`.
-  //
-  // In multi-tab windows, when the active tab is reparented out, the source
-  // window activates another tab first. Since `tab_removed_for_deletion` is
-  // `false`, the coordinator's `OnActiveTabChanged()` will receive the valid
-  // outgoing contextual registry, allowing it to cleanly close or replace the
-  // side panel in the source window if needed.
-  bool tab_removed_for_deletion = (old_tab == nullptr);
-
-  coordinator_->OnActiveTabChanged(old_contents, new_contents,
-                                   tab_removed_for_deletion);
-
   active_tab_handle_ = tab->GetHandle();
+  coordinator_->OnTabSelected(old_tab, tab);
 }
 
 void SidePanelTabModelObserver::DidRemoveTabForClosure(TabAndroid* tab) {
+  CHECK(tab);
+
+  if (active_tab_handle_ == tab->GetHandle()) {
+    active_tab_handle_ = {};
+  }
+
   coordinator_->OnTabClosed(tab);
 }
 
 void SidePanelTabModelObserver::TabRemoved(TabAndroid* tab) {
+  CHECK(tab);
+
+  if (active_tab_handle_ == tab->GetHandle()) {
+    active_tab_handle_ = {};
+  }
+
   coordinator_->OnTabReparented(tab);
 }
 
@@ -123,4 +112,5 @@ void SidePanelTabModelObserver::OnTabModelDestroyed(TabModel& tab_model) {
   CHECK(tab_model_ == &tab_model);
   tab_model_->RemoveObserver(this);
   tab_model_ = nullptr;
+  active_tab_handle_ = {};
 }

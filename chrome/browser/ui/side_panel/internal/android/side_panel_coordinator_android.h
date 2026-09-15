@@ -68,23 +68,29 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
              bool suppress_animations) override;
   void Toggle(SidePanelEntryKey key,
               SidePanelOpenTrigger open_trigger) override;
+  void OnActiveTabChanged(content::WebContents* old_contents,
+                          content::WebContents* new_contents,
+                          bool tab_removed_for_deletion) override;
   content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
   void DisableAnimationsForTesting() override;
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;
 
   /////////////////////////////////////////////////////////////////
-  //            Start of other public functions                  //
+  //   Start of public functions for SidePanelTabModelObserver   //
   /////////////////////////////////////////////////////////////////
 
-  // Called when a tab is closed (destroyed).
+  // Called when a tab is closed, but the closure can be undone.
   void OnTabClosed(TabAndroid* tab);
 
   // Called when the given `tab` is removed from this window's TabModel and
   // _has_ become the active tab of another window.
   void OnTabReparented(TabAndroid* tab);
 
+  // Called when the active tab changes.
+  void OnTabSelected(TabAndroid* old_tab, TabAndroid* new_tab);
+
   /////////////////////////////////////////////////////////////////
-  //            End of other public functions                    //
+  //    End of public functions for SidePanelTabModelObserver    //
   /////////////////////////////////////////////////////////////////
 
   /////////////////////////////////////////////////////////////////

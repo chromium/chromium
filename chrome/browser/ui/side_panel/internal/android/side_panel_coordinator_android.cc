@@ -348,6 +348,18 @@ void SidePanelCoordinatorAndroid::OnTabReparented(TabAndroid* tab) {
   }
 }
 
+void SidePanelCoordinatorAndroid::OnTabSelected(TabAndroid* old_tab,
+                                                TabAndroid* new_tab) {
+  SPLOG("OnTabSelected - old_tab: " << old_tab << ", new_tab: " << new_tab);
+  CHECK(new_tab);
+
+  SidePanelRegistry* old_contextual_registry =
+      old_tab ? SidePanelRegistry::From(old_tab) : nullptr;
+  SidePanelRegistry* new_contextual_registry = SidePanelRegistry::From(new_tab);
+  MaybeShowEntryOnTabStripModelChanged(old_contextual_registry,
+                                       new_contextual_registry);
+}
+
 void SidePanelCoordinatorAndroid::OnWillAutoClose() {
   SPLOG("OnWillAutoClose");
 
@@ -411,8 +423,8 @@ void SidePanelCoordinatorAndroid::Init() {
   // initialization to restore the side panel state for the active tab.
   if (tabs::TabInterface* active_tab =
           TabListInterface::From(browser())->GetActiveTab()) {
-    OnActiveTabChanged(/*old_contents=*/nullptr, active_tab->GetContents(),
-                       /*tab_removed_for_deletion=*/false);
+    OnTabSelected(/*old_tab=*/nullptr,
+                  TabAndroid::FromTabInterface(active_tab));
   }
 }
 
@@ -441,6 +453,14 @@ void SidePanelCoordinatorAndroid::Toggle(SidePanelEntryKey key,
   if (unique_key.has_value()) {
     Show(unique_key.value(), open_trigger, /*suppress_animations=*/false);
   }
+}
+
+void SidePanelCoordinatorAndroid::OnActiveTabChanged(
+    content::WebContents* old_contents,
+    content::WebContents* new_contents,
+    bool tab_removed_for_deletion) {
+  NOTREACHED()
+      << "On Android, active tab changes are handled via OnTabSelected().";
 }
 
 content::WebContents*
