@@ -100,11 +100,12 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
       PaintImage paint_image = image->PaintImageForCurrentFrame();
       if (sk_sp<SkImage> skia_image = paint_image.GetSwSkImage()) {
         SkPixmap pixmap;
-        if (skia_image->peekPixels(&pixmap)) {
+        auto dest_shared_image = lease->GetSharedImage();
+        if (dest_shared_image && skia_image->peekPixels(&pixmap)) {
           uint32_t src_x = image_sub_rect.x();
           uint32_t src_y = image_sub_rect.y();
-          const int dest_width = lease->shared_image()->size().width();
-          const int dest_height = lease->shared_image()->size().height();
+          const int dest_width = dest_shared_image->size().width();
+          const int dest_height = dest_shared_image->size().height();
 
           SkPixmap subset;
           if (pixmap.extractSubset(
@@ -113,13 +114,11 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
                                              dest_width, dest_height))) {
             TRACE_EVENT0("blink",
                          "WebGPUMailboxTexture::FromStaticBitmapImage");
-            if (!lease->IsGpuContextLost()) {
-              lease->SetSyncToken(lease->RasterInterface()->WritePixels(
-                  lease->shared_image(), lease->sync_token(),
-                  /*dst_x_offset=*/0, /*dst_y_offset=*/0, subset));
-              lease->SetCleared();
-              copy_success = true;
-            }
+            lease->SetSyncToken(lease->RasterInterface()->WritePixels(
+                dest_shared_image, lease->GetSyncToken(),
+                /*dst_x_offset=*/0, /*dst_y_offset=*/0, subset));
+            lease->SetCleared();
+            copy_success = true;
           }
         }
       }
