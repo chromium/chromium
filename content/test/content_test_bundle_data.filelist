@@ -8965,6 +8965,7 @@ data/mixed-content/basic-passive.html
 data/mixed-content/image-with-non-redundant-cert-error.html
 data/mixed-content/image-with-redundant-cert-error-in-iframe.html
 data/mixed-content/image-with-redundant-cert-error.html
+data/mixed-content/navigate-iframe-to-insecure.html
 data/mixed-content/non-redundant-cert-error-in-iframe.html
 data/mixed-content/redundant-cert-error-in-iframe.html
 data/mojo_bindings_web_test.test-mojom

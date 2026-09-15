@@ -26,6 +26,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_connection_info.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/source_location.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "url/gurl.h"
@@ -211,6 +212,12 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   void set_request_context_type(
       blink::mojom::RequestContextType request_context_type) {
     request_context_type_ = request_context_type;
+  }
+
+  // Sets the source location reported for the navigation. Only supported for
+  // renderer-initiated navigations.
+  void set_source_location(network::mojom::SourceLocationPtr source_location) {
+    source_location_ = std::move(source_location);
   }
 
   void set_insecure_request_policy(
@@ -403,6 +410,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   std::string href_translate_;
   blink::mojom::RequestContextType request_context_type_ =
       blink::mojom::RequestContextType::LOCATION;
+  network::mojom::SourceLocationPtr source_location_;
   blink::mojom::InsecureRequestPolicy insecure_request_policy_ =
       blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
   std::vector<uint32_t> insecure_navigations_set_;

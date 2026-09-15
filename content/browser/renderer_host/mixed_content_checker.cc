@@ -18,6 +18,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/source_location.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
@@ -121,11 +122,24 @@ void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
   CHECK(!navigation_request->GetRedirectChain().empty(),
         base::NotFatalUntil::M158);
   GURL url_before_redirects = navigation_request->GetRedirectChain()[0];
-  rfh->GetAssociatedLocalFrame()->MixedContentFound(
-      mixed_content_url, navigation_request->GetURL(),
-      navigation_request->request_context_type(), was_allowed,
-      url_before_redirects, for_redirect,
-      navigation_request->common_params().source_location.Clone());
+  // The source location identifies the document or script that initiated the
+  // navigation, which can be in a different process from the navigating
+  // frame, so it should not be sent if it's cross-origin with the navigating
+  // frame's document.
+  network::mojom::SourceLocationPtr source_location =
+      navigation_request->common_params().source_location.Clone();
+  if (rfh->GetLastCommittedOrigin().IsSameOriginWith(
+          GURL(source_location->url))) {
+    rfh->GetAssociatedLocalFrame()->MixedContentFound(
+        mixed_content_url, navigation_request->GetURL(),
+        navigation_request->request_context_type(), was_allowed,
+        url_before_redirects, for_redirect, std::move(source_location));
+  } else {
+    rfh->GetAssociatedLocalFrame()->MixedContentFound(
+        mixed_content_url, navigation_request->GetURL(),
+        navigation_request->request_context_type(), was_allowed,
+        url_before_redirects, for_redirect, nullptr);
+  }
 }
 
 // Updates the renderer about any Blink feature usage.

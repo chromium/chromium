@@ -1482,6 +1482,9 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   common_params->href_translate = href_translate_;
   common_params->request_destination =
       network::mojom::RequestDestination::kDocument;
+  if (source_location_) {
+    common_params->source_location = source_location_.Clone();
+  }
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;
