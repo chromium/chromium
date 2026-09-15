@@ -531,8 +531,14 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, StateAccessors) {
   EXPECT_FALSE(view->IsActionPoppedOut(kActionPrint));
 }
 
+// TODO(crbug.com/545042573): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TextAndAriaLabelAttributes DISABLED_TextAndAriaLabelAttributes
+#else
+#define MAYBE_TextAndAriaLabelAttributes TextAndAriaLabelAttributes
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
-                       TextAndAriaLabelAttributes) {
+                       MAYBE_TextAndAriaLabelAttributes) {
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
