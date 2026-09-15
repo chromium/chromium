@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
@@ -621,7 +622,13 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, RecursiveCheckDeepAssertEq_Success) {
   EXPECT_TRUE(result_catcher.GetNextResult());
 }
 
-IN_PROC_BROWSER_TEST_F(TestAPITest, ListenOnceWithoutPromise) {
+// Flaky, see crbug.com/556889807.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ListenOnceWithoutPromise DISABLED_ListenOnceWithoutPromise
+#else
+#define MAYBE_ListenOnceWithoutPromise ListenOnceWithoutPromise
+#endif
+IN_PROC_BROWSER_TEST_F(TestAPITest, MAYBE_ListenOnceWithoutPromise) {
   ResultCatcher result_catcher;
   static constexpr char kBackgroundJs[] =
       R"(let createdTab;
