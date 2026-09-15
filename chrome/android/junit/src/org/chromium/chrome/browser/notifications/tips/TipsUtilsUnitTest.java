@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -448,5 +449,27 @@ public class TipsUtilsUnitTest {
                         mSharedPreferences,
                         /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO - 1)));
+    }
+
+    @SmallTest
+    @Test
+    public void testIsSupportedDeviceType() {
+        assertTrue(TipsUtils.isSupportedDeviceType());
+
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        assertFalse(TipsUtils.isSupportedDeviceType());
+        DeviceInfo.setIsAutomotiveForTesting(false);
+
+        DeviceInfo.setIsTVForTesting(true);
+        assertFalse(TipsUtils.isSupportedDeviceType());
+        DeviceInfo.setIsTVForTesting(false);
+
+        DeviceInfo.setIsXrForTesting(true);
+        assertFalse(TipsUtils.isSupportedDeviceType());
+        DeviceInfo.setIsXrForTesting(false);
+
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertFalse(TipsUtils.isSupportedDeviceType());
+        DeviceInfo.setIsDesktopForTesting(false);
     }
 }

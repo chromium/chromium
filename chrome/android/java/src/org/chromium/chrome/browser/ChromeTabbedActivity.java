@@ -2940,7 +2940,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 }
 
                 // Launch the tips promo, tied with the intent extra set in TipsAgent.java.
-                if (fromTipsNotifications != INVALID_TIPS_NOTIFICATION_FEATURE_TYPE) {
+                if (fromTipsNotifications != INVALID_TIPS_NOTIFICATION_FEATURE_TYPE
+                        && TipsUtils.isSupportedDeviceType()) {
                     mTipsPromoCoordinator =
                             new TipsPromoCoordinator(
                                     this,

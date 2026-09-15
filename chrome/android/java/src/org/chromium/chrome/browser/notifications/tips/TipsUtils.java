@@ -283,7 +283,8 @@ public class TipsUtils {
                     Profile profile = provider.getOriginalProfile();
                     if (profile.shutdownStarted()) return;
 
-                    if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
+                    if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()
+                            && TipsUtils.isSupportedDeviceType()) {
                         if (ChromeFeatureList.sAndroidTipsNotificationsResetFeatureTipShown
                                 .getValue()) {
                             clearFeatureTipShownPrefs(profile);
@@ -511,11 +512,14 @@ public class TipsUtils {
 
     /**
      * Checks if the current device type is supported. Tips notifications are not designed for
-     * Automotive, TV and XR form factors, but more specifically the activity used to handle
-     * notification settings is not supported so the opt in should not be triggered.
+     * Automotive, TV, XR, and Desktop form factors, but more specifically the activity used to
+     * handle notification settings is not supported so the opt in should not be triggered.
      */
     public static boolean isSupportedDeviceType() {
-        return !DeviceInfo.isAutomotive() && !DeviceInfo.isXr() && !DeviceInfo.isTV();
+        return !DeviceInfo.isAutomotive()
+                && !DeviceInfo.isXr()
+                && !DeviceInfo.isTV()
+                && !DeviceInfo.isDesktop();
     }
 
     /**
