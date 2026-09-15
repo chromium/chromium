@@ -447,6 +447,10 @@
   <message name="IDS_AUTOFILL_GMAIL_OTP_REQUIRED_STEP_2" desc="Second step in the Gmail OTP settings required dialog prompting the user to turn on smart features in other Google products.">
     Turn on “<ph name="BEGIN_LINK">&lt;a href="$1" tabindex="0" aria-description="$2" target="_blank"&gt;</ph>Smart features in other Google products<ph name="LINK_END">&lt;/a&gt;</ph>”
   </message>
+  <!-- TODO(crbug.com/556170227): Make this string translateable once UI is finalized. -->
+  <message name="IDS_AUTOFILL_OPEN_GMAIL_FOR_OTP" desc="The text of the suggestion that opens Gmail to view one time passwords." translateable="false">
+    Open Gmail
+  </message>
   <message name="IDS_AUTOFILL_DISABLE_SETTINGS_EXPLANATION_TITLE" desc="Title of the card explaining why the settings page was disabled. Sentence-Cased." formatter_data="android_java">
     Google isn’t your autofill provider
   </message>

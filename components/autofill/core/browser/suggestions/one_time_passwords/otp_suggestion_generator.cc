@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,26 +23,28 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#if BUILDFLAG(IS_ANDROID)
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#endif
 
 namespace autofill {
 namespace {
 
 // Builds Suggestion for given `otp_value`.
-Suggestion BuildOtpSuggestion(const std::string& otp_value) {
-  Suggestion suggestion = Suggestion(base::UTF8ToUTF16(otp_value),
-                                     SuggestionType::kOneTimePasswordEntry);
+Suggestion BuildOtpSuggestion(const std::string& otp_value,
+                              SuggestionType type) {
+  Suggestion suggestion(base::UTF8ToUTF16(otp_value), type);
+  if (type == SuggestionType::kGmailOneTimePasswordEntry) {
+    suggestion.icon = Suggestion::Icon::kGmail;
+  }
 #if BUILDFLAG(IS_ANDROID)
-  // Android SMS OTPs are the only supported OTPs at the moment. Choose the
-  // right icon and A11Y label when more OTP options are supported in the
-  // future.
-  suggestion.icon = Suggestion::Icon::kAndroidMessages;
+  // Choose the right icon and A11Y label when more OTP options are supported
+  // in the future.
+  if (type == SuggestionType::kOneTimePasswordEntry) {
+    suggestion.icon = Suggestion::Icon::kAndroidMessages;
+  }
   suggestion.voice_over = l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL,
-      base::UTF8ToUTF16(otp_value));
+      suggestion.main_text.value);
   suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_ONE_TIME_PASSWORD);
 #endif
@@ -50,10 +54,26 @@ Suggestion BuildOtpSuggestion(const std::string& otp_value) {
 }  // namespace
 
 std::vector<Suggestion> BuildOtpSuggestions(
-    std::vector<std::string> one_time_passwords) {
+    base::span<const std::string> one_time_passwords,
+    SuggestionType type) {
+  CHECK(type == SuggestionType::kGmailOneTimePasswordEntry ||
+        type == SuggestionType::kOneTimePasswordEntry);
+  if (one_time_passwords.empty()) {
+    return {};
+  }
   std::vector<Suggestion> suggestions;
+  suggestions.reserve(
+      one_time_passwords.size() +
+      (type == SuggestionType::kGmailOneTimePasswordEntry ? 2 : 0));
   for (const std::string& otp_value : one_time_passwords) {
-    suggestions.push_back(BuildOtpSuggestion(otp_value));
+    suggestions.push_back(BuildOtpSuggestion(otp_value, type));
+  }
+  if (type == SuggestionType::kGmailOneTimePasswordEntry) {
+    suggestions.emplace_back(SuggestionType::kSeparator);
+    Suggestion& open_gmail = suggestions.emplace_back(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_OPEN_GMAIL_FOR_OTP),
+        SuggestionType::kOpenGmailForOtps);
+    open_gmail.icon = Suggestion::Icon::kGmail;
   }
   return suggestions;
 }

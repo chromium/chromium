@@ -18,13 +18,17 @@
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/common/autofill_test_util.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace autofill {
 
 using ::base::test::RunOnceCallback;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pair;
@@ -57,12 +61,37 @@ TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions) {
       base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
       suggestions_generated_callback;
 
-  EXPECT_CALL(suggestions_generated_callback,
-              Run(testing::Pair(
-                  SuggestionGenerator::SuggestionDataSource::kOneTimePassword,
-                  testing::UnorderedElementsAre(
-                      Field(&Suggestion::main_text,
-                            Field(&Suggestion::Text::value, u"123456"))))));
+  EXPECT_CALL(
+      suggestions_generated_callback,
+      Run(Pair(
+          SuggestionGenerator::SuggestionDataSource::kOneTimePassword,
+          ElementsAre(
+              AllOf(Field(&Suggestion::main_text,
+                          Field(&Suggestion::Text::value, u"123456")),
+                    Field(&Suggestion::type,
+                          SuggestionType::kOneTimePasswordEntry))))));
+
+  generator().GenerateSuggestions(form, form.fields()[0], &form_structure,
+                                  form_structure.field(0), client(),
+                                  suggestions_generated_callback.Get());
+}
+
+TEST_F(OtpSuggestionGeneratorTest, GenerateOtpSuggestions_EmptyOtpList) {
+  FormData form = test::GetFormData({.fields = {{.role = ONE_TIME_CODE}}});
+  FormStructure form_structure(form);
+  form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
+
+  EXPECT_CALL(otp_manager(), GetOtpSuggestions)
+      .WillOnce(RunOnceCallback<2>(std::vector<std::string>{}));
+
+  base::MockCallback<
+      base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>>
+      suggestions_generated_callback;
+
+  EXPECT_CALL(
+      suggestions_generated_callback,
+      Run(Pair(SuggestionGenerator::SuggestionDataSource::kOneTimePassword,
+               IsEmpty())));
 
   generator().GenerateSuggestions(form, form.fields()[0], &form_structure,
                                   form_structure.field(0), client(),
@@ -75,7 +104,37 @@ TEST_F(OtpSuggestionGeneratorTest, EmptyInput) {
   EXPECT_TRUE(suggestions.empty());
 }
 
-TEST_F(OtpSuggestionGeneratorTest, Otps) {
+TEST_F(OtpSuggestionGeneratorTest, GmailOtps) {
+  std::vector<std::string> otps = {"123456", "789012"};
+  std::vector<Suggestion> suggestions =
+      BuildOtpSuggestions(otps, SuggestionType::kGmailOneTimePasswordEntry);
+
+  ASSERT_EQ(suggestions.size(), 4U);
+  EXPECT_EQ(suggestions[0].main_text.value, base::UTF8ToUTF16(otps[0]));
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kGmailOneTimePasswordEntry);
+  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kGmail);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(suggestions[0].voice_over, u"Verification Code: 123456");
+  EXPECT_EQ(suggestions[0].acceptance_a11y_announcement, u"Autofilled code");
+#endif
+
+  EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(otps[1]));
+  EXPECT_EQ(suggestions[1].type, SuggestionType::kGmailOneTimePasswordEntry);
+  EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kGmail);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(suggestions[1].voice_over, u"Verification Code: 789012");
+  EXPECT_EQ(suggestions[1].acceptance_a11y_announcement, u"Autofilled code");
+#endif
+
+  EXPECT_EQ(suggestions[2].type, SuggestionType::kSeparator);
+
+  EXPECT_EQ(suggestions[3].main_text.value,
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_OPEN_GMAIL_FOR_OTP));
+  EXPECT_EQ(suggestions[3].type, SuggestionType::kOpenGmailForOtps);
+  EXPECT_EQ(suggestions[3].icon, Suggestion::Icon::kGmail);
+}
+
+TEST_F(OtpSuggestionGeneratorTest, SmsOtps) {
   std::vector<std::string> otps = {"123456", "789012"};
   std::vector<Suggestion> suggestions = BuildOtpSuggestions(otps);
 
@@ -86,6 +145,8 @@ TEST_F(OtpSuggestionGeneratorTest, Otps) {
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kAndroidMessages);
   EXPECT_EQ(suggestions[0].voice_over, u"Verification Code: 123456");
   EXPECT_EQ(suggestions[0].acceptance_a11y_announcement, u"Autofilled code");
+#else
+  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kNoIcon);
 #endif
 
   EXPECT_EQ(suggestions[1].main_text.value, base::UTF8ToUTF16(otps[1]));
@@ -94,6 +155,8 @@ TEST_F(OtpSuggestionGeneratorTest, Otps) {
   EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kAndroidMessages);
   EXPECT_EQ(suggestions[1].voice_over, u"Verification Code: 789012");
   EXPECT_EQ(suggestions[1].acceptance_a11y_announcement, u"Autofilled code");
+#else
+  EXPECT_EQ(suggestions[1].icon, Suggestion::Icon::kNoIcon);
 #endif
 }
 

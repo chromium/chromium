@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -15,6 +16,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 
@@ -22,11 +24,12 @@ namespace autofill {
 
 class OtpManager;
 
-// Generates OTP suggestions from the provided vector of retrieved OTP values.
+// Generates OTP suggestions from the provided span of retrieved OTP values.
 // TODO(crbug.com/409962888): Cleanup once AutofillNewSuggestionGeneration is
 // launched.
 std::vector<Suggestion> BuildOtpSuggestions(
-    std::vector<std::string> one_time_passwords);
+    base::span<const std::string> one_time_passwords,
+    SuggestionType type = SuggestionType::kOneTimePasswordEntry);
 
 // A `SuggestionGenerator` for `FillingProduct::kOneTimePassword`.
 class OtpSuggestionGenerator : public SuggestionGenerator {
