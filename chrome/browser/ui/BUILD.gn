@@ -2712,8 +2712,6 @@ static_library("ui") {
 
   if (toolkit_views) {
     sources += [
-      "views/browser_commands_views.cc",
-      "views/browser_dialogs_views.cc",
       "views/frame/app_menu_button.cc",
       "views/frame/app_menu_button.h",
       "views/frame/base_tab_strip_region_view.cc",
@@ -2799,6 +2797,8 @@ static_library("ui") {
       "//chrome/browser/ui/tabs/tab_strip_api",
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
+      "//chrome/browser/ui/views:browser_commands_views",
+      "//chrome/browser/ui/views:browser_dialogs_views",
       "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views:bubble_anchor_util_views_impl",
       "//chrome/browser/ui/views:bubble_menu_item_factory",
@@ -3165,6 +3165,14 @@ static_library("ui") {
       # c/b/ui/browser.h
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/autofill:autofill_field_promo_view_impl_impl",
+
+      # browser_commands_views.cc includes browser_commands.h and browser_view.h
+      # from //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views:browser_commands_views",
+
+      # browser_dialogs_views.cc includes browser_window.h and browser_view.h
+      # from //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views:browser_dialogs_views",
 
       # popup_impl and popup_view_views_impl include browser_view.h.
       "//chrome/browser/ui/views/autofill/popup:popup_impl",
@@ -3631,12 +3639,11 @@ static_library("ui") {
   # TODO(https://crbug.com/330808104): Delete this code.
 
   if (use_aura) {
-    sources += [ "views/accelerator_utils_aura.cc" ]
-
     deps += [
       "//chrome/browser/ui/aura/accessibility",
       "//chrome/browser/ui/aura/accessibility:impl",
       "//chrome/browser/ui/aura/tab_contents",
+      "//chrome/browser/ui/views:accelerator_utils_aura",
       "//chrome/browser/ui/views:theme_profile_key",
       "//chrome/browser/ui/views/renderer_context_menu",
       "//chrome/browser/ui/views/renderer_context_menu:impl",
@@ -3653,6 +3660,10 @@ static_library("ui") {
     # Any circular includes must depend on the target
     # "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
+      # accelerator_utils_aura.cc includes browser_view.h from
+      # //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views:accelerator_utils_aura",
+
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following header gets componentized:
       # c/b/ui/views/frame/browser_view.h
@@ -3708,7 +3719,14 @@ static_library("ui") {
     ]
 
     if (use_aura) {
-      sources += [ "views/javascript_app_modal_event_blocker_aura.cc" ]
+      deps += [
+        "//chrome/browser/ui/views:javascript_app_modal_event_blocker_aura",
+      ]
+      allow_circular_includes_from += [
+        # javascript_app_modal_event_blocker_aura.cc includes browser_view.h
+        # from //chrome/browser/ui:ui.
+        "//chrome/browser/ui/views:javascript_app_modal_event_blocker_aura",
+      ]
     }
 
     if (toolkit_views) {

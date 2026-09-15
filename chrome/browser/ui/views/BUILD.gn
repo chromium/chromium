@@ -121,6 +121,50 @@ source_set("bubble_anchor_util_views_impl") {
   ]
 }
 
+source_set("browser_commands_views") {
+  sources = [ "browser_commands_views.cc" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/app:command_ids",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ui/views/tabs:tab_strip",
+    "//ui/base:features",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+  if (use_aura) {
+    deps += [
+      "//ui/aura",
+      "//ui/wm/public",
+    ]
+  }
+}
+
+source_set("browser_dialogs_views") {
+  sources = [ "browser_dialogs_views.cc" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":task_manager_view",
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/browser/extensions",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/task_manager",
+    "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
+    "//chrome/browser/ui/views/bookmarks",
+    "//chrome/browser/ui/views/select_audio_output",
+    "//components/constrained_window",
+    "//components/permissions",
+    "//ui/base",
+    "//ui/views",
+  ]
+}
+
 source_set("dotted_icon") {
   public = [ "dotted_icon.h" ]
   sources = [ "dotted_icon.cc" ]
@@ -470,6 +514,19 @@ source_set("elevation_icon_setter") {
 }
 
 if (use_aura) {
+  source_set("accelerator_utils_aura") {
+    sources = [ "accelerator_utils_aura.cc" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      "//base",
+      "//chrome/browser/ui:accelerator_table",
+      "//ui/base",
+    ]
+    if (is_chromeos) {
+      deps += [ "//ash/public/cpp" ]
+    }
+  }
+
   source_set("theme_profile_key") {
     public = [ "theme_profile_key.h" ]
     sources = [ "theme_profile_key.cc" ]
@@ -722,6 +779,20 @@ source_set("javascript_app_modal_event_blocker") {
     public_deps += [
       "//ui/aura",
       "//ui/events",
+    ]
+  }
+}
+
+if (use_aura) {
+  source_set("javascript_app_modal_event_blocker_aura") {
+    sources = [ "javascript_app_modal_event_blocker_aura.cc" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      ":javascript_app_modal_event_blocker",
+      "//base",
+      "//ui/aura",
+      "//ui/events",
+      "//ui/wm",
     ]
   }
 }
