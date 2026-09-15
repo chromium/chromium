@@ -14,4 +14,6 @@ Tests that new-tab prerender targets (target_hint="_blank") get auto-attached pr
     waitingForDebugger : true
 }
 Navigation: http://devtools.oopif-a.test:8000/inspector-protocol/prerender/resources/empty.html
+Detached auto-attached session: true
+Independent session sees activated page: true
 

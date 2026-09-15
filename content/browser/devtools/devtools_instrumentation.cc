@@ -1078,10 +1078,25 @@ void WillInitiatePrerender(FrameTree& frame_tree) {
 }
 
 void DidActivatePrerender(const NavigationRequest& nav_request,
-                          const std::optional<base::UnguessableToken>&
-                              initiator_devtools_navigation_token) {
+                          WebContents* initiator_web_contents) {
   FrameTreeNode* ftn = nav_request.frame_tree_node();
+  WebContents* activated_web_contents = WebContentsImpl::FromFrameTreeNode(ftn);
+  const bool should_update_initiator =
+      initiator_web_contents &&
+      initiator_web_contents != activated_web_contents &&
+      !initiator_web_contents->IsBeingDestroyed();
   UpdateChildFrameTrees(ftn, /* update_target_info= */ true);
+
+  // New-tab prerenders are auto attached to the initiator's DevTools target.
+  // After activation, update the initiator to detach the now independent page.
+  if (!should_update_initiator) {
+    return;
+  }
+  auto* initiator_host =
+      WebContentsDevToolsAgentHost::GetFor(initiator_web_contents);
+  if (initiator_host) {
+    initiator_host->UpdateChildFrameTrees(/* update_target_info= */ false);
+  }
 }
 
 void DidUpdatePrerenderStatus(

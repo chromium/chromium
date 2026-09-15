@@ -975,7 +975,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   // Prerender is activated. Set the status to kSuccess.
   SetTriggeringOutcome(PreloadingTriggeringOutcome::kSuccess);
   devtools_instrumentation::DidActivatePrerender(
-      navigation_request, initiator_devtools_navigation_token());
+      navigation_request, initiator_web_contents().get());
   return page;
 }
 

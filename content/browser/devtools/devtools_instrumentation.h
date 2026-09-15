@@ -375,8 +375,7 @@ void OnPrefetchBodyDataReceived(FrameTreeNode* frame_tree_node,
 bool IsPrerenderAllowed(FrameTree& frame_tree);
 void WillInitiatePrerender(FrameTree& frame_tree);
 void DidActivatePrerender(const NavigationRequest& nav_request,
-                          const std::optional<base::UnguessableToken>&
-                              initiator_devtools_navigation_token);
+                          WebContents* initiator_web_contents);
 void DidUpdatePrerenderStatus(
     FrameTreeNodeId initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
