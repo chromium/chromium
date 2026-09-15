@@ -62,6 +62,9 @@ import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -117,6 +120,14 @@ public class TabGridContextMenuCoordinatorUnitTest {
         mTabBookmarkerSupplier = ObservableSuppliers.createNonNull(mTabBookmarker);
 
         when(mTabModel.getTabGroupCount()).thenReturn(1);
+        when(mTabModel.tabGroupExists(mTabGroupId)).thenReturn(true);
+        SavedTabGroup savedGroup = new SavedTabGroup();
+        savedGroup.syncId = "sync_group_id";
+        savedGroup.localId = new LocalTabGroupId(mTabGroupId);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedGroup.savedTabs.add(savedTab);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {"sync_group_id"});
+        when(mTabGroupSyncService.getGroup("sync_group_id")).thenReturn(savedGroup);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
@@ -593,6 +604,8 @@ public class TabGridContextMenuCoordinatorUnitTest {
         mUrl = new GURL(LOCALHOST_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
         when(mTabModel.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.tabGroupExists(any())).thenReturn(false);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(7, mMenuItemList.size());
@@ -612,6 +625,8 @@ public class TabGridContextMenuCoordinatorUnitTest {
         mUrl = new GURL(LOCALHOST_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
         when(mTabModel.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.tabGroupExists(any())).thenReturn(false);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(7, mMenuItemList.size());

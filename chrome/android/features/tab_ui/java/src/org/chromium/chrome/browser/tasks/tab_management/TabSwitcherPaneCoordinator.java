@@ -241,6 +241,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final SettableNonNullObservableSupplier<Float> mSearchBoxVisibilityFractionSupplier =
             ObservableSuppliers.createNonNull(0.0f);
     private final @Nullable ImageView mPaneHairline;
+    private final @Nullable DataSharingTabManager mDataSharingTabManager;
     private final PinnedTabStripCoordinator mPinnedTabsCoordinator;
     private @Nullable TabGridContextMenuCoordinator mContextMenuCoordinator;
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
@@ -323,6 +324,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mActivity = activity;
             mModalDialogManager = modalDialogManager;
             mBottomSheetController = bottomSheetController;
+            mDataSharingTabManager = dataSharingTabManager;
             mParentView = parentView;
             mOnDestroyed = onDestroyed;
             mEdgeToEdgeSupplier = edgeToEdgeSupplier;
@@ -1177,7 +1179,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         /* supportsShowNewGroup= */ true,
                         /* destroyOnHide= */ false,
                         /* windowAndroid= */ null,
-                        /* tabGroupUiActionHandler= */ null);
+                        mDataSharingTabManager != null
+                                ? mDataSharingTabManager.getTabGroupUiActionHandler()
+                                : null);
 
         ShowTabListEditor showTabListEditor =
                 tabId -> {

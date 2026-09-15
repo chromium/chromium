@@ -17,25 +17,23 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -218,11 +216,14 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
     }
 
     private boolean hasTabGroups() {
-        Collection<TabModelSelector> selectors =
-                TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()
-                        ? TabWindowManagerSingleton.getInstance().getAllTabModelSelectors()
+        TabModel tabModel = getTabModel();
+        Profile profile = tabModel.getProfile();
+        TabGroupSyncService syncService =
+                profile != null && !profile.isOffTheRecord()
+                        ? TabGroupSyncServiceFactory.getForProfile(profile)
                         : null;
-        return TabGroupUtils.hasTabGroups(getTabModel(), selectors);
+        GroupWindowChecker checker = new GroupWindowChecker(mActivity, syncService, tabModel);
+        return checker.hasOtherGroups(/* currentGroupId= */ null);
     }
 
     private void updateText() {

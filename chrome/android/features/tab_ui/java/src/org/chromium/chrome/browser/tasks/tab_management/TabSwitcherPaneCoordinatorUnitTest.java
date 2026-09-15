@@ -206,6 +206,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
