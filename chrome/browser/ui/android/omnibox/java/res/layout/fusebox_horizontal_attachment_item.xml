@@ -6,9 +6,8 @@ found in the LICENSE file.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="0dp"
+    android:layout_width="@dimen/fusebox_carousel_item_width"
     android:layout_height="wrap_content"
-    android:layout_weight="1"
     android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"
     android:orientation="vertical"
     android:gravity="center_horizontal"

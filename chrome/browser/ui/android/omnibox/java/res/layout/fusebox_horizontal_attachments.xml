@@ -4,30 +4,41 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<LinearLayout
+<HorizontalScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:baselineAligned="false"
+    android:fillViewport="true"
+    android:scrollbars="none"
+    android:overScrollMode="never"
+    android:clipToPadding="false"
     android:paddingHorizontal="@dimen/fusebox_carousel_padding_horizontal"
     android:paddingTop="@dimen/fusebox_carousel_padding_top"
     android:paddingBottom="@dimen/fusebox_carousel_padding_bottom"
     android:importantForAccessibility="no">
 
-    <include
-        layout="@layout/fusebox_horizontal_attachment_item"
-        android:id="@+id/fusebox_add_current_tab"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:baselineAligned="false"
+        android:importantForAccessibility="no">
 
-    <include
-        layout="@layout/fusebox_horizontal_attachment_item"
-        android:id="@+id/fusebox_pick_tabs_button"/>
+        <include
+            layout="@layout/fusebox_horizontal_attachment_item"
+            android:id="@+id/fusebox_add_current_tab"/>
 
-    <include
-        layout="@layout/fusebox_horizontal_attachment_item"
-        android:id="@+id/fusebox_pick_picture_button"/>
+        <include
+            layout="@layout/fusebox_horizontal_attachment_item"
+            android:id="@+id/fusebox_pick_tabs_button"/>
 
-    <include
-        layout="@layout/fusebox_horizontal_attachment_item"
-        android:id="@+id/fusebox_camera_button"/>
-</LinearLayout>
+        <include
+            layout="@layout/fusebox_horizontal_attachment_item"
+            android:id="@+id/fusebox_pick_picture_button"/>
+
+        <include
+            layout="@layout/fusebox_horizontal_attachment_item"
+            android:id="@+id/fusebox_camera_button"/>
+    </LinearLayout>
+</HorizontalScrollView>
