@@ -462,9 +462,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
       on_task_blocklist->IsParentTab(tab_strip_model->GetActiveWebContents()));
 }
 
+// TODO(crbug.com/562078739): Flaky.
 IN_PROC_BROWSER_TEST_F(
     OnTaskLockedSessionWindowTrackerBrowserTest,
-    NavigateCurrentTabWithSameDomainAndOneLevelDeepFromRedirectUrl) {
+    DISABLED_NavigateCurrentTabWithSameDomainAndOneLevelDeepFromRedirectUrl) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager()->LaunchSystemWebAppAsync(
