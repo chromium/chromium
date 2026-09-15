@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -83,13 +82,11 @@ class ChromeShimlessRmaDelegateTest : public testing::Test {
 
 // Validates a QrCode Bitmap is correctly converted to a string.
 TEST_F(ChromeShimlessRmaDelegateTest, GenerateQrCode) {
-  base::RunLoop run_loop;
   chrome_shimless_rma_delegate_.GenerateQrCode(
       "www.sample-url.com",
       base::BindLambdaForTesting([&](const std::string& qr_code_image) {
         EXPECT_FALSE(qr_code_image.empty());
       }));
-  run_loop.RunUntilIdle();
 }
 
 class FakeServiceWorkerContext : public content::FakeServiceWorkerContext {
