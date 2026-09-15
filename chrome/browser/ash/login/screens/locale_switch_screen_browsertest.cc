@@ -160,7 +160,9 @@ IN_PROC_BROWSER_TEST_F(LocaleSwitchScreenBrowserTest,
             false);
 }
 
-IN_PROC_BROWSER_TEST_F(LocaleSwitchScreenBrowserTest, SkipWhenSameLocales) {
+// TODO(crbug.com/562025613): Flaky.
+IN_PROC_BROWSER_TEST_F(LocaleSwitchScreenBrowserTest,
+                       DISABLED_SkipWhenSameLocales) {
   const std::string current_locale = g_browser_process->GetApplicationLocale();
   EXPECT_EQ(current_locale, "en-US");
   SetPeopleAPIResponseLocale(current_locale);
