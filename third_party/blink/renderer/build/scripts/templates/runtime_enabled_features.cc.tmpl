@@ -24,11 +24,7 @@
 
 namespace blink {
 
-RuntimeEnabledFeaturesBase::Backup::Backup()
-{% for feature in features if feature.is_protected_feature %}
-  {{ ':' if loop.first else ',' }} {{feature.data_member_name}}(RuntimeEnabledFeaturesBase::get_{{feature.data_member_name}}())
-{% endfor %}
-{
+RuntimeEnabledFeaturesBase::Backup::Backup() {
   std::copy(std::begin(RuntimeEnabledFeaturesBase::feature_states_),
             std::end(RuntimeEnabledFeaturesBase::feature_states_),
             feature_states_);
@@ -37,11 +33,6 @@ RuntimeEnabledFeaturesBase::Backup::Backup()
 void RuntimeEnabledFeaturesBase::Backup::Restore() {
   std::copy(std::begin(feature_states_), std::end(feature_states_),
             RuntimeEnabledFeaturesBase::feature_states_);
-  {% for feature in features %}
-  {% if feature.is_protected_feature %}
-  RuntimeEnabledFeaturesBase::Set{{feature.name}}Enabled({{feature.data_member_name}});
-  {% endif %}
-  {% endfor %}
 }
 
 {% for feature_set in feature_sets %}
@@ -82,12 +73,12 @@ void RuntimeEnabledFeaturesBase::SetOriginTrialControlledFeaturesEnabled(bool en
 
 namespace {
 
-// All non-protected feature names, sorted by name and concatenated into a
-// single NUL-separated string pool. The lookup tables below hold offsets into
-// this pool rather than `const char*`, which avoids a relocation per feature
-// and shrinks each entry to two bytes.
+// All feature names, sorted by name and concatenated into a single
+// NUL-separated string pool. The lookup tables below hold offsets into this
+// pool rather than `const char*`, which avoids a relocation per feature and
+// shrinks each entry to two bytes.
 constexpr char kFeatureNamePool[] =
-{% for feature in simple_features %}
+{% for feature in features_by_name %}
     "{{feature.name}}\0"
 {% endfor %}
     ;
@@ -111,13 +102,13 @@ std::optional<uint16_t> RuntimeEnabledFeaturesBase::FindFeatureFlagIndex(
   // not exist after inlining.
   static constexpr uint16_t kFeatureNameOffsets[] = {
   {% set ns = namespace(offset=0) %}
-  {% for feature in simple_features %}
+  {% for feature in features_by_name %}
     {{ns.offset}},
   {% set ns.offset = ns.offset + (feature.name|string|length) + 1 %}
   {% endfor %}
   };
   static constexpr uint16_t kFlagIndices[] = {
-  {% for feature in simple_features %}
+  {% for feature in features_by_name %}
     k{{feature.name}}FlagIndex,
   {% endfor %}
   };
@@ -134,15 +125,6 @@ std::optional<uint16_t> RuntimeEnabledFeaturesBase::FindFeatureFlagIndex(
 
 void RuntimeEnabledFeaturesBase::SetFeatureEnabledFromString(
     std::string_view name, bool enable) {
-  // Protected features are handled with a linear if-chain rather than the
-  // binary-searched table in FindFeatureFlagIndex() because their setters are
-  // not plain stores. This is fine since only a few features are protected.
-  {% for feature in protected_features %}
-  if (name == "{{feature.name}}") {
-    Set{{feature.name}}Enabled(enable);
-    return;
-  }
-  {% endfor %}
   // Unlike `IsFeatureEnabledFromString()`, there is no special handling for
   // features with a `custom_enable_check`; callers must ensure they properly
   // coordinate configuration for a feature with a `custom_enable_check`.
@@ -161,7 +143,7 @@ bool RuntimeEnabledFeaturesBase::IsFeatureEnabledFromString(
   // `FlagIndex` enum is emitted in feature declaration order, of which this is
   // a subsequence.
   static constexpr uint16_t kFlagIndicesInOriginTrials[] = {
-  {% for feature in features if not feature.is_protected_feature and feature.in_origin_trial %}
+  {% for feature in features if feature.in_origin_trial %}
     k{{feature.name}}FlagIndex,
   {% endfor %}
   };
@@ -196,20 +178,19 @@ void RuntimeEnabledFeaturesBase::UpdateStatusFromBaseFeatures() {
   // Storing indices into `feature_states_` rather than pointers or setter
   // functions keeps the tables small and free of relocations, and avoids
   // referencing the setter functions so that they need not exist after
-  // inlining. Protected features are handled by the separate table below
-  // because their setters are not plain stores.
+  // inlining.
   static const base::Feature* const kBaseFeatures[] = {
-  {% for feature in simple_features if feature.base_feature %}
+  {% for feature in features_by_name if feature.base_feature %}
     &blink::features::k{{feature.base_feature}},
   {% endfor %}
   };
   static const uint16_t kFlagIndices[] = {
-  {% for feature in simple_features if feature.base_feature %}
+  {% for feature in features_by_name if feature.base_feature %}
     k{{feature.name}}FlagIndex,
   {% endfor %}
   };
   static const bool kCopyIfOverridden[] = {
-  {% for feature in simple_features if feature.base_feature %}
+  {% for feature in features_by_name if feature.base_feature %}
     {{'true' if feature.copied_from_base_feature_if == "overridden" else 'false'}},
   {% endfor %}
   };
@@ -228,43 +209,7 @@ void RuntimeEnabledFeaturesBase::UpdateStatusFromBaseFeatures() {
         feature_states_[kFlagIndices[i]] = feature_enabled;
     }
   }
-
-  struct BaseFeatureToProtectedRuntimeFeatureMap {
-    const base::Feature& feature;
-    void (*enabler)(bool enable);
-    bool if_overridden;
-  };
-  const BaseFeatureToProtectedRuntimeFeatureMap protected_mappings[] = {
-  {% for feature in protected_features if feature.base_feature %}
-    {blink::features::k{{feature.base_feature}}, Set{{feature.name}}Enabled,
-     {{'true' if feature.copied_from_base_feature_if == "overridden" else 'false'}}},
-  {% endfor %}
-  };
-  for (const auto& map : protected_mappings) {
-    const bool feature_enabled = base::FeatureList::IsEnabled(map.feature);
-    const bool is_overridden =
-        base::FeatureList::GetStateIfOverridden(map.feature).has_value();
-    if (map.if_overridden) {
-      if (is_overridden)
-        map.enabler(feature_enabled);
-    } else {
-      if (feature_enabled || is_overridden)
-        map.enabler(feature_enabled);
-    }
-  }
 }
-
-{% for feature in features %}
-{% if feature.is_protected_feature %}
-void RuntimeEnabledFeaturesBase::Set{{feature.name}}Enabled(bool enabled) {
-  if (get_{{feature.data_member_name}}() == enabled) {
-    return;
-  }
-  base::AutoWritableMemory protected_memory_writer({{feature.data_member_name}});
-  protected_memory_writer.GetProtectedData() = enabled;
-}
-{% endif %}
-{% endfor %}
 
 {% for feature in features %}
 {%if feature.is_overridable_feature and not feature.in_origin_trial%}
@@ -306,11 +251,7 @@ bool RuntimeEnabledFeaturesBase::{{feature.name}}Enabled(const FeatureContext* c
   if (RuntimeEnabledFeaturesBase::{{implied_by}}Enabled(context))
     return true;
   {% endfor %}
-  {% if feature.is_protected_feature %}
-  if (get_{{feature.data_member_name}}())
-  {% else %}
   if (feature_states_[k{{feature.name}}FlagIndex])
-  {% endif %}
     return true;
   {% if not feature.origin_trial_feature_name %}
   // The feature does not have an origin trial name and its runtime flag
@@ -323,17 +264,10 @@ bool RuntimeEnabledFeaturesBase::{{feature.name}}Enabled(const FeatureContext* c
 
 {% endfor %}
 
-{% for feature in features %}
-{% if feature.status_type == 'str' and feature.is_protected_feature %}
-DEFINE_PROTECTED_DATA base::ProtectedMemory<bool> RuntimeEnabledFeaturesBase::{{feature.data_member_name}};
-{% endif %}
-{% endfor %}
-
 // Platform-dependent entries resolve their initial value with a
 // BUILDFLAG(...) ternary chain, falling back to the 'default' status.
 bool RuntimeEnabledFeaturesBase::feature_states_[kFlagIndexCount] = {
 {% for feature in features %}
-{% if not feature.is_protected_feature %}
   // k{{feature.name}}FlagIndex
 {% if feature.status_type == 'str' %}
   {{'true' if feature.status == 'stable' else 'false'}},
@@ -343,34 +277,7 @@ bool RuntimeEnabledFeaturesBase::feature_states_[kFlagIndexCount] = {
   {% endfor %}
   {{'true' if feature.status['default'] == 'stable' else 'false'}},
 {% endif %}
-{% endif %}
 {% endfor %}
 };
-
-// All protected runtime feature flags share a single read-only section, so
-// they are initialized together. Reading any one of them triggers
-// initialization of all of them so that subsequent reads never require
-// write access to the section.
-void RuntimeEnabledFeaturesBase::InitializeProtectedMemoryFeatureFlags() {
-  [[maybe_unused]] static const bool initialized = [] {
-    {% for feature in features %}
-    {% if feature.is_protected_feature %}
-    base::ProtectedMemoryInitializer {{feature.data_member_name}}initializer({{feature.data_member_name}}, {{'true' if feature.status == 'stable' else 'false'}});
-    {% endif %}
-    {% endfor %}
-    return true;
-  }();
-}
-
-// Simple getter methods for protected memory values that ensure they are
-// properly initialized before first access.
-{% for feature in features %}
-{% if feature.is_protected_feature %}
-bool RuntimeEnabledFeaturesBase::get_{{feature.data_member_name}}() {
-  InitializeProtectedMemoryFeatureFlags();
-  return *{{feature.data_member_name}};
-}
-{% endif %}
-{% endfor %}
 
 } // namespace blink

@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/protected_memory.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -31,14 +30,12 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
   STATIC_ONLY(RuntimeEnabledFeaturesBase);
 
  private:
-  // Index of each non-protected feature's flag in `feature_states_`. Using a
-  // single array + indices (rather than one static bool per feature) lets
-  // lookup tables store small integers instead of pointers.
+  // Index of each feature's flag in `feature_states_`. Using a single array +
+  // indices (rather than one static bool per feature) lets lookup tables store
+  // small integers instead of pointers.
   enum FlagIndex : uint16_t {
     {% for feature in features %}
-    {% if not feature.is_protected_feature %}
     k{{feature.name}}FlagIndex,
-    {% endif %}
     {% endfor %}
     kFlagIndexCount,
   };
@@ -52,19 +49,7 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
 
    private:
     bool feature_states_[kFlagIndexCount];
-    {% for feature in features %}
-    {% if feature.is_protected_feature %}
-    bool {{feature.data_member_name}};
-    {% endif %}
-    {% endfor %}
   };
-
-  // Simple getter methods for protected memory values.
-  {% for feature in features %}
-  {% if feature.is_protected_feature %}
-  static bool get_{{feature.data_member_name}}();
-  {% endif %}
-  {% endfor %}
 
   {% for feature in features %}
   {% if not feature.in_origin_trial %}
@@ -85,11 +70,7 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
     if ({{implied_by}}Enabled())
       return true;
     {% endfor %}
-    {% if feature.is_protected_feature %}
-    return get_{{feature.data_member_name}}();
-    {% else %}
     return feature_states_[k{{feature.name}}FlagIndex];
-    {% endif %}
     {% endif %}
   }
 
@@ -130,35 +111,18 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
   static void SetFeatureEnabledFromString(std::string_view name, bool enabled);
   static void UpdateStatusFromBaseFeatures();
 
-  // Initializes the backing storage for every is_protected_feature flag. All
-  // of the flags share a single read-only section, so they are initialized
-  // together and the section only has to be made writable once. This is
-  // invoked by the first read of any protected flag. Calling it more than once
-  // is a no-op.
-  static void InitializeProtectedMemoryFeatureFlags();
-
   {% for feature in features %}
-  {% if feature.is_protected_feature %}
-  static void Set{{feature.name}}Enabled(bool enabled);
-  {% else %}
   static void Set{{feature.name}}Enabled(bool enabled) { feature_states_[k{{feature.name}}FlagIndex] = enabled; }
-  {%endif %}
   {% endfor %}
 
  private:
   friend class RuntimeEnabledFeaturesTestHelpers;
 
-  // Returns the `feature_states_` index of the non-protected feature named
-  // `name`, or std::nullopt if there is no such feature. Shared by
+  // Returns the `feature_states_` index of the feature named `name`, or
+  // std::nullopt if there is no such feature. Shared by
   // SetFeatureEnabledFromString() and IsFeatureEnabledFromString() so that the
   // lookup tables only exist once.
   static std::optional<uint16_t> FindFeatureFlagIndex(std::string_view name);
-
-  {% for feature in features %}
-  {% if feature.is_protected_feature %}
-  static DECLARE_PROTECTED_DATA base::ProtectedMemory<bool> {{feature.data_member_name}};
-  {% endif %}
-  {% endfor %}
 
   {% if custom_enable_checks %}
   // Declarations for features guarded by `custom_enable_check`. Definitions
@@ -185,8 +149,7 @@ class PLATFORM_EXPORT RuntimeEnabledFeatures : public RuntimeEnabledFeaturesBase
   friend class WebRuntimeFeaturesBase;
   friend class WebRuntimeFeatures;
   friend class WebView;
-  friend class RuntimeEnabledFeaturesTestTraits;
-  friend class RuntimeProtectedEnabledFeaturesTestTraits;
+  friend class RuntimeEnabledFeaturesTest;
 };
 
 }  // namespace blink

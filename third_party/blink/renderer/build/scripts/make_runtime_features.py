@@ -36,7 +36,6 @@ if sys.version_info.major == 2:
 else:
     import pickle
 
-from blinkbuild.name_style_converter import NameStyleConverter
 import make_runtime_features_utilities as util
 import json5_generator
 import template_expander
@@ -71,8 +70,6 @@ class BaseRuntimeFeatureWriter(json5_generator.Writer):
         for feature in self._features:
             feature['in_origin_trial'] = str(
                 feature['name']) in origin_trial_set
-            feature['data_member_name'] = self._data_member_name(
-                feature['name'])
             # If 'status' is a dict, add the values for all the not-mentioned platforms too.
             if isinstance(feature['status'], dict):
                 feature['status'] = self._status_with_all_platforms(
@@ -92,12 +89,6 @@ class BaseRuntimeFeatureWriter(json5_generator.Writer):
         ]
         self._header_guard = self.make_header_guard(self._relative_output_dir +
                                                     self.file_basename + '.h')
-
-    @staticmethod
-    def _data_member_name(str_or_converter):
-        converter = NameStyleConverter(str_or_converter) if type(
-            str_or_converter) is str else str_or_converter
-        return converter.to_class_data_member(prefix='is', suffix='enabled')
 
     @staticmethod
     def _validate_custom_enable_check(feature):
@@ -193,15 +184,8 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
 
     def _template_inputs(self):
         # Sorted by name so that the generated lookup tables can be binary
-        # searched. `simple_features` are the features whose setters are plain
-        # stores into `feature_states_`, unlike those of `protected_features`.
+        # searched.
         features_by_name = sorted(self._features, key=lambda f: str(f['name']))
-        simple_features = [
-            f for f in features_by_name if not f['is_protected_feature']
-        ]
-        protected_features = [
-            f for f in features_by_name if f['is_protected_feature']
-        ]
         custom_enable_check_features = [
             f for f in features_by_name if f['custom_enable_check']
         ]
@@ -210,8 +194,7 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
              for f in custom_enable_check_features})
         return {
             'features': self._features,
-            'simple_features': simple_features,
-            'protected_features': protected_features,
+            'features_by_name': features_by_name,
             'custom_enable_check_features': custom_enable_check_features,
             'custom_enable_checks': custom_enable_checks,
             'feature_sets': self._feature_sets(),

@@ -6,7 +6,6 @@
 
 #include <cstdlib>
 
-#include "base/memory/protected_memory_buildflags.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,183 +16,10 @@
 
 namespace blink {
 
-class RuntimeEnabledFeaturesTestTraits {
- public:
-  using ScopedTestFeatureForTestType = ScopedTestFeatureForTest;
-  using ScopedTestFeatureImpliedForTestType = ScopedTestFeatureImpliedForTest;
-  using ScopedTestFeatureDependentForTestType =
-      ScopedTestFeatureDependentForTest;
-
-  static bool ScopedForTestSupported() { return true; }
-
-  static ScopedTestFeatureForTestType CreateScopedTestFeatureForTest(
-      bool enabled) {
-    return ScopedTestFeatureForTest(enabled);
-  }
-
-  static ScopedTestFeatureImpliedForTestType
-  CreateScopedTestFeatureImpliedForTest(bool enabled) {
-    return ScopedTestFeatureImpliedForTest(enabled);
-  }
-
-  static ScopedTestFeatureDependentForTestType
-  CreateScopedTestFeatureDependentForTest(bool enabled) {
-    return ScopedTestFeatureDependentForTest(enabled);
-  }
-
-  static bool TestFeatureEnabled() {
-    return RuntimeEnabledFeatures::TestFeatureEnabled();
-  }
-
-  static bool TestFeatureImpliedEnabled() {
-    return RuntimeEnabledFeatures::TestFeatureImpliedEnabled();
-  }
-
-  static bool TestFeatureDependentEnabled() {
-    return RuntimeEnabledFeatures::TestFeatureDependentEnabled();
-  }
-
-  static bool OriginTrialsSampleAPIEnabledByRuntimeFlag() {
-    return RuntimeEnabledFeatures::OriginTrialsSampleAPIEnabledByRuntimeFlag();
-  }
-
-  static bool OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag() {
-    return RuntimeEnabledFeatures::
-        OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag();
-  }
-
-  static bool OriginTrialsSampleAPIDependentEnabledByRuntimeFlag() {
-    return RuntimeEnabledFeatures::
-        OriginTrialsSampleAPIDependentEnabledByRuntimeFlag();
-  }
-
-  static void SetTestFeatureEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetTestFeatureEnabled(enabled);
-  }
-
-  static void SetTestFeatureImpliedEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetTestFeatureImpliedEnabled(enabled);
-  }
-
-  static void SetTestFeatureDependentEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetTestFeatureDependentEnabled(enabled);
-  }
-
-  static void SetOriginTrialsSampleAPIEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetOriginTrialsSampleAPIEnabled(enabled);
-  }
-
-  static void SetOriginTrialsSampleAPIImpliedEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetOriginTrialsSampleAPIImpliedEnabled(enabled);
-  }
-
-  static void SetOriginTrialsSampleAPIDependentEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetOriginTrialsSampleAPIDependentEnabled(enabled);
-  }
-};
-
-class RuntimeProtectedEnabledFeaturesTestTraits {
- public:
-  using ScopedTestFeatureForTestType = ScopedTestFeatureProtectedForTest;
-  using ScopedTestFeatureImpliedForTestType =
-      ScopedTestFeatureProtectedImpliedForTest;
-  using ScopedTestFeatureDependentForTestType =
-      ScopedTestFeatureProtectedDependentForTest;
-
-  static bool ScopedForTestSupported() {
-    // The way the ScopedForTest classes are implemented, they do not work with
-    // protected variables in component builds. This is because of the static
-    // inline variable use results in the value being allocated in one module,
-    // but the protected code being called from a different. So don't run this
-    // test for the protected case in component builds.
-#if defined(COMPONENT_BUILD)
-    return false;
-#else
-    return true;
-#endif
-  }
-
-  static ScopedTestFeatureForTestType CreateScopedTestFeatureForTest(
-      bool enabled) {
-    return ScopedTestFeatureProtectedForTest(enabled);
-  }
-
-  static ScopedTestFeatureImpliedForTestType
-  CreateScopedTestFeatureImpliedForTest(bool enabled) {
-    return ScopedTestFeatureProtectedImpliedForTest(enabled);
-  }
-
-  static ScopedTestFeatureDependentForTestType
-  CreateScopedTestFeatureDependentForTest(bool enabled) {
-    return ScopedTestFeatureProtectedDependentForTest(enabled);
-  }
-
-  static bool TestFeatureEnabled() {
-    return RuntimeEnabledFeatures::TestFeatureProtectedEnabled();
-  }
-
-  static bool TestFeatureImpliedEnabled() {
-    return RuntimeEnabledFeatures::TestFeatureProtectedImpliedEnabled();
-  }
-
-  static bool TestFeatureDependentEnabled() {
-    return RuntimeEnabledFeatures::TestFeatureProtectedDependentEnabled();
-  }
-
-  static bool OriginTrialsSampleAPIEnabledByRuntimeFlag() {
-    return RuntimeEnabledFeatures::
-        ProtectedOriginTrialsSampleAPIEnabledByRuntimeFlag();
-  }
-
-  static bool OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag() {
-    return RuntimeEnabledFeatures::
-        ProtectedOriginTrialsSampleAPIImpliedEnabledByRuntimeFlag();
-  }
-
-  static bool OriginTrialsSampleAPIDependentEnabledByRuntimeFlag() {
-    return RuntimeEnabledFeatures::
-        ProtectedOriginTrialsSampleAPIDependentEnabledByRuntimeFlag();
-  }
-
-  static void SetTestFeatureEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetTestFeatureProtectedEnabled(enabled);
-  }
-
-  static void SetTestFeatureImpliedEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetTestFeatureProtectedImpliedEnabled(enabled);
-  }
-
-  static void SetTestFeatureDependentEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetTestFeatureProtectedDependentEnabled(enabled);
-  }
-
-  static void SetOriginTrialsSampleAPIEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetProtectedOriginTrialsSampleAPIEnabled(enabled);
-  }
-
-  static void SetOriginTrialsSampleAPIImpliedEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetProtectedOriginTrialsSampleAPIImpliedEnabled(
-        enabled);
-  }
-
-  static void SetOriginTrialsSampleAPIDependentEnabled(bool enabled) {
-    RuntimeEnabledFeatures::SetProtectedOriginTrialsSampleAPIDependentEnabled(
-        enabled);
-  }
-};
-
-template <typename TRuntimeEnabledFeaturesTraits>
-class AbstractRuntimeEnabledFeaturesTest : public testing::Test {
+// The setters are protected, and RuntimeEnabledFeatures only befriends named
+// classes, so the tests reach them through this fixture.
+class RuntimeEnabledFeaturesTest : public testing::Test {
  protected:
-  using ScopedTestFeatureForTestType =
-      typename TRuntimeEnabledFeaturesTraits::ScopedTestFeatureForTestType;
-  using ScopedTestFeatureImpliedForTestType =
-      typename TRuntimeEnabledFeaturesTraits::
-          ScopedTestFeatureImpliedForTestType;
-  using ScopedTestFeatureDependentForTestType =
-      typename TRuntimeEnabledFeaturesTraits::
-          ScopedTestFeatureDependentForTestType;
-
   void CheckAllDisabled() {
     CHECK(!TestFeatureEnabled());
     CHECK(!TestFeatureImpliedEnabled());
@@ -208,78 +34,54 @@ class AbstractRuntimeEnabledFeaturesTest : public testing::Test {
     CheckAllDisabled();
   }
 
-  bool ScopedForTestSupported() {
-    return TRuntimeEnabledFeaturesTraits::ScopedForTestSupported();
-  }
-
-  ScopedTestFeatureForTestType CreateScopedTestFeatureForTest(bool enabled) {
-    return TRuntimeEnabledFeaturesTraits::CreateScopedTestFeatureForTest(
-        enabled);
-  }
-
-  ScopedTestFeatureImpliedForTestType CreateScopedTestFeatureImpliedForTest(
-      bool enabled) {
-    return TRuntimeEnabledFeaturesTraits::CreateScopedTestFeatureImpliedForTest(
-        enabled);
-  }
-
-  ScopedTestFeatureDependentForTestType CreateScopedTestFeatureDependentForTest(
-      bool enabled) {
-    return TRuntimeEnabledFeaturesTraits::
-        CreateScopedTestFeatureDependentForTest(enabled);
-  }
-
   bool TestFeatureEnabled() {
-    return TRuntimeEnabledFeaturesTraits::TestFeatureEnabled();
+    return RuntimeEnabledFeatures::TestFeatureEnabled();
   }
 
   bool TestFeatureImpliedEnabled() {
-    return TRuntimeEnabledFeaturesTraits::TestFeatureImpliedEnabled();
+    return RuntimeEnabledFeatures::TestFeatureImpliedEnabled();
   }
 
   bool TestFeatureDependentEnabled() {
-    return TRuntimeEnabledFeaturesTraits::TestFeatureDependentEnabled();
+    return RuntimeEnabledFeatures::TestFeatureDependentEnabled();
   }
 
   bool OriginTrialsSampleAPIEnabledByRuntimeFlag() {
-    return TRuntimeEnabledFeaturesTraits::
-        OriginTrialsSampleAPIEnabledByRuntimeFlag();
+    return RuntimeEnabledFeatures::OriginTrialsSampleAPIEnabledByRuntimeFlag();
   }
 
   bool OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag() {
-    return TRuntimeEnabledFeaturesTraits::
+    return RuntimeEnabledFeatures::
         OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag();
   }
 
   bool OriginTrialsSampleAPIDependentEnabledByRuntimeFlag() {
-    return TRuntimeEnabledFeaturesTraits::
+    return RuntimeEnabledFeatures::
         OriginTrialsSampleAPIDependentEnabledByRuntimeFlag();
   }
 
   void SetTestFeatureEnabled(bool enabled) {
-    TRuntimeEnabledFeaturesTraits::SetTestFeatureEnabled(enabled);
+    RuntimeEnabledFeatures::SetTestFeatureEnabled(enabled);
   }
 
   void SetTestFeatureImpliedEnabled(bool enabled) {
-    TRuntimeEnabledFeaturesTraits::SetTestFeatureImpliedEnabled(enabled);
+    RuntimeEnabledFeatures::SetTestFeatureImpliedEnabled(enabled);
   }
 
   void SetTestFeatureDependentEnabled(bool enabled) {
-    TRuntimeEnabledFeaturesTraits::SetTestFeatureDependentEnabled(enabled);
+    RuntimeEnabledFeatures::SetTestFeatureDependentEnabled(enabled);
   }
 
   void SetOriginTrialsSampleAPIEnabled(bool enabled) {
-    TRuntimeEnabledFeaturesTraits::SetOriginTrialsSampleAPIEnabled(enabled);
+    RuntimeEnabledFeatures::SetOriginTrialsSampleAPIEnabled(enabled);
   }
 
   void SetOriginTrialsSampleAPIImpliedEnabled(bool enabled) {
-    TRuntimeEnabledFeaturesTraits::SetOriginTrialsSampleAPIImpliedEnabled(
-        enabled);
+    RuntimeEnabledFeatures::SetOriginTrialsSampleAPIImpliedEnabled(enabled);
   }
 
   void SetOriginTrialsSampleAPIDependentEnabled(bool enabled) {
-    TRuntimeEnabledFeaturesTraits::SetOriginTrialsSampleAPIDependentEnabled(
-        enabled);
+    RuntimeEnabledFeatures::SetOriginTrialsSampleAPIDependentEnabled(enabled);
   }
 
  private:
@@ -292,234 +94,229 @@ class AbstractRuntimeEnabledFeaturesTest : public testing::Test {
 //   TestFeatureImplied
 // implied_by
 //   TestFeature
-TYPED_TEST_SUITE_P(AbstractRuntimeEnabledFeaturesTest);
-
-TYPED_TEST_P(AbstractRuntimeEnabledFeaturesTest, Relationship) {
+TEST_F(RuntimeEnabledFeaturesTest, Relationship) {
   // Internal status: false, false, false.
-  EXPECT_FALSE(this->TestFeatureEnabled());
-  EXPECT_FALSE(this->TestFeatureImpliedEnabled());
-  EXPECT_FALSE(this->TestFeatureDependentEnabled());
+  EXPECT_FALSE(TestFeatureEnabled());
+  EXPECT_FALSE(TestFeatureImpliedEnabled());
+  EXPECT_FALSE(TestFeatureDependentEnabled());
 
-  this->SetTestFeatureEnabled(true);
+  SetTestFeatureEnabled(true);
   // Internal status: true, false, false.
-  EXPECT_TRUE(this->TestFeatureEnabled());
+  EXPECT_TRUE(TestFeatureEnabled());
   // Implied by TestFeature.
-  EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-  EXPECT_FALSE(this->TestFeatureDependentEnabled());
+  EXPECT_TRUE(TestFeatureImpliedEnabled());
+  EXPECT_FALSE(TestFeatureDependentEnabled());
 
-  this->SetTestFeatureImpliedEnabled(true);
+  SetTestFeatureImpliedEnabled(true);
   // Internal status: true, true, false.
-  EXPECT_TRUE(this->TestFeatureEnabled());
-  EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-  EXPECT_FALSE(this->TestFeatureDependentEnabled());
+  EXPECT_TRUE(TestFeatureEnabled());
+  EXPECT_TRUE(TestFeatureImpliedEnabled());
+  EXPECT_FALSE(TestFeatureDependentEnabled());
 
-  this->SetTestFeatureDependentEnabled(true);
+  SetTestFeatureDependentEnabled(true);
   // Internal status: true, true, true.
-  EXPECT_TRUE(this->TestFeatureEnabled());
-  EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-  EXPECT_TRUE(this->TestFeatureDependentEnabled());
+  EXPECT_TRUE(TestFeatureEnabled());
+  EXPECT_TRUE(TestFeatureImpliedEnabled());
+  EXPECT_TRUE(TestFeatureDependentEnabled());
 
-  this->SetTestFeatureImpliedEnabled(false);
+  SetTestFeatureImpliedEnabled(false);
   // Internal status: true, false, true.
-  EXPECT_TRUE(this->TestFeatureEnabled());
+  EXPECT_TRUE(TestFeatureEnabled());
   // Implied by TestFeature.
-  EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-  EXPECT_TRUE(this->TestFeatureDependentEnabled());
+  EXPECT_TRUE(TestFeatureImpliedEnabled());
+  EXPECT_TRUE(TestFeatureDependentEnabled());
 
-  this->SetTestFeatureEnabled(false);
+  SetTestFeatureEnabled(false);
   // Internal status: false, false, true.
-  EXPECT_FALSE(this->TestFeatureEnabled());
-  EXPECT_FALSE(this->TestFeatureImpliedEnabled());
+  EXPECT_FALSE(TestFeatureEnabled());
+  EXPECT_FALSE(TestFeatureImpliedEnabled());
   // Depends on TestFeatureImplied.
-  EXPECT_FALSE(this->TestFeatureDependentEnabled());
+  EXPECT_FALSE(TestFeatureDependentEnabled());
 
-  this->SetTestFeatureImpliedEnabled(true);
+  SetTestFeatureImpliedEnabled(true);
   // Internal status: false, true, true.
-  EXPECT_FALSE(this->TestFeatureEnabled());
-  EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-  EXPECT_TRUE(this->TestFeatureDependentEnabled());
+  EXPECT_FALSE(TestFeatureEnabled());
+  EXPECT_TRUE(TestFeatureImpliedEnabled());
+  EXPECT_TRUE(TestFeatureDependentEnabled());
 
-  this->SetTestFeatureDependentEnabled(false);
+  SetTestFeatureDependentEnabled(false);
   // Internal status: false, true, false.
-  EXPECT_FALSE(this->TestFeatureEnabled());
-  EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-  EXPECT_FALSE(this->TestFeatureDependentEnabled());
+  EXPECT_FALSE(TestFeatureEnabled());
+  EXPECT_TRUE(TestFeatureImpliedEnabled());
+  EXPECT_FALSE(TestFeatureDependentEnabled());
 }
 
-TYPED_TEST_P(AbstractRuntimeEnabledFeaturesTest, ScopedForTest) {
-  if (!this->ScopedForTestSupported()) {
-    return;
-  }
+TEST_F(RuntimeEnabledFeaturesTest, ScopedForTest) {
   // Internal status: false, false, false.
-  EXPECT_FALSE(this->TestFeatureEnabled());
-  EXPECT_FALSE(this->TestFeatureImpliedEnabled());
-  EXPECT_FALSE(this->TestFeatureDependentEnabled());
+  EXPECT_FALSE(TestFeatureEnabled());
+  EXPECT_FALSE(TestFeatureImpliedEnabled());
+  EXPECT_FALSE(TestFeatureDependentEnabled());
   {
-    auto f1 = this->CreateScopedTestFeatureForTest(true);
+    ScopedTestFeatureForTest f1(true);
     // Internal status: true, false, false.
-    EXPECT_TRUE(this->TestFeatureEnabled());
+    EXPECT_TRUE(TestFeatureEnabled());
     // Implied by TestFeature.
-    EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-    EXPECT_FALSE(this->TestFeatureDependentEnabled());
+    EXPECT_TRUE(TestFeatureImpliedEnabled());
+    EXPECT_FALSE(TestFeatureDependentEnabled());
     {
-      auto f2 = this->CreateScopedTestFeatureImpliedForTest(true);
+      ScopedTestFeatureImpliedForTest f2(true);
       // Internal status: true, true, false.
-      EXPECT_TRUE(this->TestFeatureEnabled());
-      EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-      EXPECT_FALSE(this->TestFeatureDependentEnabled());
+      EXPECT_TRUE(TestFeatureEnabled());
+      EXPECT_TRUE(TestFeatureImpliedEnabled());
+      EXPECT_FALSE(TestFeatureDependentEnabled());
       {
-        auto f3 = this->CreateScopedTestFeatureDependentForTest(true);
+        ScopedTestFeatureDependentForTest f3(true);
         // Internal status: true, true, true.
-        EXPECT_TRUE(this->TestFeatureEnabled());
-        EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-        EXPECT_TRUE(this->TestFeatureDependentEnabled());
+        EXPECT_TRUE(TestFeatureEnabled());
+        EXPECT_TRUE(TestFeatureImpliedEnabled());
+        EXPECT_TRUE(TestFeatureDependentEnabled());
         {
-          auto f3a = this->CreateScopedTestFeatureDependentForTest(false);
+          ScopedTestFeatureDependentForTest f3a(false);
           // Internal status: true, true, true.
-          EXPECT_TRUE(this->TestFeatureEnabled());
-          EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-          EXPECT_FALSE(this->TestFeatureDependentEnabled());
+          EXPECT_TRUE(TestFeatureEnabled());
+          EXPECT_TRUE(TestFeatureImpliedEnabled());
+          EXPECT_FALSE(TestFeatureDependentEnabled());
         }
         // Internal status: true, true, true.
-        EXPECT_TRUE(this->TestFeatureEnabled());
-        EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-        EXPECT_TRUE(this->TestFeatureDependentEnabled());
+        EXPECT_TRUE(TestFeatureEnabled());
+        EXPECT_TRUE(TestFeatureImpliedEnabled());
+        EXPECT_TRUE(TestFeatureDependentEnabled());
       }
     }
     // Internal status: true, false, false.
-    EXPECT_TRUE(this->TestFeatureEnabled());
+    EXPECT_TRUE(TestFeatureEnabled());
     // Implied by TestFeature.
-    EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-    EXPECT_FALSE(this->TestFeatureDependentEnabled());
+    EXPECT_TRUE(TestFeatureImpliedEnabled());
+    EXPECT_FALSE(TestFeatureDependentEnabled());
     {
-      auto f2a = this->CreateScopedTestFeatureImpliedForTest(false);
+      ScopedTestFeatureImpliedForTest f2a(false);
       // Internal status: true, false, false.
-      EXPECT_TRUE(this->TestFeatureEnabled());
+      EXPECT_TRUE(TestFeatureEnabled());
       // Implied by TestFeature.
-      EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-      EXPECT_FALSE(this->TestFeatureDependentEnabled());
+      EXPECT_TRUE(TestFeatureImpliedEnabled());
+      EXPECT_FALSE(TestFeatureDependentEnabled());
     }
   }
   // Internal status: false, false, false.
-  EXPECT_FALSE(this->TestFeatureEnabled());
-  EXPECT_FALSE(this->TestFeatureImpliedEnabled());
-  EXPECT_FALSE(this->TestFeatureDependentEnabled());
+  EXPECT_FALSE(TestFeatureEnabled());
+  EXPECT_FALSE(TestFeatureImpliedEnabled());
+  EXPECT_FALSE(TestFeatureDependentEnabled());
   {
-    auto f3 = this->CreateScopedTestFeatureDependentForTest(true);
+    ScopedTestFeatureDependentForTest f3(true);
     // Internal status: false, false, true.
-    EXPECT_FALSE(this->TestFeatureEnabled());
-    EXPECT_FALSE(this->TestFeatureImpliedEnabled());
+    EXPECT_FALSE(TestFeatureEnabled());
+    EXPECT_FALSE(TestFeatureImpliedEnabled());
     // Depends on TestFeatureImplied.
-    EXPECT_FALSE(this->TestFeatureDependentEnabled());
+    EXPECT_FALSE(TestFeatureDependentEnabled());
     {
-      auto f2 = this->CreateScopedTestFeatureImpliedForTest(true);
+      ScopedTestFeatureImpliedForTest f2(true);
       // Internal status: false, true, true.
-      EXPECT_FALSE(this->TestFeatureEnabled());
-      EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-      EXPECT_TRUE(this->TestFeatureDependentEnabled());
+      EXPECT_FALSE(TestFeatureEnabled());
+      EXPECT_TRUE(TestFeatureImpliedEnabled());
+      EXPECT_TRUE(TestFeatureDependentEnabled());
       {
-        auto f1 = this->CreateScopedTestFeatureForTest(true);
+        ScopedTestFeatureForTest f1(true);
         // Internal status: true, true, true.
-        EXPECT_TRUE(this->TestFeatureEnabled());
-        EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-        EXPECT_TRUE(this->TestFeatureDependentEnabled());
+        EXPECT_TRUE(TestFeatureEnabled());
+        EXPECT_TRUE(TestFeatureImpliedEnabled());
+        EXPECT_TRUE(TestFeatureDependentEnabled());
       }
       // Internal status: false, true, true.
-      EXPECT_FALSE(this->TestFeatureEnabled());
-      EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-      EXPECT_TRUE(this->TestFeatureDependentEnabled());
+      EXPECT_FALSE(TestFeatureEnabled());
+      EXPECT_TRUE(TestFeatureImpliedEnabled());
+      EXPECT_TRUE(TestFeatureDependentEnabled());
     }
     // Internal status: false, false, true.
-    EXPECT_FALSE(this->TestFeatureEnabled());
-    EXPECT_FALSE(this->TestFeatureImpliedEnabled());
+    EXPECT_FALSE(TestFeatureEnabled());
+    EXPECT_FALSE(TestFeatureImpliedEnabled());
     // Depends on TestFeatureImplied.
-    EXPECT_FALSE(this->TestFeatureDependentEnabled());
+    EXPECT_FALSE(TestFeatureDependentEnabled());
     {
-      auto f2 = this->CreateScopedTestFeatureImpliedForTest(true);
+      ScopedTestFeatureImpliedForTest f2(true);
       // Internal status: false, true, true.
-      EXPECT_FALSE(this->TestFeatureEnabled());
-      EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-      EXPECT_TRUE(this->TestFeatureDependentEnabled());
+      EXPECT_FALSE(TestFeatureEnabled());
+      EXPECT_TRUE(TestFeatureImpliedEnabled());
+      EXPECT_TRUE(TestFeatureDependentEnabled());
     }
   }
   // Internal status: false, false, false.
-  EXPECT_FALSE(this->TestFeatureEnabled());
-  EXPECT_FALSE(this->TestFeatureImpliedEnabled());
-  EXPECT_FALSE(this->TestFeatureDependentEnabled());
+  EXPECT_FALSE(TestFeatureEnabled());
+  EXPECT_FALSE(TestFeatureImpliedEnabled());
+  EXPECT_FALSE(TestFeatureDependentEnabled());
 }
 
-TYPED_TEST_P(AbstractRuntimeEnabledFeaturesTest, BackupRestore) {
+TEST_F(RuntimeEnabledFeaturesTest, BackupRestore) {
   // Internal status: false, false, false.
-  EXPECT_FALSE(this->TestFeatureEnabled());
-  EXPECT_FALSE(this->TestFeatureImpliedEnabled());
-  EXPECT_FALSE(this->TestFeatureDependentEnabled());
+  EXPECT_FALSE(TestFeatureEnabled());
+  EXPECT_FALSE(TestFeatureImpliedEnabled());
+  EXPECT_FALSE(TestFeatureDependentEnabled());
 
-  this->SetTestFeatureEnabled(true);
-  this->SetTestFeatureDependentEnabled(true);
+  SetTestFeatureEnabled(true);
+  SetTestFeatureDependentEnabled(true);
   // Internal status: true, false, true.
-  EXPECT_TRUE(this->TestFeatureEnabled());
+  EXPECT_TRUE(TestFeatureEnabled());
   // Implied by TestFeature.
-  EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-  EXPECT_TRUE(this->TestFeatureDependentEnabled());
+  EXPECT_TRUE(TestFeatureImpliedEnabled());
+  EXPECT_TRUE(TestFeatureDependentEnabled());
 
   RuntimeEnabledFeatures::Backup backup;
 
-  this->SetTestFeatureEnabled(false);
-  this->SetTestFeatureImpliedEnabled(true);
-  this->SetTestFeatureDependentEnabled(false);
+  SetTestFeatureEnabled(false);
+  SetTestFeatureImpliedEnabled(true);
+  SetTestFeatureDependentEnabled(false);
   // Internal status: false, true, false.
-  EXPECT_FALSE(this->TestFeatureEnabled());
-  EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-  EXPECT_FALSE(this->TestFeatureDependentEnabled());
+  EXPECT_FALSE(TestFeatureEnabled());
+  EXPECT_TRUE(TestFeatureImpliedEnabled());
+  EXPECT_FALSE(TestFeatureDependentEnabled());
 
   backup.Restore();
   // Should restore the internal status to: true, false, true.
-  EXPECT_TRUE(this->TestFeatureEnabled());
+  EXPECT_TRUE(TestFeatureEnabled());
   // Implied by TestFeature.
-  EXPECT_TRUE(this->TestFeatureImpliedEnabled());
-  EXPECT_TRUE(this->TestFeatureDependentEnabled());
+  EXPECT_TRUE(TestFeatureImpliedEnabled());
+  EXPECT_TRUE(TestFeatureDependentEnabled());
 
-  this->SetTestFeatureEnabled(false);
+  SetTestFeatureEnabled(false);
   // Internal status: false, false, true.
-  EXPECT_FALSE(this->TestFeatureEnabled());
-  EXPECT_FALSE(this->TestFeatureImpliedEnabled());
+  EXPECT_FALSE(TestFeatureEnabled());
+  EXPECT_FALSE(TestFeatureImpliedEnabled());
   // Depends on TestFeatureImplied.
-  EXPECT_FALSE(this->TestFeatureDependentEnabled());
+  EXPECT_FALSE(TestFeatureDependentEnabled());
 }
 
 // Test setup:
 // OriginTrialsSampleAPIImplied   impled_by  \
 //                                             OriginTrialsSampleAPI
 // OriginTrialsSampleAPIDependent depends_on /
-TYPED_TEST_P(AbstractRuntimeEnabledFeaturesTest, OriginTrialsByRuntimeEnabled) {
+TEST_F(RuntimeEnabledFeaturesTest, OriginTrialsByRuntimeEnabled) {
   // Internal status: false, false, false.
-  EXPECT_FALSE(this->OriginTrialsSampleAPIEnabledByRuntimeFlag());
-  EXPECT_FALSE(this->OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag());
-  EXPECT_FALSE(this->OriginTrialsSampleAPIDependentEnabledByRuntimeFlag());
+  EXPECT_FALSE(OriginTrialsSampleAPIEnabledByRuntimeFlag());
+  EXPECT_FALSE(OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag());
+  EXPECT_FALSE(OriginTrialsSampleAPIDependentEnabledByRuntimeFlag());
 
-  this->SetOriginTrialsSampleAPIEnabled(true);
+  SetOriginTrialsSampleAPIEnabled(true);
   // Internal status: true, false, false.
-  EXPECT_TRUE(this->OriginTrialsSampleAPIEnabledByRuntimeFlag());
+  EXPECT_TRUE(OriginTrialsSampleAPIEnabledByRuntimeFlag());
   // Implied by OriginTrialsSampleAPI.
-  EXPECT_TRUE(this->OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag());
-  EXPECT_FALSE(this->OriginTrialsSampleAPIDependentEnabledByRuntimeFlag());
+  EXPECT_TRUE(OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag());
+  EXPECT_FALSE(OriginTrialsSampleAPIDependentEnabledByRuntimeFlag());
 
-  this->SetOriginTrialsSampleAPIImpliedEnabled(true);
-  this->SetOriginTrialsSampleAPIDependentEnabled(true);
+  SetOriginTrialsSampleAPIImpliedEnabled(true);
+  SetOriginTrialsSampleAPIDependentEnabled(true);
   // Internal status: true, true, true.
-  EXPECT_TRUE(this->OriginTrialsSampleAPIEnabledByRuntimeFlag());
-  EXPECT_TRUE(this->OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag());
-  EXPECT_TRUE(this->OriginTrialsSampleAPIDependentEnabledByRuntimeFlag());
+  EXPECT_TRUE(OriginTrialsSampleAPIEnabledByRuntimeFlag());
+  EXPECT_TRUE(OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag());
+  EXPECT_TRUE(OriginTrialsSampleAPIDependentEnabledByRuntimeFlag());
 
-  this->SetOriginTrialsSampleAPIEnabled(false);
+  SetOriginTrialsSampleAPIEnabled(false);
   // Internal status: false, true, true.
-  EXPECT_FALSE(this->OriginTrialsSampleAPIEnabledByRuntimeFlag());
-  EXPECT_TRUE(this->OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag());
+  EXPECT_FALSE(OriginTrialsSampleAPIEnabledByRuntimeFlag());
+  EXPECT_TRUE(OriginTrialsSampleAPIImpliedEnabledByRuntimeFlag());
   // Depends on OriginTrialsSampleAPI.
-  EXPECT_FALSE(this->OriginTrialsSampleAPIDependentEnabledByRuntimeFlag());
+  EXPECT_FALSE(OriginTrialsSampleAPIDependentEnabledByRuntimeFlag());
 }
 
-TYPED_TEST_P(AbstractRuntimeEnabledFeaturesTest, CopiedFromBaseFaetureIf) {
+TEST_F(RuntimeEnabledFeaturesTest, CopiedFromBaseFaetureIf) {
   using base::FeatureList;
   const base::Feature& kFeature = features::kTestBlinkFeatureDefault;
   ASSERT_TRUE(FeatureList::IsEnabled(kFeature));
@@ -529,22 +326,7 @@ TYPED_TEST_P(AbstractRuntimeEnabledFeaturesTest, CopiedFromBaseFaetureIf) {
   EXPECT_FALSE(RuntimeEnabledFeatures::TestBlinkFeatureDefaultEnabled());
 }
 
-REGISTER_TYPED_TEST_SUITE_P(AbstractRuntimeEnabledFeaturesTest,
-                            Relationship,
-                            ScopedForTest,
-                            BackupRestore,
-                            OriginTrialsByRuntimeEnabled,
-                            CopiedFromBaseFaetureIf);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(Base,
-                               AbstractRuntimeEnabledFeaturesTest,
-                               RuntimeEnabledFeaturesTestTraits);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(Protected,
-                               AbstractRuntimeEnabledFeaturesTest,
-                               RuntimeProtectedEnabledFeaturesTestTraits);
-
-TEST(RuntimeEnabledFeaturesTest, FocusgroupV2CanBeToggled) {
+TEST_F(RuntimeEnabledFeaturesTest, FocusgroupV2CanBeToggled) {
   ScopedFocusgroupV2ForTest v2_disabled(false);
   EXPECT_FALSE(RuntimeEnabledFeatures::FocusgroupV2Enabled());
 
@@ -556,7 +338,7 @@ TEST(RuntimeEnabledFeaturesTest, FocusgroupV2CanBeToggled) {
   EXPECT_FALSE(RuntimeEnabledFeatures::FocusgroupV2Enabled());
 }
 
-TEST(RuntimeEnabledFeaturesTest, FocusgroupV2DependsOnFocusgroup) {
+TEST_F(RuntimeEnabledFeaturesTest, FocusgroupV2DependsOnFocusgroup) {
   ScopedFocusgroupForTest focusgroup_disabled(false);
   ScopedFocusgroupV2ForTest v2_disabled(false);
   EXPECT_FALSE(RuntimeEnabledFeatures::FocusgroupEnabled());
@@ -578,35 +360,7 @@ TEST(RuntimeEnabledFeaturesTest, FocusgroupV2DependsOnFocusgroup) {
   EXPECT_FALSE(RuntimeEnabledFeatures::FocusgroupV2Enabled());
 }
 
-#if BUILDFLAG(PROTECTED_MEMORY_ENABLED) && defined(GTEST_HAS_DEATH_TEST) && \
-    !BUILDFLAG(IS_ANDROID)
-// All protected runtime feature flags are stored in a single read-only
-// section and must be initialized together. This ensures that once any
-// protected flag has been read, querying a different protected flag never
-// requires write access to the section. The scoped helper below dereferences
-// the raw protected storage of the dependent flag without going through its
-// getter, which CHECKs if the flag has not been constructed. Uses "DeathTest"
-// idiom for subprocess test-state isolation.
-TEST(RuntimeEnabledFeaturesProtectedDeathTest,
-     ProtectedFlagsShareInitialization) {
-  //
-  GTEST_FLAG_SET(death_test_style, "threadsafe");
-  // Exit 0 is expected because the DeathTest is used purely for subprocess
-  // test-state isolation.
-  EXPECT_EXIT(
-      {
-        // Reading one protected flag must initialize every protected flag.
-        RuntimeEnabledFeatures::TestFeatureProtectedEnabled();
-        // Direct access to a different flag's storage must now succeed.
-        ScopedTestFeatureProtectedDependentForTest scoped(false);
-        ::_Exit(0);
-      },
-      testing::ExitedWithCode(0), "");
-}
-#endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED) && defined(GTEST_HAS_DEATH_TEST)
-        // && !BUILDFLAG(IS_ANDROID)
-
-TEST(RuntimeEnabledFeaturesTest, CustomEnableCheckAllowed) {
+TEST_F(RuntimeEnabledFeaturesTest, CustomEnableCheckAllowed) {
   ScopedTestFeatureAllowedForTest allowed(true);
 
   EXPECT_FALSE(RuntimeEnabledFeatures::TestFeatureCustomEnableCheckEnabled());
@@ -619,7 +373,7 @@ TEST(RuntimeEnabledFeaturesTest, CustomEnableCheckAllowed) {
   EXPECT_FALSE(RuntimeEnabledFeatures::TestFeatureCustomEnableCheckEnabled());
 }
 
-TEST(RuntimeEnabledFeaturesTest, CustomEnableCheckDisallowed) {
+TEST_F(RuntimeEnabledFeaturesTest, CustomEnableCheckDisallowed) {
   ScopedTestFeatureAllowedForTest disallowed(false);
 
   EXPECT_FALSE(RuntimeEnabledFeatures::TestFeatureCustomEnableCheckEnabled());
@@ -642,14 +396,14 @@ TEST(RuntimeEnabledFeaturesCustomEnableCheckDeathTest, SetButNotAllowed) {
 
 // blink_platform_unittests enables test-only features, which grants all of the
 // MojoJS permissions, so both features should be enabled and readable here.
-TEST(RuntimeEnabledFeaturesTest, MojoJSAllowedByTestOnlyFeatures) {
+TEST_F(RuntimeEnabledFeaturesTest, MojoJSAllowedByTestOnlyFeatures) {
   EXPECT_TRUE(RuntimeEnabledFeatures::MojoJSEnabled());
   EXPECT_TRUE(RuntimeEnabledFeatures::MojoJSTestEnabled());
 }
 
 // With the permission granted, the MojoJS features behave like any other
 // runtime feature.
-TEST(RuntimeEnabledFeaturesTest, MojoJSCanBeToggledWhenAllowed) {
+TEST_F(RuntimeEnabledFeaturesTest, MojoJSCanBeToggledWhenAllowed) {
   ASSERT_TRUE(IsMojoJSAllowedForProcess());
 
   ScopedMojoJSForTest disabled(false);
