@@ -114,9 +114,7 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   size_t NumRenderbuffers() const;
 
   bool IsContextLost() { return context_lost_; }
-  void set_test_support(TestContextSupport* test_support) {
-    test_support_ = test_support;
-  }
+  void set_test_support(TestContextSupport* test_support);
   const gpu::Capabilities& test_capabilities() const {
     return test_capabilities_;
   }

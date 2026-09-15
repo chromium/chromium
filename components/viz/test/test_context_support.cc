@@ -35,6 +35,10 @@ bool TestContextSupport::IsSyncTokenSignaled(const gpu::SyncToken& sync_token) {
   return true;
 }
 
+gpu::SyncPointClientId TestContextSupport::GetSyncPointClientId() const {
+  return sync_point_client_id_;
+}
+
 void TestContextSupport::SignalQuery(uint32_t query,
                                      base::OnceClosure callback) {
   sync_point_callbacks_.push_back(std::move(callback));

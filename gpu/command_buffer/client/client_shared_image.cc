@@ -525,30 +525,22 @@ uint64_t ClientSharedImage::SignalLatestSyncToken(
     std::vector<SyncToken> sync_tokens,
     base::OnceClosure callback,
     SharedImageInterface* sii,
+    ContextSupport* context_support,
     uint64_t pending_callback_id) {
   CHECK(sii);
   gpu::SyncToken latest_sync_token;
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
+    SyncPointClientId client_id = context_support->GetSyncPointClientId();
     for (const auto& shared_image : shared_images) {
       if (!shared_image) {
         continue;
       }
       base::AutoLock auto_lock(shared_image->lock_);
-      unsigned int effective_sync_token_count = 0;
-      for (const auto& [_, sync_token] : shared_image->sync_token_map_) {
-        if (sync_token.GetClientId() ==
-            shared_image->creation_sync_token().GetClientId()) {
-          continue;
-        }
-        if (sync_token.HasData()) {
-          if (sync_token.release_count() > latest_sync_token.release_count()) {
-            latest_sync_token = sync_token;
-          }
-          effective_sync_token_count++;
-        }
+      auto it = shared_image->sync_token_map_.find(client_id);
+      if (it != shared_image->sync_token_map_.end() && it->second.HasData()) {
+        latest_sync_token = it->second;
       }
-      CHECK_LE(effective_sync_token_count, 1u);
     }
   } else {
     for (const auto& sync_token : sync_tokens) {

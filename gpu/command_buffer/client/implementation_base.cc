@@ -82,6 +82,10 @@ bool ImplementationBase::IsSyncTokenSignaled(const SyncToken& sync_token) {
   return gpu_control_->IsFenceSyncReleased(sync_token.release_count());
 }
 
+SyncPointClientId ImplementationBase::GetSyncPointClientId() const {
+  return {gpu_control_->GetNamespaceID(), gpu_control_->GetCommandBufferID()};
+}
+
 void ImplementationBase::GenSyncToken(GLbyte* sync_token) {
   if (!sync_token) {
     SetGLError(GL_INVALID_VALUE, "glGenSyncTokenCHROMIUM", "empty sync_token");

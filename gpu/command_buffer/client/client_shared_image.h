@@ -296,6 +296,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       std::vector<SyncToken> sync_tokens,
       base::OnceClosure callback,
       SharedImageInterface* sii,
+      ContextSupport* context_support,
       uint64_t pending_callback_id);
 
   static void SignalLatestSyncToken(

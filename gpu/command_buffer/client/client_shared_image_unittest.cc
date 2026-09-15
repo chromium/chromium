@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/viz/test/test_context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
@@ -559,7 +560,7 @@ TEST(ClientSharedImageTest, SignalLatestSyncToken_WithCallbackId) {
   uint64_t callback_id = ClientSharedImage::SignalLatestSyncToken(
       {client_si}, {SyncToken()},
       base::BindOnce([](bool* called) { *called = true; }, &callback_called),
-      sii.get(), /*pending_callback_id=*/0);
+      sii.get(), /*context_support=*/nullptr, /*pending_callback_id=*/0);
   EXPECT_EQ(callback_id, 0u);
   EXPECT_TRUE(callback_called);
 
@@ -569,7 +570,7 @@ TEST(ClientSharedImageTest, SignalLatestSyncToken_WithCallbackId) {
   callback_id = ClientSharedImage::SignalLatestSyncToken(
       {client_si}, {token},
       base::BindOnce([](bool* called) { *called = true; }, &callback_called),
-      sii.get(), /*pending_callback_id=*/100);
+      sii.get(), /*context_support=*/nullptr, /*pending_callback_id=*/100);
   EXPECT_EQ(callback_id, 100u);
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -583,7 +584,7 @@ TEST(ClientSharedImageTest, SignalLatestSyncToken_WithCallbackId) {
   callback_id = ClientSharedImage::SignalLatestSyncToken(
       {client_si}, {token},
       base::BindOnce([](bool* called) { *called = true; }, &callback_called),
-      sii.get(), /*pending_callback_id=*/0);
+      sii.get(), /*context_support=*/nullptr, /*pending_callback_id=*/0);
   EXPECT_EQ(callback_id, 100u);
   EXPECT_FALSE(callback_called);
   base::RunLoop run_loop2;
@@ -608,11 +609,14 @@ TEST(ClientSharedImageTest,
   SyncToken token(ns, cmd_id, /*release_count=*/250);
   client_si->EndExport(SharedImageExportResult::CreateForTesting(token));
 
+  viz::TestContextSupport context_support;
+  context_support.set_sync_point_client_id(token.GetClientId());
+
   bool callback_called = false;
   uint64_t callback_id = ClientSharedImage::SignalLatestSyncToken(
       {client_si}, /*sync_tokens=*/{},
       base::BindOnce([](bool* called) { *called = true; }, &callback_called),
-      sii.get(), /*pending_callback_id=*/0);
+      sii.get(), &context_support, /*pending_callback_id=*/0);
   EXPECT_EQ(callback_id, 250u);
   EXPECT_FALSE(callback_called);
   base::RunLoop run_loop;

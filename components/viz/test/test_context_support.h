@@ -35,6 +35,7 @@ class TestContextSupport : public gpu::ContextSupport {
   void SignalSyncToken(const gpu::SyncToken& sync_token,
                        base::OnceClosure callback) override;
   bool IsSyncTokenSignaled(const gpu::SyncToken& sync_token) override;
+  gpu::SyncPointClientId GetSyncPointClientId() const override;
   void SignalQuery(uint32_t query, base::OnceClosure callback) override;
   void GetGpuFence(uint32_t gpu_fence_id,
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
@@ -61,8 +62,15 @@ class TestContextSupport : public gpu::ContextSupport {
     out_of_order_callbacks_ = out_of_order_callbacks;
   }
 
+  void set_sync_point_client_id(gpu::SyncPointClientId sync_point_client_id) {
+    sync_point_client_id_ = sync_point_client_id;
+  }
+
  private:
   std::vector<base::OnceClosure> sync_point_callbacks_;
+  gpu::SyncPointClientId sync_point_client_id_{
+      gpu::CommandBufferNamespace::GPU_IO,
+      gpu::CommandBufferId::FromUnsafeValue(1)};
   bool out_of_order_callbacks_;
   bool aggressively_free_resources_ = false;
 

@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -19,8 +20,6 @@ class GpuFence;
 }
 
 namespace gpu {
-
-struct SyncToken;
 
 class ContextSupport {
  public:
@@ -35,6 +34,9 @@ class ContextSupport {
   // Returns true if the given sync token has been signaled. The sync token must
   // belong to this context. This may be called from any thread.
   virtual bool IsSyncTokenSignaled(const SyncToken& sync_token) = 0;
+
+  // Returns the SyncPointClientId for this context.
+  virtual SyncPointClientId GetSyncPointClientId() const = 0;
 
   // Runs |callback| when a query created via glCreateQueryEXT() has cleared
   // passed the glEndQueryEXT() point.

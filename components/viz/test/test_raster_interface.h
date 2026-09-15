@@ -32,9 +32,7 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   void set_context_lost_callback(base::OnceClosure callback) {
     context_lost_callback_ = std::move(callback);
   }
-  void set_test_support(TestContextSupport* test_support) {
-    test_support_ = test_support;
-  }
+  void set_test_support(TestContextSupport* test_support);
 
   void set_context_lost(bool context_lost) { context_lost_ = context_lost; }
 

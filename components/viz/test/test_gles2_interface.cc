@@ -41,6 +41,15 @@ TestGLES2Interface::TestGLES2Interface() : context_id_(NextContextId()) {
 
 TestGLES2Interface::~TestGLES2Interface() = default;
 
+void TestGLES2Interface::set_test_support(TestContextSupport* test_support) {
+  test_support_ = test_support;
+  if (test_support_) {
+    test_support_->set_sync_point_client_id(
+        {gpu::CommandBufferNamespace::GPU_IO,
+         gpu::CommandBufferId::FromUnsafeValue(test_command_buffer_id_)});
+  }
+}
+
 void TestGLES2Interface::GenTextures(GLsizei n, GLuint* textures) {
   for (int i = 0; i < n; ++i) {
     UNSAFE_TODO(textures[i]) = NextTextureId();
