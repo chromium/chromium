@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.Sugg
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionUiEvent;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabwindow.WindowId;
+import org.chromium.chrome.browser.tasks.tab_management.labels.TabListHighlighter;
 
 import java.util.HashSet;
 import java.util.List;

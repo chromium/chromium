@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tasks.tab_management.labels;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -95,8 +95,7 @@ public class TabModelNotificationDotManager implements Destroyable {
                 }
 
                 @Override
-                public void willCloseTabs(
-                        List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
+                public void willCloseTabs(List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
                     for (Tab tab : tabs) {
                         maybeUpdateForTab(tab, /* mayAddDot= */ false);
                     }

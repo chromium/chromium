@@ -45,6 +45,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.Shopping
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHighlightState;
+import org.chromium.chrome.browser.tasks.tab_management.labels.TabCardLabelData;
+import org.chromium.chrome.browser.tasks.tab_management.labels.TabCardLabelType;
+import org.chromium.chrome.browser.tasks.tab_management.labels.TabCardLabelView;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.tab_groups.TabGroupColorId;

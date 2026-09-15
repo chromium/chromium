@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupCol
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerCoordinator.TabGroupColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.TabGroupColorPickerType;
+import org.chromium.chrome.browser.tasks.tab_management.labels.TabLabeller;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;

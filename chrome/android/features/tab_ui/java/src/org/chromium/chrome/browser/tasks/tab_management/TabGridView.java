@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabA
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHighlightState;
+import org.chromium.chrome.browser.tasks.tab_management.labels.TabCardHighlightHandler;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 import org.chromium.components.tabs.TabAlert;

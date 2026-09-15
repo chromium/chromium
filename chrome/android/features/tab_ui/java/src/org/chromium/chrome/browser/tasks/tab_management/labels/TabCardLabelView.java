@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tasks.tab_management.labels;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -46,7 +46,7 @@ public class TabCardLabelView extends LinearLayout {
     }
 
     /** Set the {@link TabCardLabelData} to use. Setting null clears out the view and hides it. */
-    void setData(@Nullable TabCardLabelData data) {
+    public void setData(@Nullable TabCardLabelData data) {
         if (mLastData == data) return;
 
         if (data == null) {

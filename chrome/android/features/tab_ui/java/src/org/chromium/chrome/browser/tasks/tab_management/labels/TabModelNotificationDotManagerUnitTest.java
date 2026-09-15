@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_management;
+package org.chromium.chrome.browser.tasks.tab_management.labels;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -318,8 +318,7 @@ public class TabModelNotificationDotManagerUnitTest {
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(null);
         mTabModelObserverCaptor
                 .getValue()
-                .willCloseTabs(
-                        List.of(mTab), /* isAllTabs= */ false, /* allowUndo= */ true);
+                .willCloseTabs(List.of(mTab), /* isAllTabs= */ false, /* allowUndo= */ true);
         verifyHidden();
     }
 
