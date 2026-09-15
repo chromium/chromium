@@ -4427,19 +4427,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.WeakCheck.RankedDictsTimedOut" enum="Boolean"
-    expires_after="2027-08-30">
-  <owner>vsemeniuk@google.com</owner>
-  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
-  <summary>
-    Recorded once per password weak-check (IsWeak()/BulkWeakCheck() call) when
-    PasswordManagerFeatures::kWaitForZxcvbnRankedDictsBeforeWeakCheck is
-    enabled. True if the zxcvbn ranked dictionaries were not yet loaded by the
-    time the wait timeout elapsed, false if they became ready before the timeout
-    (including if they were already ready).
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.WeakCheck.Time" units="ms"
     expires_after="2026-11-15">
   <owner>vsemeniuk@google.com</owner>

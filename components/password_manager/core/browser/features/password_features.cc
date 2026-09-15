@@ -228,10 +228,4 @@ BASE_FEATURE(kUseDetachedWidget, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseProcessBoundPasswordString, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWaitForZxcvbnRankedDictsBeforeWeakCheck,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta> kZxcvbnRankedDictsReadyTimeout = {
-    &kWaitForZxcvbnRankedDictsBeforeWeakCheck, "ranked_dicts_ready_timeout",
-    base::Seconds(5)};
-
 }  // namespace password_manager::features

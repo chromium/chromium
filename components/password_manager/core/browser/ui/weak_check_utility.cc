@@ -4,16 +4,13 @@
 
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
 
+#include <functional>
 #include <string_view>
 
-#include "base/feature_list.h"
 #include "base/i18n/break_iterator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "components/password_manager/core/browser/features/password_features.h"
-#include "third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/matching.hpp"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/scoring.hpp"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/time_estimates.hpp"
@@ -63,27 +60,7 @@ constexpr int kZxcvbnLengthCap = 40;
 // weak. The lower the password score, the weaker it is.
 constexpr int kLowSeverityScore = 2;
 
-// If `features::kWaitForZxcvbnRankedDictsBeforeWeakCheck` is enabled, waits
-// (bounded by `features::kZxcvbnRankedDictsReadyTimeout`) for the zxcvbn
-// ranked dictionaries (supplied asynchronously by the ZxcvbnData component)
-// to become available, and records whether the wait timed out. Called once
-// per IsWeak()/BulkWeakCheck() invocation rather than once per password, so a
-// bulk check doesn't multiply the wait by the number of passwords checked.
-// Callers run on a base::ThreadPool sequence with base::MayBlock() and
-// base::WithBaseSyncPrimitives(), so blocking here is safe.
-void MaybeWaitForRankedDicts() {
-  if (!base::FeatureList::IsEnabled(
-          features::kWaitForZxcvbnRankedDictsBeforeWeakCheck)) {
-    return;
-  }
-  bool became_ready = zxcvbn::WaitForRankedDicts(
-      features::kZxcvbnRankedDictsReadyTimeout.Get());
-  base::UmaHistogramBoolean("PasswordManager.WeakCheck.RankedDictsTimedOut",
-                            !became_ready);
-}
-
-// Returns the |password| score. Doesn't wait for the ranked dictionaries to
-// be ready; callers are expected to have called MaybeWaitForRankedDicts().
+// Returns the |password| score.
 int PasswordWeakCheck(std::u16string_view password16) {
   // zxcvbn's computation time explodes for long passwords, so cap at that
   // number.
@@ -102,7 +79,6 @@ int PasswordWeakCheck(std::u16string_view password16) {
 }  // namespace
 
 IsWeakPassword IsWeak(std::u16string_view password) {
-  MaybeWaitForRankedDicts();
   return IsWeakPassword(PasswordWeakCheck(password) <= kLowSeverityScore);
 }
 
@@ -110,10 +86,7 @@ base::flat_set<std::u16string> BulkWeakCheck(
     base::flat_set<std::u16string> passwords) {
   base::UmaHistogramCounts1000("PasswordManager.WeakCheck.CheckedPasswords",
                                passwords.size());
-  MaybeWaitForRankedDicts();
-  base::EraseIf(passwords, [](std::u16string_view password) {
-    return PasswordWeakCheck(password) > kLowSeverityScore;
-  });
+  base::EraseIf(passwords, std::not_fn(&IsWeak));
   base::UmaHistogramCounts1000("PasswordManager.WeakCheck.WeakPasswords",
                                passwords.size());
   return passwords;

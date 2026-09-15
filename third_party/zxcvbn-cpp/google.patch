@@ -825,10 +825,10 @@ index 6f6b62b..0000000
 -
 -#endif
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
-index 4e4b727..f9a6af9 100644
+index a4d6561..4b328f1 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
-@@ -1,24 +1,284 @@
+@@ -1,24 +1,266 @@
  #include <zxcvbn/frequency_lists.hpp>
  
 -#include <zxcvbn/_frequency_lists.hpp>
@@ -845,7 +845,6 @@ index 4e4b727..f9a6af9 100644
 +#include "base/notreached.h"
 +#include "base/task/thread_pool.h"
 +#include "base/synchronization/lock.h"
-+#include "base/synchronization/waitable_event.h"
 +#include "third_party/abseil-cpp/absl/types/optional.h"
 +#include "third_party/abseil-cpp/absl/types/variant.h"
  
@@ -940,8 +939,7 @@ index 4e4b727..f9a6af9 100644
 +  size_t rank_;
 +  std::string_view value_;
 +};
- 
--  return build;
++
 +// Helper function that does nothing with the RankedDicts apart from letting
 +// it destruct as it goes out of scope. This is called on the ThreadPool to
 +// allow for potentially blocking behavior of `RankedDicts` destructor.
@@ -956,19 +954,10 @@ index 4e4b727..f9a6af9 100644
 +  static base::NoDestructor<scoped_refptr<RefCountedRankedDicts>> ptr(
 +      base::MakeRefCounted<RefCountedRankedDicts>(RankedDicts()));
 +  return *ptr;
- }
- 
--RankedDicts default_ranked_dicts() {
--  return convert_to_ranked_dicts(_frequency_lists::get_default_ranked_dicts());
-+base::WaitableEvent& GetRankedDictsReadyEvent() {
-+  static base::NoDestructor<base::WaitableEvent> event(
-+      base::WaitableEvent::ResetPolicy::MANUAL,
-+      base::WaitableEvent::InitialState::NOT_SIGNALED);
-+  return *event;
- }
- 
++}
++
 +}  // namespace
- 
++
 +RankedDicts::Datawrapper::Datawrapper(std::vector<char> data)
 +    : size_(data.size()), data_(data.data()), content_(std::move(data)) {}
 +
@@ -992,7 +981,7 @@ index 4e4b727..f9a6af9 100644
 +                       << static_cast<unsigned char>(c);
 +        }
 +      }
-+      merged_dicts.push_back({rank++, s});
+       merged_dicts.push_back({rank++, s});
 +    }
 +  }
 +  std::sort(merged_dicts.begin(), merged_dicts.end(),
@@ -1009,7 +998,8 @@ index 4e4b727..f9a6af9 100644
 +  // 1 byte at the end for trailing marker byte (for finding last string size)
 +  std::vector<char> vec;
 +  vec.reserve(dict_size + 1);
-+
+ 
+-  return build;
 +  // second pass: place elements in allocated array
 +  for (MergedEntry& entry : merged_dicts)
 +    RankedDictEntryRef::AppendToVector(entry, vec);
@@ -1017,7 +1007,9 @@ index 4e4b727..f9a6af9 100644
 +  vec.push_back(MarkedBigEndianU15::MARKER_BIT);
 +  data_ = Datawrapper(std::move(vec));
  }
-+
+ 
+-RankedDicts default_ranked_dicts() {
+-  return convert_to_ranked_dicts(_frequency_lists::get_default_ranked_dicts());
 +RankedDicts::RankedDicts(std::unique_ptr<base::MemoryMappedFile> map)
 +    : data_(std::move(map)) {}
 +
@@ -1068,8 +1060,8 @@ index 4e4b727..f9a6af9 100644
 +        range_last--;
 +    }
 +  }
-+}
-+
+ }
+ 
 +// Determine whether an entry starts at the given offset; in other words,
 +// determine whether a MarkedBigEndianU15 starts there.
 +bool RankedDicts::IsRealMarker(size_t offset) const {
@@ -1083,7 +1075,7 @@ index 4e4b727..f9a6af9 100644
 +    }
 +  }
 +  return false;
-+}
+ }
 +
 +// Safely updates the global `RankedDicts` using a read-copy-update (RCU) pattern.
 +// A lock is held briefly to safely update the global `scoped_refptr`, preventing
@@ -1102,15 +1094,6 @@ index 4e4b727..f9a6af9 100644
 +        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
 +        base::BindOnce(&DoNothing, std::move(old_dicts)));
 +  }
-+  GetRankedDictsReadyEvent().Signal();
-+}
-+
-+bool WaitForRankedDicts(base::TimeDelta timeout) {
-+  return GetRankedDictsReadyEvent().TimedWait(timeout);
-+}
-+
-+void ResetRankedDictsReadyForTesting() {
-+  GetRankedDictsReadyEvent().Reset();
 +}
 +
 +// Safely grabs a reference to the global `RankedDicts`. The background threads
@@ -1123,10 +1106,10 @@ index 4e4b727..f9a6af9 100644
 +
 +}  // namespace zxcvbn
 diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
-index c75ea30..1dfdeba 100644
+index c75ea30..b495ff3 100644
 --- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
 +++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
-@@ -1,37 +1,116 @@
+@@ -1,37 +1,102 @@
  #ifndef __ZXCVBN__FREQUENCY_LISTS_HPP
  #define __ZXCVBN__FREQUENCY_LISTS_HPP
  
@@ -1142,7 +1125,6 @@ index c75ea30..1dfdeba 100644
 +
 +#include "base/files/memory_mapped_file.h"
 +#include "base/memory/ref_counted.h"
-+#include "base/time/time.h"
 +#include "third_party/abseil-cpp/absl/types/optional.h"
 +#include "third_party/abseil-cpp/absl/types/variant.h"
  
@@ -1212,12 +1194,15 @@ index c75ea30..1dfdeba 100644
 +  std::string_view DataForTesting() const {
 +    return std::string_view(data_.data(), data_.size());
    }
-+
+-};
+ 
+-}
 + private:
 +  bool IsRealMarker(size_t offset) const;
-+
+ 
+-namespace zxcvbn {
 +  Datawrapper data_;
- };
++};
 +// Wrapper around `RankedDicts` to allow it to be ref-counted. This is used in a
 +// read-copy-update (RCU) pattern to prevent a data race where a background
 +// thread might read from the dictionary via `omnimatch()` while the UI thread
@@ -1228,34 +1213,19 @@ index c75ea30..1dfdeba 100644
 +  explicit RefCountedRankedDicts(RankedDicts dicts)
 +      : dicts_(std::move(dicts)) {}
 +  const RankedDicts& Data() const { return dicts_; }
- 
--}
++
 + private:
 +  friend class base::RefCountedThreadSafe<RefCountedRankedDicts>;
 +  ~RefCountedRankedDicts() = default;
 +  RankedDicts dicts_;
 +};
  
--namespace zxcvbn {
-+void SetRankedDicts(RankedDicts dicts);
-+
-+scoped_refptr<RefCountedRankedDicts> default_ranked_dicts();
- 
 -using RankedDicts = std::unordered_map<DictionaryTag, const RankedDict &>;
-+// Blocks the calling thread until `SetRankedDicts()` has been called at
-+// least once, or until `timeout` elapses, whichever comes first. Callers
-+// must be allowed to block (e.g. by using base::MayBlock() together with
-+// base::WithBaseSyncPrimitives() task traits).
-+// Returns true if the ranked dictionaries were signaled ready before the
-+// timeout elapsed, false if the timeout was hit first.
-+bool WaitForRankedDicts(base::TimeDelta timeout);
++void SetRankedDicts(RankedDicts dicts);
  
 -RankedDicts convert_to_ranked_dicts(std::unordered_map<DictionaryTag, RankedDict> & ranked_dicts);
 -RankedDicts default_ranked_dicts();
-+// Resets the "ranked dicts ready" signal set by `SetRankedDicts()`, so that
-+// `WaitForRankedDicts()` blocks again until `SetRankedDicts()` is called.
-+// For use in tests only.
-+void ResetRankedDictsReadyForTesting();
++scoped_refptr<RefCountedRankedDicts> default_ranked_dicts();
  
 -}
 +} // namespace zxcvbn

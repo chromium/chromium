@@ -73,10 +73,6 @@ Applied the following changes:
 - Refactor zxcvbn RankedDicts to be thread-safe.
 - Use memory-safe base::MemoryMappedFile::bytes() instead of data()
   and length().
-- Adds a WaitForRankedDicts() readiness signal to frequency_lists.hpp/cpp so
-  callers can wait (bounded) for SetRankedDicts() to be called at least once
-  before using the dictionaries, plus a ResetRankedDictsReadyForTesting()
-  helper (https://crbug.com/380105409).
 
 Ran the following commands to generate adjacency graphs:
 $ python ./data-scripts/build_keyboard_adjacency_graphs.py ./native-src/zxcvbn/adjacency_graphs.hpp
