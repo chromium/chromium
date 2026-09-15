@@ -7,7 +7,9 @@
 <meta name="flags" content="may">
 <meta name="assert" content="A focused read-only textarea may suppress text-overflow ellipsis even though its contents are not editable.">
 <!-- The specification says the UA "may" treat text-overflow as clip while
-     editing, but all current engines do so for form controls. -->
+     editing, but Chromium and Gecko do so for <textarea>, and WebKit,
+     which does not support text-overflow on <textarea>, does so for
+     <input>. -->
 <style>
 textarea {
   white-space: nowrap;

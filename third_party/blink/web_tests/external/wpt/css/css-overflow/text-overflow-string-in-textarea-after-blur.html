@@ -8,7 +8,9 @@
 <meta name="flags" content="may">
 <meta name="assert" content="The text-overflow string is hidden while the textarea is focused, and is shown again once the textarea loses focus.">
 <!-- The specification says the UA "may" treat text-overflow as clip while
-     editing, but all current engines do so for form controls. -->
+     editing, but Chromium and Gecko do so for <textarea>, and WebKit,
+     which does not support text-overflow on <textarea>, does so for
+     <input>. -->
 <style>
 textarea {
   white-space: nowrap;
