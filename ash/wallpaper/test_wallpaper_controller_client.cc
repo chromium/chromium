@@ -12,10 +12,6 @@
 
 namespace ash {
 
-// static
-const std::string TestWallpaperControllerClient::kDummyCollectionId =
-    "testCollectionId";
-
 TestWallpaperControllerClient::TestWallpaperControllerClient() {
   std::vector<backdrop::Image>& images = variations_[kDummyCollectionId];
   backdrop::Image image1;

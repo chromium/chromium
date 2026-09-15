@@ -21,7 +21,7 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
  public:
   // A preconfigured collection of wallpaper variants that will return some
   // usable values.
-  static const std::string kDummyCollectionId;
+  static inline constexpr char kDummyCollectionId[] = "testCollectionId";
 
   TestWallpaperControllerClient();
   TestWallpaperControllerClient(const TestWallpaperControllerClient&) = delete;

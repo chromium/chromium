@@ -21,9 +21,10 @@ namespace ash {
 
 namespace {
 
-const WallpaperInfo kTestWallpaperInfo = {"", WALLPAPER_LAYOUT_CENTER,
-                                          WallpaperType::kDefault,
-                                          base::Time::Now().LocalMidnight()};
+WallpaperInfo GetTestWallpaperInfo() {
+  return WallpaperInfo{"", WALLPAPER_LAYOUT_CENTER, WallpaperType::kDefault,
+                       base::Time::Now().LocalMidnight()};
+}
 
 gfx::ImageSkia CreateImageWithColor(const SkColor color) {
   gfx::Canvas canvas(gfx::Size(5, 5), 1.0f, true);
@@ -45,11 +46,11 @@ void WallpaperControllerTestApi::StartWallpaperPreview() {
   controller_->confirm_preview_wallpaper_callback_ = base::BindOnce(
       &WallpaperControllerImpl::SetWallpaperFromInfo,
       controller_->weak_factory_.GetWeakPtr(),
-      AccountId::FromUserEmail("user@test.com"), kTestWallpaperInfo);
+      AccountId::FromUserEmail("user@test.com"), GetTestWallpaperInfo());
   controller_->reload_preview_wallpaper_callback_ = base::BindRepeating(
       &WallpaperControllerImpl::ShowWallpaperImage,
       controller_->weak_factory_.GetWeakPtr(),
-      CreateImageWithColor(SK_ColorBLUE), kTestWallpaperInfo,
+      CreateImageWithColor(SK_ColorBLUE), GetTestWallpaperInfo(),
       /*preview_mode=*/true, /*always_on_top=*/false);
   // Show the preview wallpaper.
   controller_->reload_preview_wallpaper_callback_.Run();
