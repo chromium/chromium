@@ -44,19 +44,7 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
 
     // Variables used to ensure start/stop foreground doesn't happen too quickly (b/74236718).
     private final Handler mHandler = new Handler();
-    private final Runnable mMaybeStopServiceRunnable =
-            new Runnable() {
-                @Override
-                public void run() {
-                    Log.w(TAG, "Checking if delayed stopAndUnbindService needs to be resolved.");
-                    mStopServiceDelayed = false;
-                    processDownloadUpdateQueue(false /* not isProcessingPending */);
-                    mHandler.removeCallbacks(mMaybeStopServiceRunnable);
-                    Log.w(
-                            TAG,
-                            "Done checking if delayed stopAndUnbindService needs to be resolved.");
-                }
-            };
+    private final Runnable mMaybeStopServiceRunnable = this::maybeStopService;
     private boolean mStopServiceDelayed;
 
     // This is true when context.bindService has been called and before context.unbindService.
@@ -70,6 +58,14 @@ public class DownloadForegroundServiceManager extends DownloadContinuityManager 
     private @Nullable DownloadForegroundServiceImpl mBoundService;
 
     public DownloadForegroundServiceManager() {}
+
+    private void maybeStopService() {
+        Log.w(TAG, "Checking if delayed stopAndUnbindService needs to be resolved.");
+        mStopServiceDelayed = false;
+        processDownloadUpdateQueue(false /* not isProcessingPending */);
+        mHandler.removeCallbacks(mMaybeStopServiceRunnable);
+        Log.w(TAG, "Done checking if delayed stopAndUnbindService needs to be resolved.");
+    }
 
     @Override
     boolean isEnabled() {

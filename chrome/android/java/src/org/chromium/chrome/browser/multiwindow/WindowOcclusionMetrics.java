@@ -27,16 +27,14 @@ class WindowOcclusionMetrics {
     private static boolean sPeriodicMetricsRunning;
 
     private static final Runnable PERIODIC_METRICS_TASK =
-            new Runnable() {
-                @Override
-                public void run() {
-                    RecordHistogram.recordCount100000Histogram(
-                            getMetricName("OcclusionCalculationsPer5Minutes"),
-                            sOcclusionCalculations);
-                    sOcclusionCalculations = 0;
-                    ThreadUtils.postOnUiThreadDelayed(this, PERIODIC_METRIC_DELAY_MS);
-                }
-            };
+            WindowOcclusionMetrics::emitPeriodicMetrics;
+
+    private static void emitPeriodicMetrics() {
+        RecordHistogram.recordCount100000Histogram(
+                getMetricName("OcclusionCalculationsPer5Minutes"), sOcclusionCalculations);
+        sOcclusionCalculations = 0;
+        ThreadUtils.postOnUiThreadDelayed(PERIODIC_METRICS_TASK, PERIODIC_METRIC_DELAY_MS);
+    }
 
     @IntDef({
         CalculateResult.SUCCESS,

@@ -140,51 +140,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private boolean mHasTopControlsHeightAnimation;
     private boolean mHasBottomControlsHeightAnimation;
 
-    private final Runnable mUpdateVisibilityRunnable =
-            new Runnable() {
-                @Override
-                public void run() {
-                    int visibility = shouldShowAndroidControls() ? View.VISIBLE : View.INVISIBLE;
-                    if (mControlContainer == null
-                            || mControlContainer.getView().getVisibility() == visibility) {
-                        return;
-                    } else if (visibility == View.VISIBLE
-                            && mContentViewScrolling
-                            && assumeNonNull(mBrowserVisibilityDelegate.get())
-                                    == BrowserControlsState.BOTH) {
-                        // TODO(crbug.com/430320400): mBrowserVisibilityDelegate.get() never
-                        // returns null, but ObservableSupplier.get() returns @Nullable.
-
-                        // Don't make the controls visible until scrolling has stopped to avoid
-                        // doing it more often than we need to. onContentViewScrollingStateChanged
-                        // will schedule us again when scrolling ceases.
-                        return;
-                    }
-
-                    try (TraceEvent _ =
-                            TraceEvent.scoped(
-                                    "BrowserControlsManager.onAndroidVisibilityChanged")) {
-                        mControlContainer.getView().setVisibility(visibility);
-                        for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
-                            obs.onAndroidControlsVisibilityChanged(visibility);
-                        }
-                        if (mForceRelayoutOnVisibilityChange && shouldShowAndroidControls()) {
-                            // requestLayout is required to trigger a new gatherTransparentRegion(),
-                            // which only occurs together with a layout and let's SurfaceFlinger
-                            // trim overlays.
-                            // This may be almost equivalent to using View.GONE, but we still use
-                            // View.INVISIBLE since drawing caches etc. won't be destroyed, and the
-                            // layout may be less expensive. The overlay trimming optimization
-                            // only works pre-Android N (see https://crbug.com/41321012), so this
-                            // call should be removed entirely once it's confirmed to be safe.
-                            ViewUtils.requestLayout(
-                                    mControlContainer.getView(),
-                                    "BrowserControlsManager.mUpdateVisibilityRunnable Runnable");
-                            mForceRelayoutOnVisibilityChange = false;
-                        }
-                    }
-                }
-            };
+    private final Runnable mUpdateVisibilityRunnable = this::updateVisibility;
 
     /**
      * Creates an instance of the browser controls manager.
@@ -228,6 +184,46 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 new BrowserStateBrowserControlsVisibilityDelegate(
                         mHtmlApiHandler.getPersistentFullscreenModeSupplier());
         mBrowserVisibilityDelegate.addSyncObserverAndPostIfNonNull(this::onConstraintsChanged);
+    }
+
+    private void updateVisibility() {
+        int visibility = shouldShowAndroidControls() ? View.VISIBLE : View.INVISIBLE;
+        if (mControlContainer == null
+                || mControlContainer.getView().getVisibility() == visibility) {
+            return;
+        } else if (visibility == View.VISIBLE
+                && mContentViewScrolling
+                && assumeNonNull(mBrowserVisibilityDelegate.get()) == BrowserControlsState.BOTH) {
+            // TODO(crbug.com/430320400): mBrowserVisibilityDelegate.get() never
+            // returns null, but ObservableSupplier.get() returns @Nullable.
+
+            // Don't make the controls visible until scrolling has stopped to avoid
+            // doing it more often than we need to. onContentViewScrollingStateChanged
+            // will schedule us again when scrolling ceases.
+            return;
+        }
+
+        try (TraceEvent _ =
+                TraceEvent.scoped("BrowserControlsManager.onAndroidVisibilityChanged")) {
+            mControlContainer.getView().setVisibility(visibility);
+            for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
+                obs.onAndroidControlsVisibilityChanged(visibility);
+            }
+            if (mForceRelayoutOnVisibilityChange && shouldShowAndroidControls()) {
+                // requestLayout is required to trigger a new gatherTransparentRegion(),
+                // which only occurs together with a layout and let's SurfaceFlinger
+                // trim overlays.
+                // This may be almost equivalent to using View.GONE, but we still use
+                // View.INVISIBLE since drawing caches etc. won't be destroyed, and the
+                // layout may be less expensive. The overlay trimming optimization
+                // only works pre-Android N (see https://crbug.com/41321012), so this
+                // call should be removed entirely once it's confirmed to be safe.
+                ViewUtils.requestLayout(
+                        mControlContainer.getView(),
+                        "BrowserControlsManager.mUpdateVisibilityRunnable Runnable");
+                mForceRelayoutOnVisibilityChange = false;
+            }
+        }
     }
 
     /**

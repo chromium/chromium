@@ -57,18 +57,7 @@ class WindowZOrderTracker {
     // Counts actual deduplicated Z-order promotions performed per metric interval.
     private int mPromotionCount;
 
-    private final Runnable mEmitMetricsRunnable =
-            new Runnable() {
-                @Override
-                public void run() {
-                    recordTrackedWindowStats();
-                    recordDisplayStats();
-                    recordResumedCount();
-                    recordPromotionCount();
-
-                    PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, this, METRIC_INTERVAL_MS);
-                }
-            };
+    private final Runnable mEmitMetricsRunnable = this::emitMetrics;
 
     /**
      * @param zOrderChangedCallback A callback to be invoked when the z-order changes.
@@ -77,6 +66,15 @@ class WindowZOrderTracker {
         mZOrder = new SparseArray<>();
         mObservers = new HashMap<>();
         mZOrderChangedCallback = zOrderChangedCallback;
+
+        PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mEmitMetricsRunnable, METRIC_INTERVAL_MS);
+    }
+
+    private void emitMetrics() {
+        recordTrackedWindowStats();
+        recordDisplayStats();
+        recordResumedCount();
+        recordPromotionCount();
 
         PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, mEmitMetricsRunnable, METRIC_INTERVAL_MS);
     }
