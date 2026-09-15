@@ -21,7 +21,10 @@
 #include "base/barrier_closure.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
@@ -401,23 +404,28 @@ TEST_F(FloatingAccessibilityControllerTest, LocaleChangeObserver) {
   gfx::Rect window_bounds = Shell::GetPrimaryRootWindow()->bounds();
 
   // RTL should position the menu on the bottom left.
-  base::i18n::SetICUDefaultLocale("he");
-  // Trigger the LocaleChangeObserver, which should cause a layout of the menu.
-  ash::LocaleUpdateController::Get()->ConfirmLocaleChange("en", "en", "he",
-                                                          base::DoNothing());
-  EXPECT_TRUE(base::i18n::IsRTL());
-  EXPECT_LT(
-      GetMenuViewBounds().ManhattanDistanceToPoint(window_bounds.bottom_left()),
-      kMenuViewBoundsBuffer);
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(true);
+    // Trigger the LocaleChangeObserver, which should cause a layout of the
+    // menu.
+    ash::LocaleUpdateController::Get()->ConfirmLocaleChange("en", "en", "he",
+                                                            base::DoNothing());
+    EXPECT_TRUE(base::i18n::IsRTL());
+    EXPECT_LT(GetMenuViewBounds().ManhattanDistanceToPoint(
+                  window_bounds.bottom_left()),
+              kMenuViewBoundsBuffer);
+  }
 
   // LTR should position the menu on the bottom right.
-  base::i18n::SetICUDefaultLocale("en");
-  ash::LocaleUpdateController::Get()->ConfirmLocaleChange("he", "he", "en",
-                                                          base::DoNothing());
-  EXPECT_FALSE(base::i18n::IsRTL());
-  EXPECT_LT(GetMenuViewBounds().ManhattanDistanceToPoint(
-                window_bounds.bottom_right()),
-            kMenuViewBoundsBuffer);
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(false);
+    ash::LocaleUpdateController::Get()->ConfirmLocaleChange("he", "he", "en",
+                                                            base::DoNothing());
+    EXPECT_FALSE(base::i18n::IsRTL());
+    EXPECT_LT(GetMenuViewBounds().ManhattanDistanceToPoint(
+                  window_bounds.bottom_right()),
+              kMenuViewBoundsBuffer);
+  }
 }
 
 TEST_F(FloatingAccessibilityControllerTest,
@@ -426,21 +434,26 @@ TEST_F(FloatingAccessibilityControllerTest,
   gfx::Rect window_bounds = Shell::GetPrimaryRootWindow()->bounds();
 
   // RTL should position the menu on the bottom left.
-  base::i18n::SetICUDefaultLocale("he");
-  // Trigger the LocaleChangeObserver, which should cause a layout of the menu.
-  ash::LocaleUpdateController::Get()->OnLocaleChanged();
-  EXPECT_TRUE(base::i18n::IsRTL());
-  EXPECT_LT(
-      GetMenuViewBounds().ManhattanDistanceToPoint(window_bounds.bottom_left()),
-      kMenuViewBoundsBuffer);
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(true);
+    // Trigger the LocaleChangeObserver, which should cause a layout of the
+    // menu.
+    ash::LocaleUpdateController::Get()->OnLocaleChanged();
+    EXPECT_TRUE(base::i18n::IsRTL());
+    EXPECT_LT(GetMenuViewBounds().ManhattanDistanceToPoint(
+                  window_bounds.bottom_left()),
+              kMenuViewBoundsBuffer);
+  }
 
   // LTR should position the menu on the bottom right.
-  base::i18n::SetICUDefaultLocale("en");
-  ash::LocaleUpdateController::Get()->OnLocaleChanged();
-  EXPECT_FALSE(base::i18n::IsRTL());
-  EXPECT_LT(GetMenuViewBounds().ManhattanDistanceToPoint(
-                window_bounds.bottom_right()),
-            kMenuViewBoundsBuffer);
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(false);
+    ash::LocaleUpdateController::Get()->OnLocaleChanged();
+    EXPECT_FALSE(base::i18n::IsRTL());
+    EXPECT_LT(GetMenuViewBounds().ManhattanDistanceToPoint(
+                  window_bounds.bottom_right()),
+              kMenuViewBoundsBuffer);
+  }
 }
 
 // The detailed view has to be anchored to the floating menu.

@@ -77,7 +77,10 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -2823,32 +2826,34 @@ TEST_F(ShelfLayoutManagerTest, RtlPlacement) {
   // Helper function to check that the given widget is placed symmetrically
   // between LTR and RTL.
   auto check_mirrored_placement = [](views::Widget* widget) {
-    base::i18n::SetICUDefaultLocale("en");
-    EXPECT_FALSE(base::i18n::IsRTL());
-    GetShelfLayoutManager()->LayoutShelf();
-    const int ltr_left_position =
-        widget->GetNativeWindow()->GetBoundsInScreen().x();
+    int ltr_left_position = 0;
+    {
+      base::i18n::ScopedDefaultIcuLocale scoped_locale(
+          base::i18n::GetKnownLanguageTag("en"));
+      EXPECT_FALSE(base::i18n::IsRTL());
+      GetShelfLayoutManager()->LayoutShelf();
+      ltr_left_position = widget->GetNativeWindow()->GetBoundsInScreen().x();
+    }
 
-    base::i18n::SetICUDefaultLocale("ar");
-    EXPECT_TRUE(base::i18n::IsRTL());
-    GetShelfLayoutManager()->LayoutShelf();
-    const int rtl_right_position =
-        widget->GetNativeWindow()->GetBoundsInScreen().right();
+    int rtl_right_position = 0;
+    {
+      base::i18n::ScopedDefaultIcuLocale scoped_locale(
+          base::i18n::GetKnownLanguageTag("ar"));
+      EXPECT_TRUE(base::i18n::IsRTL());
+      GetShelfLayoutManager()->LayoutShelf();
+      rtl_right_position =
+          widget->GetNativeWindow()->GetBoundsInScreen().right();
+    }
 
     EXPECT_EQ(
         GetShelfWidget()->GetWindowBoundsInScreen().width() - ltr_left_position,
         rtl_right_position);
   };
 
-  const std::string locale = base::i18n::GetConfiguredLocale();
-
   ShelfWidget* shelf_widget = GetPrimaryShelf()->shelf_widget();
   check_mirrored_placement(shelf_widget->navigation_widget());
   check_mirrored_placement(shelf_widget->status_area_widget());
   check_mirrored_placement(shelf_widget);
-
-  // Reset the lauguage setting.
-  base::i18n::SetICUDefaultLocale(locale);
 }
 
 // Tests the auto-hide shelf status when opening and closing a context menu.

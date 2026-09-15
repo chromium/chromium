@@ -10,7 +10,10 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
@@ -2306,7 +2309,8 @@ std::string BuildTranscriptJson(
 
 std::unique_ptr<ProjectorMetadata> populateMetadata(
     bool with_delimiters = false) {
-  base::i18n::SetICUDefaultLocale("en_US");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("en-US"));
   std::unique_ptr<ProjectorMetadata> metadata =
       std::make_unique<ProjectorMetadata>();
   metadata->SetCaptionLanguage("en");
@@ -2350,7 +2354,8 @@ std::unique_ptr<ProjectorMetadata> populateMetadata(
 std::unique_ptr<ProjectorMetadata> populateMetadataWithSentences() {
   std::unique_ptr<ProjectorMetadata> metadata =
       std::make_unique<ProjectorMetadata>();
-  base::i18n::SetICUDefaultLocale("en_US");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("en-US"));
   metadata->SetCaptionLanguage("en");
   metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
 
@@ -2406,7 +2411,8 @@ std::unique_ptr<ProjectorMetadata> populateMetadataWithSentences() {
 
 std::unique_ptr<ProjectorMetadata> populateMetadataWithLanguageWithoutSpaces() {
   // Test on a language that does not use space.
-  base::i18n::SetICUDefaultLocale("zh");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("zh"));
   std::unique_ptr<ProjectorMetadata> metadata =
       std::make_unique<ProjectorMetadata>();
   metadata->SetCaptionLanguage("zh");
@@ -2478,7 +2484,8 @@ std::unique_ptr<ProjectorMetadata> populateMetadataWithLanguageWithoutSpaces() {
 }
 
 std::unique_ptr<ProjectorMetadata> populateMetadataWithMixedCharacters() {
-  base::i18n::SetICUDefaultLocale("ja");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("ja"));
   std::unique_ptr<ProjectorMetadata> metadata =
       std::make_unique<ProjectorMetadata>();
   metadata->SetCaptionLanguage("ja");

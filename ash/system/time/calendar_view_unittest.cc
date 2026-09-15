@@ -33,6 +33,9 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -60,6 +63,18 @@
 namespace ash {
 
 namespace {
+
+struct ScopedLocaleHelper {
+  explicit ScopedLocaleHelper(std::string_view tag)
+      : scoped_locale(base::i18n::GetLanguageTagFromString(tag).value()) {
+    DateHelper::GetInstance()->ResetForTesting();
+  }
+  ~ScopedLocaleHelper() {
+    scoped_locale.reset();
+    DateHelper::GetInstance()->ResetForTesting();
+  }
+  std::optional<base::i18n::ScopedDefaultIcuLocale> scoped_locale;
+};
 
 using ::google_apis::calendar::CalendarEvent;
 using ::google_apis::calendar::EventList;
@@ -447,8 +462,7 @@ TEST_F(CalendarViewTest, WeekHeaderLabelsEnUs) {
       &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  base::i18n::SetICUDefaultLocale("en_US");
-  DateHelper::GetInstance()->ResetForTesting();
+  ScopedLocaleHelper locale_helper("en-US");
   CreateCalendarView();
 
   views::View* month_header = GetMonthHeaderView();
@@ -477,10 +491,6 @@ TEST_F(CalendarViewTest, WeekHeaderLabelsEnUs) {
   EXPECT_EQ(
       views::AsViewClass<views::Label>(month_header->children()[6])->GetText(),
       u"S");
-
-  // Reset default locale for subsequent tests.
-  base::i18n::SetICUDefaultLocale("en_US");
-  DateHelper::GetInstance()->ResetForTesting();
 }
 
 // Tests that the week header labels for German locale (first day of week is
@@ -495,8 +505,7 @@ TEST_F(CalendarViewTest, WeekHeaderLabelsDe) {
       &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  base::i18n::SetICUDefaultLocale("de");
-  DateHelper::GetInstance()->ResetForTesting();
+  ScopedLocaleHelper locale_helper("de");
   CreateCalendarView();
 
   views::View* month_header = GetMonthHeaderView();
@@ -525,10 +534,6 @@ TEST_F(CalendarViewTest, WeekHeaderLabelsDe) {
   EXPECT_EQ(
       views::AsViewClass<views::Label>(month_header->children()[6])->GetText(),
       u"S");
-
-  // Reset default locale for subsequent tests.
-  base::i18n::SetICUDefaultLocale("en_US");
-  DateHelper::GetInstance()->ResetForTesting();
 }
 
 // Tests that the week header labels for Spanish locale (first day of week is
@@ -543,8 +548,7 @@ TEST_F(CalendarViewTest, WeekHeaderLabelsEs) {
       &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  base::i18n::SetICUDefaultLocale("es");
-  DateHelper::GetInstance()->ResetForTesting();
+  ScopedLocaleHelper locale_helper("es");
   CreateCalendarView();
 
   views::View* month_header = GetMonthHeaderView();
@@ -573,10 +577,6 @@ TEST_F(CalendarViewTest, WeekHeaderLabelsEs) {
   EXPECT_EQ(
       views::AsViewClass<views::Label>(month_header->children()[6])->GetText(),
       u"D");
-
-  // Reset default locale for subsequent tests.
-  base::i18n::SetICUDefaultLocale("en_US");
-  DateHelper::GetInstance()->ResetForTesting();
 }
 
 // Tests that the week header labels for Farsi locale (first day of week is
@@ -591,8 +591,7 @@ TEST_F(CalendarViewTest, WeekHeaderLabelsFa) {
       &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
 
-  base::i18n::SetICUDefaultLocale("fa");
-  DateHelper::GetInstance()->ResetForTesting();
+  ScopedLocaleHelper locale_helper("fa");
   CreateCalendarView();
 
   views::View* month_header = GetMonthHeaderView();
@@ -621,10 +620,6 @@ TEST_F(CalendarViewTest, WeekHeaderLabelsFa) {
   EXPECT_EQ(
       views::AsViewClass<views::Label>(month_header->children()[6])->GetText(),
       u"ج");
-
-  // Reset default locale for subsequent tests.
-  base::i18n::SetICUDefaultLocale("en_US");
-  DateHelper::GetInstance()->ResetForTesting();
 }
 
 // TODO(b/285280977): Remove when CalendarView is out of TrayDetailedView.

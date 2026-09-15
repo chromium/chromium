@@ -4551,6 +4551,7 @@ test("ash_unittests") {
     "//ash/webui/personalization_app/proto",
     "//ash/webui/projector_app/public/cpp",
     "//base",
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//cc:test_support",

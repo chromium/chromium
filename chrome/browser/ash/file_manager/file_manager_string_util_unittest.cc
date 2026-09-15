@@ -5,7 +5,10 @@
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 
 #include "ash/system/time/date_helper.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,9 +22,13 @@ class FileManagerStringUtilTest : public ChromeAshTestBase {
   ~FileManagerStringUtilTest() override = default;
 
   void SetDefaultLocale(const std::string& locale) {
-    base::i18n::SetICUDefaultLocale(locale);
+    locale_override_.emplace(
+        base::i18n::GetLanguageTagFromString(locale).value());
     ash::DateHelper::GetInstance()->ResetForTesting();
   }
+
+ private:
+  std::optional<base::i18n::ScopedDefaultIcuLocale> locale_override_;
 };
 
 TEST_F(FileManagerStringUtilTest, GetLocaleBasedWeekStart_Locale) {

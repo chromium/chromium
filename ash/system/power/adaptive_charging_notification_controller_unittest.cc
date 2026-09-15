@@ -10,7 +10,10 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/test/icu_test_util.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -98,8 +101,8 @@ TEST_F(AdaptiveChargingNotificationControllerTest,
 
 TEST_F(AdaptiveChargingNotificationControllerTest, HaveTimeInNotification) {
   // Set default locale.
-  base::test::ScopedRestoreICUDefaultLocale restore_locale;
-  base::i18n::SetICUDefaultLocale("en_AU");
+  base::i18n::ScopedDefaultIcuLocale restore_locale(
+      base::i18n::GetKnownLanguageTag("en-AU"));
   base::test::ScopedRestoreDefaultTimezone sydney_time("Australia/Sydney");
 
   // Override time for testing.
@@ -128,8 +131,8 @@ TEST_F(AdaptiveChargingNotificationControllerTest, HaveTimeInNotification) {
 
 TEST_F(AdaptiveChargingNotificationControllerTest, TimeRoundingUpTest) {
   // Set default locale.
-  base::test::ScopedRestoreICUDefaultLocale restore_locale;
-  base::i18n::SetICUDefaultLocale("en_AU");
+  base::i18n::ScopedDefaultIcuLocale restore_locale(
+      base::i18n::GetKnownLanguageTag("en-AU"));
   base::test::ScopedRestoreDefaultTimezone sydney_time("Australia/Sydney");
 
   // Override time for testing.

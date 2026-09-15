@@ -12,6 +12,10 @@
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/accessibility/select_to_speak/select_to_speak_menu_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -251,7 +255,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevSentenceKeyPressed) {
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, PrevSentenceKeyPressedRtl) {
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
   ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kPreviousSentence, 0);
@@ -321,7 +325,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, NextSentenceKeyPressed) {
 }
 
 TEST_F(SelectToSpeakMenuBubbleControllerTest, NextSentenceKeyPressedRtl) {
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   TestAccessibilityControllerClient client;
   ShowSelectToSpeakPanel(/*is_paused=*/false);
   ExpectKeyPressHistogramCount(SelectToSpeakPanelAction::kNextSentence, 0);

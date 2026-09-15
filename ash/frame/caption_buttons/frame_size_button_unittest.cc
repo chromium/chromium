@@ -22,7 +22,9 @@
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "base/check_op.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -545,19 +547,18 @@ class FrameSizeButtonTestRTL : public FrameSizeButtonTest {
   ~FrameSizeButtonTestRTL() override = default;
 
   void SetUp() override {
-    original_locale_ = base::i18n::GetConfiguredLocale();
-    base::i18n::SetICUDefaultLocale("he");
+    icu_locale_override_.emplace(base::i18n::GetKnownLanguageTag("he"));
 
     FrameSizeButtonTest::SetUp();
   }
 
   void TearDown() override {
     FrameSizeButtonTest::TearDown();
-    base::i18n::SetICUDefaultLocale(original_locale_);
+    icu_locale_override_.reset();
   }
 
  private:
-  std::string original_locale_;
+  std::optional<base::i18n::ScopedDefaultIcuLocale> icu_locale_override_;
 };
 
 // Test that clicking + dragging to a button adjacent to the size button presses

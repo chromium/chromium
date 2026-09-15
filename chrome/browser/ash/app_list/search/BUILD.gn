@@ -170,6 +170,7 @@ source_set("unit_tests") {
     "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
     "//base",
     "//base:i18n",
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",

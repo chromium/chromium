@@ -5,7 +5,10 @@
 #include "ash/system/time/time_of_day.h"
 
 #include "ash/test/failing_local_time_converter.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -31,8 +34,8 @@ TEST(TimeOfDayTest, TestEquality) {
 
 TEST(TimeOfDayTest, TestSeveralOffsets) {
   // Ensure US locale to make sure time format is expected.
-  base::test::ScopedRestoreICUDefaultLocale restore_locale;
-  base::i18n::SetICUDefaultLocale("en_US");
+  base::i18n::ScopedDefaultIcuLocale restore_locale(
+      base::i18n::GetKnownLanguageTag("en-US"));
 
   // 6:32 PM ==> 18:32.
   TimeOfDay time1(18 * 60 + 32);

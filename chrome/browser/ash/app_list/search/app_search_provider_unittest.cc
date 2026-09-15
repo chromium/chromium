@@ -13,7 +13,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -291,7 +294,8 @@ TEST_F(AppSearchProviderWithArcAppsTest, Basic) {
 }
 
 TEST_F(AppSearchProviderWithArcAppsTest, NonLatinLocale) {
-  base::i18n::SetICUDefaultLocale("sr");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("sr"));
 
   const std::string test_app_id_1 = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   AddExtension(test_app_id_1, "Тестна апликација 1",
@@ -333,8 +337,6 @@ TEST_F(AppSearchProviderWithArcAppsTest, NonLatinLocale) {
   result = RunQuery("апликација 1");
   EXPECT_TRUE(result == "Тестна апликација 1,Лажна апликација 1" ||
               result == "Лажна апликација 1,Тестна апликација 1");
-
-  base::i18n::SetICUDefaultLocale("en");
 }
 
 TEST_F(AppSearchProviderWithArcAppsTest, InstallUninstallArc) {
@@ -483,7 +485,8 @@ TEST_F(AppSearchProviderCrostiniTest, CrostiniApp) {
 
 TEST_F(AppSearchProviderCrostiniTest, CrostiniAppWithExactMathing) {
   // Set a non-latin locale, which don't support fuzzy matching.
-  base::i18n::SetICUDefaultLocale("sr");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("sr"));
   // This both allows Crostini UI and enables Crostini.
   crostini::CrostiniTestHelper crostini_test_helper(profile());
   crostini_test_helper.ReInitializeAppServiceIntegration();
@@ -506,8 +509,6 @@ TEST_F(AppSearchProviderCrostiniTest, CrostiniAppWithExactMathing) {
   EXPECT_EQ("goodApp", RunQuery("good"));
   EXPECT_EQ("goodApp", RunQuery("executable"));
   EXPECT_EQ("", RunQuery("terrible"));
-
-  base::i18n::SetICUDefaultLocale("en");
 }
 
 class AppSearchProviderOemAppTest

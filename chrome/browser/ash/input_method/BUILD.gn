@@ -346,6 +346,7 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//base:i18n",
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:global_features",

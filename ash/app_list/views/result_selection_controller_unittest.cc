@@ -19,6 +19,7 @@
 #include "ash/app_list/views/search_result_container_view.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "ui/events/event.h"
@@ -164,15 +165,9 @@ class ResultSelectionTest : public testing::Test,
     if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
       // Setup right to left environment if necessary.
       is_rtl_ = GetParam();
-      if (is_rtl_)
-        base::i18n::SetICUDefaultLocale("he");
     }
 
-    if (!is_rtl_) {
-      // Reset RTL if not needed.
-      base::i18n::SetICUDefaultLocale("en");
-    }
-
+    rtl_override_.emplace(is_rtl_);
     app_list_test_delegate_ = std::make_unique<test::AppListTestViewDelegate>();
     result_selection_controller_ = std::make_unique<ResultSelectionController>(
         &containers_,
@@ -182,7 +177,10 @@ class ResultSelectionTest : public testing::Test,
     testing::Test::SetUp();
   }
 
-  void TearDown() override { g_last_created_result_index = -1; }
+  void TearDown() override {
+    g_last_created_result_index = -1;
+    rtl_override_.reset();
+  }
 
  protected:
   std::unique_ptr<TestContainer> CreateTestContainer(bool horizontal,
@@ -660,6 +658,7 @@ class ResultSelectionTest : public testing::Test,
   void OnSelectionChanged() { selection_change_count_++; }
 
   bool is_rtl_ = false;
+  std::optional<base::i18n::ScopedRTLForTesting> rtl_override_;
   int selection_change_count_ = 0;
 };
 

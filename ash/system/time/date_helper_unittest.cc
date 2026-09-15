@@ -8,10 +8,17 @@
 
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/locales_for_test.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 
 namespace ash {
+
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::LanguageTag;
 
 class DateHelperUnittest : public AshTestBase {
  public:
@@ -20,8 +27,14 @@ class DateHelperUnittest : public AshTestBase {
   DateHelperUnittest& operator=(const DateHelperUnittest& other) = delete;
   ~DateHelperUnittest() override = default;
 
-  void SetDefaultLocale(std::string_view lang) {
-    base::i18n::SetICUDefaultLocale(lang);
+  void TearDown() override {
+    DateHelper::GetInstance()->ResetForTesting();
+    locale_override_.reset();
+    AshTestBase::TearDown();
+  }
+
+  void SetDefaultLocale(LanguageTag lang) {
+    locale_override_.emplace(lang);
     DateHelper::GetInstance()->ResetFormatters();
     DateHelper::GetInstance()->CalculateLocalWeekTitles();
   }
@@ -39,11 +52,14 @@ class DateHelperUnittest : public AshTestBase {
         DateHelper::GetInstance()->twenty_four_hour_clock_interval_formatter(),
         start_time, end_time);
   }
+
+ private:
+  std::optional<base::i18n::ScopedDefaultIcuLocale> locale_override_;
 };
 
 // Gets the calendar week titles in different language and order.
 TEST_F(DateHelperUnittest, GetWeekTitle) {
-  SetDefaultLocale("zh-CN");
+  SetDefaultLocale(GetKnownLanguageTag("zh-CN"));
   std::vector<std::u16string> week_titles =
       DateHelper::GetInstance()->week_titles();
   EXPECT_EQ(u"一", week_titles[0]);  // Monday
@@ -54,7 +70,7 @@ TEST_F(DateHelperUnittest, GetWeekTitle) {
   EXPECT_EQ(u"六", week_titles[5]);  // Saturday
   EXPECT_EQ(u"日", week_titles[6]);  // Sunday
 
-  SetDefaultLocale("ar");
+  SetDefaultLocale(GetKnownLanguageTag("ar"));
   week_titles = DateHelper::GetInstance()->week_titles();
   EXPECT_EQ(u"س", week_titles[0]);  // s
   EXPECT_EQ(u"ح", week_titles[1]);  // h
@@ -64,7 +80,7 @@ TEST_F(DateHelperUnittest, GetWeekTitle) {
   EXPECT_EQ(u"خ", week_titles[5]);  // Kh
   EXPECT_EQ(u"ج", week_titles[6]);  // c
 
-  SetDefaultLocale("ko");
+  SetDefaultLocale(GetKnownLanguageTag("ko"));
   week_titles = DateHelper::GetInstance()->week_titles();
   EXPECT_EQ(u"일", week_titles[0]);
   EXPECT_EQ(u"월", week_titles[1]);
@@ -74,7 +90,7 @@ TEST_F(DateHelperUnittest, GetWeekTitle) {
   EXPECT_EQ(u"금", week_titles[5]);
   EXPECT_EQ(u"토", week_titles[6]);
 
-  SetDefaultLocale("en_US");
+  SetDefaultLocale(GetKnownLanguageTag("en-US"));
   week_titles = DateHelper::GetInstance()->week_titles();
   EXPECT_EQ(u"S", week_titles[0]);
   EXPECT_EQ(u"M", week_titles[1]);
@@ -87,7 +103,7 @@ TEST_F(DateHelperUnittest, GetWeekTitle) {
 
 // Tests getting the calendar week titles in all languages.
 TEST_F(DateHelperUnittest, GetWeekTitleForAllLocales) {
-  for (auto locale : kLocales) {
+  for (auto locale : base::i18n::GetLocalesForTest()) {
     SetDefaultLocale(locale);
     EXPECT_EQ(7U, DateHelper::GetInstance()->week_titles().size());
   }
@@ -104,7 +120,7 @@ TEST_F(DateHelperUnittest, GetFormattedInterval) {
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 11:45 GMT", &date2));
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 22:30 GMT", &date3));
 
-  SetDefaultLocale("en_US");
+  SetDefaultLocale(GetKnownLanguageTag("en-US"));
   EXPECT_EQ(u"10:00\u2009–\u200911:45\u202fAM",
             Format12HrClockInterval(date1, date2));
   EXPECT_EQ(u"10:00\u202fAM\u2009–\u200910:30\u202fPM",
@@ -112,13 +128,13 @@ TEST_F(DateHelperUnittest, GetFormattedInterval) {
   EXPECT_EQ(u"10:00\u2009–\u200911:45", Format24HrClockInterval(date1, date2));
   EXPECT_EQ(u"10:00\u2009–\u200922:30", Format24HrClockInterval(date1, date3));
 
-  SetDefaultLocale("zh_Hant");
+  SetDefaultLocale(GetKnownLanguageTag("zh-Hant"));
   EXPECT_EQ(u"上午10:00至11:45", Format12HrClockInterval(date1, date2));
   EXPECT_EQ(u"上午10:00至晚上10:30", Format12HrClockInterval(date1, date3));
   EXPECT_EQ(u"10:00 – 11:45", Format24HrClockInterval(date1, date2));
   EXPECT_EQ(u"10:00 – 22:30", Format24HrClockInterval(date1, date3));
 
-  SetDefaultLocale("ar");
+  SetDefaultLocale(GetKnownLanguageTag("ar"));
   EXPECT_EQ(u"10:00–11:45 ص", Format12HrClockInterval(date1, date2));
   EXPECT_EQ(u"10:00 ص – 10:30 م", Format12HrClockInterval(date1, date3));
   EXPECT_EQ(u"10:00–11:45", Format24HrClockInterval(date1, date2));

@@ -15,7 +15,9 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/string_compare.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -939,7 +941,8 @@ TEST_F(InputMethodManagerImplTest,
   active_state->EnableInputMethod(ImeIdFromEngineId("xkb:hu::hun"));
   active_state->EnableInputMethod(ImeIdFromEngineId("xkb:de::ger"));
 
-  base::i18n::SetICUDefaultLocale("en-US");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("en-US"));
   InputMethodDescriptors result =
       active_state->GetEnabledInputMethodsSortedByLocalizedDisplayNames();
   ASSERT_FALSE(result.empty());

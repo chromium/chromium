@@ -5,17 +5,22 @@
 #include "ash/system/time/calendar_utils.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/tag_converters.h"
+#include "base/i18n/test/locales_for_test.h"
 #include "base/i18n/test/scoped_icu_locale.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
@@ -29,6 +34,13 @@ namespace ash {
 
 namespace {
 
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::LanguageTag;
+
+constexpr auto kLocalesWithUniqueNumerals = base::MakeFixedFlatSet<LanguageTag>(
+    {GetKnownLanguageTag("bn"), GetKnownLanguageTag("fa"),
+     GetKnownLanguageTag("mr"), GetKnownLanguageTag("pa-PK")});
+
 std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const char* start_time,
     const char* end_time,
@@ -39,7 +51,6 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
       google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
       all_day_event);
 }
-
 }  // namespace
 
 using CalendarUtilsUnitTest = AshTestBase;
@@ -216,14 +227,31 @@ TEST_F(CalendarUtilsUnitTest, HoursAndMinutesInDifferentLocales) {
   base::Time midnight;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 00:00 GMT", &midnight));
 
-  for (auto locale : kLocales) {
+  static constexpr auto kExpectations = base::MakeFixedFlatMap<
+      LanguageTag, std::tuple<std::u16string_view, std::u16string_view,
+                              std::u16string_view>>({
+      {GetKnownLanguageTag("am"), {u" 9", u" 11", u" 12"}},
+      {GetKnownLanguageTag("bg"), {u"9 ч.", u"11 ч.", u"12 ч."}},
+      {GetKnownLanguageTag("he"), {u"\u200F9", u"\u200F11", u"\u200F12"}},
+      {GetKnownLanguageTag("hu"), {u"\u202F9", u"\u202F11", u"\u202F12"}},
+      {GetKnownLanguageTag("tr"), {u"\u202F9", u"\u202F11", u"\u202F12"}},
+      {GetKnownLanguageTag("ja"), {u"9\u6642", u"11\u6642", u"0\u6642"}},
+      {GetKnownLanguageTag("ko"), {u" 9\uc2dc", u" 11\uc2dc", u" 12\uc2dc"}},
+      {GetKnownLanguageTag("lt"), {u"09", u"11", u"12"}},
+      {GetKnownLanguageTag("zh-CN"), {u"9\u65f6", u"11\u65f6", u"12\u65f6"}},
+      {GetKnownLanguageTag("zh-SG"), {u"9\u65f6", u"11\u65f6", u"12\u65f6"}},
+      {GetKnownLanguageTag("zh-HK"), {u"9\u6642", u"11\u6642", u"12\u6642"}},
+      {GetKnownLanguageTag("zh-TW"), {u"9\u6642", u"11\u6642", u"12\u6642"}},
+      {GetKnownLanguageTag("zh-MO"), {u"9\u6642", u"11\u6642", u"12\u6642"}},
+  });
+
+  for (LanguageTag language_tag : base::i18n::GetLocalesForTest()) {
     // Skip locales that are tested in "LocalesWithUniqueNumerals".
-    if (kLocalesWithUniqueNumerals.contains(locale)) {
+    if (kLocalesWithUniqueNumerals.contains(language_tag)) {
       continue;
     }
 
-    ScopedDefaultIcuLocale scoped_locale(
-        *LanguageTagConverter::GetInstance().FromString(locale));
+    ScopedDefaultIcuLocale scoped_locale(language_tag);
     base::ResetFormattersForTesting();
     ash::DateHelper::GetInstance()->ResetForTesting();
 
@@ -237,43 +265,10 @@ TEST_F(CalendarUtilsUnitTest, HoursAndMinutesInDifferentLocales) {
     std::u16string expected_am = u"9";
     std::u16string expected_pm = u"11";
     std::u16string expected_mid = u"12";
-
-    if (locale == "am") {
-      expected_am = u" 9";
-      expected_pm = u" 11";
-      expected_mid = u" 12";
-    } else if (locale == "bg") {
-      expected_am = u"9 ч.";
-      expected_pm = u"11 ч.";
-      expected_mid = u"12 ч.";
-    } else if (locale == "he") {
-      expected_am = u"\u200F9";
-      expected_pm = u"\u200F11";
-      expected_mid = u"\u200F12";
-    } else if (locale == "hu" || locale == "tr") {
-      expected_am = u"\u202F9";
-      expected_pm = u"\u202F11";
-      expected_mid = u"\u202F12";
-    } else if (locale == "ja") {
-      expected_am = u"9\u6642";
-      expected_pm = u"11\u6642";
-      expected_mid = u"0\u6642";
-    } else if (locale == "ko") {
-      expected_am = u" 9\uc2dc";
-      expected_pm = u" 11\uc2dc";
-      expected_mid = u" 12\uc2dc";
-    } else if (locale == "lt") {
-      expected_am = u"09";
-      expected_pm = u"11";
-      expected_mid = u"12";
-    } else if (locale == "zh-cn" || locale == "zh-sg") {
-      expected_am = u"9\u65f6";
-      expected_pm = u"11\u65f6";
-      expected_mid = u"12\u65f6";
-    } else if (locale == "zh-hk" || locale == "zh-mo" || locale == "zh-tw") {
-      expected_am = u"9\u6642";
-      expected_pm = u"11\u6642";
-      expected_mid = u"12\u6642";
+    if (auto it = kExpectations.find(language_tag); it != kExpectations.end()) {
+      expected_am = std::get<0>(it->second);
+      expected_pm = std::get<1>(it->second);
+      expected_mid = std::get<2>(it->second);
     }
 
     EXPECT_EQ(expected_am, calendar_utils::GetTwelveHourClockHours(am_time));
@@ -345,18 +340,18 @@ TEST_F(CalendarUtilsUnitTest, LocalesWithUniqueNumerals) {
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 23:03 GMT", &time));
 
   for (auto locale : kLocalesWithUniqueNumerals) {
-    ScopedDefaultIcuLocale scoped_locale(
-        *LanguageTagConverter::GetInstance().FromString(locale));
+    ScopedDefaultIcuLocale scoped_locale(locale);
     base::ResetFormattersForTesting();
     ash::DateHelper::GetInstance()->ResetForTesting();
 
-    if (locale == "bn") {
+    if (locale == GetKnownLanguageTag("bn")) {
       EXPECT_EQ(u"২৩", calendar_utils::GetTwentyFourHourClockHours(time));
       EXPECT_EQ(u"০৩", calendar_utils::GetMinutes(time));
-    } else if (locale == "fa" || locale == "pa-pk") {
+    } else if (locale == GetKnownLanguageTag("fa") ||
+               locale == GetKnownLanguageTag("pa-PK")) {
       EXPECT_EQ(u"۲۳", calendar_utils::GetTwentyFourHourClockHours(time));
       EXPECT_EQ(u"۰۳", calendar_utils::GetMinutes(time));
-    } else if (locale == "mr") {
+    } else if (locale == GetKnownLanguageTag("mr")) {
       EXPECT_EQ(u"२३", calendar_utils::GetTwentyFourHourClockHours(time));
       EXPECT_EQ(u"०३", calendar_utils::GetMinutes(time));
     } else {
