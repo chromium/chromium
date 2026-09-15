@@ -136,6 +136,10 @@ std::string device_name() {
   return Java_DeviceInfo_getDeviceName(AttachCurrentThread());
 }
 
+bool is_retail_demo_mode() {
+  return Java_DeviceInfo_isRetailDemoMode(AttachCurrentThread());
+}
+
 void set_is_xr_for_testing() {
   Java_DeviceInfo_setIsXrForTesting(AttachCurrentThread(), true);  // IN-TEST
   get_holder().reset();

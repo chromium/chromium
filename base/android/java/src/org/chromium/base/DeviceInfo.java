@@ -237,6 +237,7 @@ public final class DeviceInfo {
         return (sIsXrForTesting != null) ? sIsXrForTesting : getInstance().mIDeviceInfo.isXr;
     }
 
+    @CalledByNative
     public static boolean isRetailDemoMode() {
         if (sIsRetailDemoModeForTesting != null) {
             return sIsRetailDemoModeForTesting;
