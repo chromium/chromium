@@ -1830,8 +1830,8 @@ message ClientSafeBrowsingReportRequest {
     URL_SUSPICIOUS = 15;
     BILLING = 16;
     APK_DOWNLOAD = 17;
-    BLOCKED_AD_REDIRECT = 19;
-    BLOCKED_AD_POPUP = 20;
+    BLOCKED_AD_REDIRECT = 19 [deprecated = true];
+    BLOCKED_AD_POPUP = 20 [deprecated = true];
     HASH_PREFIX_REAL_TIME_EXPERIMENT = 21 [deprecated = true];
     PHISHY_SITE_INTERACTIONS = 22;
     WARNING_SHOWN = 23;

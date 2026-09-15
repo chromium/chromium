@@ -143,14 +143,15 @@ enum class SBThreatType {
   // page,
   SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE = 16,
 
-  // A Google ad that caused a blocked autoredirect was collected
-  SB_THREAT_TYPE_BLOCKED_AD_REDIRECT = 17,
+  // DEPRECATED. A Google ad that caused a blocked autoredirect was collected.
+  DEPRECATED_SB_THREAT_TYPE_BLOCKED_AD_REDIRECT = 17,
 
   // A sample of an ad was collected
   SB_THREAT_TYPE_AD_SAMPLE = 18,
 
-  // A report of Google ad that caused a blocked popup was collected.
-  SB_THREAT_TYPE_BLOCKED_AD_POPUP = 19,
+  // DEPRECATED. A report of Google ad that caused a blocked popup was
+  // collected.
+  DEPRECATED_SB_THREAT_TYPE_BLOCKED_AD_POPUP = 19,
 
   // This site is considered suspicious enough to trigger logging a report to
   // Safe Browsing with more details.

@@ -712,8 +712,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="ReportType">
     <variant name="AdSample" summary="AdSample"/>
     <variant name="APKDownload" summary="APKDownload"/>
-    <variant name="BlockedAdPopup" summary="BlockedAdPopup"/>
-    <variant name="BlockedAdRedirect" summary="BlockedAdRedirect"/>
     <variant name="DangerousDownloadAutoDeleted"
         summary="DangerousDownloadAutoDeleted"/>
     <variant name="DangerousDownloadByAPI" summary="DangerousDownloadByAPI"/>

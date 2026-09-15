@@ -199,8 +199,8 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="URL suspicious"/>
   <int value="16" label="URL billing"/>
   <int value="17" label="APK download"/>
-  <int value="19" label="Blocked Ad redirect"/>
-  <int value="20" label="Blocked Ad popup"/>
+  <int value="19" label="(Obsolete) Blocked Ad redirect"/>
+  <int value="20" label="(Obsolete) Blocked Ad popup"/>
   <int value="21" label="Hash-prefix real-time experiment"/>
   <int value="22" label="Phishy site interactions"/>
   <int value="23" label="Safe Browsing warning shown to user"/>
@@ -890,9 +890,9 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Saved password reuse"/>
   <int value="15" label="Signed in sync password reuse"/>
   <int value="16" label="Signed in non sync password reuse"/>
-  <int value="17" label="Blocked ad redirect"/>
+  <int value="17" label="(Obsolete) Blocked ad redirect"/>
   <int value="18" label="Ad sample"/>
-  <int value="19" label="Blocked ad popup"/>
+  <int value="19" label="(Obsolete) Blocked ad popup"/>
   <int value="20" label="Suspicious site"/>
   <int value="21" label="Enterprise password reuse"/>
   <int value="22" label="Billing"/>
