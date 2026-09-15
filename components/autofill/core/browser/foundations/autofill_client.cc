@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -295,7 +294,7 @@ void AutofillClient::DismissAutofillAiLoadingDialog() {
 
 void AutofillClient::TriggerUserPerceptionOfAutofillSurvey(
     FillingProduct filling_product,
-    const std::map<std::string, std::string>& field_filling_stats_data) {
+    const HatsSurveyStringData& field_filling_stats_data) {
   NOTIMPLEMENTED();
 }
 

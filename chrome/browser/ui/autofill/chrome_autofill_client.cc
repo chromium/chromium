@@ -971,7 +971,7 @@ void ChromeAutofillClient::HideSuggestions(
 
 void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(
     FillingProduct filling_product,
-    const std::map<std::string, std::string>& field_filling_stats_data) {
+    const HatsSurveyStringData& field_filling_stats_data) {
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(filling_product == FillingProduct::kAddress ||
         filling_product == FillingProduct::kCreditCard);

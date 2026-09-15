@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <list>
-#include <map>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -47,14 +46,13 @@
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/browser/studies/hats_surveys_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -77,48 +75,6 @@ struct VotesUploader::VoteData {
   std::vector<LoyaltyCard> loyalty_cards;
   std::vector<OneTimeToken> otps;
 };
-
-namespace {
-
-// The minimum required number of fields for an user perception survey to be
-// triggered. This makes sure that for example forms that only contain a single
-// email field do not prompt a survey. Such survey answer would likely taint
-// our analysis.
-constexpr size_t kMinNumberAddressFieldsToTriggerAddressUserPerceptionSurvey =
-    4;
-
-// Converts `filling_stats` to a key-value representation, where the key
-// is the "stats category" and the value is the number of fields that match
-// such category. This is used to show users a survey that will measure the
-// perception of Autofill.
-std::map<std::string, std::string> FormFillingStatsToSurveyStringData(
-    autofill_metrics::FormGroupFillingStats& filling_stats) {
-  return {
-      {"Accepted fields", base::NumberToString(filling_stats.num_accepted)},
-      {"Corrected to same type",
-       base::NumberToString(filling_stats.num_corrected_to_same_type)},
-      {"Corrected to a different type",
-       base::NumberToString(filling_stats.num_corrected_to_different_type)},
-      {"Corrected to an unknown type",
-       base::NumberToString(filling_stats.num_corrected_to_unknown_type)},
-      {"Corrected to empty",
-       base::NumberToString(filling_stats.num_corrected_to_empty)},
-      {"Manually filled to same type",
-       base::NumberToString(filling_stats.num_manually_filled_to_same_type)},
-      {"Manually filled to a different type",
-       base::NumberToString(
-           filling_stats.num_manually_filled_to_different_type)},
-      {"Manually filled to an unknown type",
-       base::NumberToString(filling_stats.num_manually_filled_to_unknown_type)},
-      {"Total corrected", base::NumberToString(filling_stats.TotalCorrected())},
-      {"Total filled", base::NumberToString(filling_stats.TotalFilled())},
-      {"Total unfilled", base::NumberToString(filling_stats.TotalUnfilled())},
-      {"Total manually filled",
-       base::NumberToString(filling_stats.TotalManuallyFilled())},
-      {"Total number of fields", base::NumberToString(filling_stats.Total())}};
-}
-
-}  // namespace
 
 struct VotesUploader::PendingVote {
   LocalFrameToken frame_of_form;
@@ -484,44 +440,7 @@ void VotesUploader::UploadVote(
     base::TimeTicks submission_timestamp,
     bool observed_submission,
     ukm::SourceId ukm_source_id) {
-  auto count_types = [&submitted_form](FormType type) {
-    return std::ranges::count_if(
-        submitted_form->fields(),
-        [=](const std::unique_ptr<AutofillField>& field) {
-          return field->Type().GetFormTypes().contains(type);
-        });
-  };
-
-  size_t address_fields_count = count_types(FormType::kAddressForm);
-  autofill_metrics::FormGroupFillingStats address_filling_stats =
-      autofill_metrics::GetFormFillingStatsForFormType(FormType::kAddressForm,
-                                                       *submitted_form);
-  const bool can_trigger_address_survey =
-      address_fields_count >=
-          kMinNumberAddressFieldsToTriggerAddressUserPerceptionSurvey &&
-      address_filling_stats.TotalFilled() > 0 &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillAddressUserPerceptionSurvey);
-
-  size_t credit_card_fields_count = count_types(FormType::kCreditCardForm);
-  autofill_metrics::FormGroupFillingStats credit_card_filling_stats =
-      autofill_metrics::GetFormFillingStatsForFormType(
-          FormType::kCreditCardForm, *submitted_form);
-  const bool can_trigger_credit_card_survey =
-      credit_card_fields_count > 0 &&
-      credit_card_filling_stats.TotalFilled() > 0;
-
-  if (can_trigger_address_survey) {
-    client_->TriggerUserPerceptionOfAutofillSurvey(
-        FillingProduct::kAddress,
-        FormFillingStatsToSurveyStringData(address_filling_stats));
-  } else if (can_trigger_credit_card_survey &&
-             base::FeatureList::IsEnabled(
-                 features::kAutofillCreditCardUserPerceptionSurvey)) {
-    client_->TriggerUserPerceptionOfAutofillSurvey(
-        FillingProduct::kCreditCard,
-        FormFillingStatsToSurveyStringData(credit_card_filling_stats));
-  }
+  MaybeTriggerFormSubmissionHatsSurveys(*client_, *submitted_form);
 
   // If the form is submitted, we don't need to send pending votes from blur
   // (un-focus) events.

@@ -630,7 +630,7 @@ class MockAutofillClient : public TestAutofillClient {
               (override));
   MOCK_METHOD(void,
               TriggerUserPerceptionOfAutofillSurvey,
-              (FillingProduct, (const std::map<std::string, std::string>&)),
+              (FillingProduct, const HatsSurveyStringData&),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(bool,
@@ -2849,7 +2849,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Fill the form.
   FormData response_data =
       AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
-  const std::map<std::string, std::string> expected_field_filling_stats_data = {
+  const HatsSurveyStringData expected_field_filling_stats_data = {
       {"Accepted fields", base::NumberToString(n_fields)},
       {"Corrected to same type", "0"},
       {"Corrected to a different type", "0"},
@@ -2916,7 +2916,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormData response_data =
       AutofillFormAndGetResults(form, *form.fields().begin(), MakeGuid(4));
 
-  const std::map<std::string, std::string> expected_field_filling_stats_data = {
+  const HatsSurveyStringData expected_field_filling_stats_data = {
       {"Accepted fields", base::NumberToString(n_fields)},
       {"Corrected to same type", "0"},
       {"Corrected to a different type", "0"},

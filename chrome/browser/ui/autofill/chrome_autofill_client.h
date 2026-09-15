@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
+#include "components/autofill/core/browser/studies/hats_surveys_util.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
@@ -227,7 +228,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   bool IsGlicEnabled() const final;
   void TriggerUserPerceptionOfAutofillSurvey(
       FillingProduct filling_product,
-      const std::map<std::string, std::string>& field_filling_stats_data) final;
+      const HatsSurveyStringData& field_filling_stats_data) final;
   void TriggerDeclinedSaveAddressReasonSurvey() final;
   void TriggerAutofillAiFillingJourneySurvey(
       bool suggestion_accepted,
