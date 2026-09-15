@@ -123,28 +123,26 @@ class DataTypeSyncBridge {
 
   // Must not be called unless SupportsGetClientTag() returns true.
   //
-  // Get or generate a client tag for `entity_data`. This must be the same tag
-  // that was/would have been generated in the SyncableService/Directory world
-  // for backward compatibility with pre-USS clients. The only time this
-  // theoretically needs to be called is on the creation of local data.
-  //
-  // If a data type was never launched pre-USS, then method does not need to be
-  // different from GetStorageKey(). Only the hash of this value is kept.
+  // Computes the client tag for `entity_data`. The client tag is used as an
+  // identifier for the entity, so it must be unique and stable. It particular,
+  // it cannot depend on any mutable fields of the entity.
   //
   // IsEntityDataValid() is guaranteed to hold for the `entity_data`.
   virtual std::string GetClientTag(const EntityData& entity_data) const = 0;
 
   // Must not be called unless SupportsGetStorageKey() returns true.
   //
-  // Get or generate a storage key for `entity_data`. This will only ever be
-  // called once when first encountering a remote entity. Local changes will
-  // provide their storage keys directly to Put instead of using this method.
-  // Theoretically this function doesn't need to be stable across multiple calls
-  // on the same or different clients, but to keep things simple, it probably
-  // should be. Storage keys are kept in memory at steady state, so each model
-  // type should strive to keep these keys as small as possible.
-  // Returning an empty string means the remote creation should be ignored (i.e.
-  // it contains invalid data).
+  // Generates a storage key for `entity_data`. The storage key is used as a
+  // local identifier for the entity, e.g. it could be a primary key in the
+  // local database to allow efficient lookups. If that is not required, this
+  // method can return the same as GetClientTag().
+  //
+  // This is most commonly called when first encountering a remote entity. Local
+  // changes will usually provide their storage keys directly to Put() instead
+  // of using this method.
+  //
+  // Storage keys are kept in memory at steady state, so should be kept as small
+  // as possible.
   //
   // IsEntityDataValid() is guaranteed to hold for the `entity_data`.
   virtual std::string GetStorageKey(const EntityData& entity_data) const = 0;
