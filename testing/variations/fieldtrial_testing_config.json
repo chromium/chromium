@@ -19129,48 +19129,6 @@
             ]
         }
     ],
-    "SymphoniaPcmDecoding": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SymphoniaPcmDecoding"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SymphoniaVorbisDecoding": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SymphoniaVorbisDecoding"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncIncreaseNudgeDelayForSingleClient": [
         {
             "platforms": [
