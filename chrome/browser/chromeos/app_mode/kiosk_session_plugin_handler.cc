@@ -20,11 +20,6 @@ KioskSessionPluginHandler::Observer::Observer(content::WebContents* contents,
 
 KioskSessionPluginHandler::Observer::~Observer() = default;
 
-std::set<int> KioskSessionPluginHandler::Observer::GetHungPluginsForTesting()
-    const {
-  return hung_plugins_;
-}
-
 void KioskSessionPluginHandler::Observer::OnHungWaitTimer() {
   owner_->OnPluginHung(hung_plugins_);
 }
@@ -53,7 +48,7 @@ void KioskSessionPluginHandler::Observe(content::WebContents* contents) {
 }
 
 void KioskSessionPluginHandler::OnPluginHung(
-    const std::set<int>& hung_plugins) {
+    const std::set<content::ChildProcessId>& hung_plugins) {
   delegate_->OnPluginHung(hung_plugins);
 }
 

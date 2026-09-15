@@ -32,7 +32,8 @@ class TestKioskSessionPluginHandlerDelegate
     return plugin_path.AsUTF8Unsafe() == kValidPluginPath;
   }
 
-  void OnPluginHung(const std::set<int>& hung_plugins) override {}
+  void OnPluginHung(
+      const std::set<content::ChildProcessId>& hung_plugins) override {}
 };
 
 class KioskSessionPluginHandlerTest : public testing::Test {

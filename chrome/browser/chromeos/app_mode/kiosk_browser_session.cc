@@ -58,7 +58,7 @@ void RebootDevice() {
 
 // Sends a SIGFPE signal to plugin subprocesses that matches `child_ids`
 // to trigger a dump.
-void DumpPluginProcess(const std::set<int>& child_ids) {
+void DumpPluginProcess(const std::set<content::ChildProcessId>& child_ids) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   bool dump_requested = false;
@@ -67,7 +67,7 @@ void DumpPluginProcess(const std::set<int>& child_ids) {
            content::PROCESS_TYPE_PPAPI_PLUGIN_DEPRECATED);
        !iter.Done(); ++iter) {
     const content::ChildProcessData& data = iter.GetData();
-    if (child_ids.count(data.id) == 1) {
+    if (child_ids.contains(data.GetChildProcessId())) {
       const base::Process& process = iter.GetProcess();
       if (!process.IsValid()) {
         LOG(WARNING) << "Plugin process is not valid, skipping dump for: "
@@ -159,7 +159,8 @@ class KioskBrowserSession::PluginHandlerDelegateImpl
     return false;
   }
 
-  void OnPluginHung(const std::set<int>& hung_plugins) override {
+  void OnPluginHung(
+      const std::set<content::ChildProcessId>& hung_plugins) override {
     if (owner_->is_shutting_down()) {
       return;
     }

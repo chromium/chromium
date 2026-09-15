@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/buildflags.h"
+#include "content/public/common/child_process_id.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
 #error "Plugins should be enabled"
@@ -37,8 +38,6 @@ class KioskSessionPluginHandler {
     Observer& operator=(const Observer&) = delete;
     ~Observer() override;
 
-    std::set<int> GetHungPluginsForTesting() const;
-
    private:
     void OnHungWaitTimer();
 
@@ -46,7 +45,7 @@ class KioskSessionPluginHandler {
     void WebContentsDestroyed() override;
 
     const raw_ptr<KioskSessionPluginHandler, DanglingUntriaged> owner_;
-    std::set<int> hung_plugins_;
+    std::set<content::ChildProcessId> hung_plugins_;
     base::OneShotTimer hung_wait_timer_;
   };
 
@@ -62,7 +61,7 @@ class KioskSessionPluginHandler {
   std::vector<Observer*> GetWatchersForTesting() const;
 
  private:
-  void OnPluginHung(const std::set<int>& hung_plugins);
+  void OnPluginHung(const std::set<content::ChildProcessId>& hung_plugins);
   void OnWebContentsDestroyed(Observer* observer);
 
   const raw_ptr<KioskSessionPluginHandlerDelegate> delegate_;

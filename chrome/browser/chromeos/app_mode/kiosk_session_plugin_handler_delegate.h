@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "content/public/common/buildflags.h"
+#include "content/public/common/child_process_id.h"
 
 #if !BUILDFLAG(ENABLE_PLUGINS)
 #error "Plugins should be enabled"
@@ -22,7 +23,8 @@ class KioskSessionPluginHandlerDelegate {
   virtual bool ShouldHandlePlugin(const base::FilePath& plugin_path) const = 0;
 
   // Invoked after plugins are hung.
-  virtual void OnPluginHung(const std::set<int>& hung_plugins) = 0;
+  virtual void OnPluginHung(
+      const std::set<content::ChildProcessId>& hung_plugins) = 0;
 
  protected:
   virtual ~KioskSessionPluginHandlerDelegate() = default;
