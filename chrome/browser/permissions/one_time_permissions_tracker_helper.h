@@ -25,12 +25,11 @@ class OneTimePermissionsTrackerHelper
   OneTimePermissionsTrackerHelper& operator=(
       const OneTimePermissionsTrackerHelper&) = delete;
 
-  // content::WebContentObserver
+  // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
+  void PrimaryPageWillBeDeactivated(content::Page& page) override;
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void WasDiscarded() override;
 
   // MediaStreamCaptureIndicator::Observer
@@ -43,9 +42,6 @@ class OneTimePermissionsTrackerHelper
   explicit OneTimePermissionsTrackerHelper(content::WebContents* webContents);
   friend class content::WebContentsUserData<OneTimePermissionsTrackerHelper>;
 
-  // Keep track of the previous discard status as discard status is cleared from
-  // the WebContents before propagating navigation events.
-  bool was_discarded_ = false;
   std::optional<url::Origin> last_committed_origin_;
   std::optional<content::Visibility> last_visibility_;
 

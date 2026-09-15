@@ -24,6 +24,11 @@
 OneTimePermissionsTracker::OneTimePermissionsTracker() = default;
 OneTimePermissionsTracker::~OneTimePermissionsTracker() = default;
 
+base::WeakPtr<OneTimePermissionsTracker>
+OneTimePermissionsTracker::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 OneTimePermissionsTracker::OriginTrackEntry::OriginTrackEntry() = default;
 
 OneTimePermissionsTracker::OriginTrackEntry::~OriginTrackEntry() = default;

@@ -33,6 +33,8 @@ class OneTimePermissionsTracker : public KeyedService {
   OneTimePermissionsTracker& operator=(const OneTimePermissionsTracker&) =
       delete;
 
+  base::WeakPtr<OneTimePermissionsTracker> GetWeakPtr();
+
   // Handles primary page changes to `origin` and pages of `origin` being
   // undiscarded.
   void WebContentsLoadedOrigin(const url::Origin& origin);

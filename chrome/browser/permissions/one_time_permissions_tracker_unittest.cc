@@ -6,7 +6,10 @@
 
 #include <cstdint>
 
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/permissions/permission_context_base.h"
@@ -36,13 +39,22 @@ class OneTimePermissionsTrackerObserverForTesting
     last_notified_origin_ = origin;
   }
 
+  void OnLastPageFromOriginClosed(const url::Origin& origin) override {
+    ++notified_count_last_page_closed_;
+    last_notified_origin_ = origin;
+  }
+
   uint32_t NotifiedCountShortTimeout() { return notified_count_short_timeout_; }
   uint32_t NotifiedCountLongTimeout() { return notified_count_long_timeout_; }
+  uint32_t NotifiedCountLastPageClosed() {
+    return notified_count_last_page_closed_;
+  }
   const url::Origin& LastNotifiedOrigin() { return last_notified_origin_; }
 
  private:
   uint32_t notified_count_short_timeout_ = 0;
   uint32_t notified_count_long_timeout_ = 0;
+  uint32_t notified_count_last_page_closed_ = 0;
   url::Origin last_notified_origin_;
 };
 }  // namespace
@@ -230,4 +242,76 @@ TEST_F(OneTimePermissionsTrackerTest, LongTimerResetOnUnbackgrounded) {
       permissions::kOneTimePermissionMaximumLifetime - base::Seconds(1));
   EXPECT_EQ(observer.NotifiedCountLongTimeout(), 0u);
   tracker()->RemoveObserver(&observer);
+}
+
+TEST_F(OneTimePermissionsTrackerTest, PageTrackerLifecycle) {
+  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+
+  const GURL origin_url("https://example.com");
+  const url::Origin origin = url::Origin::Create(origin_url);
+
+  OneTimePermissionsTrackerObserverForTesting observer;
+  auto* factory_tracker =
+      OneTimePermissionsTrackerFactory::GetForBrowserContext(profile());
+  factory_tracker->AddObserver(&observer);
+
+  NavigateAndCommit(origin_url);
+  EXPECT_EQ(observer.NotifiedCountLastPageClosed(), 0u);
+
+  // Navigating to a different origin should deactivate the old page and fire
+  // OnLastPageFromOriginClosed for example.com.
+  const GURL other_url("https://other.com");
+  NavigateAndCommit(other_url);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return observer.NotifiedCountLastPageClosed() == 1u; }));
+  EXPECT_EQ(observer.LastNotifiedOrigin(), origin);
+
+  factory_tracker->RemoveObserver(&observer);
+}
+
+TEST_F(OneTimePermissionsTrackerTest, PageTrackerSameOriginNavigation) {
+  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+
+  const GURL origin_url1("https://example.com/page1.html");
+  const GURL origin_url2("https://example.com/page2.html");
+  const url::Origin origin = url::Origin::Create(origin_url1);
+
+  OneTimePermissionsTrackerObserverForTesting observer;
+  auto* factory_tracker =
+      OneTimePermissionsTrackerFactory::GetForBrowserContext(profile());
+  factory_tracker->AddObserver(&observer);
+
+  NavigateAndCommit(origin_url1);
+  EXPECT_EQ(observer.NotifiedCountLastPageClosed(), 0u);
+
+  // Navigating same-origin should NOT fire OnLastPageFromOriginClosed.
+  NavigateAndCommit(origin_url2);
+  EXPECT_EQ(observer.NotifiedCountLastPageClosed(), 0u);
+
+  factory_tracker->RemoveObserver(&observer);
+}
+
+TEST_F(OneTimePermissionsTrackerTest, PageTrackerDiscard) {
+  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+
+  const GURL origin_url("https://example.com");
+  const url::Origin origin = url::Origin::Create(origin_url);
+
+  OneTimePermissionsTrackerObserverForTesting observer;
+  auto* factory_tracker =
+      OneTimePermissionsTrackerFactory::GetForBrowserContext(profile());
+  factory_tracker->AddObserver(&observer);
+
+  NavigateAndCommit(origin_url);
+  EXPECT_EQ(observer.NotifiedCountLastPageClosed(), 0u);
+
+  // Discarding the WebContents should delete the PageTracker and fire
+  // OnLastPageFromOriginClosed for example.com.
+  web_contents()->SetWasDiscarded(true);
+  web_contents()->NotifyWasDiscarded();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return observer.NotifiedCountLastPageClosed() == 1u; }));
+  EXPECT_EQ(observer.LastNotifiedOrigin(), origin);
+
+  factory_tracker->RemoveObserver(&observer);
 }

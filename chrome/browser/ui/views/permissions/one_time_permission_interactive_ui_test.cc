@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -391,6 +392,14 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
 
   // Discard previous tab
   DiscardTabAt(0);
+
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return hcsm->GetContentSetting(GetGeolocationGurl(), GetGeolocationGurl(),
+                                   ContentSettingsType::GEOLOCATION) ==
+           CONTENT_SETTING_ASK;
+  }));
 
   // Open new tab to the right.
   ASSERT_NO_FATAL_FAILURE(

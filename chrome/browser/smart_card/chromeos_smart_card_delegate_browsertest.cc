@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -226,7 +227,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsSmartCardDelegateBrowserTest,
   app_frame_ = nullptr;
   tab_interface->Close();
 
-  EXPECT_FALSE(HasReaderPermission(origin, kDummyReader));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !HasReaderPermission(origin, kDummyReader); }));
 }
 
 class ChromeOsSmartCardDelegateBrowserTestGuestMode

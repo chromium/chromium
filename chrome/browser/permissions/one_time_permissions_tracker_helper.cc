@@ -4,20 +4,68 @@
 
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/visibility.h"
+
+namespace {
+
+// A helper class for tracking events relevant to OneTimePermissions expiration
+// which are tied to a single Page.
+class OneTimePermissionsPageTracker
+    : public content::PageUserData<OneTimePermissionsPageTracker> {
+ public:
+  ~OneTimePermissionsPageTracker() override;
+
+ private:
+  explicit OneTimePermissionsPageTracker(content::Page& page);
+
+  friend PageUserData;
+  PAGE_USER_DATA_KEY_DECL();
+
+  url::Origin origin_;
+  base::WeakPtr<OneTimePermissionsTracker> tracker_;
+};
+
+PAGE_USER_DATA_KEY_IMPL(OneTimePermissionsPageTracker);
+
+OneTimePermissionsPageTracker::OneTimePermissionsPageTracker(
+    content::Page& page)
+    : PageUserData(page),
+      origin_(page.GetMainDocument().GetLastCommittedOrigin()) {
+  auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
+      page.GetMainDocument().GetBrowserContext());
+  if (tracker) {
+    tracker_ = tracker->GetWeakPtr();
+    tracker_->WebContentsLoadedOrigin(origin_);
+  }
+}
+
+OneTimePermissionsPageTracker::~OneTimePermissionsPageTracker() {
+  // We call WebContentsUnloadedOrigin asynchronously to preserve one-time
+  // grants on same-origin navigations (allowing for the
+  // OneTimepermissionsPageTracker for the new page to be created before
+  // WebContentsUnloadedOrigin runs).
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OneTimePermissionsTracker::WebContentsUnloadedOrigin,
+                     tracker_, origin_));
+}
+
+}  // namespace
 
 OneTimePermissionsTrackerHelper::~OneTimePermissionsTrackerHelper() = default;
 
 void OneTimePermissionsTrackerHelper::WebContentsDestroyed() {
-  if (last_committed_origin_ && !web_contents()->WasDiscarded()) {
+  if (last_committed_origin_) {
     auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
         web_contents()->GetBrowserContext());
-    tracker->WebContentsUnloadedOrigin(*last_committed_origin_);
     if (web_contents()->GetVisibility() == content::Visibility::HIDDEN) {
       tracker->WebContentsUnbackgrounded(*last_committed_origin_);
     }
@@ -44,6 +92,8 @@ void OneTimePermissionsTrackerHelper::OnVisibilityChanged(
 }
 
 void OneTimePermissionsTrackerHelper::PrimaryPageChanged(content::Page& page) {
+  OneTimePermissionsPageTracker::CreateForPage(page);
+
   url::Origin new_origin = page.GetMainDocument().GetLastCommittedOrigin();
   if (last_committed_origin_ && *last_committed_origin_ == new_origin) {
     return;
@@ -51,38 +101,27 @@ void OneTimePermissionsTrackerHelper::PrimaryPageChanged(content::Page& page) {
   auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
 
-  if (last_committed_origin_) {
-    tracker->WebContentsUnloadedOrigin(*last_committed_origin_);
-  }
-
   if (web_contents()->GetVisibility() == content::Visibility::HIDDEN) {
     tracker->WebContentsBackgrounded(new_origin);
   }
 
-  tracker->WebContentsLoadedOrigin(new_origin);
   last_committed_origin_ = std::move(new_origin);
 }
 
-void OneTimePermissionsTrackerHelper::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (last_committed_origin_ && was_discarded_) {
-    // If a new navigation has started, and the tab was previously discarded,
-    // the tab has reactivated.
-    auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
-        web_contents()->GetBrowserContext());
-    tracker->WebContentsLoadedOrigin(*last_committed_origin_);
+void OneTimePermissionsTrackerHelper::PrimaryPageWillBeDeactivated(
+    content::Page& page) {
+  if (OneTimePermissionsPageTracker::GetForPage(page)) {
+    OneTimePermissionsPageTracker::DeleteForPage(page);
   }
-  was_discarded_ = false;
 }
 
 void OneTimePermissionsTrackerHelper::WasDiscarded() {
-  // A discard operation may not succeed if attempted on a pending navigation,
-  // emit only following a successful operation.
-  was_discarded_ = web_contents()->WasDiscarded();
-  if (last_committed_origin_ && was_discarded_) {
-    auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
-        web_contents()->GetBrowserContext());
-    tracker->WebContentsUnloadedOrigin(*last_committed_origin_);
+  if (web_contents()->WasDiscarded()) {
+    if (OneTimePermissionsPageTracker::GetForPage(
+            web_contents()->GetPrimaryPage())) {
+      OneTimePermissionsPageTracker::DeleteForPage(
+          web_contents()->GetPrimaryPage());
+    }
   }
 }
 
