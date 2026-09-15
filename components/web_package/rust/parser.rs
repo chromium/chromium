@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+use alloc::collections::BTreeSet;
+use alloc::string::ToString;
+use alloc::vec::Vec;
+
 use crate::constants::{
-    BUNDLE_MAGIC_BYTES, DEPRECATED_B1_TOP_LEVEL_ARRAY_SIZE, MAX_CBOR_ITEM_HEADER_SIZE,
-    MAX_SECTION_LENGTHS_CBOR_SIZE, TOP_LEVEL_ARRAY_SIZE, TRAILING_LENGTH_NUM_BYTES,
-    VERSION_B1_BYTES, VERSION_B2_BYTES,
+    BUNDLE_MAGIC_BYTES, CRITICAL_SECTION, DEPRECATED_B1_TOP_LEVEL_ARRAY_SIZE, INDEX_SECTION,
+    MAX_CBOR_ITEM_HEADER_SIZE, MAX_SECTION_LENGTHS_CBOR_SIZE, PRIMARY_SECTION, RESPONSES_SECTION,
+    TOP_LEVEL_ARRAY_SIZE, TRAILING_LENGTH_NUM_BYTES, VERSION_B1_BYTES, VERSION_B2_BYTES,
 };
-use crate::types::{MagicAndVersionResult, ParseError};
+use crate::types::{BundleHeaderResult, MagicAndVersionResult, ParseError, SectionOffsetEntry};
+
+fn is_metadata_section(name: &str) -> bool {
+    matches!(name, CRITICAL_SECTION | INDEX_SECTION | PRIMARY_SECTION)
+}
 
 /// Helper for incremental, sequential CBOR decoding with uniform error
 /// reporting.
@@ -24,6 +32,13 @@ impl<'a> BundleDecoder<'a> {
 
     fn bytes_consumed(&self) -> usize {
         self.orig_len - self.slice.len()
+    }
+
+    fn expect_array_start(&mut self, err_msg: &'static str) -> Result<u64, ParseError> {
+        match self.decoder.next_event(&mut self.slice) {
+            Ok(cbor::CborEvent::ArrayStart(n)) => Ok(n),
+            _ => Err(ParseError::format(err_msg)),
+        }
     }
 
     fn expect_bytes_start(&mut self, err_msg: &'static str) -> Result<u64, ParseError> {
@@ -51,6 +66,16 @@ fn parse_version(decoder: &mut BundleDecoder) -> Result<(), ParseError> {
             "Version error: bundle format does not correspond to the specifed version. Currently supported version is: 'b2'",
         )),
         _ => Err(ParseError::format("Cannot read version bytes.")),
+    }
+}
+
+/// Helper that parses a single complete CBOR value from `data`, ensuring all
+/// bytes are consumed.
+fn parse_exact_cbor<'a>(data: &'a [u8]) -> Result<cbor::Value<'a>, cbor::Error> {
+    match cbor::parse_with_config(data, cbor::Config::default()) {
+        Ok(res) if res.bytes_consumed == data.len() => Ok(res.value),
+        Ok(_) => Err(cbor::Error::ExtraneousData),
+        Err(err) => Err(err),
     }
 }
 
@@ -149,4 +174,137 @@ pub fn parse_magic_and_version(
     };
 
     Ok(MagicAndVersionResult { section_lengths_len, next_read_offset, next_read_length })
+}
+
+fn parse_section_lengths<'a>(bytes: &'a [u8]) -> Result<Vec<cbor::Value<'a>>, ParseError> {
+    match parse_exact_cbor(bytes) {
+        // Each section is represented as a (name, length) pair, so the array length must be even.
+        Ok(cbor::Value::Array(arr)) if arr.len() % 2 == 0 => Ok(arr),
+        _ => Err(ParseError::format("Cannot parse section-lengths.")),
+    }
+}
+
+fn parse_sections_start(
+    remaining: &[u8],
+    expected_count: u64,
+    current_offset: u64,
+    section_lengths_len: u64,
+) -> Result<u64, ParseError> {
+    let mut decoder = BundleDecoder::new(remaining);
+    if expected_count != decoder.expect_array_start("Cannot parse the number of sections.")? {
+        return Err(ParseError::format("Unexpected number of sections."));
+    }
+    let Ok(consumed_bytes) = u64::try_from(decoder.bytes_consumed()) else {
+        return Err(ParseError::format("Offset conversion overflow."));
+    };
+    let Some(start) = current_offset
+        .checked_add(section_lengths_len)
+        .and_then(|off| off.checked_add(consumed_bytes))
+    else {
+        return Err(ParseError::format("Integer overflow calculating section offsets."));
+    };
+    Ok(start)
+}
+
+fn parse_section_entry<'a>(chunk: &[cbor::Value<'a>]) -> Result<(&'a str, u64), ParseError> {
+    match chunk {
+        &[cbor::Value::String(name), cbor::Value::Int(len @ 0..)] => Ok((name, len as u64)),
+        _ => Err(ParseError::format("Cannot parse section-lengths.")),
+    }
+}
+
+fn parse_section_offsets(
+    raw_sections: &[cbor::Value],
+    mut cur_offset: u64,
+) -> Result<(Vec<SectionOffsetEntry>, u64, u64), ParseError> {
+    let mut seen_names = BTreeSet::new();
+    let mut metadata_sections = Vec::new();
+    let mut responses_info = None;
+
+    for chunk in raw_sections.chunks_exact(2) {
+        let (name, len) = parse_section_entry(chunk)?;
+
+        if !seen_names.insert(name) {
+            return Err(ParseError::format("Duplicated section."));
+        }
+
+        match name {
+            RESPONSES_SECTION => responses_info = Some((cur_offset, len)),
+            _ if is_metadata_section(name) => {
+                metadata_sections.push(SectionOffsetEntry {
+                    name: name.to_string(),
+                    offset: cur_offset,
+                    length: len,
+                });
+            }
+            // Unknown or extension sections are not read as metadata sections;
+            // if any are unrecognized but listed in "critical", parse_critical_section will fail
+            // later.
+            _ => {}
+        }
+
+        cur_offset = cur_offset
+            .checked_add(len)
+            .ok_or_else(|| ParseError::format("Integer overflow calculating section offsets."))?;
+    }
+
+    let (responses_offset, responses_length) =
+        match raw_sections.chunks_exact(2).last().map(parse_section_entry) {
+            Some(Ok((RESPONSES_SECTION, _))) => responses_info.ok_or_else(|| {
+                ParseError::format("Responses section is not the last in section-lengths.")
+            })?,
+            Some(Err(err)) => return Err(err),
+            _ => {
+                return Err(ParseError::format(
+                    "Responses section is not the last in section-lengths.",
+                ))
+            }
+        };
+
+    Ok((metadata_sections, responses_offset, responses_length))
+}
+
+/// Parses the `section-lengths` payload and the `sections` array header,
+/// validating sections and computing their offsets.
+///
+/// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-bundle-sections
+///
+/// CDDL structure:
+/// ```text
+/// section-lengths = [* (section-name: tstr, length: uint) ]
+/// sections: [* any ]
+/// ```
+///
+/// Validates:
+/// 1. Section lengths array has an even number of elements (`[name, length,
+///    ...]`).
+/// 2. `sections` array count in CBOR matches exactly the number of sections
+///    specified in `section-lengths`: "The sections array contains the
+///    sections' content. The length of this array MUST be exactly half the
+///    length of the section-lengths array, and parsers MUST NOT load any data
+///    if that is not the case."
+/// 3. Section names are not duplicated.
+/// 4. Section offsets do not experience integer overflow.
+/// 5. The "responses" section is the last section in `section-lengths`: "The
+///    'responses' section MUST appear after the other three sections defined
+///    here, and parsers MUST NOT load any data if that is not the case."
+pub fn parse_bundle_header(
+    data: &[u8],
+    section_lengths_len: u64,
+    current_offset: u64,
+) -> Result<BundleHeaderResult, ParseError> {
+    let (section_lengths_bytes, remaining) = match usize::try_from(section_lengths_len) {
+        Ok(len) if len <= data.len() => data.split_at(len),
+        _ => return Err(ParseError::format("Cannot read section-lengths.")),
+    };
+
+    let section_lengths = parse_section_lengths(section_lengths_bytes)?;
+    let num_sections = (section_lengths.len() / 2) as u64;
+    let sections_start =
+        parse_sections_start(remaining, num_sections, current_offset, section_lengths_len)?;
+
+    let (metadata_sections, responses_offset, responses_length) =
+        parse_section_offsets(&section_lengths, sections_start)?;
+
+    Ok(BundleHeaderResult { metadata_sections, responses_offset, responses_length })
 }

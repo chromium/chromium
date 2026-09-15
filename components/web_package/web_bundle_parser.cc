@@ -50,41 +50,9 @@ constexpr char kIndexSection[] = "index";
 constexpr char kPrimarySection[] = "primary";
 constexpr char kResponsesSection[] = "responses";
 
-// A list of (section-name, length) pairs.
-using SectionLengths = std::vector<std::pair<std::string, uint64_t>>;
-
-// A map from section name to (offset, length) pair.
-using SectionOffsets = std::map<std::string, std::pair<uint64_t, uint64_t>>;
-
 bool IsMetadataSection(const std::string& name) {
   return (name == kCriticalSection || name == kIndexSection ||
           name == kPrimarySection);
-}
-
-// Parses a `section-lengths` CBOR item.
-// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-bundle-sections
-//   section-lengths = [* (section-name: tstr, length: uint) ]
-std::optional<SectionLengths> ParseSectionLengths(
-    base::span<const uint8_t> data) {
-  cbor::Reader::DecoderError error;
-  std::optional<cbor::Value> value = cbor::Reader::Read(data, &error);
-  if (!value.has_value() || !value->is_array()) {
-    return std::nullopt;
-  }
-
-  const cbor::Value::ArrayValue& array = value->GetArray();
-  if (array.size() % 2 != 0) {
-    return std::nullopt;
-  }
-
-  SectionLengths result;
-  for (size_t i = 0; i < array.size(); i += 2) {
-    if (!array[i].is_string() || !array[i + 1].is_unsigned()) {
-      return std::nullopt;
-    }
-    result.emplace_back(array[i].GetString(), array[i + 1].GetUnsigned());
-  }
-  return result;
 }
 
 struct ParsedHeaders {
@@ -316,109 +284,39 @@ class WebBundleParser::MetadataParser
       RunErrorCallback("Error reading bundle header.");
       return;
     }
-    InputReader input(*data);
 
-    // webbundle = [
-    //    magic: h'F0 9F 8C 90 F0 9F 93 A6',
-    //    version: bytes .size 4,
-    //    section-lengths: bytes .cbor section-lengths,  <==== here
-    //    sections: [* any ],
-    //    length: bytes .size 8,  ; Big-endian number of bytes in the bundle.
-    // ]
-    const auto section_lengths_bytes = input.ReadBytes(section_lengths_length);
-    if (!section_lengths_bytes) {
-      RunErrorCallback("Cannot read section-lengths.");
-      return;
-    }
-    // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-bundle-sections
-    //   section-lengths = [* (section-name: tstr, length: uint) ]
-    const auto section_lengths = ParseSectionLengths(*section_lengths_bytes);
-    if (!section_lengths) {
-      RunErrorCallback("Cannot parse section-lengths.");
+    auto res = rust::parse_bundle_header(*data, section_lengths_length,
+                                         offset_in_stream);
+    if (!res.has_value()) {
+      RunErrorCallback(res.error().message);
       return;
     }
 
-    // webbundle = [
-    //    magic: h'F0 9F 8C 90 F0 9F 93 A6',
-    //    version: bytes .size 4,
-    //    section-lengths: bytes .cbor section-lengths,
-    //    sections: [* any ],  <==== here
-    //    length: bytes .size 8,  ; Big-endian number of bytes in the bundle.
-    // ]
-    const auto num_sections = input.ReadCBORHeader(CBORType::kArray);
-    if (!num_sections) {
-      RunErrorCallback("Cannot parse the number of sections.");
-      return;
-    }
+    responses_section_offset_ = res->responses_offset;
+    responses_section_length_ = res->responses_length;
+    metadata_sections_to_read_ = std::move(res->metadata_sections);
 
-    // "The sections array contains the sections' content. The length of this
-    // array MUST be exactly half the length of the section-lengths array, and
-    // parsers MUST NOT load any data if that is not the case."
-    if (*num_sections != section_lengths->size()) {
-      RunErrorCallback("Unexpected number of sections.");
-      return;
-    }
-
-    const uint64_t sections_start = offset_in_stream + input.CurrentOffset();
-    uint64_t current_offset = sections_start;
-
-    // Convert |section_lengths| to |section_offsets_|.
-    for (const auto& pair : *section_lengths) {
-      const std::string& name = pair.first;
-      const uint64_t length = pair.second;
-      bool added = section_offsets_
-                       .insert(std::make_pair(
-                           name, std::make_pair(current_offset, length)))
-                       .second;
-      if (!added) {
-        RunErrorCallback("Duplicated section.");
-        return;
-      }
-
-      if (!base::CheckAdd(current_offset, length)
-               .AssignIfValid(&current_offset)) {
-        RunErrorCallback("Integer overflow calculating section offsets.");
-        return;
-      }
-    }
-
-    // "The "responses" section MUST appear after the other three sections
-    // defined here, and parsers MUST NOT load any data if that is not the
-    // case."
-    if (section_lengths->empty() ||
-        section_lengths->back().first != kResponsesSection) {
-      RunErrorCallback("Responses section is not the last in section-lengths.");
-      return;
-    }
-
-    // Initialize |metadata_|.
     metadata_ = mojom::BundleMetadata::New();
     metadata_->version = mojom::BundleFormatVersion::kB2;
 
-    ReadMetadataSections(section_offsets_.begin());
+    ReadMetadataSections(/*section_index=*/0);
   }
 
   // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-bundle-sections
-  void ReadMetadataSections(SectionOffsets::const_iterator section_iter) {
-    for (; section_iter != section_offsets_.end(); ++section_iter) {
-      const auto& name = section_iter->first;
-      if (!IsMetadataSection(name)) {
-        continue;
-      }
-      const uint64_t section_offset = section_iter->second.first;
-      const uint64_t section_length = section_iter->second.second;
-      if (section_length > kMaxMetadataSectionSize) {
+  void ReadMetadataSections(size_t section_index) {
+    if (section_index < metadata_sections_to_read_.size()) {
+      const auto& section = metadata_sections_to_read_[section_index];
+      if (section.length > kMaxMetadataSectionSize) {
         RunErrorCallback(
             "Metadata sections larger than 1MB are not supported.");
         return;
       }
 
       data_source_->get()->Read(
-          section_offset, section_length,
+          section.offset, section.length,
           base::BindOnce(&MetadataParser::ParseMetadataSection,
-                         weak_factory_.GetWeakPtr(), section_iter,
-                         section_length));
-      // This loop will be resumed by ParseMetadataSection().
+                         weak_factory_.GetWeakPtr(), section_index,
+                         section.length));
       return;
     }
 
@@ -431,7 +329,7 @@ class WebBundleParser::MetadataParser
     RunSuccessCallback();
   }
 
-  void ParseMetadataSection(SectionOffsets::const_iterator section_iter,
+  void ParseMetadataSection(size_t section_index,
                             uint64_t expected_data_length,
                             const std::optional<std::vector<uint8_t>>& data) {
     if (!data || data->size() != expected_data_length) {
@@ -449,7 +347,7 @@ class WebBundleParser::MetadataParser
       return;
     }
 
-    const auto& name = section_iter->first;
+    const auto& name = metadata_sections_to_read_[section_index].name;
     // Note: Parse*Section() delete |this| on failure.
     if (name == kIndexSection) {
       if (!ParseIndexSection(*section_value)) {
@@ -467,7 +365,7 @@ class WebBundleParser::MetadataParser
       NOTREACHED();
     }
     // Read the next metadata section.
-    ReadMetadataSections(++section_iter);
+    ReadMetadataSections(section_index + 1);
   }
 
   // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-the-index-section
@@ -483,10 +381,8 @@ class WebBundleParser::MetadataParser
 
     base::flat_map<GURL, mojom::BundleResponseLocationPtr> requests;
 
-    auto responses_section = section_offsets_.find(kResponsesSection);
-    CHECK(responses_section != section_offsets_.end());
-    const uint64_t responses_section_offset = responses_section->second.first;
-    const uint64_t responses_section_length = responses_section->second.second;
+    const uint64_t responses_section_offset = responses_section_offset_;
+    const uint64_t responses_section_length = responses_section_length_;
 
     // For each (url, responses) entry in the index map.
     for (const auto& item : section_value.GetMap()) {
@@ -611,7 +507,9 @@ class WebBundleParser::MetadataParser
   std::optional<uint64_t> start_reading_offset_;
   ParseMetadataCallback result_callback_;
   ParsingCompleteCallback complete_callback_;
-  SectionOffsets section_offsets_;
+  rs_std::Vec<rust::SectionOffsetEntry> metadata_sections_to_read_;
+  uint64_t responses_section_offset_ = 0;
+  uint64_t responses_section_length_ = 0;
   mojom::BundleMetadataPtr metadata_;
   base::WeakPtrFactory<MetadataParser> weak_factory_{this};
 };

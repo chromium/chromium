@@ -8,6 +8,10 @@ pub const TRAILING_LENGTH_NUM_BYTES: usize = 8;
 
 /// The maximum size of the section-lengths CBOR item.
 /// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-top-level-structure
+/// "The section-lengths array is embedded in a byte string to facilitate
+/// reading it from a network. This byte string MUST be less than 8192
+/// (8*1024) bytes long, and parsers MUST NOT load any data from a
+/// section-lengths item longer than this."
 pub(crate) const MAX_SECTION_LENGTHS_CBOR_SIZE: u64 = 8192;
 
 /// Initial buffer size for reading magic bytes and top-level headers (24
@@ -50,3 +54,10 @@ pub(crate) const VERSION_B2_BYTES: &[u8] = b"b2\0\0";
 ///       62 31 00 00  -- "b1\0\0"
 /// ```
 pub(crate) const VERSION_B1_BYTES: &[u8] = b"b1\0\0";
+
+/// Canonical Web Bundle section names.
+/// https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-sections-and-length
+pub(crate) const CRITICAL_SECTION: &str = "critical";
+pub(crate) const INDEX_SECTION: &str = "index";
+pub(crate) const PRIMARY_SECTION: &str = "primary";
+pub(crate) const RESPONSES_SECTION: &str = "responses";

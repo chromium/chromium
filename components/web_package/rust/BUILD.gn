@@ -33,6 +33,7 @@ rust_static_library("web_package_rust_unittests") {
   ]
   deps = [
     ":web_package_rust",
+    "//components/cbor/rust:cbor",
     "//testing/rust_gtest_interop",
   ]
 }

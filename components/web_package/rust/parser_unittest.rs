@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+use cbor::Value;
 use rust_gtest_interop::prelude::*;
-use web_package_rust::{parse_magic_and_version, parse_trailing_length};
+use web_package_rust::{parse_bundle_header, parse_magic_and_version, parse_trailing_length};
 
 #[gtest(WebPackageRustTest, TestTrailingLength)]
 fn test_trailing_length() {
@@ -175,4 +176,111 @@ fn test_magic_and_version_errors() {
     let err_truncated_sl = parse_magic_and_version(&truncated_sl, 0).unwrap_err();
     expect_false!(err_truncated_sl.is_version_error);
     expect_eq!(err_truncated_sl.message, "Cannot parse the size of section-lengths.");
+}
+
+#[gtest(WebPackageRustTest, TestBundleHeader)]
+fn test_bundle_header() {
+    // section-lengths: ["primary", 50, "index", 100, "responses", 200]
+    let section_lengths_cbor = cbor::write(&Value::Array(vec![
+        Value::String("primary"),
+        Value::Int(50),
+        Value::String("index"),
+        Value::Int(100),
+        Value::String("responses"),
+        Value::Int(200),
+    ]));
+
+    let mut data = section_lengths_cbor.clone();
+    // Sections array header (array of 3 elements)
+    data.push(0x83);
+
+    let res = parse_bundle_header(&data, section_lengths_cbor.len() as u64, 1000);
+    expect_true!(res.is_ok());
+    let res = res.unwrap();
+    expect_eq!(res.metadata_sections.len(), 2usize);
+    // sections_start = 1000 + section_lengths_cbor.len() + 1
+    let start = 1000 + section_lengths_cbor.len() as u64 + 1;
+    expect_eq!(res.metadata_sections[0].name, "primary");
+    expect_eq!(res.metadata_sections[0].offset, start);
+    expect_eq!(res.metadata_sections[0].length, 50);
+
+    expect_eq!(res.metadata_sections[1].name, "index");
+    expect_eq!(res.metadata_sections[1].offset, start + 50);
+    expect_eq!(res.metadata_sections[1].length, 100);
+
+    expect_eq!(res.responses_offset, start + 150);
+    expect_eq!(res.responses_length, 200);
+}
+
+#[gtest(WebPackageRustTest, TestBundleHeaderErrors)]
+fn test_bundle_header_errors() {
+    // 1. Truncated section-lengths data.
+    let data = [0u8; 10];
+    let res = parse_bundle_header(&data, 20, 0);
+    expect_true!(res.is_err());
+    let err = res.unwrap_err();
+    expect_eq!(err.message, "Cannot read section-lengths.");
+    expect_false!(err.is_version_error);
+
+    // 32-bit truncation / overflow protection in section_lengths_len.
+    let res_overflow = parse_bundle_header(&data, u64::MAX, 0);
+    expect_true!(res_overflow.is_err());
+    expect_eq!(res_overflow.unwrap_err().message, "Cannot read section-lengths.");
+
+    // 2. Responses section not last.
+    // Case 2a: responses is not the last section (e.g. index follows responses).
+    let not_last_cbor = cbor::write(&Value::Array(vec![
+        Value::String("responses"),
+        Value::Int(100),
+        Value::String("index"),
+        Value::Int(200),
+    ]));
+    let mut not_last_data = not_last_cbor.clone();
+    not_last_data.push(0x82); // Array of 2 sections
+    let res_not_last = parse_bundle_header(&not_last_data, not_last_cbor.len() as u64, 0);
+    expect_true!(res_not_last.is_err());
+    let err_not_last = res_not_last.unwrap_err();
+    expect_eq!(err_not_last.message, "Responses section is not the last in section-lengths.");
+    expect_false!(err_not_last.is_version_error);
+
+    // Case 2b: missing responses entirely.
+    let missing_resp_cbor =
+        cbor::write(&Value::Array(vec![Value::String("index"), Value::Int(100)]));
+    let mut missing_resp_data = missing_resp_cbor.clone();
+    missing_resp_data.push(0x81); // Array of 1 section
+    let res_missing = parse_bundle_header(&missing_resp_data, missing_resp_cbor.len() as u64, 0);
+    expect_true!(res_missing.is_err());
+    let err_missing = res_missing.unwrap_err();
+    expect_eq!(err_missing.message, "Responses section is not the last in section-lengths.");
+    expect_false!(err_missing.is_version_error);
+
+    // 3. Duplicated section names.
+    let dup_cbor = cbor::write(&Value::Array(vec![
+        Value::String("index"),
+        Value::Int(50),
+        Value::String("index"),
+        Value::Int(100),
+        Value::String("responses"),
+        Value::Int(200),
+    ]));
+    let mut dup_data = dup_cbor.clone();
+    dup_data.push(0x83); // Array of 3 sections
+    let res_dup = parse_bundle_header(&dup_data, dup_cbor.len() as u64, 0);
+    expect_true!(res_dup.is_err());
+    let err_dup = res_dup.unwrap_err();
+    expect_eq!(err_dup.message, "Duplicated section.");
+    expect_false!(err_dup.is_version_error);
+
+    // Negative section length
+    let neg_len_cbor = cbor::write(&Value::Array(vec![
+        Value::String("index"),
+        Value::Int(-1),
+        Value::String("responses"),
+        Value::Int(100),
+    ]));
+    let mut neg_len_data = neg_len_cbor.clone();
+    neg_len_data.push(0x82);
+    let res_neg = parse_bundle_header(&neg_len_data, neg_len_cbor.len() as u64, 0);
+    expect_true!(res_neg.is_err());
+    expect_eq!(res_neg.unwrap_err().message, "Cannot parse section-lengths.");
 }
