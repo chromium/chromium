@@ -347,7 +347,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private final @Nullable Intent mKeepAliveServiceIntent;
     private final @Nullable Bundle mAnimationBundle;
 
-    private int mUiType;
+    private final int mUiType;
     private final int mTitleVisibilityState;
     private final @Nullable String mMediaViewerUrl;
     private final boolean mEnableEmbeddedMediaExperience;
@@ -599,6 +599,39 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
         mIsOpenedByChrome = IntentHandler.wasIntentSenderChrome(intent);
 
+        boolean isTwa =
+                mSession != null
+                        && IntentUtils.safeGetBooleanExtra(
+                                intent,
+                                TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY,
+                                false);
+
+        mActivityType =
+                isTwa
+                        ? ActivityType.TRUSTED_WEB_ACTIVITY
+                        : isAuthTab() ? ActivityType.AUTH_TAB : ActivityType.CUSTOM_TAB;
+        mTrustedWebActivityAdditionalOrigins =
+                IntentUtils.safeGetStringArrayListExtra(
+                        intent, TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS);
+
+        // Do not fill in `mAllTrustedWebActivityOrigins` yet, because we cannot `getUrlToLoad()`
+        // until native is loaded.
+
+        mTrustedWebActivityDisplayMode = resolveTwaDisplayMode();
+        mTrustedWebActivityDisplayOverrideMode = resolveTwaDisplayOverrideMode();
+
+        mBreakPointDp = getActivityBreakPointFromIntent(intent);
+        mInitialActivityHeight = getInitialActivityHeightFromIntent(intent);
+        mInitialActivityWidth = getInitialActivityWidthFromIntent(intent);
+        mPartialTabToolbarCornerRadius = getToolbarCornerRadiusFromIntent(context, intent);
+        // The default behavior is that the PCCT's height is resizable.
+        @ActivityHeightResizeBehavior
+        int activityHeightResizeBehavior =
+                IntentUtils.safeGetIntExtra(
+                        intent, EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_DEFAULT);
+        mIsPartialCustomTabFixedHeight = activityHeightResizeBehavior == ACTIVITY_HEIGHT_FIXED;
+
+        // Depends on the Trusted Web Activity state resolved above.
         final int requestedUiType =
                 IntentUtils.safeGetIntExtra(intent, EXTRA_UI_TYPE, CustomTabsUiType.DEFAULT);
         mUiType = getCustomTabsUiType(requestedUiType);
@@ -666,30 +699,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         updateExtraMenuItems(menuItems);
         maybeAddShareOption(intent, context);
 
-        boolean isTwa =
-                mSession != null
-                        && IntentUtils.safeGetBooleanExtra(
-                                intent,
-                                TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY,
-                                false);
-
-        mActivityType =
-                isTwa
-                        ? ActivityType.TRUSTED_WEB_ACTIVITY
-                        : isAuthTab() ? ActivityType.AUTH_TAB : ActivityType.CUSTOM_TAB;
-        mTrustedWebActivityAdditionalOrigins =
-                IntentUtils.safeGetStringArrayListExtra(
-                        intent, TrustedWebActivityIntentBuilder.EXTRA_ADDITIONAL_TRUSTED_ORIGINS);
-
-        // Do not fill in `mAllTrustedWebActivityOrigins` yet, because we cannot `getUrlToLoad()`
-        // until native is loaded.
-
-        mTrustedWebActivityDisplayMode = resolveTwaDisplayMode();
-        mTrustedWebActivityDisplayOverrideMode = resolveTwaDisplayOverrideMode();
-
-        // After TWA checks, update custom tabs ui types. Order seems to matter
-        // here.
-        mUiType = getCustomTabsUiType(requestedUiType);
         int intentVisibilityState =
                 IntentUtils.safeGetIntExtra(
                         intent,
@@ -745,17 +754,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         mCctTabSwitcherEnabledForEmbedderExperiment =
                 IntentUtils.safeGetBooleanExtra(
                         intent, EXTRA_CCT_TAB_SWITCHER_ENABLED_FOR_EMBEDDER_EXPERIMENT, false);
-
-        mBreakPointDp = getActivityBreakPointFromIntent(intent);
-        mInitialActivityHeight = getInitialActivityHeightFromIntent(intent);
-        mInitialActivityWidth = getInitialActivityWidthFromIntent(intent);
-        mPartialTabToolbarCornerRadius = getToolbarCornerRadiusFromIntent(context, intent);
-        // The default behavior is that the PCCT's height is resizable.
-        @ActivityHeightResizeBehavior
-        int activityHeightResizeBehavior =
-                IntentUtils.safeGetIntExtra(
-                        intent, EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR, ACTIVITY_HEIGHT_DEFAULT);
-        mIsPartialCustomTabFixedHeight = activityHeightResizeBehavior == ACTIVITY_HEIGHT_FIXED;
 
         mInteractWithBackground = CustomTabsIntent.isBackgroundInteractionEnabled(intent);
         if (IntentUtils.safeHasExtra(intent, EXTRA_ENABLE_BACKGROUND_INTERACTION)) {

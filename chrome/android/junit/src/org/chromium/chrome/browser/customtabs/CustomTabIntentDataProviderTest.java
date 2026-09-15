@@ -1470,6 +1470,68 @@ public class CustomTabIntentDataProviderTest {
                 CustomButtonParams.ButtonType.CCT_OPEN_IN_BROWSER_BUTTON, buttons.get(0).getType());
     }
 
+    /**
+     * A Trusted Web Activity is not an open-in-browser eligible UI type, so the state requested by
+     * the embedder is overridden.
+     *
+     * <p>Regression test: the UI type used to be resolved twice, and the open-in-browser state was
+     * derived from the first value, which was computed before the Trusted Web Activity state was
+     * known. A TWA was therefore evaluated as if it were a {@link CustomTabsUiType#DEFAULT} Custom
+     * Tab and kept the embedder's state.
+     */
+    @Test
+    public void openInBrowserState_trustedWebActivity_isDisabled() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+
+        CustomTabsSession session =
+                CustomTabsSession.createMockSessionForTesting(
+                        new ComponentName(mContext, ChromeLauncherActivity.class));
+        Intent intent =
+                new TrustedWebActivityIntentBuilder(getLaunchingUrl()).build(session).getIntent();
+        intent.putExtra(
+                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_ON);
+
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertEquals(CustomTabsUiType.TRUSTED_WEB_ACTIVITY, dataProvider.getUiType());
+        assertEquals(
+                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_OFF,
+                dataProvider.getOpenInBrowserButtonState());
+    }
+
+    /**
+     * The interactive omnibox is not allowed in a partial Custom Tab, so the share state keeps its
+     * regular default instead of the omnibox-specific one.
+     *
+     * <p>Regression test: the partial Custom Tab dimensions used to be parsed after the share state
+     * was resolved, so {@link CustomTabIntentDataProvider#isPartialCustomTab()} reported {@code
+     * false} while the constructor asked whether the interactive omnibox was allowed, and the share
+     * button was defaulted off.
+     */
+    @Test
+    public void shareState_partialCustomTab_omniboxNotAllowedDuringConstruction() {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        when(connection.isFirstParty(any())).thenReturn(true);
+        // Mirror ChromeCustomTabsConnection#shouldEnableOmniboxForIntent, which consults the
+        // provider instead of looking at the intent alone.
+        when(connection.shouldEnableOmniboxForIntent(any()))
+                .thenAnswer(
+                        invocation ->
+                                ((BrowserServicesIntentDataProvider) invocation.getArgument(0))
+                                        .isInteractiveOmniboxAllowed());
+
+        Intent intent =
+                new Intent().putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
+
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+
+        assertTrue(dataProvider.isPartialCustomTab());
+        assertEquals(CustomTabsIntent.SHARE_STATE_DEFAULT, dataProvider.getShareButtonState());
+    }
+
     @Test
     public void openInBrowserStateExtraTrue_enabledByEmbedderTrue_openInBrowserButtonAdded() {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
