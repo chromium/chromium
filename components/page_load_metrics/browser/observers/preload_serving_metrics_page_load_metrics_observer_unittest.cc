@@ -51,13 +51,15 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   base::HistogramTester histogram_tester;
 
   page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
-      content::UsedInstantLoad::kNoInstantLoad, "Other", /*is_url_srp=*/false);
+      content::UsedInstantLoad::kNoInstantLoad,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
-      content::UsedInstantLoad::kNoInstantLoad, "Other", /*is_url_srp=*/false);
+      content::UsedInstantLoad::kNoInstantLoad,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
   page_load_metrics_internal::RecordLargestContentfulPaint(
       base::Milliseconds(555), content::UsedInstantLoad::kNoInstantLoad,
-      "Other", /*is_url_srp=*/false);
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
 
   ExpectFCP(histogram_tester, "WithoutPreload", {334});
   ExpectFCP(histogram_tester, "WithPrefetch", {});
@@ -65,32 +67,40 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
 
   ExpectFCP(histogram_tester, "All.All.All", {334});
   ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {334});
+  ExpectFCP(histogram_tester, "All.All.NoInstantLoadDiskCache", {});
   ExpectFCP(histogram_tester, "All.All.Prefetch", {});
   ExpectFCP(histogram_tester, "All.All.Prerender", {});
 
   ExpectFCP(histogram_tester, "Other.All.All", {334});
   ExpectFCP(histogram_tester, "Other.All.NoInstantLoad", {334});
+  ExpectFCP(histogram_tester, "Other.All.NoInstantLoadDiskCache", {});
   ExpectFCP(histogram_tester, "Other.All.Prefetch", {});
   ExpectFCP(histogram_tester, "Other.All.Prerender", {});
 
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoadDiskCache",
+            {});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
 
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {334});
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.NoInstantLoad",
             {334});
+  ExpectFCP(histogram_tester,
+            "WithoutFiltering.Other.All.NoInstantLoadDiskCache", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {});
   ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {});
 
   ExpectLCP(histogram_tester, "All.All.All", {555});
   ExpectLCP(histogram_tester, "All.All.NoInstantLoad", {555});
+  ExpectLCP(histogram_tester, "All.All.NoInstantLoadDiskCache", {});
   ExpectLCP(histogram_tester, "All.All.Prefetch", {});
   ExpectLCP(histogram_tester, "All.All.Prerender", {});
 
   ExpectLCP(histogram_tester, "Other.All.All", {555});
   ExpectLCP(histogram_tester, "Other.All.NoInstantLoad", {555});
+  ExpectLCP(histogram_tester, "Other.All.NoInstantLoadDiskCache", {});
   ExpectLCP(histogram_tester, "Other.All.Prefetch", {});
   ExpectLCP(histogram_tester, "Other.All.Prerender", {});
 
@@ -105,10 +115,12 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   base::HistogramTester histogram_tester;
 
   page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
-      content::UsedInstantLoad::kNoInstantLoad, "Other", /*is_url_srp=*/false);
+      content::UsedInstantLoad::kNoInstantLoad,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/false,
-      content::UsedInstantLoad::kNoInstantLoad, "Other", /*is_url_srp=*/false);
+      content::UsedInstantLoad::kNoInstantLoad,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
 
   ExpectFCP(histogram_tester, "WithoutPreload", {334});
   ExpectFCP(histogram_tester, "WithPrefetch", {});
@@ -146,13 +158,15 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   base::HistogramTester histogram_tester;
 
   page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
-      content::UsedInstantLoad::kBFCache, "Backward", /*is_url_srp=*/false);
+      content::UsedInstantLoad::kBFCache, /*is_served_by_disk_cache=*/false,
+      "Backward", /*is_url_srp=*/false);
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
-      content::UsedInstantLoad::kBFCache, "Backward", /*is_url_srp=*/false);
+      content::UsedInstantLoad::kBFCache, /*is_served_by_disk_cache=*/false,
+      "Backward", /*is_url_srp=*/false);
   page_load_metrics_internal::RecordLargestContentfulPaint(
-      base::Milliseconds(555), content::UsedInstantLoad::kBFCache, "Backward",
-      /*is_url_srp=*/false);
+      base::Milliseconds(555), content::UsedInstantLoad::kBFCache,
+      /*is_served_by_disk_cache=*/false, "Backward", /*is_url_srp=*/false);
 
   histogram_tester.ExpectBucketCount("PreloadServingMetrics.Backward.All",
                                      3 /* kBFCache */, 1);
@@ -171,13 +185,15 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest, NavigationWithSRP) {
   base::HistogramTester histogram_tester;
 
   page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
-      content::UsedInstantLoad::kNoInstantLoad, "Other", /*is_url_srp=*/true);
+      content::UsedInstantLoad::kNoInstantLoad,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/true);
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
-      content::UsedInstantLoad::kNoInstantLoad, "Other", /*is_url_srp=*/true);
+      content::UsedInstantLoad::kNoInstantLoad,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/true);
   page_load_metrics_internal::RecordLargestContentfulPaint(
       base::Milliseconds(555), content::UsedInstantLoad::kNoInstantLoad,
-      "Other", /*is_url_srp=*/true);
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/true);
 
   ExpectFCP(histogram_tester, "All.All.All", {334});
   ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {334});
@@ -223,12 +239,12 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   base::HistogramTester histogram_tester;
 
   page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
-      content::UsedInstantLoad::kPrefetchWithoutPrePrefetch, "Other",
-      /*is_url_srp=*/true);
+      content::UsedInstantLoad::kPrefetchWithoutPrePrefetch,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/true);
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
-      content::UsedInstantLoad::kPrefetchWithoutPrePrefetch, "Other",
-      /*is_url_srp=*/true);
+      content::UsedInstantLoad::kPrefetchWithoutPrePrefetch,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/true);
 
   ExpectFCP(histogram_tester, "WithPrefetch", {334});
   ExpectFCP(histogram_tester, "WithoutPreload", {});
@@ -267,16 +283,16 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest, NavigationWithPrefetch) {
   base::HistogramTester histogram_tester;
 
   page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
-      content::UsedInstantLoad::kPrefetchWithoutPrePrefetch, "Other",
-      /*is_url_srp=*/false);
+      content::UsedInstantLoad::kPrefetchWithoutPrePrefetch,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
-      content::UsedInstantLoad::kPrefetchWithoutPrePrefetch, "Other",
-      /*is_url_srp=*/false);
+      content::UsedInstantLoad::kPrefetchWithoutPrePrefetch,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
   page_load_metrics_internal::RecordLargestContentfulPaint(
       base::Milliseconds(555),
-      content::UsedInstantLoad::kPrefetchWithoutPrePrefetch, "Other",
-      /*is_url_srp=*/false);
+      content::UsedInstantLoad::kPrefetchWithoutPrePrefetch,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
 
   ExpectFCP(histogram_tester, "WithoutPreload", {});
   ExpectFCP(histogram_tester, "WithPrefetch", {334});
@@ -343,16 +359,16 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   base::HistogramTester histogram_tester;
 
   page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
-      content::UsedInstantLoad::kPrefetchWithPrePrefetch, "Other",
-      /*is_url_srp=*/false);
+      content::UsedInstantLoad::kPrefetchWithPrePrefetch,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
-      content::UsedInstantLoad::kPrefetchWithPrePrefetch, "Other",
-      /*is_url_srp=*/false);
+      content::UsedInstantLoad::kPrefetchWithPrePrefetch,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
   page_load_metrics_internal::RecordLargestContentfulPaint(
       base::Milliseconds(555),
-      content::UsedInstantLoad::kPrefetchWithPrePrefetch, "Other",
-      /*is_url_srp=*/false);
+      content::UsedInstantLoad::kPrefetchWithPrePrefetch,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
 
   ExpectFCP(histogram_tester, "WithoutPreload", {});
   ExpectFCP(histogram_tester, "WithPrefetch", {334});
@@ -418,15 +434,18 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   base::HistogramTester histogram_tester;
 
   page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
-      content::UsedInstantLoad::kNoInstantLoad, "TestInitiator",
+      content::UsedInstantLoad::kNoInstantLoad,
+      /*is_served_by_disk_cache=*/false, "TestInitiator",
       /*is_url_srp=*/true);
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
-      content::UsedInstantLoad::kNoInstantLoad, "TestInitiator",
+      content::UsedInstantLoad::kNoInstantLoad,
+      /*is_served_by_disk_cache=*/false, "TestInitiator",
       /*is_url_srp=*/true);
   page_load_metrics_internal::RecordLargestContentfulPaint(
       base::Milliseconds(555), content::UsedInstantLoad::kNoInstantLoad,
-      "TestInitiator", /*is_url_srp=*/true);
+      /*is_served_by_disk_cache=*/false, "TestInitiator",
+      /*is_url_srp=*/true);
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.TestInitiator.All",
                                       0 /* kNoInstantLoad */, 1);
@@ -472,13 +491,15 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
   base::HistogramTester histogram_tester;
 
   page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
-      content::UsedInstantLoad::kPrerender, "Other", /*is_url_srp=*/false);
+      content::UsedInstantLoad::kPrerender, /*is_served_by_disk_cache=*/false,
+      "Other", /*is_url_srp=*/false);
   page_load_metrics_internal::RecordFirstContentfulPaint(
       base::Milliseconds(334), /*is_in_foreground=*/true,
-      content::UsedInstantLoad::kPrerender, "Other", /*is_url_srp=*/false);
+      content::UsedInstantLoad::kPrerender, /*is_served_by_disk_cache=*/false,
+      "Other", /*is_url_srp=*/false);
   page_load_metrics_internal::RecordLargestContentfulPaint(
-      base::Milliseconds(555), content::UsedInstantLoad::kPrerender, "Other",
-      /*is_url_srp=*/false);
+      base::Milliseconds(555), content::UsedInstantLoad::kPrerender,
+      /*is_served_by_disk_cache=*/false, "Other", /*is_url_srp=*/false);
 
   ExpectFCP(histogram_tester, "WithoutPreload", {});
   ExpectFCP(histogram_tester, "WithPrefetch", {});
@@ -516,6 +537,70 @@ TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
 
   histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
                                       2 /* kPrerender */, 1);
+  histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
+}
+
+// Verifies metrics recording for a navigation served by disk cache without
+// preloading.
+TEST(PreloadServingMetricsPageLoadMetricsObserverTest,
+     NavigationServedByDiskCache) {
+  base::HistogramTester histogram_tester;
+
+  page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
+      content::UsedInstantLoad::kNoInstantLoad,
+      /*is_served_by_disk_cache=*/true, "Other", /*is_url_srp=*/false);
+  page_load_metrics_internal::RecordFirstContentfulPaint(
+      base::Milliseconds(334), /*is_in_foreground=*/true,
+      content::UsedInstantLoad::kNoInstantLoad,
+      /*is_served_by_disk_cache=*/true, "Other", /*is_url_srp=*/false);
+  page_load_metrics_internal::RecordLargestContentfulPaint(
+      base::Milliseconds(555), content::UsedInstantLoad::kNoInstantLoad,
+      /*is_served_by_disk_cache=*/true, "Other", /*is_url_srp=*/false);
+
+  ExpectFCP(histogram_tester, "WithoutPreload", {334});
+  ExpectFCP(histogram_tester, "WithPrefetch", {});
+  ExpectFCP(histogram_tester, "WithPrerender", {});
+
+  ExpectFCP(histogram_tester, "All.All.All", {334});
+  ExpectFCP(histogram_tester, "All.All.NoInstantLoad", {});
+  ExpectFCP(histogram_tester, "All.All.NoInstantLoadDiskCache", {334});
+  ExpectFCP(histogram_tester, "All.All.Prefetch", {});
+  ExpectFCP(histogram_tester, "All.All.Prerender", {});
+
+  ExpectFCP(histogram_tester, "Other.All.All", {334});
+  ExpectFCP(histogram_tester, "Other.All.NoInstantLoad", {});
+  ExpectFCP(histogram_tester, "Other.All.NoInstantLoadDiskCache", {334});
+  ExpectFCP(histogram_tester, "Other.All.Prefetch", {});
+  ExpectFCP(histogram_tester, "Other.All.Prerender", {});
+
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.All", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoad", {});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.NoInstantLoadDiskCache",
+            {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prefetch", {});
+  ExpectFCP(histogram_tester, "WithoutFiltering.All.All.Prerender", {});
+
+  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.All", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.NoInstantLoad", {});
+  ExpectFCP(histogram_tester,
+            "WithoutFiltering.Other.All.NoInstantLoadDiskCache", {334});
+  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prefetch", {});
+  ExpectFCP(histogram_tester, "WithoutFiltering.Other.All.Prerender", {});
+
+  ExpectLCP(histogram_tester, "All.All.All", {555});
+  ExpectLCP(histogram_tester, "All.All.NoInstantLoad", {});
+  ExpectLCP(histogram_tester, "All.All.NoInstantLoadDiskCache", {555});
+  ExpectLCP(histogram_tester, "All.All.Prefetch", {});
+  ExpectLCP(histogram_tester, "All.All.Prerender", {});
+
+  ExpectLCP(histogram_tester, "Other.All.All", {555});
+  ExpectLCP(histogram_tester, "Other.All.NoInstantLoad", {});
+  ExpectLCP(histogram_tester, "Other.All.NoInstantLoadDiskCache", {555});
+  ExpectLCP(histogram_tester, "Other.All.Prefetch", {});
+  ExpectLCP(histogram_tester, "Other.All.Prerender", {});
+
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.Other.All",
+                                      4 /* kNoInstantLoadDiskCache */, 1);
   histogram_tester.ExpectTotalCount("PreloadServingMetrics.Other.SRP", 0);
 }
 

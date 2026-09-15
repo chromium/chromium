@@ -150,6 +150,61 @@ IN_PROC_BROWSER_TEST_F(PreloadServingMetricsPageLoadMetricsObserverBrowserTest,
       1);
 }
 
+// Verifies metrics recording for a navigation served by disk cache without
+// instant loading technology.
+IN_PROC_BROWSER_TEST_F(PreloadServingMetricsPageLoadMetricsObserverBrowserTest,
+                       NoInstantLoadDiskCache) {
+  GURL target_url = https_server().GetURL("a.test", "/title1.html");
+  GURL initial_url = https_server().GetURL("a.test", "/empty.html");
+
+  // Populate disk cache for `target_url`.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), target_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  base::HistogramTester histogram_tester;
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+  waiter->AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
+  waiter->AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kLargestContentfulPaint);
+  NavigateViaLinkClick(web_contents(), target_url);
+  waiter->Wait();
+
+  // Navigate away to flush PreloadServingMetrics.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  histogram_tester.ExpectUniqueSample("PreloadServingMetrics.LinkClick.All",
+                                      4 /* kNoInstantLoadDiskCache */, 1);
+
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.LinkClick.All.All",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.LinkClick.All.NoInstantLoad",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.LinkClick.All.NoInstantLoadDiskCache",
+      1);
+
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToLargestContentfulPaint2.LinkClick.All.All",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToLargestContentfulPaint2.LinkClick.All.NoInstantLoad",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToLargestContentfulPaint2.LinkClick.All."
+      "NoInstantLoadDiskCache",
+      1);
+}
+
 // Verifies metrics recording for a navigation using prefetch.
 IN_PROC_BROWSER_TEST_F(PreloadServingMetricsPageLoadMetricsObserverBrowserTest,
                        Prefetch) {

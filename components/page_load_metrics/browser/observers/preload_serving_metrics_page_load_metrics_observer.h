@@ -18,6 +18,7 @@ namespace page_load_metrics_internal {
 
 void RecordPreloadServingMetricsByNavigationInitiator(
     content::UsedInstantLoad used_instant_load,
+    bool is_served_by_disk_cache,
     std::string_view navigation_initiator_string,
     bool is_url_srp);
 
@@ -25,12 +26,14 @@ void RecordFirstContentfulPaint(
     base::TimeDelta corrected_first_contentful_paint,
     bool is_in_foreground,
     content::UsedInstantLoad used_instant_load,
+    bool is_served_by_disk_cache,
     std::string_view navigation_initiator_string,
     bool is_url_srp);
 
 void RecordLargestContentfulPaint(
     base::TimeDelta corrected_largest_contentful_paint,
     content::UsedInstantLoad used_instant_load,
+    bool is_served_by_disk_cache,
     std::string_view navigation_initiator_string,
     bool is_url_srp);
 
@@ -101,6 +104,7 @@ class PreloadServingMetricsPageLoadMetricsObserver
     std::string navigation_initiator_string;
     bool is_url_srp;
     bool is_served_by_legacy_search_prefetch;
+    bool is_served_by_disk_cache;
   };
 
   std::optional<NavigationData> navigation_data_;

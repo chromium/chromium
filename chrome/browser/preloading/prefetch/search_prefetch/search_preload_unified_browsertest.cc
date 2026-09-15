@@ -1431,6 +1431,10 @@ IN_PROC_BROWSER_TEST_P(HTTPCacheSearchPreloadUnifiedBrowserTest,
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
       "NavigationToFirstContentfulPaint.All.All.NoInstantLoad",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.All.All.NoInstantLoadDiskCache",
       1);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
@@ -1447,6 +1451,10 @@ IN_PROC_BROWSER_TEST_P(HTTPCacheSearchPreloadUnifiedBrowserTest,
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
       "NavigationToFirstContentfulPaint.Backward.All.NoInstantLoad",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
+      "NavigationToFirstContentfulPaint.Backward.All.NoInstantLoadDiskCache",
       1);
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."

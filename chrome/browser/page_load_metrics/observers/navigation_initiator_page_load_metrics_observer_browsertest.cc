@@ -1342,15 +1342,16 @@ IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
   // Navigate away to flush PreloadServingMetrics.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-  int expected_bfcache_bucket = IsBfcacheEnabled() ? 3 /* kBFCache */ : 0;
+  int expected_bfcache_bucket =
+      IsBfcacheEnabled() ? 3 /* kBFCache */ : 4 /* kNoInstantLoadDiskCache */;
   preload_histogram_tester.ExpectBucketCount("PreloadServingMetrics.Other.All",
                                              0 /* kNoPreload */, 2);
   preload_histogram_tester.ExpectBucketCount(
       "PreloadServingMetrics.Backward.All", expected_bfcache_bucket, 1);
   preload_histogram_tester.ExpectBucketCount(
       "PreloadServingMetrics.Forward.All", expected_bfcache_bucket, 1);
-  preload_histogram_tester.ExpectBucketCount("PreloadServingMetrics.Reload.All",
-                                             0 /* kNoPreload */, 1);
+  preload_histogram_tester.ExpectBucketCount(
+      "PreloadServingMetrics.Reload.All", 4 /* kNoInstantLoadDiskCache */, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
@@ -1488,7 +1489,8 @@ IN_PROC_BROWSER_TEST_P(NavigationInitiatorPageLoadMetricsBFCacheBrowserTest,
   // Navigate away to flush PreloadServingMetrics.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
-  int expected_bfcache_bucket = IsBfcacheEnabled() ? 3 /* kBFCache */ : 0;
+  int expected_bfcache_bucket =
+      IsBfcacheEnabled() ? 3 /* kBFCache */ : 4 /* kNoInstantLoadDiskCache */;
   preload_histogram_tester.ExpectBucketCount("PreloadServingMetrics.Other.All",
                                              0 /* kNoPreload */, 2);
   preload_histogram_tester.ExpectBucketCount("PreloadServingMetrics.Other.SRP",

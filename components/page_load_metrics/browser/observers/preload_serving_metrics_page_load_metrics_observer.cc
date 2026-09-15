@@ -31,15 +31,19 @@ enum class UsedInstantLoadUma {
   kPrefetch = 1,
   kPrerender = 2,
   kBFCache = 3,
-  kMaxValue = kBFCache,
+  kNoInstantLoadDiskCache = 4,
+  kMaxValue = kNoInstantLoadDiskCache,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:UsedInstantLoadUma)
 
 UsedInstantLoadUma ToUsedInstantLoadUma(
-    content::UsedInstantLoad used_instant_load) {
+    content::UsedInstantLoad used_instant_load,
+    bool is_served_by_disk_cache) {
   switch (used_instant_load) {
     case content::UsedInstantLoad::kNoInstantLoad:
-      return UsedInstantLoadUma::kNoInstantLoad;
+      return is_served_by_disk_cache
+                 ? UsedInstantLoadUma::kNoInstantLoadDiskCache
+                 : UsedInstantLoadUma::kNoInstantLoad;
     case content::UsedInstantLoad::kPrefetchWithoutPrePrefetch:
     case content::UsedInstantLoad::kPrefetchWithPrePrefetch:
       return UsedInstantLoadUma::kPrefetch;
@@ -61,6 +65,8 @@ const char* ToString(UsedInstantLoadUma used_instant_load_uma) {
       return "Prerender";
     case UsedInstantLoadUma::kBFCache:
       return "BFCache";
+    case UsedInstantLoadUma::kNoInstantLoadDiskCache:
+      return "NoInstantLoadDiskCache";
   }
   NOTREACHED();
 }
@@ -178,10 +184,11 @@ namespace page_load_metrics_internal {
 
 void RecordPreloadServingMetricsByNavigationInitiator(
     content::UsedInstantLoad used_instant_load,
+    bool is_served_by_disk_cache,
     std::string_view navigation_initiator_string,
     bool is_url_srp) {
   UsedInstantLoadUma used_instant_load_uma =
-      ToUsedInstantLoadUma(used_instant_load);
+      ToUsedInstantLoadUma(used_instant_load, is_served_by_disk_cache);
 
   base::UmaHistogramEnumeration(
       base::StrCat(
@@ -199,6 +206,7 @@ void RecordFirstContentfulPaint(
     base::TimeDelta corrected_first_contentful_paint,
     bool is_in_foreground,
     content::UsedInstantLoad used_instant_load,
+    bool is_served_by_disk_cache,
     std::string_view navigation_initiator_string,
     bool is_url_srp) {
   // BFCache restores are filtered out in `OnFirstContentfulPaintInPage()`, but
@@ -209,8 +217,8 @@ void RecordFirstContentfulPaint(
   }
 
   const char* obsolete_suffix = GetObsoleteSuffix(used_instant_load);
-  const char* used_instant_load_string =
-      ToString(ToUsedInstantLoadUma(used_instant_load));
+  const char* used_instant_load_string = ToString(
+      ToUsedInstantLoadUma(used_instant_load, is_served_by_disk_cache));
 
   PAGE_LOAD_HISTOGRAM(
       base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
@@ -286,6 +294,7 @@ void RecordFirstContentfulPaint(
 void RecordLargestContentfulPaint(
     base::TimeDelta corrected_largest_contentful_paint,
     content::UsedInstantLoad used_instant_load,
+    bool is_served_by_disk_cache,
     std::string_view navigation_initiator_string,
     bool is_url_srp) {
   // BFCache restores are filtered out in `MaybeRecord()`, but unit tests can
@@ -295,8 +304,8 @@ void RecordLargestContentfulPaint(
     return;
   }
 
-  const char* used_instant_load_string =
-      ToString(ToUsedInstantLoadUma(used_instant_load));
+  const char* used_instant_load_string = ToString(
+      ToUsedInstantLoadUma(used_instant_load, is_served_by_disk_cache));
 
   const std::array<std::string_view, 2> navigation_initiators = {
       "All", navigation_initiator_string};
@@ -356,7 +365,8 @@ PreloadServingMetricsPageLoadMetricsObserver::NavigationData::NavigationData(
           GetNavigationInitiatorString(navigation_handle)),
       is_url_srp(google_util::IsGoogleSearchUrl(navigation_handle.GetURL())),
       is_served_by_legacy_search_prefetch(
-          GetServedByLegacySearchPrefetch(navigation_handle)) {
+          GetServedByLegacySearchPrefetch(navigation_handle)),
+      is_served_by_disk_cache(navigation_handle.WasResponseCached()) {
   CHECK(preload_serving_metrics_capsule);
 }
 
@@ -453,6 +463,7 @@ void PreloadServingMetricsPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
 
   page_load_metrics_internal::RecordFirstContentfulPaint(
       corrected, is_in_foreground, used_instant_load,
+      navigation_data_->is_served_by_disk_cache,
       navigation_data_->navigation_initiator_string,
       navigation_data_->is_url_srp);
 }
@@ -503,7 +514,8 @@ void PreloadServingMetricsPageLoadMetricsObserver::MaybeRecord() {
           navigation_data_->is_served_by_legacy_search_prefetch);
 
   page_load_metrics_internal::RecordPreloadServingMetricsByNavigationInitiator(
-      used_instant_load, navigation_data_->navigation_initiator_string,
+      used_instant_load, navigation_data_->is_served_by_disk_cache,
+      navigation_data_->navigation_initiator_string,
       navigation_data_->is_url_srp);
 
   if (!navigation_data_->used_bfcache) {
@@ -522,6 +534,7 @@ void PreloadServingMetricsPageLoadMetricsObserver::MaybeRecord() {
                 all_frames_largest_contentful_paint.Time().value());
         page_load_metrics_internal::RecordLargestContentfulPaint(
             corrected, used_instant_load,
+            navigation_data_->is_served_by_disk_cache,
             navigation_data_->navigation_initiator_string,
             navigation_data_->is_url_srp);
       }

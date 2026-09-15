@@ -27965,6 +27965,7 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Prefetch"/>
   <int value="2" label="Prerender"/>
   <int value="3" label="BFCache"/>
+  <int value="4" label="NoInstantLoadDiskCache"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/preload_serving_metrics_page_load_metrics_observer.cc:UsedInstantLoadUma) -->
