@@ -70,6 +70,12 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
       base::RepeatingCallback<void(const SendTabToSelfEntry*)>;
   void SetSendEntryCallback(SendEntryCallback callback);
 
+  using MarkEntryActivatedCallback =
+      base::RepeatingCallback<void(const std::string&,
+                                   ShareActivatedEntryPoint)>;
+  void SetMarkEntryActivatedCallback(MarkEntryActivatedCallback callback);
+  void SetMarkEntryActivatedCallback(base::RepeatingClosure callback);
+
   struct RemoteEntryParams {
     GURL url;
     std::string title;
@@ -124,6 +130,7 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   std::optional<ShareActivatedEntryPoint> last_activated_entry_point_;
   int activated_call_count_ = 0;
   SendEntryCallback send_entry_callback_;
+  MarkEntryActivatedCallback mark_entry_activated_callback_;
   SendTabToSelfResult send_result_ = SendTabToSelfResult::kSuccess;
   std::vector<std::unique_ptr<SendTabToSelfEntry>>
       remote_entries_pending_model_ready_;

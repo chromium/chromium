@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
@@ -47,6 +48,23 @@
 namespace send_tab_to_self {
 
 namespace {
+
+using base::test::TestFuture;
+
+// Waits until the specified browser window becomes inactive.
+void WaitForBrowserToBecomeInactive(BrowserWindowInterface* browser) {
+  if (!browser->IsActive()) {
+    return;
+  }
+  TestFuture<BrowserWindowInterface*> inactive_future;
+  base::CallbackListSubscription subscription =
+      browser->RegisterDidBecomeInactive(
+          inactive_future.GetRepeatingCallback());
+  if (!browser->IsActive()) {
+    return;
+  }
+  EXPECT_TRUE(inactive_future.Wait());
+}
 
 class SendTabToSelfToolbarIconControllerTest : public InProcessBrowserTest {
  public:
@@ -149,6 +167,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
 
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
+  WaitForBrowserToBecomeInactive(browser());
 
   SendTabToSelfEntry entry("a", GURL("https://www.example-a.com"), "a site",
                            base::Time(), "device a", "device b", PageContext(),
@@ -187,6 +206,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
   BrowserView::GetBrowserViewForBrowser(app_browser)->Activate();
   WaitUntilBrowserBecomeActiveOrLastActive(app_browser);
+  WaitForBrowserToBecomeInactive(browser());
 
   SendTabToSelfEntry entry("a", GURL("https://www.example-a.com"), "a site",
                            base::Time(), "device a", "device b", PageContext(),
@@ -279,6 +299,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
   FakeSendTabToSelfModel* model = GetModel(browser()->GetProfile());
   model->SetLocalCacheGuid("device_b");
 
+  TestFuture<void> activated_future;
+  model->SetMarkEntryActivatedCallback(activated_future.GetRepeatingCallback());
+
   base::Time now = base::Time::Now();
   auto entries =
       model->AddEntriesRemotely({{.url = url_1,
@@ -308,7 +331,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
       "Sharing.SendTabToSelf.AutoOpenOutcome2",
       AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
 
-  // Verify that the model was called with the correct GUID and entry point.
+  // Tab activation dispatches visibility changes asynchronously on macOS.
+  // Wait for the model activation callback before asserting.
+  EXPECT_TRUE(activated_future.Wait());
   EXPECT_EQ(model->last_activated_guid(), entry_1->GetGUID());
   EXPECT_EQ(model->last_activated_entry_point(),
             ShareActivatedEntryPoint::kAutoOpened);
@@ -339,6 +364,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
   // Create an incognito browser and remove the current browser from focus.
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
+  WaitForBrowserToBecomeInactive(browser());
   ASSERT_FALSE(browser()->IsActive());
 
   GURL url_1("https://www.example-a.com");
@@ -393,9 +419,16 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
       ToastService::From(browser())->toast_controller()->GetCurrentToastId(),
       ToastId::kSendTabToSelfTabsOpenedInBackground);
 
+  TestFuture<void> activated_future;
+  model->SetMarkEntryActivatedCallback(activated_future.GetRepeatingCallback());
+
   // Manually activate one of the background tabs (index 1) and verify the
   // model was notified.
   browser()->GetTabStripModel()->ActivateTabAt(1);
+
+  // Tab activation dispatches visibility changes asynchronously on macOS.
+  // Wait for the model activation callback before asserting.
+  EXPECT_TRUE(activated_future.Wait());
   EXPECT_EQ(model->last_activated_guid(), entry_1->GetGUID());
   EXPECT_EQ(model->last_activated_entry_point(),
             ShareActivatedEntryPoint::kTabStrip);
@@ -417,6 +450,7 @@ IN_PROC_BROWSER_TEST_F(
   // Create an incognito browser and remove the current browser from focus.
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
+  WaitForBrowserToBecomeInactive(browser());
   ASSERT_FALSE(browser()->IsActive());
 
   GURL url_1("https://www.example-a.com");
@@ -455,11 +489,16 @@ IN_PROC_BROWSER_TEST_F(
       ToastService::From(browser())->toast_controller()->GetCurrentToastId(),
       ToastId::kSendTabToSelfTabsOpenedInBackground);
 
+  TestFuture<void> activated_future;
+  model->SetMarkEntryActivatedCallback(activated_future.GetRepeatingCallback());
+
   // Simulate clicking the toast action button.
   controller()->SwitchToLatestTabsOpenedInBackground(browser());
   EXPECT_EQ(1, browser()->GetTabStripModel()->active_index());
 
-  // Verify that the model was notified.
+  // Tab activation dispatches visibility changes asynchronously on macOS.
+  // Wait for the model activation callback before asserting.
+  EXPECT_TRUE(activated_future.Wait());
   EXPECT_EQ(model->last_activated_guid(), entry_1->GetGUID());
   EXPECT_EQ(model->last_activated_entry_point(),
             ShareActivatedEntryPoint::kDesktopToast);
@@ -488,6 +527,7 @@ IN_PROC_BROWSER_TEST_F(
   // Create an incognito browser and remove the current browser from focus.
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
+  WaitForBrowserToBecomeInactive(browser());
   ASSERT_FALSE(browser()->IsActive());
 
   GURL url_2("https://www.example-b.com");
@@ -565,6 +605,7 @@ IN_PROC_BROWSER_TEST_F(
   // Create an incognito browser and remove the current browser from focus.
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
+  WaitForBrowserToBecomeInactive(browser());
   ASSERT_FALSE(browser()->IsActive());
 
   GURL url_1("https://www.example-a.com");
@@ -632,6 +673,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerAutoOpenTest,
   // Create an incognito browser and remove the current browser from focus.
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   WaitUntilBrowserBecomeActiveOrLastActive(incognito_browser);
+  WaitForBrowserToBecomeInactive(browser());
   ASSERT_FALSE(browser()->IsActive());
 
   GURL url_1("https://www.example-a.com");

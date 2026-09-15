@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_activation_tracker.h"
 
 #include "base/functional/bind.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +25,8 @@
 
 namespace send_tab_to_self {
 namespace {
+
+using base::test::TestFuture;
 
 class SendTabToSelfActivationTrackerBrowserTest : public InProcessBrowserTest {
  public:
@@ -103,10 +106,15 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfActivationTrackerBrowserTest,
   FakeSendTabToSelfModel* model = GetModel(browser()->GetProfile());
   ASSERT_EQ(model->activated_call_count(), 0);
 
+  TestFuture<void> activated_future;
+  model->SetMarkEntryActivatedCallback(activated_future.GetRepeatingCallback());
+
   // Activate the restored target tab.
   tab_strip->ActivateTabAt(target_index);
 
-  // Verify that the model was notified of the activation.
+  // Tab activation dispatches visibility changes asynchronously on macOS.
+  // Wait for the model activation callback before asserting.
+  EXPECT_TRUE(activated_future.Wait());
   EXPECT_EQ(model->last_activated_guid(), "test_guid");
   EXPECT_EQ(model->last_activated_entry_point(),
             ShareActivatedEntryPoint::kTabStrip);

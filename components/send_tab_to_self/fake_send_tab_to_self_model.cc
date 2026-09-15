@@ -14,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/send_tab_to_self/page_context.h"
@@ -140,6 +141,9 @@ void FakeSendTabToSelfModel::MarkEntryActivated(
   if (it != entries_.end()) {
     it->second->MarkActivated(base::Time::Now());
   }
+  if (mark_entry_activated_callback_) {
+    mark_entry_activated_callback_.Run(last_activated_guid_, entry_point);
+  }
 }
 
 bool FakeSendTabToSelfModel::IsReady() {
@@ -207,6 +211,18 @@ void FakeSendTabToSelfModel::SetSendResult(SendTabToSelfResult result) {
 
 void FakeSendTabToSelfModel::SetSendEntryCallback(SendEntryCallback callback) {
   send_entry_callback_ = std::move(callback);
+}
+
+void FakeSendTabToSelfModel::SetMarkEntryActivatedCallback(
+    MarkEntryActivatedCallback callback) {
+  mark_entry_activated_callback_ = std::move(callback);
+}
+
+void FakeSendTabToSelfModel::SetMarkEntryActivatedCallback(
+    base::RepeatingClosure callback) {
+  mark_entry_activated_callback_ =
+      base::IgnoreArgs<const std::string&, ShareActivatedEntryPoint>(
+          std::move(callback));
 }
 
 const SendTabToSelfEntry* FakeSendTabToSelfModel::AddEntryRemotely(
