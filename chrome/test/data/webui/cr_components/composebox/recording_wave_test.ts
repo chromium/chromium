@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_components/search/recording_wave.js';
 
 import {AudioProcessor} from 'chrome://resources/cr_components/search/audio_processor.service.js';
+import {MAX_BAR_BOUND_HEIGHT} from 'chrome://resources/cr_components/search/recording_wave.js';
 import type {RecordingWaveElement} from 'chrome://resources/cr_components/search/recording_wave.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -323,6 +324,56 @@ suite('RecordingWaveElementTest', () => {
               'Volume must reset to exactly 0 after stopListening()');
         } finally {
           AudioProcessor.setSimulate(false);
+        }
+      });
+
+  test(
+      'wave is vertically centered with overflow-x clip and overflow-y visible',
+      () => {
+        const computed = window.getComputedStyle(recordingWaveElement);
+        assertEquals('center', computed.alignItems);
+        assertEquals('clip', computed.overflowX);
+        assertEquals('visible', computed.overflowY);
+      });
+
+  test(
+      'bar height with spring overshoot never exceeds 40px when loud',
+      async () => {
+        const originalGetVolume = AudioProcessor.getVolume;
+        AudioProcessor.getVolume = () => 1.0;  // Max volume
+
+        try {
+          recordingWaveElement.isListening = true;
+          await recordingWaveElement.updateComplete;
+          await microtasksFinished();
+
+          const barsData = (recordingWaveElement as any).barsData_;
+          // Trigger spawn at ACTIVATION_DELAY_INDEX (6).
+          barsData[6].isUnspawned = true;
+          (recordingWaveElement as any).animationLoop_(performance.now());
+          assertEquals(36, barsData[6].targetHeightPx);
+
+          // Simulate spring overshoot peak (currentScaleY = 1.372).
+          barsData[6].isSpawning = true;
+          barsData[6].currentScaleY = 1.372;
+          barsData[6].currentScaleX = 1.0;
+
+          (recordingWaveElement as any).animationLoop_(performance.now());
+
+          const pill =
+              recordingWaveElement.$.barsContainer.children[6] as HTMLElement;
+          const transform = pill.style.transform;
+          const match = transform.match(/scaleY\(([\d.]+)\)/);
+          assertTrue(!!match, 'scaleY should be present in transform');
+          const scaleY = parseFloat(match?.[1] ?? '0');
+          assertTrue(scaleY > 0, 'scaleY should be greater than 0');
+          const renderedHeight = barsData[6].targetHeightPx * scaleY;
+          assertTrue(
+              renderedHeight <= MAX_BAR_BOUND_HEIGHT + 0.01,
+              `Rendered height ${renderedHeight} should not exceed ` +
+                  `${MAX_BAR_BOUND_HEIGHT}px`);
+        } finally {
+          AudioProcessor.getVolume = originalGetVolume;
         }
       });
 });

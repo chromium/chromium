@@ -511,11 +511,6 @@ ntp-lens-upload-dialog {
 }
 
 #voiceSearchDialog:has(#voiceSearch[audio-wave-enabled])
-    #voiceSearchGlow {
-  --recording-wave-top-padding: 4px;
-}
-
-#voiceSearchDialog:has(#voiceSearch[audio-wave-enabled])
     #voiceSearchGlow::part(full-container-overlay) {
   height: 48px;
   inset-inline: 0;
