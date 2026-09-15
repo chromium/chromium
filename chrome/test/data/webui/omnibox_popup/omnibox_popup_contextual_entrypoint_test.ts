@@ -154,6 +154,39 @@ suite('OmniboxPopupContextualEntrypointTest', () => {
     assertFalse(!!lensChip);
   });
 
+  test('CurrentTabChipSuppressedWhenFeatureIneligible', async () => {
+    loadTimeData.overrideValues({
+      composeboxShowCurrentTabChip: false,
+    });
+
+    const newElement =
+        document.createElement('omnibox-popup-contextual-entrypoint');
+    newElement.inputState = createDefaultInputState();
+    newElement.isContentSharingEnabled = true;
+    newElement.isLensSearchEligible = true;
+    document.body.appendChild(newElement);
+    testProxy.initVisibilityPrefs();
+
+    testProxy.handler.setPromiseResolveFor<'getRecentTabs'>('getRecentTabs', {
+      tabs: [{
+        tabId: 123,
+        title: 'Test Tab',
+        url: 'https://example.com',
+        showInCurrentTabChip: true,
+      }],
+    });
+
+    popupCallbackRouter.onShow();
+    await testProxy.handler.whenCalled('getRecentTabs');
+    await microtasksFinished();
+
+    const currentTabChip = $$<HTMLElement>(newElement, '#currentTabChip');
+    assertFalse(!!currentTabChip);
+
+    const lensChip = $$<HTMLElement>(newElement, '#lensSearchChip');
+    assertTrue(!!lensChip);
+  });
+
   test('BackgroundAndShapeProperties', async () => {
     loadTimeData.overrideValues({
       contextButtonHasBackground: true,

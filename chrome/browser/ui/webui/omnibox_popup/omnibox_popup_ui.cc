@@ -199,15 +199,15 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kShowContextMenuTabPreviews.Get());
   source->AddBoolean("composeboxShowImageSuggest",
                      omnibox::kShowComposeboxImageSuggestions.Get());
-  // The popup chip UI entrypoint is enabled by the AskG experiment (kAskGShowChip).
+  // The popup chip UI entrypoint is enabled by the AskG experiment
+  // (kAskGShowChip).
   source->AddBoolean(
       "composeboxShowChip",
-      omnibox::IsAimPopupEnabled(profile_) &&
-          omnibox::kAskGShowChip.Get());
+      omnibox::IsAimPopupEnabled(profile_) && omnibox::kAskGShowChip.Get());
   source->AddBoolean("composeboxShowCurrentTabChip",
-                     omnibox::kAskGCurrentTabChip.Get());
-  source->AddBoolean("composeboxShowLensIcon",
-                     omnibox::kAskGLensIcon.Get());
+                     omnibox::kAskGCurrentTabChip.Get() &&
+                         omnibox::AreContextualTasksEligible(profile_));
+  source->AddBoolean("composeboxShowLensIcon", omnibox::kAskGLensIcon.Get());
   source->AddBoolean("askGComposeboxLensChipEnabled",
                      omnibox::kAskGComposeboxLensChip.Get());
   source->AddBoolean("askGBlockAutoTabZeroStateSuggestions",
