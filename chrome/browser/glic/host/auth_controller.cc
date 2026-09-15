@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
@@ -73,7 +72,6 @@ AuthController::~AuthController() = default;
 
 void AuthController::CheckAuthBeforeLoad(
     base::OnceCallback<void(mojom::PrepareForClientResult)> callback) {
-  TRACE_EVENT("glic", "AuthController::CheckAuthBeforeLoad");
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
       mojom::PrepareForClientResult::kErrorResyncingCookies);
@@ -158,8 +156,6 @@ void AuthController::OnPrimaryAccountChanged(
       if (ShouldSyncCookiesDelayed()) {
         DelayedForceSyncCookies(
             GlicCookieSyncTrigger::kOnPrimaryAccountChanged);
-      } else {
-        MaybeSetNeedsSync();
       }
       break;
     // Ignore until primary account is set.
@@ -187,7 +183,6 @@ void AuthController::OnRefreshTokenUpdatedForAccount(
     return;
   }
   if (!ShouldSyncCookiesDelayed()) {
-    MaybeSetNeedsSync();
     return;
   }
   if (!identity_manager_->AreRefreshTokensLoaded() &&
@@ -230,25 +225,6 @@ void AuthController::OnClientTransientError(
 
 bool AuthController::NeedsSyncForTesting() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kGlicPartitionNeedsCookieSync);
-}
-
-void AuthController::OnInstanceCreated() {
-  TRACE_EVENT("glic", "AuthController::OnInstanceCreated");
-  bool first_instance = !has_instance_been_created_;
-  has_instance_been_created_ = true;
-  if (!base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange) ||
-      !base::FeatureList::IsEnabled(features::kGlicCookieSyncEarlyNoStartup)) {
-    return;
-  }
-  if (IsAutomationEnabled() || GetTokenState() == TokenState::kRequiresSignIn) {
-    return;
-  }
-  bool needs_sync =
-      profile_->GetPrefs()->GetBoolean(prefs::kGlicPartitionNeedsCookieSync);
-  if (first_instance || needs_sync) {
-    ForceSyncCookies(GlicCookieSyncTrigger::kInstanceCreated,
-                     base::DoNothing());
-  }
 }
 
 void AuthController::DelayedForceSyncCookies(GlicCookieSyncTrigger trigger) {
@@ -333,9 +309,6 @@ void AuthController::MaybeSyncCookiesOnError() {
 }
 
 void AuthController::MaybeSetNeedsSync() {
-  if (!base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange)) {
-    return;
-  }
   if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicPartitionNeedsCookieSync)) {
     profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync,
                                      true);
@@ -345,9 +318,6 @@ void AuthController::MaybeSetNeedsSync() {
 bool AuthController::ShouldSyncCookiesDelayed() {
   if (!base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange)) {
     return false;
-  }
-  if (base::FeatureList::IsEnabled(features::kGlicCookieSyncEarlyNoStartup)) {
-    return has_instance_been_created_;
   }
   return !features::kGlicCookieSyncOnTokenChangeOnlyWhenFreCompleted.Get() ||
        GlicEnabling::GetCompletedFre(profile_) == prefs::FreStatus::kCompleted;
