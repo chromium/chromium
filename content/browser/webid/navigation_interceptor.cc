@@ -44,11 +44,11 @@ std::string* GetIfString(net::structured_headers::Dictionary& dict
   if (it == dict.end()) {
     return nullptr;
   }
-  auto item_and_params = it->second.GetWithParamsIfItem();
-  if (!item_and_params.has_value()) {
+  net::structured_headers::ParameterizedItem* item = it->second.GetIfItem();
+  if (!item) {
     return nullptr;
   }
-  return item_and_params->first.GetIfString();
+  return item->item.GetIfString();
 }
 
 std::optional<std::string> TakeIfString(
@@ -393,9 +393,10 @@ NavigationInterceptor::RequestBuilder::Build(
   idp_options->params_json = TakeIfString(dict, "params");
 
   if (auto it = dict.find("fields"); it != dict.end()) {
-    if (auto inner_list_and_params = it->second.GetWithParamsIfInnerList()) {
+    if (net::structured_headers::InnerList* inner_list =
+            it->second.GetIfInnerList()) {
       std::vector<std::string> fields;
-      for (auto& member_item : inner_list_and_params->first) {
+      for (auto& member_item : inner_list->items) {
         std::string* field_str = member_item.item.GetIfString();
         if (!field_str) {
           return std::nullopt;

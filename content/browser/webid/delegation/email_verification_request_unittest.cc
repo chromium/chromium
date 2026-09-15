@@ -63,11 +63,12 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
   auto sha256_it = parsed_digest_dict->find("sha-256");
   ASSERT_NE(sha256_it, parsed_digest_dict->end())
       << "Missing 'sha-256' in Content-Digest header";
-  const auto sha256_member = sha256_it->second.GetWithParamsIfItem();
-  ASSERT_TRUE(sha256_member.has_value())
+  const net::structured_headers::ParameterizedItem* sha256_member =
+      sha256_it->second.GetIfItem();
+  ASSERT_TRUE(sha256_member)
       << "Invalid sha-256 format in Content-Digest header";
   const std::string* sha256_byte_sequence =
-      sha256_member->first.GetIfByteSequence();
+      sha256_member->item.GetIfByteSequence();
   ASSERT_TRUE(sha256_byte_sequence)
       << "sha-256 in Content-Digest header is not a byte sequence";
   if (!post_data.empty()) {
@@ -90,10 +91,11 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
   auto sig_member_it = parsed_key_dict->find("sig");
   ASSERT_NE(sig_member_it, parsed_key_dict->end())
       << "Missing 'sig' member in Signature-Key";
-  const auto sig_member = sig_member_it->second.GetWithParamsIfItem();
-  ASSERT_TRUE(sig_member.has_value()) << "'sig' member is not an item";
+  const net::structured_headers::ParameterizedItem* sig_member =
+      sig_member_it->second.GetIfItem();
+  ASSERT_TRUE(sig_member) << "'sig' member is not an item";
   const net::structured_headers::Parameters& sig_member_params =
-      sig_member->second;
+      sig_member->params;
 
   // Parse kty
   auto kty_it = std::ranges::find_if(
@@ -182,17 +184,18 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
   auto input_sig_it = parsed_input_dict->find("sig");
   ASSERT_NE(input_sig_it, parsed_input_dict->end())
       << "Missing 'sig' member in Signature-Input";
-  const auto input_sig_member = input_sig_it->second.GetWithParamsIfInnerList();
+  const net::structured_headers::InnerList* input_sig_member =
+      input_sig_it->second.GetIfInnerList();
 
   // Verify sig components in Signature-Input
-  ASSERT_TRUE(input_sig_member.has_value())
+  ASSERT_TRUE(input_sig_member)
       << "'sig' member in Signature-Input is not an inner list";
-  ASSERT_EQ(input_sig_member->first.size(), 5u)
+  ASSERT_EQ(input_sig_member->items.size(), 5u)
       << "'sig' member in Signature-Input has incorrect size";
   std::vector<std::string> expected_components = {
       "@method", "@authority", "@path", "content-digest", "signature-key"};
   for (size_t i = 0; i < expected_components.size(); ++i) {
-    const auto* str = input_sig_member->first[i].item.GetIfString();
+    const auto* str = input_sig_member->items[i].item.GetIfString();
     ASSERT_TRUE(str) << "Component in Signature-Input is not a string";
     ASSERT_EQ(*str, expected_components[i])
         << "Component in Signature-Input mismatch. Expected "
@@ -200,9 +203,9 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
   }
 
   auto created_it = std::ranges::find_if(
-      input_sig_member->second,
+      input_sig_member->params,
       [](const auto& pair) { return pair.first == "created"; });
-  ASSERT_NE(created_it, input_sig_member->second.end())
+  ASSERT_NE(created_it, input_sig_member->params.end())
       << "Missing 'created' parameter in Signature-Input";
   const int64_t* created_time = created_it->second.GetIfInteger();
   ASSERT_TRUE(created_time) << "'created' parameter is not an integer";
@@ -218,10 +221,10 @@ void VerifyMessageSignature(const net::HttpRequestHeaders& extra_headers,
   auto sig_it = parsed_sig_dict->find("sig");
   ASSERT_NE(sig_it, parsed_sig_dict->end())
       << "Missing 'sig' member in Signature";
-  const auto sig_member_val = sig_it->second.GetWithParamsIfItem();
-  ASSERT_TRUE(sig_member_val.has_value()) << "Invalid Signature format";
-  const std::string* signature_bytes =
-      sig_member_val->first.GetIfByteSequence();
+  const net::structured_headers::ParameterizedItem* sig_member_val =
+      sig_it->second.GetIfItem();
+  ASSERT_TRUE(sig_member_val) << "Invalid Signature format";
+  const std::string* signature_bytes = sig_member_val->item.GetIfByteSequence();
   ASSERT_TRUE(signature_bytes) << "Signature item is not a byte sequence";
 
   std::string signature_base = base::StringPrintf(
