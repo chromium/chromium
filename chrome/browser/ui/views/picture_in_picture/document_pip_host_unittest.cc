@@ -1062,6 +1062,56 @@ TEST_F(DocumentPipHostTest, Close_IsIdempotent) {
   EXPECT_EQ(nullptr, host->GetWidget());
 }
 
+TEST_F(DocumentPipHostTest, WidgetCloseNow_TearsDownWidgetSynchronously) {
+  auto* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+  ASSERT_TRUE(host->GetWidget());
+  auto widget = host->GetWidget()->GetWeakPtr();
+  auto* child = host->GetChildWebContents();
+  ASSERT_TRUE(child);
+  content::WebContentsDestroyedWatcher child_destroyed_watcher(child);
+  DialogManagerDelegateTeardownObserver teardown_observer(host->GetWidget(),
+                                                          child);
+  TestModalDialogHostObserver modal_observer;
+  host->AddObserver(&modal_observer);
+
+  host->GetWidget()->CloseNow();
+
+  EXPECT_FALSE(widget);
+  EXPECT_EQ(host, DocumentPipHost::FromWebContents(opener()));
+  EXPECT_EQ(nullptr, host->GetWidget());
+  EXPECT_EQ(nullptr, host->GetChildWebContents());
+  EXPECT_TRUE(child_destroyed_watcher.IsDestroyed());
+  EXPECT_TRUE(teardown_observer.on_widget_destroying_called());
+  EXPECT_TRUE(teardown_observer.was_delegate_null_at_destruction());
+  EXPECT_EQ(1, modal_observer.on_host_destroying_count());
+
+  host->Close();
+  EXPECT_EQ(1, modal_observer.on_host_destroying_count());
+
+  EXPECT_EQ(host, CreateHostAndOpenPipWindow());
+  ASSERT_TRUE(host->GetWidget());
+  host->Close();
+  EXPECT_EQ(2, modal_observer.on_host_destroying_count());
+  host->RemoveObserver(&modal_observer);
+}
+
+TEST_F(DocumentPipHostTest, WidgetClose_UsesSynchronousCallback) {
+  auto* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+  ASSERT_TRUE(host->GetWidget());
+  auto widget = host->GetWidget()->GetWeakPtr();
+  content::WebContentsDestroyedWatcher child_destroyed_watcher(
+      host->GetChildWebContents());
+
+  host->GetWidget()->Close();
+
+  EXPECT_FALSE(widget);
+  EXPECT_EQ(nullptr, host->GetWidget());
+  EXPECT_EQ(nullptr, host->GetChildWebContents());
+  EXPECT_TRUE(child_destroyed_watcher.IsDestroyed());
+}
+
 // A second CreateAndShowPipWindow() while a window is already open is a
 // no-op: the existing widget/child are kept and the newly supplied child is
 // dropped.

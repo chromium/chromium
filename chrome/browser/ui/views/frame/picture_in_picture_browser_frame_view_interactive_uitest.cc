@@ -62,6 +62,7 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_utils.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -82,6 +83,10 @@
 
 class DocumentPipFrameViewTestApi {
  public:
+  static bool ShowPageInfo(DocumentPipFrameView* frame_view) {
+    return frame_view->ShowPageInfo();
+  }
+
   static PipTopBarAnimationController* GetAnimationController(
       DocumentPipFrameView* frame_view) {
     return frame_view->animation_controller_.get();
@@ -1314,7 +1319,31 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureTitleActivationTest,
   ASSERT_TRUE(IsButtonVisible(GetCloseButton()));
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+class PictureInPictureNativeWindowTest
+    : public PictureInPictureBrowserFrameViewTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool UseStandaloneDocumentPip() const override { return GetParam(); }
+
+  bool ShowPageInfoDialog() {
+    if (!UseStandaloneDocumentPip()) {
+      return pip_frame_view()->ShowPageInfoDialog();
+    }
+    auto* frame_view = views::AsViewClass<DocumentPipFrameView>(
+        GetPipWidget()->non_client_view()->frame_view());
+    CHECK(frame_view);
+    return DocumentPipFrameViewTestApi::ShowPageInfo(frame_view);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PictureInPictureNativeWindowTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+IN_PROC_BROWSER_TEST_P(PictureInPictureNativeWindowTest,
                        IsTrackedByTheOcclusionObserver) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
@@ -1328,15 +1357,15 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
 
     // Check that the PictureInPictureOcclusionTracker is observing the
     // document picture-in-picture window.
-    EXPECT_EQ(1u, pip_widgets.size());
-    EXPECT_EQ(pip_frame_view()->GetWidget(), pip_widgets[0]);
+    ASSERT_EQ(1u, pip_widgets.size());
+    EXPECT_EQ(GetPipWidget(), pip_widgets[0]);
   }
 
   // Open the PageInfo dialog and ensure that it's being tracked as well. We
   // don't have a handle to the widget, but we can reasonably assume it's being
   // tracked if the number of tracked widgets is now 2.
   {
-    pip_frame_view()->ShowPageInfoDialog();
+    ASSERT_TRUE(ShowPageInfoDialog());
     std::vector<views::Widget*> pip_widgets =
         occlusion_tracker->GetPictureInPictureWidgetsForTesting();
     EXPECT_EQ(2u, pip_widgets.size());
@@ -1344,7 +1373,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
 
   // Close both widgets and ensure they're no longer being tracked.
   {
-    pip_frame_view()->GetWidget()->CloseNow();
+    GetPipWidget()->CloseNow();
     std::vector<views::Widget*> pip_widgets =
         occlusion_tracker->GetPictureInPictureWidgetsForTesting();
     EXPECT_EQ(0u, pip_widgets.size());
@@ -1408,7 +1437,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
 // When a Chrome window goes into fullscreen while a document picture-in-picture
 // window is open, the document picture-in-picture window should show up on top
 // of the fullscreen Chrome window.
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureNativeWindowTest,
                        WindowDisplaysOnFullscreenSpaces) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 
@@ -1416,7 +1445,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
       ->fullscreen_controller()
       ->ToggleBrowserFullscreenMode(/*user_initiated=*/true);
 
-  PictureInPictureWidgetVisibilityTracker(pip_frame_view()->GetWidget())
+  PictureInPictureWidgetVisibilityTracker(GetPipWidget())
       .WaitForVisibilityState(true);
 }
 #endif  // BUILDFLAG(IS_MAC)
@@ -1455,7 +1484,7 @@ class FakeLinuxUiGetter : public ui::LinuxUiGetter {
 };
 
 class PictureInPictureBrowserFrameViewLinuxNoClientNativeDecorationsTest
-    : public PictureInPictureBrowserFrameViewTest {
+    : public PictureInPictureNativeWindowTest {
  public:
   void SetUpOnMainThread() override {
     // Create a fake UI getter, which will automatically set itself as the
@@ -1464,17 +1493,25 @@ class PictureInPictureBrowserFrameViewLinuxNoClientNativeDecorationsTest
     linux_ui_getter_ = std::make_unique<FakeLinuxUiGetter>();
     ThemeServiceFactory::GetForProfile(browser()->GetProfile())
         ->UseSystemTheme();
-    PictureInPictureBrowserFrameViewTest::SetUpOnMainThread();
+    PictureInPictureNativeWindowTest::SetUpOnMainThread();
   }
 
  private:
   std::unique_ptr<ui::LinuxUiGetter> linux_ui_getter_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PictureInPictureBrowserFrameViewLinuxNoClientNativeDecorationsTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "Standalone" : "BrowserBacked";
+    });
+
 // Regression test for https://crbug.com/325459394:
 // PiP should not crash if the Linux native theme does not draw client-side
 // frame decorations.
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PictureInPictureBrowserFrameViewLinuxNoClientNativeDecorationsTest,
     DoesNotCrash) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
@@ -1871,13 +1908,14 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_P(PictureInPictureNativeWindowTest,
                        GetNonDecoratedClientAreaBoundsInScreen) {
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
-  auto* pip_widget = pip_frame_view()->GetWidget();
+  auto* pip_widget = GetPipWidget();
 
-  gfx::Rect bounds =
-      pip_frame_view()->GetNonDecoratedClientAreaBoundsInScreen();
+  gfx::Rect bounds = pip_widget->non_client_view()
+                         ->frame_view()
+                         ->GetNonDecoratedClientAreaBoundsInScreen();
   EXPECT_FALSE(bounds.IsEmpty());
 
   // The bounds should be contained within the widget bounds in screen.

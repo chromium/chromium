@@ -653,10 +653,27 @@ void DocumentPipHost::ClosePipWindow() {
     return;
   }
 
-  modal_dialog_host_observer_list_.Notify(
-      &web_modal::ModalDialogHostObserver::OnHostDestroying);
+  PrepareForWidgetDestruction();
+
+  // CLIENT_OWNS_WIDGET: synchronously destroy the widget. This tears down the
+  // view tree -> DocumentPipContentsView (the WebView) -> child WebContents.
+  // The widget references `widget_delegate_` by raw pointer, so destroy the
+  // widget first, then the delegate.
+  widget_.reset();
+  widget_delegate_.reset();
+}
+
+void DocumentPipHost::PrepareForWidgetDestruction() {
+  // An external native close prepares here before the synchronous close
+  // callback releases ownership. Run the cleanup only once per window.
+  if (!widget_observation_.IsObserving()) {
+    return;
+  }
+
   widget_observation_.Reset();
   contents_view_observation_.Reset();
+  modal_dialog_host_observer_list_.Notify(
+      &web_modal::ModalDialogHostObserver::OnHostDestroying);
 
   // Destroy the child-dialog observer before the widget it observes, so its
   // scoped observations remove themselves while the widget is still alive.
@@ -676,13 +693,6 @@ void DocumentPipHost::ClosePipWindow() {
   // Destroy the tucker before the widget, since it references the widget.
   tucker_.reset();
   is_tucking_forced_ = false;
-
-  // CLIENT_OWNS_WIDGET: synchronously destroy the widget. This tears down the
-  // view tree -> DocumentPipContentsView (the WebView) -> child WebContents.
-  // The widget references `widget_delegate_` by raw pointer, so destroy the
-  // widget first, then the delegate.
-  widget_.reset();
-  widget_delegate_.reset();
 }
 
 void DocumentPipHost::OnWidgetCloseRequested(
@@ -858,7 +868,9 @@ void DocumentPipHost::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 void DocumentPipHost::OnWidgetDestroying(views::Widget* widget) {
-  ClosePipWindow();
+  // Views still uses the client view after this notification. The
+  // MakeCloseSynchronous callback releases the widget after native destruction.
+  PrepareForWidgetDestruction();
 }
 
 void DocumentPipHost::OnViewBoundsChanged(views::View* observed_view) {

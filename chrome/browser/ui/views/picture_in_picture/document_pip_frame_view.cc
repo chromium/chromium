@@ -627,6 +627,11 @@ void DocumentPipFrameView::AddedToWidget() {
         FROM_HERE, base::BindOnce(&DocumentPipFrameView::ShowOverlayIfNeeded,
                                   weak_factory_.GetWeakPtr()));
   }
+
+  if (auto* tracker =
+          PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker()) {
+    tracker->OnPictureInPictureWidgetOpened(GetWidget());
+  }
 }
 
 int DocumentPipFrameView::GetTopAreaHeight() const {

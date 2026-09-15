@@ -263,6 +263,10 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   // multiple times; subsequent calls are no-ops.
   void ClosePipWindow();
 
+  // Disconnects observers and delegates before widget teardown. May also run
+  // during an externally initiated native close, without deleting the widget.
+  void PrepareForWidgetDestruction();
+
   // Callback for Widget::MakeCloseSynchronous(). Invoked when external code
   // (e.g. DialogDelegate, OS close button) requests the widget to close.
   void OnWidgetCloseRequested(views::Widget::ClosedReason reason);
