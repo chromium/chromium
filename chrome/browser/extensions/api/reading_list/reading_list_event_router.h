@@ -5,19 +5,24 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_READING_LIST_READING_LIST_EVENT_ROUTER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_READING_LIST_READING_LIST_EVENT_ROUTER_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "content/public/browser/browser_context.h"
-#include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
+
+class EventRouter;
 
 // The ReadingListEventRouter listens for reading list events and notifies
 // observers of the changes.

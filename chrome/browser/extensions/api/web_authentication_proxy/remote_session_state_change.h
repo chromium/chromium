@@ -11,14 +11,17 @@
 #include "base/files/file_path_watcher.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "extensions/browser/event_router.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
+
+class EventRouter;
 
 // WebAuthenticationProxyRemoteSessionStateChangeNotifier watches for changes to
 // a per-extension file in the well-known directory path returned by

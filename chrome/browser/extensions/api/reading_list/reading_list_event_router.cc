@@ -10,6 +10,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/event_router.h"
 
 namespace extensions {
 

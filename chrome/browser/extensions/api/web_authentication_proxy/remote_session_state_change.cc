@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/extensions/api/web_authentication_proxy.h"
+#include "extensions/browser/event_router.h"
 
 namespace extensions {
 

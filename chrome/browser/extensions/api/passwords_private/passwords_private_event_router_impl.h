@@ -13,13 +13,14 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-#include "extensions/browser/event_router.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
 
 namespace extensions {
+
+class EventRouter;
 
 class PasswordsPrivateEventRouterImpl : public PasswordsPrivateEventRouter {
  public:
