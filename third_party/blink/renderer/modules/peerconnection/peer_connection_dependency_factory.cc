@@ -96,6 +96,7 @@
 #include "third_party/webrtc/api/create_modular_peer_connection_factory.h"
 #include "third_party/webrtc/api/enable_media.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc/api/peer_connection_tracer_interface.h"
 #include "third_party/webrtc/api/rtc_event_log/rtc_event_log_factory.h"
 #include "third_party/webrtc/api/transport/goog_cc_factory.h"
 #include "third_party/webrtc/api/video_track_source_proxy_factory.h"
@@ -981,6 +982,7 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     blink::WebLocalFrame* web_frame,
     webrtc::PeerConnectionObserver* observer,
+    std::unique_ptr<webrtc::PeerConnectionTracerInterface> tracer,
     ExceptionState& exception_state) {
   CHECK(observer);
   if (!GetPcFactory()) {
@@ -988,6 +990,7 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
   }
 
   webrtc::PeerConnectionDependencies dependencies(observer);
+  dependencies.tracer = std::move(tracer);
   // |web_frame| may be null in tests, e.g. if
   // RTCPeerConnectionHandler::InitializeForTest() is used.
   if (web_frame) {

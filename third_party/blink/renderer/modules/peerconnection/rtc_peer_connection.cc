@@ -2772,15 +2772,9 @@ void RTCPeerConnection::DidModifyTransceivers(
 
   // Fire "pc.ontrack" synchronously.
   for (auto& transceiver : track_events) {
-    auto* track_event = MakeGarbageCollected<RTCTrackEvent>(
+    MaybeDispatchEvent(MakeGarbageCollected<RTCTrackEvent>(
         transceiver->receiver(), transceiver->receiver()->track(),
-        transceiver->receiver()->streams(), transceiver);
-    // Only log events that are actually dispatched to JavaScript, matching
-    // the condition in MaybeDispatchEvent().
-    if (!suppress_events_) {
-      peer_handler_->TrackOnTrack(*track_event);
-    }
-    MaybeDispatchEvent(track_event);
+        transceiver->receiver()->streams(), transceiver));
   }
 
   // Transceiver modifications can cause changes in the set of ICE

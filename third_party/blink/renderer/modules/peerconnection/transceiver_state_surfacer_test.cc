@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/webrtc/api/peer_connection_tracer_interface.h"
 
 using testing::AnyNumber;
 using testing::Return;
@@ -55,7 +56,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
     DummyExceptionStateForTesting exception_state;
     peer_connection_ = dependency_factory_->CreatePeerConnection(
         webrtc::PeerConnectionInterface::RTCConfiguration(), nullptr, nullptr,
-        exception_state);
+        /*tracer=*/nullptr, exception_state);
     EXPECT_CALL(
         *(static_cast<blink::MockPeerConnectionImpl*>(peer_connection_.get())),
         GetSctpTransport())

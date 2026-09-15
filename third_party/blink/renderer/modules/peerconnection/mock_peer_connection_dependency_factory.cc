@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/api/metronome/metronome.h"
+#include "third_party/webrtc/api/peer_connection_tracer_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/units/time_delta.h"
 
@@ -346,8 +347,10 @@ MockPeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     blink::WebLocalFrame* frame,
     webrtc::PeerConnectionObserver* observer,
+    std::unique_ptr<webrtc::PeerConnectionTracerInterface> tracer,
     ExceptionState& exception_state) {
-  return webrtc::make_ref_counted<MockPeerConnectionImpl>(this, observer);
+  return webrtc::make_ref_counted<MockPeerConnectionImpl>(this, observer,
+                                                          std::move(tracer));
 }
 
 scoped_refptr<webrtc::VideoTrackSourceInterface>

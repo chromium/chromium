@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
+#include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/rtp_receiver_interface.h"
 #include "third_party/webrtc/stats/test/rtc_test_stats.h"
@@ -158,11 +159,13 @@ class MockPeerConnectionTracker : public PeerConnectionTracker {
       TrackSetConfiguration,
       void(RTCPeerConnectionHandler* pc_handler,
            const webrtc::PeerConnectionInterface::RTCConfiguration& config));
-  MOCK_METHOD4(TrackAddIceCandidate,
+  MOCK_METHOD1(TrackRestartIce, void(RTCPeerConnectionHandler* pc_handler));
+  MOCK_METHOD3(TrackAddIceCandidate,
                void(RTCPeerConnectionHandler* pc_handler,
                     RTCIceCandidatePlatform* candidate,
-                    Source source,
-                    bool succeeded));
+                    Source source));
+  MOCK_METHOD2(TrackAddIceCandidateFailed,
+               void(RTCPeerConnectionHandler* pc_handler, const String& error));
   MOCK_METHOD4(TrackAddTransceiver,
                void(RTCPeerConnectionHandler* pc_handler,
                     TransceiverUpdatedReason reason,
@@ -178,12 +181,30 @@ class MockPeerConnectionTracker : public PeerConnectionTracker {
                     TransceiverUpdatedReason reason,
                     const RTCRtpTransceiverPlatform& transceiver,
                     size_t transceiver_index));
+  MOCK_METHOD2(TrackAddTransceiverCall,
+               void(RTCPeerConnectionHandler* pc_handler,
+                    const AddTransceiverInfo& info));
+  MOCK_METHOD2(TrackAddTrack,
+               void(RTCPeerConnectionHandler* pc_handler,
+                    const TrackInfo& track));
+  MOCK_METHOD2(TrackOnTrack,
+               void(RTCPeerConnectionHandler* pc_handler,
+                    const TrackInfo& track));
   MOCK_METHOD1(TrackOnIceComplete, void(RTCPeerConnectionHandler* pc_handler));
   MOCK_METHOD3(TrackCreateDataChannel,
                void(RTCPeerConnectionHandler* pc_handler,
-                    const webrtc::DataChannelInterface* data_channel,
+                    const DataChannelInfo& channel,
                     Source source));
   MOCK_METHOD1(TrackStop, void(RTCPeerConnectionHandler* pc_handler));
+  MOCK_METHOD1(TrackClose, void(RTCPeerConnectionHandler* pc_handler));
+  MOCK_METHOD7(TrackIceCandidateError,
+               void(RTCPeerConnectionHandler* pc_handler,
+                    const String& address,
+                    std::optional<uint16_t> port,
+                    const String& host_candidate,
+                    const String& url,
+                    int error_code,
+                    const String& error_text));
   MOCK_METHOD2(TrackSignalingStateChange,
                void(RTCPeerConnectionHandler* pc_handler,
                     webrtc::PeerConnectionInterface::SignalingState state));
@@ -655,8 +676,6 @@ TEST_F(RTCPeerConnectionHandlerTest, NoCallbacksToClientAfterStop) {
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, CreateOffer) {
-  EXPECT_CALL(*mock_tracker_.Get(), TrackCreateOffer(pc_handler_.get(), _));
-
   // TODO(perkj): Can blink::RTCSessionDescriptionRequest be changed so
   // the |request| requestSucceeded can be tested? Currently the |request|
   // object can not be initialized from a unit test.
@@ -666,7 +685,6 @@ TEST_F(RTCPeerConnectionHandlerTest, CreateOffer) {
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, CreateAnswer) {
-  EXPECT_CALL(*mock_tracker_.Get(), TrackCreateAnswer(pc_handler_.get(), _));
   // TODO(perkj): Can blink::RTCSessionDescriptionRequest be changed so
   // the |request| requestSucceeded can be tested? Currently the |request|
   // object can not be initialized from a unit test.
@@ -676,13 +694,6 @@ TEST_F(RTCPeerConnectionHandlerTest, CreateAnswer) {
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, setLocalDescription) {
-  // PeerConnectionTracker::TrackSetSessionDescription is expected to be called
-  // before |mock_peer_connection| is called.
-  testing::InSequence sequence;
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackSetSessionDescription(pc_handler_.get(), String(kRealSdp),
-                                         String(kRealSdpType),
-                                         PeerConnectionTracker::kSourceLocal));
   EXPECT_CALL(*mock_peer_connection_, SetLocalDescriptionForMock(_, _));
 
   pc_handler_->SetLocalDescription(
@@ -705,13 +716,8 @@ TEST_F(RTCPeerConnectionHandlerTest, setLocalDescription) {
 TEST_F(RTCPeerConnectionHandlerTest, setLocalDescriptionParseError) {
   auto* description = MakeGarbageCollected<RTCSessionDescriptionPlatform>(
       kDummySdpType, kDummySdp);
-  testing::InSequence sequence;
-  // Expect two "Track" calls, one for the start of the attempt and one for the
-  // failure.
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackSetSessionDescription(pc_handler_.get(), String(kDummySdp),
-                                         String(kDummySdpType),
-                                         PeerConnectionTracker::kSourceLocal));
+  // The parse fails inside Blink, so the handler reports the failure itself
+  // rather than through RTCPeerConnectionTracerImpl.
   EXPECT_CALL(
       *mock_tracker_.Get(),
       TrackSessionDescriptionCallback(
@@ -726,13 +732,6 @@ TEST_F(RTCPeerConnectionHandlerTest, setLocalDescriptionParseError) {
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescription) {
-  // PeerConnectionTracker::TrackSetSessionDescription is expected to be called
-  // before |mock_peer_connection| is called.
-  testing::InSequence sequence;
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackSetSessionDescription(pc_handler_.get(), String(kRealSdp),
-                                         String(kRealSdpType),
-                                         PeerConnectionTracker::kSourceRemote));
   EXPECT_CALL(*mock_peer_connection_, SetRemoteDescriptionForMock(_, _));
 
   pc_handler_->SetRemoteDescription(
@@ -755,13 +754,8 @@ TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescription) {
 TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescriptionParseError) {
   auto* description = MakeGarbageCollected<RTCSessionDescriptionPlatform>(
       kDummySdpType, kDummySdp);
-  testing::InSequence sequence;
-  // Expect two "Track" calls, one for the start of the attempt and one for the
-  // failure.
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackSetSessionDescription(pc_handler_.get(), String(kDummySdp),
-                                         String(kDummySdpType),
-                                         PeerConnectionTracker::kSourceRemote));
+  // The parse fails inside Blink, so the handler reports the failure itself
+  // rather than through RTCPeerConnectionTracerImpl.
   EXPECT_CALL(
       *mock_tracker_.Get(),
       TrackSessionDescriptionCallback(
@@ -778,8 +772,6 @@ TEST_F(RTCPeerConnectionHandlerTest, setRemoteDescriptionParseError) {
 TEST_F(RTCPeerConnectionHandlerTest, setConfiguration) {
   webrtc::PeerConnectionInterface::RTCConfiguration config;
 
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackSetConfiguration(pc_handler_.get(), _));
   EXPECT_EQ(webrtc::RTCErrorType::NONE, pc_handler_->SetConfiguration(config));
 }
 
@@ -790,8 +782,6 @@ TEST_F(RTCPeerConnectionHandlerTest, setConfigurationError) {
 
   mock_peer_connection_->set_setconfiguration_error_type(
       webrtc::RTCErrorType::INVALID_MODIFICATION);
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackSetConfiguration(pc_handler_.get(), _));
   EXPECT_EQ(webrtc::RTCErrorType::INVALID_MODIFICATION,
             pc_handler_->SetConfiguration(config));
 }
@@ -800,9 +790,6 @@ TEST_F(RTCPeerConnectionHandlerTest, addICECandidate) {
   auto* candidate = MakeGarbageCollected<RTCIceCandidatePlatform>(
       kDummySdp, "sdpMid", 1, "username", "url");
 
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackAddIceCandidate(pc_handler_.get(), candidate,
-                                   PeerConnectionTracker::kSourceRemote, true));
   auto* request = MakeGarbageCollected<DummyRTCVoidRequest>();
   pc_handler_->AddIceCandidate(request, candidate);
   RunMessageLoopsUntilIdle();
@@ -862,10 +849,6 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
 
   webrtc::PeerConnectionInterface::PeerConnectionState new_state =
       webrtc::PeerConnectionInterface::PeerConnectionState::kNew;
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackConnectionStateChange(
-                  pc_handler_.get(),
-                  webrtc::PeerConnectionInterface::PeerConnectionState::kNew));
   EXPECT_CALL(*mock_client_.Get(),
               DidChangePeerConnectionState(
                   webrtc::PeerConnectionInterface::PeerConnectionState::kNew));
@@ -873,22 +856,12 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
 
   new_state = webrtc::PeerConnectionInterface::PeerConnectionState::kConnecting;
   EXPECT_CALL(
-      *mock_tracker_.Get(),
-      TrackConnectionStateChange(
-          pc_handler_.get(),
-          webrtc::PeerConnectionInterface::PeerConnectionState::kConnecting));
-  EXPECT_CALL(
       *mock_client_.Get(),
       DidChangePeerConnectionState(
           webrtc::PeerConnectionInterface::PeerConnectionState::kConnecting));
   pc_handler_->observer()->OnConnectionChange(new_state);
 
   new_state = webrtc::PeerConnectionInterface::PeerConnectionState::kConnected;
-  EXPECT_CALL(
-      *mock_tracker_.Get(),
-      TrackConnectionStateChange(
-          pc_handler_.get(),
-          webrtc::PeerConnectionInterface::PeerConnectionState::kConnected));
   EXPECT_CALL(
       *mock_client_.Get(),
       DidChangePeerConnectionState(
@@ -898,11 +871,6 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
   new_state =
       webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected;
   EXPECT_CALL(
-      *mock_tracker_.Get(),
-      TrackConnectionStateChange(
-          pc_handler_.get(),
-          webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected));
-  EXPECT_CALL(
       *mock_client_.Get(),
       DidChangePeerConnectionState(
           webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected));
@@ -910,22 +878,12 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
 
   new_state = webrtc::PeerConnectionInterface::PeerConnectionState::kFailed;
   EXPECT_CALL(
-      *mock_tracker_.Get(),
-      TrackConnectionStateChange(
-          pc_handler_.get(),
-          webrtc::PeerConnectionInterface::PeerConnectionState::kFailed));
-  EXPECT_CALL(
       *mock_client_.Get(),
       DidChangePeerConnectionState(
           webrtc::PeerConnectionInterface::PeerConnectionState::kFailed));
   pc_handler_->observer()->OnConnectionChange(new_state);
 
   new_state = webrtc::PeerConnectionInterface::PeerConnectionState::kClosed;
-  EXPECT_CALL(
-      *mock_tracker_.Get(),
-      TrackConnectionStateChange(
-          pc_handler_.get(),
-          webrtc::PeerConnectionInterface::PeerConnectionState::kClosed));
   EXPECT_CALL(
       *mock_client_.Get(),
       DidChangePeerConnectionState(
@@ -935,24 +893,12 @@ TEST_F(RTCPeerConnectionHandlerTest, OnConnectionChange) {
 
 TEST_F(RTCPeerConnectionHandlerTest, OnIceGatheringChange) {
   testing::InSequence sequence;
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackIceGatheringStateChange(
-                  pc_handler_.get(),
-                  webrtc::PeerConnectionInterface::kIceGatheringNew));
   EXPECT_CALL(*mock_client_.Get(),
               DidChangeIceGatheringState(
                   webrtc::PeerConnectionInterface::kIceGatheringNew));
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackIceGatheringStateChange(
-                  pc_handler_.get(),
-                  webrtc::PeerConnectionInterface::kIceGatheringGathering));
   EXPECT_CALL(*mock_client_.Get(),
               DidChangeIceGatheringState(
                   webrtc::PeerConnectionInterface::kIceGatheringGathering));
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackIceGatheringStateChange(
-                  pc_handler_.get(),
-                  webrtc::PeerConnectionInterface::kIceGatheringComplete));
   EXPECT_CALL(*mock_client_.Get(),
               DidChangeIceGatheringState(
                   webrtc::PeerConnectionInterface::kIceGatheringComplete));
@@ -974,10 +920,6 @@ TEST_F(RTCPeerConnectionHandlerTest, OnIceGatheringChange) {
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, OnIceCandidate) {
-  testing::InSequence sequence;
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackAddIceCandidate(pc_handler_.get(), _,
-                                   PeerConnectionTracker::kSourceLocal, true));
   EXPECT_CALL(*mock_client_.Get(), DidGenerateICECandidate(_));
 
   std::unique_ptr<webrtc::IceCandidate> native_candidate(
@@ -993,17 +935,12 @@ TEST_F(RTCPeerConnectionHandlerTest, OnRenegotiationNeeded) {
   testing::InSequence sequence;
   EXPECT_CALL(*mock_peer_connection_, ShouldFireNegotiationNeededEvent)
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackOnRenegotiationNeeded(pc_handler_.get()));
   EXPECT_CALL(*mock_client_.Get(), NegotiationNeeded());
   pc_handler_->observer()->OnNegotiationNeededEvent(42);
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, CreateDataChannel) {
   blink::WebString label = "d1";
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackCreateDataChannel(pc_handler_.get(), testing::NotNull(),
-                                     PeerConnectionTracker::kSourceLocal));
   webrtc::scoped_refptr<webrtc::DataChannelInterface> channel =
       pc_handler_->CreateDataChannel("d1", webrtc::DataChannelInit());
   EXPECT_TRUE(channel.get());
@@ -1169,12 +1106,7 @@ TEST_F(RTCPeerConnectionHandlerTest,
 
 TEST_F(RTCPeerConnectionHandlerTest,
        OnIceCandidateAfterClientGarbageCollectionDoesNothing) {
-  testing::InSequence sequence;
-  EXPECT_CALL(*mock_tracker_.Get(),
-              TrackAddIceCandidate(pc_handler_.get(), _,
-                                   PeerConnectionTracker::kSourceLocal, true))
-      .Times(0);
-
+  // Regression test: the candidate must be dropped without crashing.
   std::unique_ptr<webrtc::IceCandidate> native_candidate(
       mock_dependency_factory_->CreateIceCandidate("sdpMid", 1, kDummySdp));
   mock_client_ = nullptr;
@@ -1192,6 +1124,354 @@ TEST_F(RTCPeerConnectionHandlerTest,
   EXPECT_FALSE(pc_handler->Initialize(
       /*context=*/nullptr, webrtc::PeerConnectionInterface::RTCConfiguration(),
       /*frame=*/nullptr, exception_state));
+}
+
+// The following tests exercise RTCPeerConnectionTracerImpl, the adapter that
+// libWebRTC drives on its signaling thread instead of the handler calling
+// PeerConnectionTracker::Track* by hand. MockPeerConnectionImpl keeps the
+// tracer that PeerConnectionDependencyFactory::CreatePeerConnection() was
+// handed, so these run through the real injection path. Each callback
+// serializes and posts to the main thread, hence the RunMessageLoopsUntilIdle.
+
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsCreateOffer) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  EXPECT_CALL(*mock_tracker_.Get(), TrackCreateOffer(pc_handler_.get(), _));
+
+  tracer->OnCreateOffer(
+      webrtc::PeerConnectionInterface::RTCOfferAnswerOptions());
+  RunMessageLoopsUntilIdle();
+}
+
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsCreateOfferSuccess) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  String value;
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackSessionDescriptionCallback(
+                  pc_handler_.get(), PeerConnectionTracker::kActionCreateOffer,
+                  String("OnSuccess"), _))
+      .WillOnce(testing::SaveArg<3>(&value));
+
+  auto description =
+      webrtc::CreateSessionDescription(webrtc::SdpType::kOffer, kRealSdp);
+  ASSERT_TRUE(description);
+  tracer->OnCreateOfferSuccess(description.get());
+  RunMessageLoopsUntilIdle();
+  EXPECT_NE(std::string::npos, value.Utf8().find("\"sdp\""));
+}
+
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsSetLocalDescription) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  EXPECT_CALL(
+      *mock_tracker_.Get(),
+      TrackSetSessionDescription(pc_handler_.get(), _, String(kRealSdpType),
+                                 PeerConnectionTracker::kSourceLocal));
+
+  auto description =
+      webrtc::CreateSessionDescription(webrtc::SdpType::kOffer, kRealSdp);
+  ASSERT_TRUE(description);
+  tracer->OnSetLocalDescription(description.get());
+  RunMessageLoopsUntilIdle();
+}
+
+// A null description means the no-argument setLocalDescription() overload.
+TEST_F(RTCPeerConnectionHandlerTest,
+       TracerForwardsImplicitSetLocalDescription) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  String value;
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackSetSessionDescriptionImplicit(pc_handler_.get()));
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackSessionDescriptionCallback(
+                  pc_handler_.get(),
+                  PeerConnectionTracker::kActionSetLocalDescriptionImplicit,
+                  String("OnSuccess"), _))
+      .WillOnce(testing::SaveArg<3>(&value));
+
+  auto description =
+      webrtc::CreateSessionDescription(webrtc::SdpType::kOffer, kRealSdp);
+  ASSERT_TRUE(description);
+  tracer->OnSetLocalDescription(nullptr);
+  tracer->OnSetLocalDescriptionSuccess(description.get());
+  RunMessageLoopsUntilIdle();
+  // Only the implicit form reports the SDP the PeerConnection generated.
+  EXPECT_NE(std::string::npos, value.Utf8().find("\"sdp\""));
+}
+
+// Regression test: PeerConnectionTracker forwards this value into a
+// non-nullable mojom string, so a null String aborts on serialization. The
+// explicit setLocalDescription() form carries no payload and must therefore
+// report an empty, non-null string.
+TEST_F(RTCPeerConnectionHandlerTest,
+       TracerSetDescriptionSuccessValueIsNotNull) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  String local_value;
+  String remote_value;
+  EXPECT_CALL(
+      *mock_tracker_.Get(),
+      TrackSessionDescriptionCallback(
+          pc_handler_.get(), PeerConnectionTracker::kActionSetLocalDescription,
+          String("OnSuccess"), _))
+      .WillOnce(testing::SaveArg<3>(&local_value));
+  EXPECT_CALL(
+      *mock_tracker_.Get(),
+      TrackSessionDescriptionCallback(
+          pc_handler_.get(), PeerConnectionTracker::kActionSetRemoteDescription,
+          String("OnSuccess"), _))
+      .WillOnce(testing::SaveArg<3>(&remote_value));
+
+  auto description =
+      webrtc::CreateSessionDescription(webrtc::SdpType::kOffer, kRealSdp);
+  ASSERT_TRUE(description);
+  tracer->OnSetLocalDescription(description.get());
+  tracer->OnSetLocalDescriptionSuccess(description.get());
+  tracer->OnSetRemoteDescriptionSuccess();
+  RunMessageLoopsUntilIdle();
+  EXPECT_FALSE(local_value.IsNull());
+  EXPECT_TRUE(local_value.empty());
+  EXPECT_FALSE(remote_value.IsNull());
+}
+
+// Same hazard for the failure paths: RTCError::message() is a const char* and
+// String::FromUtf8() maps an empty one to a null String.
+TEST_F(RTCPeerConnectionHandlerTest, TracerFailureValueIsNotNull) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  String value;
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackSessionDescriptionCallback(
+                  pc_handler_.get(), PeerConnectionTracker::kActionCreateOffer,
+                  String("OnFailure"), _))
+      .WillOnce(testing::SaveArg<3>(&value));
+
+  tracer->OnCreateOfferFailure(
+      webrtc::RTCError(webrtc::RTCErrorType::INTERNAL_ERROR, ""));
+  RunMessageLoopsUntilIdle();
+  EXPECT_FALSE(value.IsNull());
+}
+
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsAddTransceiver) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  PeerConnectionTracker::AddTransceiverInfo info;
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackAddTransceiverCall(pc_handler_.get(), _))
+      .WillOnce(testing::SaveArg<1>(&info));
+
+  webrtc::RtpTransceiverInit init;
+  init.direction = webrtc::RtpTransceiverDirection::kRecvOnly;
+  init.stream_ids = {"stream_id"};
+  auto track = MockWebRtcAudioTrack::Create("track_id");
+  tracer->OnAddTransceiver(webrtc::MediaType::AUDIO, track.get(), init);
+  RunMessageLoopsUntilIdle();
+  EXPECT_EQ(String("audio"), info.kind);
+  EXPECT_EQ(String("track_id"), info.track_id);
+  EXPECT_EQ(webrtc::RtpTransceiverDirection::kRecvOnly, info.direction);
+  ASSERT_EQ(1u, info.stream_ids.size());
+  EXPECT_EQ(String("stream_id"), info.stream_ids[0]);
+}
+
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsAddTrack) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  PeerConnectionTracker::TrackInfo info;
+  EXPECT_CALL(*mock_tracker_.Get(), TrackAddTrack(pc_handler_.get(), _))
+      .WillOnce(testing::SaveArg<1>(&info));
+
+  auto track = MockWebRtcAudioTrack::Create("track_id");
+  tracer->OnAddTrack(*track, {"stream_id"});
+  RunMessageLoopsUntilIdle();
+  EXPECT_EQ(String("audio"), info.kind);
+  EXPECT_EQ(String("track_id"), info.id);
+  ASSERT_EQ(1u, info.stream_ids.size());
+  EXPECT_EQ(String("stream_id"), info.stream_ids[0]);
+}
+
+// The remote track carries its own identity, so OnTrack reads it off the
+// transceiver's receiver rather than needing a transceiver id.
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsOnTrack) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  PeerConnectionTracker::TrackInfo info;
+  EXPECT_CALL(*mock_tracker_.Get(), TrackOnTrack(pc_handler_.get(), _))
+      .WillOnce(testing::SaveArg<1>(&info));
+
+  std::vector<webrtc::scoped_refptr<webrtc::MediaStreamInterface>> streams;
+  streams.push_back(webrtc::scoped_refptr<webrtc::MediaStreamInterface>(
+      new webrtc::RefCountedObject<MockMediaStream>("stream_id")));
+  auto track = MockWebRtcAudioTrack::Create("track_id");
+  webrtc::scoped_refptr<FakeRtpReceiver> receiver(
+      new webrtc::RefCountedObject<FakeRtpReceiver>(
+          webrtc::scoped_refptr<webrtc::MediaStreamTrackInterface>(track.get()),
+          std::move(streams)));
+  webrtc::scoped_refptr<FakeRtpTransceiver> transceiver(
+      new webrtc::RefCountedObject<FakeRtpTransceiver>(
+          webrtc::MediaType::AUDIO, /*sender=*/nullptr, receiver,
+          /*mid=*/std::nullopt, /*stopped=*/false,
+          webrtc::RtpTransceiverDirection::kRecvOnly,
+          /*current_direction=*/std::nullopt));
+
+  tracer->OnTrack(*transceiver);
+  RunMessageLoopsUntilIdle();
+  EXPECT_EQ(String("audio"), info.kind);
+  EXPECT_EQ(String("track_id"), info.id);
+  ASSERT_EQ(1u, info.stream_ids.size());
+  EXPECT_EQ(String("stream_id"), info.stream_ids[0]);
+}
+
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsStateChanges) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  EXPECT_CALL(
+      *mock_tracker_.Get(),
+      TrackSignalingStateChange(
+          pc_handler_.get(), webrtc::PeerConnectionInterface::kHaveLocalOffer));
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackConnectionStateChange(
+                  pc_handler_.get(),
+                  webrtc::PeerConnectionInterface::PeerConnectionState::kNew));
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackIceGatheringStateChange(
+                  pc_handler_.get(),
+                  webrtc::PeerConnectionInterface::kIceGatheringGathering));
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackOnRenegotiationNeeded(pc_handler_.get()));
+
+  tracer->OnSignalingStateChanged(
+      webrtc::PeerConnectionInterface::kHaveLocalOffer);
+  tracer->OnConnectionStateChanged(
+      webrtc::PeerConnectionInterface::PeerConnectionState::kNew);
+  tracer->OnIceGatheringStateChanged(
+      webrtc::PeerConnectionInterface::kIceGatheringGathering);
+  tracer->OnNegotiationNeeded();
+  RunMessageLoopsUntilIdle();
+}
+
+// chrome://webrtc-internals shows the JavaScript visible iceConnectionState,
+// which RTCPeerConnection computes itself and the handler reports directly,
+// so the tracer must stay quiet.
+TEST_F(RTCPeerConnectionHandlerTest, TracerDoesNotForwardIceConnectionState) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  EXPECT_CALL(*mock_tracker_.Get(), TrackIceConnectionStateChange(_, _))
+      .Times(0);
+
+  tracer->OnIceConnectionStateChanged(
+      webrtc::PeerConnectionInterface::kIceConnectionCompleted);
+  RunMessageLoopsUntilIdle();
+}
+
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsIceCandidates) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackAddIceCandidate(pc_handler_.get(), _,
+                                   PeerConnectionTracker::kSourceLocal));
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackAddIceCandidate(pc_handler_.get(), _,
+                                   PeerConnectionTracker::kSourceRemote));
+
+  std::unique_ptr<webrtc::IceCandidate> candidate(
+      mock_dependency_factory_->CreateIceCandidate("sdpMid", 1, kDummySdp));
+  ASSERT_TRUE(candidate);
+  tracer->OnIceCandidate(*candidate);
+  tracer->OnAddIceCandidate(*candidate);
+  RunMessageLoopsUntilIdle();
+}
+
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsRestartIce) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  EXPECT_CALL(*mock_tracker_.Get(), TrackRestartIce(pc_handler_.get()));
+
+  tracer->OnRestartIce();
+  RunMessageLoopsUntilIdle();
+}
+
+// A rejected addIceCandidate() is reported as its own entry, carrying the
+// reason, in addition to the addIceCandidate entry for the call itself.
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsAddIceCandidateFailure) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackAddIceCandidateFailed(pc_handler_.get(),
+                                         String("The remote description was "
+                                                "null")));
+
+  tracer->OnAddIceCandidateFailure(webrtc::RTCError(
+      webrtc::RTCErrorType::INVALID_STATE, "The remote description was null"));
+  RunMessageLoopsUntilIdle();
+}
+
+// The success is the other half of the same split, and has no entry of its
+// own: chrome://webrtc-internals lets the addIceCandidate entry stand for it
+// and only calls out the failure.
+TEST_F(RTCPeerConnectionHandlerTest,
+       TracerDoesNotForwardAddIceCandidateSuccess) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  EXPECT_CALL(*mock_tracker_.Get(), TrackAddIceCandidate(_, _, _)).Times(0);
+  EXPECT_CALL(*mock_tracker_.Get(), TrackAddIceCandidateFailed(_, _)).Times(0);
+
+  tracer->OnAddIceCandidateSuccess();
+  RunMessageLoopsUntilIdle();
+}
+
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsIceCandidateError) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  // The address is suppressed when there is no port, but the host candidate
+  // keeps it - matching RTCPeerConnectionHandler::Observer.
+  EXPECT_CALL(
+      *mock_tracker_.Get(),
+      TrackIceCandidateError(pc_handler_.get(), String(),
+                             std::optional<uint16_t>(), String("1.2.3.4:0"),
+                             String("turn:example.com"), 701, String("boom")));
+
+  tracer->OnIceCandidateError("1.2.3.4", 0, "turn:example.com", 701, "boom");
+  RunMessageLoopsUntilIdle();
+}
+
+TEST_F(RTCPeerConnectionHandlerTest, TracerForwardsSetConfiguration) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  EXPECT_CALL(*mock_tracker_.Get(),
+              TrackSetConfiguration(pc_handler_.get(), _));
+
+  tracer->OnSetConfiguration(
+      webrtc::PeerConnectionInterface::RTCConfiguration());
+  RunMessageLoopsUntilIdle();
+}
+
+// PeerConnectionTracker::RegisterPeerConnection() already reports the
+// creation, so the tracer must not report it a second time. In particular it
+// must not resurface as a setConfiguration the application never called.
+TEST_F(RTCPeerConnectionHandlerTest, TracerDoesNotForwardCreate) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  EXPECT_CALL(*mock_tracker_.Get(), TrackSetConfiguration(_, _)).Times(0);
+
+  tracer->OnCreate(webrtc::PeerConnectionInterface::RTCConfiguration());
+  RunMessageLoopsUntilIdle();
+}
+
+// RTCPeerConnectionHandler::Close() reports the close itself, because the
+// tracer's OnClose() fires inside webrtc::PeerConnection::Close() and the task
+// it posts would land after UnregisterPeerConnection() has dropped the local
+// id. Forwarding it here too would only work by relying on that silent drop.
+TEST_F(RTCPeerConnectionHandlerTest, TracerDoesNotForwardClose) {
+  auto* tracer = mock_peer_connection_->tracer();
+  ASSERT_TRUE(tracer);
+  EXPECT_CALL(*mock_tracker_.Get(), TrackClose(_)).Times(0);
+
+  tracer->OnClose();
+  RunMessageLoopsUntilIdle();
+  // The handler closes again while it is destroyed during teardown.
+  testing::Mock::VerifyAndClearExpectations(mock_tracker_.Get());
 }
 
 }  // namespace blink

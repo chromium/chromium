@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc/api/peer_connection_tracer_interface.h"
 #include "third_party/webrtc/api/sctp_transport_interface.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
 #include "third_party/webrtc/api/test/mock_peerconnectioninterface.h"
@@ -188,8 +189,15 @@ class FakeDtlsTransport : public webrtc::DtlsTransportInterface {
 // removed. https://crbug.com/788659
 class MockPeerConnectionImpl : public webrtc::MockPeerConnectionInterface {
  public:
-  explicit MockPeerConnectionImpl(MockPeerConnectionDependencyFactory* factory,
-                                  webrtc::PeerConnectionObserver* observer);
+  MockPeerConnectionImpl(
+      MockPeerConnectionDependencyFactory* factory,
+      webrtc::PeerConnectionObserver* observer,
+      std::unique_ptr<webrtc::PeerConnectionTracerInterface> tracer = nullptr);
+
+  // The tracer a real webrtc::PeerConnection would own and invoke on its
+  // signaling thread. This mock never fires events by itself; tests drive it
+  // directly to exercise RTCPeerConnectionTracerImpl.
+  webrtc::PeerConnectionTracerInterface* tracer() { return tracer_.get(); }
 
   MockPeerConnectionImpl(const MockPeerConnectionImpl&) = delete;
   MockPeerConnectionImpl& operator=(const MockPeerConnectionImpl&) = delete;
@@ -351,6 +359,7 @@ class MockPeerConnectionImpl : public webrtc::MockPeerConnectionInterface {
   int sdp_mline_index_;
   std::string ice_sdp_;
   raw_ptr<webrtc::PeerConnectionObserver> observer_;
+  std::unique_ptr<webrtc::PeerConnectionTracerInterface> tracer_;
   webrtc::RTCErrorType setconfiguration_error_type_ =
       webrtc::RTCErrorType::NONE;
   webrtc::scoped_refptr<webrtc::RTCStatsReport> stats_report_;

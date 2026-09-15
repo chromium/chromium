@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_PEER_CONNECTION_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_PEER_CONNECTION_TRACKER_H_
 
+#include <optional>
+
 #include "base/gtest_prod_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -23,11 +25,10 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
-
-namespace webrtc {
-class DataChannelInterface;
-}  // namespace webrtc
+#include "third_party/webrtc/api/rtp_parameters.h"
+#include "third_party/webrtc/api/rtp_transceiver_direction.h"
 
 namespace blink {
 class LocalFrame;
@@ -37,7 +38,6 @@ class RTCAnswerOptionsPlatform;
 class RTCIceCandidatePlatform;
 class RTCOfferOptionsPlatform;
 class RTCPeerConnectionHandler;
-class RTCTrackEvent;
 class UserMediaRequest;
 class WebLocalFrame;
 
@@ -81,6 +81,36 @@ class MODULES_EXPORT PeerConnectionTracker
       mojo::PendingReceiver<mojom::blink::PeerConnectionManager> receiver);
 
   enum Source { kSourceLocal, kSourceRemote };
+
+  // The arguments of an addTransceiver() call.
+  struct AddTransceiverInfo {
+    String kind;
+    // Null unless addTransceiver() was called with a track.
+    String track_id;
+    webrtc::RtpTransceiverDirection direction =
+        webrtc::RtpTransceiverDirection::kSendRecv;
+    Vector<String> stream_ids;
+    Vector<webrtc::RtpEncodingParameters> send_encodings;
+  };
+
+  // A local track passed to addTrack(), or a remote track surfaced by a
+  // "track" event.
+  struct TrackInfo {
+    String kind;
+    String id;
+    Vector<String> stream_ids;
+  };
+
+  // See https://w3c.github.io/webrtc-pc/#dom-rtcdatachannelinit
+  struct DataChannelInfo {
+    String label;
+    bool ordered = true;
+    std::optional<int> max_packet_life_time;
+    std::optional<int> max_retransmits;
+    String protocol;
+    bool negotiated = false;
+    std::optional<int> id;
+  };
 
   enum Action {
     kActionSetLocalDescription,
@@ -138,11 +168,17 @@ class MODULES_EXPORT PeerConnectionTracker
       RTCPeerConnectionHandler* pc_handler,
       const webrtc::PeerConnectionInterface::RTCConfiguration& config);
 
-  // Sends an update when an Ice candidate is added.
+  // Sends an update when restartIce is called.
+  virtual void TrackRestartIce(RTCPeerConnectionHandler* pc_handler);
+
+  // Sends an update when an Ice candidate is gathered locally or added by the
+  // application.
   virtual void TrackAddIceCandidate(RTCPeerConnectionHandler* pc_handler,
                                     RTCIceCandidatePlatform* candidate,
-                                    Source source,
-                                    bool succeeded);
+                                    Source source);
+  // Sends an update when an added Ice candidate was rejected.
+  virtual void TrackAddIceCandidateFailed(RTCPeerConnectionHandler* pc_handler,
+                                          const String& error);
   // Sends an update when an Ice candidate error is receiver.
   virtual void TrackIceCandidateError(RTCPeerConnectionHandler* pc_handler,
                                       const String& address,
@@ -167,16 +203,25 @@ class MODULES_EXPORT PeerConnectionTracker
       const RTCRtpTransceiverPlatform& transceiver,
       size_t transceiver_index);
 
+  // Sends an update when a transceiver is added with addTransceiver().
+  // Example event: "addTransceiver".
+  virtual void TrackAddTransceiverCall(RTCPeerConnectionHandler* pc_handler,
+                                       const AddTransceiverInfo& info);
+
+  // Sends an update when a local track is added with addTrack().
+  // Example event: "addTrack".
+  virtual void TrackAddTrack(RTCPeerConnectionHandler* pc_handler,
+                             const TrackInfo& track);
+
   // Sends an update when the "track" event is fired for a remote track added
   // by setRemoteDescription. Example event: "ontrack".
   virtual void TrackOnTrack(RTCPeerConnectionHandler* pc_handler,
-                            const RTCTrackEvent& event);
+                            const TrackInfo& track);
 
   // Sends an update when a DataChannel is created.
-  virtual void TrackCreateDataChannel(
-      RTCPeerConnectionHandler* pc_handler,
-      const webrtc::DataChannelInterface* data_channel,
-      Source source);
+  virtual void TrackCreateDataChannel(RTCPeerConnectionHandler* pc_handler,
+                                      const DataChannelInfo& channel,
+                                      Source source);
 
   // Sends an update when a PeerConnection has been closed.
   virtual void TrackClose(RTCPeerConnectionHandler* pc_handler);

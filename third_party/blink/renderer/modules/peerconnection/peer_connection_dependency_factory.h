@@ -120,11 +120,14 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   // Asks the libjingle PeerConnection factory to create a libjingle
   // PeerConnection object.
   // The PeerConnection object is owned by PeerConnectionHandler.
+  // `tracer`, if non-null, receives the events chrome://webrtc-internals
+  // renders; it is owned by the PeerConnection for its whole lifetime.
   virtual webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
   CreatePeerConnection(
       const webrtc::PeerConnectionInterface::RTCConfiguration& config,
       blink::WebLocalFrame* web_frame,
       webrtc::PeerConnectionObserver* observer,
+      std::unique_ptr<webrtc::PeerConnectionTracerInterface> tracer,
       ExceptionState& exception_state);
 
   // Creates a PortAllocator that uses Chrome IPC sockets and enforces privacy

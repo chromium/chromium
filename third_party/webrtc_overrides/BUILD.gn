@@ -49,6 +49,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api:rtp_parameters",
   "//third_party/webrtc/api:rtp_receiver_interface",
   "//third_party/webrtc/api:rtp_sender_interface",
+  "//third_party/webrtc/api:rtp_transceiver_direction",
   "//third_party/webrtc/api:rtp_transceiver_interface",
   "//third_party/webrtc/api:scoped_refptr",
   "//third_party/webrtc/api:sctp_transport_interface",

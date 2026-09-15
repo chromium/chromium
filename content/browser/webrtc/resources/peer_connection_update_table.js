@@ -136,7 +136,9 @@ export class PeerConnectionUpdateTable {
         'transceiverModified'].includes(update.type)) {
       const data = JSON.parse(update.value);
       type += '(index=' + data.transceiverIndex + ', kind=' + data.kind + ')';
-    } else if (update.type === 'ontrack') {
+    } else if ([
+                 'addTransceiver', 'addTrack', 'ontrack'
+               ].includes(update.type)) {
       const data = JSON.parse(update.value);
       type += '(kind=' + data.kind + ')';
     } else if ([
@@ -246,7 +248,7 @@ export class PeerConnectionUpdateTable {
       }
     } else if ([
                  'icecandidate', 'addIceCandidate', 'transceiverAdded',
-                 'transceiverModified', 'ontrack'
+                 'transceiverModified', 'addTransceiver', 'addTrack', 'ontrack'
                ].includes(update.type)) {
       const parts = JSON.parse(update.value);
       valueContainer.textContent = JSON.stringify(parts, null, ' ');

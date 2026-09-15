@@ -109,6 +109,8 @@ blink_modules_sources("peerconnection") {
     "rtc_peer_connection_ice_error_event.h",
     "rtc_peer_connection_ice_event.cc",
     "rtc_peer_connection_ice_event.h",
+    "rtc_peer_connection_tracer_impl.cc",
+    "rtc_peer_connection_tracer_impl.h",
     "rtc_rtp_receiver.cc",
     "rtc_rtp_receiver.h",
     "rtc_rtp_receiver_impl.cc",
