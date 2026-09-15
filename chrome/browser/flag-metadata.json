@@ -4628,7 +4628,7 @@
   {
     "name": "enable-unrestricted-usb",
     "owners": [ "deviceapi-team@google.com" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 166
   },
   {
     "name": "enable-unsafe-webgpu",
