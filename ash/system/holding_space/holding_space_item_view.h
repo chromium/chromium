@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/callback_list.h"
@@ -84,7 +85,8 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   bool selected() const { return selected_; }
 
  protected:
-  views::Builder<views::ImageView> CreateCheckmarkBuilder();
+  views::Builder<views::ImageView> CreateCheckmarkBuilder(
+      int container_size = kHoldingSpaceIconSize);
   views::Builder<views::View> CreatePrimaryActionBuilder(
       bool apply_accent_colors = false,
       const gfx::Size& min_size = gfx::Size());

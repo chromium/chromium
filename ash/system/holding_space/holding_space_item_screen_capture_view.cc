@@ -95,17 +95,16 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
             .SetMainAxisAlignment(MainAxisAlignment::kCenter)
             .SetCrossAxisAlignment(CrossAxisAlignment::kCenter)
             .SetFocusBehavior(views::View::FocusBehavior::NEVER)
-            .AddChild(
-                views::Builder<views::ImageView>()
-                    .SetID(kHoldingSpaceScreenCaptureOverlayIconId)
-                    .SetPreferredSize(kOverlayIconSize)
-                    .SetImageSize(
-                        gfx::Size(kHoldingSpaceIconSize, kHoldingSpaceIconSize))
-                    .SetImage(ui::ImageModel::FromVectorIcon(
-                        *overlay_icon.value(), kColorAshButtonIconColor,
-                        kHoldingSpaceIconSize))
-                    .SetBackground(holding_space_util::CreateCircleBackground(
-                        kColorAshShieldAndBase80))));
+            .AddChild(views::Builder<views::ImageView>()
+                          .SetID(kHoldingSpaceScreenCaptureOverlayIconId)
+                          .SetPreferredSize(kOverlayIconSize)
+                          .SetImageSize(gfx::Size(kHoldingSpaceIconSize,
+                                                  kHoldingSpaceIconSize))
+                          .SetImage(ui::ImageModel::FromVectorIcon(
+                              *overlay_icon.value(), kColorAshButtonIconColor,
+                              kHoldingSpaceIconSize))
+                          .SetBackground(views::CreatePillBackground(
+                              kColorAshShieldAndBase80))));
   }
 
   std::move(builder)
@@ -120,12 +119,11 @@ HoldingSpaceItemScreenCaptureView::HoldingSpaceItemScreenCaptureView(
                   views::FlexSpecification(
                       views::MinimumFlexSizeRule::kScaleToZero,
                       views::MaximumFlexSizeRule::kUnbounded)))
-              .AddChild(
-                  CreatePrimaryActionBuilder(
-                      /*apply_accent_colors=*/true,
-                      /*min_size=*/kPrimaryActionSize)
-                      .SetBackground(holding_space_util::CreateCircleBackground(
-                          kColorAshShieldAndBase80))))
+              .AddChild(CreatePrimaryActionBuilder(
+                            /*apply_accent_colors=*/true,
+                            /*min_size=*/kPrimaryActionSize)
+                            .SetBackground(views::CreatePillBackground(
+                                kColorAshShieldAndBase80))))
       .AddChild(views::Builder<views::View>()
                     .SetCanProcessEventsWithinSubtree(false)
                     .SetBorder(views::CreateRoundedRectBorder(

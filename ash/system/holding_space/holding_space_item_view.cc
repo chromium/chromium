@@ -53,7 +53,7 @@ namespace {
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsHoldingSpaceItemViewProperty, false)
 
 // Appearance.
-constexpr size_t kCheckmarkBackgroundSize = 18;
+constexpr int kCheckmarkBackgroundSize = 18;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -307,15 +307,16 @@ void HoldingSpaceItemView::SetSelected(bool selected) {
   OnSelectionUiChanged();
 }
 
-views::Builder<views::ImageView>
-HoldingSpaceItemView::CreateCheckmarkBuilder() {
+views::Builder<views::ImageView> HoldingSpaceItemView::CreateCheckmarkBuilder(
+    int container_size) {
   DCHECK(!checkmark_);
   auto checkmark = views::Builder<views::ImageView>();
   checkmark.CopyAddressTo(&checkmark_)
       .SetID(kHoldingSpaceItemCheckmarkId)
       .SetVisible(selected())
-      .SetBackground(holding_space_util::CreateCircleBackground(
-          ui::kColorAshFocusRing, kCheckmarkBackgroundSize))
+      .SetBackground(views::CreatePillBackground(
+          ui::kColorAshFocusRing,
+          gfx::Insets((container_size - kCheckmarkBackgroundSize) / 2)))
       .SetImage(ui::ImageModel::FromVectorIcon(
           kCheckIcon, kColorAshCheckmarkIconColor, kHoldingSpaceIconSize));
   return checkmark;
@@ -361,7 +362,7 @@ views::Builder<views::View> HoldingSpaceItemView::CreatePrimaryActionBuilder(
               .SetID(kHoldingSpaceItemPinButtonId)
               .SetBackground(
                   apply_accent_colors
-                      ? holding_space_util::CreateCircleBackground(
+                      ? views::CreatePillBackground(
                             cros_tokens::kCrosSysSystemPrimaryContainer)
                       : nullptr)
               .SetCallback(base::BindRepeating(

@@ -13,7 +13,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/color_util.h"
-#include "ash/system/holding_space/holding_space_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -107,8 +106,12 @@ class BasePinButton : public views::View {
     GetViewAccessibility().SetName(accessible_name);
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     SetPreferredSize(size);
-    SetBackground(holding_space_util::CreateCircleBackground(
-        cros_tokens::kCrosSysSystemBaseElevated, kButtonBackgroundDiameter));
+    // The background is a fixed-diameter circle centered in the (larger, and
+    // not necessarily square) button bounds.
+    SetBackground(views::CreatePillBackground(
+        cros_tokens::kCrosSysSystemBaseElevated,
+        gfx::Insets::VH((size.height() - kButtonBackgroundDiameter) / 2,
+                        (size.width() - kButtonBackgroundDiameter) / 2)));
 
     SetTooltipText(accessible_name);
 

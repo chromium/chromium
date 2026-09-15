@@ -7,17 +7,13 @@
 #include <memory>
 #include <optional>
 
-#include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
-#include "ui/views/background.h"
-#include "ui/views/painter.h"
 #include "ui/views/view.h"
 
 namespace ash::holding_space_util {
@@ -43,53 +39,6 @@ class CallbackPathGenerator : public views::HighlightPathGenerator {
   }
 
   Callback callback_;
-};
-
-// CircleBackground ------------------------------------------------------------
-
-class CircleBackground : public views::Background {
- public:
-  CircleBackground(ui::ColorId color_id, size_t fixed_size)
-      : fixed_size_(fixed_size) {
-    set_color(color_id);
-  }
-
-  CircleBackground(ui::ColorId color_id, const gfx::InsetsF& insets)
-      : insets_(insets) {
-    set_color(color_id);
-  }
-
-  CircleBackground(const CircleBackground&) = delete;
-  CircleBackground& operator=(const CircleBackground&) = delete;
-
-  ~CircleBackground() override = default;
-
-  // views::Background:
-  void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    gfx::RectF bounds(view->GetLocalBounds());
-
-    if (insets_.has_value())
-      bounds.Inset(insets_.value());
-
-    const float radius =
-        fixed_size_.has_value()
-            ? fixed_size_.value() / 2.f
-            : std::min(bounds.size().width(), bounds.size().height()) / 2.f;
-
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
-
-    canvas->DrawCircle(bounds.CenterPoint(), radius, flags);
-  }
-
-  void OnViewThemeChanged(views::View* view) override {
-    view->SchedulePaint();
-  }
-
- private:
-  const std::optional<size_t> fixed_size_;
-  const std::optional<gfx::InsetsF> insets_;
 };
 
 // Helpers ---------------------------------------------------------------------
@@ -149,17 +98,6 @@ void AnimateOut(views::View* view,
                 ui::LayerAnimationObserver* observer) {
   AnimateTo(view, /*opacity=*/0.f, duration, /*delay=*/base::TimeDelta(),
             observer);
-}
-
-std::unique_ptr<views::Background> CreateCircleBackground(ui::ColorId color_id,
-                                                          size_t fixed_size) {
-  return std::make_unique<CircleBackground>(color_id, fixed_size);
-}
-
-std::unique_ptr<views::Background> CreateCircleBackground(
-    ui::ColorId color_id,
-    const gfx::InsetsF& insets) {
-  return std::make_unique<CircleBackground>(color_id, insets);
 }
 
 std::unique_ptr<views::HighlightPathGenerator> CreateHighlightPathGenerator(

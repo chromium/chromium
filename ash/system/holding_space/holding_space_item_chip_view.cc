@@ -305,7 +305,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
                                 base::Unretained(this)))
                             .CopyAddressTo(&image_)
                             .SetID(kHoldingSpaceItemImageId))
-              .AddChild(CreateCheckmarkBuilder())
+              .AddChild(CreateCheckmarkBuilder(kHoldingSpaceChipIconSize))
               .AddChild(
                   views::Builder<views::View>()
                       .CopyAddressTo(&secondary_action_container_)
