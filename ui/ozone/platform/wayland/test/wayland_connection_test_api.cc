@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
+#include "ui/ozone/platform/wayland/host/wayland_idle_notify.h"
 
 namespace ui {
 
@@ -32,6 +33,11 @@ void WaylandConnectionTestApi::SyncDisplay() {
 
 void WaylandConnectionTestApi::EnableLinuxDrmSyncobj() {
   impl_->enable_linux_drm_syncobj_for_testing_ = true;
+}
+
+std::unique_ptr<ExtIdleNotifier>
+WaylandConnectionTestApi::TakeExtIdleNotifier() {
+  return std::move(impl_->ext_idle_notifier_);
 }
 
 }  // namespace ui

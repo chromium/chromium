@@ -16,7 +16,6 @@ namespace ui {
 
 class WaylandConnection;
 
-// TODO(crbug.com/380125108) Add unit tests
 // Wraps the ext_idle_notifier_v1 Wayland protocol, which provides user idle
 // time notifications.
 class ExtIdleNotifier : public wl::GlobalObjectRegistrar<ExtIdleNotifier> {

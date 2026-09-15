@@ -34,6 +34,8 @@ class WaylandConnectionTestApi {
   // events have been handled.
   void SyncDisplay();
 
+  std::unique_ptr<ExtIdleNotifier> TakeExtIdleNotifier();
+
  private:
   const raw_ptr<WaylandConnection> impl_;
 };
