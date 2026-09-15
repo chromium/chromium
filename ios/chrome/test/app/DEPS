@@ -11,6 +11,7 @@ specific_include_rules = {
   ],
 "sync_test_util\\.mm": [
     "+components/data_sharing/public",
+    "+components/gcm_driver",
     "+components/saved_tab_groups",
     "+components/send_tab_to_self",
     "+components/shared_highlighting/core/common",
