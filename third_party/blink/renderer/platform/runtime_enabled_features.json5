@@ -1563,6 +1563,12 @@
       status: "stable",
     },
     {
+      // Attempts to "fold" a calc() value to NaN or +/-Infinity when producing
+      // a CalculationValue. Can produce incorrect results if the expression
+      // contains percentages.
+      name: "CSSCalcEarlyNaNAndInfFolding",
+    },
+    {
       // Support CSS Values Level 4 calc simplification and serialization
       // as specified in the specs below.
       // https://drafts.csswg.org/css-values-4/#calc-simplification
