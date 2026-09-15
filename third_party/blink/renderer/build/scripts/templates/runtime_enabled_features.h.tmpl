@@ -73,6 +73,14 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
     if (!{{depends_on}}Enabled())
       return false;
     {% endfor %}
+    {% if feature.custom_enable_check %}
+    // Guarded features may not use `implied_by` or `depends_on`, no need to
+    // handle either case here.
+    if (!feature_states_[k{{feature.name}}FlagIndex]) {
+      return false;
+    }
+    return {{feature.custom_enable_check}}();
+    {% else %}
     {% for implied_by in feature.implied_by %}
     if ({{implied_by}}Enabled())
       return true;
@@ -81,6 +89,7 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
     return get_{{feature.data_member_name}}();
     {% else %}
     return feature_states_[k{{feature.name}}FlagIndex];
+    {% endif %}
     {% endif %}
   }
 
@@ -150,6 +159,17 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
   static DECLARE_PROTECTED_DATA base::ProtectedMemory<bool> {{feature.data_member_name}};
   {% endif %}
   {% endfor %}
+
+  {% if custom_enable_checks %}
+  // Declarations for features guarded by `custom_enable_check`. Definitions
+  // for these methods must be provided in `runtime_enabled_feature_checks.cc`.
+  // These checks guard powerful or security-sensitive features and failing the
+  // check may be fatal, though this is not required; an implementation may
+  // choose to return false to silently disallow the feature without crashing.
+  {% for custom_enable_check in custom_enable_checks %}
+  static bool {{custom_enable_check}}();
+  {% endfor %}
+  {% endif %}
 };
 
 class PLATFORM_EXPORT RuntimeEnabledFeatures : public RuntimeEnabledFeaturesBase {

@@ -149,6 +149,53 @@ The parameters of `implied_by` and `depends_on` can be used to specify the relat
 
 **Note:** Only one of `implied_by` and `depends_on` can be specified.
 
+### Guarding a Feature With a Custom Enable Check
+
+Some features expose powerful capabilities and enabling them by corrupting the
+renderer's memory is a step towards a sandbox escape. Such a feature can name an
+author-provided check that must also pass for it to be considered enabled:
+
+```json5
+{
+  name: "MyPrivilegedFeature",
+  status: "test",
+  custom_enable_check: "CanEnableMyPrivilegedFeature",
+},
+```
+
+This declares `bool RuntimeEnabledFeaturesBase::CanEnableMyPrivilegedFeature()`,
+which must be defined by hand in
+[runtime_enabled_feature_checks.cc][runtimeEnabledFeatureChecks]. Several
+features may name the same check. The feature's generated accessor becomes:
+
+```cpp
+static bool MyPrivilegedFeatureEnabled() {
+  if (!feature_states_[kMyPrivilegedFeatureFlagIndex]) {
+    return false;
+  }
+  return CanEnableMyPrivilegedFeature();
+}
+```
+
+If desired, the implementation of this check may choose to make failure fatal,
+though that is not required.
+
+Whatever state the check consults lives outside the standard feature flags that
+`RuntimeEnabledFeatures::Backup` saves and restores, so consider providing a
+scoper for tests that need to manipulate it rather than leaving them to restore
+it by hand.
+
+`custom_enable_check` is mutually exclusive with several other options:
+- `browser_process_read_access`
+- `browser_process_read_write_access`
+- `origin_trial_feature_name`
+- `public`
+- `settable_from_internals`
+as these provide a way of reading or writing the feature state that would
+likely bypass the coordination required with a custom enable check. It is also
+mutually exclusive with `implied_by` and `depends_on`, as these make the
+feature depend on the state of other features, whose flags may not be guarded.
+
 ### Runtime Enabled CSS Properties
 
 If your feature is adding new CSS Properties you will need to use the runtime_flag argument in [renderer/core/css/css_properties.json5][cssProperties].
@@ -302,10 +349,10 @@ Downstream forks can customize `runtime_enabled_features.json5` without dealing 
 * [Blink extended attribute](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/bindings/IDLExtendedAttributes.md)
 * [make_runtime_features.py](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/build/scripts/make_runtime_features.py)
 * [runtime_enabled_features.json5](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/runtime_enabled_features.json5)
+* [runtimeEnabledFeatureChecks](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/runtime_enabled_feature_checks.cc)
 * [make_internal_runtime_flags.py](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/build/scripts/make_internal_runtime_flags.py)
 * [code_generator_v8.py](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/bindings/scripts/code_generator_v8.py)
 * [virtual/stable](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/web_tests/VirtualTestSuites;drc=9878f26d52d32871ed1c085444196e5453909eec;l=112)
 * [content/child/runtime_features.cc](https://source.chromium.org/chromium/chromium/src/+/main:content/child/runtime_features.cc)
 * [initialize blink features](https://chromium.googlesource.com/chromium/src/+/main/docs/initialize_blink_features.md)
 * [controlled by chromium feature](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/runtime_enabled_features.json5;drc=70bddadf50a14254072cf7ca0bcf83e4331a7d4f;l=833)
-

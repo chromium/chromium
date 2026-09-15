@@ -84,6 +84,8 @@ class BaseRuntimeFeatureWriter(json5_generator.Writer):
                 feature['base_feature'] = ''
             elif feature['base_feature'] == '':
                 feature['base_feature'] = feature['name']
+            if feature['custom_enable_check']:
+                self._validate_custom_enable_check(feature)
 
         self._origin_trial_features = [
             feature for feature in self._features if feature['in_origin_trial']
@@ -96,6 +98,30 @@ class BaseRuntimeFeatureWriter(json5_generator.Writer):
         converter = NameStyleConverter(str_or_converter) if type(
             str_or_converter) is str else str_or_converter
         return converter.to_class_data_member(prefix='is', suffix='enabled')
+
+    @staticmethod
+    def _validate_custom_enable_check(feature):
+        """Validates the config for a feature that uses a `custom_enable_check`
+
+        A `custom_enable_check` guards powerful or security-sensitive features
+        and failing the check may be fatal. Disallow configuration options that
+        provide a way of reading or writing the feature state that would likely
+        bypass the coordination required with a custom enable check, as well as
+        options that allow a feature to depend on the state of other features.
+        """
+        unsupported = (f'runtime_enabled_features.json5: {feature["name"]}: '
+                       'custom_enable_check is not supported for features ')
+        assert not feature['in_origin_trial'], \
+            unsupported + 'controlled by origin trials'
+        assert (not feature['browser_process_read_access']
+                and not feature['browser_process_read_write_access']), \
+            unsupported + 'readable or writable through ' \
+            'RuntimeFeatureStateOverrideContext'
+        assert not feature['public'], unsupported + 'with a public setter'
+        assert not feature['settable_from_internals'], \
+            unsupported + 'settable from internals'
+        assert not feature['implied_by'], unsupported + 'with implied_by'
+        assert not feature['depends_on'], unsupported + 'with depends_on'
 
     def _feature_sets(self):
         # Another way to think of the status levels is as "sets of features"
@@ -176,10 +202,18 @@ class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
         protected_features = [
             f for f in features_by_name if f['is_protected_feature']
         ]
+        custom_enable_check_features = [
+            f for f in features_by_name if f['custom_enable_check']
+        ]
+        custom_enable_checks = sorted(
+            {f['custom_enable_check']
+             for f in custom_enable_check_features})
         return {
             'features': self._features,
             'simple_features': simple_features,
             'protected_features': protected_features,
+            'custom_enable_check_features': custom_enable_check_features,
+            'custom_enable_checks': custom_enable_checks,
             'feature_sets': self._feature_sets(),
             'platforms': self._platforms(),
             'input_files': self._input_files,

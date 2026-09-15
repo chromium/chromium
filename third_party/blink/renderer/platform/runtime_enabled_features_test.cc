@@ -7,10 +7,12 @@
 #include <cstdlib>
 
 #include "base/memory/protected_memory_buildflags.h"
+#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_feature_checks.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -603,5 +605,39 @@ TEST(RuntimeEnabledFeaturesProtectedDeathTest,
 }
 #endif  // BUILDFLAG(PROTECTED_MEMORY_ENABLED) && defined(GTEST_HAS_DEATH_TEST)
         // && !BUILDFLAG(IS_ANDROID)
+
+TEST(RuntimeEnabledFeaturesTest, CustomEnableCheckAllowed) {
+  ScopedTestFeatureAllowedForTest allowed(true);
+
+  EXPECT_FALSE(RuntimeEnabledFeatures::TestFeatureCustomEnableCheckEnabled());
+  {
+    ScopedTestFeatureCustomEnableCheckForTest enabled(true);
+    EXPECT_TRUE(RuntimeEnabledFeatures::TestFeatureCustomEnableCheckEnabled());
+    EXPECT_TRUE(RuntimeEnabledFeatures::IsFeatureEnabledFromString(
+        "TestFeatureCustomEnableCheck"));
+  }
+  EXPECT_FALSE(RuntimeEnabledFeatures::TestFeatureCustomEnableCheckEnabled());
+}
+
+TEST(RuntimeEnabledFeaturesTest, CustomEnableCheckDisallowed) {
+  ScopedTestFeatureAllowedForTest disallowed(false);
+
+  EXPECT_FALSE(RuntimeEnabledFeatures::TestFeatureCustomEnableCheckEnabled());
+  EXPECT_FALSE(RuntimeEnabledFeatures::IsFeatureEnabledFromString(
+      "TestFeatureCustomEnableCheck"));
+}
+
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+TEST(RuntimeEnabledFeaturesCustomEnableCheckDeathTest, SetButNotAllowed) {
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
+  ScopedTestFeatureCustomEnableCheckForTest enabled(true);
+  ScopedTestFeatureAllowedForTest disallowed(false);
+
+  EXPECT_CHECK_DEATH(
+      RuntimeEnabledFeatures::TestFeatureCustomEnableCheckEnabled());
+  EXPECT_CHECK_DEATH(RuntimeEnabledFeatures::IsFeatureEnabledFromString(
+      "TestFeatureCustomEnableCheck"));
+}
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

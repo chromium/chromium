@@ -1489,6 +1489,8 @@ component("platform") {
     "region_capture_crop_id.h",
     "resolution_units.h",
     "restriction_target_id.h",
+    "runtime_enabled_feature_checks.cc",
+    "runtime_enabled_feature_checks.h",
     "search_engine_utils.cc",
     "search_engine_utils.h",
     "sparse_vector.h",

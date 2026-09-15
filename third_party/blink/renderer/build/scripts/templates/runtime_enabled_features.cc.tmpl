@@ -143,6 +143,9 @@ void RuntimeEnabledFeaturesBase::SetFeatureEnabledFromString(
     return;
   }
   {% endfor %}
+  // Unlike `IsFeatureEnabledFromString()`, there is no special handling for
+  // features with a `custom_enable_check`; callers must ensure they properly
+  // coordinate configuration for a feature with a `custom_enable_check`.
   std::optional<uint16_t> flag_index = FindFeatureFlagIndex(name);
   if (flag_index.has_value())
     feature_states_[*flag_index] = enable;
@@ -167,7 +170,16 @@ bool RuntimeEnabledFeaturesBase::IsFeatureEnabledFromString(
   std::optional<uint16_t> flag_index = FindFeatureFlagIndex(name);
   if (flag_index.has_value() &&
       !std::ranges::binary_search(kFlagIndicesInOriginTrials, *flag_index)) {
-    return feature_states_[*flag_index];
+    // A feature that uses a `custom_enable_check` must call the generated
+    // helpers rather than directly answering with `feature_states_`.
+    switch (*flag_index) {
+      {% for feature in custom_enable_check_features %}
+      case k{{feature.name}}FlagIndex:
+        return {{feature.name}}Enabled();
+      {% endfor %}
+      [[likely]] default:
+        return feature_states_[*flag_index];
+    }
   } else {
     // TODO(crbug.com/477806715): This will get hit for features controlled by origin trials.
     SCOPED_CRASH_KEY_STRING64("BlinkFeatureNotFound", "name", name);
