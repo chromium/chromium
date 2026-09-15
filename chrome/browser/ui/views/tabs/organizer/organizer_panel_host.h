@@ -20,9 +20,10 @@ class OrganizerPanelHost {
   void operator=(const OrganizerPanelHost&) = delete;
   virtual ~OrganizerPanelHost() = default;
 
-  virtual void SetPanelView(std::unique_ptr<views::View> panel_view) = 0;
-  virtual std::unique_ptr<views::View> TakePanelView() = 0;
-  virtual bool HasPanelView() const = 0;
+  virtual void SetOrganizerPanelView(
+      std::unique_ptr<views::View> panel_view) = 0;
+  virtual std::unique_ptr<views::View> TakeOrganizerPanelView() = 0;
+  virtual bool HasOrganizerPanelView() const = 0;
 
   // Returns the host interface if `view` or one of its ancestors is a known
   // implementation, otherwise null.

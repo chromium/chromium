@@ -38,6 +38,7 @@ source_set("impl") {
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/actions:actions_util",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/user_education",
     "//chrome/browser/ui/views/animations",
@@ -55,7 +56,9 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     "//base/test:test_support",
+    "//chrome/browser/ui/tabs:test_support",
     "//chrome/browser/ui/views/animations",
+    "//chrome/browser/ui/views/tabs/organizer:unit_test_support",
     "//chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

@@ -64,9 +64,9 @@ class OrganizerTrayView : public views::FlexLayoutView,
 
  protected:
   // OrganizerPanelHost:
-  void SetPanelView(std::unique_ptr<views::View> panel_view) override;
-  std::unique_ptr<views::View> TakePanelView() override;
-  bool HasPanelView() const override;
+  void SetOrganizerPanelView(std::unique_ptr<views::View> panel_view) override;
+  std::unique_ptr<views::View> TakeOrganizerPanelView() override;
+  bool HasOrganizerPanelView() const override;
 
   // views::View:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

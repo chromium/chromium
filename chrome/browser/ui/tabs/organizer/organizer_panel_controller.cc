@@ -18,8 +18,10 @@
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/actions/actions.h"
@@ -37,7 +39,22 @@ class OrganizerPanelController::PanelViewManager {
  public:
   PanelViewManager(OrganizerPanelController& controller,
                    BrowserWindowInterface& browser)
-      : controller_(controller), browser_(browser) {}
+      : controller_(controller), browser_(browser) {
+    // If embedding the panel in the vertical tab strip is enabled, listen for
+    // mode changes.
+    if (organizer_panel::ShouldShowOrganizerPanelInVerticalTabStrip()) {
+      if (auto* const state_controller =
+              tabs::VerticalTabStripStateController::From(&*browser_)) {
+        tab_strip_state_subscription_ =
+            state_controller->RegisterOnModeChanged(base::BindRepeating(
+                [](PanelViewManager* manager,
+                   tabs::VerticalTabStripStateController*) {
+                  manager->UpdatePanelViewHost();
+                },
+                base::Unretained(this)));
+      }
+    }
+  }
 
   std::unique_ptr<views::View> SetPanelView(
       std::unique_ptr<views::View> panel_view) {
@@ -48,18 +65,25 @@ class OrganizerPanelController::PanelViewManager {
     return old_panel;
   }
 
+  // Maybe moves the panel between hosts if the desired host has changed.
+  void UpdatePanelViewHost() {
+    auto* const desired_host = OrganizerPanelHost::GetPreferredHost(*browser_);
+    auto* const actual_host = GetCurrentHost();
+    if (!actual_host) {
+      return;
+    }
+    CHECK(desired_host) << "Browser has no panel host.";
+    if (desired_host != actual_host) {
+      desired_host->SetOrganizerPanelView(
+          actual_host->TakeOrganizerPanelView());
+    }
+  }
+
  private:
   // Removes the panel view from its current host.
   std::unique_ptr<views::View> RemovePanelView() {
-    auto* const panel_view = panel_view_.view();
-    if (!panel_view) {
-      return nullptr;
-    }
-    auto* const parent = panel_view->parent();
-    auto* const old_host = OrganizerPanelHost::FromView(parent);
-    CHECK(old_host) << "View is not a pane host or in a panel host: "
-                    << parent->GetClassName();
-    return old_host->TakePanelView();
+    auto* const old_host = GetCurrentHost();
+    return old_host ? old_host->TakeOrganizerPanelView() : nullptr;
   }
 
   // Adds the panel view to the correct host for the current browser state.
@@ -68,11 +92,23 @@ class OrganizerPanelController::PanelViewManager {
     auto* const host = OrganizerPanelHost::GetPreferredHost(*browser_);
     CHECK(host) << "Browser has no panel host.";
     panel_view_.SetView(panel_view.get());
-    host->SetPanelView(std::move(panel_view));
+    host->SetOrganizerPanelView(std::move(panel_view));
+  }
+
+  OrganizerPanelHost* GetCurrentHost() {
+    auto* const panel_view = panel_view_.view();
+    if (!panel_view) {
+      return nullptr;
+    }
+    CHECK(panel_view->parent());
+    auto* const host = OrganizerPanelHost::FromView(panel_view->parent());
+    CHECK(host);
+    return host;
   }
 
   const raw_ref<OrganizerPanelController> controller_;
   const raw_ref<BrowserWindowInterface> browser_;
+  base::CallbackListSubscription tab_strip_state_subscription_;
   views::ViewTracker panel_view_;
 };
 

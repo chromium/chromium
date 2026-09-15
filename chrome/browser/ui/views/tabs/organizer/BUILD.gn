@@ -8,13 +8,13 @@ source_set("organizer") {
   sources = [
     "layout_constants.h",
     "organizer_panel_controls_view.h",
-    "organizer_panel_host.h",
     "organizer_panel_utils.h",
     "organizer_panel_view.h",
     "organizer_tray_view.h",
   ]
 
   public_deps = [
+    ":organizer_panel_host",
     "//base",
     "//chrome/app/vector_icons",
     "//chrome/browser/ui/tabs/organizer",
@@ -28,6 +28,15 @@ source_set("organizer") {
       "//extensions/common",
     ]
   }
+}
+
+source_set("organizer_panel_host") {
+  sources = [ "organizer_panel_host.h" ]
+
+  public_deps = [
+    "//base",
+    "//ui/views",
+  ]
 }
 
 source_set("impl") {
@@ -86,6 +95,27 @@ source_set("impl") {
   }
 }
 
+source_set("unit_test_support") {
+  testonly = true
+  sources = [
+    "organizer_panel_test.cc",
+    "organizer_panel_test.h",
+  ]
+  public_deps = [ ":organizer" ]
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/browser/ui/views/animations",
+    "//chrome/browser/ui/views/interaction:impl",
+    "//chrome/test:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -94,6 +124,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":organizer",
+    ":unit_test_support",
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//chrome/app/vector_icons",
@@ -124,7 +155,7 @@ source_set("unit_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "organizer_panel_view_interactive_uitest.cc" ]
+  sources = [ "organizer_panel_interactive_uitest.cc" ]
   deps = [
     ":organizer",
     "//chrome/browser/tab_group_sync:factories",

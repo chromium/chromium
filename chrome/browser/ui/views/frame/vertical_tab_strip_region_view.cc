@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -501,6 +502,29 @@ void VerticalTabStripRegionView::OnMouseExited(const ui::MouseEvent& event) {
   HandleMouseExited();
 }
 
+void VerticalTabStripRegionView::SetOrganizerPanelView(
+    std::unique_ptr<views::View> panel_view) {
+  CHECK(!organizer_panel_view_);
+  panel_view->SetVisible(false);
+  panel_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  organizer_panel_view_ =
+      AddChildViewAt(std::move(panel_view), *GetIndexOf(content_area_view_));
+}
+
+std::unique_ptr<views::View>
+VerticalTabStripRegionView::TakeOrganizerPanelView() {
+  CHECK(organizer_panel_view_);
+  organizer_panel_show_percent_ = 0.0;
+  return RemoveChildViewT(std::exchange(organizer_panel_view_, nullptr));
+}
+
+bool VerticalTabStripRegionView::HasOrganizerPanelView() const {
+  return organizer_panel_view_ != nullptr;
+}
+
 void VerticalTabStripRegionView::HandleMouseExited() {
   // On Windows, we get mouse exit events when moving between the caption area
   // and client as well as when we transition between web contents area
@@ -704,7 +728,20 @@ void VerticalTabStripRegionView::RequestCollapse(bool collapse) {
       ->Start(TabStripAnimations::kVerticalTabStrip, motion);
 }
 
+void VerticalTabStripRegionView::SetOrganizerPanelShowPercent(double percent) {
+  CHECK(organizer_panel_view_ || percent == 0.0);
+  if (organizer_panel_show_percent_ == percent) {
+    return;
+  }
+  organizer_panel_show_percent_ = percent;
 
+  // TODO(https://crbug.com/555248711): This currently displays both panels
+  // stacked during transition, which is not the correct behavior. Switch to
+  // setting visibility in the layout pass to allow the sliding animation and to
+  // avoid unnecessary layout loops.
+  organizer_panel_view_->SetVisible(percent > 0.0);
+  content_area_view_->SetVisible(percent < 1.0);
+}
 
 VerticalTabStripRegionView::RegionViewFocusListener::RegionViewFocusListener(
     VerticalTabStripRegionView* region_view)

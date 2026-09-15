@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
-
 #include "base/callback_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -426,13 +424,13 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,
   const extensions::Extension* extension = LoadExtensionWithSidePanel();
   ASSERT_TRUE(extension);
 
-  RunTestSequence(
-      CheckControllerState(false), Do([this, extension]() {
-        extensions::side_panel_util::OpenGlobalExtensionSidePanel(
-            *browser(), /*web_contents=*/nullptr, extension->id());
-      }),
-      WaitForPanelOpen(), CheckControllerState(true, extension->id()),
-      WaitForShow(OrganizerPanelView::kWebViewElementId));
+  RunTestSequence(CheckControllerState(false), Do([this, extension]() {
+                    extensions::side_panel_util::OpenGlobalExtensionSidePanel(
+                        *browser(), /*web_contents=*/nullptr, extension->id());
+                  }),
+                  WaitForPanelOpen(),
+                  CheckControllerState(true, extension->id()),
+                  WaitForShow(OrganizerPanelView::kWebViewElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelExtensionInteractiveUiTest,

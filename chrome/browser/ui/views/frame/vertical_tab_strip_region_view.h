@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/views/tabs/shared/drop_arrow.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_expand_on_hover_lock.h"
 #include "components/tabs/public/tab_interface.h"
@@ -55,7 +56,8 @@ class VerticalTabStripRegionView final
     : public BaseTabStripRegionView,
       public views::ResizeAreaDelegate,
       public OmniboxTabHelper::Observer,
-      public tabs::VerticalTabStripStateController::Delegate {
+      public tabs::VerticalTabStripStateController::Delegate,
+      public OrganizerPanelHost {
   METADATA_HEADER(VerticalTabStripRegionView, BaseTabStripRegionView)
 
  public:
@@ -135,6 +137,8 @@ class VerticalTabStripRegionView final
   bool IsCollapsing() override;
   void RequestCollapse(bool collapse) override;
 
+  void SetOrganizerPanelShowPercent(double percent);
+
   views::Separator* tabs_separator_for_testing() {
     return tab_strip_view() ? tab_strip_view()->GetTabsSeparator() : nullptr;
   }
@@ -196,6 +200,11 @@ class VerticalTabStripRegionView final
   // Used to create and destroy locks for the expand on hover state.
   friend class VerticalTabStripExpandOnHoverLock;
 
+  // OrganizerPanelHost:
+  void SetOrganizerPanelView(std::unique_ptr<views::View> panel_view) override;
+  std::unique_ptr<views::View> TakeOrganizerPanelView() override;
+  bool HasOrganizerPanelView() const override;
+
   void HandleMouseExited();
 
   void AddTabStripView(std::unique_ptr<views::View> view) override;
@@ -238,6 +247,10 @@ class VerticalTabStripRegionView final
   void OnOmniboxPopupVisibilityChanged(bool is_open) override;
 
   void OnActiveTabChanged(const tabs::TabInterface* active_tab) override;
+
+  // Organizer panel:
+  raw_ptr<views::View> organizer_panel_view_ = nullptr;
+  double organizer_panel_show_percent_ = 0.0;
 
   raw_ptr<views::View> content_area_view_ = nullptr;
   raw_ptr<VerticalTabStripTopContainer> top_button_container_ = nullptr;
