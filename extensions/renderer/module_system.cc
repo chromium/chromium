@@ -204,9 +204,7 @@ ModuleSystem::ModuleSystem(ScriptContext* context, const SourceMap* source_map)
   if (context_->context_type() == mojom::ContextType::kPrivilegedExtension &&
       ContextNeedsMojoBindings(context_) &&
       blink::WebV8Features::IsSupported(context->v8_context())) {
-    // Valid enablement code path, so need to ensure MojoJS is allowed for the
-    // process before attempting to enable it.
-    blink::WebV8Features::AllowMojoJSForProcess();
+    blink::WebV8Features::AllowMojoJSPerContextForProcess();
     blink::WebV8Features::EnableMojoJS(context->v8_context(), true);
   }
 }

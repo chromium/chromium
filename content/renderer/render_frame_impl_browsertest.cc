@@ -1408,10 +1408,15 @@ class RenderFrameImplMojoJsTest : public RenderViewTest {
 
   void SetUp() override {
     RenderViewTest::SetUp();
+    // RenderViewTest::SetUp() enables every test-only feature, which includes
+    // MojoJS and MojoJSTest. Undo that grant here so test cases can exercise
+    // attempts to bypass the protection.
+    disallow_mojo_js_.emplace();
     EXPECT_TRUE(GetMainRenderFrame()->IsMainFrame());
   }
 
   void TearDown() override {
+    disallow_mojo_js_.reset();
 #if defined(LEAK_SANITIZER)
     // Do this before shutting down V8 in RenderViewTest::TearDown().
     // http://crbug.com/328552
@@ -1463,6 +1468,7 @@ class RenderFrameImplMojoJsTest : public RenderViewTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<blink::ScopedDisallowMojoJsForTesting> disallow_mojo_js_;
 };
 
 // Verifies enabling MojoJS bindings.
@@ -1511,7 +1517,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, EnabledBindingsTampered) {
 
         LoadHTML(kSimpleScriptHtml);
       },
-      "Check failed: \\*mojo_js_allowed_");
+      "Check failed: IsMojoJSAllowedPerContextForProcess");
 }
 
 // Verifies that tampering with enable_mojo_js_bindings_ to enable MojoJS
@@ -1527,7 +1533,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, EnableMojoJsBindingsTampered) {
 
         LoadHTML(kSimpleScriptHtml);
       },
-      "Check failed: \\*mojo_js_allowed_");
+      "Check failed: IsMojoJSAllowedPerContextForProcess");
 }
 
 // Verifies that tampering with mojo_js_interface_broker_ to enable MojoJS
@@ -1544,7 +1550,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, MojoJsInterfaceBrokerTampered) {
 
         LoadHTML(kSimpleScriptHtml);
       },
-      "Check failed: \\*mojo_js_allowed_");
+      "Check failed: IsMojoJSAllowedPerContextForProcess");
 }
 
 // Verifies that tampering with mojo_js_interface_broker_ to enable MojoJS
@@ -1556,7 +1562,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest,
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
   EXPECT_CHECK_DEATH_WITH(ContextFeatureSettingsEnableMojoJsTampered(),
-                          "Check failed: \\*mojo_js_allowed_");
+                          "Check failed: IsMojoJSAllowedPerContextForProcess");
 }
 #endif  //  BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 

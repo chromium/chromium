@@ -2588,9 +2588,7 @@ void RenderFrameImpl::AllowBindings(int64_t enabled_bindings_flags) {
   enabled_bindings_.PutAll(new_bindings);
 
   if (new_bindings.Has(BindingsPolicyValue::kMojoWebUi)) {
-    // If mojo web UI is being enabled, update the protected memory bool to
-    // allow MojoJS binding in this process.
-    blink::WebV8Features::AllowMojoJSForProcess();
+    blink::WebV8Features::AllowMojoJSPerContextForProcess();
   }
 }
 
@@ -2599,16 +2597,14 @@ void RenderFrameImpl::EnableMojoJsBindings(
   enable_mojo_js_bindings_ = true;
   mojo_js_features_ = std::move(features);
 
-  // Update the protected memory bool to allow MojoJS binding in this process.
-  blink::WebV8Features::AllowMojoJSForProcess();
+  blink::WebV8Features::AllowMojoJSPerContextForProcess();
 }
 
 void RenderFrameImpl::EnableMojoJsBindingsWithBroker(
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker) {
   mojo_js_interface_broker_ = std::move(broker);
 
-  // Update the protected memory bool to allow MojoJS binding in this process.
-  blink::WebV8Features::AllowMojoJSForProcess();
+  blink::WebV8Features::AllowMojoJSPerContextForProcess();
 }
 
 void RenderFrameImpl::BindWebUI(

@@ -14,6 +14,30 @@ namespace blink {
 // are defined in runtime_enabled_feature_checks.cc. This header declares the
 // helpers (test or otherwise) to configure state that backs those checks.
 
+// MojoJS and related features are gated by protected memory, which needs to be
+// explicitly initialized before use.
+PLATFORM_EXPORT void InitializeMojoJSPermissions();
+
+// Grants this process permission to mark individual execution contexts as
+// MojoJS-enabled via ContextFeatureSettings; this is the typical grant for
+// WebUI pages and privileged extensions that use MojoJS.
+//
+// TODO(dcheng): It's not clear that there's a lot of value in having this be
+// a separate toggle from `AllowMojoJSForProcess()`.
+PLATFORM_EXPORT void AllowMojoJSPerContextForProcess();
+
+PLATFORM_EXPORT void AllowMojoJSForProcess();
+PLATFORM_EXPORT void AllowMojoJSTestForProcess();
+
+PLATFORM_EXPORT bool IsMojoJSAllowedPerContextForProcess();
+PLATFORM_EXPORT bool IsMojoJSAllowedForProcess();
+PLATFORM_EXPORT bool IsMojoJSTestAllowedForProcess();
+
+// Permission grants are irrevocable except for testing purposes.
+PLATFORM_EXPORT void SetMojoJSPermissionsForTesting(bool per_context,
+                                                    bool runtime_feature,
+                                                    bool test_runtime_feature);
+
 // RAII scoper to control the TestFeatureCustomEnableCheck runtime feature.
 class PLATFORM_EXPORT ScopedTestFeatureAllowedForTest {
   STACK_ALLOCATED();

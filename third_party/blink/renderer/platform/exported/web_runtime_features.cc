@@ -30,10 +30,17 @@
 
 #include "third_party/blink/public/platform/web_runtime_features.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_feature_checks.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+void WebRuntimeFeatures::InitializeMojoJSPermissions() {
+  blink::InitializeMojoJSPermissions();
+}
 
 void WebRuntimeFeatures::EnableExperimentalFeatures(bool enable) {
   RuntimeEnabledFeatures::SetExperimentalFeaturesEnabled(enable);
@@ -41,14 +48,35 @@ void WebRuntimeFeatures::EnableExperimentalFeatures(bool enable) {
 
 void WebRuntimeFeatures::EnableFeatureFromString(std::string_view name,
                                                  bool enable) {
+  if (enable) {
+    if (name == "MojoJS") {
+      blink::AllowMojoJSForProcess();
+    } else if (name == "MojoJSTest") {
+      blink::AllowMojoJSTestForProcess();
+    }
+  }
   RuntimeEnabledFeatures::SetFeatureEnabledFromString(name, enable);
 }
 
 void WebRuntimeFeatures::UpdateStatusFromBaseFeatures() {
+  // MojoJSTest is not controlled by a corresponding base::Feature.
+  if (base::FeatureList::IsEnabled(features::kMojoJS)) {
+    blink::AllowMojoJSForProcess();
+  }
   RuntimeEnabledFeatures::UpdateStatusFromBaseFeatures();
 }
 
 void WebRuntimeFeatures::EnableTestOnlyFeatures(bool enable) {
+  // Many test fixtures call this early on and don't expect to have to
+  // explicitly initialize the ProtectedMemory storage for MojoJS, et cetera, so
+  // handle it here as a convenience for tests.
+  blink::InitializeMojoJSPermissions();
+
+  if (enable) {
+    blink::AllowMojoJSForProcess();
+    blink::AllowMojoJSPerContextForProcess();
+    blink::AllowMojoJSTestForProcess();
+  }
   RuntimeEnabledFeatures::SetTestFeaturesEnabled(enable);
 }
 
@@ -70,6 +98,33 @@ void WebRuntimeFeatures::EnableDesktopAndroidScrollbars(bool enable) {
 
 void WebRuntimeFeatures::EnableLocalNetworkAccessWebRTC(bool enable) {
   RuntimeEnabledFeatures::SetLocalNetworkAccessWebRTCEnabled(enable);
+}
+
+// static
+void WebRuntimeFeatures::SetMojoJSFeaturesEnabledForTesting(bool mojo_js,
+                                                            bool mojo_js_test) {
+  RuntimeEnabledFeatures::SetMojoJSEnabled(mojo_js);
+  RuntimeEnabledFeatures::SetMojoJSTestEnabled(mojo_js_test);
+}
+
+ScopedDisallowMojoJsForTesting::ScopedDisallowMojoJsForTesting()
+    : mojo_js_enabled_(RuntimeEnabledFeatures::MojoJSEnabled()),
+      mojo_js_test_enabled_(RuntimeEnabledFeatures::MojoJSTestEnabled()),
+      mojo_js_per_context_allowed_(
+          blink::IsMojoJSAllowedPerContextForProcess()),
+      mojo_js_runtime_feature_allowed_(blink::IsMojoJSAllowedForProcess()),
+      mojo_js_test_runtime_feature_allowed_(
+          blink::IsMojoJSTestAllowedForProcess()) {
+  WebRuntimeFeatures::SetMojoJSFeaturesEnabledForTesting(false, false);
+  blink::SetMojoJSPermissionsForTesting(false, false, false);
+}
+
+ScopedDisallowMojoJsForTesting::~ScopedDisallowMojoJsForTesting() {
+  blink::SetMojoJSPermissionsForTesting(mojo_js_per_context_allowed_,
+                                        mojo_js_runtime_feature_allowed_,
+                                        mojo_js_test_runtime_feature_allowed_);
+  WebRuntimeFeatures::SetMojoJSFeaturesEnabledForTesting(mojo_js_enabled_,
+                                                         mojo_js_test_enabled_);
 }
 
 }  // namespace blink

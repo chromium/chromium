@@ -640,4 +640,39 @@ TEST(RuntimeEnabledFeaturesCustomEnableCheckDeathTest, SetButNotAllowed) {
 }
 #endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
+// blink_platform_unittests enables test-only features, which grants all of the
+// MojoJS permissions, so both features should be enabled and readable here.
+TEST(RuntimeEnabledFeaturesTest, MojoJSAllowedByTestOnlyFeatures) {
+  EXPECT_TRUE(RuntimeEnabledFeatures::MojoJSEnabled());
+  EXPECT_TRUE(RuntimeEnabledFeatures::MojoJSTestEnabled());
+}
+
+// With the permission granted, the MojoJS features behave like any other
+// runtime feature.
+TEST(RuntimeEnabledFeaturesTest, MojoJSCanBeToggledWhenAllowed) {
+  ASSERT_TRUE(IsMojoJSAllowedForProcess());
+
+  ScopedMojoJSForTest disabled(false);
+  EXPECT_FALSE(RuntimeEnabledFeatures::MojoJSEnabled());
+  {
+    ScopedMojoJSForTest enabled(true);
+    EXPECT_TRUE(RuntimeEnabledFeatures::MojoJSEnabled());
+  }
+  EXPECT_FALSE(RuntimeEnabledFeatures::MojoJSEnabled());
+}
+
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+TEST(RuntimeEnabledFeaturesMojoJSDeathTest, SetButNotAllowed) {
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
+
+  EXPECT_CHECK_DEATH({
+    // Enabling the flag in `RuntimeEnabledFeatures` in a disallowed process
+    // should crash with a CHECK failure.
+    ScopedDisallowMojoJsForTesting disallowed;
+    ScopedMojoJSForTest enabled(true);
+    (void)RuntimeEnabledFeatures::MojoJSEnabled();
+  });
+}
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+
 }  // namespace blink

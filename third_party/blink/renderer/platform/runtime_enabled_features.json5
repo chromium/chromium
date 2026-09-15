@@ -4273,7 +4273,7 @@
     {
       name: "MojoJS",
       status: "test",
-      is_protected_feature: true,
+      custom_enable_check: "CanEnableMojoJS",
     },
     // MojoJSTest is used exclusively in testing environments, whereas MojoJS
     // may also be used elsewhere.
@@ -4281,7 +4281,7 @@
       name: "MojoJSTest",
       status: "test",
       base_feature: "none",
-      is_protected_feature: true,
+      custom_enable_check: "CanEnableMojoJSTest",
     },
     // Move the selection to the last position in the list item. See
     // https://crbug.com/331841851
