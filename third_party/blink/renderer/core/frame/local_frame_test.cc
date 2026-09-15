@@ -9,9 +9,12 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #if BUILDFLAG(IS_MAC)
@@ -156,6 +159,20 @@ TEST_F(LocalFrameTest, RequestNetworkIdleCallbackMultiple) {
   EXPECT_EQ(count, 0);
   page_holder->GetFrame().NetworkBecameIdle(base::TimeDelta());
   EXPECT_EQ(count, 2);
+}
+
+TEST_F(LocalFrameTest, DetachedFrameGetLCPP) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({blink::features::kLCPCriticalPathPredictor},
+                                {});
+
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  LocalFrame& frame = page_holder->GetFrame();
+  EXPECT_NE(frame.GetLCPP(), nullptr);
+
+  frame.Detach(FrameDetachType::kRemove);
+  EXPECT_TRUE(frame.IsDetached());
+  EXPECT_EQ(frame.GetLCPP(), nullptr);
 }
 
 }  // namespace blink
