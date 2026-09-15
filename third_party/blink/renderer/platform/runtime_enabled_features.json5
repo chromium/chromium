@@ -1780,10 +1780,6 @@
       status: "experimental",
     },
     {
-      name: "CSSLetterAndWordSpacingPercentage",
-      status: "stable",
-    },
-    {
       // light-dark() for image values (background-image, etc.)
       // Ship in M150, should be removed in M152.
       // https://drafts.csswg.org/css-color-5/#light-dark

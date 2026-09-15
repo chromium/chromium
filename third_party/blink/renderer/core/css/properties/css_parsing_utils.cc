@@ -9651,14 +9651,9 @@ CSSValue* ParseSpacing(CSSParserTokenStream& stream,
   if (stream.Peek().Id() == CSSValueID::kNormal) {
     return ConsumeIdent(stream);
   }
-  if (RuntimeEnabledFeatures::CSSLetterAndWordSpacingPercentageEnabled()) {
-    return ConsumeLengthOrPercent(stream, context, local_context,
-                                  CSSPrimitiveValue::ValueRange::kAll,
-                                  UnitlessQuirk::kAllow);
-  }
-  return ConsumeLength(stream, context, local_context,
-                       CSSPrimitiveValue::ValueRange::kAll,
-                       UnitlessQuirk::kAllow);
+  return ConsumeLengthOrPercent(stream, context, local_context,
+                                CSSPrimitiveValue::ValueRange::kAll,
+                                UnitlessQuirk::kAllow);
 }
 
 CSSValue* ConsumeSingleContainerName(CSSParserTokenStream& stream,

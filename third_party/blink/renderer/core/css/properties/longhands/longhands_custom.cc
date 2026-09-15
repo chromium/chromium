@@ -6323,20 +6323,14 @@ const CSSValue* LetterSpacing::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (RuntimeEnabledFeatures::CSSLetterAndWordSpacingPercentageEnabled()) {
-    const Length& spacing = style.ComputedLetterSpacing();
-    if (spacing.IsFixed()) {
-      if (spacing.IsZero()) {
-        return CSSIdentifierValue::Create(CSSValueID::kNormal);
-      }
-      return ZoomAdjustedPixelValue(spacing.Pixels(), style);
+  const Length& spacing = style.ComputedLetterSpacing();
+  if (spacing.IsFixed()) {
+    if (spacing.IsZero()) {
+      return CSSIdentifierValue::Create(CSSValueID::kNormal);
     }
-    return CSSPrimitiveValue::Create(spacing, style.Zoom());
+    return ZoomAdjustedPixelValue(spacing.Pixels(), style);
   }
-  if (!style.LetterSpacing()) {
-    return CSSIdentifierValue::Create(CSSValueID::kNormal);
-  }
-  return ZoomAdjustedPixelValue(style.LetterSpacing(), style);
+  return CSSPrimitiveValue::Create(spacing, style.Zoom());
 }
 
 const blink::Color LightingColor::ColorIncludingFallback(
@@ -12662,14 +12656,11 @@ const CSSValue* WordSpacing::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (RuntimeEnabledFeatures::CSSLetterAndWordSpacingPercentageEnabled()) {
-    const Length& spacing = style.ComputedWordSpacing();
-    if (spacing.IsFixed()) {
-      return ZoomAdjustedPixelValue(spacing.Pixels(), style);
-    }
-    return CSSPrimitiveValue::Create(spacing, style.Zoom());
+  const Length& spacing = style.ComputedWordSpacing();
+  if (spacing.IsFixed()) {
+    return ZoomAdjustedPixelValue(spacing.Pixels(), style);
   }
-  return ZoomAdjustedPixelValue(style.WordSpacing(), style);
+  return CSSPrimitiveValue::Create(spacing, style.Zoom());
 }
 
 const CSSValue* WritingMode::CSSValueFromComputedStyleInternal(
