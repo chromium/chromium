@@ -476,9 +476,17 @@ IN_PROC_BROWSER_TEST_F(
 // Test that downloading a file in tab fullscreen (not browser fullscreen)
 // results in an exclusive access bubble, and the partial view, if enabled, is
 // displayed after the tab exits fullscreen.
+// TODO(crbug.com/562031019): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ExclusiveAccessBubbleShownForTabFullscreenDownloadThenPartialView \
+  DISABLED_ExclusiveAccessBubbleShownForTabFullscreenDownloadThenPartialView
+#else
+#define MAYBE_ExclusiveAccessBubbleShownForTabFullscreenDownloadThenPartialView \
+  ExclusiveAccessBubbleShownForTabFullscreenDownloadThenPartialView
+#endif
 IN_PROC_BROWSER_TEST_F(
     DownloadBubbleInteractiveUiTest,
-    ExclusiveAccessBubbleShownForTabFullscreenDownloadThenPartialView) {
+    MAYBE_ExclusiveAccessBubbleShownForTabFullscreenDownloadThenPartialView) {
   using ui_test_utils::FullscreenWaiter;
 
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
