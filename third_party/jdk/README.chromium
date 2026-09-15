@@ -4,8 +4,8 @@ URL: https://openjdk.java.net/
 Version: 25
 Update Mechanism: Autoroll
 CPEPrefix: cpe:/a:oracle:openjdk
-License: GPL-2.0
-License File: current/LICENSE
+License: GPL-2.0-with-classpath-exception
+License File: current/legal/java.base/LICENSE
 Security Critical: no
 Shipped: no
 
