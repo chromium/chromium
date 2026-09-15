@@ -75,7 +75,13 @@ TEST_F(WindowMirrorViewTest, MirrorLayerHasNoTransformWhenNonClientViewShown) {
       mirror_view->GetMirrorLayerForTesting()->transform().IsIdentity());
 }
 
-TEST_F(WindowMirrorViewTest, Clipping) {
+// TODO(crbug.com/562105237): Flaky on ASan + LSan.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_Clipping DISABLED_Clipping
+#else
+#define MAYBE_Clipping Clipping
+#endif
+TEST_F(WindowMirrorViewTest, MAYBE_Clipping) {
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   const gfx::Rect window_bounds(0, 0, 400, 400);
   widget->SetBounds(window_bounds);
@@ -122,7 +128,14 @@ TEST_F(WindowMirrorViewTest, Clipping) {
   }
 }
 
-TEST_F(WindowMirrorViewTest, ChangingBoundsUpdatesClipRect) {
+// TODO(crbug.com/562105237): Flaky on ASan + LSan.
+#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_ChangingBoundsUpdatesClipRect \
+  DISABLED_ChangingBoundsUpdatesClipRect
+#else
+#define MAYBE_ChangingBoundsUpdatesClipRect ChangingBoundsUpdatesClipRect
+#endif
+TEST_F(WindowMirrorViewTest, MAYBE_ChangingBoundsUpdatesClipRect) {
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetBounds(gfx::Rect(0, 0, 400, 400));
   aura::Window* widget_window = widget->GetNativeWindow();
