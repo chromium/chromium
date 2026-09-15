@@ -645,7 +645,9 @@ void SaveFileManager::RemoveSavedFileFromFileMap(
     auto it = save_file_map_.find(save_item_id);
     if (it != save_file_map_.end()) {
       SaveFile* save_file = it->second.get();
-      CHECK(!save_file->InProgress(), base::NotFatalUntil::M159);
+      // TODO(crbug.com/561651608): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(!save_file->InProgress());
       base::DeleteFile(save_file->FullPath());
       save_file_map_.erase(it);
     }
