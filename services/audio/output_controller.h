@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -350,7 +351,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // The snoopers examining or grabbing a copy of the audio data from the
   // OnMoreData() calls.
   base::Lock snooper_lock_;
-  std::vector<raw_ptr<Snooper>> snoopers_;
+  std::vector<raw_ptr<Snooper>> snoopers_ GUARDED_BY(snooper_lock_);
 
   // The current volume of the audio stream.
   double volume_;

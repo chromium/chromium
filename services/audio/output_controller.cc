@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -216,7 +217,12 @@ OutputController::~OutputController() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(kClosed, state_);
   DCHECK_EQ(nullptr, stream_);
-  DCHECK(snoopers_.empty());
+#if DCHECK_IS_ON()
+  {
+    base::AutoLock lock(snooper_lock_);
+    DCHECK(snoopers_.empty());
+  }
+#endif
   UMA_HISTOGRAM_LONG_TIMES("Media.AudioOutputController.LifeTime",
                            base::TimeTicks::Now() - construction_time_);
 }
@@ -618,8 +624,8 @@ void OutputController::StartSnooping(Snooper* snooper) {
 
   // The list will only update on this thread, and only be read on the realtime
   // audio thread.
-  DCHECK(!std::ranges::contains(snoopers_, snooper));
   base::AutoLock lock(snooper_lock_);
+  DCHECK(!std::ranges::contains(snoopers_, snooper));
   snoopers_.push_back(snooper);
 }
 
@@ -628,10 +634,10 @@ void OutputController::StopSnooping(Snooper* snooper) {
 
   // The list will only update on this thread, and only be read on the realtime
   // audio thread.
-  const auto it = std::ranges::find(snoopers_, snooper);
-  CHECK(it != snoopers_.end());
   // We also don't care about ordering, so swap and pop rather than erase.
   base::AutoLock lock(snooper_lock_);
+  const auto it = std::ranges::find(snoopers_, snooper);
+  CHECK(it != snoopers_.end());
   *it = snoopers_.back();
   snoopers_.pop_back();
 }
