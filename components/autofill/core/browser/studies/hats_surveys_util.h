@@ -8,8 +8,10 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/containers/lru_cache.h"
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -41,10 +43,14 @@ void MaybeTriggerFormSubmissionHatsSurveys(AutofillClient& client,
 class RecentUserAutofillAiInteractionsForHats final {
  public:
   struct InteractionDetails {
-    std::optional<EntityType> entity_type_accepted;
-    std::optional<EntityInstance::RecordType> accepted_entity_record_type;
+    // The different AutofillAi entities that were accepted on a form.
+    std::vector<EntityType> entity_type_accepted;
+    // The record type of each AutofillAi entity that was accepted on a form.
+    std::vector<EntityInstance::RecordType> accepted_entity_record_type;
     // The types of the field where the suggestion was shown or accepted.
     FieldTypeSet autofill_ai_field_types;
+    // A bitset indicating for each field if it was filled using AutofillAi.
+    std::vector<bool> is_filled_per_field;
   };
 
   static constexpr size_t kSuggestionInteractionMemorySize = 5;
@@ -55,6 +61,7 @@ class RecentUserAutofillAiInteractionsForHats final {
   void SuggestionsShown(const FormStructure& form, const AutofillField& field);
 
   void SuggestionAccepted(const FormStructure& form,
+                          base::span<const AutofillField* const> filled_fields,
                           const EntityInstance& entity);
 
   std::optional<InteractionDetails> GetRecentUserInteraction(

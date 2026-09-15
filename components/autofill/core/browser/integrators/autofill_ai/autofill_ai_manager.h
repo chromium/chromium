@@ -105,6 +105,12 @@ class AutofillAiManager
   // `form`.
   void UpdateLoggerReadinessData(const FormStructure& form);
 
+  // Returns the recent user interactions with AutofillAi suggestions relevant
+  // for HaTS surveys. Returns `std::nullopt` if there was no recent
+  // AutofillAi-related activity on the form with `form_id`.
+  std::optional<RecentUserAutofillAiInteractionsForHats::InteractionDetails>
+  GetRecentUserInteractionForHats(FormGlobalId form_id) const;
+
   base::WeakPtr<AutofillAiManager> GetWeakPtr();
 
  private:

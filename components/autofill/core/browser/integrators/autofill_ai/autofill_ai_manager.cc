@@ -366,7 +366,8 @@ void AutofillAiManager::OnDidFillSuggestion(
     return;
   }
   entity_manager->RecordEntityUsed(entity.guid(), base::Time::Now());
-  user_suggestion_interactions_per_form_.SuggestionAccepted(form, entity);
+  user_suggestion_interactions_per_form_.SuggestionAccepted(form, filled_fields,
+                                                            entity);
 }
 
 void AutofillAiManager::OnEditedAutofilledField(const FormStructure& form,
@@ -411,6 +412,12 @@ void AutofillAiManager::UpdateLoggerReadinessData(const FormStructure& form) {
   }
   logger_.OnFormHasDataToFill(form.global_id(), relevant_entities,
                               entity_manager->GetEntityInstances());
+}
+
+std::optional<RecentUserAutofillAiInteractionsForHats::InteractionDetails>
+AutofillAiManager::GetRecentUserInteractionForHats(FormGlobalId form_id) const {
+  return user_suggestion_interactions_per_form_.GetRecentUserInteraction(
+      form_id);
 }
 
 bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,

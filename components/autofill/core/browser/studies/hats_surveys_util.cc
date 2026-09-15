@@ -120,24 +120,41 @@ void RecentUserAutofillAiInteractionsForHats::SuggestionsShown(
   auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
   // Do not overwrite cases in which a suggestion was previously accepted.
   if (it == user_suggestion_interactions_per_form_.end() ||
-      !it->second.entity_type_accepted) {
+      it->second.entity_type_accepted.empty()) {
     user_suggestion_interactions_per_form_.Put(
         form.global_id(),
         InteractionDetails{
-            .entity_type_accepted = std::nullopt,
-            .accepted_entity_record_type = std::nullopt,
+            .entity_type_accepted = {},
+            .accepted_entity_record_type = {},
             .autofill_ai_field_types = field.Type().GetAutofillAiTypes(),
+            .is_filled_per_field = std::vector<bool>(form.field_count(), false),
         });
   }
 }
 
 void RecentUserAutofillAiInteractionsForHats::SuggestionAccepted(
     const FormStructure& form,
+    base::span<const AutofillField* const> filled_fields,
     const EntityInstance& entity) {
+  const std::vector<bool> is_filled_per_field =
+      base::ToVector(form, [&](const std::unique_ptr<AutofillField>& field) {
+        return std::ranges::contains(filled_fields, field.get());
+      });
+
   auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
   if (it != user_suggestion_interactions_per_form_.end()) {
-    it->second.entity_type_accepted = entity.type();
-    it->second.accepted_entity_record_type = entity.record_type();
+    it->second.entity_type_accepted.push_back(entity.type());
+    it->second.accepted_entity_record_type.push_back(entity.record_type());
+    if (it->second.is_filled_per_field.size() != is_filled_per_field.size()) {
+      // Form was modified between filling operations, reset filled fields.
+      it->second.is_filled_per_field = is_filled_per_field;
+    } else {
+      it->second.is_filled_per_field = base::ToVector(
+          std::views::zip(it->second.is_filled_per_field, is_filled_per_field),
+          [](std::pair<bool, bool> is_filled) {
+            return is_filled.first || is_filled.second;
+          });
+    }
   }
 }
 
@@ -165,17 +182,17 @@ void MaybeTriggerAutofillAiSubmissionHatsSurveys(
   if (!entity_manager) {
     return;
   }
-  if (interaction_details->entity_type_accepted &&
-      interaction_details->accepted_entity_record_type ==
-          EntityInstance::RecordType::kPersonalContext) {
+  if (!interaction_details->entity_type_accepted.empty() &&
+      std::ranges::contains(interaction_details->accepted_entity_record_type,
+                            EntityInstance::RecordType::kPersonalContext)) {
     auto saved_entity_type_names = base::MakeFlatSet<EntityTypeName>(
         entity_manager->GetEntityInstances(), std::less(),
         [](const EntityInstance& entity) { return entity.type().name(); });
 
     client.TriggerAutofillAiFillingJourneySurvey(
         /*suggestion_accepted=*/true,
-        *interaction_details->entity_type_accepted, saved_entity_type_names,
-        interaction_details->autofill_ai_field_types);
+        interaction_details->entity_type_accepted.front(),
+        saved_entity_type_names, interaction_details->autofill_ai_field_types);
   }
 }
 
