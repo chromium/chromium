@@ -411,7 +411,6 @@ SeedReaderWriter::SeedReaderWriter(
     PrefService* local_state,
     const base::FilePath& seed_file_dir,
     base::FilePath::StringViewType seed_filename,
-    base::FilePath::StringViewType old_seed_filename,
     const SeedFieldsPrefs& fields_prefs,
     version_info::Channel channel,
     const EntropyProviders* entropy_providers,
@@ -429,7 +428,6 @@ SeedReaderWriter::SeedReaderWriter(
     seed_writer_ = std::make_unique<base::ImportantFileWriter>(
         GetFilePath(seed_file_dir, seed_filename), file_task_runner_,
         /*interval=*/base::Seconds(1), kSeedWriterHistogramSuffix);
-    old_seed_file_path_ = GetFilePath(seed_file_dir, old_seed_filename);
   }
   if (IsEligibleForSeedFileTrial(channel, seed_file_dir, entropy_providers)) {
     SetUpSeedFileTrial(entropy_providers->default_entropy(), channel);
@@ -438,17 +436,7 @@ SeedReaderWriter::SeedReaderWriter(
       // reason for the error is that the seed file is missing.
       check_missing_seed_file_ = ShouldCheckMissingSeedFile(channel);
       ReadSeedFile();
-    } else if (ShouldMigrateToLocalState(channel)) {
-      // Because of the new group assignment, it is possible that a client that
-      // previously stored the seed data in the old seed file should now migrate
-      // back to local state.
-      MigrateToLocalState();
     }
-  } else if (ShouldMigrateToLocalState(channel)) {
-    // The old seed file experiment was affecting clients in stable and beta
-    // channels. Migrate if necessary the seed data from the old seed file to
-    // local state.
-    MigrateToLocalState();
   }
 }
 
@@ -760,10 +748,9 @@ bool SeedReaderWriter::ShouldClearSeedDataFromMemory() {
 void SeedReaderWriter::OnSeedWriteComplete(bool write_success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (migrating_from_old_source_ && write_success) {
-    // Clients using a seed file should clear seed from local state and the old
-    // seed file, as it will no longer be used.
+    // Clients using a seed file should clear seed from local state, as it will
+    // no longer be used.
     local_state_->ClearPref(fields_prefs_->seed);
-    DeleteOldSeedFile();
     migrating_from_old_source_ = false;
   }
   if (ShouldClearSeedDataFromMemory()) {
@@ -856,12 +843,6 @@ void SeedReaderWriter::DeleteSeedFile() {
                                 seed_writer_->path()));
 }
 
-void SeedReaderWriter::DeleteOldSeedFile() {
-  file_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                                old_seed_file_path_));
-}
-
 void SeedReaderWriter::ReadSeedFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SeedSource seed_source = SeedSource::kNoSource;
@@ -874,13 +855,10 @@ void SeedReaderWriter::ReadSeedFile() {
     stored_seed_info_ = std::move(read_seed_info_result.value());
     // Record that the seed file was read successfully.
     seed_source = SeedSource::kSeedFile;
-    // If we're using the seed file, clear the seed from local state and the old
-    // seed file, as it will no longer be used. If they don't exist, this is a
+    // If we're using the seed file, clear the seed from local state,
+    // as it will no longer be used. If it doesn't exist, this is a
     // no-op.
     local_state_->ClearPref(fields_prefs_->seed);
-    // Do a scheduled write immediately instead of waiting to ensure that the
-    // migration to the new seed file is done as soon as possible.
-    DeleteOldSeedFile();
   } else if (read_seed_info_result.error() !=
                  LoadSeedResult::kErrorReadingFile &&
              read_seed_info_result.error() != LoadSeedResult::kFileNotFound) {
@@ -888,18 +866,6 @@ void SeedReaderWriter::ReadSeedFile() {
     // to an empty string so we keep it in memory and don't read it from
     // disk.
     stored_seed_info_.set_data("");
-  } else if (ReadOldSeedFile()) {
-    // When the file doesn't exist (kFileNotFound or kErrorReadingFile on
-    // stable), we can read from the old file instead. We only want to migrate
-    // the seed using the old Seed File or Local State the first time, when the
-    // Seed File doesn't exist yet. In posterior runs the file should exist. If
-    // there's an error for any other reason, we don't want to fallback, so we
-    // just initialize the seed data to empty. Note: base::ReadFileToString()
-    // doesn't provide info about why the read failed, but this is most probable
-    // due to the file not existing.
-
-    // Record that the seed file was read successfully.
-    seed_source = SeedSource::kOldSeedFile;
   } else if (MigrateFromLocalStateToSeedFile()) {
     // Export seed data from Local State to a seed file in the following cases.
     // 1. Seed file does not exist because this is the first run. For Windows,
@@ -916,56 +882,6 @@ void SeedReaderWriter::ReadSeedFile() {
   base::UmaHistogramBoolean(
       base::StrCat({"Variations.SeedFileRead.", histogram_suffix_}),
       seed_source == SeedSource::kSeedFile);
-}
-
-// TODO(b/510295477): Remove this function once the migration is complete.
-bool SeedReaderWriter::ReadOldSeedFile() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string seed_file_data;
-  const bool success =
-      base::ReadFileToString(old_seed_file_path_, &seed_file_data);
-  if (!success) {
-    return false;
-  }
-  std::string raw_seed_data;
-  // The seed will be stored raw in memory, so we need to process it before
-  // storing it. If the seed is invalid, we will store an empty seed in memory.
-  auto result =
-      ProcessStoredSeedData(SeedStorageFormat::kCompressed, seed_file_data,
-                            local_state_->GetString(fields_prefs_->signature),
-                            &raw_seed_data, /*signature=*/nullptr);
-  if (result == LoadSeedResult::kSuccess) {
-    stored_seed_info_.set_data(std::move(raw_seed_data));
-  } else {
-    // Set seed data to an empty string so we keep it in memory and don't read
-    // it from disk.
-    stored_seed_info_.set_data("");
-  }
-  stored_seed_info_.set_signature(
-      local_state_->GetString(fields_prefs_->signature));
-  stored_seed_info_.set_milestone(
-      local_state_->GetInteger(fields_prefs_->milestone));
-  stored_seed_info_.set_seed_date(
-      TimeToProtoTime(local_state_->GetTime(fields_prefs_->seed_date)));
-  stored_seed_info_.set_client_fetch_time(
-      TimeToProtoTime(local_state_->GetTime(fields_prefs_->client_fetch_time)));
-  stored_seed_info_.set_session_country_code(
-      local_state_->GetString(fields_prefs_->session_country_code));
-  PermanentCountryVersion permanent_country_version =
-      GetPermanentCountryVersion(local_state_,
-                                 fields_prefs_->permanent_country_code_version);
-  stored_seed_info_.set_permanent_country_code(
-      permanent_country_version.country);
-  stored_seed_info_.set_permanent_version(permanent_country_version.version);
-
-  // Schedule a write to the new seed file for future Chrome sessions.
-  migrating_from_old_source_ = true;
-  seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
-  // Do a scheduled write immediately instead of waiting to ensure that the
-  // migration to the new seed file is done as soon as possible.
-  seed_writer_->DoScheduledWrite();
-
-  return success;
 }
 
 bool SeedReaderWriter::MigrateFromLocalStateToSeedFile() {
@@ -1047,26 +963,7 @@ bool SeedReaderWriter::ShouldUseSeedFile() const {
          base::FieldTrialList::FindFullName(kSeedFileTrial) == kSeedFilesGroup;
 }
 
-bool SeedReaderWriter::ShouldMigrateToLocalState(
-    version_info::Channel channel) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return seed_writer_ && base::PathExists(old_seed_file_path_);
-}
 
-void SeedReaderWriter::MigrateToLocalState() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string seed_file_data;
-  const bool success =
-      base::ReadFileToString(old_seed_file_path_, &seed_file_data);
-  if (success && !seed_file_data.empty()) {
-    std::string seed_data = seed_file_data == kIdenticalToSafeSeedSentinel
-                                ? kIdenticalToSafeSeedSentinel
-                                : base::Base64EncodeEarlyStartup(
-                                      base::as_byte_span(seed_file_data));
-    local_state_->SetString(fields_prefs_->seed, seed_data);
-  }
-  DeleteOldSeedFile();
-}
 
 void SeedReaderWriter::ProcessStoredSeedDataAndRunCallback(
     ReadSeedDataCallback done_callback,

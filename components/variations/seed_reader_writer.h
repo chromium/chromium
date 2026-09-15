@@ -135,8 +135,8 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
     kNoSource = 0,
     kLocalState = 1,
     kSeedFile = 2,
-    kOldSeedFile = 3,
-    kMaxValue = kOldSeedFile,
+    // kOldSeedFile = 3,
+    kMaxValue = kSeedFile,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:SeedSource)
 
@@ -145,8 +145,6 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Android Webview intentionally uses an empty path as it uses only local
   // state to store seeds.
   // `seed_filename` is the base name of a file in which seed data is stored.
-  // `old_seed_filename` is the base name of the file that may contain the seed
-  // data only. Deprecated after SeedFiles_V8.
   // `fields_prefs` is a variations pref struct (kRegularSeedFieldsPrefs or
   // kSafeSeedFieldsPrefs) denoting the prefs for the fields for the type of
   // seed being stored.
@@ -158,7 +156,6 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   SeedReaderWriter(PrefService* local_state,
                    const base::FilePath& seed_file_dir,
                    base::FilePath::StringViewType seed_filename,
-                   base::FilePath::StringViewType old_seed_filename,
                    const SeedFieldsPrefs& fields_prefs,
                    version_info::Channel channel,
                    const EntropyProviders* entropy_providers,
@@ -320,20 +317,12 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Schedules the deletion of a seed file.
   void DeleteSeedFile();
 
-  // Schedules the deletion of a seed file.
-  void DeleteOldSeedFile();
-
   // Reads seed data from a seed file, and if the read is successful,
   // populates `seed_info_`. May also schedule a seed file write for some
   // clients on the first run and for clients that are in the seed file
   // experiment's treatment group for the first time. If `seed_pref_` is present
   // in `local state_`, additionally clears it.
   void ReadSeedFile();
-
-  // Reads the seed data from the old seed file. Returns true if the read is
-  // successful.
-  // TODO(crbug.com/417138763): Remove this once the migration is complete.
-  bool ReadOldSeedFile();
 
   // Migrates the seed data from local state to a seed file. Returns true if the
   // migration is successful.
@@ -351,14 +340,6 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
 
   // Returns true if a seed file should be used.
   bool ShouldUseSeedFile() const;
-
-  // Returns true if the client should migrate to local state from the seed
-  // file.
-  bool ShouldMigrateToLocalState(version_info::Channel channel) const;
-
-  // Reads the seed data from the seed file and stores it in local state. Also
-  // removes the seed file.
-  void MigrateToLocalState();
 
   // Calls `done_callback` with the result of the load, the seed data, and
   // signature. The seed data and signature should only be used if the result is
@@ -426,10 +407,6 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Note: if the seed data is empty or kIdenticalToSafeSeedSentinel, it
   // will be kept in memory even if this is true.
   bool seed_purgeable_from_memory_ = false;
-
-  // Path to the old seed file.
-  // TODO(crbug.com/411431524): Remove this once the experiment has ended.
-  base::FilePath old_seed_file_path_;
 
   // Suffix to be used for histograms, either "Latest" or "Safe".
   const std::string histogram_suffix_;

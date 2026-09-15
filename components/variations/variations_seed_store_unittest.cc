@@ -53,8 +53,6 @@ using ::testing::Not;
 // File used by SeedReaderWriter to store a latest seed.
 const base::FilePath::CharType kSeedFilename[] =
     FILE_PATH_LITERAL("VariationsSeedV2");
-const base::FilePath::CharType kOldSeedFilename[] =
-    FILE_PATH_LITERAL("VariationsSeedV1");
 const base::FilePath::CharType kSafeSeedFilename[] =
     FILE_PATH_LITERAL("VariationsSafeSeedV2");
 
@@ -430,8 +428,8 @@ class SeedStoreGroupTestBase : public ::testing::Test {
 
     // Initialize |seed_reader_writer_|.
     seed_reader_writer_ = std::make_unique<SeedReaderWriter>(
-        &prefs_, temp_dir_.GetPath(), kSeedFilename, kOldSeedFilename,
-        seed_fields_prefs, version_info::Channel::UNKNOWN,
+        &prefs_, temp_dir_.GetPath(), kSeedFilename, seed_fields_prefs,
+        version_info::Channel::UNKNOWN,
         std::make_unique<const MockEntropyProviders>(
             MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup})
             .get(),

@@ -69,11 +69,6 @@ const base::FilePath::CharType kSeedFilename[] =
 // LINT.ThenChange(/components/variations/variations_safe_seed_store.cc,
 // /chrome/browser/metrics/variations/variations_safe_mode_end_to_end_browsertest.cc)
 
-// Name of the old seed file. It stores only the seed data gzip-compressed.
-// TODO(crbug.com/411431524): Remove this once the experiment has ended.
-const base::FilePath::CharType kOldSeedFilename[] =
-    FILE_PATH_LITERAL("VariationsSeedV1");
-
 // Returns true if |signature| is empty and if the command-line flag to accept
 // empty seed signature is specified.
 bool AcceptEmptySeedSignatureForTesting(const std::string& signature) {
@@ -279,7 +274,6 @@ VariationsSeedStore::VariationsSeedStore(
           std::make_unique<SeedReaderWriter>(local_state,
                                              seed_file_dir,
                                              kSeedFilename,
-                                             kOldSeedFilename,
                                              kRegularSeedFieldsPrefs,
                                              channel,
                                              entropy_providers,

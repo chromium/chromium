@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="No Source"/>
   <int value="1" label="Local State"/>
   <int value="2" label="Seed File"/>
-  <int value="3" label="Old Seed File"/>
+  <int value="3" label="Old Seed File (Obsolete)"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/variations/seed_reader_writer.h:SeedSource) -->

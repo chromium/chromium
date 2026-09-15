@@ -18,11 +18,6 @@ namespace {
 const base::FilePath::CharType kSafeSeedFilename[] =
     FILE_PATH_LITERAL("VariationsSafeSeedV2");
 
-// Name of the old safe seed file. It stores only the seed data gzip-compressed.
-// TODO(rcanoaparicio): Remove this once the experiment has ended.
-const base::FilePath::CharType kOldSafeSeedFilename[] =
-    FILE_PATH_LITERAL("VariationsSafeSeedV1");
-
 }  // namespace
 
 VariationsSafeSeedStore::VariationsSafeSeedStore(
@@ -35,7 +30,6 @@ VariationsSafeSeedStore::VariationsSafeSeedStore(
           std::make_unique<SeedReaderWriter>(local_state,
                                              seed_file_dir,
                                              kSafeSeedFilename,
-                                             kOldSafeSeedFilename,
                                              kSafeSeedFieldsPrefs,
                                              channel,
                                              entropy_providers,
