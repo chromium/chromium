@@ -355,26 +355,9 @@ void DedicatedWorkerGlobalScope::FetchAndRunClassicScript(
       mojom::blink::RequestContextType::WORKER;
   network::mojom::RequestDestination destination =
       network::mojom::RequestDestination::kWorker;
-
-  // Step 12.1. "Set request's reserved client to inside settings."
-  // The browesr process takes care of this.
-
-  // Step 12.2. "Fetch request, and asynchronously wait to run the remaining
-  // steps as part of fetch's process response for the response response."
-  WorkerClassicScriptLoader* classic_script_loader =
-      MakeGarbageCollected<WorkerClassicScriptLoader>();
-  classic_script_loader->LoadTopLevelScriptAsynchronously(
-      *this,
-      CreateOutsideSettingsFetcher(outside_settings_object,
-                                   outside_resource_timing_notifier),
-      script_url, std::move(worker_main_script_load_params), context_type,
-      destination, network::mojom::RequestMode::kSameOrigin,
-      network::mojom::CredentialsMode::kSameOrigin,
-      BindOnce(&DedicatedWorkerGlobalScope::DidReceiveResponseForClassicScript,
-               WrapWeakPersistent(this), WrapPersistent(classic_script_loader)),
-      BindOnce(&DedicatedWorkerGlobalScope::DidFetchClassicScript,
-               WrapWeakPersistent(this), WrapPersistent(classic_script_loader),
-               stack_id));
+  FetchClassicScript(script_url, std::move(worker_main_script_load_params),
+                     outside_settings_object, outside_resource_timing_notifier,
+                     context_type, destination, stack_id);
 }
 
 // https://html.spec.whatwg.org/C/#worker-processing-model
