@@ -137,7 +137,7 @@ bool ChromeTracingDelegate::IsRecordingAllowed(
   EnsureObservingBrowserCollection();
 #endif
 
-  if (IsOffTheRecordSessionActive() ||
+  if ((g_browser_process && IsOffTheRecordSessionActive()) ||
       session_start <= latest_incognito_launched_) {
     UMA_HISTOGRAM_ENUMERATION(
         "Tracing.Background.FinalizationDisallowedReason",
