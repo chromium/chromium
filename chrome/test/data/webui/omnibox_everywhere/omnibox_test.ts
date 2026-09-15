@@ -1092,6 +1092,43 @@ suite('OmniboxEverywhereComposeboxTest', () => {
         assertFalse(composebox.isScreenshotMenuOpen);
         assertEquals(1, testProxy.handler.getCallCount('showScreenshotMenu'));
       });
+
+  test('deleting file context queries autocomplete', async () => {
+    const token = 'test-token';
+    const file = ComposeboxFile.createFromFile(
+        token, {name: 'file.png', type: 'image/png'});
+    composebox.onFileContextAdded(file);
+    await microtasksFinished();
+
+    testProxy.handler.resetResolver('queryAutocomplete');
+    composebox.deleteFile(token, /*fromUserAction=*/ true);
+    await microtasksFinished();
+
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    const args = testProxy.handler.getArgs('queryAutocomplete')[0];
+    assertEquals('', args[2]);
+    assertFalse(args[3]);
+    assertEquals(null, composebox.result);
+  });
+
+  test('context upload replaced queries autocomplete', async () => {
+    const token = 'test-token';
+    const file = ComposeboxFile.createFromFile(
+        token, {name: 'file.png', type: 'image/png'});
+    composebox.onFileContextAdded(file);
+    await microtasksFinished();
+
+    testProxy.handler.resetResolver('queryAutocomplete');
+    composebox.onContextualInputStatusChanged(
+        token, ContextUploadStatus.kUploadReplaced, null);
+    await microtasksFinished();
+
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    const args = testProxy.handler.getArgs('queryAutocomplete')[0];
+    assertEquals('', args[2]);
+    assertFalse(args[3]);
+    assertEquals(null, composebox.result);
+  });
 });
 
 declare global {
