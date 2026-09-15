@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/dom/transform_source.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -190,7 +191,51 @@ static void CreateAndAppendBanner(Document& document, Callback build_banner) {
   target->insertBefore(banner, target->firstChild());
 }
 
+constexpr char kXhtmlNamespace[] = "http://www.w3.org/1999/xhtml";
+
+static bool IsXhtmlScriptWithSrc(xmlNodePtr node) {
+  return node->type == XML_ELEMENT_NODE &&
+         xmlStrEqual(node->name, BAD_CAST "script") && node->ns &&
+         xmlStrEqual(node->ns->href, BAD_CAST kXhtmlNamespace) &&
+         xmlHasNsProp(node, BAD_CAST "src", nullptr);
+}
+
+// Returns true if the XSLT source document contains an XHTML <script src=...>
+// element at most two levels below the document element. Such a script never
+// runs in a browser with native XSLT, because the parser stops at the
+// xml-stylesheet processing instruction before the document element is even
+// created. It will run once XSLT is removed, so its presence means the site
+// has deliberately prepared for removal (typically by deploying an XSLT
+// polyfill), and the deprecation banner would be a false alarm.
+static bool SourceHasPolyfillScript(Document& owner_document) {
+  TransformSource* transform_source = owner_document.GetTransformSource();
+  if (!transform_source) {
+    return false;
+  }
+  xmlDocPtr source = transform_source->PlatformSource();
+  if (!source) {
+    return false;
+  }
+  xmlNodePtr root = xmlDocGetRootElement(source);
+  if (!root) {
+    return false;
+  }
+  for (xmlNodePtr child = root->children; child; child = child->next) {
+    if (IsXhtmlScriptWithSrc(child)) {
+      return true;
+    }
+    for (xmlNodePtr grandchild = child->children; grandchild;
+         grandchild = grandchild->next) {
+      if (IsXhtmlScriptWithSrc(grandchild)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 static void InjectXSLTWarningBanner(bool is_cap_alert_xslt,
+                                    bool source_has_polyfill_script,
                                     Document& document) {
   ExecutionContext* context = document.GetExecutionContext();
   if (!RuntimeEnabledFeatures::GenerateXSLTWarningBannerEnabled(context)) {
@@ -204,6 +249,9 @@ static void InjectXSLTWarningBanner(bool is_cap_alert_xslt,
   }
   if (context &&
       context->FeatureEnabled(mojom::blink::OriginTrialFeature::kXSLT)) {
+    return;
+  }
+  if (source_has_polyfill_script) {
     return;
   }
   if (is_cap_alert_xslt) {
@@ -269,6 +317,13 @@ Document* XSLTProcessor::CreateDocumentFromSource(
       RuntimeEnabledFeatures::EnableXSLTForCAPAlertsEnabled(
           owner_document->GetExecutionContext());
 
+  // Sites that have deployed an XSLT polyfill don't need the banner. This must
+  // be computed before CommitNavigation() below, which detaches the source
+  // document. CAP alerts are intentionally not scanned: they always get their
+  // own banner.
+  bool source_has_polyfill_script = !owner_document->IsCAPAlert() &&
+                                    SourceHasPolyfillScript(*owner_document);
+
   String mime_type = source_mime_type;
   // Force text/plain to be parsed as XHTML. This was added without explanation
   // in 2005:
@@ -293,7 +348,8 @@ Document* XSLTProcessor::CreateDocumentFromSource(
                                      CommitReason::kXSLT);
     Document* new_doc = frame->GetDocument();
     if (new_doc) {
-      InjectXSLTWarningBanner(is_cap_alert_xslt, *new_doc);
+      InjectXSLTWarningBanner(is_cap_alert_xslt, source_has_polyfill_script,
+                              *new_doc);
     }
     return new_doc;
   }
@@ -318,7 +374,8 @@ Document* XSLTProcessor::CreateDocumentFromSource(
         StrCat({"Document encoding not valid: ", source_encoding})));
   }
   document->SetContent(document_source);
-  InjectXSLTWarningBanner(is_cap_alert_xslt, *document);
+  InjectXSLTWarningBanner(is_cap_alert_xslt, source_has_polyfill_script,
+                          *document);
   return document;
 }
 
