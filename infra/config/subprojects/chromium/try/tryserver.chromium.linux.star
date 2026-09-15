@@ -1282,15 +1282,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-tsgo-rel",
-    mirrors = [
-        "ci/linux-tsgo-rel",
-    ],
-    gn_args = "ci/linux-tsgo-rel",
-    contact_team_email = "chrome-webui@google.com",
-)
-
-try_.builder(
     name = "linux-separate-renderer-rel",
     description_html = "Runs separate renderer tests on Linux, mirroring linux-separate-renderer-fyi-rel.",
     mirrors = [

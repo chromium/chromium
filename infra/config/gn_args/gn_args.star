@@ -1636,13 +1636,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "use_typescript_go",
-    args = {
-        "use_typescript_go": True,
-    },
-)
-
-gn_args.config(
     name = "separate_renderer",
     args = {
         "enable_separate_renderer_binary": True,

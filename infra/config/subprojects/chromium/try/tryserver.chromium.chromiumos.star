@@ -314,15 +314,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-chromeos-tsgo-rel",
-    mirrors = [
-        "ci/linux-chromeos-tsgo-rel",
-    ],
-    gn_args = "ci/linux-chromeos-tsgo-rel",
-    contact_team_email = "chrome-webui@google.com",
-)
-
-try_.builder(
     name = "linux-chromeos-clobber-rel",
     mirrors = [
         "ci/linux-chromeos-archive-rel",
