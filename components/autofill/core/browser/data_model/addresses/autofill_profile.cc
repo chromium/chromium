@@ -686,11 +686,8 @@ void AutofillProfile::OverwriteDataFromForLegacySync(
 
   // Structured names should not be simply overwritten but it should be
   // attempted to merge the names.
-  bool is_structured_name_mergeable = false;
   NameInfo name_info = GetNameInfo();
-  is_structured_name_mergeable =
-      name_info.IsStructuredNameMergeable(profile.GetNameInfo());
-  name_info.MergeStructuredName(
+  const bool merge_succeeded = name_info.MergeStructuredName(
       profile.GetNameInfo(),
       usage_history().use_date() < profile.usage_history().use_date());
 
@@ -711,7 +708,7 @@ void AutofillProfile::OverwriteDataFromForLegacySync(
   // structure. Note, this should only happen if the complete name is empty. For
   // the legacy implementation, set the full name if |profile| does not contain
   // a full name.
-  if (is_structured_name_mergeable || !HasRawInfo(NAME_FULL)) {
+  if (merge_succeeded || !HasRawInfo(NAME_FULL)) {
     name_ = std::move(name_info);
   }
 

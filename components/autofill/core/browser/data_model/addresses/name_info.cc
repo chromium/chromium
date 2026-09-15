@@ -513,14 +513,43 @@ bool NameInfo::AreAlternativeNamesMergeable(
 
 bool NameInfo::MergeStructuredName(const NameInfo& newer,
                                    bool newer_was_more_recently_used) {
-  if (name_->MergeWithComponent(*newer.name_, newer_was_more_recently_used)) {
-    if (IsAlternativeNameSupported() && newer.IsAlternativeNameSupported()) {
-      return alternative_name_->MergeWithComponent(
-          *newer.alternative_name_, newer_was_more_recently_used);
-    }
-    return true;
+  // It should never happen in practice as this method is used to override the
+  // `AutofillProfile` owning `this` with data coming from sync. Since their
+  // GUIDs have to match, the country of both profiles (and thus the support for
+  // alternative names) should be the same.
+  if (!HaveSimilarAlternativeNameSupport(newer)) {
+    return false;
   }
-  return false;
+
+  // Check the mergeability of the full name. A full name must be present in all
+  // valid (not-moved-from) `NameInfo` objects.
+  if (!name_->IsMergeableWithComponent(*newer.name_)) {
+    return false;
+  }
+
+  // The presence of an alternative name is not mandatory; however, if one
+  // exists, its mergeability must be checked. In such a case, `NameInfo` is
+  // mergeable only if both of its components are mergeable with the respective
+  // components of the `newer` object.
+  if (IsAlternativeNameSupported() && newer.IsAlternativeNameSupported()) {
+    if (!alternative_name_->IsMergeableWithComponent(
+            *newer.alternative_name_)) {
+      return false;
+    }
+    // This must return true because `IsMergeableWithComponent` checks for both
+    // name components were already performed and had their results been
+    // negative this method would have returned earlier.
+    return name_->MergeWithComponent(*newer.name_,
+                                     newer_was_more_recently_used) &&
+           alternative_name_->MergeWithComponent(*newer.alternative_name_,
+                                                 newer_was_more_recently_used);
+  }
+
+  // The alternative name does not exist, so only merge the full name. This must
+  // return true, because the `IsMergeableWithComponent` check for the full name
+  // was called earlier and would have returned early had it had a negative
+  // result.
+  return name_->MergeWithComponent(*newer.name_, newer_was_more_recently_used);
 }
 
 bool NameInfo::IsNameVariantOf(std::u16string_view value,
@@ -600,23 +629,6 @@ std::u16string NameInfo::GetValueForComparisonForType(
     const AddressCountryCode& common_country_code) const {
   return GetRootForType(field_type)
       ->GetValueForComparisonForType(field_type, common_country_code);
-}
-
-bool NameInfo::IsStructuredNameMergeable(const NameInfo& newer) const {
-  // It should never happen in practice as this method is used to override the
-  // `AutofillProile` owning `this` with data coming from sync. Since their
-  // guids have to match, the country of both profiles (and thus the support for
-  // alternative names), should be the same.
-  if (!HaveSimilarAlternativeNameSupport(newer)) {
-    return false;
-  }
-
-  if (IsAlternativeNameSupported() && newer.IsAlternativeNameSupported()) {
-    return name_->IsMergeableWithComponent(*newer.name_) &&
-           alternative_name_->IsMergeableWithComponent(
-               *newer.alternative_name_);
-  }
-  return name_->IsMergeableWithComponent(*newer.name_);
 }
 
 bool NameInfo::FinalizeAfterImport() {

@@ -113,13 +113,11 @@ class NameInfo : public FormGroup {
   // cannot be completed.
   bool FinalizeAfterImport();
 
-  // Returns true if the structured-name information in |this| and |newer| are
-  // mergeable. Note, returns false if |newer| is variant of |this| or vice
+  // Merges the structured name-information of |newer| into |this|. Returns true
+  // if the merge succeeded, false otherwise.
+  // |newer| and |this| are mergeable if |newer| is variant of |this| or vice
   // versa. A name variant is a variation that allows for abbreviations, a
   // reordering and omission of the tokens.
-  bool IsStructuredNameMergeable(const NameInfo& newer) const;
-
-  // Merges the structured name-information of |newer| into |this|.
   bool MergeStructuredName(const NameInfo& newer,
                            bool newer_was_more_recently_used);
 
