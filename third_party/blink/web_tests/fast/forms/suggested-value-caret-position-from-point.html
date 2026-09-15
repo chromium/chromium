@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/cssom-view/#dom-document-caretpositionfrompoint">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+  input, textarea {
+    width: 300px;
+    font-size: 16px;
+    font-family: monospace;
+  }
+</style>
+<input id="empty-input">
+<input id="filled-input" value="ab">
+<input id="password-input" type="password">
+<textarea id="text-area" rows="2"></textarea>
+<input id="placeholder-input" placeholder="placeholder text 0123456789">
+<input id="value-input" value="mm mm mm mm mm mm mm">
+<script>
+const suggestion = 'suggested value 0123456789';
+
+// Sweeps caretPositionFromPoint() across the width of |control| and returns
+// the set of distinct getClientRect() positions of the reported carets.
+function distinctCaretRectPositions(control) {
+  const bounds = control.getBoundingClientRect();
+  const y = bounds.top + 12;
+  const positions = new Set();
+  for (let x = bounds.left + 4; x <= bounds.right - 4; x += 2) {
+    const caretPosition = document.caretPositionFromPoint(x, y);
+    if (!caretPosition)
+      continue;
+    assert_equals(caretPosition.offsetNode, control,
+                  `offsetNode at (${x}, ${y})`);
+    assert_less_than_equal(caretPosition.offset, control.value.length,
+                           `offset at (${x}, ${y})`);
+    const rect = caretPosition.getClientRect();
+    if (rect)
+      positions.add(`${rect.x},${rect.y}`);
+  }
+  return positions;
+}
+
+function testSuggestedValue(control, maxDistinctPositions, description) {
+  test(() => {
+    control.focus();
+    internals.setSuggestedValue(control, suggestion);
+    try {
+      const positions = distinctCaretRectPositions(control);
+      assert_less_than_equal(
+          positions.size, maxDistinctPositions,
+          `distinct caret rects: ${JSON.stringify([...positions])}`);
+    } finally {
+      internals.setSuggestedValue(control, '');
+    }
+  }, description);
+}
+
+testSuggestedValue(
+    document.getElementById('empty-input'), 1,
+    'caretPositionFromPoint() over an empty <input> showing a suggested ' +
+        'value maps every point to the caret at the start of the value');
+
+testSuggestedValue(
+    document.getElementById('filled-input'),
+    document.getElementById('filled-input').value.length + 1,
+    'caretPositionFromPoint() over an <input> with a value showing a ' +
+        'suggested value only reports carets within the value');
+
+testSuggestedValue(
+    document.getElementById('password-input'), 1,
+    'caretPositionFromPoint() over an empty password <input> showing a ' +
+        'suggested value maps every point to the caret at the start of the ' +
+        'value');
+
+testSuggestedValue(
+    document.getElementById('text-area'), 1,
+    'caretPositionFromPoint() over an empty <textarea> showing a suggested ' +
+        'value maps every point to the caret at the start of the value');
+
+test(() => {
+  const control = document.getElementById('placeholder-input');
+  const positions = distinctCaretRectPositions(control);
+  assert_less_than_equal(
+      positions.size, 1,
+      `distinct caret rects: ${JSON.stringify([...positions])}`);
+}, 'caretPositionFromPoint() over an empty <input> showing a placeholder ' +
+       'maps every point to the caret at the start of the value');
+
+test(() => {
+  const control = document.getElementById('value-input');
+  const positions = distinctCaretRectPositions(control);
+  assert_greater_than(positions.size, 1,
+                      'caret rects should track positions within the value');
+}, 'caretPositionFromPoint() over an <input> with a value reports carets ' +
+       'at each position within the value');
+</script>

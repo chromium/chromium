@@ -634,6 +634,11 @@ input::-internal-input-suggested {
     overflow: hidden;
 }
 
+input::-internal-input-suggested,
+textarea::-internal-input-suggested {
+    pointer-events: none !important;
+}
+
 @supports blink-feature(AutofillPreviewIgnoreAuthorFont) {
     input::-internal-input-suggested,
     textarea::-internal-input-suggested {

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/cssom/caret_position.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_caret_position_from_point_options.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -16,6 +17,33 @@ namespace blink {
 class CaretPositionTest : public PageTestBase {
  public:
   CaretPositionTest() = default;
+
+ protected:
+  // Sweeps caretPositionFromPoint() across the width of |control| and returns
+  // the distinct getClientRect() positions of the reported carets.
+  Vector<gfx::PointF> DistinctCaretRectPositions(TextControlElement& control) {
+    const DOMRect* bounds = control.GetBoundingClientRect();
+    const float y = bounds->top() + 12;
+    Vector<gfx::PointF> positions;
+    for (float x = bounds->left() + 4; x <= bounds->right() - 4; x += 2) {
+      CaretPosition* caret_position = GetDocument().caretPositionFromPoint(
+          x, y, CaretPositionFromPointOptions::Create());
+      if (!caret_position) {
+        continue;
+      }
+      EXPECT_EQ(&control, caret_position->offsetNode());
+      EXPECT_EQ(0u, caret_position->offset());
+      DOMRect* rect = caret_position->getClientRect();
+      if (!rect) {
+        continue;
+      }
+      gfx::PointF position(rect->x(), rect->y());
+      if (!positions.Contains(position)) {
+        positions.push_back(position);
+      }
+    }
+    return positions;
+  }
 };
 
 TEST_F(CaretPositionTest, offsetNodeAndOffset) {
@@ -116,5 +144,26 @@ TEST_F(CaretPositionTest, getClientRectInInput) {
   EXPECT_NE(nullptr, range_client_rect);
   EXPECT_NE(nullptr, caret_position_client_rect);
   EXPECT_EQ(*range_client_rect, *caret_position_client_rect);
+}
+
+TEST_F(CaretPositionTest, caretPositionFromPointInInputWithSuggestedValue) {
+  SetBodyContent("<input style='width: 300px; font-size: 16px'>");
+  auto& input =
+      ToTextControl(*GetDocument().QuerySelector(AtomicString("input")));
+  input.SetSuggestedValue("suggested value 0123456789");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_LE(DistinctCaretRectPositions(input).size(), 1u);
+}
+
+TEST_F(CaretPositionTest, caretPositionFromPointInTextareaWithSuggestedValue) {
+  SetBodyContent(
+      "<textarea style='width: 300px; font-size: 16px' rows='2'></textarea>");
+  auto& textarea =
+      ToTextControl(*GetDocument().QuerySelector(AtomicString("textarea")));
+  textarea.SetSuggestedValue("suggested value 0123456789");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_LE(DistinctCaretRectPositions(textarea).size(), 1u);
 }
 }  // namespace blink

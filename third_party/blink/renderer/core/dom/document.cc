@@ -2090,6 +2090,10 @@ CaretPosition* Document::caretPositionFromPoint(
   Node* anchor_node = position_with_affinity.AnchorNode();
   if (TextControlElement* text_control = EnclosingTextControl(anchor_node)) {
     anchor_node = text_control;
+    CHECK(anchor_node == text_control ||
+          text_control->InnerEditorElement()->contains(anchor_node))
+        << "We should not expose positions in content (e.g., autofill "
+           "suggestions) not in the editor";
   }
   bool adjust_position = false;
   while (anchor_node->IsInShadowTree() &&
