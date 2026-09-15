@@ -4,8 +4,8 @@
 
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "build/build_config.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/policy/safe_browsing_policy_test.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,11 +41,10 @@ void SendInterstitialCommand(
 // appears on SSL blocking pages.
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
                        SSLErrorOverridingAllowedDefaults) {
-  net::EmbeddedTestServer https_server_expired(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(https_server_expired.Start());
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
 
   const PrefService* const prefs =
       chrome_test_utils::GetProfile(this)->GetPrefs();
@@ -58,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
-  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  ASSERT_TRUE(NavigateToUrl(https_server.GetURL("/"), this));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(IsShowingInterstitial(tab));
 
@@ -69,20 +68,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
 // Test that when SSL error overriding is allowed, the origin list is ignored
 // and the proceed link appears on SSL blocking pages.
-// TODO(crbug.com/555854628): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SSLErrorOverridingAllowedEnabled \
-  DISABLED_SSLErrorOverridingAllowedEnabled
-#else
-#define MAYBE_SSLErrorOverridingAllowedEnabled SSLErrorOverridingAllowedEnabled
-#endif
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
-                       MAYBE_SSLErrorOverridingAllowedEnabled) {
-  net::EmbeddedTestServer https_server_expired(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(https_server_expired.Start());
+                       SSLErrorOverridingAllowedEnabled) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
 
   const PrefService* const prefs =
       chrome_test_utils::GetProfile(this)->GetPrefs();
@@ -109,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
-  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  ASSERT_TRUE(NavigateToUrl(https_server.GetURL("/"), this));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(IsShowingInterstitial(tab));
 
@@ -120,21 +111,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
 // Test that when SSL error overriding is disabled, the proceed link does not
 // appear appear on SSL blocking pages.
-// TODO(crbug.com/555854628): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SSLErrorOverridingAllowedDisabled \
-  DISABLED_SSLErrorOverridingAllowedDisabled
-#else
-#define MAYBE_SSLErrorOverridingAllowedDisabled \
-  SSLErrorOverridingAllowedDisabled
-#endif
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
-                       MAYBE_SSLErrorOverridingAllowedDisabled) {
-  net::EmbeddedTestServer https_server_expired(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(https_server_expired.Start());
+                       SSLErrorOverridingAllowedDisabled) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
 
   const PrefService* const prefs =
       chrome_test_utils::GetProfile(this)->GetPrefs();
@@ -152,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  ASSERT_TRUE(NavigateToUrl(https_server.GetURL("/"), this));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(IsShowingInterstitial(tab));
 
@@ -169,21 +151,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 // Test that when SSL error overriding is disallowed by policy and the origin
 // list is configured, the proceed link does not appear on SSL blocking pages if
 // the page is not on the origin list.
-// TODO(crbug.com/555854628): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SSLErrorOverridingAllowedForOriginsWrongOrigin \
-  DISABLED_SSLErrorOverridingAllowedForOriginsWrongOrigin
-#else
-#define MAYBE_SSLErrorOverridingAllowedForOriginsWrongOrigin \
-  SSLErrorOverridingAllowedForOriginsWrongOrigin
-#endif
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
-                       MAYBE_SSLErrorOverridingAllowedForOriginsWrongOrigin) {
-  net::EmbeddedTestServer https_server_expired(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(https_server_expired.Start());
+                       SSLErrorOverridingAllowedForOriginsWrongOrigin) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
 
   const PrefService* const prefs =
       chrome_test_utils::GetProfile(this)->GetPrefs();
@@ -214,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  ASSERT_TRUE(NavigateToUrl(https_server.GetURL("/"), this));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(IsShowingInterstitial(tab));
 
@@ -233,11 +206,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 // blocking pages.
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
                        SSLErrorOverridingForOriginsBadInput) {
-  net::EmbeddedTestServer https_server_expired(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(https_server_expired.Start());
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
 
   const PrefService* const prefs =
       chrome_test_utils::GetProfile(this)->GetPrefs();
@@ -266,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  ASSERT_TRUE(NavigateToUrl(https_server.GetURL("/"), this));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(IsShowingInterstitial(tab));
 
@@ -284,11 +256,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 // list is empty, the proceed link does not appear on SSL blocking pages.
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
                        SSLErrorOverridingForOriginsEmptyList) {
-  net::EmbeddedTestServer https_server_expired(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(https_server_expired.Start());
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
 
   const PrefService* const prefs =
       chrome_test_utils::GetProfile(this)->GetPrefs();
@@ -315,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  ASSERT_TRUE(NavigateToUrl(https_server.GetURL("/"), this));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(IsShowingInterstitial(tab));
 
@@ -332,21 +303,12 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 // Test that when SSL error overriding is disallowed by policy and the origin
 // list is configured, the proceed link appears on SSL blocking pages if the
 // page is on the origin list.
-// TODO(crbug.com/555854628): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SSLErrorOverridingAllowedForOrigins \
-  DISABLED_SSLErrorOverridingAllowedForOrigins
-#else
-#define MAYBE_SSLErrorOverridingAllowedForOrigins \
-  SSLErrorOverridingAllowedForOrigins
-#endif
 IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
-                       MAYBE_SSLErrorOverridingAllowedForOrigins) {
-  net::EmbeddedTestServer https_server_expired(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
-  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(https_server_expired.Start());
+                       SSLErrorOverridingAllowedForOrigins) {
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
 
   const PrefService* const prefs =
       chrome_test_utils::GetProfile(this)->GetPrefs();
@@ -365,7 +327,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   // Add a policy to allow overriding on specific sites only. The path should be
   // ignored.
   base::ListValue allow_list;
-  allow_list.Append("127.0.0.1/my/path/to/file.ext");
+  allow_list.Append(
+      base::StrCat({https_server.GetURL("/").host(), "/my/path/to/file.ext"}));
   policies.Set(key::kSSLErrorOverrideAllowedForOrigins, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                base::Value(std::move(allow_list)), nullptr);
@@ -378,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
-  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  ASSERT_TRUE(NavigateToUrl(https_server.GetURL("/"), this));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(IsShowingInterstitial(tab));
 
