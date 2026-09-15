@@ -712,6 +712,11 @@ crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/function
 crbug.com/40144307 [ linux nvidia-0x2783 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/535817988 [ linux nvidia angle-opengl passthrough ] conformance/extensions/oes-texture-float-linear.html [ RetryOnFailure ]
 
+## Linux / OpenGL / GTX 1660 ##
+
+crbug.com/498282277 [ linux angle-opengl nvidia-0x2184 ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
+crbug.com/498282277 [ linux angle-opengl nvidia-0x2184 ] conformance2/textures/canvas/tex-2d-rg8-rg-unsigned_byte.html [ RetryOnFailure ]
+
 ## Linux AMD RX 5500 XT ##
 
 crbug.com/445727124 [ linux amd-0x7340 ] deqp/functional/gles3/shaderoperator/unary_operator_00.html [ Failure ]
