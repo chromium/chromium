@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -23,10 +24,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
@@ -1179,23 +1182,60 @@ bool AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
   CHECK(desc.usage & (AHARDWAREBUFFER_USAGE_CPU_READ_RARELY |
                       AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN));
 
-  base::span<uint8_t> dst_buffer = mapping.GetMemoryAsSpan<uint8_t>();
-  const size_t required_size =
-      static_cast<size_t>(desc.width) * desc.height * 3 / 2;
-  if (dst_buffer.size() < required_size) {
+  // gfx::Size and libyuv take the dimensions as `int`.
+  if (!base::IsValueInRangeForNumericType<int>(desc.width) ||
+      !base::IsValueInRangeForNumericType<int>(desc.height)) {
+    return false;
+  }
+  const gfx::Size size(static_cast<int>(desc.width),
+                       static_cast<int>(desc.height));
+  if (size.IsEmpty()) {
     return false;
   }
 
+  // Clients can't create a non-NV12 mappable AHB SharedImage.
+  // NV12 requires even dimensions on this platform, and the code below relies
+  // on that: it writes the destination UV rows with a stride of `width` bytes,
+  // while libyuv::NV12Copy() writes ceil(width / 2) * 2 bytes per UV row over
+  // ceil(height / 2) rows. For odd dimensions the two disagree, which is what
+  // allowed a forged buffer to overflow the destination.
+  constexpr viz::SharedImageFormat kFormat = viz::MultiPlaneFormat::kNV12;
+  if (!IsSizeForBufferHandleValid(size, kFormat)) {
+    return false;
+  }
+
+  // Size the destination with the same helpers the client used to allocate
+  // `shared_memory`. They use ceil-rounded chroma dimensions, matching what
+  // NV12Copy() writes, and checked arithmetic.
+  std::optional<size_t> y_plane_size =
+      viz::SharedMemoryPlaneSizeForSharedImageFormat(kFormat, /*plane_index=*/0,
+                                                     size);
+  std::optional<size_t> required_size =
+      viz::SharedMemorySizeForSharedImageFormat(kFormat, size);
+  if (!y_plane_size.has_value() || !required_size.has_value()) {
+    return false;
+  }
+
+  base::span<uint8_t> dst_buffer = mapping.GetMemoryAsSpan<uint8_t>();
+  if (dst_buffer.size() < required_size.value()) {
+    return false;
+  }
+  // Bounds-checked split of the destination into its Y and UV planes.
+  auto [dst_y_plane, dst_uv_plane] =
+      dst_buffer.first(required_size.value()).split_at(y_plane_size.value());
+
   AHardwareBuffer_Planes planes;
   int fence = -1;
-  int ret = AHardwareBuffer_lockPlanes(hardware_buffer,
-                                       AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN,
-                                       fence, nullptr, &planes);
+  const uint64_t cpu_read_usage =
+      desc.usage & (AHARDWAREBUFFER_USAGE_CPU_READ_RARELY |
+                    AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN);
+  int ret = AHardwareBuffer_lockPlanes(hardware_buffer, cpu_read_usage, fence,
+                                       nullptr, &planes);
   if (ret != 0) {
     return false;
   }
 
-  absl::Cleanup uncloker = [&]() {
+  absl::Cleanup unlocker = [&]() {
     AHardwareBuffer_unlock(hardware_buffer, nullptr);
   };
 
@@ -1219,14 +1259,35 @@ bool AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
     return false;
   }
 
-  const int dst_stride = desc.width;
+  // libyuv takes strides as `int`. Ensure the source strides fit in `int` to
+  // prevent overflow into negative values, which libyuv interprets as bottom-up
+  // strides.
+  if (!base::IsValueInRangeForNumericType<int>(planes.planes[0].rowStride) ||
+      !base::IsValueInRangeForNumericType<int>(planes.planes[1].rowStride)) {
+    return false;
+  }
+
+  // Destination row strides must match what the client expects when mapping
+  // the shared memory, and must fit in `int` for libyuv.
+  std::optional<size_t> dst_stride_y =
+      viz::SharedMemoryRowSizeForSharedImageFormat(kFormat, /*plane_index=*/0,
+                                                   size.width());
+  std::optional<size_t> dst_stride_uv =
+      viz::SharedMemoryRowSizeForSharedImageFormat(kFormat, /*plane_index=*/1,
+                                                   size.width());
+  if (!dst_stride_y.has_value() || !dst_stride_uv.has_value() ||
+      !base::IsValueInRangeForNumericType<int>(dst_stride_y.value()) ||
+      !base::IsValueInRangeForNumericType<int>(dst_stride_uv.value())) {
+    return false;
+  }
 
   int result = libyuv::NV12Copy(
-      static_cast<uint8_t*>(planes.planes[0].data), planes.planes[0].rowStride,
-      static_cast<uint8_t*>(planes.planes[1].data), planes.planes[1].rowStride,
-      dst_buffer.data(), dst_stride,
-      dst_buffer.subspan(desc.height * dst_stride).data(), dst_stride,
-      desc.width, desc.height);
+      static_cast<uint8_t*>(planes.planes[0].data),
+      static_cast<int>(planes.planes[0].rowStride),
+      static_cast<uint8_t*>(planes.planes[1].data),
+      static_cast<int>(planes.planes[1].rowStride), dst_y_plane.data(),
+      static_cast<int>(dst_stride_y.value()), dst_uv_plane.data(),
+      static_cast<int>(dst_stride_uv.value()), size.width(), size.height());
 
   return result == 0;
 }

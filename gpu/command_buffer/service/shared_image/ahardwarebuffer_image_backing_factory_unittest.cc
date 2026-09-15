@@ -6,10 +6,16 @@
 
 #include <android/hardware_buffer.h>
 
+#include <vector>
+
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/numerics/safe_conversions.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_info.h"
@@ -783,6 +789,173 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Values(GrContextType::kGL,
                                          GrContextType::kGraphiteDawn),
                          testing::PrintToStringParamName());
+
+// Usage bits of a real NV12 buffer that is read back to shared memory: it is
+// sampled by the GPU and read by the CPU. Allocating with GPU usage matters,
+// since a CPU-only Y8Cb8Cr8_420 allocation is free to come back as a planar
+// (YV12) layout, which this code path does not support.
+constexpr uint64_t kNV12ReadbackUsage =
+    AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
+    AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN;
+
+// Allocates an NV12 AHardwareBuffer of `size`, or returns an empty handle if
+// the platform refuses the allocation (e.g. for odd dimensions).
+base::android::ScopedHardwareBufferHandle AllocateNV12Buffer(
+    const gfx::Size& size,
+    uint64_t usage = kNV12ReadbackUsage) {
+  AHardwareBuffer_Desc desc = {
+      .width = static_cast<uint32_t>(size.width()),
+      .height = static_cast<uint32_t>(size.height()),
+      .layers = 1,
+      .format = AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420,
+      .usage = usage,
+  };
+  AHardwareBuffer* buffer = nullptr;
+  AHardwareBuffer_allocate(&desc, &buffer);
+  if (!buffer) {
+    return base::android::ScopedHardwareBufferHandle();
+  }
+  return base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+}
+
+// Whether the platform allocator hands back the interleaved NV12 plane layout
+// that CopyNativeBufferToSharedMemoryAsync() supports. Gralloc is free to pick
+// a planar layout instead, in which case the copy legitimately fails and the
+// tests below that expect success have nothing to assert.
+bool SupportsNV12PlaneLayout(AHardwareBuffer* buffer) {
+  AHardwareBuffer_Planes planes;
+  if (AHardwareBuffer_lockPlanes(buffer, AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN,
+                                 /*fence=*/-1, nullptr, &planes) != 0) {
+    return false;
+  }
+  const bool supported =
+      planes.planeCount == 3 && planes.planes[0].pixelStride == 1 &&
+      planes.planes[1].pixelStride == 2 && planes.planes[2].pixelStride == 2 &&
+      planes.planes[1].rowStride == planes.planes[2].rowStride &&
+      (static_cast<uint8_t*>(planes.planes[2].data) -
+       static_cast<uint8_t*>(planes.planes[1].data)) == 1;
+  AHardwareBuffer_unlock(buffer, nullptr);
+  return supported;
+}
+
+// Writes a distinct value into every byte the copy is supposed to read, and
+// returns those bytes in the order the destination is supposed to hold them:
+// `height` rows of `width` Y bytes, followed by `height / 2` rows of `width`
+// interleaved UV bytes. Returns an empty vector if the buffer can't be locked.
+std::vector<uint8_t> FillNV12Buffer(AHardwareBuffer* buffer,
+                                    const gfx::Size& size) {
+  AHardwareBuffer_Planes planes;
+  if (AHardwareBuffer_lockPlanes(buffer, AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN,
+                                 /*fence=*/-1, nullptr, &planes) != 0) {
+    return {};
+  }
+
+  const size_t width = base::checked_cast<size_t>(size.width());
+  const size_t height = base::checked_cast<size_t>(size.height());
+  std::vector<uint8_t> expected;
+  auto fill_plane = [&](const AHardwareBuffer_Plane& src, size_t rows,
+                        uint8_t seed) {
+    const size_t row_stride = src.rowStride;
+    // SAFETY: A locked plane holds `rows` rows at `rowStride` byte intervals,
+    // the last of which is at least `width` bytes long.
+    base::span<uint8_t> plane = UNSAFE_BUFFERS(base::span(
+        static_cast<uint8_t*>(src.data), (rows - 1) * row_stride + width));
+    for (size_t row = 0; row < rows; ++row) {
+      base::span<uint8_t> src_row = plane.subspan(row * row_stride, width);
+      for (size_t col = 0; col < width; ++col) {
+        src_row[col] = static_cast<uint8_t>(seed + row * 7 + col);
+        expected.push_back(src_row[col]);
+      }
+    }
+  };
+  fill_plane(planes.planes[0], height, /*seed=*/0);
+  fill_plane(planes.planes[1], height / 2, /*seed=*/128);
+
+  AHardwareBuffer_unlock(buffer, nullptr);
+  return expected;
+}
+
+// Regression test for the out-of-bounds write reachable from a compromised
+// renderer via the CopyNativeGmbToSharedMemoryAsync IPC. The destination size
+// used to be computed as `width * height * 3 / 2`, which rounds *down* for odd
+// dimensions, while libyuv::NV12Copy() writes ceil-rounded chroma planes. A
+// buffer with odd dimensions must be rejected outright.
+TEST(AHardwareBufferImageBackingFactoryCopyTest, RejectsOddDimensions) {
+  constexpr gfx::Size kOddSize(65, 65);
+  auto ahb_handle = AllocateNV12Buffer(kOddSize);
+  if (!ahb_handle.is_valid()) {
+    GTEST_SKIP() << "Odd-sized NV12 AHardwareBuffer allocation unsupported";
+  }
+
+  // This is the size that the old (truncating) check would have accepted; it is
+  // smaller than what NV12Copy() would write, so accepting it overflows.
+  const size_t undersized =
+      static_cast<size_t>(kOddSize.width()) * kOddSize.height() * 3 / 2;
+  ASSERT_LT(undersized, viz::SharedMemorySizeForSharedImageFormat(
+                            viz::MultiPlaneFormat::kNV12, kOddSize)
+                            .value());
+  auto region = base::UnsafeSharedMemoryRegion::Create(undersized);
+  ASSERT_TRUE(region.IsValid());
+
+  EXPECT_FALSE(
+      AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
+          gfx::GpuMemoryBufferHandle(std::move(ahb_handle)),
+          std::move(region)));
+}
+
+// A destination smaller than the full NV12 image must be rejected.
+TEST(AHardwareBufferImageBackingFactoryCopyTest, RejectsUndersizedDestination) {
+  constexpr gfx::Size kSize(64, 64);
+  auto ahb_handle = AllocateNV12Buffer(kSize);
+  if (!ahb_handle.is_valid()) {
+    GTEST_SKIP() << "NV12 AHardwareBuffer allocation unsupported";
+  }
+  const size_t required = viz::SharedMemorySizeForSharedImageFormat(
+                              viz::MultiPlaneFormat::kNV12, kSize)
+                              .value();
+  auto region = base::UnsafeSharedMemoryRegion::Create(required - 1);
+  ASSERT_TRUE(region.IsValid());
+
+  EXPECT_FALSE(
+      AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
+          gfx::GpuMemoryBufferHandle(std::move(ahb_handle)),
+          std::move(region)));
+}
+
+// A correctly sized destination must receive the whole image in the layout the
+// client expects: a tightly packed Y plane followed by a tightly packed UV
+// plane, both with a row size of `width` bytes.
+TEST(AHardwareBufferImageBackingFactoryCopyTest, CopiesBothPlanes) {
+  constexpr gfx::Size kSize(64, 64);
+  auto ahb_handle = AllocateNV12Buffer(
+      kSize, kNV12ReadbackUsage | AHARDWAREBUFFER_USAGE_CPU_WRITE_OFTEN);
+  if (!ahb_handle.is_valid()) {
+    GTEST_SKIP() << "NV12 AHardwareBuffer allocation unsupported";
+  }
+  if (!SupportsNV12PlaneLayout(ahb_handle.get())) {
+    GTEST_SKIP() << "Platform does not provide an interleaved NV12 layout";
+  }
+
+  const std::vector<uint8_t> expected = FillNV12Buffer(ahb_handle.get(), kSize);
+  ASSERT_EQ(expected.size(), viz::SharedMemorySizeForSharedImageFormat(
+                                 viz::MultiPlaneFormat::kNV12, kSize)
+                                 .value());
+
+  auto region = base::UnsafeSharedMemoryRegion::Create(expected.size());
+  ASSERT_TRUE(region.IsValid());
+  base::UnsafeSharedMemoryRegion region_for_reading = region.Duplicate();
+  ASSERT_TRUE(region_for_reading.IsValid());
+
+  ASSERT_TRUE(
+      AHardwareBufferImageBackingFactory::CopyNativeBufferToSharedMemoryAsync(
+          gfx::GpuMemoryBufferHandle(std::move(ahb_handle)),
+          std::move(region)));
+
+  base::WritableSharedMemoryMapping mapping = region_for_reading.Map();
+  ASSERT_TRUE(mapping.IsValid());
+  EXPECT_EQ(mapping.GetMemoryAsSpan<uint8_t>().first(expected.size()),
+            base::span(expected));
+}
 
 }  // anonymous namespace
 }  // namespace gpu
