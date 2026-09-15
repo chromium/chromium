@@ -28,12 +28,9 @@ class SessionControllerImpl : public SessionController,
   SessionControllerImpl& operator=(const SessionControllerImpl&) = delete;
 
   // SessionController implementation:
-  // TODO(bokan): Remove
-  Conversation* GetConversation() override;
   void GetPageContext(FetchCompleteCallback callback) override;
 
-  SessionView* session_view() { return session_view_.get(); }
-
+  SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
 
  private:

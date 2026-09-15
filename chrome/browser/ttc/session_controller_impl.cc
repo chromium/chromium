@@ -45,10 +45,6 @@ SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
 
 SessionControllerImpl::~SessionControllerImpl() = default;
 
-Conversation* SessionControllerImpl::GetConversation() {
-  return conversation_.get();
-}
-
 void SessionControllerImpl::GetPageContext(FetchCompleteCallback callback) {
   if (!page_context_monitor_) {
     std::move(callback).Run(base::unexpected(

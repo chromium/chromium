@@ -77,7 +77,6 @@ TEST_F(TtcKeyedServiceUnitTest, StartSession) {
   service_->StartSession();
   SessionController* controller = service_->session_controller();
   ASSERT_NE(controller, nullptr);
-  EXPECT_NE(controller->GetConversation(), nullptr);
 }
 
 TEST_F(TtcKeyedServiceUnitTest, StartSessionFailsIfAlreadyStarted) {

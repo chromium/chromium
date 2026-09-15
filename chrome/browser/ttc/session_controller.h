@@ -18,8 +18,6 @@ class SessionController {
  public:
   virtual ~SessionController() = default;
 
-  virtual Conversation* GetConversation() = 0;
-
   // Fetches the context of the page this session is operating on, invoking
   // `callback` with the result.
   virtual void GetPageContext(FetchCompleteCallback callback) = 0;

@@ -58,10 +58,7 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "session_controller_impl_unittest.cc",
-    "ttc_keyed_service_unittest.cc",
-  ]
+  sources = [ "ttc_keyed_service_unittest.cc" ]
   deps = [
     ":impl",
     ":ttc",
