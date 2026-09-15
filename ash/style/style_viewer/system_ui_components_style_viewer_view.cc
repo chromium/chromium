@@ -99,15 +99,13 @@ class SystemUIComponentsStyleViewerView::ComponentButton
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     SetBorder(std::make_unique<views::HighlightBorder>(
         0, views::HighlightBorder::Type::kHighlightBorderNoShadow));
-    SetBackground(
-        views::CreateSolidBackground(kInactiveButtonBackgroundColorId));
-    SetEnabledTextColors(kInactiveButtonTextColorId);
+    SetPreferredSize(gfx::Size(kMenuWidth, kDefaultButtonHeight));
+    SetFocusBehavior(views::View::FocusBehavior::NEVER);
+    UpdateColors(/*active=*/false);
 
     label()->SetSubpixelRenderingEnabled(false);
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-
-    SetFocusBehavior(views::View::FocusBehavior::NEVER);
   }
 
   ComponentButton(const ComponentButton&) = delete;
@@ -115,17 +113,16 @@ class SystemUIComponentsStyleViewerView::ComponentButton
 
   ~ComponentButton() override = default;
 
-  void SetActive(bool active) {
+  void SetActive(bool active) { UpdateColors(active); }
+
+ private:
+  // Applies the text and background colors matching the given active state.
+  void UpdateColors(bool active) {
     SetEnabledTextColors(active ? kActiveButtonTextColorId
                                 : kInactiveButtonTextColorId);
-    background()->SetColor(active ? kActiveButtonBackgroundColorId
-                                  : kInactiveButtonBackgroundColorId);
-  }
-
-  // views::LabelButton:
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override {
-    return gfx::Size(kMenuWidth, kDefaultButtonHeight);
+    SetBackground(views::CreateSolidBackground(
+        active ? kActiveButtonBackgroundColorId
+               : kInactiveButtonBackgroundColorId));
   }
 };
 

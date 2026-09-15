@@ -164,8 +164,10 @@ void ResizeToggleMenu::MenuButtonView::UpdateColors() {
   title_->SetEnabledColor(is_selected_ ? cros_tokens::kCrosSysOnPrimary
                                        : cros_tokens::kCrosSysOnSurface);
 
-  background()->SetColor(is_selected_ ? cros_tokens::kCrosSysPrimary
-                                      : cros_tokens::kCrosSysSystemOnBase);
+  SetBackground(views::CreateRoundedRectBackground(
+      is_selected_ ? cros_tokens::kCrosSysPrimary
+                   : cros_tokens::kCrosSysSystemOnBase,
+      kButtonRadius));
   GetBorder()->SetColor(SK_ColorTRANSPARENT);
 }
 

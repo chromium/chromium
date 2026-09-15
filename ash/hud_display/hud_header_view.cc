@@ -38,7 +38,7 @@ class BottomLeftOuterBackground : public views::Background {
   // Background will have left bottom rounded corner with |top_rounding_radius|.
   BottomLeftOuterBackground(SkColor color, SkScalar top_rounding_radius)
       : inner_radius_(top_rounding_radius) {
-    SetColor(color);
+    set_color(color);
   }
 
   BottomLeftOuterBackground(const BottomLeftOuterBackground&) = delete;

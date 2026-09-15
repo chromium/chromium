@@ -75,10 +75,14 @@ class VIEWS_EXPORT Background : public ui::SafeCastable {
   // color).
   ui::ColorVariant color() const { return color_; }
 
-  // Set a solid color to be used when drawing backgrounds.
-  virtual void SetColor(ui::ColorVariant color);
-
   virtual void SetInternalName(const std::string& name);
+
+ protected:
+  // Set a solid color to be used when drawing backgrounds. Restricted to
+  // subclasses: callers holding a generic `Background*` cannot know how the
+  // concrete subclass uses the color, if at all. To change a view's
+  // background, install a new one with `View::SetBackground()`.
+  void set_color(ui::ColorVariant color);
 
  private:
   ui::ColorVariant color_;

@@ -788,7 +788,8 @@ void SearchBoxView::OnThemeChanged() {
   UpdatePlaceholderTextStyle();
   UpdateTextColor();
 
-  UpdateBackgroundColor(GetBackgroundColorForState(current_app_list_state_));
+  UpdateSearchBoxBackground(
+      corner_radius_, GetBackgroundColorForState(current_app_list_state_));
   SchedulePaint();
 }
 
@@ -934,7 +935,6 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
 
 void SearchBoxView::UpdateBackground(AppListState target_state) {
   int corner_radius = GetSearchBoxBorderCornerRadiusForState(target_state);
-  SetSearchBoxBackgroundCornerRadius(corner_radius);
   const bool is_corner_radius_changed = corner_radius_ != corner_radius;
   corner_radius_ = corner_radius;
 
@@ -959,7 +959,8 @@ void SearchBoxView::UpdateBackground(AppListState target_state) {
 
   if (is_corner_radius_changed || highlight_border_changed)
     SchedulePaint();
-  UpdateBackgroundColor(GetBackgroundColorForState(target_state));
+  UpdateSearchBoxBackground(corner_radius,
+                            GetBackgroundColorForState(target_state));
   UpdateTextColor();
   current_app_list_state_ = target_state;
 }

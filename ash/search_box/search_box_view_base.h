@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
@@ -218,8 +219,6 @@ class SearchBoxViewBase : public views::View,
 
   views::BoxLayoutView* box_layout_view() { return content_container_; }
 
-  void SetSearchBoxBackgroundCornerRadius(int corner_radius);
-
   void SetSearchIconImage(gfx::ImageSkia image);
 
   void SetShowAssistantButton(bool show);
@@ -230,8 +229,11 @@ class SearchBoxViewBase : public views::View,
   // background of the search box.
   virtual void HandleSearchBoxEvent(ui::LocatedEvent* located_event);
 
-  // Updates the search box's background color.
-  void UpdateBackgroundColor(SkColor color);
+  // Re-creates the search box background with the given corner radius and
+  // color, and propagates `color` to the buttons' ink drops. The background is
+  // only painted if the search box was created with one (see
+  // `InitParams::create_background`).
+  void UpdateSearchBoxBackground(int corner_radius, SkColor color);
 
   // Shows/hides the virtual keyboard if the search box is active.
   virtual void UpdateKeyboardVisibility() {}
@@ -281,6 +283,11 @@ class SearchBoxViewBase : public views::View,
 
   // Whether the search box is active.
   bool is_search_box_active_ = false;
+
+  // Whether the search box paints a background (see
+  // `InitParams::create_background`).
+  bool has_background_ = false;
+
   // Whether to show close button if the search box is active and empty.
   bool show_close_button_when_active_ = false;
   // Whether to show assistant button.

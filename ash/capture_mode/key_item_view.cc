@@ -37,11 +37,6 @@ constexpr char kGoogleSansFont[] = "Google Sans";
 constexpr int kKeyItemViewFontSize = 18;
 constexpr int kKeyItemViewLineHeight = 24;
 
-SkColor GetColor() {
-  return capture_mode_util::GetColorProviderForNativeTheme()->GetColor(
-      cros_tokens::kCrosSysSystemBaseElevated);
-}
-
 }  // namespace
 
 KeyItemView::KeyItemView(ui::KeyboardCode key_code)
@@ -50,9 +45,9 @@ KeyItemView::KeyItemView(ui::KeyboardCode key_code)
           this,
           SystemShadow::Type::kElevation4)) {
   SetPaintToLayer();
-  SetBackground(
-      views::CreateRoundedRectBackground(GetColor(), kKeyItemHeight / 2));
   layer()->SetFillsBoundsOpaquely(false);
+  SetBackground(views::CreateRoundedRectBackground(
+      cros_tokens::kCrosSysSystemBaseElevated, kKeyItemHeight / 2));
 
   capture_mode_util::SetHighlightBorder(
       this, kKeyItemHeight / 2,
@@ -62,12 +57,6 @@ KeyItemView::KeyItemView(ui::KeyboardCode key_code)
 }
 
 KeyItemView::~KeyItemView() = default;
-
-void KeyItemView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  GetBackground()->SetColor(GetColor());
-  SchedulePaint();
-}
 
 void KeyItemView::Layout(PassKey) {
   const auto bounds = GetContentsBounds();

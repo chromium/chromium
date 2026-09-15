@@ -25,7 +25,7 @@ constexpr float kTopOffset = 12.f;
 
 CalendarUpNextViewBackground::CalendarUpNextViewBackground(
     ui::ColorId color_id) {
-  SetColor(color_id);
+  set_color(color_id);
 }
 
 CalendarUpNextViewBackground::~CalendarUpNextViewBackground() = default;

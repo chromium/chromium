@@ -43,7 +43,7 @@ constexpr int kTooltipMaxLines = 3;
 class ThemedFullyRoundedRectBackground : public views::Background {
  public:
   explicit ThemedFullyRoundedRectBackground(ui::ColorId color_id) {
-    SetColor(color_id);
+    set_color(color_id);
   }
   ThemedFullyRoundedRectBackground(const ThemedFullyRoundedRectBackground&) =
       delete;

@@ -188,7 +188,7 @@ class PromiseIconBackground : public views::Background {
                         const gfx::Rect& icon_bounds,
                         const gfx::Insets& insets)
       : icon_bounds_(icon_bounds), insets_(insets) {
-    SetColor(color_id);
+    set_color(color_id);
   }
 
   PromiseIconBackground(const PromiseIconBackground&) = delete;

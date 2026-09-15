@@ -33,7 +33,7 @@ class IndicatorDividerBackground : public views::Background {
   // Background will have right rounded side with |arc_radius|.
   IndicatorDividerBackground(SkColor color, SkScalar arc_radius)
       : arc_radius_(arc_radius) {
-    SetColor(color);
+    set_color(color);
   }
 
   IndicatorDividerBackground(const IndicatorDividerBackground&) = delete;

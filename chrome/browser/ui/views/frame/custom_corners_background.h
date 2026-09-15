@@ -148,9 +148,6 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   int default_radius() const { return default_radius_; }
 
  private:
-  // Hide this as it should not be used directly.
-  using Background::SetColor;
-
   using VisualCorners = CornerMapT<VisualCorner, Corner>;
 
   // Returns a path containing the entire painted background region.

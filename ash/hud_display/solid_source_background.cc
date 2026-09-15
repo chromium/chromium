@@ -16,7 +16,7 @@ namespace hud_display {
 SolidSourceBackground::SolidSourceBackground(SkColor color,
                                              SkScalar top_rounding_radius)
     : top_rounding_radius_(top_rounding_radius) {
-  SetColor(color);
+  set_color(color);
 }
 
 void SolidSourceBackground::Paint(gfx::Canvas* canvas,

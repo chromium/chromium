@@ -51,12 +51,12 @@ class CircleBackground : public views::Background {
  public:
   CircleBackground(ui::ColorId color_id, size_t fixed_size)
       : fixed_size_(fixed_size) {
-    SetColor(color_id);
+    set_color(color_id);
   }
 
   CircleBackground(ui::ColorId color_id, const gfx::InsetsF& insets)
       : insets_(insets) {
-    SetColor(color_id);
+    set_color(color_id);
   }
 
   CircleBackground(const CircleBackground&) = delete;

@@ -19,7 +19,7 @@ constexpr gfx::Insets kHighlightInsets = gfx::Insets::VH(4, 0);
 
 class HighlightBackground : public views::Background {
  public:
-  HighlightBackground() { SetColor(ui::kColorMenuItemBackgroundHighlighted); }
+  HighlightBackground() { set_color(ui::kColorMenuItemBackgroundHighlighted); }
 
   HighlightBackground(const HighlightBackground&) = delete;
   HighlightBackground& operator=(const HighlightBackground&) = delete;

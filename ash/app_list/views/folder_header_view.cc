@@ -119,9 +119,6 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     Textfield::OnThemeChanged();
 
     const bool is_active = has_mouse_already_entered_ || HasFocus();
-    SetBackground(views::CreateRoundedRectBackground(
-        GetFolderBackgroundColor(is_active), kFolderNameBorderRadius,
-        kFolderNameBorderThickness));
 
     SetPlaceholderTextColorId(kColorAshTextColorSecondary);
     SetTextColorId(kColorAshTextColorPrimary);
@@ -243,7 +240,9 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
 
  private:
   void UpdateBackgroundColor(bool is_active) {
-    background()->SetColor(GetFolderBackgroundColor(is_active));
+    SetBackground(views::CreateRoundedRectBackground(
+        GetFolderBackgroundColor(is_active), kFolderNameBorderRadius,
+        kFolderNameBorderThickness));
     SchedulePaint();
   }
 

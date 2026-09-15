@@ -29,7 +29,6 @@ class KeyItemView : public views::View {
   ~KeyItemView() override;
 
   // views::View:
-  void OnThemeChanged() override;
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;

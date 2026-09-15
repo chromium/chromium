@@ -417,9 +417,10 @@ class HUDActionButton : public views::LabelButton {
   }
 
   void UpdateBackgroundColor() override {
-    GetBackground()->SetColor(GetVisualState() == STATE_DISABLED
-                                  ? kHUDDisabledButtonColor
-                                  : kHUDDefaultColor);
+    SetBackground(views::CreateRoundedRectBackground(
+        GetVisualState() == STATE_DISABLED ? kHUDDisabledButtonColor
+                                           : kHUDDefaultColor,
+        kActionButtonCornerRadius));
   }
 
  private:

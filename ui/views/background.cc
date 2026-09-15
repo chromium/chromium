@@ -43,7 +43,7 @@ DEFINE_SAFE_CAST_TARGET(Background)
 // background in a solid color.
 class SolidBackground : public Background {
  public:
-  explicit SolidBackground(ui::ColorVariant color) { SetColor(color); }
+  explicit SolidBackground(ui::ColorVariant color) { set_color(color); }
 
   SolidBackground(const SolidBackground&) = delete;
   SolidBackground& operator=(const SolidBackground&) = delete;
@@ -68,7 +68,7 @@ class RoundedRectBackground : public Background {
                         const std::optional<gfx::RoundedCornersF>& radii,
                         const gfx::Insets& insets)
       : radii_(radii), insets_(insets) {
-    SetColor(color);
+    set_color(color);
   }
 
   RoundedRectBackground(const RoundedRectBackground&) = delete;
@@ -116,7 +116,7 @@ class LayerBasedSolidBackground : public Background {
   LayerBasedSolidBackground(ui::ColorVariant color,
                             const std::optional<gfx::RoundedCornersF>& radii)
       : radii_(radii) {
-    SetColor(color);
+    set_color(color);
   }
 
   LayerBasedSolidBackground(const LayerBasedSolidBackground&) = delete;
@@ -202,11 +202,6 @@ class BackgroundPainter : public Background {
     Painter::PaintPainterAt(canvas, painter_.get(), view->GetLocalBounds());
   }
 
-  void SetColor(ui::ColorVariant color) override {
-    NOTREACHED() << "It does not make sense to `SetColor()` for a painter "
-                    "based background.";
-  }
-
  private:
   std::unique_ptr<Painter> painter_;
 };
@@ -215,7 +210,7 @@ Background::Background() = default;
 
 Background::~Background() = default;
 
-void Background::SetColor(ui::ColorVariant color) {
+void Background::set_color(ui::ColorVariant color) {
   color_ = color;
 }
 
