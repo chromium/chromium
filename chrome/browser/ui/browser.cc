@@ -198,6 +198,8 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/zoom_controller.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/color_chooser.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/file_select_listener.h"
@@ -2969,7 +2971,14 @@ void Browser::SetWebContentsBlocked(content::WebContents* web_contents,
     if (content_settings->GetContentSetting(
             url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN) !=
         CONTENT_SETTING_ALLOW) {
-      web_contents->ExitFullscreen(true);
+      // Defer exiting fullscreen to prevent synchronous window management
+      // messages (e.g. direct WndProc calls on Windows) from destroying the
+      // WebContents or callers while modal dialog presentation is on the
+      // stack.
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&content::WebContents::ExitFullscreen,
+                                    web_contents->GetWeakPtr(),
+                                    /*will_cause_resize=*/true));
     }
   }
 
