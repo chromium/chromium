@@ -551,6 +551,8 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     if (cached_policy_info_->has_key_version()) {
       cloud_policy_client_->set_public_key_version(
           cached_policy_info_->key_version());
+    } else {
+      cloud_policy_client_->clear_public_key_version();
     }
   }
 

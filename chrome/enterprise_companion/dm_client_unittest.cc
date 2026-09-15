@@ -712,6 +712,7 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfCloudPolicyClientFails) {
   EnsureRegistered();
 
   EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).WillOnce([&] {
+    EXPECT_FALSE(mock_cloud_policy_client_->public_key_version_valid_);
     mock_cloud_policy_client_->SetStatus(
         policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID);
     mock_cloud_policy_client_->NotifyPolicyFetched();
@@ -744,6 +745,7 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfFetchResultInvalid) {
   EnsureRegistered();
 
   EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).WillOnce([&] {
+    EXPECT_FALSE(mock_cloud_policy_client_->public_key_version_valid_);
     mock_cloud_policy_client_->SetPolicy(
         kPolicyType1, /*settings_entity_id=*/"",
         enterprise_management::PolicyFetchResponse());
@@ -785,24 +787,28 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfFetchResultInvalid) {
 }
 
 // If the fetched policies fail validation, the policy cache should be cleared.
+// Subsequent policy fetches are not expected to use a stale value of the public
+// key version that no longer matches cached_policy_info_.
 TEST_F(DMClientTest, PolicyCacheClearedIfFetchResultInvalid) {
   // Store some policies, a DM token must be preset to serialize the data.
   EnsureRegistered();
+  enterprise_management::PublicKeyVerificationData key_verification_data;
+  key_verification_data.set_new_public_key(kPublicKey1);
+  key_verification_data.set_new_public_key_version(kPublicKey1Version);
   ::enterprise_management::PolicyFetchResponse fake_response;
   ::enterprise_management::PolicyData fake_policy_data;
+  fake_policy_data.set_timestamp(kTimestamp1);
   fake_policy_data.set_policy_value(kPolicyValue1);
   fake_response.set_policy_data(fake_policy_data.SerializeAsString());
+  fake_response.set_new_public_key_verification_data(
+      key_verification_data.SerializeAsString());
   ASSERT_TRUE(dm_storage_->CanPersistPolicies());
   ASSERT_TRUE(dm_storage_->PersistPolicies(
       {{kPolicyType1, fake_response.SerializeAsString()}}));
   ASSERT_TRUE(dm_storage_->ReadPolicyData(kPolicyType1));
 
-  EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).WillOnce([&] {
-    mock_cloud_policy_client_->SetPolicy(
-        kPolicyType1, /*settings_entity_id=*/"",
-        enterprise_management::PolicyFetchResponse());
-    mock_cloud_policy_client_->NotifyPolicyFetched();
-  });
+  SetMockPolicyFetchResponseValidatorResult(
+      policy::CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE);
   EXPECT_CALL(*mock_cloud_policy_client_,
               UploadPolicyValidationReport(_, _, _, _, _, _))
       .WillOnce([&](policy::CloudPolicyValidatorBase::Status,
@@ -813,8 +819,17 @@ TEST_F(DMClientTest, PolicyCacheClearedIfFetchResultInvalid) {
         std::move(callback).Run(policy::CloudPolicyClient::Result(
             policy::DeviceManagementStatus::DM_STATUS_SUCCESS));
       });
-  SetMockPolicyFetchResponseValidatorResult(
-      policy::CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE);
+  EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy)
+      .WillOnce([&] {
+        EXPECT_TRUE(mock_cloud_policy_client_->public_key_version_valid_);
+        EXPECT_EQ(mock_cloud_policy_client_->public_key_version_,
+                  kPublicKey1Version);
+        mock_cloud_policy_client_->SetPolicy(
+            kPolicyType1, /*settings_entity_id=*/"",
+            enterprise_management::PolicyFetchResponse());
+        mock_cloud_policy_client_->NotifyPolicyFetched();
+      })
+      .RetiresOnSaturation();
 
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
@@ -827,6 +842,39 @@ TEST_F(DMClientTest, PolicyCacheClearedIfFetchResultInvalid) {
   run_loop.Run();
 
   EXPECT_FALSE(dm_storage_->ReadPolicyData(kPolicyType1));
+  std::unique_ptr<device_management_storage::CachedPolicyInfo>
+      cached_policy_info = dm_storage_->GetCachedPolicyInfo();
+  EXPECT_TRUE(cached_policy_info->public_key().empty());
+  EXPECT_FALSE(cached_policy_info->has_key_version());
+  EXPECT_EQ(cached_policy_info->timestamp(), 0);
+
+  // Subsequent policy fetches should clear the public key version in the client
+  // rather than using the stale value that no longer matches
+  // cached_policy_info_.
+  EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).WillOnce([&] {
+    EXPECT_FALSE(mock_cloud_policy_client_->public_key_version_valid_);
+    mock_cloud_policy_client_->SetStatus(policy::DM_STATUS_REQUEST_FAILED);
+    mock_cloud_policy_client_->NotifyPolicyFetched();
+  });
+
+  base::RunLoop second_fetch_loop;
+  dm_client_->FetchPolicies(
+      PolicyFetchReason::kTest, test_event_logger_,
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.EqualsDeviceManagementStatus(
+            policy::DM_STATUS_REQUEST_FAILED));
+        test_event_logger_->Flush(second_fetch_loop.QuitClosure());
+      }));
+  second_fetch_loop.Run();
+
+  EXPECT_TRUE(test_event_logger_->registration_events().empty());
+  EXPECT_THAT(
+      test_event_logger_->policy_fetch_events(),
+      ElementsAre(
+          EnterpriseCompanionStatus::FromCloudPolicyValidationResult(
+              policy::CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE),
+          EnterpriseCompanionStatus::FromDeviceManagementStatus(
+              policy::DM_STATUS_REQUEST_FAILED)));
 }
 
 TEST_F(DMClientTest, FetchPoliciesFailsIfResultCannotBePersisted) {
@@ -834,6 +882,7 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfResultCannotBePersisted) {
   dm_storage_->SetWillPersistPolicies(false);
 
   EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).WillOnce([&] {
+    EXPECT_FALSE(mock_cloud_policy_client_->public_key_version_valid_);
     mock_cloud_policy_client_->SetPolicy(
         kPolicyType1, /*settings_entity_id=*/"",
         enterprise_management::PolicyFetchResponse());
@@ -886,6 +935,7 @@ TEST_F(DMClientTest, FetchPoliciesSuccess) {
   response2.set_policy_data(data2.SerializeAsString());
 
   EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).WillOnce([&] {
+    EXPECT_FALSE(mock_cloud_policy_client_->public_key_version_valid_);
     mock_cloud_policy_client_->SetPolicy(kPolicyType1, "", response1);
     mock_cloud_policy_client_->SetPolicy(kPolicyType2, "", response2);
     mock_cloud_policy_client_->NotifyPolicyFetched();
@@ -960,11 +1010,15 @@ TEST_F(DMClientTest, FetchPoliciesOverwrite) {
 
   testing::InSequence expect_calls_in_sequence;
   EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).WillOnce([&] {
+    EXPECT_FALSE(mock_cloud_policy_client_->public_key_version_valid_);
     mock_cloud_policy_client_->SetPolicy(kPolicyType1, "", response1);
     mock_cloud_policy_client_->SetPolicy(kPolicyType2, "", response2);
     mock_cloud_policy_client_->NotifyPolicyFetched();
   });
   EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).WillOnce([&] {
+    EXPECT_TRUE(mock_cloud_policy_client_->public_key_version_valid_);
+    EXPECT_EQ(mock_cloud_policy_client_->public_key_version_,
+              kPublicKey1Version);
     mock_cloud_policy_client_->SetPolicy(kPolicyType1, "", response3);
     mock_cloud_policy_client_->NotifyPolicyFetched();
   });
@@ -1020,6 +1074,7 @@ TEST_F(DMClientTest, FetchPoliciesReset) {
   EnsureRegistered();
 
   EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).WillOnce([&] {
+    EXPECT_FALSE(mock_cloud_policy_client_->public_key_version_valid_);
     mock_cloud_policy_client_->SetStatus(
         policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET);
     mock_cloud_policy_client_->dm_token_.clear();
@@ -1050,6 +1105,7 @@ TEST_F(DMClientTest, FetchPoliciesInvalidation) {
   EnsureRegistered();
 
   EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).WillOnce([&] {
+    EXPECT_FALSE(mock_cloud_policy_client_->public_key_version_valid_);
     mock_cloud_policy_client_->SetStatus(
         policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND);
     mock_cloud_policy_client_->dm_token_.clear();
