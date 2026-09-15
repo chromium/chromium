@@ -100,14 +100,21 @@ std::optional<AiModeButtonUiConfig> AiModeButtonService::BuildCurrentUiConfig()
   if (!dse) {
     return std::nullopt;
   }
+  return GetUiConfigForTemplateUrl(*dse,
+                                   template_url_service_->search_terms_data());
+}
 
-  SearchEngineType type =
-      dse->GetEngineType(template_url_service_->search_terms_data());
+// static
+std::optional<AiModeButtonUiConfig>
+AiModeButtonService::GetUiConfigForTemplateUrl(
+    const TemplateURL& template_url,
+    const SearchTermsData& search_terms_data) {
+  SearchEngineType type = template_url.GetEngineType(search_terms_data);
 
   if (type == SearchEngineType::SEARCH_ENGINE_GOOGLE) {
     return AiModeButtonUiConfig(
         type, l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL),
-        dse->short_name(), /*favicon_url=*/"", /*navigation_url=*/"",
+        template_url.short_name(), /*favicon_url=*/"", /*navigation_url=*/"",
         /*navigation_url_empty=*/"");
   }
 
@@ -130,8 +137,9 @@ std::optional<AiModeButtonUiConfig> AiModeButtonService::BuildCurrentUiConfig()
 
   CHECK(IsValidConfig(*found_config));
   return AiModeButtonUiConfig(
-      type, found_config->name, dse->short_name(), found_config->favicon_url,
-      found_config->navigation_url, found_config->navigation_url_empty);
+      type, found_config->name, template_url.short_name(),
+      found_config->favicon_url, found_config->navigation_url,
+      found_config->navigation_url_empty);
 }
 
 // static

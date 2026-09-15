@@ -5,22 +5,28 @@
 #include "components/search_engines/android/template_url_android.h"
 
 #include <cstdint>
+#include <optional>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "build/branding_buildflags.h"
+#include "components/search_engines/ai_mode_button_service.h"
+#include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "url/android/gurl_android.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS)
 #include "third_party/search_engines_data/search_engines_scaled_resources_map.h"
 #endif
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/search_engines/android/jni_headers/AiModeButtonUiConfig_jni.h"
 #include "components/search_engines/android/jni_headers/TemplateUrl_jni.h"
 
 using base::android::JavaRef;
@@ -51,6 +57,26 @@ static ScopedJavaLocalRef<jobject> JNI_TemplateUrl_GetFaviconURL(
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
 
   return url::GURLAndroid::FromNativeGURL(env, template_url->favicon_url());
+}
+
+static ScopedJavaLocalRef<jobject> JNI_TemplateUrl_GetAiModeButtonUiConfig(
+    JNIEnv* env,
+    int64_t template_url_ptr) {
+  TemplateURL* template_url = ToTemplateURL(template_url_ptr);
+  // Engine classification only consults `search_terms_data` to resolve the
+  // Google base URL, for which the defaults are adequate here.
+  SearchTermsData search_terms_data;
+  std::optional<AiModeButtonUiConfig> config =
+      AiModeButtonService::GetUiConfigForTemplateUrl(*template_url,
+                                                     search_terms_data);
+  if (!config) {
+    return nullptr;
+  }
+  return Java_AiModeButtonUiConfig_Constructor(
+      env, config->text, config->tooltip, config->a11y_label,
+      config->context_menu_label, config->placeholder_text,
+      GURL(config->favicon_url), std::string(config->navigation_url),
+      GURL(config->navigation_url_empty));
 }
 
 static bool JNI_TemplateUrl_IsPrepopulatedOrProgramProvided(

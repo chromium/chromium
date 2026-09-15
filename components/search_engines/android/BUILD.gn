@@ -45,6 +45,7 @@ android_library("java") {
     "//components/search_engines:search_engine_enums_java",
   ]
   sources = [
+    "java/src/org/chromium/components/search_engines/AiModeButtonUiConfig.java",
     "java/src/org/chromium/components/search_engines/FakeSearchEngineCountryDelegate.java",
     "java/src/org/chromium/components/search_engines/NoOpSearchEngineCountryDelegate.java",
     "java/src/org/chromium/components/search_engines/PrepopulatedAndRecentlyVisitedTemplateURLs.java",
@@ -59,6 +60,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/components/search_engines/AiModeButtonUiConfig.java",
     "java/src/org/chromium/components/search_engines/PrepopulatedAndRecentlyVisitedTemplateURLs.java",
     "java/src/org/chromium/components/search_engines/TemplateUrl.java",
     "java/src/org/chromium/components/search_engines/TemplateUrlService.java",

@@ -66,6 +66,13 @@ class AiModeButtonService : public KeyedService,
                                           : nullptr;
   }
 
+  // Returns the UI config describing the AI Mode entry point offered by
+  // `template_url`, or `std::nullopt` if that search engine offers none.
+  // `search_terms_data` is used to classify `template_url`.
+  static std::optional<AiModeButtonUiConfig> GetUiConfigForTemplateUrl(
+      const TemplateURL& template_url,
+      const SearchTermsData& search_terms_data);
+
  private:
   friend class TestAiModeButtonService;
 
