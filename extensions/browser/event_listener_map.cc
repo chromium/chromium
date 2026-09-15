@@ -591,11 +591,21 @@ void EventListenerMap::CleanupListener(EventListener* listener) {
   if (listener->matcher_id() == -1) {
     return;
   }
-  // If we're removing the final listener for an event, we can remove the
-  // entry from |filtered_events_|, as well.
+  // If we're removing the final filtered listener for an event, remove the
+  // entry from `filtered_events_` so that any remaining unfiltered listeners
+  // are still reached via `GetEventListeners()`. `listener` may still be in the
+  // list at this point, so it is excluded from the check.
   auto iter = listeners_.find(listener->event_name());
-  if (iter->second.size() == 1) {
-    filtered_events_.erase(iter->first);
+  if (iter != listeners_.end()) {
+    const bool has_other_filtered_listener =
+        std::ranges::any_of(iter->second, [listener](const auto& other) {
+          // `other` can be null if it was moved from during batch removal
+          // (e.g. RemoveListenersForProcess()).
+          return other && other.get() != listener && other->matcher_id() != -1;
+        });
+    if (!has_other_filtered_listener) {
+      filtered_events_.erase(iter->first);
+    }
   }
   CHECK_EQ(1u, listeners_by_matcher_id_.erase(listener->matcher_id()));
 }
