@@ -603,15 +603,17 @@ void ReadAnythingUntrustedPageHandler::OnUpdateLanguageStatus(
     content::LanguageInstallStatus install_status,
     const std::string& error) {
   // Language status is profile-dependent so only send the update if the status
-  // is for this profile. Incognito profiles download the language to the main
-  // profile, so we need to always send the language updates for incognito.
+  // is for this profile. Primary off-the-record profiles with regular parents
+  // (such as Incognito or Enterprise Isolated Mode) download the language to
+  // the main profile, so we need to always send the language updates for them.
   // Guest profiles don't have matching IDs, so if this profile is a guest and
   // the profile sending the language status is a guest, then we do send the
   // status update.
   Profile* statusProfile = Profile::FromBrowserContext(browser_context);
   const bool shouldSendGuestStatus =
       statusProfile->IsGuestSession() && profile_->IsGuestSession();
-  if (!shouldSendGuestStatus && !profile_->IsIncognitoProfile() &&
+  if (!shouldSendGuestStatus &&
+      !profile_->IsPrimaryOTRProfileWithRegularParent() &&
       statusProfile->UniqueToken() != profile_->UniqueToken()) {
     return;
   }
