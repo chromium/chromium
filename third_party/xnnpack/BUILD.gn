@@ -1328,13 +1328,13 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f32-vtanh_arm64",
       ":f32-vunary_arm64",
       ":operators_arm64",
-      ":pf16-f16-f16-igemm_arch=armv8.2-a+sve+sve2",
-      ":pf16-gemm_arch=armv8.2-a+sve+sve2",
-      ":pf32-gemm_arch=armv8.2-a+sve+sve2",
-      ":pf32-igemm_arch=armv8.2-a+sve+sve2",
-      ":pqs8-f32-qc8w-igemm_arch=armv8.2-a+sve+sve2",
-      ":pqs8-qc4w-gemm_arch=armv8.2-a+sve+sve2",
-      ":pqs8-qc8w-gemm_arch=armv8.2-a+sve+sve2",
+      ":pf16-f16-f16-igemm_arm64",
+      ":pf16-gemm_arm64",
+      ":pf32-gemm_arm64",
+      ":pf32-igemm_arm64",
+      ":pqs8-f32-qc8w-igemm_arm64",
+      ":pqs8-qc4w-gemm_arm64",
+      ":pqs8-qc8w-gemm_arm64",
       ":qb4-packw_arch=armv8.2-a+dotprod",
       ":qd8-bf16-qb4w-gemm_arch=armv8.2-a+dotprod",
       ":qd8-bf16-qb4w-gemm_arch=armv8.2-a+i8mm+fp16+bf16",
@@ -1371,16 +1371,16 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":qd8-f32-qc8w-igemm_arch=armv8.2-a+fp16+dotprod",
       ":qd8-f32-qc8w-igemm_arch=armv8.2-a+i8mm+fp16",
       ":qd8-f32-qc8w-igemm_arm64",
-      ":qp8-f16-qc8w-gemm_arch=armv8.2-a+sve+sve2",
+      ":qp8-f16-qc8w-gemm_arm64",
       ":qp8-f32-qb4w-gemm_arch=armv8.2-a+dotprod",
       ":qp8-f32-qb4w-gemm_arch=armv8.2-a+i8mm+fp16",
-      ":qp8-f32-qc2w-gemm_arch=armv8.2-a+sve+sve2",
+      ":qp8-f32-qc2w-gemm_arm64",
       ":qp8-f32-qc4w-gemm_arch=armv8.2-a+dotprod",
       ":qp8-f32-qc4w-gemm_arch=armv8.2-a+i8mm+fp16",
-      ":qp8-f32-qc4w-gemm_arch=armv8.2-a+sve+sve2",
+      ":qp8-f32-qc4w-gemm_arm64",
       ":qp8-f32-qc8w-gemm_arch=armv8.2-a+dotprod",
       ":qp8-f32-qc8w-gemm_arch=armv8.2-a+i8mm+fp16",
-      ":qp8-f32-qc8w-gemm_arch=armv8.2-a+sve+sve2",
+      ":qp8-f32-qc8w-gemm_arm64",
       ":qs8-dwconv_arm64",
       ":qs8-f16-vcvt_arch=armv8.2-a+fp16",
       ":qs8-f32-vcvt_arm64",
@@ -1444,18 +1444,18 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":u8-rdminmax_arm64",
       ":u8-rminmax_arm64",
       ":u8-vclamp_arm64",
-      ":x16-pack-lh_arch=armv8.2-a+sve+sve2",
+      ":x16-pack-lh_arm64",
       ":x16-packw_arm64",
       ":x16-transposec_arm64",
       ":x16-x32-packw_arm64",
       ":x24-transposec_arm64",
-      ":x32-pack-lh_arch=armv8.2-a+sve+sve2",
+      ":x32-pack-lh_arm64",
       ":x32-packw_arm64",
       ":x32-transposec_arm64",
       ":x32-unpool_arm64",
       ":x64-transposec_arm64",
       ":x8-lut_arm64",
-      ":x8-pack-lh_arch=armv8.2-a+sve+sve2",
+      ":x8-pack-lh_arm64",
       ":x8-packq_arm64",
       ":x8-packw_arm64",
       ":x8-transposec_arm64",
@@ -1579,13 +1579,13 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":f32-vtanh_arm64_standalone",
       ":f32-vunary_arm64_standalone",
       ":operators_arm64_standalone",
-      ":pf16-f16-f16-igemm_arch=armv8.2-a+sve+sve2_standalone",
-      ":pf16-gemm_arch=armv8.2-a+sve+sve2_standalone",
-      ":pf32-gemm_arch=armv8.2-a+sve+sve2_standalone",
-      ":pf32-igemm_arch=armv8.2-a+sve+sve2_standalone",
-      ":pqs8-f32-qc8w-igemm_arch=armv8.2-a+sve+sve2_standalone",
-      ":pqs8-qc4w-gemm_arch=armv8.2-a+sve+sve2_standalone",
-      ":pqs8-qc8w-gemm_arch=armv8.2-a+sve+sve2_standalone",
+      ":pf16-f16-f16-igemm_arm64_standalone",
+      ":pf16-gemm_arm64_standalone",
+      ":pf32-gemm_arm64_standalone",
+      ":pf32-igemm_arm64_standalone",
+      ":pqs8-f32-qc8w-igemm_arm64_standalone",
+      ":pqs8-qc4w-gemm_arm64_standalone",
+      ":pqs8-qc8w-gemm_arm64_standalone",
       ":qb4-packw_arch=armv8.2-a+dotprod_standalone",
       ":qd8-bf16-qb4w-gemm_arch=armv8.2-a+dotprod_standalone",
       ":qd8-bf16-qb4w-gemm_arch=armv8.2-a+i8mm+fp16+bf16_standalone",
@@ -1622,16 +1622,16 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":qd8-f32-qc8w-igemm_arch=armv8.2-a+fp16+dotprod_standalone",
       ":qd8-f32-qc8w-igemm_arch=armv8.2-a+i8mm+fp16_standalone",
       ":qd8-f32-qc8w-igemm_arm64_standalone",
-      ":qp8-f16-qc8w-gemm_arch=armv8.2-a+sve+sve2_standalone",
+      ":qp8-f16-qc8w-gemm_arm64_standalone",
       ":qp8-f32-qb4w-gemm_arch=armv8.2-a+dotprod_standalone",
       ":qp8-f32-qb4w-gemm_arch=armv8.2-a+i8mm+fp16_standalone",
-      ":qp8-f32-qc2w-gemm_arch=armv8.2-a+sve+sve2_standalone",
+      ":qp8-f32-qc2w-gemm_arm64_standalone",
       ":qp8-f32-qc4w-gemm_arch=armv8.2-a+dotprod_standalone",
       ":qp8-f32-qc4w-gemm_arch=armv8.2-a+i8mm+fp16_standalone",
-      ":qp8-f32-qc4w-gemm_arch=armv8.2-a+sve+sve2_standalone",
+      ":qp8-f32-qc4w-gemm_arm64_standalone",
       ":qp8-f32-qc8w-gemm_arch=armv8.2-a+dotprod_standalone",
       ":qp8-f32-qc8w-gemm_arch=armv8.2-a+i8mm+fp16_standalone",
-      ":qp8-f32-qc8w-gemm_arch=armv8.2-a+sve+sve2_standalone",
+      ":qp8-f32-qc8w-gemm_arm64_standalone",
       ":qs8-dwconv_arm64_standalone",
       ":qs8-f16-vcvt_arch=armv8.2-a+fp16_standalone",
       ":qs8-f32-vcvt_arm64_standalone",
@@ -1695,18 +1695,18 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":u8-rdminmax_arm64_standalone",
       ":u8-rminmax_arm64_standalone",
       ":u8-vclamp_arm64_standalone",
-      ":x16-pack-lh_arch=armv8.2-a+sve+sve2_standalone",
+      ":x16-pack-lh_arm64_standalone",
       ":x16-packw_arm64_standalone",
       ":x16-transposec_arm64_standalone",
       ":x16-x32-packw_arm64_standalone",
       ":x24-transposec_arm64_standalone",
-      ":x32-pack-lh_arch=armv8.2-a+sve+sve2_standalone",
+      ":x32-pack-lh_arm64_standalone",
       ":x32-packw_arm64_standalone",
       ":x32-transposec_arm64_standalone",
       ":x32-unpool_arm64_standalone",
       ":x64-transposec_arm64_standalone",
       ":x8-lut_arm64_standalone",
-      ":x8-pack-lh_arch=armv8.2-a+sve+sve2_standalone",
+      ":x8-pack-lh_arm64_standalone",
       ":x8-packq_arm64_standalone",
       ":x8-packw_arm64_standalone",
       ":x8-transposec_arm64_standalone",
@@ -46271,8 +46271,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("pf16-f16-f16-igemm_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pf16-f16-f16-igemm_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46298,8 +46298,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("pf16-f16-f16-igemm_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pf16-f16-f16-igemm_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46328,8 +46328,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("pf16-gemm_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pf16-gemm_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46357,8 +46357,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("pf16-gemm_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pf16-gemm_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46389,8 +46389,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("pf32-gemm_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pf32-gemm_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46418,8 +46418,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("pf32-gemm_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pf32-gemm_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46450,8 +46450,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("pf32-igemm_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pf32-igemm_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46477,8 +46477,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("pf32-igemm_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pf32-igemm_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46507,8 +46507,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("pqs8-f32-qc8w-igemm_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pqs8-f32-qc8w-igemm_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46534,8 +46534,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("pqs8-f32-qc8w-igemm_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pqs8-f32-qc8w-igemm_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46564,8 +46564,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("pqs8-qc4w-gemm_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pqs8-qc4w-gemm_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46590,8 +46590,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("pqs8-qc4w-gemm_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pqs8-qc4w-gemm_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46619,8 +46619,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("pqs8-qc8w-gemm_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pqs8-qc8w-gemm_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -46647,8 +46647,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("pqs8-qc8w-gemm_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("pqs8-qc8w-gemm_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -48794,8 +48794,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("qp8-f16-qc8w-gemm_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("qp8-f16-qc8w-gemm_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -48821,8 +48821,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("qp8-f16-qc8w-gemm_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("qp8-f16-qc8w-gemm_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -48965,8 +48965,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("qp8-f32-qc2w-gemm_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("qp8-f32-qc2w-gemm_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -48992,8 +48992,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("qp8-f32-qc2w-gemm_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("qp8-f32-qc2w-gemm_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -49136,8 +49136,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("qp8-f32-qc4w-gemm_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("qp8-f32-qc4w-gemm_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -49165,8 +49165,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("qp8-f32-qc4w-gemm_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("qp8-f32-qc4w-gemm_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -49311,8 +49311,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("qp8-f32-qc8w-gemm_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("qp8-f32-qc8w-gemm_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -49340,8 +49340,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("qp8-f32-qc8w-gemm_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("qp8-f32-qc8w-gemm_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -53227,8 +53227,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("x16-pack-lh_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("x16-pack-lh_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -53256,8 +53256,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("x16-pack-lh_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("x16-pack-lh_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -53524,8 +53524,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("x32-pack-lh_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("x32-pack-lh_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -53553,8 +53553,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("x32-pack-lh_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("x32-pack-lh_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -53898,8 +53898,8 @@ if (current_cpu == "arm64") {
   }
 
   if (build_with_chromium) {
-    source_set("x8-pack-lh_arch=armv8.2-a+sve+sve2") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("x8-pack-lh_arm64") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
@@ -53927,8 +53927,8 @@ if (current_cpu == "arm64") {
 
   # This is a target that cannot depend on //base.
   if (build_with_internal_optimization_guide) {
-    source_set("x8-pack-lh_arch=armv8.2-a+sve+sve2_standalone") {
-      cflags = [ "-march=armv8.2-a+sve+sve2" ]
+    source_set("x8-pack-lh_arm64_standalone") {
+      cflags = []
 
       sources = [
         "src/include/xnnpack.h",
