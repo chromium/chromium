@@ -154,6 +154,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:find_in_page", IconType::kIconSet}},
           {{&omnibox::kHttpChromeRefreshOldIcon},
            {"webui-toolbar:info", IconType::kIconSet}},
+          {{&omnibox::kHttpOldIcon},
+           {"webui-toolbar:info", IconType::kIconSet}},
           {{&omnibox::kInfoIcon}, {"webui-toolbar:info", IconType::kIconSet}},
           {{&omnibox::kPageChromeRefreshOldIcon},
            {"webui-toolbar:public", IconType::kIconSet}},
