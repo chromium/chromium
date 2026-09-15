@@ -4049,6 +4049,7 @@ test("base_unittests") {
     "task/thread_pool/thread_pool_impl_unittest.cc",
     "task/thread_pool/tracked_ref_unittest.cc",
     "task/thread_pool/worker_thread_set_unittest.cc",
+    "task/thread_pool/worker_thread_unittest.cc",
     "task/thread_pool_unittest.cc",
     "test/gmock_callback_support_unittest.cc",
     "test/gmock_expected_support_unittest.cc",

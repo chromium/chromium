@@ -8,6 +8,7 @@
 
 #include <atomic>
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -36,6 +37,7 @@
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -217,7 +219,8 @@ class ThreadPoolWorkerTestParam : public testing::TestWithParam<int> {
 
       // Create a Sequence with TasksPerSequence() Tasks.
       scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
-          TaskTraits(), nullptr, TaskSourceExecutionMode::kParallel);
+          TaskTraits(), nullptr, TaskSourceExecutionMode::kParallel,
+          ThreadType::kDefault);
       Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
       for (int i = 0; i < outer_->TasksPerSequence(); ++i) {
         Task task(FROM_HERE,
@@ -266,7 +269,7 @@ class ThreadPoolWorkerTestParam : public testing::TestWithParam<int> {
         // Verify the number of Tasks in |registered_task_source|.
         for (int i = 0; i < outer_->TasksPerSequence() - 1; ++i) {
           registered_task_source.WillRunTask();
-          IgnoreResult(registered_task_source.TakeTask());
+          std::ignore = registered_task_source.TakeTask();
           if (i < outer_->TasksPerSequence() - 2) {
             EXPECT_TRUE(registered_task_source.DidProcessTask());
             EXPECT_TRUE(registered_task_source.WillReEnqueue(TimeTicks::Now()));
@@ -501,7 +504,7 @@ class ControllableCleanupDelegate : public WorkerThreadDefaultDelegate {
     scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
         TaskTraits(WithBaseSyncPrimitives(),
                    TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN),
-        nullptr, TaskSourceExecutionMode::kParallel);
+        nullptr, TaskSourceExecutionMode::kParallel, ThreadType::kDefault);
     Task task(FROM_HERE,
               BindOnce(
                   [](TestWaitableEvent* work_processed,
@@ -804,9 +807,9 @@ TEST_F(ThreadPoolWorkerTest, BumpThreadTypeOfAliveThreadDuringShutdown) {
 
   // Block shutdown to ensure that the worker doesn't exit when StartShutdown()
   // is called.
-  scoped_refptr<Sequence> sequence =
-      MakeRefCounted<Sequence>(TaskTraits{TaskShutdownBehavior::BLOCK_SHUTDOWN},
-                               nullptr, TaskSourceExecutionMode::kParallel);
+  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
+      TaskTraits{TaskShutdownBehavior::BLOCK_SHUTDOWN}, nullptr,
+      TaskSourceExecutionMode::kParallel, ThreadType::kDefault);
   auto registered_task_source =
       task_tracker.RegisterTaskSource(std::move(sequence));
 
@@ -931,7 +934,7 @@ class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
   void WaitForWork() override {
     // Fill several buckets before going to sleep.
     for (size_t size = 8;
-         size < partition_alloc::ThreadCache::kDefaultSizeThreshold; size++) {
+         size < partition_alloc::kThreadCacheDefaultSizeThreshold; size++) {
       void* data = malloc(size);
       // A simple malloc() / free() pair can be discarded by the compiler (and
       // is), making the test fail. It is sufficient to make |FreeForTest()| a
@@ -940,11 +943,13 @@ class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
       FreeForTest(data);
     }
 
-    size_t cached_memory_before =
-        partition_alloc::ThreadCache::Get()->CachedMemory();
+    // This runs on the worker thread, so this reports the memory cached by
+    // this thread's own cache.
+    size_t cached_memory_before = partition_alloc::internal::
+        GetThreadCacheCachedMemoryForCurrentThreadForTesting();
     WorkerThreadDefaultDelegate::WaitForWork();
-    size_t cached_memory_after =
-        partition_alloc::ThreadCache::Get()->CachedMemory();
+    size_t cached_memory_after = partition_alloc::internal::
+        GetThreadCacheCachedMemoryForCurrentThreadForTesting();
 
     if (!test_done_) {
       if (purge_expected_) {

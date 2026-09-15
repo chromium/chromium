@@ -5,6 +5,8 @@
 #ifndef PARTITION_ALLOC_EXTENDED_API_H_
 #define PARTITION_ALLOC_EXTENDED_API_H_
 
+#include <cstddef>
+
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
@@ -14,6 +16,12 @@ namespace partition_alloc::internal {
 // Get allocation stats for the thread cache partition on the current
 // thread. See the documentation of ThreadAllocStats for details.
 ThreadAllocStats GetAllocStatsForCurrentThread();
+
+// Returns the amount of memory, in bytes, cached by the current thread's
+// thread cache, or 0 if this thread has no (valid) thread cache. Exposed for
+// tests living outside of PartitionAlloc, which cannot see the internal
+// definition of `ThreadCache`.
+size_t GetThreadCacheCachedMemoryForCurrentThreadForTesting();
 
 // Creates a scope for testing which:
 // - if the given |root| is a default malloc root for the entire process,
