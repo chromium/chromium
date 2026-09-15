@@ -52,6 +52,9 @@ public class VerticalTabUtils {
      */
     public static final int MIN_EXPANDED_WIDTH_DP = 92;
 
+    /** Maximum width in dp that the expanded vertical tabs rail can be manually resized to. */
+    public static final int MAX_EXPANDED_WIDTH_DP = 500;
+
     /** The ratio of window width that the vertical tabs rail can consume when expanded. */
     public static final float EXPANDED_WINDOW_WIDTH_RATIO = 0.33f;
 
@@ -194,6 +197,47 @@ public class VerticalTabUtils {
     public static void setRailCollapsedInSharedPref(boolean collapsed) {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED, collapsed);
+    }
+
+    /**
+     * Returns whether the vertical tabs rail can be manually resized by dragging its inner edge.
+     */
+    public static boolean isManualResizeEnabled() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS,
+                "manual_resize",
+                /* defaultValue= */ false);
+    }
+
+    /**
+     * Returns the expanded vertical tabs rail width in dp that the user last chose by dragging the
+     * rail's resize handle, or {@code 0} if the user has never resized the rail.
+     */
+    public static int getUserResizedWidthDp() {
+        return ChromeSharedPreferences.getInstance()
+                .readInt(
+                        ChromePreferenceKeys.VERTICAL_TABS_USER_RESIZED_WIDTH_DP,
+                        /* defaultValue= */ 0);
+    }
+
+    /**
+     * Stores the expanded vertical tabs rail width in dp that the user chose by dragging the rail's
+     * resize handle.
+     *
+     * <p>The width is stored as-is. Callers are responsible for clamping it to the rail's bounds
+     * and to the width actually available when applying it.
+     *
+     * @param widthDp The user-chosen width in dp. A non-positive value clears the preference, so
+     *     the rail width is determined automatically from the window size again.
+     */
+    public static void setUserResizedWidthDp(int widthDp) {
+        if (widthDp <= 0) {
+            ChromeSharedPreferences.getInstance()
+                    .removeKey(ChromePreferenceKeys.VERTICAL_TABS_USER_RESIZED_WIDTH_DP);
+            return;
+        }
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.VERTICAL_TABS_USER_RESIZED_WIDTH_DP, widthDp);
     }
 
     /**
@@ -380,5 +424,7 @@ public class VerticalTabUtils {
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.VERTICAL_TABS_USER_RESIZED_WIDTH_DP);
     }
 }

@@ -1110,6 +1110,14 @@ public final class ChromePreferenceKeys {
     public static final String VERTICAL_TABS_ENABLED_TIMESTAMP =
             "Chrome.VerticalTabs.EnabledTimestamp";
 
+    /**
+     * Stores the expanded vertical tabs rail width, in dp, that the user last chose by dragging the
+     * rail's resize handle. Unset (or non-positive) means the user has never resized the rail, so
+     * its width is determined automatically from the window size.
+     */
+    public static final String VERTICAL_TABS_USER_RESIZED_WIDTH_DP =
+            "Chrome.VerticalTabs.UserResizedWidthDp";
+
     /** Key for deferred recording of list of uninstalled WebAPK packages. */
     public static final String WEBAPK_UNINSTALLED_PACKAGES = "webapk_uninstalled_packages";
 
@@ -1372,6 +1380,7 @@ public final class ChromePreferenceKeys {
                 VERTICAL_TABS_COLLAPSED,
                 VERTICAL_TABS_ENABLED,
                 VERTICAL_TABS_ENABLED_TIMESTAMP,
+                VERTICAL_TABS_USER_RESIZED_WIDTH_DP,
                 WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
                 WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES);
     }

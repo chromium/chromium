@@ -6167,6 +6167,12 @@ inline constexpr char kEnableAndroidSidePanelLogsDescription[] =
     "When enabled, includes detailed logging for the Android Side Panel "
     "feature.";
 
+inline constexpr char kEnableAndroidSidePanelManualResizingName[] =
+    "Enable Android Side Panel Manual Resizing";
+inline constexpr char kEnableAndroidSidePanelManualResizingDescription[] =
+    "When enabled, the Android side panel can be resized by dragging its "
+    "inner edge.";
+
 inline constexpr char kEnableSetShapeName[] =
     "Enable ChromeOS Isolated Web App setShape API";
 inline constexpr char kEnableSetShapeDescription[] =

@@ -10113,6 +10113,8 @@ from previous Chrome versions.
   <int value="-1447457836" label="QuickShareV2:disabled"/>
   <int value="-1447314734" label="QuerySearchBurnInPeriod:enabled"/>
   <int value="-1447147245" label="VideoPlayerNativeControls:enabled"/>
+  <int value="-1447120866"
+      label="EnableAndroidSidePanelManualResizing:disabled"/>
   <int value="-1447000031" label="PrivateStateTokensDevUI:disabled"/>
   <int value="-1446625028" label="CrostiniUsbAllowUnsupported:enabled"/>
   <int value="-1446537836" label="XSLT:disabled"/>
@@ -19979,6 +19981,7 @@ from previous Chrome versions.
   <int value="1602496374" label="EnterprisePolicyOnSignin:disabled"/>
   <int value="1602627012" label="OverrideSitePrefsForHrefTranslate:enabled"/>
   <int value="1602869271" label="ChromeShareScreenshot:disabled"/>
+  <int value="1603422781" label="EnableAndroidSidePanelManualResizing:enabled"/>
   <int value="1603578716" label="CaptionSettings:disabled"/>
   <int value="1603999817"
       label="SupportMultipleServerRequestsForPixPayments:enabled"/>

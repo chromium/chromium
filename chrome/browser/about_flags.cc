@@ -2573,13 +2573,17 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
 
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_All[] = {
     {"block_draw_on_cold_start", "true"},
-    {"group_hover_card", "true"}};
+    {"group_hover_card", "true"},
+    {"manual_resize", "true"}};
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {
     {"enable_by_default", "true"}};
+const FeatureEntry::FeatureParam kAndroidVerticalTabs_ManualResize[] = {
+    {"manual_resize", "true"}};
 
 const FeatureEntry::FeatureVariation kAndroidVerticalTabsVariations[] = {
     {"with all experimental features", kAndroidVerticalTabs_All, nullptr},
     {"with enabled-by-default", kAndroidVerticalTabs_EnableByDefault, nullptr},
+    {"with manual resize", kAndroidVerticalTabs_ManualResize, nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
@@ -12886,6 +12890,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEnableAndroidSidePanel,
                                     kEnableAndroidSidePanelVariations,
                                     "EnableAndroidSidePanel")},
+    {"enable-android-side-panel-manual-resizing",
+     flag_descriptions::kEnableAndroidSidePanelManualResizingName,
+     flag_descriptions::kEnableAndroidSidePanelManualResizingDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kEnableAndroidSidePanelManualResizing)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -13959,8 +13969,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillGmailOtpPreLaunchMetricsName,
      flag_descriptions::kAutofillGmailOtpPreLaunchMetricsDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillGmailOtpPreLaunchMetrics)},
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillGmailOtpPreLaunchMetrics)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

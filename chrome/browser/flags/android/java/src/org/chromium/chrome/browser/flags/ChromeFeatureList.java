@@ -560,6 +560,8 @@ public abstract class ChromeFeatureList {
     public static final String ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE =
             "EnableAndroidSidePanelDevFeature";
     public static final String ENABLE_ANDROID_SIDE_PANEL_LOGS = "EnableAndroidSidePanelLogs";
+    public static final String ENABLE_ANDROID_SIDE_PANEL_MANUAL_RESIZING =
+            "EnableAndroidSidePanelManualResizing";
     public static final String ENABLE_BROWSER_WINDOW_INTERFACE_FOR_CUSTOM_TAB_ACTIVITY =
             "EnableBrowserWindowInterfaceForCustomTabActivity";
     public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
@@ -1196,6 +1198,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE, false);
     public static final CachedFlag sEnableAndroidSidePanelLogs =
             newCachedFlag(ENABLE_ANDROID_SIDE_PANEL_LOGS, false);
+    public static final CachedFlag sEnableAndroidSidePanelManualResizing =
+            newCachedFlag(ENABLE_ANDROID_SIDE_PANEL_MANUAL_RESIZING, false);
     public static final CachedFlag sEnableBrowserWindowInterfaceForCustomTabActivity =
             newCachedFlag(
                     ENABLE_BROWSER_WINDOW_INTERFACE_FOR_CUSTOM_TAB_ACTIVITY,
@@ -1611,6 +1615,7 @@ public abstract class ChromeFeatureList {
                     sEnableAndroidSidePanel,
                     sEnableAndroidSidePanelDevFeature,
                     sEnableAndroidSidePanelLogs,
+                    sEnableAndroidSidePanelManualResizing,
                     sEnableBrowserWindowInterfaceForCustomTabActivity,
                     sEnableExclusiveAccessManager,
                     sEnableFullscreenToAnyScreenAndroid,

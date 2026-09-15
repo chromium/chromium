@@ -68,6 +68,43 @@ public class VerticalTabUtilsUnitTest {
 
     @Test
     @SmallTest
+    public void testUserResizedWidthPreference() {
+        assertEquals(0, VerticalTabUtils.getUserResizedWidthDp());
+
+        VerticalTabUtils.setUserResizedWidthDp(300);
+        assertEquals(300, VerticalTabUtils.getUserResizedWidthDp());
+    }
+
+    @Test
+    @SmallTest
+    public void testUserResizedWidthPreference_ClearedByNonPositiveWidth() {
+        VerticalTabUtils.setUserResizedWidthDp(300);
+        assertEquals(300, VerticalTabUtils.getUserResizedWidthDp());
+
+        VerticalTabUtils.setUserResizedWidthDp(0);
+        assertEquals(0, VerticalTabUtils.getUserResizedWidthDp());
+
+        VerticalTabUtils.setUserResizedWidthDp(300);
+        VerticalTabUtils.setUserResizedWidthDp(-1);
+        assertEquals(0, VerticalTabUtils.getUserResizedWidthDp());
+    }
+
+    @Test
+    @SmallTest
+    public void testIsManualResizeEnabled() {
+        FeatureOverrides.newBuilder()
+                .param(ChromeFeatureList.ANDROID_VERTICAL_TABS, "manual_resize", false)
+                .apply();
+        assertFalse(VerticalTabUtils.isManualResizeEnabled());
+
+        FeatureOverrides.newBuilder()
+                .param(ChromeFeatureList.ANDROID_VERTICAL_TABS, "manual_resize", true)
+                .apply();
+        assertTrue(VerticalTabUtils.isManualResizeEnabled());
+    }
+
+    @Test
+    @SmallTest
     @Config(qualifiers = "sw600dp")
     public void testIsVerticalTabsEligible_FeatureDisabled() {
         FeatureOverrides.disable(ChromeFeatureList.ANDROID_VERTICAL_TABS);
