@@ -7,6 +7,7 @@
 
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -79,9 +80,8 @@ class NET_EXPORT NetworkChangeNotifierPassive : public NetworkChangeNotifier {
 #endif
 
   mutable base::Lock lock_;
-  NetworkChangeNotifier::ConnectionType
-      connection_type_;        // Guarded by |lock_|.
-  double max_bandwidth_mbps_;  // Guarded by |lock_|.
+  NetworkChangeNotifier::ConnectionType connection_type_ GUARDED_BY(lock_);
+  double max_bandwidth_mbps_ GUARDED_BY(lock_);
 };
 
 }  // namespace net

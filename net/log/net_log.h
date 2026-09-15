@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
@@ -356,15 +357,15 @@ class NET_EXPORT NetLog {
                                             base::DictValue params);
 
   // Called whenever an observer is added or removed, to update
-  // |observer_capture_modes_|. Must have acquired |lock_| prior to calling.
-  void UpdateObserverCaptureModes();
+  // |observer_capture_modes_|.
+  void UpdateObserverCaptureModes() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Returns true if |observer| is watching this NetLog. Must
-  // be called while |lock_| is already held.
-  bool HasObserver(ThreadSafeObserver* observer);
-  bool HasCaptureModeObserver(ThreadSafeCaptureModeObserver* observer);
+  // Returns true if |observer| is watching this NetLog.
+  bool HasObserver(ThreadSafeObserver* observer)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  bool HasCaptureModeObserver(ThreadSafeCaptureModeObserver* observer)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // |lock_| protects access to |observers_|.
   base::Lock lock_;
 
   // Last assigned source ID.  Incremented to get the next one.
@@ -380,14 +381,13 @@ class NET_EXPORT NetLog {
   // Pointers contained in |observers_| are non-owned, and must
   // remain valid.
   //
-  // |lock_| must be acquired whenever reading or writing to this.
-  //
   // In practice |observers_| will be very small (<5) so O(n)
   // operations on it are fine.
-  std::vector<raw_ptr<ThreadSafeObserver, VectorExperimental>> observers_;
+  std::vector<raw_ptr<ThreadSafeObserver, VectorExperimental>> observers_
+      GUARDED_BY(lock_);
 
   std::vector<raw_ptr<ThreadSafeCaptureModeObserver, VectorExperimental>>
-      capture_mode_observers_;
+      capture_mode_observers_ GUARDED_BY(lock_);
 };
 
 }  // namespace net
