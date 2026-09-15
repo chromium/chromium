@@ -84,13 +84,18 @@ ExtensionHost* ExtensionHostTestHelper::WaitFor(HostEvent event) {
   quit_loop_ = run_loop.QuitWhenIdleClosure();
   waiting_for_ = event;
   run_loop.Run();
+  // `waiting_for_` and `quit_loop_` may not have been reset if the run loop
+  // was quit due to a timeout.
+  waiting_for_.reset();
+  quit_loop_.Reset();
 
-  DCHECK(observed_events_.contains(event));
+  iter = observed_events_.find(event);
   // Note: This can still be null here if the corresponding ExtensionHost was
   // destroyed.  This is always true when waiting for
   // OnExtensionHostDestroyed(), but can also happen if the ExtensionHost is
-  // destroyed while waiting for the run loop to idle.
-  return observed_events_[event];
+  // destroyed while waiting for the run loop to idle or if the run loop
+  // timed out before the event was observed.
+  return iter != observed_events_.end() ? iter->second : nullptr;
 }
 
 void ExtensionHostTestHelper::EventSeen(ExtensionHost* host, HostEvent event) {
