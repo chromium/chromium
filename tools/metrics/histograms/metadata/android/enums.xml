@@ -938,12 +938,6 @@ chromium-metrics-reviews@google.com.
 
 </enum>
 
-<enum name="AsyncTaskStatus">
-  <int value="0" label="PENDING">AsyncTask was not started when waited on.</int>
-  <int value="1" label="RUNNING">AsyncTask was running when waited on.</int>
-  <int value="2" label="FINISHED">AsyncTask is done.</int>
-</enum>
-
 <!-- LINT.IfChange(AwPrefetchApiCallResult) -->
 
 <enum name="AwPrefetchApiCallResult">
