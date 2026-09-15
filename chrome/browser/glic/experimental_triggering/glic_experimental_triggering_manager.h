@@ -43,7 +43,7 @@ class GlicExperimentalTriggeringManager {
       base::OnceCallback<void(
           base::expected<std::string, ScreenshotResult::Status>)> callback);
 
-  void GetExperimentalTriggeringUpdates(
+  virtual void GetExperimentalTriggeringUpdates(
       mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
           handler,
       base::OnceCallback<void(bool)> success_status_callback);

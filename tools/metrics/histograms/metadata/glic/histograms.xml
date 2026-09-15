@@ -745,6 +745,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ExperimentalTriggering.ClientConnected" enum="Boolean"
+    expires_after="2027-08-01">
+  <owner>qinmin@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records whether the Glic web client successfully connected after an
+    experimental triggering invocation was started.
+  </summary>
+</histogram>
+
+<histogram name="Glic.ExperimentalTriggering.ExecutionOutcome"
+    enum="GlicExperimentalTriggeringExecutionOutcome"
+    expires_after="2027-08-01">
+  <owner>qinmin@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the end-to-end execution outcome or failure reason of a Glic
+    experimental triggering actuation request.
+  </summary>
+</histogram>
+
 <histogram name="Glic.ExperimentalTriggering.FirstFCMMessageLatency" units="ms"
     expires_after="2027-08-01">
   <owner>qinmin@chromium.org</owner>
@@ -774,6 +795,25 @@ chromium-metrics-reviews@google.com.
     <variant name="BrowserActuatorTransport"
         summary="the browser_actuator transport layer"/>
     <variant name="SharingMessage" summary="the Sharing FCM message channel"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.ExperimentalTriggering.Latency.{Phase}" units="ms"
+    expires_after="2027-08-01">
+  <owner>qinmin@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records the duration from when an experimental triggering actuation request
+    is processed until {Phase}.
+  </summary>
+  <token key="Phase">
+    <variant name="ToClientConnected" summary="the Glic web client connects"/>
+    <variant name="ToFirstResponse"
+        summary="the first update or worklog is received from the client"/>
+    <variant name="ToSidePanelOpened" summary="the Glic side panel is opened"/>
+    <variant name="ToTerminalCompletion"
+        summary="terminal completion is received from the client. Uses long
+                 times to accommodate actuation timeouts up to 5 minutes"/>
   </token>
 </histogram>
 
@@ -841,6 +881,16 @@ chromium-metrics-reviews@google.com.
     triggering device opt-in dialog is actively shown to the user before they
     make a decision or dismiss it. Excludes time when the dialog's tab is in the
     background.
+  </summary>
+</histogram>
+
+<histogram name="Glic.ExperimentalTriggering.SidePanelOpened" enum="Boolean"
+    expires_after="2027-08-01">
+  <owner>qinmin@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    Records whether the Glic side panel opened after an experimental triggering
+    invocation was started.
   </summary>
 </histogram>
 

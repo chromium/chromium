@@ -45,7 +45,7 @@ class GlicExperimentalTriggeringCoordinator {
 
   // Validates, logs, and processes an incoming raw protobuf triggering
   // message, returning the domain response (success or error).
-  virtual std::optional<ExperimentalTriggeringResponse> OnProtoMessage(
+  std::optional<ExperimentalTriggeringResponse> OnProtoMessage(
       const std::string& context_id,
       const components_sharing_message::GlicExperimentalTriggering& proto,
       ScopedIncomingMessageResultLogger result_logger,
@@ -76,7 +76,7 @@ class GlicExperimentalTriggeringCoordinator {
  private:
   friend class ExperimentalTriggeringUpdatesHandler;
 
-  void OnUpdatesHandlerCleanup(std::string_view context_id);
+  void OnUpdatesHandlerCleanup(const std::string& context_id);
 
   // Returns true if an active updates handler exists for `context_id`.
   bool HasUpdatesHandler(std::string_view context_id) const {

@@ -40,6 +40,28 @@ enum class GlicExperimentalTriggeringIncomingMessageResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringIncomingMessageResult)
 
+// The execution outcome or failure reason for an experimental triggering
+// actuation request.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GlicExperimentalTriggeringExecutionOutcome)
+enum class GlicExperimentalTriggeringExecutionOutcome {
+  kSuccess = 0,
+  kTimeoutWaitingForClient = 1,
+  kTimeoutWaitingForActuation = 2,
+  kInvokeErrorInvokeInProgress = 3,
+  kInvokeErrorTabClosed = 4,
+  kInvokeErrorOther = 5,
+  kUpdatesRegistrationFailed = 6,
+  kClientDisconnectedBeforeResponse = 7,
+  kTerminalFailed = 8,
+  kTerminalStopped = 9,
+  kDestroyedBeforeCompletion = 10,
+  kMaxValue = kDestroyedBeforeCompletion,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringExecutionOutcome)
+
 // Helper RAII class to log the
 // Glic.ExperimentalTriggering.IncomingMessageResult.{Channel} histogram for
 // the channel passed to the constructor. Enforces that a result is set on

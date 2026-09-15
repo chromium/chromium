@@ -296,6 +296,24 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/experimental_opt_in/experimental_opt_in.ts:GlicExperimentalTriggeringErrorType) -->
 
+<!-- LINT.IfChange(GlicExperimentalTriggeringExecutionOutcome) -->
+
+<enum name="GlicExperimentalTriggeringExecutionOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Timeout: Waiting for Client Connection / Side Panel"/>
+  <int value="2" label="Timeout: Waiting for Gemini / Actuation"/>
+  <int value="3" label="Invoke Error: Invoke in Progress"/>
+  <int value="4" label="Invoke Error: Tab Closed"/>
+  <int value="5" label="Invoke Error: Other"/>
+  <int value="6" label="Updates Registration Failed"/>
+  <int value="7" label="Client Disconnected Before Response"/>
+  <int value="8" label="Terminal Failed"/>
+  <int value="9" label="Terminal Stopped"/>
+  <int value="10" label="Destroyed Before Completion"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h:GlicExperimentalTriggeringExecutionOutcome) -->
+
 <!-- LINT.IfChange(GlicExperimentalTriggeringIncomingMessageResult) -->
 
 <enum name="GlicExperimentalTriggeringIncomingMessageResult">
