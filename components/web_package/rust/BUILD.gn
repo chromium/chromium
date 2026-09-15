@@ -14,6 +14,8 @@ rust_static_library("web_package_rust") {
     crate_root,
   ]
 
+  deps = [ "//components/cbor/rust:cbor" ]
+
   cpp_api_from_rust = {
     target_name = "web_package_rust_bindings"
     cpp_namespace = "web_package::rust"

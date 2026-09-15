@@ -35,9 +35,6 @@ namespace web_package {
 
 namespace {
 
-// The maximum size of the section-lengths CBOR item.
-constexpr uint64_t kMaxSectionLengthsCBORSize = 8192;
-
 // The maximum size of a metadata section allowed in this implementation.
 constexpr uint64_t kMaxMetadataSectionSize = 1 * 1024 * 1024;
 
@@ -46,35 +43,6 @@ constexpr uint64_t kMaxResponseHeaderLength = 512 * 1024;
 
 // The initial buffer size for reading an item from the response section.
 constexpr uint64_t kInitialBufferSizeForResponse = 4096;
-
-// The first byte of WebBundle format >=b2 (Array of length 5).
-constexpr uint8_t kBundleHeadByte = 0x85;
-// The first byte of WebBundle format b1 (Array of length 6).
-constexpr uint8_t kBundleB1HeadByte = 0x86;
-
-// CBOR of the magic string "🌐📦".
-// MetadataParser::ParseMagicBytes() checks the first byte (0x85) and this.
-//
-// The first 10 bytes of the web bundle format are:
-//   85                             -- Array of length 5
-//      48                          -- Byte string of length 8
-//         F0 9F 8C 90 F0 9F 93 A6  -- "🌐📦" in UTF-8
-const uint8_t kBundleMagicBytes[] = {
-    0x48, 0xF0, 0x9F, 0x8C, 0x90, 0xF0, 0x9F, 0x93, 0xA6,
-};
-
-// CBOR of the version string "b2\0\0".
-//   44               -- Byte string of length 4
-//       62 32 00 00  -- "b2\0\0"
-const uint8_t kVersionB2MagicBytes[] = {
-    0x44, 0x62, 0x32, 0x00, 0x00,
-};
-// CBOR of the version string "b1\0\0".
-//   44               -- Byte string of length 4
-//       62 31 00 00  -- "b1\0\0"
-const uint8_t kVersionB1MagicBytes[] = {
-    0x44, 0x62, 0x31, 0x00, 0x00,
-};
 
 // Section names.
 constexpr char kCriticalSection[] = "critical";
@@ -308,11 +276,8 @@ class WebBundleParser::MetadataParser
   void ReadMagicBytes(const uint64_t offset_in_stream) {
     // First, we will parse the CBOR header of the top level array (1-byte),
     // `magic`, `version`, and the CBOR header of `section-lengths`.
-    const uint64_t length = 1 + sizeof(kBundleMagicBytes) +
-                            sizeof(kVersionB2MagicBytes) +
-                            kMaxCBORItemHeaderSize;
     data_source_->get()->Read(
-        offset_in_stream, length,
+        offset_in_stream, rust::INITIAL_BUNDLE_HEADER_BUFFER_SIZE,
         base::BindOnce(&MetadataParser::ParseMagicBytes,
                        weak_factory_.GetWeakPtr(), offset_in_stream));
   }
@@ -325,83 +290,23 @@ class WebBundleParser::MetadataParser
       return;
     }
 
-    InputReader input(*data);
-
-    // Read the first byte denoting a CBOR array size. It must be equal to 0x85
-    // (5).
-    const auto array_size = input.ReadByte();
-    if (!array_size) {
-      RunErrorCallback("Missing CBOR array size byte.");
+    auto res = rust::parse_magic_and_version(*data, offset_in_stream);
+    if (!res.has_value()) {
+      const auto& error = res.error();
+      RunErrorCallback(error.message,
+                       error.is_version_error
+                           ? mojom::BundleParseErrorType::kVersionError
+                           : mojom::BundleParseErrorType::kFormatError);
       return;
     }
 
-    // Let kBundleB1HeadByte pass this check, to report custom error message for
-    // b1 bundles.
-    if (*array_size != kBundleHeadByte && *array_size != kBundleB1HeadByte) {
-      RunErrorCallback("Wrong magic bytes.");
-      return;
-    }
-
-    // Check the magic bytes "48 F0 9F 8C 90 F0 9F 93 A6".
-    const auto magic = input.ReadBytes(sizeof(kBundleMagicBytes));
-    if (!magic || !std::ranges::equal(*magic, kBundleMagicBytes)) {
-      RunErrorCallback("Wrong magic bytes.");
-      return;
-    }
-
-    // Let version be the result of reading 5 bytes from stream.
-    const auto version = input.ReadBytes(sizeof(kVersionB2MagicBytes));
-    if (!version) {
-      RunErrorCallback("Cannot read version bytes.");
-      return;
-    }
-    if (!std::ranges::equal(*version, kVersionB2MagicBytes)) {
-      const char* message;
-      if (std::ranges::equal(*version, kVersionB1MagicBytes)) {
-        message =
-            "Bundle format version is 'b1' which is no longer supported."
-            " Currently supported version is: 'b2'";
-      } else {
-        message =
-            "Version error: bundle format does not correspond to the specifed "
-            "version. Currently supported version is: 'b2'";
-      }
-      RunErrorCallback(message, mojom::BundleParseErrorType::kVersionError);
-      return;
-    }
-    if (*array_size != kBundleHeadByte) {
-      RunErrorCallback("Wrong CBOR array size of the top-level structure");
-      return;
-    }
-
-    const auto section_lengths_length =
-        input.ReadCBORHeader(CBORType::kByteString);
-    if (!section_lengths_length) {
-      RunErrorCallback("Cannot parse the size of section-lengths.");
-      return;
-    }
-
-    // https://www.ietf.org/archive/id/draft-ietf-wpack-bundled-responses-01.html#name-top-level-structure
-    // "The section-lengths array is embedded in a byte string to facilitate
-    // reading it from a network. This byte string MUST be less than 8192
-    // (8*1024) bytes long, and parsers MUST NOT load any data from a
-    // section-lengths item longer than this."
-    if (*section_lengths_length >= kMaxSectionLengthsCBORSize) {
-      RunErrorCallback(
-          "The section-lengths CBOR must be smaller than 8192 bytes.");
-      return;
-    }
-
-    // In the next step, we will parse the content of `section-lengths`,
-    // and the CBOR header of `sections`.
-    const uint64_t length = *section_lengths_length + kMaxCBORItemHeaderSize;
-
-    offset_in_stream += input.CurrentOffset();
+    uint64_t next_offset = res->next_read_offset;
+    uint64_t next_length = res->next_read_length;
     data_source_->get()->Read(
-        offset_in_stream, length,
+        next_offset, next_length,
         base::BindOnce(&MetadataParser::ParseBundleHeader,
-                       weak_factory_.GetWeakPtr(), offset_in_stream,
-                       *section_lengths_length));
+                       weak_factory_.GetWeakPtr(), next_offset,
+                       res->section_lengths_len));
   }
 
   void ParseBundleHeader(uint64_t offset_in_stream,

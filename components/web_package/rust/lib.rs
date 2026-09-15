@@ -11,6 +11,6 @@ mod constants;
 mod parser;
 mod types;
 
-pub use constants::TRAILING_LENGTH_NUM_BYTES;
-pub use parser::parse_trailing_length;
-pub use types::ParseError;
+pub use constants::{INITIAL_BUNDLE_HEADER_BUFFER_SIZE, TRAILING_LENGTH_NUM_BYTES};
+pub use parser::{parse_magic_and_version, parse_trailing_length};
+pub use types::{MagicAndVersionResult, ParseError};
