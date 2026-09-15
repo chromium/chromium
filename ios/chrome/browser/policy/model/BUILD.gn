@@ -177,6 +177,8 @@ source_set("saas_usage_reporting") {
     "reporting/saas_usage/saas_usage_report_factory_delegate_ios.mm",
     "reporting/saas_usage/saas_usage_report_scheduler_delegate_ios.h",
     "reporting/saas_usage/saas_usage_report_scheduler_delegate_ios.mm",
+    "reporting/saas_usage/saas_usage_report_uploader_ios.h",
+    "reporting/saas_usage/saas_usage_report_uploader_ios.mm",
   ]
   deps = [
     ":model",
@@ -184,6 +186,7 @@ source_set("saas_usage_reporting") {
     "//components/enterprise",
     "//components/enterprise/browser/identifiers",
     "//components/policy/core/common",
+    "//ios/chrome/browser/enterprise/common",
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
@@ -323,6 +326,7 @@ source_set("unit_tests") {
     "reporting/report_scheduler_ios_unittest.mm",
     "reporting/saas_usage/saas_usage_encryption_protocol_provider_unittest.mm",
     "reporting/saas_usage/saas_usage_report_scheduler_delegate_ios_unittest.mm",
+    "reporting/saas_usage/saas_usage_report_uploader_ios_unittest.mm",
     "restrict_accounts_policy_handler_unittest.cc",
     "status_provider/user_cloud_policy_status_provider_unittest.mm",
   ]
