@@ -10,6 +10,7 @@
 #include "components/sync/service/sync_service_observer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
+class AccountId;
 class Profile;
 
 namespace syncer {
@@ -50,7 +51,18 @@ class OSSyncHandler : public content::WebUIMessageHandler,
   // Pushes the updated sync prefs to JavaScript.
   void PushSyncPrefs();
 
-  // Gets the SyncService associated with the parent profile.
+  // Returns the AccountId annotated on the profile, or nullptr if it carries
+  // none, as a guest or other non-user profile does.
+  const AccountId* GetAccountId() const;
+
+  // Returns the SyncService for the profile's user without regard to whether
+  // sync is usable, or nullptr if there is none at all -- a guest or other
+  // non-user profile carries no AccountId. Prefer GetSyncService(); this is
+  // for observer registration, which must survive sync being turned off.
+  syncer::SyncService* GetSyncServiceIgnoringPolicy() const;
+
+  // Returns the SyncService the page operates on, or nullptr if there is none
+  // or enterprise policy has disabled sync.
   syncer::SyncService* GetSyncService() const;
 
   void AddSyncServiceObserver();

@@ -13,10 +13,11 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
+#include "chromeos/ash/components/sync/sync_service_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
@@ -113,12 +114,8 @@ void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
 
 void OSSyncHandler::HandleOpenBrowserSyncSettings(const base::ListValue& args) {
   const GURL settings_url(ash::chrome_urls::kChromeUISettingsURL);
-  // Guest sessions substitute their off-the-record profile for `profile_`,
-  // but the AccountId is only ever annotated on the original profile --
-  // unwrap to it before looking up the annotation.
   signin::IdentityManager* identity_manager =
-      ash::IdentityManagerProvider::Get().Find(CHECK_DEREF(
-          ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile())));
+      ash::IdentityManagerProvider::Get().Find(CHECK_DEREF(GetAccountId()));
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       (identity_manager &&
        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) ||
@@ -202,22 +199,41 @@ void OSSyncHandler::PushSyncPrefs() {
   FireWebUIListener("os-sync-prefs-changed", args);
 }
 
+const AccountId* OSSyncHandler::GetAccountId() const {
+  // Guest sessions substitute their off-the-record profile for `profile_`,
+  // but the AccountId is only ever annotated on the original profile --
+  // unwrap to it before looking up the annotation.
+  return ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile());
+}
+
+syncer::SyncService* OSSyncHandler::GetSyncServiceIgnoringPolicy() const {
+  const AccountId* account_id = GetAccountId();
+  return account_id && account_id->is_valid()
+             ? ash::SyncServiceProvider::Get().Find(*account_id)
+             : nullptr;
+}
+
 syncer::SyncService* OSSyncHandler::GetSyncService() const {
-  const bool is_sync_allowed = SyncServiceFactory::IsSyncAllowed(profile_);
-  return is_sync_allowed ? SyncServiceFactory::GetForProfile(profile_)
-                         : nullptr;
+  // This used to call SyncServiceFactory::IsSyncAllowed(), which was itself
+  // just this check against the SyncService the factory returned.
+  SyncService* service = GetSyncServiceIgnoringPolicy();
+  return service && !service->HasDisableReason(
+                        SyncService::DISABLE_REASON_ENTERPRISE_POLICY)
+             ? service
+             : nullptr;
 }
 
 void OSSyncHandler::AddSyncServiceObserver() {
-  // Observe even if sync isn't allowed. IsSyncAllowed() can change mid-session.
-  SyncService* service = SyncServiceFactory::GetForProfile(profile_);
+  // Observe even when sync is disallowed: the disable reason checked by
+  // GetSyncService() can change mid-session.
+  SyncService* service = GetSyncServiceIgnoringPolicy();
   if (service) {
     service->AddObserver(this);
   }
 }
 
 void OSSyncHandler::RemoveSyncServiceObserver() {
-  SyncService* service = SyncServiceFactory::GetForProfile(profile_);
+  SyncService* service = GetSyncServiceIgnoringPolicy();
   if (service) {
     service->RemoveObserver(this);
   }
