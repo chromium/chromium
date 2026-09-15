@@ -1701,6 +1701,46 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       StartOnBlockedSite_NavigateActionAllowed) {
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "bad.example.com", "/actor/link.html");
+  const GURL allowed_url =
+      embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
+
+  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+     {
+       "navigation_blocked": [
+         { "from": "*", "to": "[*.]bad.example.com" }
+       ]
+     }
+)json");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  // Attempting to click a link on the blocked page fails because the actor
+  // cannot actuate on a blocked site.
+  ActResultFuture click_result;
+  actor_task().Act(
+      ToRequestList(MakeClickRequest(*active_tab(), gfx::Point(1, 1))),
+      click_result.GetCallback());
+  ExpectErrorResult(click_result,
+                    mojom::ActionResultCode::kActionsBlockedForSiteRisk);
+
+  // However, navigating away via NavigateTool to an unblocked site succeeds.
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, true)));
+
+  std::unique_ptr<ToolRequest> navigate_to_allowed =
+      MakeNavigateRequest(*active_tab(), allowed_url.spec());
+  ActResultFuture nav_result;
+  actor_task().Act(ToRequestList(navigate_to_allowed),
+                   nav_result.GetCallback());
+  ExpectOkResult(nav_result);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), allowed_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        ActorContainerConfig_Navigation) {
   optimization_guide::proto::AgentContainerConfig config_proto;
   optimization_guide::proto::LocationRule* rule =
