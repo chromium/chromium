@@ -37,7 +37,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -51,7 +50,6 @@ public class ComposeplateCoordinatorUnitTest {
     @Mock private View mIncognitoButton;
     @Mock private View mComposeplateButton;
     @Mock private View.OnClickListener mOriginalOnClickListener;
-    @Mock private Profile mProfile;
 
     private Context mContext;
     private ComposeplateCoordinator mCoordinator;
@@ -64,7 +62,6 @@ public class ComposeplateCoordinatorUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         IncognitoUtils.setEnabledForTesting(true);
-        assertTrue(IncognitoUtils.isIncognitoModeEnabled(mProfile));
 
         when(mParentView.findViewById(R.id.composeplate_view)).thenReturn(mComposeplateView);
         when(mParentView.getResources()).thenReturn(mContext.getResources());
@@ -74,7 +71,7 @@ public class ComposeplateCoordinatorUnitTest {
         when(mComposeplateView.findViewById(R.id.composeplate_button))
                 .thenReturn(mComposeplateButton);
 
-        mCoordinator = new ComposeplateCoordinator(mParentView, mProfile);
+        mCoordinator = new ComposeplateCoordinator(mParentView);
         mPropertyModel = mCoordinator.getModelForTesting();
     }
 

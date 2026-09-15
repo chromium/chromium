@@ -13,7 +13,6 @@ import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -28,9 +27,8 @@ public class ComposeplateCoordinator {
      * Constructs a new ComposeplateCoordinator.
      *
      * @param parentView The parent {@link ViewGroup} for the composeplate.
-     * @param profile The current user profile.
      */
-    public ComposeplateCoordinator(ViewGroup parentView, Profile profile) {
+    public ComposeplateCoordinator(ViewGroup parentView) {
         mModel = new PropertyModel(ComposeplateProperties.ALL_KEYS);
         mView = parentView.findViewById(R.id.composeplate_view);
         PropertyModelChangeProcessor.create(mModel, mView, ComposeplateViewBinder::bind);
