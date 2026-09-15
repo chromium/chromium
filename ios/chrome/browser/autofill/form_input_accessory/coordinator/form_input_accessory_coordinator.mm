@@ -39,6 +39,9 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_coordinator.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
+#import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_source_item.h"
+#import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_sources_util.h"
+#import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_sources_view_controller.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/public/autofill_suggestion_context_menu_handler.h"
@@ -182,6 +185,7 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
 @interface FormInputAccessoryCoordinator () <
     AddressCoordinatorDelegate,
     AtMemoryCommands,
+    AutofillAiSourcesViewControllerDelegate,
     AutofillSuggestionContextMenuHandler,
     CardCoordinatorDelegate,
     ExpandedManualFillCoordinatorDelegate,
@@ -189,7 +193,8 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
     FormInputAccessoryViewControllerDelegate,
     ManualFillAllPasswordCoordinatorDelegate,
     PasswordCoordinatorDelegate,
-    SecurityAlertCommands>
+    SecurityAlertCommands,
+    UIAdaptivePresentationControllerDelegate>
 
 // The object in charge of interacting with the web view. Used to fill the data
 // in the forms.
@@ -229,6 +234,9 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
 
   // The coordinator for the AtMemory Autofill feature.
   AtMemoryCoordinator* _atMemoryCoordinator;
+
+  // The navigation controller presenting the Autofill AI sources bottom sheet.
+  UINavigationController* _sourcesNavigationController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -341,6 +349,7 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
 
 - (void)reset {
   [self stopChildren];
+  [self dismissSourcesSheetAnimated:NO];
   [self resetInputViews];
   [_formInputAccessoryMediator reloadFirstResponderInputViews];
 }
@@ -358,6 +367,8 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
   [self stopManualFillAllPasswordCoordinator];
 
   [self dismissAlertCoordinator];
+  [self dismissAtMemory];
+  [self dismissSourcesSheetAnimated:NO];
 }
 
 - (void)stopChildren {
@@ -612,7 +623,51 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
 }
 
 - (void)openSourcesForSuggestion:(FormSuggestion*)suggestion {
-  // TODO(crbug.com/551864564): Implement opening sources for the suggestion.
+  [self dismissSourcesSheetAnimated:NO];
+
+  web::WebState* activeWebState = [self activeWebState];
+  if (!activeWebState) {
+    return;
+  }
+  base::optional_ref<const autofill::EntityInstance> entity =
+      autofill::GetEntityInstance(
+          ProfileIOS::FromBrowserState(activeWebState->GetBrowserState()),
+          suggestion.payload);
+  if (!entity.has_value() || !EntityHasValidSources(*entity)) {
+    return;
+  }
+
+  NSArray<AutofillAiSourceGroup*>* groups = ExtractSourcesFromEntity(*entity);
+  if (groups.count == 0) {
+    return;
+  }
+
+  NSString* subtitle = SourcesHeaderSubtitle(*entity, suggestion.value);
+  AutofillAiSourcesViewController* sourcesViewController =
+      [[AutofillAiSourcesViewController alloc] initWithSubtitle:subtitle
+                                                         groups:groups];
+  sourcesViewController.delegate = self;
+
+  _sourcesNavigationController = [[UINavigationController alloc]
+      initWithRootViewController:sourcesViewController];
+  _sourcesNavigationController.presentationController.delegate = self;
+  UISheetPresentationController* sheetPresentationController =
+      _sourcesNavigationController.sheetPresentationController;
+  if (sheetPresentationController) {
+    sheetPresentationController.detents = @[
+      [UISheetPresentationControllerDetent mediumDetent],
+      [UISheetPresentationControllerDetent largeDetent],
+    ];
+    sheetPresentationController.prefersGrabberVisible = YES;
+  }
+
+  UIViewController* presenter = self.baseViewController;
+  while (presenter.presentedViewController) {
+    presenter = presenter.presentedViewController;
+  }
+  [presenter presentViewController:_sourcesNavigationController
+                          animated:YES
+                        completion:nil];
 }
 
 - (void)suppressPersonalContextSuggestion:(FormSuggestion*)suggestion {
@@ -620,15 +675,15 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
 }
 
 - (BOOL)hasSourcesForSuggestion:(FormSuggestion*)suggestion {
+  web::WebState* activeWebState = [self activeWebState];
+  if (!activeWebState) {
+    return NO;
+  }
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAmbientAutofillSourceAttribution)) {
     return NO;
   }
 
-  web::WebState* activeWebState = [self activeWebState];
-  if (!activeWebState) {
-    return NO;
-  }
   base::optional_ref<const autofill::EntityInstance> entity =
       autofill::GetEntityInstance(
           ProfileIOS::FromBrowserState(activeWebState->GetBrowserState()),
@@ -637,15 +692,7 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
     return NO;
   }
 
-  const auto* payload =
-      std::get_if<autofill::EntityInstance::PersonalContextRecordTypePayload>(
-          &entity->record_type_data());
-  if (!payload) {
-    return NO;
-  }
-  return std::ranges::any_of(payload->sources, [](const auto& source) {
-    return GURL(source.url).is_valid();
-  });
+  return EntityHasValidSources(*entity);
 }
 
 - (BOOL)canSuppressPersonalContextSuggestion:(FormSuggestion*)suggestion {
@@ -668,6 +715,36 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
   return entity.has_value() &&
          entity->record_type() ==
              autofill::EntityInstance::RecordType::kPersonalContext;
+}
+
+#pragma mark - AutofillAiSourcesViewControllerDelegate
+
+- (void)sourcesViewController:(AutofillAiSourcesViewController*)viewController
+          didSelectSourceItem:(AutofillAiSourceItem*)sourceItem {
+  if (!self.browser) {
+    return;
+  }
+  [self dismissSourcesSheetAnimated:YES];
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:sourceItem.URL];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler openURLInNewTab:command];
+}
+
+- (void)sourcesViewControllerDidDismiss:
+    (AutofillAiSourcesViewController*)viewController {
+  [self dismissSourcesSheetAnimated:YES];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  if (presentationController.presentedViewController ==
+      _sourcesNavigationController) {
+    _sourcesNavigationController = nil;
+  }
 }
 
 #pragma mark - FallbackCoordinatorDelegate
@@ -924,6 +1001,17 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
   [_alertCoordinator stop];
   [self.childCoordinators removeObject:_alertCoordinator];
   _alertCoordinator = nil;
+}
+
+- (void)dismissSourcesSheetAnimated:(BOOL)animated {
+  if (!_sourcesNavigationController) {
+    return;
+  }
+  UINavigationController* sourcesNavigationController =
+      _sourcesNavigationController;
+  _sourcesNavigationController = nil;
+  [sourcesNavigationController dismissViewControllerAnimated:animated
+                                                  completion:nil];
 }
 
 - (feature_engagement::Tracker*)featureEngagementTracker {

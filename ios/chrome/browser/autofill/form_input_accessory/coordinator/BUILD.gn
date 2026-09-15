@@ -31,6 +31,7 @@ source_set("coordinator") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/atmemory/coordinator",
     "//ios/chrome/browser/autofill/atmemory/public",
+    "//ios/chrome/browser/autofill/autofill_ai/ui",
     "//ios/chrome/browser/autofill/form_input_accessory/public",
     "//ios/chrome/browser/autofill/form_input_accessory/ui",
     "//ios/chrome/browser/autofill/manual_fill/coordinator",
