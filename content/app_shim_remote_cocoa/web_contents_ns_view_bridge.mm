@@ -21,6 +21,8 @@ WebContentsNSViewBridge::WebContentsNSViewBridge(
     : host_(std::move(client),
             ui::WindowResizeHelperMac::Get()->task_runner()) {
   ns_view_ = [[WebContentsViewCocoa alloc] initWithViewsHostableView:nullptr];
+  ns_view_.layer = [[CALayer alloc] init];
+  ns_view_.wantsLayer = YES;
   [ns_view_ setHost:host_.get()];
   [ns_view_ enableDroppedScreenShotCopier];
   view_id_ =
@@ -32,6 +34,8 @@ WebContentsNSViewBridge::WebContentsNSViewBridge(
     content::WebContentsViewMac* web_contents_view) {
   ns_view_ = [[WebContentsViewCocoa alloc]
       initWithViewsHostableView:web_contents_view];
+  ns_view_.layer = [[CALayer alloc] init];
+  ns_view_.wantsLayer = YES;
   [ns_view_ setHost:web_contents_view];
   view_id_ =
       std::make_unique<remote_cocoa::ScopedNSViewIdMapping>(view_id, ns_view_);

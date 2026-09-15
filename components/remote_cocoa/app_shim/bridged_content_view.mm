@@ -801,7 +801,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 }
 
 - (BOOL)isOpaque {
-  return _bridge ? !_bridge->is_translucent_window() : NO;
+  return [self.window isOpaque];
 }
 
 // To maximize consistency with the Cocoa browser (mac_views_browser=0), accept

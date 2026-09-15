@@ -2351,7 +2351,8 @@ TEST_F(NativeWidgetMacTest, InvalidateShadow) {
   widget->CloseNow();
 }
 
-// Test that the contentView opacity corresponds to the window type.
+// Test that the contentView opacity corresponds to the window type and reflects
+// dynamic changes to the hosting window's opacity after creation.
 TEST_F(NativeWidgetMacTest, ContentOpacity) {
   NativeWidgetMacTestWindow* window;
   Widget::InitParams init_params =
@@ -2367,6 +2368,11 @@ TEST_F(NativeWidgetMacTest, ContentOpacity) {
   init_params.opacity = Widget::InitParams::WindowOpacity::kTranslucent;
   widget = CreateWidgetWithTestWindow(std::move(init_params), &window);
   EXPECT_FALSE([[window contentView] isOpaque]);
+
+  // Updating the NSWindow opaqueness directly should dynamically update the
+  // contentView's isOpaque reporting.
+  [window setOpaque:YES];
+  EXPECT_TRUE([[window contentView] isOpaque]);
   widget->CloseNow();
 
   // Test opaque explicitly.
