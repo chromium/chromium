@@ -125,7 +125,6 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest, ShutdownConfirmation) {
   // Press the accelerator for quitting.
   generator.PressKey(ui::VKEY_Q, modifiers);
   generator.ReleaseKey(ui::VKEY_Q, modifiers);
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
 }
