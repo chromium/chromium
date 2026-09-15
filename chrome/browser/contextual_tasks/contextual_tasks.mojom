@@ -466,4 +466,7 @@ interface ExtensionPage {
   // Called by the browser process (C++) to unlock/enable the input in the
   // WebUI.
   UnlockInput();
+
+  // Called by the browser process (C++) when the Lens overlay is shown/hidden.
+  OnLensOverlayStateChanged(bool is_showing);
 };

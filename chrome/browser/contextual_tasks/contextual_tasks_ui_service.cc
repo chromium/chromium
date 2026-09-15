@@ -3339,6 +3339,14 @@ void ContextualTasksUiService::OnLensOverlayStateChanged(
     BrowserWindowInterface* browser_window_interface,
     bool is_showing,
     std::optional<lens::LensOverlayInvocationSource> invocation_source) {
+  for (auto& observer : observers_) {
+    observer.OnLensOverlayStateChanged(is_showing);
+  }
+
+  if (!browser_window_interface) {
+    return;
+  }
+
   auto* controller =
       ContextualTasksPanelController::From(browser_window_interface);
   if (!controller || !controller->IsPanelOpenForContextualTask()) {

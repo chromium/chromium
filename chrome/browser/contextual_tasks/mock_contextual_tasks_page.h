@@ -105,6 +105,7 @@ class MockContextualTasksExtensionPage : public mojom::ExtensionPage {
   MOCK_METHOD(void, ExitBasicMode, (), (override));
   MOCK_METHOD(void, LockInput, (), (override));
   MOCK_METHOD(void, UnlockInput, (), (override));
+  MOCK_METHOD(void, OnLensOverlayStateChanged, (bool is_showing), (override));
 
  private:
   mojo::Receiver<mojom::ExtensionPage> receiver_{this};

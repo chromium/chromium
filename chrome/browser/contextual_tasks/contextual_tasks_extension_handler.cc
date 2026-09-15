@@ -4,9 +4,13 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_handler.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,6 +22,7 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -39,9 +44,23 @@ DOCUMENT_USER_DATA_KEY_IMPL(ContextualTasksExtensionHandler);
 
 ContextualTasksExtensionHandler::ContextualTasksExtensionHandler(
     content::RenderFrameHost* rfh)
-    : content::DocumentUserData<ContextualTasksExtensionHandler>(rfh) {}
+    : content::DocumentUserData<ContextualTasksExtensionHandler>(rfh) {
+  if (auto* browser_context = rfh->GetBrowserContext()) {
+    if (auto* ui_service = contextual_tasks::ContextualTasksUiServiceFactory::
+            GetForBrowserContext(browser_context)) {
+      ui_service_observation_.Observe(ui_service);
+    }
+  }
+}
 
 ContextualTasksExtensionHandler::~ContextualTasksExtensionHandler() = default;
+
+void ContextualTasksExtensionHandler::OnLensOverlayStateChanged(
+    bool is_showing) {
+  if (contextual_tasks_page_) {
+    contextual_tasks_page_->OnLensOverlayStateChanged(is_showing);
+  }
+}
 
 void ContextualTasksExtensionHandler::OnPermissionPromptChanged(
     bool is_showing,
@@ -142,7 +161,39 @@ void ContextualTasksExtensionHandler::GetHandshakeMessage(
 // composebox::mojom::PageHandler stubs:
 void ContextualTasksExtensionHandler::FocusChanged(bool focused) {}
 void ContextualTasksExtensionHandler::StartPlatformVoiceRecognition() {}
-void ContextualTasksExtensionHandler::HandleLensButtonClick() {}
+void ContextualTasksExtensionHandler::HandleLensButtonClick() {
+#if !BUILDFLAG(IS_ANDROID)
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualTasks.Composebox.UserAction.LensButtonClicked"));
+
+  if (auto* controller = GetLensSearchController()) {
+    if (controller->IsShowingUI()) {
+      if (controller->invocation_source() ==
+          lens::LensOverlayInvocationSource::kContextualTasksComposebox) {
+        controller->CloseLensAsync(
+            lens::LensOverlayDismissalSource::
+                kContextualTasksComposeboxLensButtonClick);
+        return;
+      } else {
+        // If the overlay is showing from a different invocation source, clear
+        // the selection and start fresh for a follow-up.
+        if (controller->lens_overlay_controller()) {
+          controller->lens_overlay_controller()->ClearAllSelections();
+        }
+        // Set the invocation source to contextual tasks so that any follow-up
+        // queries are associated with the contextual tasks session via the
+        // query flow router and thumbnails are added appropriately to the
+        // composebox. This will work as if the overlay was opened from the
+        // contextual tasks composebox in the first place.
+        controller->SetInvocationSource(
+            lens::LensOverlayInvocationSource::kContextualTasksComposebox);
+      }
+    }
+    controller->OpenLensOverlay(
+        lens::LensOverlayInvocationSource::kContextualTasksComposebox);
+  }
+#endif
+}
 void ContextualTasksExtensionHandler::HandleFileUpload(bool is_image) {}
 void ContextualTasksExtensionHandler::NavigateUrl(const GURL& url) {}
 void ContextualTasksExtensionHandler::CloseLensOverlayFromWebUI(

@@ -97,6 +97,7 @@ class ContextualTasksUiService : public KeyedService {
    public:
     virtual void OnContextualTasksUiServiceShutdown(
         ContextualTasksUiService* service) {}
+    virtual void OnLensOverlayStateChanged(bool is_showing) {}
   };
 
   ContextualTasksUiService(

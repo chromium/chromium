@@ -3770,4 +3770,32 @@ TEST_F(ContextualTasksUiServiceTest, ResetZeroStateInOpenSidePanel) {
   EXPECT_EQ(real_service_->GetCreationUrlForTask(task.GetTaskId()), url);
 }
 
+namespace {
+
+class MockContextualTasksUiServiceObserver
+    : public ContextualTasksUiService::Observer {
+ public:
+  MOCK_METHOD(void, OnLensOverlayStateChanged, (bool is_showing), (override));
+};
+
+}  // namespace
+
+TEST_F(ContextualTasksUiServiceTest,
+       OnLensOverlayStateChanged_NotifiesObservers) {
+  MockContextualTasksUiServiceObserver observer;
+  real_service_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnLensOverlayStateChanged(true));
+  real_service_->OnLensOverlayStateChanged(/*browser_window_interface=*/nullptr,
+                                           /*is_showing=*/true,
+                                           /*invocation_source=*/std::nullopt);
+
+  EXPECT_CALL(observer, OnLensOverlayStateChanged(false));
+  real_service_->OnLensOverlayStateChanged(/*browser_window_interface=*/nullptr,
+                                           /*is_showing=*/false,
+                                           /*invocation_source=*/std::nullopt);
+
+  real_service_->RemoveObserver(&observer);
+}
+
 }  // namespace contextual_tasks

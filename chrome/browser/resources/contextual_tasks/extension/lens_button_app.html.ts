@@ -13,8 +13,11 @@ export function getHtml(this: LensButtonAppElement) {
         noink
         aria-label="${this.label_}"
         title="${this.label_}"
+        aria-pressed="${this.active ? 'true' : 'false'}"
         ?active="${this.active}"
-        ?disabled="${this.disabled}">
+        ?disabled="${this.disabled}"
+        @click="${this.onClick_}"
+        @mousedown="${this.onMousedown_}">
     </cr-icon-button>
   <!--_html_template_end_-->`;
 }
