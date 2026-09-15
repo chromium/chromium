@@ -115,7 +115,7 @@ class CountCopy final {
  public:
   static int* const kDeletedValue;
 
-  CountCopy() : counter_(nullptr) {}
+  CountCopy() = default;
   explicit CountCopy(int* counter) : counter_(counter) {}
   explicit CountCopy(int& counter) : counter_(&counter) {}
   CountCopy(const CountCopy& other) : counter_(other.counter_) {
@@ -132,7 +132,7 @@ class CountCopy final {
   const int* Counter() const { return counter_; }
 
  private:
-  int* counter_;
+  int* counter_ = nullptr;
 };
 
 struct CountCopyHashTraits : public GenericHashTraits<CountCopy> {
@@ -162,7 +162,7 @@ struct ValueInstanceCountBase {
 template <typename T>
 class ValueInstanceCount final : public ValueInstanceCountBase {
  public:
-  ValueInstanceCount() : counter_(nullptr), value_(T()) {}
+  ValueInstanceCount() = default;
   explicit ValueInstanceCount(int* counter, T value = T())
       : counter_(counter), value_(value) {
     if (counter_ && counter_ != kDeletedValue)
@@ -191,8 +191,8 @@ class ValueInstanceCount final : public ValueInstanceCountBase {
   const T& Value() const { return value_; }
 
  private:
-  int* counter_;
-  T value_;
+  int* counter_ = nullptr;
+  T value_{};
 };
 
 template <typename T>

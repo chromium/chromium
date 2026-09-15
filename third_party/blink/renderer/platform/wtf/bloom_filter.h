@@ -43,7 +43,7 @@ class BloomFilter {
   USING_FAST_MALLOC(BloomFilter);
 
  public:
-  BloomFilter() { Clear(); }
+  BloomFilter() = default;
 
   void Add(unsigned hash);
 
@@ -80,7 +80,7 @@ class BloomFilter {
   bool IsBitSet(unsigned key) const;
   void SetBit(unsigned key);
 
-  std::array<BitArrayUnit, kBitArraySize> bit_array_;
+  std::array<BitArrayUnit, kBitArraySize> bit_array_{};
 
   static_assert(kKeyBits <= kMaxKeyBits, "bloom filter key size check");
 

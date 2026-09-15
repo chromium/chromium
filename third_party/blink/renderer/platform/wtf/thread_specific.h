@@ -47,7 +47,7 @@ class ThreadSpecific {
   USING_FAST_MALLOC(ThreadSpecific);
 
  public:
-  ThreadSpecific() : slot_(&Destroy) {}
+  ThreadSpecific() = default;
   ThreadSpecific(const ThreadSpecific&) = delete;
   ThreadSpecific& operator=(const ThreadSpecific&) = delete;
   bool
@@ -76,7 +76,7 @@ class ThreadSpecific {
 
   // This member must only be accessed or modified on the main thread.
   T* main_thread_storage_ = nullptr;
-  base::ThreadLocalStorage::Slot slot_;
+  base::ThreadLocalStorage::Slot slot_{&Destroy};
 };
 
 template <typename T>

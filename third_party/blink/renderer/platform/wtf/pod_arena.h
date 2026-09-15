@@ -72,7 +72,7 @@ class PodArena final : public RefCounted<PodArena> {
  protected:
   friend class RefCounted<PodArena>;
 
-  PodArena() : current_(nullptr), current_chunk_size_(kDefaultChunkSize) {}
+  PodArena() = default;
 
   template <class T>
   void* AllocateBase() {
@@ -100,7 +100,7 @@ class PodArena final : public RefCounted<PodArena> {
 
    public:
     // Allocates a block of memory of the given size.
-    explicit Chunk(size_t size) : current_offset_(0) {
+    explicit Chunk(size_t size) {
       uint8_t* allocated = static_cast<uint8_t*>(
           Partitions::FastMalloc(size, WTF_HEAP_PROFILER_TYPE_NAME(PodArena)));
       // SAFETY: FastMalloc() ensures `allocated` has `size` bytes.
@@ -131,11 +131,11 @@ class PodArena final : public RefCounted<PodArena> {
 
    protected:
     base::span<uint8_t> base_;
-    size_t current_offset_;
+    size_t current_offset_ = 0;
   };
 
-  Chunk* current_;
-  size_t current_chunk_size_;
+  Chunk* current_ = nullptr;
+  size_t current_chunk_size_ = kDefaultChunkSize;
   Vector<std::unique_ptr<Chunk>> chunks_;
 };
 

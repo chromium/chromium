@@ -45,7 +45,7 @@ class PodIntervalTree final : public PodRedBlackTree<PodInterval<T, UserData>> {
   // this tree.
   using IntervalType = PodInterval<T, UserData>;
 
-  PodIntervalTree() : PodRedBlackTree<IntervalType>() {}
+  PodIntervalTree() = default;
 
   PodIntervalTree(const PodIntervalTree&) = delete;
   PodIntervalTree& operator=(const PodIntervalTree&) = delete;

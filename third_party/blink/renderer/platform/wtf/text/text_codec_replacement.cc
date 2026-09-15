@@ -12,8 +12,7 @@
 
 namespace blink {
 
-TextCodecReplacement::TextCodecReplacement()
-    : replacement_error_returned_(false) {}
+TextCodecReplacement::TextCodecReplacement() = default;
 
 void TextCodecReplacement::RegisterEncodingNames(
     EncodingNameRegistrar registrar) {

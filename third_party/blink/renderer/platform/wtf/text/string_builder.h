@@ -63,7 +63,7 @@ class WTF_EXPORT StringBuilder {
   USING_FAST_MALLOC(StringBuilder);
 
  public:
-  StringBuilder() : no_buffer_() {}
+  StringBuilder() = default;
   StringBuilder(const StringBuilder&) = delete;
   StringBuilder& operator=(const StringBuilder&) = delete;
   ~StringBuilder() { ClearBuffer(); }
@@ -419,7 +419,7 @@ class WTF_EXPORT StringBuilder {
 
   String string_;
   union {
-    char no_buffer_;
+    char no_buffer_ = 0;
     Buffer8 buffer8_;
     Buffer16 buffer16_;
   };

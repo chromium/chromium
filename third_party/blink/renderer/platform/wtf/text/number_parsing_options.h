@@ -28,11 +28,7 @@ class NumberParsingOptions final {
   }
 
   // Construct an instance without any flags set.
-  constexpr NumberParsingOptions()
-      : accept_trailing_garbage_(false),
-        accept_leading_plus_(false),
-        accept_leading_trailing_whitespace_(false),
-        accept_minus_zero_for_unsigned_(false) {}
+  constexpr NumberParsingOptions() = default;
 
   // Returns a new instance by merging |this| and AcceptTrailingGarbage flag.
   constexpr NumberParsingOptions SetAcceptTrailingGarbage() const {
@@ -71,10 +67,10 @@ class NumberParsingOptions final {
   }
 
  private:
-  uint32_t accept_trailing_garbage_ : 1;
-  uint32_t accept_leading_plus_ : 1;
-  uint32_t accept_leading_trailing_whitespace_ : 1;
-  uint32_t accept_minus_zero_for_unsigned_ : 1;
+  uint32_t accept_trailing_garbage_ : 1 = false;
+  uint32_t accept_leading_plus_ : 1 = false;
+  uint32_t accept_leading_trailing_whitespace_ : 1 = false;
+  uint32_t accept_minus_zero_for_unsigned_ : 1 = false;
 };
 
 }  // namespace blink

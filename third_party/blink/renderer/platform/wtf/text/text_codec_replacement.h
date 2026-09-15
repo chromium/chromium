@@ -28,7 +28,7 @@ class TextCodecReplacement final : public TextCodecUtf8 {
                 bool stop_on_error,
                 bool& saw_error) override;
 
-  bool replacement_error_returned_;
+  bool replacement_error_returned_ = false;
 };
 
 }  // namespace blink

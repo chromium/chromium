@@ -109,7 +109,7 @@ class WTF_EXPORT SingleThreadedBitField {
   using DefineFirstValue =
       internal::BitFieldValue<Type, 0, size, BitFieldType, is_const>;
 
-  explicit SingleThreadedBitField() : SingleThreadedBitField(0) {}
+  explicit SingleThreadedBitField() = default;
   explicit SingleThreadedBitField(BitFieldType bits) : bits_(bits) {}
 
   template <typename Value>
@@ -125,7 +125,7 @@ class WTF_EXPORT SingleThreadedBitField {
   BitFieldType bits() const { return bits_; }
 
  protected:
-  BitFieldType bits_;
+  BitFieldType bits_ = 0;
 };
 
 // BitField that can be written by a single thread but read by multiple threads.
@@ -136,7 +136,7 @@ class WTF_EXPORT ConcurrentlyReadBitField
   using Base::bits_;
 
  public:
-  explicit ConcurrentlyReadBitField() : Base(0) {}
+  explicit ConcurrentlyReadBitField() = default;
   explicit ConcurrentlyReadBitField(BitFieldType bits) : Base(bits) {}
 
   template <typename Value>

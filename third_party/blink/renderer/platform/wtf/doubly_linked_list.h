@@ -125,8 +125,8 @@ class DoublyLinkedList {
   AddResult InsertAfter(T* node, T* insertion_point);
 
  protected:
-  PointerType head_;
-  PointerType tail_;
+  PointerType head_ = nullptr;
+  PointerType tail_ = nullptr;
 
  private:
   struct TypeConstraints {
@@ -142,8 +142,7 @@ class DoublyLinkedList {
 };
 
 template <typename T, typename PointerType>
-inline DoublyLinkedList<T, PointerType>::DoublyLinkedList()
-    : head_(nullptr), tail_(nullptr) {}
+inline DoublyLinkedList<T, PointerType>::DoublyLinkedList() = default;
 
 template <typename T, typename PointerType>
 inline bool DoublyLinkedList<T, PointerType>::empty() const {

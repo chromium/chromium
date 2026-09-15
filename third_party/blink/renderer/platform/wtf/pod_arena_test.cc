@@ -35,15 +35,21 @@ namespace {
 
 // A couple of simple structs to allocate.
 struct TestClassXYZW {
-  TestClassXYZW() : x(0), y(0), z(0), w(1) {}
+  TestClassXYZW() = default;
 
-  float x, y, z, w;
+  float x = 0;
+  float y = 0;
+  float z = 0;
+  float w = 1;
 };
 
 struct TestClassABCD {
-  TestClassABCD() : a(1), b(2), c(3), d(4) {}
+  TestClassABCD() = default;
 
-  float a, b, c, d;
+  float a = 1;
+  float b = 2;
+  float c = 3;
+  float d = 4;
 };
 
 }  // anonymous namespace

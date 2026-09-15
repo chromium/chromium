@@ -698,10 +698,10 @@ TEST(VectorTest, Optional) {
 TEST(VectorTest, emplace_back) {
   struct Item {
     Item() = default;
-    explicit Item(int value1) : value1(value1), value2() {}
+    explicit Item(int value1) : value1(value1) {}
     Item(int value1, int value2) : value1(value1), value2(value2) {}
-    int value1;
-    int value2;
+    int value1 = 0;
+    int value2 = 0;
   };
 
   Vector<Item> vector;

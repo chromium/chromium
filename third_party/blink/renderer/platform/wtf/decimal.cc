@@ -222,7 +222,7 @@ static uint64_t ScaleUp(uint64_t x, int n) {
 }  // namespace
 
 Decimal::EncodedData::EncodedData(Sign sign, FormatClass format_class)
-    : coefficient_(0), exponent_(0), format_class_(format_class), sign_(sign) {}
+    : format_class_(format_class), sign_(sign) {}
 
 Decimal::EncodedData::EncodedData(Sign sign, int exponent, uint64_t coefficient)
     : format_class_(coefficient ? kClassNormal : kClassZero), sign_(sign) {

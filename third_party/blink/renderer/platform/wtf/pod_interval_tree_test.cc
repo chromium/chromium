@@ -119,10 +119,10 @@ namespace {
 
 struct UserData1 {
  public:
-  UserData1() : a(0), b(1) {}
+  UserData1() = default;
 
-  float a;
-  int b;
+  float a = 0;
+  int b = 1;
 };
 
 }  // anonymous namespace

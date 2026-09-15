@@ -82,12 +82,12 @@ struct IcuConverterWrapper {
   USING_FAST_MALLOC(IcuConverterWrapper);
 
  public:
-  IcuConverterWrapper() : converter(nullptr) {}
+  IcuConverterWrapper() = default;
   IcuConverterWrapper(const IcuConverterWrapper&) = delete;
   IcuConverterWrapper& operator=(const IcuConverterWrapper&) = delete;
   ~IcuConverterWrapper();
 
-  UConverter* converter;
+  UConverter* converter = nullptr;
 };
 
 }  // namespace blink

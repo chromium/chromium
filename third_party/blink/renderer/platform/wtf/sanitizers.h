@@ -19,8 +19,7 @@ namespace blink {
 #define NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
 class AsanUnpoisonScope {
  public:
-  AsanUnpoisonScope(const void* addr, size_t size)
-      : addr_(addr), size_(size), was_poisoned_(false) {
+  AsanUnpoisonScope(const void* addr, size_t size) : addr_(addr), size_(size) {
     if (!ASAN_REGION_IS_POISONED(const_cast<void*>(addr_), size_))
       return;
     ASAN_UNPOISON_MEMORY_REGION(addr_, size_);
@@ -34,7 +33,7 @@ class AsanUnpoisonScope {
  private:
   const void* addr_;
   size_t size_;
-  bool was_poisoned_;
+  bool was_poisoned_ = false;
 };
 #else
 #define ASAN_REGION_IS_POISONED(addr, size) \

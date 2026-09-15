@@ -23,11 +23,11 @@ class WTF_EXPORT CaseMap {
   // |CaseMap|.
   class WTF_EXPORT WTF_EXPORT Locale {
    public:
-    Locale() : case_map_locale_(nullptr) {}
+    Locale() = default;
     explicit Locale(const AtomicString& locale);
 
    private:
-    const char* case_map_locale_;
+    const char* case_map_locale_ = nullptr;
 
     static const char* turkic_or_azeri_;
     static const char* greek_;

@@ -230,7 +230,7 @@ namespace {
 class LightPartitionStatsDumperImpl
     : public partition_alloc::PartitionStatsDumper {
  public:
-  LightPartitionStatsDumperImpl() : total_active_bytes_(0) {}
+  LightPartitionStatsDumperImpl() = default;
 
   void PartitionDumpTotals(
       const char* partition_name,
@@ -245,7 +245,7 @@ class LightPartitionStatsDumperImpl
   size_t TotalActiveBytes() const { return total_active_bytes_; }
 
  private:
-  size_t total_active_bytes_;
+  size_t total_active_bytes_ = 0;
 };
 
 }  // namespace

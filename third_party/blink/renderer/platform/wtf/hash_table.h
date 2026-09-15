@@ -884,8 +884,8 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
   HashTable(RawStorageTag, ValueType* table, wtf_size_t size)
       : table_(table), table_size_(size) {}
 
-  ValueType* table_;
-  wtf_size_t table_size_;
+  ValueType* table_ = nullptr;
+  wtf_size_t table_size_ = 0;
   wtf_size_t key_count_ = 0;
 #if DCHECK_IS_ON()
   wtf_size_t deleted_count_ : 30 = 0;
@@ -945,22 +945,7 @@ inline HashTable<Key,
 
                  Traits,
                  KeyTraits,
-                 Allocator>::HashTable()
-    : table_(nullptr),
-      table_size_(0),
-      key_count_(0),
-      deleted_count_(0)
-#if DCHECK_IS_ON()
-      ,
-      access_forbidden_(false),
-      modifications_(0)
-#endif
-#if DUMP_HASHTABLE_STATS_PER_TABLE
-      ,
-      stats_(nullptr)
-#endif
-{
-}
+                 Allocator>::HashTable() = default;
 
 inline wtf_size_t CalculateCapacity(wtf_size_t size) {
   for (wtf_size_t mask = size; mask; mask >>= 1) {
@@ -1853,18 +1838,8 @@ template <typename Key,
           typename Allocator>
 HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::HashTable(
     const HashTable& other)
-    : table_(nullptr),
-      table_size_(0),
-      key_count_(0),
-      deleted_count_(0)
-#if DCHECK_IS_ON()
-      ,
-      access_forbidden_(false),
-      modifications_(0)
-#endif
 #if DUMP_HASHTABLE_STATS_PER_TABLE
-      ,
-      stats_(HashTableStatsPtr<Allocator>::Copy(other.stats_))
+    : stats_(HashTableStatsPtr<Allocator>::Copy(other.stats_))
 #endif
 {
   DCHECK(!other.AccessForbidden());
@@ -1900,18 +1875,8 @@ template <typename Key,
           typename Allocator>
 HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::HashTable(
     HashTable&& other)
-    : table_(nullptr),
-      table_size_(0),
-      key_count_(0),
-      deleted_count_(0)
-#if DCHECK_IS_ON()
-      ,
-      access_forbidden_(false),
-      modifications_(0)
-#endif
 #if DUMP_HASHTABLE_STATS_PER_TABLE
-      ,
-      stats_(HashTableStatsPtr<Allocator>::Copy(other.stats_))
+    : stats_(HashTableStatsPtr<Allocator>::Copy(other.stats_))
 #endif
 {
   swap(other);

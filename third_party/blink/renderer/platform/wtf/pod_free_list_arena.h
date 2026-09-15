@@ -77,7 +77,7 @@ class PodFreeListArena : public RefCounted<PodFreeListArena<T>> {
   }
 
  private:
-  PodFreeListArena() : arena_(PodArena::Create()), free_list_(nullptr) {}
+  PodFreeListArena() = default;
   ~PodFreeListArena() = default;
 
   void* AllocateFromFreeList() {
@@ -97,16 +97,16 @@ class PodFreeListArena : public RefCounted<PodFreeListArena<T>> {
     return total;
   }
 
-  scoped_refptr<PodArena> arena_;
+  scoped_refptr<PodArena> arena_ = PodArena::Create();
 
   // This free list contains pointers within every chunk that's been allocated
   // so far. None of the individual chunks can be freed until the arena is
   // destroyed.
   struct FixedSizeMemoryChunk {
     DISALLOW_NEW();
-    FixedSizeMemoryChunk* next;
+    FixedSizeMemoryChunk* next = nullptr;
   };
-  FixedSizeMemoryChunk* free_list_;
+  FixedSizeMemoryChunk* free_list_ = nullptr;
 
   static_assert(sizeof(T) >= sizeof(FixedSizeMemoryChunk),
                 "PodFreeListArena type should be larger");

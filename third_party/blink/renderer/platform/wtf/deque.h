@@ -170,7 +170,7 @@ class Deque {
     friend class Deque;
 
    public:
-    BackingBuffer() : Base() {}
+    BackingBuffer() = default;
     explicit BackingBuffer(wtf_size_t capacity) : Base(capacity) {}
     BackingBuffer(const BackingBuffer&) = delete;
     BackingBuffer& operator=(const BackingBuffer&) = delete;
@@ -200,8 +200,8 @@ class Deque {
   void SwapImpl(Deque&, VectorOperationOrigin this_origin);
 
   BackingBuffer buffer_;
-  wtf_size_t start_;
-  wtf_size_t end_;
+  wtf_size_t start_ = 0;
+  wtf_size_t end_ = 0;
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
@@ -367,7 +367,7 @@ class DequeConstIterator
 };
 
 template <typename T, wtf_size_t kInlineCapacity, typename Allocator>
-inline Deque<T, kInlineCapacity, Allocator>::Deque() : start_(0), end_(0) {}
+inline Deque<T, kInlineCapacity, Allocator>::Deque() = default;
 
 template <typename T, wtf_size_t kInlineCapacity, typename Allocator>
 inline Deque<T, kInlineCapacity, Allocator>::Deque(const Deque& other)
@@ -400,8 +400,7 @@ Deque<T, kInlineCapacity, Allocator>::operator=(const Deque& other) {
 }
 
 template <typename T, wtf_size_t kInlineCapacity, typename Allocator>
-inline Deque<T, kInlineCapacity, Allocator>::Deque(Deque&& other)
-    : start_(0), end_(0) {
+inline Deque<T, kInlineCapacity, Allocator>::Deque(Deque&& other) {
   SwapForMove(std::move(other), VectorOperationOrigin::kConstruction);
 }
 

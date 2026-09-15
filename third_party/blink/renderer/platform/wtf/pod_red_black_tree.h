@@ -93,15 +93,7 @@ class PodRedBlackTree {
 
   // Constructs a new red-black tree, allocating temporary objects
   // from a newly constructed PodFreeListArena.
-  PodRedBlackTree()
-      : arena_(PodFreeListArena<Node>::Create()),
-        root_(nullptr)
-#ifndef NDEBUG
-        ,
-        verbose_debugging_(false)
-#endif
-  {
-  }
+  PodRedBlackTree() = default;
   virtual ~PodRedBlackTree() = default;
 
   void Add(const T& data) {
@@ -151,12 +143,7 @@ class PodRedBlackTree {
 
    public:
     // Constructor. Newly-created nodes are colored red.
-    explicit Node(const T& data)
-        : left_(nullptr),
-          right_(nullptr),
-          parent_(nullptr),
-          color_(kRed),
-          data_(data) {}
+    explicit Node(const T& data) : data_(data) {}
 
     Node(const Node&) = delete;
     Node& operator=(const Node&) = delete;
@@ -191,10 +178,10 @@ class PodRedBlackTree {
     void SetParent(Node* node) { parent_ = node; }
 
    private:
-    Node* left_;
-    Node* right_;
-    Node* parent_;
-    NodeColor color_;
+    Node* left_ = nullptr;
+    Node* right_ = nullptr;
+    Node* parent_ = nullptr;
+    NodeColor color_ = kRed;
     T data_;
   };
 
@@ -656,10 +643,11 @@ class PodRedBlackTree {
   //----------------------------------------------------------------------
   // Data members
 
-  scoped_refptr<PodFreeListArena<Node>> arena_;
-  Node* root_;
+  scoped_refptr<PodFreeListArena<Node>> arena_ =
+      PodFreeListArena<Node>::Create();
+  Node* root_ = nullptr;
 #ifndef NDEBUG
-  bool verbose_debugging_;
+  bool verbose_debugging_ = false;
 #endif
 };
 

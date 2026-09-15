@@ -42,7 +42,7 @@ class TextCodecUtf8 : public TextCodec {
   static bool IsSupported(StringView canonical_name);
 
  protected:
-  TextCodecUtf8() : partial_sequence_size_(0) {}
+  TextCodecUtf8() = default;
 
  private:
   static std::unique_ptr<TextCodec> Create(const TextEncoding&);

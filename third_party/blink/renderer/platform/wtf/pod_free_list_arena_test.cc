@@ -36,18 +36,21 @@ namespace {
 
 // A couple of simple structs to allocate.
 struct TestClass1 {
-  TestClass1() : x(0), y(0), z(0), w(1) {}
+  TestClass1() = default;
 
-  float x, y, z, w;
+  float x = 0;
+  float y = 0;
+  float z = 0;
+  float w = 1;
 };
 
 struct TestClass2 {
-  TestClass2() : padding(0) {
+  TestClass2() {
     static int test_ids = 0;
     id = test_ids++;
   }
   int id;
-  int padding;
+  int padding = 0;
 };
 
 }  // anonymous namespace

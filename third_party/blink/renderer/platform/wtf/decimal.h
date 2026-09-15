@@ -88,8 +88,8 @@ class WTF_EXPORT Decimal {
     EncodedData(Sign, FormatClass);
     FormatClass GetFormatClass() const { return format_class_; }
 
-    uint64_t coefficient_;
-    int16_t exponent_;
+    uint64_t coefficient_ = 0;
+    int16_t exponent_ = 0;
     FormatClass format_class_;
     Sign sign_;
   };
