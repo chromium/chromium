@@ -2419,8 +2419,11 @@ public class ReadAloudController
 
     // Called when an unrecoverable playback error occurs.
     void onPlaybackError(String errorMessage) {
-        // TODO: Handle playback error.
-        Log.d(TAG, "onPlaybackError: errorMessage = %s", errorMessage);
+        Log.e(TAG, "onPlaybackError: errorMessage = %s", errorMessage);
+        resetCurrentPlayback(ReasonForStoppingPlayback.UNKNOWN_REASON);
+        if (mPlayerCoordinator != null) {
+            mPlayerCoordinator.playbackFailed();
+        }
     }
 
     // Called when the playback state of a voice preview changes in settings.

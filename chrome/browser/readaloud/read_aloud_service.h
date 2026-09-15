@@ -271,6 +271,7 @@ class ReadAloudService
   void OnUtilityDisconnect();
   void ResetUtilityConnection();
   PlaybackState GetCurrentPlaybackState() const;
+  void HandlePlaybackError(std::string_view error_message);
 
   raw_ptr<Profile> profile_;
   PlaybackControllerBinder controller_binder_;

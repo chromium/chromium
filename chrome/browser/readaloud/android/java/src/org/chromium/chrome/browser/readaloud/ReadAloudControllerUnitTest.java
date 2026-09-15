@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -2538,6 +2539,21 @@ public class ReadAloudControllerUnitTest {
         assertEquals(
                 PlaybackListener.State.STOPPED,
                 ((NativeVoicePreviewPlayback) previewPlayback).getState());
+    }
+
+    @Test
+    public void testOnPlaybackError_irrecoverable() {
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+        // Confirm tab is tracked for playback.
+        assertEquals(mTab, mController.getActivePlaybackTabSupplier().get());
+
+        mController.onPlaybackError("Distillation failed");
+
+        // Verify UI is transitioned to error state.
+        verify(mPlayerCoordinator).playbackFailed();
+        // Verify active playback tab state is cleared.
+        assertNull(mController.getActivePlaybackTabSupplier().get());
     }
 
     @Test

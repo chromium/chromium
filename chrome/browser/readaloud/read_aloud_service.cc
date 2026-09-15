@@ -254,10 +254,7 @@ void ReadAloudService::OnArticleReady(
   viewer_handle_.reset();
 
   if (!distillation_succeeded) {
-    Stop();
-    if (delegate_) {
-      delegate_->OnPlaybackError("Distillation failed");
-    }
+    HandlePlaybackError("Distillation failed");
     return;
   }
 
@@ -414,10 +411,7 @@ void ReadAloudService::OnAudioStreamCreated(
     return;
   }
   if (!stream_remote.is_valid() || !data_pipe) {
-    Stop();
-    if (delegate_) {
-      delegate_->OnPlaybackError("Failed to initialize audio output stream");
-    }
+    HandlePlaybackError("Failed to initialize audio output stream");
     return;
   }
 
@@ -426,9 +420,13 @@ void ReadAloudService::OnAudioStreamCreated(
 }
 
 void ReadAloudService::OnUtilityDisconnect() {
+  HandlePlaybackError("Utility process disconnected");
+}
+
+void ReadAloudService::HandlePlaybackError(std::string_view error_message) {
   Stop();
   if (delegate_) {
-    delegate_->OnPlaybackError("Utility process disconnected");
+    delegate_->OnPlaybackError(error_message);
   }
 }
 
