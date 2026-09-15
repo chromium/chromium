@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_HANDLER_WEB_FLOW_VIEW_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
@@ -212,6 +214,8 @@ class PaymentHandlerWebFlowViewController
   bool CollapseActiveIndicatorIfNeeded();
   void HideIndicatorChip();
   void ShowBlockedCameraIndicator();
+  void ShowInUseCameraIndicator();
+  void HideInUseCameraIndicator();
   void AnimateExpandRequestChip();
   void ResetRequestChip();
   void OnRequestChipPressed();
@@ -239,6 +243,8 @@ class PaymentHandlerWebFlowViewController
       permission_request_manager_observation_{this};
   IndicatorType indicator_type_ = IndicatorType::kNone;
   IndicatorDisplayPhase indicator_phase_ = IndicatorDisplayPhase::kHidden;
+  base::TimeTicks media_indicator_show_start_time_;
+  base::TimeTicks media_capture_stop_time_;
   base::OneShotTimer indicator_chip_collapse_timer_;
   base::OneShotTimer indicator_dismiss_timer_;
   base::OneShotTimer delay_prompt_timer_;
