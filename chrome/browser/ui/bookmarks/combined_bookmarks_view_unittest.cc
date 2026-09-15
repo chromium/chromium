@@ -42,7 +42,7 @@ class CombinedBookmarksViewTest : public testing::Test {
 TEST_F(CombinedBookmarksViewTest, BasicTreeQueries) {
   ASSERT_TRUE(view().GetRootNode());
   EXPECT_NE(view().GetRootNode(), model().root_node());
-  EXPECT_EQ(view().GetChildren(view().GetRootNode()).size(), 3u);
+  EXPECT_EQ(view().GetChildren(view().GetRootNode()).size(), 2u);
   EXPECT_TRUE(view().IsPermanentNode(model().bookmark_bar_node()));
 
   AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 ");
@@ -50,6 +50,14 @@ TEST_F(CombinedBookmarksViewTest, BasicTreeQueries) {
   ASSERT_EQ(children.size(), 2u);
   EXPECT_EQ(children[0]->GetTitle(), u"1");
   EXPECT_EQ(children[1]->GetTitle(), u"2");
+}
+
+TEST_F(CombinedBookmarksViewTest, PermanentNodeVisibility) {
+  EXPECT_EQ(view().GetChildren(view().GetRootNode()).size(), 2u);
+  // Adding a bookmark to the mobile node makes it visible.
+  model().AddURL(model().mobile_node(), 0, u"Mobile BM",
+                 GURL("http://example.com"));
+  EXPECT_EQ(view().GetChildren(view().GetRootNode()).size(), 3u);
 }
 
 TEST_F(CombinedBookmarksViewTest, AddAndRemove) {
@@ -70,12 +78,14 @@ TEST_F(CombinedBookmarksViewTest, AddAndRemove) {
 
 TEST_F(CombinedBookmarksViewTest,
        UniqueUuidMappingForAccountAndLocalPermanentNodes) {
+  model().AddURL(model().bookmark_bar_node(), 0, u"Local Bookmark",
+                 GURL("http://example.com"));
   model().CreateAccountPermanentFolders();
   auto account_view =
       std::make_unique<CombinedBookmarksView>(&model(), nullptr);
 
   auto children = account_view->GetChildren(account_view->GetRootNode());
-  EXPECT_EQ(children.size(), 6u);
+  EXPECT_EQ(children.size(), 4u);
 
   std::set<base::Uuid> uuids;
   for (const BookmarkNode* child : children) {

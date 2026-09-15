@@ -61,7 +61,9 @@ std::vector<const bookmarks::BookmarkNode*> CombinedBookmarksView::GetChildren(
   if (parent == synthetic_root_node_.get()) {
     std::vector<const bookmarks::BookmarkNode*> children;
     for (const auto& child : model_->root_node()->children()) {
-      children.push_back(child.get());
+      if (child->IsVisible()) {
+        children.push_back(child.get());
+      }
     }
     return children;
   }
