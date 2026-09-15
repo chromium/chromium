@@ -3984,6 +3984,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/crostini:browser_tests",
         "//chrome/browser/ui/views/frame",
         "//chrome/browser/ui/views/frame:app_menu_button_observer",
+        "//chrome/browser/ui/views/frame:browser_native_widget_ash",
         "//chrome/browser/ui/views/frame:contents_container_outline",
         "//chrome/browser/ui/views/frame:scrim_view",
         "//chrome/browser/ui/views/frame:top_controls_slide_controller",

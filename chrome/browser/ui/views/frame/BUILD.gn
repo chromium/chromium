@@ -56,10 +56,72 @@ if (is_chromeos) {
     ]
   }
 
+  source_set("browser_frame_view_factory_chromeos") {
+    sources = [ "browser_frame_view_factory_chromeos.cc" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [ ":picture_in_picture_browser_frame_view_ash" ]
+  }
+
+  source_set("browser_native_widget_ash") {
+    public = [ "browser_native_widget_ash.h" ]
+    public_deps = [
+      ":browser_native_widget",
+      "//base",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/views",
+    ]
+  }
+
+  source_set("browser_native_widget_ash_impl") {
+    sources = [ "browser_native_widget_ash.cc" ]
+    public_deps = [
+      ":browser_native_widget_ash",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      "//ash",
+      "//ash/public/cpp",
+      "//base",
+      "//build:buildflag_header_h",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/ui:browser_init_state",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/web_applications",
+      "//chromeos/ui/base",
+      "//chromeos/ui/frame",
+      "//components/app_restore",
+      "//components/sessions:session_id",
+      "//ui/aura",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/views",
+    ]
+  }
+
   source_set("browser_native_widget_factory_chromeos") {
     sources = [ "browser_native_widget_factory_chromeos.cc" ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-    deps = [ ":browser_native_widget_factory" ]
+    deps = [
+      ":browser_native_widget_ash",
+      ":browser_native_widget_factory",
+    ]
+  }
+
+  source_set("picture_in_picture_browser_frame_view_ash") {
+    public = [ "picture_in_picture_browser_frame_view_ash.h" ]
+    sources = [ "picture_in_picture_browser_frame_view_ash.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser:browser_public_dependencies",
+      "//ui/aura",
+    ]
+    deps = [
+      "//ash",
+      "//chrome/browser/ui/color:color_headers",
+      "//chromeos/constants",
+      "//chromeos/ui/base",
+      "//chromeos/ui/frame",
+      "//chromeos/ui/wm",
+      "//ui/views",
+    ]
   }
 
   source_set("browser_frame_header_chromeos") {
@@ -1236,6 +1298,7 @@ source_set("browser_tests") {
     ]
 
     deps += [
+      ":browser_native_widget_ash",
       ":frame",
       ":immersive_mode_tester",
       ":top_controls_slide_controller",
@@ -1390,5 +1453,25 @@ if (is_linux) {
       "//ui/linux:linux_ui",
       "//ui/views",
     ]
+  }
+}
+
+if (use_aura && !is_chromeos) {
+  source_set("browser_frame_view_factory_views") {
+    sources = [ "browser_frame_view_factory_views.cc" ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+    deps = [
+      "//base",
+      "//build:buildflag_header_h",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/web_applications",
+    ]
+    if (is_linux) {
+      deps += [
+        ":picture_in_picture_browser_frame_view_linux",
+        "//ui/base:types",
+        "//ui/linux:linux_ui",
+      ]
+    }
   }
 }
