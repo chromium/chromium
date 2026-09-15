@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/net/core/auth_scope_metadata.h"
 #include "components/enterprise/net/core/utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -22,18 +23,6 @@
 namespace enterprise_net {
 
 namespace {
-
-// Maps an internal AuthScope enum to the corresponding signin::OAuthConsumerId.
-std::optional<signin::OAuthConsumerId> GetOAuthConsumerIdForScope(
-    AuthScope scope) {
-  switch (scope) {
-    case AuthScope::kCloudSecureGateway:
-      return signin::OAuthConsumerId::kSecureGatewayService;
-    case AuthScope::kNone:
-    default:
-      return std::nullopt;
-  }
-}
 
 // Maps a GoogleServiceAuthError to the corresponding TokenFetchError.
 // Retriable cases are marked as kTransientError, while permanent failures

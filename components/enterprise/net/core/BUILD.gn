@@ -22,6 +22,8 @@ static_library("core") {
 
   if (enterprise_proxy) {
     public += [
+      "auth_scope_metadata.h",
+      "enterprise_network_auth_service.h",
       "enterprise_proxy_error_data.h",
       "enterprise_proxy_error_service.h",
       "enterprise_proxy_service.h",
@@ -34,6 +36,7 @@ static_library("core") {
       "utils.h",
     ]
     sources += [
+      "auth_scope_metadata.cc",
       "enterprise_network_auth_service.cc",
       "enterprise_proxy_error_data.cc",
       "enterprise_proxy_error_service.cc",
@@ -54,6 +57,7 @@ static_library("core") {
       "//components/signin/public/identity_manager",
       "//net",
       "//services/network/public/cpp",
+      "//url",
     ]
   }
 }
@@ -65,6 +69,7 @@ source_set("unit_tests") {
 
   if (enterprise_proxy) {
     sources += [
+      "auth_scope_metadata_unittest.cc",
       "enterprise_network_auth_service_unittest.cc",
       "enterprise_proxy_error_service_unittest.cc",
       "enterprise_proxy_service_unittest.cc",
@@ -89,6 +94,7 @@ source_set("unit_tests") {
       "//services/network/public/cpp",
       "//testing/gmock",
       "//testing/gtest",
+      "//url",
     ]
     if (!is_ios) {
       deps += [ "//content/test:test_support" ]

@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "components/enterprise/net/core/auth_scope_metadata.h"
 #include "components/policy/core/common/values_util.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -57,10 +58,9 @@ constexpr char kProfileIdCamelPlaceholder[] = "${profileId}";
 constexpr char kAcceptLanguagePlaceholder[] = "${accept_language}";
 constexpr char kAcceptLanguageCamelPlaceholder[] = "${acceptLanguage}";
 
-// Auth type and scope string values.
+// Auth type string values.
 constexpr char kAuthNone[] = "none";
 constexpr char kAuthTypeProfileBearerToken[] = "profile_bearer_token";
-constexpr char kAuthScopeCloudSecureGateway[] = "cloud_secure_gateway";
 
 std::string AuthTypeToString(AuthType type) {
   switch (type) {
@@ -68,15 +68,6 @@ std::string AuthTypeToString(AuthType type) {
       return kAuthNone;
     case AuthType::kProfileBearerToken:
       return kAuthTypeProfileBearerToken;
-  }
-}
-
-std::string AuthScopeToString(AuthScope scope) {
-  switch (scope) {
-    case AuthScope::kNone:
-      return kAuthNone;
-    case AuthScope::kCloudSecureGateway:
-      return kAuthScopeCloudSecureGateway;
   }
 }
 
@@ -122,7 +113,9 @@ base::ListValue ExtraHeadersToList(
 base::DictValue AuthConfigToDict(const ProxyAuthConfig& auth) {
   base::DictValue dict;
   dict.Set(kTypeKey, AuthTypeToString(auth.type));
-  dict.Set(kScopeKey, AuthScopeToString(auth.scope));
+  if (std::optional<std::string_view> scope = AuthScopeToString(auth.scope)) {
+    dict.Set(kScopeKey, *scope);
+  }
   return dict;
 }
 
@@ -148,17 +141,6 @@ AuthType ParseAuthType(std::string_view type_str) {
       });
   auto it = kAuthTypeMap.find(normalized);
   return it != kAuthTypeMap.end() ? it->second : AuthType::kNone;
-}
-
-AuthScope ParseAuthScope(std::string_view scope_str) {
-  std::string normalized = base::ToLowerASCII(scope_str);
-  static constexpr auto kAuthScopeMap =
-      base::MakeFixedFlatMap<std::string_view, AuthScope>({
-          {kAuthNone, AuthScope::kNone},
-          {kAuthScopeCloudSecureGateway, AuthScope::kCloudSecureGateway},
-      });
-  auto it = kAuthScopeMap.find(normalized);
-  return it != kAuthScopeMap.end() ? it->second : AuthScope::kNone;
 }
 
 std::vector<ProxyExtraHeader> ParseExtraHeadersList(
