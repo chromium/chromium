@@ -630,6 +630,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kUpdaterChat:
     case ModelBasedCapabilityKey::kContextHub:
     case ModelBasedCapabilityKey::kReadAloudSynthesize:
+    case ModelBasedCapabilityKey::kReadAloudGenerateText:
     case ModelBasedCapabilityKey::kTtc:
       return true;
     case ModelBasedCapabilityKey::kFormsClassifications:
@@ -639,7 +640,6 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kGeminiAntiscamProtection:
     case ModelBasedCapabilityKey::kAmountExtraction:
     case ModelBasedCapabilityKey::kCardRecommendations:
-    case ModelBasedCapabilityKey::kReadAloudGenerateText:
       return false;
     case ModelBasedCapabilityKey::kPasswordChangeSubmission:
       return !base::FeatureList::IsEnabled(
