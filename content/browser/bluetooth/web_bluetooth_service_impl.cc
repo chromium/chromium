@@ -201,8 +201,11 @@ struct WebBluetoothServiceImpl::DeferredStartNotificationData {
   DeferredStartNotificationData(
       mojo::PendingAssociatedRemote<
           blink::mojom::WebBluetoothCharacteristicClient> client,
-      RemoteCharacteristicStartNotificationsCallback callback)
-      : client(std::move(client)), callback(std::move(callback)) {}
+      RemoteCharacteristicStartNotificationsCallback callback,
+      blink::WebBluetoothDeviceId device_id)
+      : client(std::move(client)),
+        callback(std::move(callback)),
+        device_id(std::move(device_id)) {}
 
   ~DeferredStartNotificationData() = default;
 
@@ -212,6 +215,7 @@ struct WebBluetoothServiceImpl::DeferredStartNotificationData {
   mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothCharacteristicClient>
       client;
   RemoteCharacteristicStartNotificationsCallback callback;
+  blink::WebBluetoothDeviceId device_id;
 };
 
 // static
@@ -339,12 +343,20 @@ struct CacheQueryResult {
 struct GATTNotifySessionAndCharacteristicClient {
   GATTNotifySessionAndCharacteristicClient(
       mojo::AssociatedRemote<blink::mojom::WebBluetoothCharacteristicClient>
-          client)
-      : characteristic_client(std::move(client)) {}
+          client,
+      WebBluetoothServiceImpl::RemoteCharacteristicStartNotificationsCallback
+          callback,
+      blink::WebBluetoothDeviceId device_id)
+      : characteristic_client(std::move(client)),
+        start_notifications_callback(std::move(callback)),
+        device_id(std::move(device_id)) {}
 
   std::unique_ptr<BluetoothGattNotifySession> gatt_notify_session;
   mojo::AssociatedRemote<blink::mojom::WebBluetoothCharacteristicClient>
       characteristic_client;
+  WebBluetoothServiceImpl::RemoteCharacteristicStartNotificationsCallback
+      start_notifications_callback;
+  blink::WebBluetoothDeviceId device_id;
 };
 
 // static
@@ -407,13 +419,10 @@ WebBluetoothServiceImpl::WebBluetoothServiceImpl(
     PreventBackForwardCache();
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebBluetoothNewPermissionsBackend)) {
-    BluetoothDelegate* delegate =
-        GetContentClient()->browser()->GetBluetoothDelegate();
-    if (delegate) {
-      observer_.Observe(delegate);
-    }
+  BluetoothDelegate* delegate =
+      GetContentClient()->browser()->GetBluetoothDelegate();
+  if (delegate) {
+    observer_.Observe(delegate);
   }
 }
 
@@ -563,17 +572,56 @@ void WebBluetoothServiceImpl::OnPermissionRevoked(const url::Origin& origin) {
     return;
 
   std::set<blink::WebBluetoothDeviceId> permitted_ids;
-  for (const auto& device : delegate->GetPermittedDevices(&render_frame_host()))
+  for (const auto& device :
+       delegate->GetPermittedDevices(&render_frame_host())) {
     permitted_ids.insert(device->id);
+  }
 
   connected_devices_->CloseConnectionsToDevicesNotInList(permitted_ids);
+
+  std::erase_if(pending_connection_device_ids_, [&](const auto& device_id) {
+    return !permitted_ids.contains(device_id);
+  });
 
   std::erase_if(watch_advertisements_clients_,
                 [&](const std::unique_ptr<WatchAdvertisementsClient>& client) {
                   return !permitted_ids.contains(client->device_id());
                 });
 
+  std::vector<RemoteCharacteristicStartNotificationsCallback> callbacks_to_fail;
+
+  for (auto& [characteristic_id, session_data] :
+       characteristic_id_to_notify_session_) {
+    if (!permitted_ids.contains(session_data->device_id) &&
+        session_data->start_notifications_callback) {
+      callbacks_to_fail.push_back(
+          std::move(session_data->start_notifications_callback));
+    }
+  }
+  std::erase_if(characteristic_id_to_notify_session_, [&](const auto& pair) {
+    return !permitted_ids.contains(pair.second->device_id);
+  });
+
+  for (auto& [characteristic_id, deferred_queue] :
+       characteristic_id_to_deferred_start_) {
+    if (!deferred_queue.empty() &&
+        !permitted_ids.contains(deferred_queue.front()->device_id)) {
+      while (!deferred_queue.empty()) {
+        callbacks_to_fail.push_back(
+            std::move(deferred_queue.front()->callback));
+        deferred_queue.pop();
+      }
+    }
+  }
+  std::erase_if(characteristic_id_to_deferred_start_,
+                [](const auto& pair) { return pair.second.empty(); });
+
   MaybeStopDiscovery();
+
+  for (auto& callback : callbacks_to_fail) {
+    std::move(callback).Run(
+        blink::mojom::WebBluetoothResult::GATT_NOT_AUTHORIZED);
+  }
 }
 
 content::RenderFrameHost* WebBluetoothServiceImpl::GetRenderFrameHost() {
@@ -1319,6 +1367,14 @@ void WebBluetoothServiceImpl::RemoteCharacteristicStartNotificationsInternal(
     RemoteCharacteristicStartNotificationsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  blink::WebBluetoothDeviceId device_id =
+      GetCharacteristicDeviceID(characteristic_instance_id);
+  if (!device_id.IsValid() || !HasDevicePermission(device_id)) {
+    std::move(callback).Run(
+        blink::mojom::WebBluetoothResult::GATT_NOT_AUTHORIZED);
+    return;
+  }
+
   const CacheQueryResult query_result =
       QueryCacheForCharacteristic(characteristic_instance_id);
   if (query_result.outcome != CacheQueryOutcome::kSuccess) {
@@ -1329,18 +1385,14 @@ void WebBluetoothServiceImpl::RemoteCharacteristicStartNotificationsInternal(
 
   characteristic_id_to_notify_session_[characteristic_instance_id] =
       std::make_unique<GATTNotifySessionAndCharacteristicClient>(
-          std::move(client));
+          std::move(client), std::move(callback), std::move(device_id));
 
-  // TODO(crbug.com/40524549): Remove SplitOnceCallback() by updating
-  // the callee interface.
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
   query_result.characteristic->StartNotifySession(
       base::BindOnce(&WebBluetoothServiceImpl::OnStartNotifySessionSuccess,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(split_callback.first)),
+                     characteristic_instance_id),
       base::BindOnce(&WebBluetoothServiceImpl::OnStartNotifySessionFailed,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(split_callback.second),
                      characteristic_instance_id));
 }
 
@@ -1369,8 +1421,9 @@ void WebBluetoothServiceImpl::RemoteCharacteristicStartNotifications(
       // awaiting a notify session. Defer this start, and continue once the
       // in-flight start has completed.
       characteristic_id_to_deferred_start_[characteristic_instance_id].emplace(
-          std::make_unique<DeferredStartNotificationData>(std::move(client),
-                                                          std::move(callback)));
+          std::make_unique<DeferredStartNotificationData>(
+              std::move(client), std::move(callback),
+              notification_client->device_id));
       return;
     }
     if (notification_client->gatt_notify_session->IsActive()) {
@@ -1442,9 +1495,10 @@ void WebBluetoothServiceImpl::RemoteCharacteristicStopNotifications(
 
   auto notify_session_iter =
       characteristic_id_to_notify_session_.find(characteristic_instance_id);
-  if (notify_session_iter == characteristic_id_to_notify_session_.end()) {
-    // If the frame hasn't subscribed to notifications before we just
-    // run the callback.
+  if (notify_session_iter == characteristic_id_to_notify_session_.end() ||
+      !notify_session_iter->second->gatt_notify_session) {
+    // If the frame hasn't subscribed to notifications before or the start
+    // request is still in flight, we just run the callback.
     std::move(callback).Run();
     return;
   }
@@ -1831,7 +1885,7 @@ void WebBluetoothServiceImpl::GetDevicesImpl(
   std::move(callback).Run(std::move(web_bluetooth_devices));
 }
 
-bool WebBluetoothServiceImpl::HasWatchAdvertisementsPermission(
+bool WebBluetoothServiceImpl::HasDevicePermission(
     const blink::WebBluetoothDeviceId& device_id) {
   if (base::FeatureList::IsEnabled(
           features::kWebBluetoothNewPermissionsBackend)) {
@@ -1861,7 +1915,7 @@ void WebBluetoothServiceImpl::WatchAdvertisementsForDeviceImpl(
       /*service=*/this, std::move(client_remote), std::move(device_id),
       std::move(callback));
   if (watch_advertisements_discovery_session_) {
-    if (!HasWatchAdvertisementsPermission(pending_client->device_id())) {
+    if (!HasDevicePermission(pending_client->device_id())) {
       pending_client->RunCallback(
           blink::mojom::WebBluetoothResult::NOT_ALLOWED_TO_ACCESS_ANY_SERVICE);
       return;
@@ -1908,7 +1962,7 @@ void WebBluetoothServiceImpl::OnStartDiscoverySessionForWatchAdvertisements(
       continue;
     }
 
-    if (!HasWatchAdvertisementsPermission(pending_client->device_id())) {
+    if (!HasDevicePermission(pending_client->device_id())) {
       pending_client->RunCallback(
           blink::mojom::WebBluetoothResult::NOT_ALLOWED_TO_ACCESS_ANY_SERVICE);
       continue;
@@ -2153,28 +2207,43 @@ void WebBluetoothServiceImpl::OnCharacteristicWriteValueFailed(
 }
 
 void WebBluetoothServiceImpl::OnStartNotifySessionSuccess(
-    RemoteCharacteristicStartNotificationsCallback callback,
+    const std::string& characteristic_instance_id,
     std::unique_ptr<BluetoothGattNotifySession> notify_session) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS);
-  std::string characteristic_id = notify_session->GetCharacteristicIdentifier();
-  auto iter = characteristic_id_to_notify_session_.find(characteristic_id);
+  auto iter =
+      characteristic_id_to_notify_session_.find(characteristic_instance_id);
 
-  if (iter == characteristic_id_to_notify_session_.end())
+  if (iter == characteristic_id_to_notify_session_.end()) {
+    // If the session is no longer in |characteristic_id_to_notify_session_|,
+    // permission was revoked while StartNotifySession was in-flight.
+    // Explicitly stop the session to ensure notifications are halted on the
+    // platform adapter immediately, rather than relying solely on the session
+    // destructor.
+    if (notify_session) {
+      notify_session->Stop(base::DoNothing());
+    }
     return;
+  }
+
   // Saving the BluetoothGattNotifySession keeps notifications active.
   iter->second->gatt_notify_session = std::move(notify_session);
 
+  RemoteCharacteristicStartNotificationsCallback callback =
+      std::move(iter->second->start_notifications_callback);
+  if (callback) {
+    std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS);
+  }
+
   // Continue any deferred notification starts.
   auto deferred_iter =
-      characteristic_id_to_deferred_start_.find(characteristic_id);
+      characteristic_id_to_deferred_start_.find(characteristic_instance_id);
   if (deferred_iter != characteristic_id_to_deferred_start_.end()) {
     base::queue<std::unique_ptr<DeferredStartNotificationData>> deferral_queue =
         std::move(deferred_iter->second);
     characteristic_id_to_deferred_start_.erase(deferred_iter);
     while (!deferral_queue.empty()) {
       RemoteCharacteristicStartNotifications(
-          characteristic_id, std::move(deferral_queue.front()->client),
+          characteristic_instance_id, std::move(deferral_queue.front()->client),
           std::move(deferral_queue.front()->callback));
       deferral_queue.pop();
     }
@@ -2182,34 +2251,20 @@ void WebBluetoothServiceImpl::OnStartNotifySessionSuccess(
 }
 
 void WebBluetoothServiceImpl::OnStartNotifySessionFailed(
-    RemoteCharacteristicStartNotificationsCallback callback,
     const std::string& characteristic_instance_id,
     GattErrorCode error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto iter =
       characteristic_id_to_notify_session_.find(characteristic_instance_id);
-  mojo::AssociatedRemote<blink::mojom::WebBluetoothCharacteristicClient> client;
-  if (iter != characteristic_id_to_notify_session_.end()) {
-    client = std::move(iter->second->characteristic_client);
-    characteristic_id_to_notify_session_.erase(iter);
+  if (iter == characteristic_id_to_notify_session_.end()) {
+    return;
   }
 
-#if PAIR_BLUETOOTH_ON_DEMAND()
-  if (error_code == GattErrorCode::kNotAuthorized && client) {
-    BluetoothDevice* device =
-        GetCachedDevice(GetCharacteristicDeviceID(characteristic_instance_id));
-    if (device && !device->IsPaired()) {
-      // Initiate pairing. See (Secure Characteristics) in README.md for more
-      // information.
-      pairing_manager_->PairForCharacteristicStartNotifications(
-          characteristic_instance_id, std::move(client), std::move(callback));
-      return;
-    }
-  }
-#endif  // PAIR_BLUETOOTH_ON_DEMAND()
-
-  std::move(callback).Run(TranslateGATTErrorAndRecord(
-      error_code, UMAGATTOperation::kStartNotifications));
+  mojo::AssociatedRemote<blink::mojom::WebBluetoothCharacteristicClient>
+      client = std::move(iter->second->characteristic_client);
+  RemoteCharacteristicStartNotificationsCallback callback =
+      std::move(iter->second->start_notifications_callback);
+  characteristic_id_to_notify_session_.erase(iter);
 
   // Fail any deferred notification starts blocked on this one.
   auto deferred_iter =
@@ -2226,6 +2281,25 @@ void WebBluetoothServiceImpl::OnStartNotifySessionFailed(
               error_code, UMAGATTOperation::kStartNotifications));
       deferral_queue.pop();
     }
+  }
+
+#if PAIR_BLUETOOTH_ON_DEMAND()
+  if (error_code == GattErrorCode::kNotAuthorized && client) {
+    BluetoothDevice* device =
+        GetCachedDevice(GetCharacteristicDeviceID(characteristic_instance_id));
+    if (device && !device->IsPaired()) {
+      // Initiate pairing. See (Secure Characteristics) in README.md for more
+      // information.
+      pairing_manager_->PairForCharacteristicStartNotifications(
+          characteristic_instance_id, std::move(client), std::move(callback));
+      return;
+    }
+  }
+#endif  // PAIR_BLUETOOTH_ON_DEMAND()
+
+  if (callback) {
+    std::move(callback).Run(TranslateGATTErrorAndRecord(
+        error_code, UMAGATTOperation::kStartNotifications));
   }
 }
 

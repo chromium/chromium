@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -32,6 +33,7 @@
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_characteristic.h"
+#include "device/bluetooth/test/mock_bluetooth_gatt_connection.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_descriptor.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_notify_session.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_service.h"
@@ -42,6 +44,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace content {
@@ -54,6 +57,9 @@ using ::blink::mojom::WebBluetoothGATTQueryQuantity;
 using ::blink::mojom::WebBluetoothRemoteGATTCharacteristicPtr;
 using ::blink::mojom::WebBluetoothRemoteGATTServicePtr;
 using ::blink::mojom::WebBluetoothResult;
+using ::blink::mojom::WebBluetoothService;
+using RemoteCharacteristicStartNotificationsCallback = ::blink::mojom::
+    WebBluetoothService::RemoteCharacteristicStartNotificationsCallback;
 using ::device::BluetoothDevice;
 using ::device::BluetoothGattService;
 using ::device::BluetoothRemoteGattCharacteristic;
@@ -196,6 +202,65 @@ class FakeWebBluetoothCharacteristicClient : WebBluetoothCharacteristicClient {
 
  private:
   mojo::AssociatedReceiver<WebBluetoothCharacteristicClient> receiver_{this};
+};
+
+class RecordingWebBluetoothCharacteristicClient
+    : public WebBluetoothCharacteristicClient {
+ public:
+  RecordingWebBluetoothCharacteristicClient() = default;
+  ~RecordingWebBluetoothCharacteristicClient() override = default;
+
+  mojo::PendingAssociatedRemote<WebBluetoothCharacteristicClient>
+  BindNewEndpointClientAndPassRemote() {
+    receiver_.reset();
+    return receiver_.BindNewEndpointAndPassDedicatedRemote();
+  }
+
+  const std::vector<std::vector<uint8_t>>& received_values() const {
+    return received_values_;
+  }
+
+  void SetValueChangeCallback(base::RepeatingClosure callback) {
+    value_change_callback_ = std::move(callback);
+  }
+
+ protected:
+  // WebBluetoothCharacteristicClient implementation:
+  void RemoteCharacteristicValueChanged(
+      base::span<const uint8_t> value) override {
+    received_values_.emplace_back(value.begin(), value.end());
+    if (value_change_callback_) {
+      value_change_callback_.Run();
+    }
+  }
+
+ private:
+  mojo::AssociatedReceiver<WebBluetoothCharacteristicClient> receiver_{this};
+  std::vector<std::vector<uint8_t>> received_values_;
+  base::RepeatingClosure value_change_callback_;
+};
+
+class FakeWebBluetoothServerClient
+    : public blink::mojom::WebBluetoothServerClient {
+ public:
+  FakeWebBluetoothServerClient() = default;
+  ~FakeWebBluetoothServerClient() override = default;
+
+  mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothServerClient>
+  BindNewEndpointAndPassRemote() {
+    receiver_.reset();
+    return receiver_.BindNewEndpointAndPassDedicatedRemote();
+  }
+
+  bool disconnected() const { return disconnected_; }
+
+ private:
+  // blink::mojom::WebBluetoothServerClient:
+  void GATTServerDisconnected() override { disconnected_ = true; }
+
+  mojo::AssociatedReceiver<blink::mojom::WebBluetoothServerClient> receiver_{
+      this};
+  bool disconnected_ = false;
 };
 
 class FakeBluetoothAdapter : public device::MockBluetoothAdapter {
@@ -345,6 +410,21 @@ class TestBluetoothDelegate : public BluetoothDelegate {
   TestBluetoothDelegate& operator=(const TestBluetoothDelegate&) = delete;
 
   // BluetoothDelegate:
+  void AddFramePermissionObserver(FramePermissionObserver* observer) override {
+    observer_list_.AddObserver(observer);
+  }
+
+  void RemoveFramePermissionObserver(
+      FramePermissionObserver* observer) override {
+    observer_list_.RemoveObserver(observer);
+  }
+
+  void RevokePermission(const url::Origin& origin) {
+    for (auto& observer : observer_list_) {
+      observer.OnPermissionRevoked(origin);
+    }
+  }
+
   std::unique_ptr<BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
       RenderFrameHost* frame,
       const BluetoothScanningPrompt::EventHandler& event_handler) override {
@@ -362,6 +442,26 @@ class TestBluetoothDelegate : public BluetoothDelegate {
     std::move(callback).Run(PairPromptResult(PairPromptStatus::kCancelled));
   }
 
+  blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
+      RenderFrameHost* frame,
+      const std::string& device_address) override {
+    auto it = address_to_id_map_.find(device_address);
+    if (it != address_to_id_map_.end()) {
+      return it->second;
+    }
+    return blink::WebBluetoothDeviceId();
+  }
+
+  std::string GetDeviceAddress(
+      RenderFrameHost* frame,
+      const blink::WebBluetoothDeviceId& device_id) override {
+    auto it = id_to_address_map_.find(device_id);
+    if (it != id_to_address_map_.end()) {
+      return it->second;
+    }
+    return std::string();
+  }
+
   bool HasDevicePermission(
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) override {
@@ -370,6 +470,38 @@ class TestBluetoothDelegate : public BluetoothDelegate {
 
   void set_has_device_permission(bool value) {
     has_device_permission_ = value;
+  }
+
+  bool IsAllowedToAccessService(RenderFrameHost* frame,
+                                const blink::WebBluetoothDeviceId& device_id,
+                                const device::BluetoothUUID& service) override {
+    return has_device_permission_;
+  }
+
+  bool IsAllowedToAccessAtLeastOneService(
+      RenderFrameHost* frame,
+      const blink::WebBluetoothDeviceId& device_id) override {
+    return has_device_permission_;
+  }
+
+  std::vector<blink::mojom::WebBluetoothDevicePtr> GetPermittedDevices(
+      RenderFrameHost* frame) override {
+    if (!has_device_permission_) {
+      return {};
+    }
+    std::vector<blink::mojom::WebBluetoothDevicePtr> devices;
+    for (const auto& [address, id] : address_to_id_map_) {
+      auto device = blink::mojom::WebBluetoothDevice::New();
+      device->id = id;
+      devices.push_back(std::move(device));
+    }
+    return devices;
+  }
+
+  void AddDevice(const std::string& address,
+                 const blink::WebBluetoothDeviceId& device_id) {
+    address_to_id_map_[address] = device_id;
+    id_to_address_map_[device_id] = address;
   }
 
   bool MayUseBluetooth(RenderFrameHost* frame) override {
@@ -405,6 +537,9 @@ class TestBluetoothDelegate : public BluetoothDelegate {
       AllowWebBluetoothResult::kAllow;
   raw_ptr<FakeBluetoothScanningPrompt, AcrossTasksDanglingUntriaged> prompt_ =
       nullptr;
+  base::ObserverList<FramePermissionObserver> observer_list_;
+  std::map<std::string, blink::WebBluetoothDeviceId> address_to_id_map_;
+  std::map<blink::WebBluetoothDeviceId, std::string> id_to_address_map_;
 };
 
 class TestContentBrowserClient : public ContentBrowserClient {
@@ -702,8 +837,11 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     device_options->accept_all_devices = true;
     device_options->optional_services.push_back(
         device_bundle.service().GetUUID());
-    return service_ptr_->allowed_devices().AddDevice(
+    blink::WebBluetoothDeviceId id = service_ptr_->allowed_devices().AddDevice(
         device_bundle.device().GetAddress(), device_options);
+    browser_client_.bluetooth_delegate()->AddDevice(
+        device_bundle.device().GetAddress(), id);
+    return id;
   }
 
   void DeleteService() {
@@ -718,6 +856,56 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
       const blink::WebBluetoothDeviceId& device_id,
       blink::mojom::WebBluetoothService::ForgetDeviceCallback callback) {
     service_ptr_->ForgetDevice(device_id, std::move(callback));
+  }
+
+  void RemoteServerConnect(
+      const blink::WebBluetoothDeviceId& device_id,
+      mojo::PendingAssociatedRemote<blink::mojom::WebBluetoothServerClient>
+          client,
+      blink::mojom::WebBluetoothService::RemoteServerConnectCallback callback) {
+    service_ptr_->RemoteServerConnect(device_id, std::move(client),
+                                      std::move(callback));
+  }
+
+  void RemoteCharacteristicStartNotifications(
+      const std::string& characteristic_instance_id,
+      mojo::PendingAssociatedRemote<
+          blink::mojom::WebBluetoothCharacteristicClient> client,
+      blink::mojom::WebBluetoothService::
+          RemoteCharacteristicStartNotificationsCallback callback) {
+    service_ptr_->RemoteCharacteristicStartNotifications(
+        characteristic_instance_id, std::move(client), std::move(callback));
+  }
+
+  void RemoteCharacteristicStopNotifications(
+      const std::string& characteristic_instance_id,
+      blink::mojom::WebBluetoothService::
+          RemoteCharacteristicStopNotificationsCallback callback) {
+    service_ptr_->RemoteCharacteristicStopNotifications(
+        characteristic_instance_id, std::move(callback));
+  }
+
+  void RemoteCharacteristicStartNotificationsInternal(
+      const std::string& characteristic_instance_id,
+      mojo::AssociatedRemote<blink::mojom::WebBluetoothCharacteristicClient>
+          client,
+      blink::mojom::WebBluetoothService::
+          RemoteCharacteristicStartNotificationsCallback callback) {
+    service_ptr_->RemoteCharacteristicStartNotificationsInternal(
+        characteristic_instance_id, std::move(client), std::move(callback));
+  }
+
+  void GattCharacteristicValueChanged(
+      device::BluetoothAdapter* adapter,
+      device::BluetoothRemoteGattCharacteristic* characteristic,
+      const std::vector<uint8_t>& value) {
+    service_ptr_->GattCharacteristicValueChanged(adapter, characteristic,
+                                                 value);
+  }
+
+  bool HasNotifySession(const std::string& characteristic_instance_id) {
+    return service_ptr_->characteristic_id_to_notify_session_.contains(
+        characteristic_instance_id);
   }
 
   std::string GetAllowedDeviceAddress(
@@ -1004,7 +1192,63 @@ TEST_F(WebBluetoothServiceImplTest, IncompletePairingOnShutdown) {
   // tab closure while the pairing request is in progress.
   DeleteService();
 }
+
+TEST_F(WebBluetoothServiceImplTest,
+       DeferredStartsFailOnNotAuthorizedWithPairing) {
+  RegisterTestCharacteristic();
+  FakeBluetoothCharacteristic& test_characteristic =
+      battery_device_bundle().characteristic();
+  test_characteristic.DeferNextStartNotification(
+      device::BluetoothGattService::GattErrorCode::kNotAuthorized);
+
+  auto pairing_manager =
+      std::make_unique<NiceMock<MockWebBluetoothPairingManager>>();
+  EXPECT_CALL(*pairing_manager, PairForCharacteristicStartNotifications(
+                                    test_characteristic.GetIdentifier(), _, _))
+      .Times(1);
+  service_ptr_->SetPairingManagerForTesting(std::move(pairing_manager));
+
+  RecordingWebBluetoothCharacteristicClient client1;
+  base::test::TestFuture<WebBluetoothResult> start_future1;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client1.BindNewEndpointClientAndPassRemote(),
+      start_future1.GetCallback());
+
+  RecordingWebBluetoothCharacteristicClient client2;
+  base::test::TestFuture<WebBluetoothResult> start_future2;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client2.BindNewEndpointClientAndPassRemote(),
+      start_future2.GetCallback());
+
+  test_characteristic.ResumeDeferredStartNotification();
+
+  EXPECT_FALSE(start_future1.IsReady());
+  EXPECT_EQ(start_future2.Get(), WebBluetoothResult::GATT_NOT_AUTHORIZED);
+}
 #endif  // PAIR_BLUETOOTH_ON_DEMAND()
+
+TEST_F(WebBluetoothServiceImplTest, StopNotificationsWhileStartInFlight) {
+  RegisterTestCharacteristic();
+  FakeBluetoothCharacteristic& test_characteristic =
+      battery_device_bundle().characteristic();
+  test_characteristic.DeferNextStartNotification(/*error_code=*/std::nullopt);
+
+  RecordingWebBluetoothCharacteristicClient client;
+  base::test::TestFuture<WebBluetoothResult> start_future;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client.BindNewEndpointClientAndPassRemote(), start_future.GetCallback());
+
+  base::RunLoop stop_loop;
+  RemoteCharacteristicStopNotifications(test_characteristic.GetIdentifier(),
+                                        stop_loop.QuitClosure());
+  stop_loop.Run();
+
+  test_characteristic.ResumeDeferredStartNotification();
+  EXPECT_EQ(start_future.Get(), WebBluetoothResult::SUCCESS);
+}
 
 TEST_F(WebBluetoothServiceImplTest, DeferredStartNotifySession) {
   RegisterTestCharacteristic();
@@ -1475,6 +1719,243 @@ TEST_F(WebBluetoothServiceImplTestNewPermissionsBackend,
             WebBluetoothResult::NOT_ALLOWED_TO_ACCESS_ANY_SERVICE);
 
   EXPECT_CALL(*adapter_, StopScan).Times(1);
+}
+
+#if PAIR_BLUETOOTH_ON_DEMAND()
+TEST_F(WebBluetoothServiceImplTestNewPermissionsBackend,
+       PairingActivePermissionRevoked) {
+  // Grant permission via the delegate so registration succeeds.
+  browser_client_.bluetooth_delegate()->set_has_device_permission(true);
+
+  RegisterTestCharacteristic();
+  FakeBluetoothCharacteristic& test_characteristic =
+      battery_device_bundle().characteristic();
+  test_characteristic.DeferNextStartNotification(
+      device::BluetoothGattService::GattErrorCode::kNotAuthorized);
+
+  auto pairing_manager =
+      std::make_unique<NiceMock<MockWebBluetoothPairingManager>>();
+  base::test::TestFuture<
+      const std::string&,
+      mojo::AssociatedRemote<blink::mojom::WebBluetoothCharacteristicClient>,
+      RemoteCharacteristicStartNotificationsCallback>
+      pairing_future;
+  EXPECT_CALL(*pairing_manager, PairForCharacteristicStartNotifications(
+                                    test_characteristic.GetIdentifier(), _, _))
+      .WillOnce(base::test::InvokeFuture(pairing_future));
+  service_ptr_->SetPairingManagerForTesting(std::move(pairing_manager));
+
+  RecordingWebBluetoothCharacteristicClient client;
+  base::test::TestFuture<WebBluetoothResult> start_future;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client.BindNewEndpointClientAndPassRemote(), start_future.GetCallback());
+
+  test_characteristic.ResumeDeferredStartNotification();
+  auto [characteristic_id, pairing_client, pairing_callback] =
+      pairing_future.Take();
+  ASSERT_TRUE(pairing_callback);
+
+  browser_client_.bluetooth_delegate()->set_has_device_permission(false);
+  browser_client_.bluetooth_delegate()->RevokePermission(
+      contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  RemoteCharacteristicStartNotificationsInternal(characteristic_id,
+                                                 std::move(pairing_client),
+                                                 std::move(pairing_callback));
+
+  EXPECT_EQ(start_future.Get(), WebBluetoothResult::GATT_NOT_AUTHORIZED);
+}
+#endif  // PAIR_BLUETOOTH_ON_DEMAND()
+
+// Tests permission revocation behavior under both permission backends.
+class WebBluetoothServiceImplPermissionRevocationTest
+    : public WebBluetoothServiceImplTest {
+ public:
+  WebBluetoothServiceImplPermissionRevocationTest() {
+    feature_list_.InitWithFeatureState(
+        features::kWebBluetoothNewPermissionsBackend,
+        new_permissions_backend_enabled());
+  }
+
+ protected:
+  bool new_permissions_backend_enabled() const { return GetParam(); }
+
+  void RevokeAllDevicePermissions() {
+    browser_client_.bluetooth_delegate()->set_has_device_permission(false);
+    browser_client_.bluetooth_delegate()->RevokePermission(
+        contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  }
+
+  // Flushes the posted notification task along with the Mojo delivery task that
+  // it posts in turn.
+  void FlushNotificationDelivery() {
+    base::test::TestFuture<void> flush_future;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::OnceClosure closure) {
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, std::move(closure));
+            },
+            flush_future.GetCallback()));
+    EXPECT_TRUE(flush_future.Wait());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebBluetoothServiceImplPermissionRevocationTest,
+                         ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "NewPermissionsBackend"
+                                             : "LegacyPermissionsBackend";
+                         });
+
+// Verifies that an active notify session in
+// characteristic_id_to_notify_session_ stops delivering values once permission
+// is revoked.
+TEST_P(WebBluetoothServiceImplPermissionRevocationTest,
+       NotifySessionPurgedOnPermissionRevoked) {
+  // Grant permission via the delegate so registration and notifications
+  // succeed.
+  browser_client_.bluetooth_delegate()->set_has_device_permission(true);
+
+  RegisterTestCharacteristic();
+  FakeBluetoothCharacteristic& test_characteristic =
+      battery_device_bundle().characteristic();
+
+  RecordingWebBluetoothCharacteristicClient client;
+  base::test::TestFuture<WebBluetoothResult> start_future;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client.BindNewEndpointClientAndPassRemote(), start_future.GetCallback());
+  EXPECT_EQ(start_future.Get(), WebBluetoothResult::SUCCESS);
+
+  // Send a GATT characteristic value changed event before revocation to verify
+  // notifications are actively received.
+  base::test::TestFuture<void> value_future;
+  client.SetValueChangeCallback(value_future.GetRepeatingCallback());
+  const std::vector<uint8_t> initial_value = {1, 2, 3};
+  GattCharacteristicValueChanged(adapter_.get(), &test_characteristic,
+                                 initial_value);
+  EXPECT_TRUE(value_future.Wait());
+
+  EXPECT_EQ(client.received_values().size(), 1u);
+  EXPECT_EQ(client.received_values()[0], initial_value);
+
+  // Consume the signal; under the legacy backend a second one arrives below.
+  value_future.Clear();
+
+  RevokeAllDevicePermissions();
+
+  // Send a second GATT characteristic value changed event.
+  const std::vector<uint8_t> post_revoke_value = {4, 5, 6};
+  GattCharacteristicValueChanged(adapter_.get(), &test_characteristic,
+                                 post_revoke_value);
+  FlushNotificationDelivery();
+
+  EXPECT_FALSE(HasNotifySession(test_characteristic.GetIdentifier()));
+  EXPECT_EQ(client.received_values().size(), 1u);
+}
+
+// Verifies that a start notification request whose session is still being
+// acquired is failed with GATT_NOT_AUTHORIZED, and that the session which
+// arrives afterwards is not resurrected.
+TEST_P(WebBluetoothServiceImplPermissionRevocationTest,
+       InFlightStartNotificationOnPermissionRevoked) {
+  browser_client_.bluetooth_delegate()->set_has_device_permission(true);
+
+  RegisterTestCharacteristic();
+  FakeBluetoothCharacteristic& test_characteristic =
+      battery_device_bundle().characteristic();
+  test_characteristic.DeferNextStartNotification(/*error_code=*/std::nullopt);
+
+  RecordingWebBluetoothCharacteristicClient client;
+  base::test::TestFuture<WebBluetoothResult> start_future;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client.BindNewEndpointClientAndPassRemote(), start_future.GetCallback());
+
+  RevokeAllDevicePermissions();
+
+  EXPECT_EQ(start_future.Get(), WebBluetoothResult::GATT_NOT_AUTHORIZED);
+  EXPECT_FALSE(HasNotifySession(test_characteristic.GetIdentifier()));
+
+  // The adapter finishes acquiring the session after the revocation.
+  test_characteristic.ResumeDeferredStartNotification();
+
+  FlushNotificationDelivery();
+  EXPECT_FALSE(HasNotifySession(test_characteristic.GetIdentifier()));
+}
+
+// Verifies that requests queued in characteristic_id_to_deferred_start_ behind
+// an in-flight session acquisition are also failed on revocation.
+TEST_P(WebBluetoothServiceImplPermissionRevocationTest,
+       DeferredStartNotificationOnPermissionRevoked) {
+  browser_client_.bluetooth_delegate()->set_has_device_permission(true);
+
+  RegisterTestCharacteristic();
+  FakeBluetoothCharacteristic& test_characteristic =
+      battery_device_bundle().characteristic();
+  test_characteristic.DeferNextStartNotification(/*error_code=*/std::nullopt);
+
+  // The first request goes in flight and holds the notify session slot.
+  RecordingWebBluetoothCharacteristicClient client1;
+  base::test::TestFuture<WebBluetoothResult> start_future1;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client1.BindNewEndpointClientAndPassRemote(),
+      start_future1.GetCallback());
+
+  // A second request for the same characteristic is deferred behind it.
+  RecordingWebBluetoothCharacteristicClient client2;
+  base::test::TestFuture<WebBluetoothResult> start_future2;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client2.BindNewEndpointClientAndPassRemote(),
+      start_future2.GetCallback());
+
+  RevokeAllDevicePermissions();
+
+  EXPECT_EQ(start_future1.Get(), WebBluetoothResult::GATT_NOT_AUTHORIZED);
+  EXPECT_EQ(start_future2.Get(), WebBluetoothResult::GATT_NOT_AUTHORIZED);
+}
+
+// Verifies that a GATT connection which is still being established is dropped
+// rather than handed to the renderer when permission is revoked mid-connect.
+TEST_P(WebBluetoothServiceImplPermissionRevocationTest,
+       PendingConnectionCancelledOnPermissionRevoked) {
+  browser_client_.bluetooth_delegate()->set_has_device_permission(true);
+  const auto device_id = AddTestDevice(battery_device_bundle());
+
+  // Capture the connection callback so the connection stays pending across the
+  // revocation.
+  base::test::TestFuture<BluetoothDevice::GattConnectionCallback,
+                         std::optional<BluetoothUUID>>
+      connection_future;
+  EXPECT_CALL(battery_device_bundle().device(), CreateGattConnection)
+      .WillOnce(base::test::InvokeFuture(connection_future));
+
+  FakeWebBluetoothServerClient server_client;
+  base::test::TestFuture<WebBluetoothResult> connect_future;
+  RemoteServerConnect(device_id, server_client.BindNewEndpointAndPassRemote(),
+                      connect_future.GetCallback());
+
+  RevokeAllDevicePermissions();
+
+  // The adapter completes the connection after the permission was revoked.
+  auto [connection_callback, service_uuid] = connection_future.Take();
+  std::move(connection_callback)
+      .Run(std::make_unique<NiceMock<device::MockBluetoothGattConnection>>(
+               adapter_, battery_device_bundle().device().GetAddress()),
+           /*error_code=*/std::nullopt);
+
+  // Pruning pending_connection_device_ids_ makes OnCreateGATTConnection drop
+  // the connection instead of handing it to the renderer.
+  EXPECT_EQ(connect_future.Get(), WebBluetoothResult::CONNECT_CONN_FAILED);
 }
 
 TEST_F(WebBluetoothServiceImplTest,
