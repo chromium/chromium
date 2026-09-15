@@ -313,6 +313,35 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/tips/TipsOptInCoordinator.java:OptInPromoEventType) -->
 
+<!-- NSError codes returned by -[UNUserNotificationCenter
+     addNotificationRequest:withCompletionHandler:]. Codes are only meaningful
+     in combination with the NSError domain, which is not recorded, so labels
+     are prefixed with the domain they are expected to come from. Codes in the
+     UNErrorDomain range come from UNError.h, codes in the 4096-4224 range come
+     from NSCocoaErrorDomain (FoundationErrors.h) and are reported when the
+     connection to the macOS notification daemon fails. -->
+
+<enum name="UNNotificationDeliveryResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="UNError: NotificationsNotAllowed"/>
+  <int value="100" label="UNError: AttachmentInvalidURL"/>
+  <int value="101" label="UNError: AttachmentUnrecognizedType"/>
+  <int value="102" label="UNError: AttachmentInvalidFileSize"/>
+  <int value="103" label="UNError: AttachmentNotInDataStore"/>
+  <int value="104" label="UNError: AttachmentMoveIntoDataStoreFailed"/>
+  <int value="105" label="UNError: AttachmentCorrupt"/>
+  <int value="1400" label="UNError: NotificationInvalidNoDate"/>
+  <int value="1401" label="UNError: NotificationInvalidNoContent"/>
+  <int value="1500" label="UNError: ContentProvidingObjectNotAllowed"/>
+  <int value="1501" label="UNError: ContentProvidingInvalid"/>
+  <int value="1600" label="UNError: BadgeInputInvalid"/>
+  <int value="4097" label="NSCocoaError: XPCConnectionInterrupted"/>
+  <int value="4099" label="NSCocoaError: XPCConnectionInvalid"/>
+  <int value="4101" label="NSCocoaError: XPCConnectionReplyInvalid"/>
+  <int value="4102"
+      label="NSCocoaError: XPCConnectionCodeSigningRequirementFailure"/>
+</enum>
+
 <enum name="UNNotificationPermissionRequestResult">
   <int value="0" label="Permission request failed"/>
   <int value="1" label="Permission denied"/>

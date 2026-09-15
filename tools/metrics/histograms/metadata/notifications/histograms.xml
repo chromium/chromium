@@ -859,13 +859,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.macOS.DeliveryResult.{Style}"
-    units="NSErrorCode" expires_after="2027-03-01">
+    enum="UNNotificationDeliveryResult" expires_after="2027-03-01">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
     Records the result of adding a notification request to the macOS
     UNUserNotificationCenter. Recorded when the macOS API completion handler is
-    called. Logs 0 for success, or the NSError code on failure.
+    called. Logs 0 for success, or the NSError code on failure. Note that the
+    NSError domain is not recorded, so codes could in theory be ambiguous;
+    labels assume the error is either in the UNErrorDomain or, for codes in the
+    4096-4224 range, in the NSCocoaErrorDomain.
   </summary>
   <token key="Style" variants="MacOSNotificationStyle"/>
 </histogram>
