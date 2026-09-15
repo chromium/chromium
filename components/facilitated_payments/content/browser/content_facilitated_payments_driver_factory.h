@@ -42,6 +42,11 @@ class ContentFacilitatedPaymentsDriverFactory
   ContentFacilitatedPaymentsDriver& GetOrCreateForFrame(
       content::RenderFrameHost* render_frame_host);
 
+  // Evaluates the cumulative score received from the Renderer.
+  virtual void OnHeuristicScoreReported(
+      content::RenderFrameHost* render_frame_host,
+      double score);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       ContentFacilitatedPaymentsDriverFactoryTest,

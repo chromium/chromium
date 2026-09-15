@@ -11,6 +11,7 @@
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 
 namespace payments::facilitated {
 
@@ -36,7 +37,8 @@ ContentFacilitatedPaymentsDriverFactory::GetOrCreateForFrame(
     return *iter->second;
   }
   driver = std::make_unique<ContentFacilitatedPaymentsDriver>(
-      &*client_, render_frame_host, std::make_unique<SecurityChecker>());
+      &*client_, render_frame_host, std::make_unique<SecurityChecker>(),
+      /*factory=*/this);
   DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(), driver.get());
   return *iter->second;
 }
@@ -126,6 +128,13 @@ void ContentFacilitatedPaymentsDriverFactory::OnTextCopiedToClipboard(
       /*main_frame_origin=*/main_frame->GetLastCommittedOrigin(), copied_text,
       render_frame_host->GetPageUkmSourceId(),
       /*is_same_origin=*/is_same_origin);
+}
+
+void ContentFacilitatedPaymentsDriverFactory::OnHeuristicScoreReported(
+    content::RenderFrameHost* render_frame_host,
+    double score) {
+  // TODO(crbug.com/556832672): Check OptimizationGuide merchant allowlist and
+  // evaluate heuristic score against thresholds to trigger image extraction.
 }
 
 }  // namespace payments::facilitated
