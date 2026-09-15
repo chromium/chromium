@@ -1277,16 +1277,15 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
 
   views::Widget* GetPopupWidget() {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    auto* location_bar_view = browser_view->toolbar()->location_bar_view();
+    auto* location_bar = browser_view->toolbar()->location_bar();
     auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-        location_bar_view->GetOmniboxPopupView());
+        location_bar->GetOmniboxPopupView());
     if (!popup_view || !popup_view->presenter()) {
       return nullptr;
     }
     popup_view->presenter()->Show();
-    location_bar_view->GetOmniboxController()
-        ->popup_state_manager()
-        ->SetPopupState(OmniboxPopupState::kClassic);
+    location_bar->GetOmniboxController()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kClassic);
     return popup_view->presenter()->get_widget_for_testing();
   }
 
@@ -1303,9 +1302,9 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
   void SimulateFrontendMojoMessage(bool is_showing,
                                    const gfx::Size& prompt_size) {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    auto* location_bar_view = browser_view->toolbar()->location_bar_view();
+    auto* location_bar = browser_view->toolbar()->location_bar();
     auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-        location_bar_view->GetOmniboxPopupView());
+        location_bar->GetOmniboxPopupView());
     if (popup_view && popup_view->presenter()) {
       views::Widget* popup_widget =
           popup_view->presenter()->get_widget_for_testing();

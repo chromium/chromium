@@ -9,15 +9,17 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 
 class OmniboxPopupViewBrowserViewTest : public InteractiveBrowserTest {
  public:
   OmniboxPopupViewBrowserViewTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        omnibox::kWebUIOmniboxFullPopup,
-        {{"Omnibox_UseBrowserView", "true"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{omnibox::kWebUIOmniboxFullPopup,
+                               {{"Omnibox_UseBrowserView", "true"}}}},
+        /*disabled_features=*/{features::kWebUILocationBar});
   }
 
  protected:

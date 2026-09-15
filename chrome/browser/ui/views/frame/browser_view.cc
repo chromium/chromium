@@ -4863,8 +4863,8 @@ void BrowserView::Layout(PassKey) {
     // of being a separate popup widget), its layout depends on the position of
     // the `LocationBarView`. We must update its layout after the
     // `BrowserView` layout to ensure it aligns correctly with the location bar.
-    auto* popup_view = toolbar_->location_bar_view()->GetOmniboxPopupView();
-    SafeInvoke(popup_view)
+    SafeInvoke(toolbar_->location_bar())
+        .Then(&LocationBar::GetOmniboxPopupView)
         .Then(&OmniboxPopupView::AsOmniboxPopupViewBrowserView)
         .Then(&OmniboxPopupViewBrowserView::UpdateLayout);
   }
@@ -4999,8 +4999,8 @@ void BrowserView::AddedToWidget() {
     // of being a separate popup widget), the popup view needs a reference to
     // `BrowserView` to add the popup frame as a child view. We inject it here
     // after the toolbar (and location bar) have been initialized.
-    auto* popup_view = toolbar_->location_bar_view()->GetOmniboxPopupView();
-    SafeInvoke(popup_view)
+    SafeInvoke(toolbar_->location_bar())
+        .Then(&LocationBar::GetOmniboxPopupView)
         .Then(&OmniboxPopupView::AsOmniboxPopupViewBrowserView)
         .Then(&OmniboxPopupViewBrowserView::SetBrowserView, this);
   }
