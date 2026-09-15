@@ -41,7 +41,6 @@
 namespace blink {
 
 class SharedWorkerThread;
-class WorkerClassicScriptLoader;
 
 class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
   DEFINE_WRAPPERTYPEINFO();
@@ -111,9 +110,6 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
   }
 
  private:
-  void DidFetchClassicScript(WorkerClassicScriptLoader* classic_script_loader,
-                             const v8_inspector::V8StackTraceId& stack_id);
-
   void ExceptionThrown(ErrorEvent*) override;
 
   const SharedWorkerToken token_;

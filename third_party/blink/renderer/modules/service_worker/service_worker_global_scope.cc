@@ -416,66 +416,6 @@ ServiceWorkerGlobalScope::GetAssociatedInterfaceRegistry() {
   return associated_inteface_registy_;
 }
 
-// https://w3c.github.io/ServiceWorker/#update
-void ServiceWorkerGlobalScope::DidFetchClassicScript(
-    WorkerClassicScriptLoader* classic_script_loader,
-    const v8_inspector::V8StackTraceId& stack_id) {
-  DCHECK(IsContextThread());
-
-  // Step 9. "If the algorithm asynchronously completes with null, then:"
-  if (classic_script_loader->Failed()) {
-    // Step 9.1. "Invoke Reject Job Promise with job and TypeError."
-    // Step 9.2. "If newestWorker is null, invoke Clear Registration algorithm
-    // passing registration as its argument."
-    // Step 9.3. "Invoke Finish Job with job and abort these steps."
-    // The browser process takes care of these steps.
-    ReportingProxy().DidFailToFetchClassicScript();
-    // Close the worker global scope to terminate the thread.
-    close();
-    return;
-  }
-  // The app cache ID is not used.
-  ReportingProxy().DidFetchScript();
-  probe::ScriptImported(this, classic_script_loader->Identifier(),
-                        classic_script_loader->SourceText());
-
-  // Step 10. "If hasUpdatedResources is false, then:"
-  //   Step 10.1. "Invoke Resolve Job Promise with job and registration."
-  //   Steo 10.2. "Invoke Finish Job with job and abort these steps."
-  // Step 11. "Let worker be a new service worker."
-  // Step 12. "Set worker's script url to job's script url, worker's script
-  // resource to script, worker's type to job's worker type, and worker's
-  // script resource map to updatedResourceMap."
-  // Step 13. "Append url to worker's set of used scripts."
-  // The browser process takes care of these steps.
-
-  // Step 14. "Set worker's script resource's HTTPS state to httpsState."
-  // This is done in the constructor of WorkerGlobalScope.
-
-  // Step 15. "Set worker's script resource's referrer policy to
-  // referrerPolicy."
-  auto referrer_policy = network::mojom::ReferrerPolicy::kDefault;
-  if (!classic_script_loader->GetReferrerPolicy().IsNull()) {
-    SecurityPolicy::ReferrerPolicyFromHeaderValue(
-        classic_script_loader->GetReferrerPolicy(),
-        kDoNotSupportReferrerPolicyLegacyKeywords, &referrer_policy);
-  }
-
-  // Step 16. "Invoke Run Service Worker algorithm given worker, with the force
-  // bypass cache for importscripts flag set if job’s force bypass cache flag
-  // is set, and with the following callback steps given evaluationStatus:"
-  RunClassicScript(
-      classic_script_loader->ResponseURL(), referrer_policy,
-      classic_script_loader->GetContentSecurityPolicy()
-          ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
-                            ->GetParsedPolicies())
-          : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-      classic_script_loader->GetDocumentPolicy(),
-      classic_script_loader->OriginTrialTokens(),
-      classic_script_loader->SourceText(),
-      classic_script_loader->ReleaseCachedMetadata(), stack_id);
-}
-
 // https://w3c.github.io/ServiceWorker/#run-service-worker-algorithm
 void ServiceWorkerGlobalScope::Initialize(
     const KURL& response_url,

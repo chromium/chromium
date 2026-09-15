@@ -210,51 +210,6 @@ void SharedWorkerGlobalScope::Connect(MessagePortChannel channel) {
   DispatchEvent(*event);
 }
 
-// https://html.spec.whatwg.org/C/#worker-processing-model
-void SharedWorkerGlobalScope::DidFetchClassicScript(
-    WorkerClassicScriptLoader* classic_script_loader,
-    const v8_inspector::V8StackTraceId& stack_id) {
-  DCHECK(IsContextThread());
-
-  // Step 12. "If the algorithm asynchronously completes with null or with
-  // script whose error to rethrow is non-null, then:"
-  //
-  // The case |error to rethrow| is non-null indicates the parse error.
-  // Parsing the script should be done during fetching according to the spec
-  // but it is done in EvaluateClassicScript() for classic scripts.
-  // Therefore, we cannot catch parse error events here.
-  // TODO(https://crbug.com/1058259) Catch parse error events for classic
-  // shared workers.
-  if (classic_script_loader->Failed()) {
-    // Step 12.1. "Queue a task to fire an event named error at worker."
-    // Step 12.2. "Run the environment discarding steps for inside settings."
-    // Step 12.3. "Return."
-    ReportingProxy().DidFailToFetchClassicScript();
-    return;
-  }
-  ReportingProxy().DidFetchScript();
-  probe::ScriptImported(this, classic_script_loader->Identifier(),
-                        classic_script_loader->SourceText());
-
-  auto response_referrer_policy = network::mojom::ReferrerPolicy::kDefault;
-  if (!classic_script_loader->GetReferrerPolicy().IsNull()) {
-    SecurityPolicy::ReferrerPolicyFromHeaderValue(
-        classic_script_loader->GetReferrerPolicy(),
-        kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
-  }
-
-  RunClassicScript(
-      classic_script_loader->ResponseURL(), response_referrer_policy,
-      classic_script_loader->GetContentSecurityPolicy()
-          ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
-                            ->GetParsedPolicies())
-          : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-      classic_script_loader->GetDocumentPolicy(),
-      classic_script_loader->OriginTrialTokens(),
-      classic_script_loader->SourceText(),
-      classic_script_loader->ReleaseCachedMetadata(), stack_id);
-}
-
 void SharedWorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
   WorkerGlobalScope::ExceptionThrown(event);
   if (WorkerThreadDebugger* debugger =

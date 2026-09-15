@@ -84,7 +84,6 @@ class ServiceWorkerRegistration;
 class ServiceWorkerThread;
 class WaitUntilObserver;
 class WebURLResponse;
-class WorkerClassicScriptLoader;
 struct GlobalScopeCreationParams;
 struct WebServiceWorkerError;
 struct WebServiceWorkerObjectInfo;
@@ -438,9 +437,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       const KURL& script_url,
       std::unique_ptr<Vector<uint8_t>> meta_data) override;
   void ExceptionThrown(ErrorEvent*) override;
-
-  void DidFetchClassicScript(WorkerClassicScriptLoader* classic_script_loader,
-                             const v8_inspector::V8StackTraceId& stack_id);
 
   // Loads and runs the installed top-level classic worker script.
   void LoadAndRunInstalledClassicScript(

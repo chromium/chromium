@@ -55,7 +55,6 @@ class PostMessageOptions;
 class ScriptState;
 class SourceLocation;
 class WebServiceWorkerProvider;
-class WorkerClassicScriptLoader;
 struct GlobalScopeCreationParams;
 
 class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
@@ -220,9 +219,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
           back_forward_cache_controller_host,
       base::TimeTicks dedicated_worker_start_time);
 
-  void DidFetchClassicScript(WorkerClassicScriptLoader* classic_script_loader,
-                             const v8_inspector::V8StackTraceId& stack_id);
-
   DedicatedWorkerObjectProxy& WorkerObjectProxy() const;
 
   // A unique ID for this context.
@@ -250,9 +246,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   // The creator's document policy, used for local-scheme workers (about:,
   // blob:, data:, filesystem:) to inherit the document policy from the creator.
   DocumentPolicy::DocumentPolicyBundle creator_document_policy_;
-
-  // The timestamp taken when FetchAndRunClassicScript() is called.
-  base::TimeTicks fetch_classic_script_start_time_;
 
   // The timestamp taken when DedicatedWorker::Start() was called.
   base::TimeTicks dedicated_worker_start_time_;

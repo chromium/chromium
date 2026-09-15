@@ -479,60 +479,6 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
       },
       perfetto::Flow::Global(trace_id));  // SchedulePostMessage
 }
-// https://html.spec.whatwg.org/C/#worker-processing-model
-void DedicatedWorkerGlobalScope::DidFetchClassicScript(
-    WorkerClassicScriptLoader* classic_script_loader,
-    const v8_inspector::V8StackTraceId& stack_id) {
-  DCHECK(IsContextThread());
-  TRACE_EVENT("blink.worker",
-              "DedicatedWorkerGlobalScope::DidFetchClassicScript");
-  TRACE_EVENT_END("blink.worker",
-                  perfetto::NamedTrack::FromPointer(
-                      "blink::DedicatedWorkerGlobalScope", this));
-  base::UmaHistogramTimes(
-      "Worker.TopLevelScript.FetchClassicScriptTime",
-      base::TimeTicks::Now() - fetch_classic_script_start_time_);
-
-  // Step 12. "If the algorithm asynchronously completes with null, then:"
-  if (classic_script_loader->Failed()) {
-    // Step 12.1. "Queue a task to fire an event named error at worker."
-    // DidFailToFetchClassicScript() will asynchronously fire the event.
-    ReportingProxy().DidFailToFetchClassicScript();
-
-    // Step 12.2. "Run the environment discarding steps for inside settings."
-    // Do nothing because the HTML spec doesn't define these steps for web
-    // workers.
-
-    // Schedule worker termination.
-    close();
-
-    // Step 12.3. "Return."
-    return;
-  }
-  ReportingProxy().DidFetchScript();
-  probe::ScriptImported(this, classic_script_loader->Identifier(),
-                        classic_script_loader->SourceText());
-
-  auto response_referrer_policy = network::mojom::ReferrerPolicy::kDefault;
-  if (!classic_script_loader->GetReferrerPolicy().IsNull()) {
-    SecurityPolicy::ReferrerPolicyFromHeaderValue(
-        classic_script_loader->GetReferrerPolicy(),
-        kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
-  }
-
-  RunClassicScript(
-      classic_script_loader->ResponseURL(), response_referrer_policy,
-      classic_script_loader->GetContentSecurityPolicy()
-          ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
-                            ->GetParsedPolicies())
-          : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-      classic_script_loader->GetDocumentPolicy(),
-      // Pass dummy origin trial tokens here as it is already set to outside's
-      // origin trial tokens in DedicatedWorkerGlobalScope's constructor.
-      /*response_origin_trial_tokens=*/nullptr,
-      classic_script_loader->SourceText(),
-      classic_script_loader->ReleaseCachedMetadata(), stack_id);
-}
 
 int DedicatedWorkerGlobalScope::requestAnimationFrame(
     V8FrameRequestCallback* callback,

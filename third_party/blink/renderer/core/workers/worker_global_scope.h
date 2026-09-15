@@ -306,6 +306,8 @@ class CORE_EXPORT WorkerGlobalScope
 
   void DidReceiveResponseForClassicScript(
       WorkerClassicScriptLoader* classic_script_loader);
+  void DidFetchClassicScript(WorkerClassicScriptLoader* classic_script_loader,
+                             const v8_inspector::V8StackTraceId& stack_id);
   void RunClassicScript(
       const KURL& response_url,
       network::mojom::ReferrerPolicy response_referrer_policy,
@@ -340,6 +342,10 @@ class CORE_EXPORT WorkerGlobalScope
   // Used for importScripts().
   // Also called by ServiceWorkerGlobalScope::importScripts.
   void ImportScriptsInternal(const Vector<String>& urls, ExceptionState&);
+
+  // The timestamp taken when FetchAndRunClassicScript() is called.
+  // Currently only used for `DedicatedWorkerGlobalScope` metrics.
+  base::TimeTicks fetch_classic_script_start_time_;
 
  private:
   void SetWorkerSettings(std::unique_ptr<WorkerSettings>);
