@@ -22,51 +22,52 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="CBOR.Read.Duration.{ParserBackend}" units="microseconds"
-    expires_after="2026-11-06">
+<histogram name="CBOR.Read.Duration" units="microseconds"
+    expires_after="2026-12-15">
   <owner>zgroza@chromium.org</owner>
   <owner>src/components/cbor/OWNERS</owner>
   <summary>
-    Records the total elapsed time in microseconds for cbor::Reader::Read().
-    Emitted once for every call to cbor::Reader::Read(). This metric is only
-    reported for clients with high-resolution clocks. {ParserBackend}
+    Records the total elapsed time in microseconds for cbor::Reader::Read(),
+    which for the Rust parser includes both Rust parsing and the conversion of
+    the result to a C++ cbor::Value. Emitted once for every call to
+    cbor::Reader::Read() that leaves the choice of parser to the
+    kUseRustCborParser feature. Both the C++ and the Rust parser report here, so
+    the two can be compared across that feature's experiment groups. Calls that
+    select a parser themselves are not recorded, and neither is anything in
+    builds that do not include the Rust parser, as neither takes part in the
+    experiment. This metric is also only reported for clients with
+    high-resolution clocks.
   </summary>
-  <token key="ParserBackend">
-    <variant name="Cpp" summary="Uses the C++ cbor parser."/>
-    <variant name="Rust"
-        summary="Uses the Rust cbor parser and includes both Rust parsing and
-                 C++ Value conversion."/>
-  </token>
 </histogram>
 
-<histogram name="CBOR.Read.Size.{ParserBackend}" units="bytes"
-    expires_after="2026-11-06">
-  <owner>zgroza@chromium.org</owner>
-  <owner>src/components/cbor/OWNERS</owner>
-  <summary>
-    Records the size of the payload in bytes provided to cbor::Reader::Read().
-    This provides context for CBOR.Read.Duration. Emitted once for every call to
-    cbor::Reader::Read(). {ParserBackend}
-  </summary>
-  <token key="ParserBackend">
-    <variant name="Cpp" summary="Uses the C++ cbor parser."/>
-    <variant name="Rust" summary="Uses the Rust cbor parser."/>
-  </token>
-</histogram>
-
-<histogram name="CBOR.ReadResult.{ParserBackend}" enum="CBORDecoderError"
-    expires_after="2026-11-06">
+<histogram name="CBOR.Read.Result" enum="CBORDecoderError"
+    expires_after="2026-12-15">
   <owner>zgroza@chromium.org</owner>
   <owner>src/components/cbor/OWNERS</owner>
   <summary>
     Records the outcome (success or specific decoder error) of CBOR parsing
-    operations. Emitted once for every call to cbor::Reader::Read().
-    {ParserBackend}
+    operations. Emitted once for every call to cbor::Reader::Read() that leaves
+    the choice of parser to the kUseRustCborParser feature. Both the C++ and the
+    Rust parser report here, so the two can be compared across that feature's
+    experiment groups. Calls that select a parser themselves are not recorded,
+    and neither is anything in builds that do not include the Rust parser, as
+    neither takes part in the experiment.
   </summary>
-  <token key="ParserBackend">
-    <variant name="Cpp" summary="Uses the C++ cbor parser."/>
-    <variant name="Rust" summary="Uses the Rust cbor parser."/>
-  </token>
+</histogram>
+
+<histogram name="CBOR.Read.Size" units="bytes" expires_after="2026-12-15">
+  <owner>zgroza@chromium.org</owner>
+  <owner>src/components/cbor/OWNERS</owner>
+  <summary>
+    Records the size of the payload in bytes provided to cbor::Reader::Read().
+    This provides context for CBOR.Read.Duration. Sizes above 10MB are recorded
+    in the overflow bucket. Emitted once for every call to cbor::Reader::Read()
+    that leaves the choice of parser to the kUseRustCborParser feature. Both the
+    C++ and the Rust parser report here, so the two can be compared across that
+    feature's experiment groups. Calls that select a parser themselves are not
+    recorded, and neither is anything in builds that do not include the Rust
+    parser, as neither takes part in the experiment.
+  </summary>
 </histogram>
 
 </histograms>

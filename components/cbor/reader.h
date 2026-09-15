@@ -139,11 +139,13 @@ class CBOR_EXPORT Reader {
     // correctly.)
     bool allow_invalid_utf8 = false;
 
-    // Uses the rust parser instead of the C++ parser. Only supported when
-    // BUILDFLAG(USE_CBOR_RUST) is true; otherwise this defaults to false
-    // regardless of the state of `kUseRustCborParser`, and setting it to true
-    // is a fatal error.
-    bool use_rust;
+    // Selects the CBOR parser to use. When unset, the parser is the one
+    // selected by `kUseRustCborParser` and the parse is reported to UMA;
+    // callers that set this field opt out of both, since they do not take part
+    // in the experiment. Setting it to true is only supported when
+    // BUILDFLAG(USE_CBOR_RUST) is true; otherwise the C++ parser is always
+    // used and setting this to true is a fatal error.
+    std::optional<bool> use_rust;
   };
 
   Reader(const Reader&) = delete;

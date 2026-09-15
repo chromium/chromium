@@ -9,6 +9,8 @@
 
 #include "base/containers/span.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "components/cbor/cbor_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1471,37 +1473,95 @@ TEST_P(CBORReaderTest, TestDefaultMaxNestingLevelBoundary) {
   VerifyDecoderError(depth_17, Reader::DecoderError::TOO_MUCH_NESTING);
 }
 
+#if BUILDFLAG(USE_CBOR_RUST)
+
+namespace {
+
+// `CBOR.Read.Duration` is only emitted on clients whose clock can measure it.
+int ExpectedDurationCount() {
+  return base::TimeTicks::IsHighResolution() ? 1 : 0;
+}
+
+}  // namespace
+
 TEST_P(CBORReaderTest, MetricsRecordedOnSuccess) {
+  // Only parses that leave the parser choice to `kUseRustCborParser` are
+  // recorded, so drive the parser through the feature rather than through
+  // `Config::use_rust`.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kUseRustCborParser, GetParam());
+
   base::HistogramTester histograms;
   const std::vector<uint8_t> valid_cbor = {0x01};  // Integer 1
 
-  std::optional<Value> cbor = DoRead(valid_cbor);
-  ASSERT_TRUE(cbor.has_value());
+  Reader::Config config;
+  ASSERT_TRUE(Reader::Read(valid_cbor, config).has_value());
 
-  std::string backend = GetParam() ? ".Rust" : ".Cpp";
-  histograms.ExpectUniqueSample("CBOR.ReadResult" + backend,
+  histograms.ExpectUniqueSample("CBOR.Read.Result",
                                 Reader::DecoderError::CBOR_NO_ERROR, 1);
-  histograms.ExpectTotalCount("CBOR.Read.Duration" + backend, 1);
-  histograms.ExpectUniqueSample("CBOR.Read.Size" + backend, valid_cbor.size(),
-                                1);
+  histograms.ExpectTotalCount("CBOR.Read.Duration", ExpectedDurationCount());
+  histograms.ExpectUniqueSample("CBOR.Read.Size", valid_cbor.size(), 1);
 }
 
 TEST_P(CBORReaderTest, MetricsRecordedOnError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kUseRustCborParser, GetParam());
+
   base::HistogramTester histograms;
   const std::vector<uint8_t> invalid_cbor = {0x18};  // Incomplete 1-byte int
 
-  Reader::DecoderError error;
-  std::optional<Value> cbor = DoRead(invalid_cbor, &error);
-  EXPECT_FALSE(cbor.has_value());
+  Reader::DecoderError error = Reader::DecoderError::CBOR_NO_ERROR;
+  Reader::Config config;
+  config.error_code_out = &error;
+  EXPECT_FALSE(Reader::Read(invalid_cbor, config).has_value());
   EXPECT_EQ(Reader::DecoderError::INCOMPLETE_CBOR_DATA, error);
 
-  std::string backend = GetParam() ? ".Rust" : ".Cpp";
-  histograms.ExpectUniqueSample("CBOR.ReadResult" + backend,
+  histograms.ExpectUniqueSample("CBOR.Read.Result",
                                 Reader::DecoderError::INCOMPLETE_CBOR_DATA, 1);
-  histograms.ExpectTotalCount("CBOR.Read.Duration" + backend, 1);
-  histograms.ExpectUniqueSample("CBOR.Read.Size" + backend, invalid_cbor.size(),
-                                1);
+  histograms.ExpectTotalCount("CBOR.Read.Duration", ExpectedDurationCount());
+  histograms.ExpectUniqueSample("CBOR.Read.Size", invalid_cbor.size(), 1);
 }
+
+TEST_P(CBORReaderTest, MetricsNotRecordedWhenParserIsSelectedExplicitly) {
+  // Selecting a parser opts out of the experiment, so nothing is recorded even
+  // when the selection agrees with the feature. Were it recorded, the samples
+  // would be present in whichever arm happened to agree and absent from the
+  // other, skewing the population being compared.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kUseRustCborParser, GetParam());
+
+  base::HistogramTester histograms;
+  const std::vector<uint8_t> valid_cbor = {0x01};  // Integer 1
+
+  // `DoRead()` always sets `Config::use_rust`.
+  ASSERT_TRUE(DoRead(valid_cbor).has_value());
+
+  histograms.ExpectTotalCount("CBOR.Read.Result", 0);
+  histograms.ExpectTotalCount("CBOR.Read.Duration", 0);
+  histograms.ExpectTotalCount("CBOR.Read.Size", 0);
+}
+
+#else
+
+TEST_P(CBORReaderTest, MetricsNotRecordedWithoutRustParser) {
+  // Builds without the Rust parser never query `kUseRustCborParser`, so they
+  // take part in neither arm of the experiment and report nothing at all, even
+  // for a parse that leaves the parser choice to the feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kUseRustCborParser);
+
+  base::HistogramTester histograms;
+  const std::vector<uint8_t> valid_cbor = {0x01};  // Integer 1
+
+  Reader::Config config;
+  ASSERT_TRUE(Reader::Read(valid_cbor, config).has_value());
+
+  histograms.ExpectTotalCount("CBOR.Read.Result", 0);
+  histograms.ExpectTotalCount("CBOR.Read.Duration", 0);
+  histograms.ExpectTotalCount("CBOR.Read.Size", 0);
+}
+
+#endif  // BUILDFLAG(USE_CBOR_RUST)
 
 #if BUILDFLAG(USE_CBOR_RUST)
 INSTANTIATE_TEST_SUITE_P(,

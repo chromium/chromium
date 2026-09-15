@@ -21,17 +21,17 @@
 #include <iterator>
 #include <limits>
 #include <map>
+#include <optional>
 #include <utility>
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
@@ -132,21 +132,19 @@ Value ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key) {
 
 class [[nodiscard]] ScopedMetricsReporter {
  public:
-  ScopedMetricsReporter(bool is_rust,
-                        size_t payload_size,
+  ScopedMetricsReporter(size_t payload_size,
                         const Reader::DecoderError& error_code)
-      : backend_(is_rust ? ".Rust" : ".Cpp"),
-        payload_size_(payload_size),
-        error_code_(error_code) {}
+      : payload_size_(payload_size), error_code_(error_code) {}
   ~ScopedMetricsReporter() {
-    base::UmaHistogramEnumeration(base::StrCat({"CBOR.ReadResult", backend_}),
-                                  *error_code_);
-    base::UmaHistogramCounts10M(base::StrCat({"CBOR.Read.Size", backend_}),
-                                payload_size_);
+    const base::TimeDelta elapsed = timer_.Elapsed();
+
+    UMA_HISTOGRAM_ENUMERATION("CBOR.Read.Result", *error_code_);
+    UMA_HISTOGRAM_COUNTS_10M("CBOR.Read.Size",
+                             base::saturated_cast<int>(payload_size_));
     if (base::TimeTicks::IsHighResolution()) {
-      base::UmaHistogramCustomMicrosecondsTimes(
-          base::StrCat({"CBOR.Read.Duration", backend_}), timer_.Elapsed(),
-          base::Microseconds(1), base::Milliseconds(100), 50);
+      UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES("CBOR.Read.Duration", elapsed,
+                                              base::Microseconds(1),
+                                              base::Milliseconds(100), 50);
     }
   }
 
@@ -154,14 +152,17 @@ class [[nodiscard]] ScopedMetricsReporter {
   ScopedMetricsReporter& operator=(ScopedMetricsReporter&&) = delete;
 
  private:
-  const std::string_view backend_;
   const size_t payload_size_;
   const base::raw_ref<const Reader::DecoderError> error_code_;
-  base::ElapsedTimer timer_;
+  const base::ElapsedTimer timer_;
 };
 
-// The default value for `Reader::Config::use_rust`.
-bool ShouldUseRustParserByDefault() {
+// Resolves `Reader::Config::use_rust` to the parser to use. An unset value
+// follows the `kUseRustCborParser` feature.
+bool ShouldUseRustParser(const std::optional<bool>& use_rust) {
+  if (use_rust.has_value()) {
+    return *use_rust;
+  }
 #if BUILDFLAG(USE_CBOR_RUST)
   return base::FeatureList::IsEnabled(kUseRustCborParser);
 #else
@@ -169,9 +170,28 @@ bool ShouldUseRustParserByDefault() {
 #endif
 }
 
+// Whether a parse configured with `use_rust` should be reported to UMA.
+//
+// Both parsers report to the same histograms, and the `kUseRustCborParser`
+// experiment group is what tells them apart. Only parses that take part in the
+// experiment may be reported:
+//
+//  - A caller that selects a parser itself does not follow the experiment. Its
+//    samples would land in whichever arm happens to agree with its choice and
+//    be dropped from the other, skewing the population being compared.
+//  - Builds without the Rust parser never query the feature, and so are in
+//    neither arm.
+bool ShouldRecordMetrics([[maybe_unused]] const std::optional<bool>& use_rust) {
+#if BUILDFLAG(USE_CBOR_RUST)
+  return !use_rust.has_value();
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
-Reader::Config::Config() : use_rust(ShouldUseRustParserByDefault()) {}
+Reader::Config::Config() = default;
 Reader::Config::~Config() = default;
 
 Reader::Reader(base::span<const uint8_t> data)
@@ -248,10 +268,15 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
   DecoderError& error_code_out =
       config.error_code_out ? *config.error_code_out : ignored_error_code_out;
 
-  ScopedMetricsReporter reporter(config.use_rust, data.size(), error_code_out);
+  const bool use_rust = ShouldUseRustParser(config.use_rust);
+
+  std::optional<ScopedMetricsReporter> reporter;
+  if (ShouldRecordMetrics(config.use_rust)) {
+    reporter.emplace(data.size(), error_code_out);
+  }
 
 #if BUILDFLAG(USE_CBOR_RUST)
-  if (config.use_rust) {
+  if (use_rust) {
     cbor::rust::Config rust_config;
     rust_config.allow_invalid_utf8 = config.allow_invalid_utf8;
     rust_config.max_nesting_level = config.max_nesting_level;
@@ -283,8 +308,7 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
     return ConvertRustValueToCpp(result->value);
   }
 #else
-  CHECK(!config.use_rust)
-      << "CBOR Rust parser is statically disabled in this build";
+  CHECK(!use_rust) << "CBOR Rust parser is statically disabled in this build";
 #endif
 
   Reader reader(data);
