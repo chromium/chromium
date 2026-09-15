@@ -2369,6 +2369,7 @@ source_set("unit_tests") {
     "//base/i18n:test_support",
     "//base/test:test_support",
     "//base/version_info",
+    "//build:blink_buildflags",
     "//components/autofill/core/browser/actor:unit_tests",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",

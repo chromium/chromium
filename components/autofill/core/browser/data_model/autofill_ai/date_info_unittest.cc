@@ -8,12 +8,14 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/map_util.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/data_model_util.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 namespace {
@@ -94,86 +96,165 @@ TEST(DateInfo, GetDateProto) {
 // Tests that GetIcuDate() returns the localized date for a localized pattern
 // across all Chrome UI platform locales (ui_l10n::GetPlatformLanguageTags()).
 TEST(DateInfo, GetIcuDate_LocalizedPattern_AllPlatformLocales) {
-  DateInfo info;
-  info.SetDate(u"07/12/2028", u"DD/MM/YYYY");
-  EXPECT_EQ(info.GetDate(u"YYYY-MM-DD"), u"2028-12-07");
+  constexpr auto kPlatformLocales = std::to_array({
+#define PLATFORM_LOCALE(locale) #locale,
+#include "ui/base/l10n/l10n_util_locales_list.inc"
+#undef PLATFORM_LOCALE
+  });
 
-  auto get = [&info](std::string_view locale) -> std::u16string {
-    std::optional<std::u16string> pattern =
+  constexpr std::u16string_view kDateInIso = u"2028-12-07";
+
+  // The expected localized versions of `kDateInIso`.
+  // This is a superset of all_chrome_locales from build/config/locales.gni.
+  // There are two limitations:
+  // (1) Each platform supports only a subset of these locales.
+  //     Therefore, further down below, the test only compares the locales from
+  //     `kPlatformLocales`.
+  // (2) On some platforms, the expectations differ, mostly because Chrome
+  //     strips the ICU calendar data for some locales. For these cases, the
+  //     test modifies the expectations down below.
+  auto expected_dates =
+      base::MakeFixedFlatMap<std::string_view, std::u16string_view>({
+          {"af", u"7 Des."},        // Afrikaans
+          {"am", u"ዲሴም 7"},         // Amharic
+          {"ar", u"7 ديسمبر"},      // Arabic
+          {"ar-XB", u"7 ديسمبر"},   // RTL Pseudolocale
+          {"as", u"৭ ডিচে"},        // Assamese
+          {"az", u"7 dek"},         // Azerbaijani
+          {"be", u"7 сне"},         // Belarusian
+          {"bg", u"7.12"},          // Bulgarian
+          {"bn", u"৭ ডিসে"},        // Bengali
+          {"bs", u"7. dec"},        // Bosnian
+          {"ca", u"7 de des."},     // Catalan
+          {"cs", u"7. 12."},        // Czech
+          {"cy", u"7 Rhag"},        // Welsh
+          {"da", u"7. dec."},       // Danish
+          {"de", u"7. Dez."},       // German
+          {"el", u"7 Δεκ"},         // Greek
+          {"en", u"Dec 7"},         // English
+          {"en-GB", u"7 Dec"},      // English (UK)
+          {"en-US", u"Dec 7"},      // English (US)
+          {"en-XA", u"Dec 7"},      // Long strings Pseudolocale
+          {"es", u"7 dic"},         // Spanish
+          {"es-419", u"7 dic"},     // Spanish (Latin America)
+          {"es-MX", u"7 dic"},      // Spanish (Mexico)
+          {"et", u"7. dets"},       // Estonian
+          {"eu", u"abe. 7(a)"},     // Basque
+          {"fa", u"۱۷ آذر"},        // Persian
+          {"fi", u"7.12."},         // Finnish
+          {"fil", u"Dis 7"},        // Filipino
+          {"fr", u"7 déc."},        // French
+          {"fr-CA", u"7 déc."},     // French (Canada)
+          {"gl", u"7 de dec."},     // Galician
+          {"gu", u"7 ડિસે"},         // Gujarati
+          {"he", u"7 בדצמ׳"},       // Hebrew
+          {"hi", u"7 दिस॰"},        // Hindi
+          {"hr", u"7. pro"},        // Croatian
+          {"hu", u"dec. 7."},       // Hungarian
+          {"hy", u"7 դեկ"},         // Armenian
+          {"id", u"7 Des"},         // Indonesian
+          {"is", u"7. des."},       // Icelandic
+          {"it", u"7 dic"},         // Italian
+          {"ja", u"12月7日"},       // Japanese
+          {"ka", u"7 დეკ"},         // Georgian
+          {"kk", u"7 жел."},        // Kazakh
+          {"km", u"7 ធ្នូ"},          // Khmer
+          {"kn", u"7 ಡಿಸೆಂ"},         // Kannada
+          {"ko", u"12월 7일"},      // Korean
+          {"ky", u"7-дек."},        // Kyrgyz
+          {"lo", u"7 ທ.ວ."},        // Lao
+          {"lt", u"12-07"},         // Lithuanian
+          {"lv", u"7. dec."},       // Latvian
+          {"mk", u"7 дек."},        // Macedonian
+          {"ml", u"ഡിസം 7"},        // Malayalam
+          {"mn", u"12-р сарын 7"},  // Mongolian
+          {"mr", u"७ डिसें"},         // Marathi
+          {"ms", u"7 Dis"},         // Malay
+          {"my", u"ဒီ ၇"},           // Burmese
+          {"nb", u"7. des."},       // Norwegian (Bokmal)
+          {"ne", u"डिसेम्बर ७"},      // Nepali
+          {"nl", u"7 dec"},         // Dutch
+          {"or", u"ଡିସେମ୍ବର 7"},      // Odia
+          {"pa", u"7 ਦਸੰ"},          // Punjabi
+          {"pl", u"7 gru"},         // Polish
+          {"pt", u"7 de dez."},     // Portuguese
+          {"pt-BR", u"7 de dez."},  // Portuguese (Brazil)
+          {"pt-PT", u"7/12"},       // Portuguese (Portugal)
+          {"ro", u"7 dec."},        // Romanian
+          {"ru", u"7 дек."},        // Russian
+          {"si", u"උඳුවප් 7"},        // Sinhala
+          {"sk", u"7. 12."},        // Slovak
+          {"sl", u"7. dec."},       // Slovenian
+          {"sq", u"7 dhj"},         // Albanian
+          {"sr", u"7. дец"},        // Serbian
+          {"sr-Latn", u"7. dec"},   // Serbian (Latin)
+          {"sv", u"7 dec."},        // Swedish
+          {"sw", u"7 Des"},         // Swahili
+          {"ta", u"டிச. 7"},        // Tamil
+          {"te", u"7 డిసెం"},         // Telugu
+          {"th", u"7 ธ.ค."},        // Thai
+          {"tr", u"7 Ara"},         // Turkish
+          {"uk", u"7 груд."},       // Ukrainian
+          {"ur", u"7 دسمبر"},       // Urdu
+          {"uz", u"7-dek"},         // Uzbek
+          {"vi", u"7 thg 12"},      // Vietnamese
+          {"zh-CN", u"12月7日"},    // Chinese (China)
+          {"zh-HK", u"12月7日"},    // Chinese (Hong Kong)
+          {"zh-TW", u"12月7日"},    // Chinese (Taiwan)
+          {"zu", u"Dis 7"},         // Zulu
+      });
+
+  // On some platforms, Chrome ships `.pak` UI strings for certain locales
+  // (so they appear in `l10n_util_locales_list.inc`), but strips or alters
+  // their ICU data in `third_party/icu/filters/{android,chromeos,ios}.json`
+  // to save binary size.
+  constexpr std::u16string_view kRootLocaleDate [[maybe_unused]] = u"M12 7";
+#if BUILDFLAG(IS_ANDROID)
+  expected_dates.at("as") = u"Dec 7";         // Assamese
+  expected_dates.at("be") = kRootLocaleDate;  // Belarusian
+  expected_dates.at("bs") = kRootLocaleDate;  // Bosnian
+  expected_dates.at("or") = kRootLocaleDate;  // Odia
+#elif BUILDFLAG(IS_CHROMEOS)
+  expected_dates.at("mn") = kRootLocaleDate;  // Mongolian
+#elif BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+  expected_dates.at("gl") = kRootLocaleDate;  // Galician
+  expected_dates.at("or") = kRootLocaleDate;  // Odia
+  expected_dates.at("pa") = kRootLocaleDate;  // Punjabi
+#elif BUILDFLAG(IS_IOS) && !BUILDFLAG(USE_BLINK)
+  expected_dates.at("bn") = kRootLocaleDate;    // Bengali
+  expected_dates.at("fa") = u"۱۷ سپتامبر";      // Persian
+  expected_dates.at("gl") = kRootLocaleDate;    // Galician
+  expected_dates.at("gu") = kRootLocaleDate;    // Gujarati
+  expected_dates.at("kn") = kRootLocaleDate;    // Kannada
+  expected_dates.at("ml") = kRootLocaleDate;    // Malayalam
+  expected_dates.at("mr") = kRootLocaleDate;    // Marathi
+  expected_dates.at("ms") = kRootLocaleDate;    // Malay
+  expected_dates.at("or") = kRootLocaleDate;    // Odia
+  expected_dates.at("pa") = kRootLocaleDate;    // Punjabi
+  expected_dates.at("ta") = kRootLocaleDate;    // Tamil
+  expected_dates.at("te") = kRootLocaleDate;    // Telugu
+  expected_dates.at("th") = u"7 ├เดือน: ธ.ค.┤";  // Thai
+  expected_dates.at("ur") = kRootLocaleDate;    // Urdu
+#endif
+
+  // We loop over `kPlatformLocales`, not `expected_dates`, so that we limit
+  // ourselves to those locales supported by the platform.
+  for (std::string_view locale : kPlatformLocales) {
+    SCOPED_TRACE(testing::Message() << "Locale: " << locale);
+
+    const std::u16string_view* expected_date =
+        base::FindOrNull(expected_dates, locale);
+    ASSERT_NE(expected_date, nullptr);
+
+    const std::optional<std::u16string> pattern =
         data_util::LocalizePattern(u"MMM d", locale);
-    if (!pattern) {
-      return u"invalid";
-    }
-    return info.GetIcuDate(*pattern, locale);
-  };
+    ASSERT_TRUE(pattern);
+    DateInfo info;
+    info.SetDate(kDateInIso, u"YYYY-MM-DD");
+    const std::u16string actual_date = info.GetIcuDate(*pattern, locale);
 
-  // Those are the supported locales according to
-  // ui/base/l10n/l10n_util_locales_list.inc.
-  EXPECT_EQ(get("am"), u"ዲሴም 7");         // Amharic
-  EXPECT_EQ(get("ar"), u"7 ديسمبر");      // Arabic
-  EXPECT_EQ(get("bg"), u"7.12");          // Bulgarian
-  EXPECT_EQ(get("ca"), u"7 de des.");     // Catalan
-  EXPECT_EQ(get("cs"), u"7. 12.");        // Czech
-  EXPECT_EQ(get("da"), u"7. dec.");       // Danish
-  EXPECT_EQ(get("de"), u"7. Dez.");       // German
-  EXPECT_EQ(get("el"), u"7 Δεκ");         // Greek
-  EXPECT_EQ(get("en-GB"), u"7 Dec");      // English (UK)
-  EXPECT_EQ(get("en-US"), u"Dec 7");      // English (US)
-  EXPECT_EQ(get("es"), u"7 dic");         // Spanish
-  EXPECT_EQ(get("es-419"), u"7 dic");     // Spanish (Latin America)
-  EXPECT_EQ(get("fi"), u"7.12.");         // Finnish.
-  EXPECT_EQ(get("fil"), u"Dis 7");        // Filipino
-  EXPECT_EQ(get("fr"), u"7 déc.");        // French
-  EXPECT_EQ(get("he"), u"7 בדצמ׳");       // Hebrew
-  EXPECT_EQ(get("hi"), u"7 दिस॰");        // Hindi
-  EXPECT_EQ(get("hr"), u"7. pro");        // Croatian
-  EXPECT_EQ(get("hu"), u"dec. 7.");       // Hungarian
-  EXPECT_EQ(get("id"), u"7 Des");         // Indonesian
-  EXPECT_EQ(get("it"), u"7 dic");         // Italian
-  EXPECT_EQ(get("ja"), u"12月7日");       // Japanese
-  EXPECT_EQ(get("ko"), u"12월 7일");      // Korean
-  EXPECT_EQ(get("lt"), u"12-07");         // Lithuanian.
-  EXPECT_EQ(get("lv"), u"7. dec.");       // Latvian
-  EXPECT_EQ(get("nb"), u"7. des.");       // Norwegian (Bokmal)
-  EXPECT_EQ(get("nl"), u"7 dec");         // Dutch
-  EXPECT_EQ(get("pl"), u"7 gru");         // Polish
-  EXPECT_EQ(get("pt-BR"), u"7 de dez.");  // Portuguese (Brazil)
-  EXPECT_EQ(get("pt-PT"), u"7/12");       // Portuguese (Portugal).
-  EXPECT_EQ(get("ro"), u"7 dec.");        // Romanian
-  EXPECT_EQ(get("ru"), u"7 дек.");        // Russian
-  EXPECT_EQ(get("sk"), u"7. 12.");        // Slovak
-  EXPECT_EQ(get("sl"), u"7. dec.");       // Slovenian
-  EXPECT_EQ(get("sr"), u"7. дец");        // Serbian
-  EXPECT_EQ(get("sv"), u"7 dec.");        // Swedish
-  EXPECT_EQ(get("sw"), u"7 Des");         // Swahili
-  EXPECT_EQ(get("tr"), u"7 Ara");         // Turkish
-  EXPECT_EQ(get("uk"), u"7 груд.");       // Ukrainian
-  EXPECT_EQ(get("vi"), u"7 thg 12");      // Vietnamese
-  EXPECT_EQ(get("zh-CN"), u"12月7日");    // Chinese (China)
-  EXPECT_EQ(get("zh-TW"), u"12月7日");    // Chinese (Taiwan)
-
-#if !BUILDFLAG(IS_IOS)
-  // iOS ICU data (third_party/icu/filters/ios.json) strips calendar data for
-  // these desktop UI locales.
-  EXPECT_EQ(get("af"), u"7 Des.");   // Afrikaans
-  EXPECT_EQ(get("bn"), u"৭ ডিসে");   // Bengali
-  EXPECT_EQ(get("et"), u"7. dets");  // Estonian
-  EXPECT_EQ(get("fa"), u"۱۷ آذر");   // Persian
-  EXPECT_EQ(get("gu"), u"7 ડિસે");    // Gujarati
-  EXPECT_EQ(get("kn"), u"7 ಡಿಸೆಂ");    // Kannada
-  EXPECT_EQ(get("ml"), u"ഡിസം 7");   // Malayalam
-  EXPECT_EQ(get("mr"), u"७ डिसें");    // Marathi
-  EXPECT_EQ(get("ms"), u"7 Dis");    // Malay
-  EXPECT_EQ(get("ta"), u"டிச. 7");   // Tamil
-  EXPECT_EQ(get("te"), u"7 డిసెం");    // Telugu
-  EXPECT_EQ(get("th"), u"7 ธ.ค.");   // Thai
-#endif
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS)
-  // Both iOS (ios.json) and ChromeOS (chromeos.json) strip calendar data for
-  // Urdu.
-  EXPECT_EQ(get("ur"), u"7 دسمبر");  // Urdu
-#endif
+    EXPECT_EQ(actual_date, *expected_date);
+  }
 }
 
 }  // namespace
