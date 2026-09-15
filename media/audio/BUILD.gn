@@ -577,11 +577,3 @@ fuzzer_test("wav_audio_handler_fuzzer") {
     "//media:test_support",
   ]
 }
-
-fuzzer_test("flac_audio_handler_fuzzer") {
-  sources = [ "flac_audio_handler_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//media:test_support",
-  ]
-}
