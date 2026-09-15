@@ -852,6 +852,12 @@ public class KeyboardShortcuts {
             return null;
         }
 
+        if (KeyEvent.isGamepadButton(keyCode)) {
+            if (GamepadList.isGamepadAPIActive()) {
+                return null;
+            }
+        }
+
         switch (keyCode) {
             case KeyEvent.KEYCODE_SEARCH:
                 if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
