@@ -4,6 +4,7 @@
 
 #include "components/unexportable_keys/background_long_task_scheduler.h"
 
+#include <ranges>
 #include <string_view>
 
 #include "base/check_op.h"
@@ -125,8 +126,7 @@ BackgroundLongTaskScheduler::GetTaskQueueForPriority(
 BackgroundLongTaskScheduler::TaskQueue*
 BackgroundLongTaskScheduler::GetHighestPriorityNonEmptyTaskQueue() {
   // Highest priority has the highest value.
-  for (int i = kNumTaskPriorities - 1; i >= 0; --i) {
-    TaskQueue& queue = task_queue_by_priority_[i];
+  for (TaskQueue& queue : std::views::reverse(task_queue_by_priority_)) {
     if (!queue.empty()) {
       return &queue;
     }
