@@ -581,14 +581,14 @@ void CanvasRenderingContext2D::FlushIfRecordingLimitExceeded() {
   if (Host()->IsPrinting() && clear_frame()) {
     return;
   }
-  if (shared_image_provider_ || bitmap_provider_) {
-    const MemoryManagedPaintRecorder* recorder = Recorder();
-    CHECK(recorder);
-    if (recorder->ReleasableOpBytesUsed() > max_recorded_op_bytes() ||
-        recorder->ReleasableImageBytesUsed() > max_pinned_image_bytes())
-        [[unlikely]] {
-      FlushCanvas(FlushReason::kOther);
-    }
+  const MemoryManagedPaintRecorder* recorder = Recorder();
+  if (!recorder) {
+    return;
+  }
+  if (recorder->ReleasableOpBytesUsed() > max_recorded_op_bytes() ||
+      recorder->ReleasableImageBytesUsed() > max_pinned_image_bytes())
+      [[unlikely]] {
+    FlushCanvas(FlushReason::kOther);
   }
 }
 
