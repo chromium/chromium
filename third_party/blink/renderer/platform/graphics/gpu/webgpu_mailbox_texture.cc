@@ -114,9 +114,12 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
                                              dest_width, dest_height))) {
             TRACE_EVENT0("blink",
                          "WebGPUMailboxTexture::FromStaticBitmapImage");
-            lease->SetSyncToken(lease->RasterInterface()->WritePixels(
-                dest_shared_image, lease->GetSyncToken(),
-                /*dst_x_offset=*/0, /*dst_y_offset=*/0, subset));
+            lease->SetSyncToken(context_provider_wrapper->ContextProvider()
+                                    .RasterInterface()
+                                    ->WritePixels(dest_shared_image,
+                                                  lease->GetSyncToken(),
+                                                  /*dst_x_offset=*/0,
+                                                  /*dst_y_offset=*/0, subset));
             lease->SetCleared();
             copy_success = true;
           }

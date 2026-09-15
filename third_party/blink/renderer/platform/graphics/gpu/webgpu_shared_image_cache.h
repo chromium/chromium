@@ -162,7 +162,6 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
     resource_.sync_token_ = sync_token;
   }
   void SetCleared() { resource_.is_cleared_ = true; }
-  gpu::raster::RasterInterface* RasterInterface() const;
 
   void DrawToBackingSharedImage(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
@@ -181,6 +180,7 @@ class PLATFORM_EXPORT WebGpuSharedImageLease final
   size_t GetSize() const override;
 
  private:
+  gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGpuContextLost() const;
 
   Resource resource_;
