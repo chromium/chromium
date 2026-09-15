@@ -131,6 +131,11 @@ class PrefetchManager {
       SynthesisResultStatus status = SynthesisResultStatus::kSuccess);
   void ClearCache();
 
+  // Cancels pending in-flight synthesis requests by incrementing session_sequence_id_
+  // and clearing in-flight and pending request queues.
+  // Must be called on the owning sequence.
+  void CancelInflightRequests();
+
   // Timeline & scheduler inspection:
   size_t GetTimelineChunkCount() const;
   const std::vector<TextChunk>& GetTimelineChunks() const;

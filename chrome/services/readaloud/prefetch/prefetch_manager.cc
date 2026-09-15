@@ -86,10 +86,15 @@ void PrefetchManager::ResetSession() {
   timeline_.clear();
   session_cache_.clear();
   mode_scheduler_.Reset();
+  CancelInflightRequests();
+  weak_factory_.InvalidateWeakPtrs();
+}
+
+void PrefetchManager::CancelInflightRequests() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++session_sequence_id_;
   inflight_requests_.clear();
   pending_requests_.clear();
-  weak_factory_.InvalidateWeakPtrs();
 }
 
 void PrefetchManager::SetRequestSynthesisCallback(

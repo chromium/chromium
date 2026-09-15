@@ -763,4 +763,48 @@ TEST_F(PrefetchManagerTest, SetTextContentInterleavedWhitespaceSegment) {
   EXPECT_EQ(chunks[1].start_code_unit_offset, 23u);
 }
 
+TEST_F(PrefetchManagerTest, CancelInflightRequestsClearsQueuesAndInvalidatesSequenceId) {
+  PrefetchManager manager;
+
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  read_aloud::mojom::TextSegmentPtr seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text =
+      u"Sentence one. Sentence two. Sentence three. Sentence four. Sentence "
+      u"five. Sentence six.";
+  segments.push_back(std::move(seg));
+
+  manager.SetTextContent(segments);
+  uint64_t seq_id = manager.GetCurrentSequenceId();
+
+  std::vector<uint32_t> dispatched_chunks;
+  manager.SetRequestSynthesisCallback(base::BindRepeating(
+      [](std::vector<uint32_t>* out_chunks, uint32_t chunk_index,
+         std::u16string_view text) {
+        out_chunks->push_back(chunk_index);
+      },
+      &dispatched_chunks));
+
+  // Schedule 5 chunks. Maximum concurrent in-flight is 3, so 3 go to in-flight
+  // and 2 go to pending queue.
+  for (uint32_t i = 0; i < 5; ++i) {
+    manager.SchedulePrefetch(i);
+  }
+  EXPECT_EQ(dispatched_chunks.size(), 3u);
+  EXPECT_EQ(manager.GetInflightRequestCount(), 3u);
+
+  // Cancel inflight and pending requests
+  manager.CancelInflightRequests();
+  EXPECT_EQ(manager.GetInflightRequestCount(), 0u);
+  EXPECT_GT(manager.GetCurrentSequenceId(), seq_id);
+
+  // Stale callback with old sequence_id should be ignored
+  manager.OnSynthesisResponse(
+      seq_id, 0,
+      media::DecoderBuffer::CopyFrom(
+          std::vector<uint8_t>({0x4F, 0x67, 0x67, 0x53})),
+      {});
+  EXPECT_FALSE(manager.HasCachedSegment(0));
+}
+
 }  // namespace readaloud
