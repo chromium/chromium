@@ -1409,6 +1409,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.Audio.Capture.VoiceIsolation.ProcessingAudioFifo.MaxUsage"
+    units="buffers" expires_after="2027-01-17">
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Maximum size (in buffers) of the Voice Isolation unprocessed data queue,
+    reached over a sampling interval (1000 callbacks). Logged when audio is
+    pushed into ProcessingAudioFifo (every 1000 callbacks). Not logged for
+    streams running for less than 1000 callbacks.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.Audio.Capture.VoiceIsolation.ProcessingAudioFifo.Overruns"
+    units="count" expires_after="2027-01-17">
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Number of times over a sampling interval (1000 callbacks) a Voice Isolation
+    ProcessingAudioFifo has overflowed and dropped buffers. Capped at 100 (1/10
+    of all callbacks). Logged when audio is pushed into ProcessingAudioFifo
+    (every 1000 callbacks). Not logged for streams running for less than 1000
+    callbacks.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.VoiceIsolation.StartupDuration.{Status}"
     units="ms" expires_after="2027-03-01">
   <owner>olka@chromium.org</owner>

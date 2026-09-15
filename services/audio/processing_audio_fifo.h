@@ -40,11 +40,17 @@ class ProcessingAudioFifo {
 
   using LogCallback = base::RepeatingCallback<void(std::string_view)>;
 
+  enum class FifoType {
+    kApm,
+    kVoiceIsolation,
+  };
+
   // |processing_callback| will only be called back on the processing thread.
   ProcessingAudioFifo(const media::AudioParameters& input_params,
                       int fifo_size,
                       ProcessAudioCallback processing_callback,
-                      LogCallback log_callback);
+                      LogCallback log_callback,
+                      FifoType fifo_type = FifoType::kApm);
 
   // Note: This synchronously waits for |audio_processing_thread_.Stop()|.
   ~ProcessingAudioFifo();

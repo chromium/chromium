@@ -12,10 +12,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "media/audio/simple_sources.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace audio {
@@ -503,6 +505,61 @@ TEST_F(ProcessingAudioFifoTest, StopDuringBatchProcess) {
 
   // Explicitly destroy the FIFO, to avoid TSAN failures.
   TearDownFifo();
+}
+
+TEST_F(ProcessingAudioFifoTest, ApmStatsReporterLogsAndMetrics) {
+  base::HistogramTester histogram_tester;
+  std::string logged_message;
+  auto log_callback = base::BindLambdaForTesting(
+      [&](std::string_view msg) { logged_message = std::string(msg); });
+
+  auto audio_data = CreateAudioData();
+  {
+    ProcessingAudioFifo fifo(params_, kTestFifoSize, base::DoNothing(),
+                             log_callback, ProcessingAudioFifo::FifoType::kApm);
+    for (int i = 0; i < 1000; ++i) {
+      fifo.PushData(audio_data.get(), base::TimeTicks::Now(), kTestVolume, {});
+    }
+  }
+
+  EXPECT_THAT(logged_message, testing::StartsWith("~ProcessingFifo()"));
+  EXPECT_THAT(logged_message, testing::HasSubstr("total_callbacks=1000"));
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.ProcessingAudioFifo.MaxUsage", 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.ProcessingAudioFifo.Overruns", 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.VoiceIsolation.ProcessingAudioFifo.MaxUsage", 0);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.VoiceIsolation.ProcessingAudioFifo.Overruns", 0);
+}
+
+TEST_F(ProcessingAudioFifoTest, VoiceIsolationStatsReporterLogsAndMetrics) {
+  base::HistogramTester histogram_tester;
+  std::string logged_message;
+  auto log_callback = base::BindLambdaForTesting(
+      [&](std::string_view msg) { logged_message = std::string(msg); });
+
+  auto audio_data = CreateAudioData();
+  {
+    ProcessingAudioFifo fifo(params_, kTestFifoSize, base::DoNothing(),
+                             log_callback,
+                             ProcessingAudioFifo::FifoType::kVoiceIsolation);
+    for (int i = 0; i < 1000; ++i) {
+      fifo.PushData(audio_data.get(), base::TimeTicks::Now(), kTestVolume, {});
+    }
+  }
+
+  EXPECT_THAT(logged_message, testing::StartsWith("~ProcessingFifo()"));
+  EXPECT_THAT(logged_message, testing::HasSubstr("total_callbacks=1000"));
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.VoiceIsolation.ProcessingAudioFifo.MaxUsage", 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.VoiceIsolation.ProcessingAudioFifo.Overruns", 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.ProcessingAudioFifo.MaxUsage", 0);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.ProcessingAudioFifo.Overruns", 0);
 }
 
 }  // namespace audio

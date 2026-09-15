@@ -22,12 +22,25 @@ class ProcessingAudioFifo::StatsReporter {
 
   constexpr static int kMaxFifoSize = 200;
 
-  StatsReporter(int fifo_size, ProcessingAudioFifo::LogCallback log_callback)
-      : fifo_size_(fifo_size), log_callback_(std::move(log_callback)) {}
+  StatsReporter(FifoType fifo_type,
+                int fifo_size,
+                ProcessingAudioFifo::LogCallback log_callback)
+      : fifo_size_(fifo_size),
+        log_callback_(std::move(log_callback)),
+        max_usage_metric_(
+            fifo_type == FifoType::kVoiceIsolation
+                ? "Media.Audio.Capture.VoiceIsolation.ProcessingAudioFifo."
+                  "MaxUsage"
+                : "Media.Audio.Capture.ProcessingAudioFifo.MaxUsage"),
+        overruns_metric_(
+            fifo_type == FifoType::kVoiceIsolation
+                ? "Media.Audio.Capture.VoiceIsolation.ProcessingAudioFifo."
+                  "Overruns"
+                : "Media.Audio.Capture.ProcessingAudioFifo.Overruns") {}
 
   ~StatsReporter() {
     log_callback_.Run(base::StringPrintf(
-        "AIC::~ProcessingFifo() => (total_callbacks=%d, total_overruns=%d)",
+        "~ProcessingFifo() => (total_callbacks=%d, total_overruns=%d)",
         total_callback_count_, total_overrun_count_));
   }
 
@@ -44,16 +57,14 @@ class ProcessingAudioFifo::StatsReporter {
     if (total_callback_count_ % kCallbacksPerLogPeriod)
       return;
 
-    base::UmaHistogramCustomCounts(
-        "Media.Audio.Capture.ProcessingAudioFifo.MaxUsage",
-        max_fifo_space_used_during_log_period_,
-        /*min*/ 1,
-        /*max*/ kMaxFifoSize + 1,
-        /*buckets*/ 50);
+    base::UmaHistogramCustomCounts(max_usage_metric_,
+                                   max_fifo_space_used_during_log_period_,
+                                   /*min*/ 1,
+                                   /*max*/ kMaxFifoSize + 1,
+                                   /*buckets*/ 50);
 
     base::UmaHistogramCounts100(
-        "Media.Audio.Capture.ProcessingAudioFifo.Overruns",
-        total_overrun_count_ - last_logged_overrun_count_);
+        overruns_metric_, total_overrun_count_ - last_logged_overrun_count_);
     max_fifo_space_used_during_log_period_ = 0;
     last_logged_overrun_count_ = total_overrun_count_;
   }
@@ -61,6 +72,8 @@ class ProcessingAudioFifo::StatsReporter {
  private:
   const int fifo_size_;
   const ProcessingAudioFifo::LogCallback log_callback_;
+  const char* const max_usage_metric_;
+  const char* const overruns_metric_;
   int total_callback_count_ = 0;
   int total_overrun_count_ = 0;
   int max_fifo_space_used_during_log_period_ = 0;
@@ -78,7 +91,8 @@ ProcessingAudioFifo::ProcessingAudioFifo(
     const media::AudioParameters& input_params,
     int fifo_size,
     ProcessAudioCallback processing_callback,
-    LogCallback log_callback)
+    LogCallback log_callback,
+    FifoType fifo_type)
     : fifo_size_(fifo_size),
       fifo_(fifo_size_),
       input_params_(input_params),
@@ -87,7 +101,8 @@ ProcessingAudioFifo::ProcessingAudioFifo(
       processing_callback_(std::move(processing_callback)),
       new_data_captured_(base::WaitableEvent::ResetPolicy::AUTOMATIC),
       stats_reporter_(
-          std::make_unique<StatsReporter>(fifo_size_,
+          std::make_unique<StatsReporter>(fifo_type,
+                                          fifo_size_,
                                           std::move(log_callback))) {
   DCHECK(processing_callback_);
 
