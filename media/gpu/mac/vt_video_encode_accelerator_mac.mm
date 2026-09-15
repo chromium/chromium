@@ -1200,7 +1200,12 @@ bool VTVideoEncodeAccelerator::EncodeWithPixelBuffer(
     //   * If we're uploading to a new pixel buffer and the provided frame color
     //     space is valid that'll be set on the pixel buffer.
     //   * If the frame color space is not valid, BT709 will be assumed.
-    auto frame_cs = GetImageBufferColorSpace(pixel_buffer.get());
+    //
+    // GetImageBufferColorSpace() is a lossy reverse mapping. Missing or
+    // unmapped attachments come back as an empty ColorSpace even when the
+    // frame did not change; that must not reset the compression session.
+    const gfx::ColorSpace frame_cs =
+        GetImageBufferColorSpace(pixel_buffer.get());
     std::optional<gfx::HDRMetadata> frame_hdr_metadata;
     if (frame->hdr_metadata().IsValid()) {
       frame_hdr_metadata = frame->hdr_metadata();
@@ -1213,10 +1218,12 @@ bool VTVideoEncodeAccelerator::EncodeWithPixelBuffer(
         CVPixelFormatForSourceImageBuffer(input_format_,
                                           gfx::ColorSpace::RangeID::FULL) &&
         frame_cs.GetRangeID() == gfx::ColorSpace::RangeID::FULL;
-    const bool color_space_or_hdr_metadata_changed =
-        encoder_color_space_ && (frame_cs != encoder_color_space_ ||
-                                 frame_hdr_metadata != encoder_hdr_metadata_);
-    if (first_hbd_full_range || color_space_or_hdr_metadata_changed) {
+    const bool color_space_changed = encoder_color_space_ &&
+                                     frame_cs.IsValid() &&
+                                     frame_cs != *encoder_color_space_;
+    const bool hdr_metadata_changed =
+        encoder_color_space_ && frame_hdr_metadata != encoder_hdr_metadata_;
+    if (first_hbd_full_range || color_space_changed || hdr_metadata_changed) {
       if (pending_encodes_) {
         auto status = VTCompressionSessionCompleteFrames(
             compression_session_.get(), kCMTimeInvalid);
@@ -1227,7 +1234,13 @@ bool VTVideoEncodeAccelerator::EncodeWithPixelBuffer(
           return false;
         }
       }
-      if (!ResetCompressionSession(frame_cs.GetRangeID())) {
+      // Unreadable `frame_cs` has RangeID::INVALID, which
+      // CVPixelFormatForVideoFrame() treats as LIMITED. Keep the latched
+      // range instead.
+      const auto source_range = frame_cs.IsValid()
+                                    ? frame_cs.GetRangeID()
+                                    : encoder_color_space_->GetRangeID();
+      if (!ResetCompressionSession(source_range)) {
         // ResetCompressionSession() invokes NotifyErrorStatus() on failure.
         return false;
       }
@@ -1236,7 +1249,7 @@ bool VTVideoEncodeAccelerator::EncodeWithPixelBuffer(
       force_keyframe_after_reset = true;
     }
 
-    if (!encoder_color_space_) {
+    if (!encoder_color_space_ && frame_cs.IsValid()) {
       encoder_color_space_ = frame_cs;
       encoder_hdr_metadata_ = frame_hdr_metadata;
       SetEncoderColorSpace();
