@@ -172,7 +172,7 @@ bool RunHelperAsRoot(const std::string& command,
 void ElevateAndSetConfig(base::DictValue config,
                          DaemonController::CompletionCallback done) {
   // Find out if the host service is running.
-  pid_t job_pid = base::mac::PIDForJob(remoting::kServiceName);
+  pid_t job_pid = base::mac::PIDForJobIfLoaded(remoting::kServiceName);
   bool service_running = (job_pid > 0);
 
   const char* command = service_running ? "--save-config" : "--enable";
