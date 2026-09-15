@@ -1832,4 +1832,42 @@ TEST_F(InputMethodAshTest, GetsGrammarFragments) {
   EXPECT_EQ(input_method_ash_->GetGrammarFragmentAtCursor(), std::nullopt);
 }
 
+TEST_F(InputMethodAshTest, GetSurroundingTextInfoInTextField) {
+  input_type_ = ui::TEXT_INPUT_TYPE_TEXT;
+  input_method_ash_->OnTextInputTypeChanged(this);
+
+  surrounding_text_ = u"abcdef";
+  text_range_ = gfx::Range(0, 6);
+  selection_range_ = gfx::Range(3, 3);
+
+  SurroundingTextInfo info = input_method_ash_->GetSurroundingTextInfo();
+  EXPECT_EQ(info.surrounding_text, u"abcdef");
+  EXPECT_EQ(info.selection_range, gfx::Range(3, 3));
+  EXPECT_EQ(info.offset, 0u);
+}
+
+TEST_F(InputMethodAshTest, GetSurroundingTextInfoInPasswordField) {
+  input_type_ = ui::TEXT_INPUT_TYPE_PASSWORD;
+  input_method_ash_->OnTextInputTypeChanged(this);
+
+  surrounding_text_ = u"secretpassword";
+  text_range_ = gfx::Range(0, 14);
+  selection_range_ = gfx::Range(14, 14);
+
+  SurroundingTextInfo info = input_method_ash_->GetSurroundingTextInfo();
+  EXPECT_TRUE(info.surrounding_text.empty());
+}
+
+TEST_F(InputMethodAshTest, GetSurroundingTextInfoInNoneField) {
+  input_type_ = ui::TEXT_INPUT_TYPE_NONE;
+  input_method_ash_->OnTextInputTypeChanged(this);
+
+  surrounding_text_ = u"sometext";
+  text_range_ = gfx::Range(0, 8);
+  selection_range_ = gfx::Range(0, 0);
+
+  SurroundingTextInfo info = input_method_ash_->GetSurroundingTextInfo();
+  EXPECT_TRUE(info.surrounding_text.empty());
+}
+
 }  // namespace ash

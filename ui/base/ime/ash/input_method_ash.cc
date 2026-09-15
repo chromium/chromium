@@ -989,6 +989,10 @@ void InputMethodAsh::SendKeyEvent(ui::KeyEvent* event) {
 }
 
 SurroundingTextInfo InputMethodAsh::GetSurroundingTextInfo() {
+  if (IsPasswordOrNoneInputFieldFocused()) {
+    return SurroundingTextInfo();
+  }
+
   gfx::Range text_range;
   SurroundingTextInfo info;
   TextInputClient* client = GetTextInputClient();
