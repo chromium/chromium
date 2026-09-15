@@ -158,7 +158,8 @@ class ExternalSVGResourceDocumentContent final
  public:
   explicit ExternalSVGResourceDocumentContent(
       const KURL&,
-      const CSSUrlRequestModifiers& modifiers);
+      const CSSUrlRequestModifiers& modifiers,
+      const Referrer& referrer);
 
   void Load(Document&, CrossOriginAttributeValue) override;
   void LoadWithoutCSP(Document&) override;
@@ -177,6 +178,7 @@ class ExternalSVGResourceDocumentContent final
   Member<SVGResourceDocumentContent> document_content_;
   KURL url_;
   CSSUrlRequestModifiers modifiers_;
+  Referrer referrer_;
 };
 
 // External resource reference (see SVGResource) with an ImageResourceContent
