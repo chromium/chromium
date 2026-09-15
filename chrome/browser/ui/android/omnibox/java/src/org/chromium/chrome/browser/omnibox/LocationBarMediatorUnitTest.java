@@ -4654,7 +4654,7 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
-    public void testBeginInput_fromUnanimatedFocus_transitionsToEnabledAndShowsScrim() {
+    public void testBeginInput_fromUnanimatedFocus_transitionsToEnabledAndDoesNotShowScrim() {
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
@@ -4672,7 +4672,8 @@ public class LocationBarMediatorUnitTest {
 
         assertAutocompleteState(AutocompleteState.ENABLED);
         assertFalse(mMediator.isUrlBarFocusedWithoutAnimation());
-        verify(mScrimHandler).setVisibility(true);
+        // We don't show the scrim on desktop
+        verify(mScrimHandler, never()).setVisibility(true);
     }
 
     @Test
