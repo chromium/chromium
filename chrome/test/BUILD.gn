@@ -4173,10 +4173,8 @@ if (!is_android) {
       ]
     }
     if (safe_browsing_mode == 1) {
-      sources += [
-        "../browser/safe_browsing/sb_embedded_test_server_browsertest.cc",
-        "../renderer/safe_browsing/threat_dom_details_browsertest.cc",
-      ]
+      sources +=
+          [ "../renderer/safe_browsing/threat_dom_details_browsertest.cc" ]
       deps += [
         "//chrome/browser/metrics/desktop_session_duration",
         "//chrome/browser/password_manager/factories",
