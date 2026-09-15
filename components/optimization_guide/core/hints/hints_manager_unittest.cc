@@ -712,12 +712,8 @@ TEST_F(HintsManagerTest, ParseInvalidConfigVersions) {
 }
 
 TEST_F(HintsManagerTest, ComponentProcessingWhileShutdown) {
-  base::HistogramTester histogram_tester;
   InitializeWithDefaultConfig("10.0.0.0", /*should_wait=*/false);
   hints_manager()->Shutdown();
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ProcessingComponentAtShutdown", true, 1);
 
   EXPECT_TRUE(
       pref_service()->GetString(prefs::kPendingHintsProcessingVersion).empty());

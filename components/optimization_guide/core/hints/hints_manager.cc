@@ -489,9 +489,6 @@ void HintsManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OptimizationHintsComponentUpdateListener::GetInstance()->RemoveObserver(this);
 
-  base::UmaHistogramBoolean(
-      "OptimizationGuide.ProcessingComponentAtShutdown",
-      currently_processing_component_version_.has_value());
   if (currently_processing_component_version_) {
     // If we are currently processing the component and we are asked to shut
     // down, we should clear the pref since the function to clear the pref will

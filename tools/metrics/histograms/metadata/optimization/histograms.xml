@@ -3058,16 +3058,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.ProcessingComponentAtShutdown"
-    enum="BooleanYesNo" expires_after="M145">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>catliu@chromium.org</owner>
-  <summary>
-    Whether the Optimization Hints component was being processed when the hints
-    manager is told to shutdown.
-  </summary>
-</histogram>
-
 <histogram name="OptimizationGuide.PushNotifications.CachedNotificationCount"
     units="count" expires_after="M145">
   <owner>rajendrant@chromium.org</owner>
