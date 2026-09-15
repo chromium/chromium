@@ -119,6 +119,7 @@
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/fake_safe_browsing_database_manager.h"
+#include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/load_error_reporter.h"
 #include "extensions/browser/managed_installation_mode.h"
@@ -4390,6 +4391,32 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsInstall) {
 
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_FAILED);
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
+}
+
+// Tests that a user-downloaded CRX installation without an install prompt
+// client fails and aborts the install (preventing silent installation).
+// Regression test for https://crbug.com/501875966.
+TEST_F(ExtensionServiceTest, UserDownloadWithoutPromptFails) {
+  InitializeEmptyExtensionService();
+
+  scoped_refptr<CrxInstaller> installer =
+      CrxInstaller::Create(profile(), /*client=*/nullptr);
+  installer->set_was_triggered_by_user_download();
+  installer->set_off_store_install_allow_reason(
+      CrxInstaller::OffStoreInstallAllowedInTest);
+
+  base::test::TestFuture<std::optional<CrxInstallError>> future;
+  installer->AddInstallerCallback(
+      future.GetCallback<const std::optional<CrxInstallError>&>());
+  installer->InstallCrx(data_dir().AppendASCII("good.crx"));
+
+  std::optional<CrxInstallError> install_error = future.Get();
+  EXPECT_TRUE(installer->did_handle_successfully());
+  ASSERT_TRUE(install_error.has_value());
+  EXPECT_EQ(CrxInstallErrorType::OTHER, install_error->type());
+  EXPECT_EQ(CrxInstallErrorDetail::USER_ABORTED, install_error->detail());
+
+  EXPECT_FALSE(registry()->GetInstalledExtension(kGoodCrx));
 }
 
 // Tests that extensions cannot be loaded from prefs if the policy provider

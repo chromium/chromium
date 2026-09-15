@@ -802,6 +802,18 @@ void CrxInstaller::ConfirmInstall() {
   current_version_ = base::Version(ExtensionPrefs::Get(browser_context_)
                                        ->GetVersionString(extension()->id()));
 
+  // User-downloaded installations require an install prompt client to confirm
+  // permissions unless pre-approved (e.g. from the webstore). If no prompt
+  // client is available (for example, if no browser window or tab is open),
+  // abort the install to avoid installing the extension silently. Non-user
+  // download flows (such as external providers) have their own separate
+  // acknowledgment lifecycles and may use CreateSilent() without a client.
+  if (was_triggered_by_user_download() && !client_ && !approved_) {
+    ReportFailureFromUIThread(CrxInstallError(
+        CrxInstallErrorType::OTHER, CrxInstallErrorDetail::USER_ABORTED));
+    return;
+  }
+
   if (client_ && (!allow_silent_install_ || !approved_) &&
       !update_from_settings_page_) {
     AddRef();  // Balanced in OnInstallPromptDone().
