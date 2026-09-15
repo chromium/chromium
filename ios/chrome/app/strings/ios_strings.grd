@@ -787,6 +787,26 @@
       <message name="IDS_IOS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user has filled in details related to their car. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
       Save vehicle
       </message>
+      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_GMAIL_MESSAGE" desc="Fallback label for a Gmail source in the Autofill AI sources bottom sheet when the email subject is unavailable. [iOS only]" translateable="false">
+        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+        TEST - Gmail message <ph name="INDEX">$1<ex>1</ex></ph>
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_FALLBACK_SAVED_PHOTO" desc="Fallback label for a Google Photos source in the Autofill AI sources bottom sheet when the photo title is unavailable. [iOS only]" translateable="false">
+        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+        TEST - Saved photo <ph name="INDEX">$1<ex>1</ex></ph>
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_GMAIL_SECTION_TITLE" desc="Section title for Gmail sources in the Autofill AI sources bottom sheet. [iOS only]" translateable="false">
+        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+        TEST - Gmail
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_PHOTOS_SECTION_TITLE" desc="Section title for Google Photos sources in the Autofill AI sources bottom sheet. [iOS only]" translateable="false">
+        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+        TEST - Photos
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_SOURCES_TITLE" desc="Title of the bottom sheet displaying the sources (such as Gmail or Google Photos) of an Autofill AI suggestion. [iOS only]" translateable="false">
+        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+        TEST - Sources
+      </message>
       <message name="IDS_IOS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their driver’s license. Now, the user is filling out a new form either with additional details associated with the driver’s license or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the driver’s license that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
       Update driver's license
       </message>
