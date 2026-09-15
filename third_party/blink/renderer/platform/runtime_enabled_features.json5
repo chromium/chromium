@@ -3215,7 +3215,7 @@
     },
     {
       name: "FontationsPrinting",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "FontDataServiceForCSSLocalFonts",
