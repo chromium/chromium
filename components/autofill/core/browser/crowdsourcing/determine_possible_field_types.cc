@@ -340,6 +340,10 @@ void AddPossibleAutofillAiTypesForMaskedValue(
     std::u16string_view masked_value_on_file,
     FieldType field_type,
     PossibleTypes& pt) {
+  // Single digit values are too likely to cause collisions.
+  if (masked_value_on_file.size() == 1) {
+    return;
+  }
   // Since the full value is not available on file, look for a suffix match.
   if (value_in_field.ends_with(masked_value_on_file)) {
     pt.types.insert(field_type);
@@ -380,6 +384,9 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
         const std::u16string& value_on_file =
             normalization::NormalizeForComparison(
                 attribute.GetInfo(field_type, app_locale, std::nullopt));
+        if (value_on_file.empty()) {
+          continue;
+        }
         if (attribute.masked()) {
           AddPossibleAutofillAiTypesForMaskedValue(
               value_in_field, value_on_file, field_type, pt);

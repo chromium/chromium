@@ -817,6 +817,38 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
               Each(Field(&PossibleTypes::types, Not(Contains(ONE_TIME_CODE)))));
 }
 
+// Tests that empty attributes don't influence crowdsourcing votes. Present
+// attributes should ideally always be non-empty to begin with - but there have
+// been bugs where they were empty.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       CrowdsourceAutofillAiTypes_MissingAttributes) {
+  FormData form;
+  form.set_fields({CreateTestFormField("first-name", "first-name", "Pippi",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("number", "number", "1234567",
+                                       FormControlType::kInputText)});
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  EntityInstance masked_entity =
+      test::MaskEntityInstance(test::GetPassportEntityInstance(
+          {.name = u"",
+           .number = u"",
+           .record_type = EntityInstance::RecordType::kServerWallet}));
+  EntityInstance unmasked_entity =
+      test::GetVehicleEntityInstance({.name = u"", .number = u""});
+
+  EXPECT_THAT(
+      DeterminePossibleFieldTypesForUpload(
+          std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+          std::vector<EntityInstance>{masked_entity, unmasked_entity},
+          std::vector<LoyaltyCard>(),
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-US", form_structure->fields()),
+      ElementsAre(HasTypes(UNKNOWN_TYPE), HasTypes(UNKNOWN_TYPE)));
+}
+
 // Tests if the Autofill AI field types for unmasked attributes are
 // crowdsourced.
 TEST_F(DeterminePossibleFieldTypesForUploadTest,
@@ -901,6 +933,37 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
           "en-US", form_structure->fields()),
       ElementsAre(HasTypes(PASSPORT_NUMBER), HasTypes(UNKNOWN_TYPE)));
+}
+
+// Tests that only masked attributes with at least 2 known digits are
+// crowdsourced to prevent false positives.
+TEST_F(DeterminePossibleFieldTypesForUploadTest,
+       CrowdsourceMaskedAutofillAiTypes_MinLength) {
+  FormData form;
+  form.set_fields({CreateTestFormField("number", "number", "1234567",
+                                       FormControlType::kInputText)});
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  // Create a masked passport that only has a single known digit.
+  EntityInstance entity =
+      test::MaskEntityInstance(test::GetPassportEntityInstance(
+          {.number = u"7",
+           .record_type = EntityInstance::RecordType::kServerWallet}));
+  ASSERT_EQ(entity.attribute(AttributeType(AttributeTypeName::kPassportNumber))
+                ->GetCompleteRawInfo(),
+            u"7");
+
+  // Expect that the the single digit suffix match doesn't create a passport
+  // number vote.
+  EXPECT_THAT(
+      DeterminePossibleFieldTypesForUpload(
+          std::vector<AutofillProfile>(), std::vector<CreditCard>(),
+          base::span_from_ref(entity), std::vector<LoyaltyCard>(),
+          /*fields_that_match_state=*/{},
+          /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
+          "en-US", form_structure->fields()),
+      ElementsAre(HasTypes(UNKNOWN_TYPE)));
 }
 
 // Tests if format strings are crowdsourced for certain unmasked Autofill AI
