@@ -54,7 +54,7 @@ dictionary DeviceFilter {
   // Device vendor ID.
   long vendorId;
 
-  // Device product ID, only checked only if the vendor ID matches.
+  // Device product ID, checked only if the vendor ID matches.
   long productId;
 
   // HID usage page identifier.
@@ -123,7 +123,6 @@ interface Hid {
 
   // Receive the next input report from the device.
   // |connectionId|: The <code>connectionId</code> returned by $(ref:connect).
-  // |callback|:
   static undefined receive(long connectionId,
                            ReceiveCallback callback);
 
@@ -142,7 +141,6 @@ interface Hid {
   // Request a feature report from the device.
   // |connectionId|: The <code>connectionId</code> returned by $(ref:connect).
   // |reportId|: The report ID, or <code>0</code> if none.
-  // |Returns|:
   // |PromiseValue|: data: The report data, including a report ID prefix if
   // one is sent by the device.
   static Promise<ArrayBuffer> receiveFeatureReport(
