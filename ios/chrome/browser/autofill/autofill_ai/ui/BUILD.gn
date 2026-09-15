@@ -15,6 +15,8 @@ source_set("ui") {
     "autofill_ai_source_item.mm",
     "autofill_ai_sources_util.h",
     "autofill_ai_sources_util.mm",
+    "autofill_ai_sources_view_controller.h",
+    "autofill_ai_sources_view_controller.mm",
   ]
   deps = [
     "//base",
@@ -43,6 +45,7 @@ source_set("unit_tests") {
   sources = [
     "autofill_ai_save_entity_table_view_controller_unittest.mm",
     "autofill_ai_sources_util_unittest.mm",
+    "autofill_ai_sources_view_controller_unittest.mm",
   ]
   deps = [
     ":ui",
