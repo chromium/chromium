@@ -57,11 +57,11 @@ reference to the session instance for as long as ETW trace events are desired.
 A session becomes active via a multi-step negotiation.
 
 1. Chrome creates an instance of `SystemTracingSession`.
-2. Chrome creates a named mojo channel to establish a connection with the
-   service and passes its name to the session's `AcceptInvitation()` method.
-3. The service begins monitoring the client (Chrome) for termination, connects
-   to the named channel to accept the invitation from it, and returns its PID to
-   the client.
+2. Chrome creates a mojo channel to establish a connection with the service and
+   passes its platform handle to the session's `AcceptInvitation()` method.
+3. The service begins monitoring the client (Chrome) for termination, duplicates
+   the channel handle into its process to accept the invitation from it, and
+   returns its PID to the client.
 4. Chrome sends a mojo invitation with an initial message pipe (named `0`) over
    the channel to the service.
 5. The service takes its end of the message pipe from the invitation, wraps it
