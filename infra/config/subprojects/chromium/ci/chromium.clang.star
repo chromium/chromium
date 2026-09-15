@@ -566,6 +566,7 @@ ci.builder(
             "all",
         ],
     ),
+    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",
         short_name = "and",
