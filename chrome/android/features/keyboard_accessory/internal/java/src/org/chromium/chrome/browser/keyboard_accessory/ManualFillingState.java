@@ -142,7 +142,10 @@ class ManualFillingState {
                 ObservableSuppliers.createMonotonic();
         provider.addObserver(
                 (type, item) -> {
-                    if (mWebContentsShowing) conditionalSupplier.set(item);
+                    // ManualFillingComponentBridge#destroy() notifies observers with null to
+                    // release sheet data. conditionalSupplier rejects null, and nothing reads
+                    // it after destruction, so drop the notification instead of forwarding it.
+                    if (mWebContentsShowing && item != null) conditionalSupplier.set(item);
                 });
         mSheetDataProviders.put(tabType, conditionalSupplier);
     }
