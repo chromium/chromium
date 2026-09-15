@@ -12,11 +12,9 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
@@ -49,58 +47,10 @@ content::WebContents* ReadAnythingSidePanelWebView::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  // Reading Mode only renders links from distilled web content, so restrict
-  // forwarded navigations to web schemes.
-  if (!params.url.SchemeIsHTTPOrHTTPS()) {
-    return nullptr;
-  }
-  ReadAnythingSidePanelController* controller =
-      ReadAnythingSidePanelControllerGlue::FromWebContents(web_contents())
-          ->controller();
-  if (controller && controller->tab() &&
-      controller->tab()->GetBrowserWindowInterface()) {
-    content::OpenURLParams modified_params = params;
-    content::RenderFrameHost* source_rfh = nullptr;
-    if (params.initiator_frame_token.has_value()) {
-      source_rfh = content::RenderFrameHost::FromFrameToken(
-          content::GlobalRenderFrameHostToken(
-              params.initiator_process_id,
-              params.initiator_frame_token.value()));
-    }
-
-    // Check that user_gesture is really true, by confirming that there was a
-    // recent activation in the RM rfh
-    if (modified_params.user_gesture &&
-        (!source_rfh || !source_rfh->HasTransientUserActivation())) {
-      modified_params.user_gesture = false;
-    }
-
-    // If a compromised renderer requests a CURRENT_TAB navigation, it
-    // bypasses the popup blocker, and also has other security risks like
-    // spoofing the original webpage. Set to NEW_FOREGROUND_TAB to make sure
-    // the popup blocker runs on links opened from the untrusted webui. We
-    // strictly allow-list dispositions that open new windows/tabs, and demote
-    // all others.
-    switch (modified_params.disposition) {
-      case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-      case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-      case WindowOpenDisposition::NEW_POPUP:
-      case WindowOpenDisposition::NEW_WINDOW:
-      case WindowOpenDisposition::SAVE_TO_DISK:
-      case WindowOpenDisposition::OFF_THE_RECORD:
-        break;
-      default:
-        modified_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-        break;
-    }
-
-    // Pass the main tab's WebContents as the source so the navigation pipeline
-    // has the correct context to evaluate disposition and blocking rules.
-    content::WebContents* tab_contents = controller->tab()->GetContents();
-    if (tab_contents && tab_contents->GetDelegate()) {
-      return tab_contents->GetDelegate()->OpenURLFromTab(
-          tab_contents, modified_params, std::move(navigation_handle_callback));
-    }
+  auto* glue = ReadAnythingControllerGlue::FromWebContents(web_contents());
+  if (glue && glue->controller()) {
+    return glue->controller()->OpenURLFromTab(
+        source, params, std::move(navigation_handle_callback));
   }
   return nullptr;
 }
