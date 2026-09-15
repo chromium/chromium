@@ -1099,13 +1099,15 @@ TEST_F(RawPtrTest, PlusOperator) {
 }
 
 TEST_F(RawPtrTest, MinusOperator) {
-  int foo[] = {42, 43, 44, 45};
-  CountingRawPtr<int> ptr = PA_UNSAFE_TODO(&foo[4]);
-  for (int i = 1; i <= 4; ++i) {
-    ASSERT_EQ(PA_UNSAFE_TODO(*(ptr - i)), 46 - i);
+  auto foo = std::to_array<int>({42, 43, 44, 45});
+  CountingRawPtr<int> end_ptr = base::to_address(foo.end());
+  for (int i = 1; i <= foo.size(); ++i) {
+    ASSERT_EQ(foo[foo.size() - i], 46 - i);
+    // SAFETY: we've verified the address is in bounds above.
+    ASSERT_EQ(PA_UNSAFE_BUFFERS(*(end_ptr - i)), 46 - i);
   }
   EXPECT_THAT((CountingRawPtrExpectations{
-                  .get_for_dereference_cnt = 4,
+                  .get_for_dereference_cnt = foo.size(),
                   .get_for_extraction_cnt = 0,
                   .get_for_comparison_cnt = 0,
               }),
