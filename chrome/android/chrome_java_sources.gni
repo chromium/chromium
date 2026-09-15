@@ -400,6 +400,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/overlay_panel/contextualsearch/NoSystemGestureFrameLayout.java",
   "java/src/org/chromium/chrome/browser/compositor/overlay_panel/contextualsearch/RelatedSearchesControl.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/AnimationHost.java",
+  "java/src/org/chromium/chrome/browser/compositor/overlays/strip/ExtensionTabContextMenuBridge.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/GlicButtonContextMenuCoordinator.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/ScrollDelegate.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/ScrollingStripStacker.java",

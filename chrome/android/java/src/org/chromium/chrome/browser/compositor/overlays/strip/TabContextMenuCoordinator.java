@@ -84,6 +84,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListItemType;
@@ -181,6 +182,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     private final @TabStripLayoutType int mTabStripLayout;
     private final @Nullable TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
+    private @Nullable ExtensionTabContextMenuBridge mExtensionTabContextMenuBridge;
 
     private TabContextMenuCoordinator(
             Supplier<TabModel> tabModelSupplier,
@@ -714,6 +716,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
         appendGlicItems(itemList, tabs, isIncognito);
         addVerticalTabsItems(itemList, isIncognito);
+        addExtensionItems(itemList, anchorInfo, isIncognito);
         itemList.add(createCloseItem(isIncognito));
         if (shouldShowCloseOtherTabsItem(anchorInfo)) {
             itemList.add(createCloseOtherTabsItem(isIncognito));
@@ -745,6 +748,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
         appendGlicItems(itemList, tabs, isIncognito);
         addVerticalTabsItems(itemList, isIncognito);
+        addExtensionItems(itemList, anchorInfo, isIncognito);
         itemList.add(createCloseItem(isIncognito));
         if (shouldShowCloseOtherTabsItem(anchorInfo)) {
             itemList.add(createCloseOtherTabsItem(isIncognito));
@@ -1414,5 +1418,70 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 HorizontalOrientation.LAYOUT_DIRECTION,
                 mActivity,
                 isIncognito);
+    }
+
+    /**
+     * Appends extension context menu items and separating dividers to the menu for the anchor tab.
+     */
+    private void addExtensionItems(ModelList itemList, AnchorInfo anchorInfo, boolean isIncognito) {
+        // Clean up any previously created bridge from an earlier menu invocation before
+        // creating a new one for this menu. This isn't usually necessary, but can be in the cases
+        // of unit tests or async menu flows (since onMenuDismissed is invoked asynchronously).
+        if (mExtensionTabContextMenuBridge != null) {
+            mExtensionTabContextMenuBridge.destroy();
+            mExtensionTabContextMenuBridge = null;
+        }
+        Tab tab = getTabModel().getTabById(anchorInfo.getAnchorTabId());
+        if (tab == null) {
+            return;
+        }
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) {
+            return;
+        }
+        // Attempt to create the bridge to query extension items from C++. This returns
+        // null if extensions are not enabled in this build or if the tab has no
+        // matching items.
+        mExtensionTabContextMenuBridge = ExtensionTabContextMenuBridge.create(webContents);
+        if (mExtensionTabContextMenuBridge == null) {
+            return;
+        }
+        ModelList extensionItems = mExtensionTabContextMenuBridge.getModelList();
+        if (extensionItems.isEmpty()) {
+            mExtensionTabContextMenuBridge.destroy();
+            mExtensionTabContextMenuBridge = null;
+            return;
+        }
+        // Separate extension items from native actions with dividers, avoiding
+        // duplicate adjacent dividers.
+        // First: Add a divider between this and the previous (non-extension)
+        // items if the previous item was not already a divider.
+        if (!itemList.isEmpty() && itemList.get(itemList.size() - 1).type != ListItemType.DIVIDER) {
+            itemList.add(buildMenuDivider(isIncognito));
+        }
+        // Next: Go through the list, adding each item, unless it's a divider
+        // and the previous item was also a divider.
+        for (ListItem item : extensionItems) {
+            if (item.type == ListItemType.DIVIDER
+                    && (!itemList.isEmpty()
+                            && itemList.get(itemList.size() - 1).type == ListItemType.DIVIDER)) {
+                continue;
+            }
+            itemList.add(item);
+        }
+        // Finally: Add a trailing divider if necessary (if the final item
+        // wasn't a divider).
+        if (itemList.get(itemList.size() - 1).type != ListItemType.DIVIDER) {
+            itemList.add(buildMenuDivider(isIncognito));
+        }
+    }
+
+    @Override
+    protected void onMenuDismissed() {
+        super.onMenuDismissed();
+        if (mExtensionTabContextMenuBridge != null) {
+            mExtensionTabContextMenuBridge.destroy();
+            mExtensionTabContextMenuBridge = null;
+        }
     }
 }

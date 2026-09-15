@@ -6,3 +6,4 @@ zheliooo@google.com
 per-file TabContextMenuCoordinator*=agazal@google.com,eleanorlee@google.com,jhimawan@google.com
 per-file TabStripContextMenuCoordinator*=agazal@google.com,eleanorlee@google.com,jhimawan@google.com
 per-file TabGroupContextMenuCoordinator*=agazal@google.com,eleanorlee@google.com,jhimawan@google.com
+per-file ExtensionTabContextMenuBridge*=file://extensions/UI_OWNERS

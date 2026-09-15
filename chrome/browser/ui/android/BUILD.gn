@@ -61,6 +61,8 @@ if (is_android) {
     sources = [
       "context_menu_helper.cc",
       "context_menu_helper.h",
+      "extension_tab_context_menu_bridge.cc",
+      "extension_tab_context_menu_bridge.h",
     ]
     deps = [
       "//base",
@@ -76,7 +78,7 @@ if (is_android) {
       "//ui/menus",
       "//url",
     ]
-    if (enable_desktop_android_extensions) {
+    if (enable_extensions_core) {
       # extension_menu_model_android.h is in the chrome/browser/extensions/
       # directory; dep on that target to make it accessible.
       deps += [ "//chrome/browser/extensions" ]

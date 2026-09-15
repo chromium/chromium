@@ -97,7 +97,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, ContextMenusBasics) {
   ASSERT_TRUE(RunExtensionTest("context_menus/basics")) << message_;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 class ExtensionTabContextMenuApiTest : public ExtensionContextMenuApiTest {
  public:
   ExtensionTabContextMenuApiTest() {
@@ -123,11 +122,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabContextMenuApiTest, ContextMenusTabContext) {
   // Wait until the extension has completed the menu item creation call.
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
-  // Verify the menu model. We create a TabMenuModel for the active tab
+  // Verify the menu model. We create a tab menu model for the active tab
   // to inspect its contents.
+#if BUILDFLAG(IS_ANDROID)
+  ExtensionMenuModel menu(profile(), GetActiveWebContents());
+  menu.PopulateModel();
+  EXPECT_TRUE(menu.HasVisibleItems());
+  // Calling PopulateModel() again should be idempotent and not duplicate items.
+  menu.PopulateModel();
+#else
   TabStripModel* tab_strip = browser()->tab_strip_model();
   int index = tab_strip->active_index();
   TabMenuModel menu(nullptr, nullptr, tab_strip, index);
+#endif
 
   // Iterate through the menu items to count how many times the
   // extension-provided item is present. This ensures that exactly one such item
@@ -153,6 +160,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabContextMenuApiTest, ContextMenusTabContext) {
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class FakeTabContextMenuControllerDelegate
     : public TabContextMenuController::Delegate {
  public:
@@ -180,6 +188,7 @@ class FakeTabContextMenuControllerDelegate
     return false;
   }
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabContextMenuApiTest,
                        ContextMenusTabContextMultipleItems) {
@@ -196,11 +205,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabContextMenuApiTest,
   // Wait until the extension has completed the menu item creation calls.
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
-  // Verify the menu model. We create a TabMenuModel for the active tab
+  // Verify the menu model. We create a tab menu model for the active tab
   // to inspect its contents.
+#if BUILDFLAG(IS_ANDROID)
+  ExtensionMenuModel menu(profile(), GetActiveWebContents());
+  menu.PopulateModel();
+#else
   TabStripModel* tab_strip = browser()->tab_strip_model();
   int index = tab_strip->active_index();
   TabMenuModel menu(nullptr, nullptr, tab_strip, index);
+#endif
 
   // Because there are multiple items, ContextMenuMatcher must group them inside
   // a submenu. Find the index of the extension-named submenu item.
@@ -219,6 +233,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabContextMenuApiTest,
   ASSERT_TRUE(submenu);
   ASSERT_EQ(2u, submenu->GetItemCount());
 
+#if !BUILDFLAG(IS_ANDROID)
   FakeTabContextMenuControllerDelegate fake_delegate;
 
   // Instantiate the TabContextMenuController to wrap the model, matching the
@@ -253,12 +268,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabContextMenuApiTest,
 
   // Simulate user clicking the first submenu item.
   loaded_submenu->ActivatedAt(0);
+#else
+  // Verify that querying the submenu item states routes successfully without
+  // crashes.
+  EXPECT_TRUE(submenu->IsVisibleAt(0));
+  EXPECT_TRUE(submenu->IsEnabledAt(0));
+  EXPECT_FALSE(submenu->IsItemCheckedAt(0));
+
+  // Simulate user clicking the first submenu item.
+  submenu->ActivatedAt(0);
+#endif
 
   // Wait for the extension background script to receive the click event and
   // succeed.
   ASSERT_TRUE(catcher.GetNextResult());
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(ExtensionContextMenuApiTest, ContextMenusNoPerms) {
   ASSERT_TRUE(RunExtensionTest("context_menus/no_perms")) << message_;

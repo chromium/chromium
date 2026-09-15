@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -153,6 +154,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -291,6 +293,8 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
+    @Mock private ExtensionTabContextMenuBridge.Native mExtensionTabContextMenuBridgeJniMock;
+    @Mock private MenuModelBridge mMenuModelBridge;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private TabGroupListBottomSheetCoordinator mBottomSheetCoordinator;
@@ -324,6 +328,8 @@ public class TabContextMenuCoordinatorUnitTest {
     public void setUp() {
         TrackerFactory.setTrackerForTests(mTracker);
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
+        ExtensionTabContextMenuBridgeJni.setInstanceForTesting(
+                mExtensionTabContextMenuBridgeJniMock);
         when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(any(), any()))
                 .thenReturn(EntryPointDisplayReason.OFFER_FEATURE);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
@@ -3446,6 +3452,122 @@ public class TabContextMenuCoordinatorUnitTest {
         assertFalse(
                 "Toggle layout menu item should be disabled when canActivate is false",
                 verticalTabsItem.model.get(ENABLED));
+    }
+
+    @Test
+    public void buildMenuActionItems_WithExtensionItems() {
+        when(mExtensionTabContextMenuBridgeJniMock.init(any())).thenReturn(12345L);
+        when(mExtensionTabContextMenuBridgeJniMock.getMenuModelBridge(12345L))
+                .thenReturn(mMenuModelBridge);
+
+        var itemModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(TITLE, "Extension Test Item")
+                        .build();
+        var extensionItems = new ModelList();
+        extensionItems.add(new ListItem(ListItemType.MENU_ITEM, itemModel));
+        when(mMenuModelBridge.populateModelList()).thenReturn(extensionItems);
+
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        ListItem extensionItem = findItemByTitle(modelList, "Extension Test Item");
+        assertNotNull("Extension item should be present in menu", extensionItem);
+        verify(mExtensionTabContextMenuBridgeJniMock).init(any());
+
+        mTabContextMenuCoordinator.onMenuDismissed();
+        verify(mExtensionTabContextMenuBridgeJniMock).destroy(12345L);
+    }
+
+    @Test
+    public void buildMenuActionItems_WithExtensionItems_MultipleTabs_UsesAnchorTab() {
+        WebContents webContents2 = Mockito.mock(WebContents.class);
+        when(mTab2.getWebContents()).thenReturn(webContents2);
+
+        when(mExtensionTabContextMenuBridgeJniMock.init(webContents2)).thenReturn(12345L);
+        when(mExtensionTabContextMenuBridgeJniMock.getMenuModelBridge(12345L))
+                .thenReturn(mMenuModelBridge);
+
+        var itemModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(TITLE, "Extension Multi Item")
+                        .build();
+        var extensionItems = new ModelList();
+        extensionItems.add(new ListItem(ListItemType.MENU_ITEM, itemModel));
+        when(mMenuModelBridge.populateModelList()).thenReturn(extensionItems);
+
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                mTab2,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
+        var modelList = new ModelList();
+        // Pass TAB_ID_2 as anchor tab, but all tabs as [TAB_ID, TAB_ID_2].
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID_2, List.of(TAB_ID, TAB_ID_2)));
+
+        ListItem extensionItem = findItemByTitle(modelList, "Extension Multi Item");
+        assertNotNull("Extension item should be present in menu", extensionItem);
+        // Verify init was called for the anchor tab's WebContents (mTab2), not mTab1.
+        verify(mExtensionTabContextMenuBridgeJniMock).init(webContents2);
+        verify(mExtensionTabContextMenuBridgeJniMock, never()).init(mWebContents);
+
+        mTabContextMenuCoordinator.onMenuDismissed();
+        verify(mExtensionTabContextMenuBridgeJniMock).destroy(12345L);
+    }
+
+    @Test
+    public void
+            buildMenuActionItems_WithExtensionItems_LeadingAndTrailingDividers_NoDuplicateDividers() {
+        when(mExtensionTabContextMenuBridgeJniMock.init(any())).thenReturn(12345L);
+        when(mExtensionTabContextMenuBridgeJniMock.getMenuModelBridge(12345L))
+                .thenReturn(mMenuModelBridge);
+
+        var itemModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(TITLE, "Extension Test Item")
+                        .build();
+        var dividerModel = new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS).build();
+        var extensionItems = new ModelList();
+        extensionItems.add(new ListItem(ListItemType.DIVIDER, dividerModel));
+        extensionItems.add(new ListItem(ListItemType.MENU_ITEM, itemModel));
+        extensionItems.add(new ListItem(ListItemType.DIVIDER, dividerModel));
+        when(mMenuModelBridge.populateModelList()).thenReturn(extensionItems);
+
+        mTabModel.addTab(
+                mTab1,
+                TabModel.INVALID_TAB_INDEX,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        // Verify there are no two adjacent dividers anywhere in modelList.
+        for (int i = 0; i < modelList.size() - 1; i++) {
+            if (modelList.get(i).type == ListItemType.DIVIDER) {
+                assertNotEquals(
+                        "Found duplicate adjacent dividers at indices " + i + " and " + (i + 1),
+                        ListItemType.DIVIDER,
+                        modelList.get(i + 1).type);
+            }
+        }
+
+        mTabContextMenuCoordinator.onMenuDismissed();
     }
 
     private void verifyAddToGroupSubmenuForTabOutsideOfGroup(
