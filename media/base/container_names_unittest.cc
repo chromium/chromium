@@ -68,6 +68,19 @@ uint8_t kAsfBuffer[] = {0x30, 0x26, 0xb2, 0x75, 0x8e, 0x66, 0xcf, 0x11,
                         0xa6, 0xd9, 0x00, 0xaa, 0x00, 0x62, 0xce, 0x6c};
 const char kAss1Buffer[] = "[Script Info]";
 const char kAss2Buffer[] = BYTE_ORDER_MARK "[Script Info]";
+uint8_t kBinkBuffer[] = {
+    'B',  'I',  'K',  'b',   // Signature
+    0x00, 0x00, 0x00, 0x00,  // File size (ignored)
+    0x01, 0x00, 0x00, 0x00,  // Number of frames = 1
+    0x00, 0x00, 0x00, 0x00,  // Largest frame size (skipped)
+    0x00, 0x00, 0x00, 0x00,  // Number of frames (alternate, skipped)
+    0x80, 0x02, 0x00, 0x00,  // Width = 640
+    0xe0, 0x01, 0x00, 0x00,  // Height = 480
+    0x1e, 0x00, 0x00, 0x00,  // FPS dividend = 30
+    0x01, 0x00, 0x00, 0x00,  // FPS scale = 1
+    0x00, 0x00, 0x00, 0x00,  // Flags (skipped)
+    0x01, 0x00, 0x00, 0x00,  // Audio tracks = 1
+};
 uint8_t kCafBuffer[] = {
     'c', 'a', 'f', 'f', 0,   1, 0, 0, 'd', 'e', 's', 'c', 0,   0, 0, 0, 0, 0, 0,
     32,  64,  229, 136, 128, 0, 0, 0, 0,   'a', 'a', 'c', ' ', 0, 0, 0, 2, 0, 0,
@@ -115,6 +128,93 @@ uint8_t kBug585243Buffer[] = {0x1a, 0x45, 0xdf, 0xa3, 0x01, 0x00,
                               0x00, 0x00, 0x00, 0x00, 0x00, 0x06,
                               0x42, 0x82, 0x42, 0x82, 0x00, 0x00};
 
+// Test Bink container parsing and validation.
+TEST(ContainerNamesTest, CheckBink) {
+  uint8_t buffer[] = {
+      'B',  'I',  'K',  'b',   // Signature
+      0x00, 0x00, 0x00, 0x00,  // File size (ignored)
+      0x01, 0x00, 0x00, 0x00,  // Number of frames = 1
+      0x00, 0x00, 0x00, 0x00,  // Largest frame size (skipped)
+      0x00, 0x00, 0x00, 0x00,  // Number of frames (alternate, skipped)
+      0x80, 0x02, 0x00, 0x00,  // Width = 640
+      0xe0, 0x01, 0x00, 0x00,  // Height = 480
+      0x1e, 0x00, 0x00, 0x00,  // FPS dividend = 30
+      0x01, 0x00, 0x00, 0x00,  // FPS scale = 1
+      0x00, 0x00, 0x00, 0x00,  // Flags (skipped)
+      0x01, 0x00, 0x00, 0x00,  // Audio tracks = 1
+  };
+  VERIFY(buffer, MediaContainerName::kContainerBink);
+
+  // Verify all supported Bink revisions ('b', 'd', 'f', 'g', 'h', 'i').
+  for (char sig : {'b', 'd', 'f', 'g', 'h', 'i'}) {
+    buffer[3] = static_cast<uint8_t>(sig);
+    VERIFY(buffer, MediaContainerName::kContainerBink);
+  }
+
+  // Unsupported revisions should not be recognized as Bink.
+  for (char sig : {'a', 'c', 'e', 'j', 'z', '1'}) {
+    buffer[3] = static_cast<uint8_t>(sig);
+    VERIFY(buffer, MediaContainerName::kContainerUnknown);
+  }
+  buffer[3] = 'b';
+
+  // Buffer must be at least 44 bytes.
+  VERIFY(base::span(buffer).first(43u), MediaContainerName::kContainerUnknown);
+  VERIFY(base::span(buffer).first(8u), MediaContainerName::kContainerUnknown);
+
+  // Number of frames must be > 0.
+  buffer[8] = 0;
+  VERIFY(buffer, MediaContainerName::kContainerUnknown);
+  buffer[8] = 1;
+
+  // Width must be > 0 and <= 32767.
+  buffer[20] = 0;
+  buffer[21] = 0;
+  VERIFY(buffer, MediaContainerName::kContainerUnknown);
+  buffer[20] = 0xff;
+  buffer[21] = 0x7f;  // 32767
+  VERIFY(buffer, MediaContainerName::kContainerBink);
+  buffer[20] = 0x00;
+  buffer[21] = 0x80;  // 32768
+  VERIFY(buffer, MediaContainerName::kContainerUnknown);
+  buffer[20] = 0x80;
+  buffer[21] = 0x02;  // 640
+
+  // Height must be > 0 and <= 32767.
+  buffer[24] = 0;
+  buffer[25] = 0;
+  VERIFY(buffer, MediaContainerName::kContainerUnknown);
+  buffer[24] = 0xff;
+  buffer[25] = 0x7f;  // 32767
+  VERIFY(buffer, MediaContainerName::kContainerBink);
+  buffer[24] = 0x00;
+  buffer[25] = 0x80;  // 32768
+  VERIFY(buffer, MediaContainerName::kContainerUnknown);
+  buffer[24] = 0xe0;
+  buffer[25] = 0x01;  // 480
+
+  // FPS dividend must be > 0.
+  buffer[28] = 0;
+  VERIFY(buffer, MediaContainerName::kContainerUnknown);
+  buffer[28] = 30;
+
+  // FPS scale must be > 0.
+  buffer[32] = 0;
+  VERIFY(buffer, MediaContainerName::kContainerUnknown);
+  buffer[32] = 1;
+
+  // Audio tracks must be <= 256.
+  buffer[40] = 0;
+  buffer[41] = 0;  // 0 audio tracks
+  VERIFY(buffer, MediaContainerName::kContainerBink);
+  buffer[40] = 0x00;
+  buffer[41] = 0x01;  // 256 audio tracks
+  VERIFY(buffer, MediaContainerName::kContainerBink);
+  buffer[40] = 0x01;
+  buffer[41] = 0x01;  // 257 audio tracks
+  VERIFY(buffer, MediaContainerName::kContainerUnknown);
+}
+
 // Test that containers that start with fixed strings are handled correctly.
 // This is to verify that the TAG matches the first 4 characters of the string.
 TEST(ContainerNamesTest, CheckFixedStrings) {
@@ -122,6 +222,7 @@ TEST(ContainerNamesTest, CheckFixedStrings) {
   VERIFY(kAsfBuffer, MediaContainerName::kContainerASF);
   VERIFY(kAss1Buffer, MediaContainerName::kContainerASS);
   VERIFY(kAss2Buffer, MediaContainerName::kContainerASS);
+  VERIFY(kBinkBuffer, MediaContainerName::kContainerBink);
   VERIFY(kCafBuffer, MediaContainerName::kContainerCAF);
   VERIFY(kDtshdBuffer, MediaContainerName::kContainerDTSHD);
   VERIFY(kDxaBuffer, MediaContainerName::kContainerDXA);
