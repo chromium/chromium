@@ -142,6 +142,7 @@ enum class RequestExtension {
   kMinPINLength,
   kCrossDeviceFallbackUrl,
   kCmtgKey,
+  kRemoteClientDataJSON,
 };
 
 enum class AttestationErasureOption {
@@ -1412,6 +1413,8 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
   if (options->remote_client_data_json) {
     // Use the provided clientDataJSON directly instead of building one.
     req_state_->client_data_json = *options->remote_client_data_json;
+    req_state_->requested_extensions.insert(
+        RequestExtension::kRemoteClientDataJSON);
   } else {
     webauthn::ClientDataJsonParams client_data_json_params(
         webauthn::ClientDataRequestType::kWebAuthnCreate,
@@ -2005,6 +2008,8 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   if (public_key_options->extensions->remote_client_data_json) {
     req_state_->client_data_json =
         *public_key_options->extensions->remote_client_data_json;
+    req_state_->requested_extensions.insert(
+        RequestExtension::kRemoteClientDataJSON);
   } else {
     webauthn::ClientDataJsonParams client_data_json_params(
         webauthn::ClientDataRequestType::kWebAuthnGet, caller_origin,
@@ -3195,6 +3200,9 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
         // [1]
         // https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
         break;
+      case RequestExtension::kRemoteClientDataJSON:
+        response->echo_remote_client_data_json = true;
+        break;
       case RequestExtension::kAppID:
       case RequestExtension::kLargeBlobRead:
       case RequestExtension::kLargeBlobWrite:
@@ -3349,6 +3357,9 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
       }
       case RequestExtension::kCrossDeviceFallbackUrl:
         response_extensions->cross_device_fallback_url = true;
+        break;
+      case RequestExtension::kRemoteClientDataJSON:
+        response_extensions->echo_remote_client_data_json = true;
         break;
       case RequestExtension::kHMACSecret:
       case RequestExtension::kCredProps:

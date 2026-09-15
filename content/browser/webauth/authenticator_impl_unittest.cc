@@ -2747,11 +2747,16 @@ TEST_P(AuthenticatorImplRemoteDesktopExtensionTest, MakeCredential) {
               test.success ? AuthenticatorStatus::SUCCESS
                            : AuthenticatorStatus::
                                  REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
-    // remoteClientDataJSON must reach the authenticator unchanged.
-    if (test.success && result.response &&
-        GetParam() == RemoteDesktopExtension::kRemoteClientDataJSON) {
-      EXPECT_EQ(base::as_string_view(result.response->info->client_data_json),
-                MakeClientDataJSON(test.remote_origin));
+    if (test.success) {
+      ASSERT_TRUE(result.response);
+      const bool used_remote_client_data_json =
+          GetParam() == RemoteDesktopExtension::kRemoteClientDataJSON;
+      EXPECT_EQ(result.response->echo_remote_client_data_json,
+                used_remote_client_data_json);
+      if (used_remote_client_data_json) {
+        EXPECT_EQ(base::as_string_view(result.response->info->client_data_json),
+                  MakeClientDataJSON(test.remote_origin));
+      }
     }
   }
 }
@@ -2789,11 +2794,17 @@ TEST_P(AuthenticatorImplRemoteDesktopExtensionTest, GetAssertion) {
               test.success ? AuthenticatorStatus::SUCCESS
                            : AuthenticatorStatus::
                                  REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
-    // remoteClientDataJSON must reach the authenticator unchanged.
-    if (test.success && result.response &&
-        GetParam() == RemoteDesktopExtension::kRemoteClientDataJSON) {
-      EXPECT_EQ(base::as_string_view(result.response->info->client_data_json),
-                MakeGetClientDataJSON(test.remote_origin));
+    if (test.success) {
+      ASSERT_TRUE(result.response);
+      ASSERT_TRUE(result.response->extensions);
+      const bool used_remote_client_data_json =
+          GetParam() == RemoteDesktopExtension::kRemoteClientDataJSON;
+      EXPECT_EQ(result.response->extensions->echo_remote_client_data_json,
+                used_remote_client_data_json);
+      if (used_remote_client_data_json) {
+        EXPECT_EQ(base::as_string_view(result.response->info->client_data_json),
+                  MakeGetClientDataJSON(test.remote_origin));
+      }
     }
   }
 }

@@ -388,7 +388,8 @@ TEST(WebAuthenticationJSONConversionTest,
       /*payment=*/nullptr,
       /*cmtg_key=*/
       blink::mojom::CmtgKeyResponse::New(ToByteVector("test cmtg key"),
-                                         ToByteVector("test cmtg signature")));
+                                         ToByteVector("test cmtg signature")),
+      /*echo_remote_client_data_json=*/false);
 
   ASSERT_TRUE(response->cmtg_key);
   EXPECT_EQ(response->cmtg_key->cmtg_key, expected->cmtg_key->cmtg_key);
@@ -562,7 +563,8 @@ TEST(WebAuthenticationJSONConversionTest,
           blink::mojom::CmtgKeyResponse::New(
               ToByteVector("test cmtg key"),
               ToByteVector("test cmtg signature")),
-          /*cross_device_fallback_url=*/true));
+          /*cross_device_fallback_url=*/true,
+          /*echo_remote_client_data_json=*/false));
   static const uint8_t expected_prf_first[32] = {
       0x99, 0x9d, 0x30, 0x29, 0x7b, 0xc5, 0x03, 0x7b, 0xa5, 0x7b, 0x81,
       0xbc, 0xf8, 0x27, 0xb3, 0x47, 0x1b, 0xe8, 0x3f, 0x80, 0x67, 0xf6,

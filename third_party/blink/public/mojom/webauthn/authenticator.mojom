@@ -191,6 +191,11 @@ struct MakeCredentialAuthenticatorResponse {
 
   // The response for the Credential Manager Trust Group key extension.
   CmtgKeyResponse? cmtg_key;
+
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain a `remoteClientDataJSON`
+  // extension output.
+  bool echo_remote_client_data_json;
 };
 
 struct GetAssertionAuthenticatorResponse {
@@ -265,6 +270,11 @@ struct AuthenticationExtensionsClientOutputs {
   // The value of the `crossDeviceFallbackUrl` extension output, or null if
   // none.
   bool? cross_device_fallback_url;
+
+  // True if getClientExtensionResults() called on the returned
+  // PublicKeyCredential instance should contain a `remoteClientDataJSON`
+  // extension output.
+  bool echo_remote_client_data_json;
 };
 
 // Information about the relying party. These fields take arbitrary input.
