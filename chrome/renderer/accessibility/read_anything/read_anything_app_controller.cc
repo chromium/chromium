@@ -2639,9 +2639,6 @@ void ReadAnythingAppController::OnReadingModeShown(
     read_anything::mojom::ReadAnythingOpenTrigger open_trigger) {
   model_.set_will_hide(false);
 
-  // TODO (crbug.com/494307454): Add test to verify that duplicate calls of
-  // OnReadingModeShown() won't affect Read Aloud's audio playback state (other
-  // than the playOnOpen state).
   if (open_trigger == read_anything::mojom::ReadAnythingOpenTrigger::
                           kListenToThisPageContextMenu) {
     ExecuteJavaScript("chrome.readingMode.setPlayOnOpen(true);");

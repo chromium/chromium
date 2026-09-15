@@ -6603,6 +6603,122 @@ TEST_F(ReadAnythingAppControllerTest,
       ReadAloudAppModel::ReadAloudStopSource::kButton, 1);
 }
 
+TEST_F(
+    ReadAnythingAppControllerTest,
+    OnReadingModeShown_DuplicateCalls_PreservesAudioPlaybackState_WhenPlaying) {
+  ExecuteJavaScriptForTests(
+      "var setPlayOnOpenCalledCount = 0;"
+      "chrome.readingMode.setPlayOnOpen = () => { setPlayOnOpenCalledCount++; "
+      "};");
+
+  EXPECT_CALL(page_handler_, OnReadAloudAudioStateChange(true)).Times(1);
+  controller().OnIsSpeechActiveChanged(true);
+  controller().OnIsAudioCurrentlyPlayingChanged(true);
+  ASSERT_TRUE(read_aloud_model().speech_playing());
+  ASSERT_TRUE(read_aloud_model().audio_currently_playing());
+
+  // Duplicate calls with non-listen triggers should preserve playing audio
+  // state and not execute setPlayOnOpen.
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+  EXPECT_TRUE(read_aloud_model().speech_playing());
+  EXPECT_TRUE(read_aloud_model().audio_currently_playing());
+  EXPECT_FALSE(model().will_hide());
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu);
+  EXPECT_TRUE(read_aloud_model().speech_playing());
+  EXPECT_TRUE(read_aloud_model().audio_currently_playing());
+  EXPECT_FALSE(model().will_hide());
+
+  int set_play_on_open_called_count = 0;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
+  EXPECT_EQ(0, set_play_on_open_called_count);
+
+  // Duplicate calls with the listen trigger should preserve playing audio state
+  // and execute setPlayOnOpen each time.
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::
+          kListenToThisPageContextMenu);
+  EXPECT_TRUE(read_aloud_model().speech_playing());
+  EXPECT_TRUE(read_aloud_model().audio_currently_playing());
+  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
+  EXPECT_EQ(1, set_play_on_open_called_count);
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::
+          kListenToThisPageContextMenu);
+  EXPECT_TRUE(read_aloud_model().speech_playing());
+  EXPECT_TRUE(read_aloud_model().audio_currently_playing());
+  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
+  EXPECT_EQ(2, set_play_on_open_called_count);
+}
+
+TEST_F(
+    ReadAnythingAppControllerTest,
+    OnReadingModeShown_DuplicateCalls_PreservesAudioPlaybackState_WhenPaused) {
+  ExecuteJavaScriptForTests(
+      "var setPlayOnOpenCalledCount = 0;"
+      "chrome.readingMode.setPlayOnOpen = () => { setPlayOnOpenCalledCount++; "
+      "};");
+
+  // Simulate audio having been started and then stopped/paused.
+  EXPECT_CALL(page_handler_, OnReadAloudAudioStateChange(true)).Times(1);
+  EXPECT_CALL(page_handler_, OnReadAloudAudioStateChange(false)).Times(1);
+  controller().OnIsSpeechActiveChanged(true);
+  controller().OnIsAudioCurrentlyPlayingChanged(true);
+  controller().OnIsSpeechActiveChanged(false);
+  controller().OnIsAudioCurrentlyPlayingChanged(false);
+  ASSERT_FALSE(read_aloud_model().speech_playing());
+  ASSERT_FALSE(read_aloud_model().audio_currently_playing());
+
+  // Duplicate calls with non-listen triggers should preserve paused audio state
+  // and not execute setPlayOnOpen.
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kOmniboxChip);
+  EXPECT_FALSE(read_aloud_model().speech_playing());
+  EXPECT_FALSE(read_aloud_model().audio_currently_playing());
+  EXPECT_FALSE(model().will_hide());
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu);
+  EXPECT_FALSE(read_aloud_model().speech_playing());
+  EXPECT_FALSE(read_aloud_model().audio_currently_playing());
+  EXPECT_FALSE(model().will_hide());
+
+  int set_play_on_open_called_count = 0;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
+  EXPECT_EQ(0, set_play_on_open_called_count);
+
+  // Duplicate calls with the listen trigger should preserve paused audio state
+  // and execute setPlayOnOpen each time.
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::
+          kListenToThisPageContextMenu);
+  EXPECT_FALSE(read_aloud_model().speech_playing());
+  EXPECT_FALSE(read_aloud_model().audio_currently_playing());
+  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
+  EXPECT_EQ(1, set_play_on_open_called_count);
+
+  controller().OnReadingModeShown(
+      read_anything::mojom::ReadAnythingOpenTrigger::
+          kListenToThisPageContextMenu);
+  EXPECT_FALSE(read_aloud_model().speech_playing());
+  EXPECT_FALSE(read_aloud_model().audio_currently_playing());
+  EXPECT_FALSE(model().will_hide());
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(
+      u"setPlayOnOpenCalledCount", &set_play_on_open_called_count));
+  EXPECT_EQ(2, set_play_on_open_called_count);
+}
+
 TEST_F(ReadAnythingAppControllerTest,
        OnNodeWillBeDeleted_InactiveTree_Ignored) {
   model().set_next_distillation_method(
