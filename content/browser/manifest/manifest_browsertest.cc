@@ -1850,5 +1850,70 @@ IN_PROC_BROWSER_TEST_F(
             "Returned manifest has incorrect manifest URL");
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ManifestBrowserTest,
+    BadMessage_ParseManifestFromString_ScopeExtensionsOriginNotHttps) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  const GURL manifest_url =
+      embedded_test_server()->GetURL("/manifest/manifest.json");
+  bad_manifest->manifest_url = manifest_url;
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  auto scope_extension = blink::mojom::ManifestScopeExtension::New();
+  scope_extension->origin =
+      url::Origin::Create(GURL("http://insecure.example.com"));
+  bad_manifest->scope_extensions.push_back(std::move(scope_extension));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  blink::mojom::ManifestPtr result =
+      host->ValidateParsedManifestFromStringForTesting(test_url, manifest_url,
+                                                       std::move(bad_manifest));
+  EXPECT_TRUE(blink::IsEmptyManifest(result));
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Manifest scope_extensions origin must use the https scheme.");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ManifestBrowserTest,
+    BadMessage_ParseManifestFromString_ScopeExtensionsOriginOpaque) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  const GURL manifest_url =
+      embedded_test_server()->GetURL("/manifest/manifest.json");
+  bad_manifest->manifest_url = manifest_url;
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  auto scope_extension = blink::mojom::ManifestScopeExtension::New();
+  scope_extension->origin = url::Origin();
+  bad_manifest->scope_extensions.push_back(std::move(scope_extension));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  blink::mojom::ManifestPtr result =
+      host->ValidateParsedManifestFromStringForTesting(test_url, manifest_url,
+                                                       std::move(bad_manifest));
+  EXPECT_TRUE(blink::IsEmptyManifest(result));
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Manifest scope_extensions origin must not be opaque.");
+}
+
 }  // namespace
 }  // namespace content

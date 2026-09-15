@@ -290,10 +290,12 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
               std::make_unique<net::test_server::BasicHttpResponse>();
           http_response->set_code(net::HTTP_OK);
           http_response->set_content_type("application/json");
-          http_response->set_content(
+          std::string app_id = request.GetURL().Resolve("/index").spec();
+          http_response->set_content(base::StringPrintf(
               R"({
-                "https://foo.com/index": {}
-              })");
+                "%s": {}
+              })",
+              app_id.c_str()));
           return http_response;
         }
         return nullptr;
@@ -301,20 +303,43 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
   ASSERT_TRUE(https_server.Start());
 
   GURL server_url = https_server.base_url();
+  GURL app_identity = https_server.GetURL("/index");
   ScopeExtensionInfo scope_extension =
       ScopeExtensionInfo::CreateForOrigin(url::Origin::Create(server_url));
 
   OriginAssociations origin_associations;
   origin_associations.scope_extensions = {scope_extension};
 
-  base::test::TestFuture<OriginAssociations> future;
-  manager_->GetWebAppOriginAssociations(GURL("https://foo.com/index"),
-                                        std::move(origin_associations),
-                                        future.GetCallback());
+  // 1. Same-address-space app can fetch from scope extension using the real
+  // StoragePartition URLLoaderFactory.
+  {
+    base::test::TestFuture<OriginAssociations> future;
+    manager_->GetWebAppOriginAssociations(app_identity, origin_associations,
+                                          future.GetCallback());
 
-  const OriginAssociations result = future.Get();
-  EXPECT_EQ(result.scope_extensions.size(), 1u);
-  EXPECT_EQ((*result.scope_extensions.begin()).origin, scope_extension.origin);
+    const OriginAssociations result = future.Get();
+    ASSERT_EQ(result.scope_extensions.size(), 1u);
+    EXPECT_EQ((*result.scope_extensions.begin()).origin,
+              scope_extension.origin);
+  }
+
+  // 2. Public app cannot fetch from private/link-local scope extensions (SSRF
+  // blocked).
+  {
+    OriginAssociations private_associations;
+    private_associations.scope_extensions = {
+        ScopeExtensionInfo::CreateForOrigin(
+            url::Origin::Create(GURL("https://192.168.1.10"))),
+        ScopeExtensionInfo::CreateForOrigin(
+            url::Origin::Create(GURL("https://169.254.169.254")))};
+    base::test::TestFuture<OriginAssociations> future;
+    manager_->GetWebAppOriginAssociations(GURL("https://foo.com/index"),
+                                          std::move(private_associations),
+                                          future.GetCallback());
+
+    const OriginAssociations result = future.Get();
+    EXPECT_TRUE(result.scope_extensions.empty());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,

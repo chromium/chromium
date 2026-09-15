@@ -31,6 +31,7 @@
 #include "third_party/icu/source/common/unicode/utf16.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -195,6 +196,15 @@ std::optional<std::string> MaybeGetBadMessageStringForManifest(
             base::StartsWith(shortcut.url.path(), manifest.scope.path(),
                              base::CompareCase::SENSITIVE))) {
         return "Manifest shortcut urls must be within scope.";
+      }
+    }
+
+    for (const auto& scope_extension : manifest.scope_extensions) {
+      if (scope_extension->origin.opaque()) {
+        return "Manifest scope_extensions origin must not be opaque.";
+      }
+      if (scope_extension->origin.scheme() != url::kHttpsScheme) {
+        return "Manifest scope_extensions origin must use the https scheme.";
       }
     }
 

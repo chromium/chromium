@@ -21,6 +21,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/test/test_network_context_client.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -47,7 +48,8 @@ class WebAppOriginAssociationFetcherTest : public testing::Test {
 
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
-            network::NetworkService::GetNetworkServiceForTesting());
+            network::NetworkService::GetNetworkServiceForTesting(),
+            /*is_trusted=*/true);
 
     fetcher_ = std::make_unique<WebAppOriginAssociationFetcher>(
         shared_url_loader_factory_);
@@ -71,6 +73,14 @@ class WebAppOriginAssociationFetcherTest : public testing::Test {
     if (request.relative_url != "/.well-known/web-app-origin-association")
       return nullptr;
 
+    if (redirect_enabled_) {
+      auto redirect_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      redirect_response->set_code(net::HTTP_FOUND);
+      redirect_response->AddCustomHeader("Location", "/redirected");
+      return redirect_response;
+    }
+
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_OK);
@@ -85,12 +95,14 @@ class WebAppOriginAssociationFetcherTest : public testing::Test {
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<WebAppOriginAssociationFetcher> fetcher_;
   base::HistogramTester histogram_tester_;
+  bool redirect_enabled_ = false;
 };
 
 TEST_F(WebAppOriginAssociationFetcherTest, FileExists) {
   base::test::TestFuture<std::optional<std::string>> future;
   fetcher_->FetchWebAppOriginAssociationFile(
-      url::Origin::Create(GURL(server_.base_url())), future.GetCallback());
+      url::Origin::Create(GURL(server_.base_url())),
+      network::mojom::IPAddressSpace::kLoopback, future.GetCallback());
 
   auto file_content = future.Take();
   ASSERT_FALSE(!file_content);
@@ -125,6 +137,125 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileUrlIsInvalid) {
   histogram_tester_.ExpectBucketCount(
       kFetchResultHistogram,
       WebAppOriginAssociationMetrics::FetchResult::kFetchFailedInvalidUrl, 1);
+}
+
+TEST_F(WebAppOriginAssociationFetcherTest,
+       PublicInitiatorCannotFetchPrivateIp) {
+  base::test::TestFuture<std::optional<std::string>> future;
+  fetcher_->FetchWebAppOriginAssociationFile(
+      url::Origin::Create(GURL("https://192.168.1.1:8443")),
+      network::mojom::IPAddressSpace::kPublic, future.GetCallback());
+
+  auto file_content = future.Take();
+  ASSERT_FALSE(file_content.has_value());
+  histogram_tester_.ExpectBucketCount(
+      kFetchResultHistogram,
+      WebAppOriginAssociationMetrics::FetchResult::kFetchFailedInvalidUrl, 1);
+}
+
+TEST_F(WebAppOriginAssociationFetcherTest,
+       PublicInitiatorCannotFetchLoopbackIp) {
+  base::test::TestFuture<std::optional<std::string>> future;
+  fetcher_->FetchWebAppOriginAssociationFile(
+      url::Origin::Create(GURL("https://127.0.0.1:8443")),
+      network::mojom::IPAddressSpace::kPublic, future.GetCallback());
+
+  auto file_content = future.Take();
+  ASSERT_FALSE(file_content.has_value());
+  histogram_tester_.ExpectBucketCount(
+      kFetchResultHistogram,
+      WebAppOriginAssociationMetrics::FetchResult::kFetchFailedInvalidUrl, 1);
+}
+
+TEST_F(WebAppOriginAssociationFetcherTest, CannotFetchLinkLocalIp) {
+  base::test::TestFuture<std::optional<std::string>> future;
+  fetcher_->FetchWebAppOriginAssociationFile(
+      url::Origin::Create(GURL("https://169.254.169.254:8443")),
+      network::mojom::IPAddressSpace::kLocal, future.GetCallback());
+
+  auto file_content = future.Take();
+  ASSERT_FALSE(file_content.has_value());
+  histogram_tester_.ExpectBucketCount(
+      kFetchResultHistogram,
+      WebAppOriginAssociationMetrics::FetchResult::kFetchFailedInvalidUrl, 1);
+}
+
+TEST_F(WebAppOriginAssociationFetcherTest, CannotFetchMulticastOrZeroIp) {
+  {
+    base::test::TestFuture<std::optional<std::string>> future;
+    fetcher_->FetchWebAppOriginAssociationFile(
+        url::Origin::Create(GURL("https://0.0.0.0:8443")),
+        network::mojom::IPAddressSpace::kLocal, future.GetCallback());
+
+    auto file_content = future.Take();
+    ASSERT_FALSE(file_content.has_value());
+  }
+  {
+    base::test::TestFuture<std::optional<std::string>> future;
+    fetcher_->FetchWebAppOriginAssociationFile(
+        url::Origin::Create(GURL("https://224.0.0.1:8443")),
+        network::mojom::IPAddressSpace::kLocal, future.GetCallback());
+
+    auto file_content = future.Take();
+    ASSERT_FALSE(file_content.has_value());
+  }
+  histogram_tester_.ExpectBucketCount(
+      kFetchResultHistogram,
+      WebAppOriginAssociationMetrics::FetchResult::kFetchFailedInvalidUrl, 2);
+}
+
+TEST_F(WebAppOriginAssociationFetcherTest,
+       PublicInitiatorCannotFetchLocalhostDomain) {
+  base::test::TestFuture<std::optional<std::string>> future;
+  fetcher_->FetchWebAppOriginAssociationFile(
+      url::Origin::Create(GURL("https://localhost:8443")),
+      network::mojom::IPAddressSpace::kPublic, future.GetCallback());
+
+  auto file_content = future.Take();
+  ASSERT_FALSE(file_content.has_value());
+  histogram_tester_.ExpectBucketCount(
+      kFetchResultHistogram,
+      WebAppOriginAssociationMetrics::FetchResult::kFetchFailedInvalidUrl, 1);
+}
+
+TEST_F(WebAppOriginAssociationFetcherTest, InsecureHttpOriginIsRejected) {
+  base::test::TestFuture<std::optional<std::string>> future;
+  fetcher_->FetchWebAppOriginAssociationFile(
+      url::Origin::Create(GURL("http://example.com")),
+      network::mojom::IPAddressSpace::kPublic, future.GetCallback());
+
+  auto file_content = future.Take();
+  ASSERT_FALSE(file_content.has_value());
+  histogram_tester_.ExpectBucketCount(
+      kFetchResultHistogram,
+      WebAppOriginAssociationMetrics::FetchResult::kFetchFailedInvalidUrl, 1);
+}
+
+TEST_F(WebAppOriginAssociationFetcherTest,
+       LoopbackInitiatorCanFetchLoopbackIp) {
+  base::test::TestFuture<std::optional<std::string>> future;
+  fetcher_->FetchWebAppOriginAssociationFile(
+      url::Origin::Create(GURL(server_.base_url())),
+      network::mojom::IPAddressSpace::kLoopback, future.GetCallback());
+
+  auto file_content = future.Take();
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_EQ(*file_content, kWebAppOriginAssociationFileContent);
+}
+
+TEST_F(WebAppOriginAssociationFetcherTest, RedirectIsBlocked) {
+  redirect_enabled_ = true;
+  base::test::TestFuture<std::optional<std::string>> future;
+  fetcher_->FetchWebAppOriginAssociationFile(
+      url::Origin::Create(GURL(server_.base_url())),
+      network::mojom::IPAddressSpace::kLoopback, future.GetCallback());
+
+  auto file_content = future.Take();
+  ASSERT_FALSE(file_content.has_value());
+  histogram_tester_.ExpectBucketCount(
+      kFetchResultHistogram,
+      WebAppOriginAssociationMetrics::FetchResult::kFetchFailedNoResponseBody,
+      1);
 }
 
 class WebAppOriginAssociationFetcherTimeoutTest : public testing::Test {
@@ -169,6 +300,36 @@ TEST_F(WebAppOriginAssociationFetcherTimeoutTest, FetchTimeout) {
       kFetchResultHistogram,
       WebAppOriginAssociationMetrics::FetchResult::kFetchFailedNoResponseBody,
       1);
+}
+
+TEST_F(WebAppOriginAssociationFetcherTimeoutTest,
+       PrivateInitiatorCanFetchPrivateIp) {
+  test_factory_.AddResponse(
+      "https://192.168.1.1:8443/.well-known/web-app-origin-association",
+      kWebAppOriginAssociationFileContent);
+  base::test::TestFuture<std::optional<std::string>> future;
+  fetcher_->FetchWebAppOriginAssociationFile(
+      url::Origin::Create(GURL("https://192.168.1.1:8443")),
+      network::mojom::IPAddressSpace::kLocal, future.GetCallback());
+
+  auto file_content = future.Take();
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_EQ(*file_content, kWebAppOriginAssociationFileContent);
+}
+
+TEST_F(WebAppOriginAssociationFetcherTimeoutTest,
+       LocalInitiatorCanFetchLocalDomain) {
+  test_factory_.AddResponse(
+      "https://app.local:8443/.well-known/web-app-origin-association",
+      kWebAppOriginAssociationFileContent);
+  base::test::TestFuture<std::optional<std::string>> future;
+  fetcher_->FetchWebAppOriginAssociationFile(
+      url::Origin::Create(GURL("https://app.local:8443")),
+      network::mojom::IPAddressSpace::kLocal, future.GetCallback());
+
+  auto file_content = future.Take();
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_EQ(*file_content, kWebAppOriginAssociationFileContent);
 }
 
 }  // namespace webapps

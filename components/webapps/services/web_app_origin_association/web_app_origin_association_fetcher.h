@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "url/origin.h"
 
 class GURL;
@@ -27,6 +28,9 @@ using FetchFileCallback =
     base::OnceCallback<void(std::optional<std::string> file_content)>;
 
 // Makes network requests to fetch web app origin association files.
+// Enforces Local Network Access (LNA) checks based on initiator_address_space,
+// preventing public web app installation from fetching origin association files
+// from private or loopback networks, and disallows following HTTP redirects.
 class WebAppOriginAssociationFetcher {
  public:
   explicit WebAppOriginAssociationFetcher(
@@ -37,6 +41,15 @@ class WebAppOriginAssociationFetcher {
   WebAppOriginAssociationFetcher& operator=(
       const WebAppOriginAssociationFetcher&) = delete;
 
+  // Fetches the association file for |origin|, specifying the IP address space
+  // of the initiating web app.
+  virtual void FetchWebAppOriginAssociationFile(
+      const url::Origin& origin,
+      network::mojom::IPAddressSpace initiator_address_space,
+      FetchFileCallback callback);
+
+  // Overload that determines initiator address space from the origin or
+  // defaults to kUnknown.
   virtual void FetchWebAppOriginAssociationFile(const url::Origin& origin,
                                                 FetchFileCallback callback);
 
@@ -44,7 +57,9 @@ class WebAppOriginAssociationFetcher {
                               network::SimpleURLLoader::RetryMode retry_mode);
 
  private:
-  void SendRequest(const GURL& url, FetchFileCallback callback);
+  void SendRequest(const GURL& url,
+                   network::mojom::IPAddressSpace initiator_address_space,
+                   FetchFileCallback callback);
   void OnResponse(FetchFileCallback callback,
                   std::optional<std::string> response_body);
 

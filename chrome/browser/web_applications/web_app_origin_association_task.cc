@@ -16,7 +16,9 @@
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -33,10 +35,11 @@ WebAppOriginAssociationManager::Task::Task(
           std::move(origin_associations.migration_sources)),
       owner_(manager),
       callback_(std::move(callback)) {
-  std::set<url::Origin> unique_origins;
+  std::set<url::Origin> seen;
   for (const ScopeExtensionInfo& scope_extension : scope_extensions_input_) {
-    if (!scope_extension.origin.opaque()) {
-      unique_origins.insert(scope_extension.origin);
+    if (!scope_extension.origin.opaque() &&
+        seen.insert(scope_extension.origin).second) {
+      pending_origins_.push_back(scope_extension.origin);
     }
   }
   for (const MigrationSource& migration_source : migration_sources_input_) {
@@ -48,9 +51,10 @@ WebAppOriginAssociationManager::Task::Task(
     if (origin.IsSameOriginWith(web_app_identity_)) {
       continue;
     }
-    unique_origins.insert(origin);
+    if (seen.insert(origin).second) {
+      pending_origins_.push_back(origin);
+    }
   }
-  pending_origins_.assign(unique_origins.begin(), unique_origins.end());
 }
 
 WebAppOriginAssociationManager::Task::~Task() {
@@ -68,8 +72,11 @@ void WebAppOriginAssociationManager::Task::Start() {
 
 void WebAppOriginAssociationManager::Task::FetchAssociationFile(
     const url::Origin& origin) {
+  network::mojom::IPAddressSpace initiator_address_space =
+      network::GetAddressSpaceFromUrl(web_app_identity_)
+          .value_or(network::mojom::IPAddressSpace::kUnknown);
   owner_->GetFetcher().FetchWebAppOriginAssociationFile(
-      origin,
+      origin, initiator_address_space,
       base::BindOnce(
           &WebAppOriginAssociationManager::Task::OnAssociationFileFetched,
           weak_ptr_factory_.GetWeakPtr(), origin));

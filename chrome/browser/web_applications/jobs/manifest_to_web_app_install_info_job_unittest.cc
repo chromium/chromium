@@ -712,6 +712,38 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, MigrateFromDropsCrossSiteData) {
             web_app_info->migration_sources[0].manifest_id().spec());
 }
 
+TEST_F(ManifestToWebAppInstallInfoJobTest,
+       ScopeExtensionsDropsNonHttpsAndOpaqueData) {
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+
+  {
+    auto scope_ext_http = blink::mojom::ManifestScopeExtension::New();
+    scope_ext_http->origin =
+        url::Origin::Create(GURL("http://insecure.example.com/"));
+    scope_ext_http->has_origin_wildcard = false;
+    manifest->scope_extensions.push_back(std::move(scope_ext_http));
+  }
+  {
+    auto scope_ext_opaque = blink::mojom::ManifestScopeExtension::New();
+    scope_ext_opaque->origin = url::Origin();
+    scope_ext_opaque->has_origin_wildcard = false;
+    manifest->scope_extensions.push_back(std::move(scope_ext_opaque));
+  }
+  {
+    auto scope_ext_valid = blink::mojom::ManifestScopeExtension::New();
+    scope_ext_valid->origin =
+        url::Origin::Create(GURL("https://secure.example.com/"));
+    scope_ext_valid->has_origin_wildcard = false;
+    manifest->scope_extensions.push_back(std::move(scope_ext_valid));
+  }
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  ASSERT_EQ(1u, web_app_info->scope_extensions.size());
+  EXPECT_EQ(url::Origin::Create(GURL("https://secure.example.com/")),
+            web_app_info->scope_extensions.begin()->origin);
+}
+
 TEST_F(ManifestToWebAppInstallInfoJobTest, InvalidManifestUrl) {
   SetupBasicPageState();
   auto& manifest = GetPageManifest();

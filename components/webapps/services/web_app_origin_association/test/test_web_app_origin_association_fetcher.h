@@ -22,6 +22,10 @@ class TestWebAppOriginAssociationFetcher
   ~TestWebAppOriginAssociationFetcher() override;
 
   // WebAppOriginAssociationFetcher:
+  void FetchWebAppOriginAssociationFile(
+      const url::Origin& origin,
+      network::mojom::IPAddressSpace initiator_address_space,
+      FetchFileCallback callback) override;
   void FetchWebAppOriginAssociationFile(const url::Origin& origin,
                                         FetchFileCallback callback) override;
 

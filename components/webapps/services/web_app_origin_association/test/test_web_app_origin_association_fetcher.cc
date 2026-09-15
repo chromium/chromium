@@ -20,6 +20,7 @@ TestWebAppOriginAssociationFetcher::~TestWebAppOriginAssociationFetcher() =
 
 void TestWebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
     const url::Origin& origin,
+    network::mojom::IPAddressSpace initiator_address_space,
     FetchFileCallback callback) {
   auto search = data_.find(origin);
   std::string file_content;
@@ -32,6 +33,13 @@ void TestWebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
                      file_content.empty()
                          ? std::nullopt
                          : std::make_optional(std::move(file_content))));
+}
+
+void TestWebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
+    const url::Origin& origin,
+    FetchFileCallback callback) {
+  FetchWebAppOriginAssociationFile(
+      origin, network::mojom::IPAddressSpace::kUnknown, std::move(callback));
 }
 
 void TestWebAppOriginAssociationFetcher::SetData(

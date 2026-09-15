@@ -443,6 +443,14 @@ ScopeExtensions ToWebAppScopeExtensions(
   ScopeExtensions apps_scope_extensions;
   for (const auto& scope_extension : scope_extensions) {
     CHECK(scope_extension);
+    // Disallow opaque origins and non-HTTPS origins as defense-in-depth against
+    // corrupted or invalid scope extension entries. IPC validation and bad
+    // message reporting are performed at the IPC boundary in
+    // ManifestManagerHost.
+    if (scope_extension->origin.opaque() ||
+        scope_extension->origin.scheme() != url::kHttpsScheme) {
+      continue;
+    }
     auto new_scope_extension = ScopeExtensionInfo::CreateForOrigin(
         scope_extension->origin, scope_extension->has_origin_wildcard);
     apps_scope_extensions.insert(std::move(new_scope_extension));
@@ -454,7 +462,8 @@ std::optional<MigrationSource> ToMigrationSource(
     const blink::mojom::ManifestMigrateFrom& migrate_from) {
   std::optional<webapps::ManifestId> manifest_id =
       webapps::ManifestId::Create(migrate_from.id);
-  if (!manifest_id.has_value()) {
+  if (!manifest_id.has_value() ||
+      url::Origin::Create(manifest_id->value()).opaque()) {
     return std::nullopt;
   }
   return MigrationSource(*manifest_id, migrate_from.behavior,
