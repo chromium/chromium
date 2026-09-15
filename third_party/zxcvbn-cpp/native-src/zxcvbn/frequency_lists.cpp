@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -117,6 +118,13 @@ scoped_refptr<RefCountedRankedDicts>& GetRankedDictsPointer() {
   static base::NoDestructor<scoped_refptr<RefCountedRankedDicts>> ptr(
       base::MakeRefCounted<RefCountedRankedDicts>(RankedDicts()));
   return *ptr;
+}
+
+base::WaitableEvent& GetRankedDictsReadyEvent() {
+  static base::NoDestructor<base::WaitableEvent> event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  return *event;
 }
 
 }  // namespace
@@ -254,6 +262,15 @@ void SetRankedDicts(RankedDicts dicts) {
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&DoNothing, std::move(old_dicts)));
   }
+  GetRankedDictsReadyEvent().Signal();
+}
+
+bool WaitForRankedDicts(base::TimeDelta timeout) {
+  return GetRankedDictsReadyEvent().TimedWait(timeout);
+}
+
+void ResetRankedDictsReadyForTesting() {
+  GetRankedDictsReadyEvent().Reset();
 }
 
 // Safely grabs a reference to the global `RankedDicts`. The background threads

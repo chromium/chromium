@@ -116,4 +116,12 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    # weak_check_utility_unittest.cc includes zxcvbn-cpp headers directly to
+    # drive the ranked-dicts readiness signal; ":ui"'s own dependency on
+    # //third_party/zxcvbn-cpp is private, so it doesn't grant this target
+    # #include visibility on its own.
+    deps += [ "//third_party/zxcvbn-cpp" ]
+  }
 }

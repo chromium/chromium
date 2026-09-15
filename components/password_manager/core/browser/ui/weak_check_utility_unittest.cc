@@ -4,10 +4,19 @@
 
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
 
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/thread.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp"
 
 namespace password_manager {
 
@@ -58,6 +67,67 @@ TEST(WeakCheckUtilityTest, DetectedShortAndLongWeakPasswords) {
 
   EXPECT_THAT(weak_passwords,
               ElementsAre(kWeakShortPassword, kWeakLongPassword));
+}
+
+// Tests for the (disabled-by-default) kWaitForZxcvbnRankedDictsBeforeWeakCheck
+// experiment. SetRankedDicts() posts a base::ThreadPool task to destroy the
+// previous dictionaries, so a task environment is required.
+class WeakCheckUtilityRankedDictsWaitTest : public testing::Test {
+ protected:
+  base::test::TaskEnvironment task_environment_;
+};
+
+// Regression test for crbug.com/380105409: a weak check that runs before the
+// ZxcvbnData component has finished loading its dictionaries must wait for
+// them, rather than silently scoring against empty dictionaries.
+TEST_F(WeakCheckUtilityRankedDictsWaitTest, WaitsForRankedDictsBeforeChecking) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWaitForZxcvbnRankedDictsBeforeWeakCheck);
+  zxcvbn::ResetRankedDictsReadyForTesting();
+
+  base::Thread background_thread("weak_check");
+  ASSERT_TRUE(background_thread.Start());
+
+  IsWeakPassword result;
+  base::WaitableEvent done;
+  background_thread.task_runner()->PostTask(FROM_HERE,
+                                            base::BindLambdaForTesting([&]() {
+                                              result = IsWeak(u"neverforget");
+                                              done.Signal();
+                                            }));
+
+  // The dictionaries aren't ready yet, so the background task should still
+  // be waiting.
+  EXPECT_FALSE(done.IsSignaled());
+
+  // Simulate the component installer loading a dictionary that contains the
+  // password being checked.
+  zxcvbn::SetRankedDicts(zxcvbn::RankedDicts({{"neverforget"}}));
+
+  ASSERT_TRUE(done.TimedWait(TestTimeouts::action_timeout()));
+  EXPECT_TRUE(result.value());
+
+  zxcvbn::SetRankedDicts(zxcvbn::RankedDicts());
+}
+
+// Regression test for crbug.com/380105409: if the ZxcvbnData dictionaries
+// never become ready (e.g. the component never installs), a weak check must
+// still return within a bounded time instead of hanging forever.
+TEST_F(WeakCheckUtilityRankedDictsWaitTest,
+       DoesNotHangIfRankedDictsNeverBecomeReady) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kWaitForZxcvbnRankedDictsBeforeWeakCheck,
+      {{"ranked_dicts_ready_timeout", "10ms"}});
+  zxcvbn::ResetRankedDictsReadyForTesting();
+
+  // "123456" is weak due to a sequence match, independent of any dictionary,
+  // so this should return promptly with the correct answer even though the
+  // ranked dictionaries never become ready within the (shortened) timeout.
+  EXPECT_TRUE(IsWeak(kWeakShortPassword).value());
+
+  zxcvbn::SetRankedDicts(zxcvbn::RankedDicts());
 }
 
 TEST(WeakCheckUtilityTest, HandlesUTF16SurrogatePairs) {

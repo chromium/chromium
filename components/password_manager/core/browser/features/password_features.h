@@ -245,6 +245,13 @@ BASE_DECLARE_FEATURE(kUseDetachedWidget);
 // TODO(crbug.com/513276101): Remove flag after rollout completes
 BASE_DECLARE_FEATURE(kUseProcessBoundPasswordString);
 
+// When enabled, the password weak-check waits for the zxcvbn ranked
+// dictionaries (loaded asynchronously by the ZxcvbnData component) to become
+// available before scoring a password, instead of possibly scoring against
+// empty dictionaries. Bounded by `kZxcvbnRankedDictsReadyTimeout`.
+BASE_DECLARE_FEATURE(kWaitForZxcvbnRankedDictsBeforeWeakCheck);
+extern const base::FeatureParam<base::TimeDelta> kZxcvbnRankedDictsReadyTimeout;
+
 // All features parameters in alphabetical order.
 
 }  // namespace password_manager::features

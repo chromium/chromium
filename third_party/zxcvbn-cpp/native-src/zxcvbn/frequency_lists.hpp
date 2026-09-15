@@ -8,6 +8,7 @@
 
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -96,6 +97,19 @@ class RefCountedRankedDicts
 void SetRankedDicts(RankedDicts dicts);
 
 scoped_refptr<RefCountedRankedDicts> default_ranked_dicts();
+
+// Blocks the calling thread until `SetRankedDicts()` has been called at
+// least once, or until `timeout` elapses, whichever comes first. Callers
+// must be allowed to block (e.g. by using base::MayBlock() together with
+// base::WithBaseSyncPrimitives() task traits).
+// Returns true if the ranked dictionaries were signaled ready before the
+// timeout elapsed, false if the timeout was hit first.
+bool WaitForRankedDicts(base::TimeDelta timeout);
+
+// Resets the "ranked dicts ready" signal set by `SetRankedDicts()`, so that
+// `WaitForRankedDicts()` blocks again until `SetRankedDicts()` is called.
+// For use in tests only.
+void ResetRankedDictsReadyForTesting();
 
 } // namespace zxcvbn
 

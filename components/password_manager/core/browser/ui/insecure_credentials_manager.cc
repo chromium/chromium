@@ -83,8 +83,15 @@ void InsecureCredentialsManager::StartReuseCheck(
 
 void InsecureCredentialsManager::StartWeakCheck(
     base::OnceClosure on_check_done) {
+  // TODO(crbug.com/380105409): base::WithBaseSyncPrimitives() is deprecated in
+  // favor of base::ScopedAllowBaseSyncPrimitives, but that class has a
+  // private constructor gated by a friend allow-list in
+  // base/threading/thread_restrictions.h, which needs //base/task/OWNERS
+  // approval to extend. Migrate once that's done.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      FROM_HERE,
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&BulkWeakCheck,
                      ExtractPasswords(presenter_->GetSavedPasswords())),
       base::BindOnce(&InsecureCredentialsManager::OnWeakCheckDone,
@@ -219,8 +226,12 @@ void InsecureCredentialsManager::OnSavedPasswordsChanged(
     }
   }
   if (!passwords_to_recheck.empty()) {
+    // TODO(crbug.com/380105409): see the TODO on base::WithBaseSyncPrimitives()
+    // in StartWeakCheck() above.
     base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        FROM_HERE,
+        {base::MayBlock(), base::WithBaseSyncPrimitives(),
+         base::TaskPriority::USER_VISIBLE},
         base::BindOnce(&BulkWeakCheck, std::move(passwords_to_recheck)),
         base::BindOnce(&InsecureCredentialsManager::OnPartialWeakCheckDone,
                        weak_ptr_factory_.GetWeakPtr()));
