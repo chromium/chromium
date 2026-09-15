@@ -807,11 +807,15 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetUniformIndices(
   if (!bucket) {
     return error::kInvalidArguments;
   }
-  GLsizei count = 0;
-  std::vector<char*> names;
-  std::vector<GLint> len;
-  if (!bucket->GetAsStrings(&count, &names, &len) || count <= 0) {
+  std::optional<std::vector<std::string_view>> names = bucket->GetAsStrings();
+  if (!names.has_value() || names->empty()) {
     return error::kInvalidArguments;
+  }
+  const GLsizei count = static_cast<GLsizei>(names->size());
+  std::vector<const char*> name_ptrs;
+  name_ptrs.reserve(names->size());
+  for (std::string_view name : *names) {
+    name_ptrs.push_back(name.data());
   }
   typedef cmds::GetUniformIndices::Result Result;
   uint32_t checked_size = 0;
@@ -829,7 +833,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetUniformIndices(
     return error::kInvalidArguments;
   }
   error::Error error =
-      DoGetUniformIndices(program, count, &names[0], count, indices);
+      DoGetUniformIndices(program, count, name_ptrs.data(), count, indices);
   if (error != error::kNoError) {
     return error;
   }

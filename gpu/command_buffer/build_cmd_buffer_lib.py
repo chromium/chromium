@@ -5293,16 +5293,24 @@ class InputStringArrayBucketArgument(Argument):
   if (!bucket) {
     return error::kInvalidArguments;
   }
-  GLsizei count = 0;
-  std::vector<char*> strs;
-  std::vector<GLint> len;
-  if (!bucket->GetAsStrings(&count, &strs, &len)) {
+  std::optional<std::vector<std::string_view>> string_views =
+      bucket->GetAsStrings();
+  if (!string_views.has_value()) {
     return error::kInvalidArguments;
   }
+  const GLsizei count = static_cast<GLsizei>(string_views->size());
+  std::vector<const char*> strs;
+  std::vector<GLint> len;
+  strs.reserve(string_views->size());
+  len.reserve(string_views->size());
+  for (std::string_view string : *string_views) {
+    strs.push_back(string.data());
+    len.push_back(static_cast<GLint>(string.size()));
+  }
   const char** %(original_name)s =
-      strs.size() > 0 ? const_cast<const char**>(&strs[0]) : nullptr;
+      strs.empty() ? nullptr : strs.data();
   const GLint* length =
-      len.size() > 0 ? const_cast<const GLint*>(&len[0]) : nullptr;
+      len.empty() ? nullptr : len.data();
   (void)length;
 """
     f.write(code % {

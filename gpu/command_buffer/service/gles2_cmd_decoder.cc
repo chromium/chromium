@@ -12103,11 +12103,15 @@ error::Error GLES2DecoderImpl::HandleGetUniformIndices(
   if (!bucket) {
     return error::kInvalidArguments;
   }
-  GLsizei count = 0;
-  std::vector<char*> names;
-  std::vector<GLint> len;
-  if (!bucket->GetAsStrings(&count, &names, &len) || count <= 0) {
+  std::optional<std::vector<std::string_view>> names = bucket->GetAsStrings();
+  if (!names.has_value() || names->empty()) {
     return error::kInvalidArguments;
+  }
+  const GLsizei count = static_cast<GLsizei>(names->size());
+  std::vector<const char*> name_ptrs;
+  name_ptrs.reserve(names->size());
+  for (std::string_view name : *names) {
+    name_ptrs.push_back(name.data());
   }
   typedef cmds::GetUniformIndices::Result Result;
   uint32_t checked_size = 0;
@@ -12137,7 +12141,7 @@ error::Error GLES2DecoderImpl::HandleGetUniformIndices(
     return error::kNoError;
   }
   LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER("GetUniformIndices");
-  api()->glGetUniformIndicesFn(service_id, count, &names[0], indices);
+  api()->glGetUniformIndicesFn(service_id, count, name_ptrs.data(), indices);
   GLenum error = api()->glGetErrorFn();
   if (error == GL_NO_ERROR) {
     result->SetNumResults(count);

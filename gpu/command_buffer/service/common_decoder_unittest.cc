@@ -489,17 +489,11 @@ TEST_F(CommonDecoderTest, GetAsStrings_Success) {
 
   EXPECT_EQ(write_offset, kBucketSize);
 
-  GLsizei count_out;
-  std::vector<char*> strings_out;
-  std::vector<GLint> lengths_out;
-  EXPECT_TRUE(bucket.GetAsStrings(&count_out, &strings_out, &lengths_out));
-
-  EXPECT_EQ(count_out, count);
-  EXPECT_EQ(lengths_out.size(), size_t(count_out));
-  EXPECT_EQ(lengths_out[0], sizes[0]);
-  EXPECT_EQ(lengths_out[1], sizes[1]);
-  EXPECT_EQ(std::string(str0.data()), std::string(strings_out[0]));
-  EXPECT_EQ(std::string(str1.data()), std::string(strings_out[1]));
+  std::optional<std::vector<std::string_view>> strings = bucket.GetAsStrings();
+  ASSERT_TRUE(strings.has_value());
+  ASSERT_EQ(strings->size(), static_cast<size_t>(count));
+  EXPECT_EQ((*strings)[0], "ab");
+  EXPECT_EQ((*strings)[1], "xyz");
 }
 
 // Regression test for https://issues.chromium.org/487755344 where negative
@@ -517,10 +511,7 @@ TEST_F(CommonDecoderTest, GetAsStrings_StringsSizeNegative) {
   std::array<uint8_t, 2> str = {'A', 0};
   bucket.SetData(base::as_byte_span(str), 12);
 
-  GLsizei count_out;
-  std::vector<char*> strings_out;
-  std::vector<GLint> lengths_out;
-  EXPECT_FALSE(bucket.GetAsStrings(&count_out, &strings_out, &lengths_out));
+  EXPECT_FALSE(bucket.GetAsStrings().has_value());
 }
 
 // Test that GetAsStrings rejects strings that are not NUL-terminated.
@@ -545,10 +536,7 @@ TEST_F(CommonDecoderTest, GetAsStrings_MissingNulTerminator) {
   const std::array<char, 3> str0 = {'a', 'b', 'c'};
   bucket.SetData(base::as_byte_span(str0), write_offset);
 
-  GLsizei count_out;
-  std::vector<char*> strings_out;
-  std::vector<GLint> lengths_out;
-  EXPECT_FALSE(bucket.GetAsStrings(&count_out, &strings_out, &lengths_out));
+  EXPECT_FALSE(bucket.GetAsStrings().has_value());
 }
 
 }  // namespace gpu

@@ -2729,16 +2729,22 @@ error::Error GLES2DecoderImpl::HandleShaderSourceBucket(
   if (!bucket) {
     return error::kInvalidArguments;
   }
-  GLsizei count = 0;
-  std::vector<char*> strs;
-  std::vector<GLint> len;
-  if (!bucket->GetAsStrings(&count, &strs, &len)) {
+  std::optional<std::vector<std::string_view>> string_views =
+      bucket->GetAsStrings();
+  if (!string_views.has_value()) {
     return error::kInvalidArguments;
   }
-  const char** str =
-      strs.size() > 0 ? const_cast<const char**>(&strs[0]) : nullptr;
-  const GLint* length =
-      len.size() > 0 ? const_cast<const GLint*>(&len[0]) : nullptr;
+  const GLsizei count = static_cast<GLsizei>(string_views->size());
+  std::vector<const char*> strs;
+  std::vector<GLint> len;
+  strs.reserve(string_views->size());
+  len.reserve(string_views->size());
+  for (std::string_view string : *string_views) {
+    strs.push_back(string.data());
+    len.push_back(static_cast<GLint>(string.size()));
+  }
+  const char** str = strs.empty() ? nullptr : strs.data();
+  const GLint* length = len.empty() ? nullptr : len.data();
   (void)length;
   DoShaderSource(shader, count, str, length);
   return error::kNoError;
@@ -3143,16 +3149,22 @@ error::Error GLES2DecoderImpl::HandleTransformFeedbackVaryingsBucket(
   if (!bucket) {
     return error::kInvalidArguments;
   }
-  GLsizei count = 0;
-  std::vector<char*> strs;
-  std::vector<GLint> len;
-  if (!bucket->GetAsStrings(&count, &strs, &len)) {
+  std::optional<std::vector<std::string_view>> string_views =
+      bucket->GetAsStrings();
+  if (!string_views.has_value()) {
     return error::kInvalidArguments;
   }
-  const char** varyings =
-      strs.size() > 0 ? const_cast<const char**>(&strs[0]) : nullptr;
-  const GLint* length =
-      len.size() > 0 ? const_cast<const GLint*>(&len[0]) : nullptr;
+  const GLsizei count = static_cast<GLsizei>(string_views->size());
+  std::vector<const char*> strs;
+  std::vector<GLint> len;
+  strs.reserve(string_views->size());
+  len.reserve(string_views->size());
+  for (std::string_view string : *string_views) {
+    strs.push_back(string.data());
+    len.push_back(static_cast<GLint>(string.size()));
+  }
+  const char** varyings = strs.empty() ? nullptr : strs.data();
+  const GLint* length = len.empty() ? nullptr : len.data();
   (void)length;
   GLenum buffermode = static_cast<GLenum>(c.buffermode);
   if (!validators_->buffer_mode.IsValid(buffermode)) {

@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -22,10 +23,6 @@
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
-
-// Forwardly declare a few GL types to avoid including GL header files.
-using GLsizei = int;
-using GLint = int;
 
 namespace gpu {
 
@@ -108,12 +105,10 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommonDecoder {
     // is no string.
     bool GetAsString(std::string* str);
 
-    // Gets the bucket data as strings.
-    // On success, the number of strings are in |_count|, the string data are
-    // in |_string|, and string sizes are in |_length|..
-    bool GetAsStrings(GLsizei* _count,
-                      std::vector<char*>* _string,
-                      std::vector<GLint>* _length);
+    // Gets views of the strings stored in the bucket. Returns nullopt if the
+    // bucket does not contain a valid string array. The returned views are
+    // invalidated when the bucket's storage is resized or destroyed.
+    std::optional<std::vector<std::string_view>> GetAsStrings();
 
    private:
     bool OffsetSizeValid(size_t offset, size_t size) const;

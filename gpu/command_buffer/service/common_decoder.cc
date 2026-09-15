@@ -102,58 +102,55 @@ bool CommonDecoder::Bucket::GetAsString(std::string* str) {
   return true;
 }
 
-bool CommonDecoder::Bucket::GetAsStrings(
-    GLsizei* _count, std::vector<char*>* _string, std::vector<GLint>* _length) {
+std::optional<std::vector<std::string_view>>
+CommonDecoder::Bucket::GetAsStrings() {
   const size_t bucket_size = this->size();
-  if (bucket_size < sizeof(GLint)) {
-    return false;
+  if (bucket_size < sizeof(int32_t)) {
+    return std::nullopt;
   }
   base::SpanReader reader{GetDataAsByteSpan(0, bucket_size)};
 
   std::optional<int32_t> count32 = reader.ReadI32NativeEndian();
   if (!count32.has_value() || *count32 < 0) {
-    return false;
+    return std::nullopt;
   }
-  const GLsizei count = static_cast<GLsizei>(*count32);
+  const int32_t count = *count32;
 
   // Don't pre-size the vectors from the untrusted `count`: a bogus value would
   // try to allocate a huge amount of memory. Reserve is bounded by the bucket
   // size instead, and SpanReader fails gracefully once the bucket runs out of
   // data.
-  const size_t reserve = bucket_size / (sizeof(GLint) + 1u);
-  std::vector<GLint> lengths;
+  const size_t reserve = bucket_size / (sizeof(int32_t) + 1u);
+  std::vector<int32_t> lengths;
   lengths.reserve(reserve);
-  for (GLsizei ii = 0; ii < count; ++ii) {
+  for (int32_t ii = 0; ii < count; ++ii) {
     std::optional<int32_t> length32 = reader.ReadI32NativeEndian();
     if (!length32.has_value() || *length32 < 0) {
-      return false;
+      return std::nullopt;
     }
-    lengths.push_back(static_cast<GLint>(*length32));
+    lengths.push_back(*length32);
   }
 
-  std::vector<char*> strs;
-  strs.reserve(reserve);
-  for (const GLint length : lengths) {
+  std::vector<std::string_view> strings;
+  strings.reserve(lengths.size());
+  for (const int32_t length : lengths) {
     std::optional<base::span<uint8_t>> str =
         reader.Read(static_cast<size_t>(length) + 1u);
     if (!str.has_value()) {
-      return false;
+      return std::nullopt;
     }
     if ((*str)[length] != 0) {
-      return false;
+      return std::nullopt;
     }
-    strs.push_back(base::as_writable_chars(*str).data());
+    strings.push_back(base::as_string_view(
+        base::span<const uint8_t>(*str).first(static_cast<size_t>(length))));
   }
 
   if (reader.remaining() != 0u) {
-    return false;
+    return std::nullopt;
   }
 
-  DCHECK(_count && _string && _length);
-  *_count = count;
-  *_string = strs;
-  *_length = lengths;
-  return true;
+  return strings;
 }
 
 bool CommonDecoder::Bucket::OffsetSizeValid(size_t offset, size_t size) const {
