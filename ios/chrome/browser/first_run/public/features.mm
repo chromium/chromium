@@ -19,7 +19,7 @@ BASE_FEATURE(kBestFeaturesScreenInFirstRun,
 BASE_FEATURE(kSkipDefaultBrowserPromoInFirstRun,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUpdatedFirstRunSequence, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUpdatedFirstRunSequence, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPostFREIphInProfileAgent, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -41,7 +41,7 @@ BASE_FEATURE_PARAM(int,
                    kUpdatedFirstRunSequenceParamFeature,
                    &kUpdatedFirstRunSequence,
                    kUpdatedFirstRunSequenceParam,
-                   1);
+                   2);
 
 BASE_FEATURE_PARAM(
     int,

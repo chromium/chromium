@@ -73,6 +73,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_disabled.push_back(kAuthenticationFlowReauthFirstKillswitch);
+  // TODO(crbug.com/556834550): Enable feature and remove
+  // FirstRunWithUpdatedFRESequenceTestCase.
   config.additional_args.push_back(
       "--disable-features=UpdatedFirstRunSequence");
   config.additional_args.push_back(
@@ -1279,8 +1281,9 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 
 @end
 
-// Test first run stages with the updated FRE sequence. The Best Features screen
-// feature is disabled when the updated FRE sequence feature is enabled.
+// Test first run stages with the updated FRE sequence. When there are no
+// identities on the account, the sign-in/sync screens are skipped and the DB
+// promo is shown first with the UMA disclaimer.
 @interface FirstRunWithUpdatedFRESequenceTestCase : FirstRunTestCaseBase
 
 @end
@@ -1289,19 +1292,19 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  std::erase(config.additional_args,
+             std::string("-") + test_switches::kAddFakeIdentitiesAtStartup);
   config.features_disabled.push_back(kAuthenticationFlowReauthFirstKillswitch);
-  config.additional_args.push_back("--enable-features=UpdatedFirstRunSequence");
   config.additional_args.push_back(
       "--disable-features=AnimatedDefaultBrowserPromoInFRE");
   return config;
 }
 
-#pragma mark - Tests
+#pragma mark - No Account Tests
 
-// Tests FRE with UMA default value when the default browser promo is first in
-// the sequence.
-- (void)testWithUMAChecked_DBPromoFirst {
-  // Verify DB promo and disclaimer string.
+// Tests FRE with UMA default value.
+- (void)testWithoutAccount_UMAChecked {
+  // Verify DB promo is first in the FRE and the disclaimer string.
   [self verifyDefaultBrowserIsDisplayedWithScreenIntent:
             FREDefaultBrowserIntent::kRegular];
   // Skip default browser promo.
@@ -1310,16 +1313,15 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   GREYAssertTrue(
       [FirstRunAppInterface isUMACollectionEnabled],
       @"kMetricsReportingEnabled pref was unexpectedly false by default.");
-  // Verify that sign-in screen is displayed.
+  // Verify that sign-in screen is skipped and FRE is completed.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_nil()];
 }
 
-// Tests FRE with UMA off when the default browser promo is first in the
-// sequence.
-- (void)testWithUMAUnchecked_DBPromoFirst {
+// Tests FRE with UMA off.
+- (void)testWithoutAccount_UMAUnchecked {
   // Verify DB promo and disclaimer string.
   [self verifyDefaultBrowserIsDisplayedWithScreenIntent:
             FREDefaultBrowserIntent::kRegular];
@@ -1348,27 +1350,21 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   GREYAssertFalse(
       [FirstRunAppInterface isUMACollectionEnabled],
       @"kMetricsReportingEnabled pref was unexpectedly true by default.");
-  // Verify that sign-in screen is displayed.
+  // Verify that sign-in screen is skipped and FRE is completed.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
+      assertWithMatcher:grey_nil()];
 }
 
 #pragma mark - Enterprise tests
 
 // Tests that the UMA link does not appear in FRE when UMA is disabled by
-// enterprise policy and the default browser promo is the first screen in the
-// sequence.
-- (void)testUMADisabledByPolicy_DBPromoFirst {
-  // Configure the policy to disable UMA.
+// enterprise policy and there are no accounts on the device.
+- (void)testWithoutAccount_UMADisabledByPolicy {
   [self relaunchAppWithPolicyKey:policy::key::kMetricsReportingEnabled
                   xmlPolicyValue:"<false/>"];
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  GREYAssertTrue(
-      [SigninEarlGrey isIdentityAdded:fakeIdentity],
-      @"Identity not added by kSignInAtStartup flag, in "
-      @"`relaunchAppWithPolicyKey:xmlPolicyValue:`, during the relaunch.");
+
   // Verify DB promo with no UMA footer.
   [self verifyDefaultBrowserIsDisplayedWithScreenIntent:
             FREDefaultBrowserIntent::kEnterpriseWithoutUMADisclaimer];
@@ -1378,6 +1374,11 @@ id<GREYMatcher> ManageUMALinkMatcher() {
   GREYAssertFalse(
       [FirstRunAppInterface isUMACollectionEnabled],
       @"kMetricsReportingEnabled pref was unexpectedly true by default.");
+  // Verify that sign-in screen is skipped and FRE is completed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

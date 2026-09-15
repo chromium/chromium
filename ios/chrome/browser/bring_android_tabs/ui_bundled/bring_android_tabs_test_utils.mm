@@ -20,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -49,6 +50,8 @@ void TapPromoStyleButton(id<GREYMatcher> buttonMatcher) {
 
 AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
   AppLaunchConfiguration config;
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kAddFakeIdentitiesAtStartup);
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");
   config.features_disabled.push_back(kBestOfAppFRE);
@@ -56,10 +59,6 @@ AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("AndroidPhone");
   }
-  // TODO(crbug.com/379306137): If feature is not launched, fix
-  // SignInViaFREWithHistorySyncEnabled() by moving the default browser
-  // dismissal to after sign-in and sync.
-  config.additional_args.push_back("--enable-features=UpdatedFirstRunSequence");
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
@@ -67,15 +66,19 @@ AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
 
 void SignInViaFREWithHistorySyncEnabled(BOOL enable_history_sync) {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fake_identity];
+  if (![SigninEarlGrey isIdentityAdded:fake_identity]) {
+    [SigninEarlGrey addFakeIdentity:fake_identity];
+  }
+  if ([SigninEarlGrey isSignedOut]) {
+    // Sign in.
+    TapPromoStyleButton(chrome_test_util::ButtonStackPrimaryButton());
+    // Enable history/tab sync if appropriate.
+    TapPromoStyleButton(enable_history_sync
+                            ? chrome_test_util::ButtonStackPrimaryButton()
+                            : chrome_test_util::ButtonStackSecondaryButton());
+  }
   // Default browser promo dismissal.
   TapPromoStyleButton(chrome_test_util::ButtonStackSecondaryButton());
-  // Sign in.
-  TapPromoStyleButton(chrome_test_util::ButtonStackPrimaryButton());
-  // Enable history/tab sync if appropriate.
-  TapPromoStyleButton(enable_history_sync
-                          ? chrome_test_util::ButtonStackPrimaryButton()
-                          : chrome_test_util::ButtonStackSecondaryButton());
   // If Safari import landing sheet is displayed, dismiss it.
   DismissSafariDataImportEntryPoint(/*verify_visibility=*/false);
   [ChromeEarlGrey
