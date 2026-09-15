@@ -4,9 +4,13 @@
 
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 
+#include <string>
+
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_command_line.h"
+#include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -22,8 +26,16 @@ class TestObserver : public SubscriptionEligibilityService::Observer {
     ++update_count_;
   }
 
+  void OnSubscriptionBenefitsUpdated(
+      const base::flat_set<std::string>& subscription_benefits) override {
+    last_updated_benefits_ = subscription_benefits;
+    ++benefits_update_count_;
+  }
+
   int32_t last_updated_tier_ = -1;
   int update_count_ = 0;
+  base::flat_set<std::string> last_updated_benefits_;
+  int benefits_update_count_ = 0;
 };
 }  // namespace
 
@@ -81,6 +93,39 @@ TEST_F(SubscriptionEligibilityServiceTest, ObserverNotifiedOnPrefChange) {
   service.RemoveObserver(&observer);
   pref_service_.SetInteger(prefs::kAiSubscriptionTier, 3);
   EXPECT_EQ(observer.update_count_, 1);
+}
+
+TEST_F(SubscriptionEligibilityServiceTest, GetSubscriptionBenefits_Default) {
+  SubscriptionEligibilityService service(&pref_service_);
+  EXPECT_TRUE(service.GetSubscriptionBenefits().empty());
+
+  base::ListValue benefits;
+  benefits.Append("benefit_1");
+  benefits.Append("benefit_2");
+  pref_service_.SetList(prefs::kSubscriptionBenefits, benefits.Clone());
+
+  base::flat_set<std::string> expected_benefits = {"benefit_1", "benefit_2"};
+  EXPECT_EQ(service.GetSubscriptionBenefits(), expected_benefits);
+}
+
+TEST_F(SubscriptionEligibilityServiceTest,
+       ObserverNotifiedOnBenefitsPrefChange) {
+  SubscriptionEligibilityService service(&pref_service_);
+  TestObserver observer;
+  service.AddObserver(&observer);
+
+  base::ListValue benefits;
+  benefits.Append("benefit_1");
+  pref_service_.SetList(prefs::kSubscriptionBenefits, benefits.Clone());
+
+  base::flat_set<std::string> expected_benefits = {"benefit_1"};
+  EXPECT_EQ(observer.last_updated_benefits_, expected_benefits);
+  EXPECT_EQ(observer.benefits_update_count_, 1);
+
+  service.RemoveObserver(&observer);
+  benefits.Append("benefit_2");
+  pref_service_.SetList(prefs::kSubscriptionBenefits, benefits.Clone());
+  EXPECT_EQ(observer.benefits_update_count_, 1);
 }
 
 }  // namespace subscription_eligibility

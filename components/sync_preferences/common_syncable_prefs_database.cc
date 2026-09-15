@@ -173,6 +173,7 @@ enum {
   kAutofillWalletReminderNoticeShown = 123,
   kAutofillAtMemoryDoubleCtrlTriggerEnabled = 124,
   kAutofillAtMemoryShortcut = 125,
+  kSubscriptionEligibilitySubscriptionBenefits = 126,
   // New entries should be added above this line.
   kSubscriptionEligibilityAiSubscriptionTier =
       100338,  // (different ID as it's a move from //chrome)
@@ -539,6 +540,11 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           WriteBehavior::kWriteToBoth}},
         {subscription_eligibility::prefs::kAiSubscriptionTier,
          {syncable_prefs_ids::kSubscriptionEligibilityAiSubscriptionTier,
+          syncer::PRIORITY_PREFERENCES,
+          PrefSensitivity::kExemptFromUserControlWhileSignedIn,
+          MergeBehavior::kNone, WriteBehavior::kWriteToBoth}},
+        {subscription_eligibility::prefs::kSubscriptionBenefits,
+         {syncable_prefs_ids::kSubscriptionEligibilitySubscriptionBenefits,
           syncer::PRIORITY_PREFERENCES,
           PrefSensitivity::kExemptFromUserControlWhileSignedIn,
           MergeBehavior::kNone, WriteBehavior::kWriteToBoth}},

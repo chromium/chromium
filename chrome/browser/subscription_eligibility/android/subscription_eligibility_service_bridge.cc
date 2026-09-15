@@ -4,6 +4,9 @@
 
 #include "chrome/browser/subscription_eligibility/android/subscription_eligibility_service_bridge.h"
 
+#include <string>
+
+#include "base/containers/flat_set.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 
@@ -64,6 +67,13 @@ void SubscriptionEligibilityServiceBridge::OnAiSubscriptionTierUpdated(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SubscriptionEligibilityService_onAiSubscriptionTierChanged(env,
                                                                   java_ref_);
+}
+
+void SubscriptionEligibilityServiceBridge::OnSubscriptionBenefitsUpdated(
+    const base::flat_set<std::string>& subscription_benefits) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_SubscriptionEligibilityService_onSubscriptionBenefitsChanged(env,
+                                                                    java_ref_);
 }
 
 }  // namespace subscription_eligibility

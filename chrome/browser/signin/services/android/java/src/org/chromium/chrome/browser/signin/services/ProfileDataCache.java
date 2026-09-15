@@ -421,6 +421,15 @@ public class ProfileDataCache
         updateCache();
     }
 
+    /** Implements {@link SubscriptionEligibilityService.Observer}. */
+    @Override
+    public void onSubscriptionBenefitsChanged() {
+        // Subscription benefits ring is only displayed for eligible tiers. We must update the cache
+        // when benefits change so that the ring is applied (or removed) accordingly.
+        if (!mAiTierRingEnabled) return;
+        updateCache();
+    }
+
     /** Implements {@link IdentityManager.Observer}. */
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {

@@ -397,6 +397,7 @@ chromium-metrics-reviews@google.com.
   <int value="123" label="AutofillWalletReminderNoticeShown"/>
   <int value="124" label="AutofillAtMemoryDoubleCtrlTriggerEnabled"/>
   <int value="125" label="AutofillAtMemoryShortcut"/>
+  <int value="126" label="SubscriptionEligibilitySubscriptionBenefits"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

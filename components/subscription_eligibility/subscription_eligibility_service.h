@@ -6,7 +6,9 @@
 #define COMPONENTS_SUBSCRIPTION_ELIGIBILITY_SUBSCRIPTION_ELIGIBILITY_SERVICE_H_
 
 #include <optional>
+#include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -26,6 +28,10 @@ class SubscriptionEligibilityService : public KeyedService {
    public:
     // Invoked when the AI Subscription tier has been updated.
     virtual void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) {}
+
+    // Invoked when subscription benefits have been updated.
+    virtual void OnSubscriptionBenefitsUpdated(
+        const base::flat_set<std::string>& subscription_benefits) {}
   };
 
   explicit SubscriptionEligibilityService(PrefService* pref_service);
@@ -39,6 +45,9 @@ class SubscriptionEligibilityService : public KeyedService {
   // returned, it means the account must have Chrome benefits.
   int32_t GetAiSubscriptionTier() const;
 
+  // Returns the subscription benefits for the user profile.
+  base::flat_set<std::string> GetSubscriptionBenefits() const;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
@@ -47,6 +56,9 @@ class SubscriptionEligibilityService : public KeyedService {
  private:
   // Invoked when underlying pref for ai subscription tier changes.
   void OnAiSubscriptionTierUpdated();
+
+  // Invoked when underlying pref for subscription benefits changes.
+  void OnSubscriptionBenefitsUpdated();
 
   // Not owned. Guaranteed to outlive `this`.
   raw_ptr<PrefService> pref_service_;

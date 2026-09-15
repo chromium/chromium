@@ -17,9 +17,11 @@ import org.chromium.chrome.browser.profiles.Profile;
  */
 @NullMarked
 public class SubscriptionEligibilityService {
-    /** Observer for AI subscription tier changes. */
+    /** Observer for AI subscription tier and benefits changes. */
     public interface Observer {
         void onAiSubscriptionTierChanged();
+
+        void onSubscriptionBenefitsChanged();
     }
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
@@ -58,6 +60,13 @@ public class SubscriptionEligibilityService {
     private void onAiSubscriptionTierChanged() {
         for (Observer observer : mObservers) {
             observer.onAiSubscriptionTierChanged();
+        }
+    }
+
+    @CalledByNative
+    private void onSubscriptionBenefitsChanged() {
+        for (Observer observer : mObservers) {
+            observer.onSubscriptionBenefitsChanged();
         }
     }
 

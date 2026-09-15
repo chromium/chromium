@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_SUBSCRIPTION_ELIGIBILITY_ANDROID_SUBSCRIPTION_ELIGIBILITY_SERVICE_BRIDGE_H_
 #define CHROME_BROWSER_SUBSCRIPTION_ELIGIBILITY_ANDROID_SUBSCRIPTION_ELIGIBILITY_SERVICE_BRIDGE_H_
 
+#include <string>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 
@@ -35,6 +38,8 @@ class SubscriptionEligibilityServiceBridge
  private:
   // SubscriptionEligibilityService::Observer:
   void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
+  void OnSubscriptionBenefitsUpdated(
+      const base::flat_set<std::string>& subscription_benefits) override;
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
   base::WeakPtr<SubscriptionEligibilityService> service_;

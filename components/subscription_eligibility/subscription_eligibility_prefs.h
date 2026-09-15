@@ -17,6 +17,9 @@ namespace subscription_eligibility::prefs {
 // Integer pref that determines the rollout eligibility for the user profile.
 inline constexpr char kAiSubscriptionTier[] = "sync.ai_subscription_tier";
 
+// List pref that stores the subscription benefits for the user profile.
+inline constexpr char kSubscriptionBenefits[] = "sync.subscription_benefits";
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 }  // namespace subscription_eligibility::prefs
