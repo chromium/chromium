@@ -43,6 +43,7 @@ build_webui("build") {
       "internal/conversation.ts",
       "internal/page_context_verbalizer.ts",
       "internal/persona.ts",
+      "internal/test_api.ts",
       "internal/tools/tool_executor.ts",
     ]
   }
