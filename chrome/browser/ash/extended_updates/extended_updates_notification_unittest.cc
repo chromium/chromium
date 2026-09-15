@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/extended_updates/extended_updates_notification.h"
 
-#include <algorithm>
 #include <optional>
 
 #include "ash/constants/ash_pref_names.h"
@@ -12,9 +11,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -22,15 +18,13 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
 namespace {
 
 using IndexedButton = ExtendedUpdatesNotification::IndexedButton;
-
-using ::testing::Eq;
 
 class TestExtendedUpdatesNotification final
     : public ExtendedUpdatesNotification {
@@ -58,43 +52,42 @@ class ExtendedUpdatesNotificationTest : public testing::Test {
       const ExtendedUpdatesNotificationTest&) = delete;
   ~ExtendedUpdatesNotificationTest() override = default;
 
+  void SetUp() override { message_center::MessageCenter::Initialize(); }
+
+  void TearDown() override { message_center::MessageCenter::Shutdown(); }
+
  protected:
   scoped_refptr<TestExtendedUpdatesNotification> CreateTestNotification(
       Profile* profile) {
     return base::MakeRefCounted<TestExtendedUpdatesNotification>(profile);
   }
 
-  // Gets the number of notifications that are currently showing.
-  int ShowingNotificationCount() {
-    return std::ranges::count_if(
-        notification_display_service_tester_.GetDisplayedNotificationsForType(
-            ExtendedUpdatesNotification::kNotificationType),
-        [](const message_center::Notification& note) {
-          return note.id() == ExtendedUpdatesNotification::kNotificationId;
-        });
+  // Returns whether the notification is currently showing.
+  bool IsShowingNotification() {
+    return message_center::MessageCenter::Get()->FindNotificationById(
+               ExtendedUpdatesNotification::kNotificationId) != nullptr;
   }
 
   void ClickNotification(std::optional<IndexedButton> button) {
-    notification_display_service_tester_.SimulateClick(
-        ExtendedUpdatesNotification::kNotificationType,
-        std::string(ExtendedUpdatesNotification::kNotificationId),
-        button ? std::optional<int>{static_cast<int>(*button)} : std::nullopt,
-        /*reply=*/std::nullopt);
+    if (button) {
+      message_center::MessageCenter::Get()->ClickOnNotificationButton(
+          ExtendedUpdatesNotification::kNotificationId,
+          static_cast<int>(*button));
+    } else {
+      message_center::MessageCenter::Get()->ClickOnNotification(
+          ExtendedUpdatesNotification::kNotificationId);
+    }
   }
 
   void CloseNotification(bool by_user) {
-    notification_display_service_tester_.RemoveNotification(
-        ExtendedUpdatesNotification::kNotificationType,
-        std::string(ExtendedUpdatesNotification::kNotificationId), by_user,
-        /*silent=*/false);
+    message_center::MessageCenter::Get()->RemoveNotification(
+        ExtendedUpdatesNotification::kNotificationId, by_user);
   }
 
   content::BrowserTaskEnvironment task_environment_;
   ash::ScopedStubInstallAttributes install_attributes_;
   ScopedTestingCrosSettings cros_settings_;
   TestingProfile profile_;
-  NotificationDisplayServiceTester notification_display_service_tester_{
-      &profile_};
 };
 
 }  // namespace
@@ -119,13 +112,13 @@ TEST_F(ExtendedUpdatesNotificationTest, ProfileDestroyedAfterShow) {
 
 TEST_F(ExtendedUpdatesNotificationTest, ClickNoButton) {
   ExtendedUpdatesNotification::Show(CreateTestNotification(&profile_));
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 
   ClickNotification(std::nullopt);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 
   CloseNotification(/*by_user=*/false);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
 }
 
 TEST_F(ExtendedUpdatesNotificationTest, ShowExtendedUpdatesDialog) {
@@ -134,13 +127,13 @@ TEST_F(ExtendedUpdatesNotificationTest, ShowExtendedUpdatesDialog) {
   EXPECT_CALL(*note, ShowExtendedUpdatesDialog()).Times(1);
 
   ExtendedUpdatesNotification::Show(std::move(note));
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
   histogram_tester.ExpectBucketCount(
       kExtendedUpdatesEntryPointEventMetric,
       ExtendedUpdatesEntryPointEvent::kNoArcNotificationShown, 1);
 
   ClickNotification(IndexedButton::kSetUp);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
   EXPECT_FALSE(ExtendedUpdatesNotification::IsNotificationDismissed(&profile_));
   histogram_tester.ExpectBucketCount(
       kExtendedUpdatesEntryPointEventMetric,
@@ -152,51 +145,51 @@ TEST_F(ExtendedUpdatesNotificationTest, OpenLearnMoreUrl) {
   EXPECT_CALL(*note, OpenLearnMoreUrl()).Times(1);
 
   ExtendedUpdatesNotification::Show(std::move(note));
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 
   ClickNotification(IndexedButton::kLearnMore);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
   EXPECT_FALSE(ExtendedUpdatesNotification::IsNotificationDismissed(&profile_));
 }
 
 TEST_F(ExtendedUpdatesNotificationTest, UserDismiss) {
   ExtendedUpdatesNotification::Show(CreateTestNotification(&profile_));
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 
   CloseNotification(/*by_user=*/true);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
   EXPECT_TRUE(ExtendedUpdatesNotification::IsNotificationDismissed(&profile_));
 }
 
 TEST_F(ExtendedUpdatesNotificationTest, NonUserDismiss) {
   ExtendedUpdatesNotification::Show(CreateTestNotification(&profile_));
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 
   CloseNotification(/*by_user=*/false);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
   EXPECT_FALSE(ExtendedUpdatesNotification::IsNotificationDismissed(&profile_));
 }
 
 TEST_F(ExtendedUpdatesNotificationTest, DismissNotificationAfterOptIn) {
   ExtendedUpdatesNotification::Show(CreateTestNotification(&profile_));
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 
   cros_settings_.device_settings()->SetBoolean(kDeviceExtendedAutoUpdateEnabled,
                                                true);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
 }
 
 TEST_F(ExtendedUpdatesNotificationTest,
        DismissNotificationAfterOptInWithNoNotificationShowing) {
   ExtendedUpdatesNotification::Show(CreateTestNotification(&profile_));
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 
   CloseNotification(/*by_user=*/false);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
 
   cros_settings_.device_settings()->SetBoolean(kDeviceExtendedAutoUpdateEnabled,
                                                true);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
 }
 
 }  // namespace ash

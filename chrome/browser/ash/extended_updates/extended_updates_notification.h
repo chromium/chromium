@@ -5,11 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_EXTENDED_UPDATES_EXTENDED_UPDATES_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_EXTENDED_UPDATES_EXTENDED_UPDATES_NOTIFICATION_H_
 
-#include <string_view>
-
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -26,10 +23,7 @@ class ExtendedUpdatesNotification
     kLearnMore = 1,
   };
 
-  static constexpr std::string_view kNotificationId =
-      "ash.extended_updates.available";
-  static constexpr NotificationHandler::Type kNotificationType =
-      NotificationHandler::Type::TRANSIENT;
+  static constexpr char kNotificationId[] = "ash.extended_updates.available";
 
   // Shows the notification.
   static void Show(Profile* profile);
@@ -56,8 +50,6 @@ class ExtendedUpdatesNotification
   virtual void OpenLearnMoreUrl();
 
  private:
-  Profile* profile() { return profile_.get(); }
-
   void SubscribeToDeviceSettingsChanges();
   void OnDeviceSettingsChanged();
 

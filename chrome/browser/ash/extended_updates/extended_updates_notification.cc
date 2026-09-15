@@ -16,13 +16,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
 
@@ -54,11 +53,6 @@ void ExtendedUpdatesNotification::Show(Profile* profile) {
 
 void ExtendedUpdatesNotification::Show(
     scoped_refptr<ExtendedUpdatesNotification> delegate) {
-  if (!delegate || !delegate->profile()) {
-    return;
-  }
-  Profile* profile = delegate->profile();
-
   delegate->SubscribeToDeviceSettingsChanges();
 
   message_center::RichNotificationData data;
@@ -68,16 +62,15 @@ void ExtendedUpdatesNotification::Show(
   AddButton(data, IndexedButton::kLearnMore,
             IDS_EXTENDED_UPDATES_NOTIFICATION_LEARN_MORE_BUTTON);
 
-  SystemNotificationBuilder builder;
-  builder.SetId(std::string(kNotificationId))
-      .SetCatalogName(NotificationCatalogName::kExtendedUpdatesAvailable)
-      .SetTitleId(IDS_EXTENDED_UPDATES_NOTIFICATION_TITLE)
-      .SetMessageId(IDS_EXTENDED_UPDATES_NOTIFICATION_MESSAGE)
-      .SetOptionalFields(data)
-      .SetDelegate(std::move(delegate));
-  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
-      kNotificationType, builder.Build(/*keep_timestamp=*/false),
-      /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      SystemNotificationBuilder()
+          .SetId(kNotificationId)
+          .SetCatalogName(NotificationCatalogName::kExtendedUpdatesAvailable)
+          .SetTitleId(IDS_EXTENDED_UPDATES_NOTIFICATION_TITLE)
+          .SetMessageId(IDS_EXTENDED_UPDATES_NOTIFICATION_MESSAGE)
+          .SetOptionalFields(data)
+          .SetDelegate(std::move(delegate))
+          .BuildPtr(/*keep_timestamp=*/false));
   RecordExtendedUpdatesEntryPointEvent(
       ExtendedUpdatesEntryPointEvent::kNoArcNotificationShown);
 }
@@ -112,10 +105,8 @@ void ExtendedUpdatesNotification::Click(
       break;
   }
 
-  if (profile_) {
-    NotificationDisplayServiceFactory::GetForProfile(profile_.get())
-        ->Close(kNotificationType, std::string(kNotificationId));
-  }
+  message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
+                                                           /*by_user=*/false);
 }
 
 void ExtendedUpdatesNotification::ShowExtendedUpdatesDialog() {
@@ -138,9 +129,9 @@ void ExtendedUpdatesNotification::SubscribeToDeviceSettingsChanges() {
 }
 
 void ExtendedUpdatesNotification::OnDeviceSettingsChanged() {
-  if (profile_ && ExtendedUpdatesController::Get()->IsOptedIn()) {
-    NotificationDisplayServiceFactory::GetForProfile(profile_.get())
-        ->Close(kNotificationType, std::string(kNotificationId));
+  if (ExtendedUpdatesController::Get()->IsOptedIn()) {
+    message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
+                                                             /*by_user=*/false);
   }
 }
 

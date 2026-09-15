@@ -27,8 +27,6 @@
 #include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -44,14 +42,13 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
 namespace {
 
 using ::testing::ElementsAre;
-using ::testing::Eq;
 using ::testing::IsEmpty;
 
 
@@ -108,9 +105,6 @@ class ExtendedUpdatesControllerTest : public ChromeAshTestBase {
         TestingProfile::kDefaultProfileUserName);
 
     arc::SetArcPlayStoreEnabledForProfile(profile_, true);
-
-    notification_display_service_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile_.get());
   }
 
   void TearDown() override {
@@ -160,21 +154,15 @@ class ExtendedUpdatesControllerTest : public ChromeAshTestBase {
     return time;
   }
 
-  // Gets the number of notifications that are currently showing.
-  int ShowingNotificationCount() {
-    return std::ranges::count_if(
-        notification_display_service_tester_->GetDisplayedNotificationsForType(
-            ExtendedUpdatesNotification::kNotificationType),
-        [](const message_center::Notification& note) {
-          return note.id() == ExtendedUpdatesNotification::kNotificationId;
-        });
+  // Returns whether the notification is currently showing.
+  bool IsShowingNotification() {
+    return message_center::MessageCenter::Get()->FindNotificationById(
+               ExtendedUpdatesNotification::kNotificationId) != nullptr;
   }
 
   void CloseNotification(bool by_user) {
-    notification_display_service_tester_->RemoveNotification(
-        ExtendedUpdatesNotification::kNotificationType,
-        std::string(ExtendedUpdatesNotification::kNotificationId), by_user,
-        /*silent=*/false);
+    message_center::MessageCenter::Get()->RemoveNotification(
+        ExtendedUpdatesNotification::kNotificationId, by_user);
   }
 
   bool IsQuickSettingsNoticeVisible() {
@@ -193,8 +181,6 @@ class ExtendedUpdatesControllerTest : public ChromeAshTestBase {
   ScopedTestDeviceSettingsService device_settings_service_;
   ScopedTestingCrosSettings cros_settings_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
-  std::unique_ptr<NotificationDisplayServiceTester>
-      notification_display_service_tester_;
 
   raw_ptr<TestingProfile> profile_;
   base::SimpleTestClock test_clock_;
@@ -293,14 +279,14 @@ TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_EligibleThenOptIn) {
 
   // No notification before owner key is loaded.
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
   EXPECT_FALSE(IsQuickSettingsNoticeVisible());
 
   // Simulate owner key loaded.
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
   EXPECT_TRUE(IsQuickSettingsNoticeVisible());
 
   EXPECT_TRUE(controller()->OptIn(profile_));
@@ -316,7 +302,7 @@ TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_BeforeExtendedDate) {
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
   EXPECT_FALSE(IsQuickSettingsNoticeVisible());
 }
 
@@ -328,7 +314,7 @@ TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_AfterEol) {
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
   EXPECT_FALSE(IsQuickSettingsNoticeVisible());
 }
 
@@ -339,7 +325,7 @@ TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_OptInNotRequired) {
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
   EXPECT_FALSE(IsQuickSettingsNoticeVisible());
 }
 
@@ -352,7 +338,7 @@ TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_FeatureDisabled) {
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
   EXPECT_FALSE(IsQuickSettingsNoticeVisible());
 }
 
@@ -364,7 +350,7 @@ TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_NotOwner) {
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
   EXPECT_FALSE(IsQuickSettingsNoticeVisible());
 }
 
@@ -379,7 +365,7 @@ TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_ArcAppsInitializedButNoApp) {
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 
   EXPECT_TRUE(IsQuickSettingsNoticeVisible());
 }
@@ -399,7 +385,7 @@ TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_ArcAppsInitializedWithApps) {
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
 
   // Quick settings notice does not depend on having no android apps.
   EXPECT_TRUE(IsQuickSettingsNoticeVisible());
@@ -422,7 +408,7 @@ TEST_F(ExtendedUpdatesControllerTest,
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 
   EXPECT_TRUE(IsQuickSettingsNoticeVisible());
 }
@@ -447,7 +433,7 @@ TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_ArcDisabledButAppsInstalled) {
 
   // Notification should be visible, because arc is off.
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 }
 
 TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_NoNotificationAfterDismiss) {
@@ -456,16 +442,16 @@ TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_NoNotificationAfterDismiss) {
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 
   CloseNotification(/*by_user=*/true);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
 
   controller()->OnEolInfo(profile_, eol_info);
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
 }
 
 TEST_F(ExtendedUpdatesControllerTest,
@@ -475,16 +461,16 @@ TEST_F(ExtendedUpdatesControllerTest,
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 
   CloseNotification(/*by_user=*/false);
-  EXPECT_THAT(ShowingNotificationCount(), Eq(0));
+  EXPECT_FALSE(IsShowingNotification());
 
   controller()->OnEolInfo(profile_, eol_info);
   RunPendingIsOwnerCallbacks(profile_);
 
   task_environment()->RunUntilIdle();
-  EXPECT_THAT(ShowingNotificationCount(), Eq(1));
+  EXPECT_TRUE(IsShowingNotification());
 }
 
 TEST_F(ExtendedUpdatesControllerTest, OnEolInfo_DoesNotCrashForOTRProfiles) {

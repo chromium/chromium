@@ -12,10 +12,7 @@ static_library("extended_updates") {
     "extended_updates_notification.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/notifications",
-  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash",
@@ -34,6 +31,7 @@ static_library("extended_updates") {
     "//components/prefs",
     "//ui/base",
     "//ui/chromeos",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//url",
   ]
@@ -69,6 +67,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
 
     # Gather unit tests from subdirectories.
