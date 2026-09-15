@@ -5440,6 +5440,18 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_History) {
   // it's the file that was downloaded in PRE_DownloadTest_History.
   base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
   CreatedObserver created_observer(manager);
+
+  if (base::FeatureList::IsEnabled(
+          download::features::kDeferredDownloadHistoryLoading)) {
+    // When deferred history loading is enabled, history is not loaded on
+    // startup, so DownloadManager should have no downloads initially.
+    manager->GetAllDownloads(&downloads);
+    EXPECT_TRUE(downloads.empty());
+
+    // Calling GetNextId() on the delegate triggers history initialization.
+    manager->GetDelegate()->GetNextId(base::DoNothing());
+  }
+
   created_observer.Wait();
   manager->GetAllDownloads(&downloads);
   ASSERT_EQ(1UL, downloads.size());
