@@ -65,6 +65,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ozone_buildflags.h"
@@ -321,6 +322,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   ~BookmarkBarViewEventTestBase() override = default;
 
   void SetUp() override {
+    ui::TestClipboard::CreateForCurrentThread();
+
     // Inject the publisher dependency to AppService.
     publisher_host_factory_resetter_ =
         apps::AppServiceProxyFactory::GetInstance()->SetPublisherHostFactory(
@@ -404,6 +407,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     content::SetContentClient(nullptr);
 
     publisher_host_factory_resetter_.reset();
+    ui::Clipboard::DestroyClipboardForCurrentThread();
   }
 
  protected:
@@ -1546,13 +1550,7 @@ class BookmarkBarViewTest14 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ContextMenus2 DISABLED_ContextMenus2
-#else
-#define MAYBE_ContextMenus2 ContextMenus2
-#endif
-VIEW_TEST(BookmarkBarViewTest14, MAYBE_ContextMenus2)
+VIEW_TEST(BookmarkBarViewTest14, ContextMenus2)
 
 // Makes sure deleting from the context menu keeps the bookmark menu showing.
 class BookmarkBarViewTest15 : public BookmarkBarViewEventTestBase {
@@ -2298,15 +2296,7 @@ class BookmarkBarViewTest27 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MiddleClickOnFolderOpensAllBookmarks \
-  DISABLED_MiddleClickOnFolderOpensAllBookmarks
-#else
-#define MAYBE_MiddleClickOnFolderOpensAllBookmarks \
-  MiddleClickOnFolderOpensAllBookmarks
-#endif
-VIEW_TEST(BookmarkBarViewTest27, MAYBE_MiddleClickOnFolderOpensAllBookmarks)
+VIEW_TEST(BookmarkBarViewTest27, MiddleClickOnFolderOpensAllBookmarks)
 
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -2318,12 +2308,37 @@ class BookmarkBarViewTest28 : public BookmarkBarViewEventTestBase {
   void DoTestOnMessageLoop() override {
     views::LabelButton* button = GetBookmarkButton(0);
     ui_test_utils::MoveMouseToCenterAndClick(
-        button, ui_controls::LEFT, ui_controls::UP | ui_controls::DOWN,
+        button, ui_controls::LEFT, ui_controls::DOWN,
         CreateEventTask(this, &BookmarkBarViewTest28::Step2), kAccelatorState);
   }
 
  private:
   void Step2() {
+    // On Windows, SendMouseEvents with DOWN pressed VK_CONTROL down and left it
+    // pressed. Passing kNoAccelerator here ensures VK_CONTROL is not released
+    // in the same ::SendInput batch as WM_LBUTTONUP before WM_LBUTTONUP is
+    // processed. On other platforms, each SendMouseEvents call sets modifier
+    // flags per event, so kAccelatorState must be passed on UP as well.
+#if BUILDFLAG(IS_WIN)
+    constexpr int kReleaseAccelerator = ui_controls::kNoAccelerator;
+#else
+    constexpr int kReleaseAccelerator = kAccelatorState;
+#endif
+    ASSERT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(
+        ui_controls::LEFT, ui_controls::UP,
+        CreateEventTask(this, &BookmarkBarViewTest28::Step3),
+        kReleaseAccelerator));
+  }
+
+  void Step3() {
+#if BUILDFLAG(IS_WIN)
+    ASSERT_TRUE(ui_controls::SendKeyPressNotifyWhenDone(
+        window()->GetNativeWindow(), ui::VKEY_CONTROL, false, false, false,
+        false, CreateEventTask(this, &BookmarkBarViewTest28::Step4)));
+  }
+
+  void Step4() {
+#endif
     ASSERT_EQ(2u, wrapper_.urls().size());
     EXPECT_EQ(wrapper_.urls()[0],
               model_->bookmark_bar_node()->children()[0]->children()[0]->url());
@@ -2333,17 +2348,7 @@ class BookmarkBarViewTest28 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(crbug.com/40947483): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ClickWithModifierOnFolderOpensAllBookmarks \
-  DISABLED_ClickWithModifierOnFolderOpensAllBookmarks
-#else
-#define MAYBE_ClickWithModifierOnFolderOpensAllBookmarks \
-  ClickWithModifierOnFolderOpensAllBookmarks
-#endif
-
-VIEW_TEST(BookmarkBarViewTest28,
-          MAYBE_ClickWithModifierOnFolderOpensAllBookmarks)
+VIEW_TEST(BookmarkBarViewTest28, ClickWithModifierOnFolderOpensAllBookmarks)
 
 // Tests drag and drop to an empty menu.
 class BookmarkBarViewTest29 : public BookmarkBarViewDragTestBase {
