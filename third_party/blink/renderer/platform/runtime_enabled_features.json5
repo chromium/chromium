@@ -2784,7 +2784,7 @@
     {
       name: "ExtensionScriptTagging",
       public: true,
-      status: "test",
+      status: "stable",
       base_feature: "ExtensionScriptTagging",
     },
     {
