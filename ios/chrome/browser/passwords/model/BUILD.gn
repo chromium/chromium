@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("model") {
+source_set("password_check_manager") {
   sources = [
     "ios_chrome_bulk_leak_check_service_factory.h",
     "ios_chrome_bulk_leak_check_service_factory.mm",
@@ -10,6 +10,35 @@ source_set("model") {
     "ios_chrome_password_check_manager.mm",
     "ios_chrome_password_check_manager_factory.h",
     "ios_chrome_password_check_manager_factory.mm",
+  ]
+  public_deps = [
+    ":store_factory",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+  deps = [
+    ":features",
+    ":password_checkup_metrics",
+    "//components/autofill/core/common",
+    "//components/password_manager/core/browser/affiliation:affiliation_fetching",
+    "//components/password_manager/core/browser/leak_detection",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/webauthn/model",
+    "//ios/chrome/browser/webdata_services/model",
+  ]
+}
+
+source_set("model") {
+  sources = [
     "ios_chrome_password_manager_client.h",
     "ios_chrome_password_manager_client.mm",
     "ios_chrome_password_reuse_detection_manager_client.h",
@@ -90,6 +119,7 @@ source_set("model") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/ui_bundled/coordinators",
+    "//ios/chrome/browser/level_up/model",
     "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/infobars/model",
@@ -124,6 +154,7 @@ source_set("model") {
     "//url",
   ]
   public_deps = [
+    ":password_check_manager",
     ":password_controller_delegate",
     ":store_factory",
   ]

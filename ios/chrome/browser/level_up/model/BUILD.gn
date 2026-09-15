@@ -22,7 +22,10 @@ source_set("model") {
     "level_up_service_factory.h",
     "level_up_service_factory.mm",
   ]
-  public_deps = [ ":task_info" ]
+  public_deps = [
+    ":task_info",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
   deps = [
     "//base",
     "//components/keyed_service/core",
@@ -32,7 +35,7 @@ source_set("model") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/level_up/model/tasks",
     "//ios/chrome/browser/ntp/model:util",
-    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/passwords/model:password_check_manager",
     "//ios/chrome/browser/sessions/model:restoration_observer",
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
@@ -41,7 +44,6 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -63,6 +65,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/profile",
+    "//ios/chrome/browser/content_suggestions/tips/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/coordinator/scene/test",

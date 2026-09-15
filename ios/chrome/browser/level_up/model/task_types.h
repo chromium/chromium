@@ -46,8 +46,8 @@ TaskType StringToTaskType(std::string_view str);
 enum class LevelUpTaskStatType {
   // Number of tabs decluttered from grid.
   kTabsDecluttered,
-  // Typing time saved by forms autofill.
-  kTypingSaved,
+  // Passwords autofilled using form suggestions or manual fill.
+  kPasswordsAutofilled,
   // Passwords verified by checkup.
   kPasswordsVerified,
   // Photos/camera searches performed using Lens.

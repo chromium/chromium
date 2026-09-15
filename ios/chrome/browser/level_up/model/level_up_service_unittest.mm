@@ -145,14 +145,16 @@ TEST_F(LevelUpServiceTest, TestTaskCompletionResetsFreshness) {
 TEST_F(LevelUpServiceTest, TestStatValues) {
   // Initially all stats are 0.
   EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
-  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTypingSaved));
+  EXPECT_EQ(0,
+            service_->GetStatValue(LevelUpTaskStatType::kPasswordsAutofilled));
   EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kPasswordsVerified));
   EXPECT_EQ(
       0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
 
-  // Increment typing saved stat.
-  service_->IncrementStatValue(LevelUpTaskStatType::kTypingSaved, 15);
-  EXPECT_EQ(15, service_->GetStatValue(LevelUpTaskStatType::kTypingSaved));
+  // Increment passwords autofilled stat.
+  service_->IncrementStatValue(LevelUpTaskStatType::kPasswordsAutofilled, 15);
+  EXPECT_EQ(15,
+            service_->GetStatValue(LevelUpTaskStatType::kPasswordsAutofilled));
 
   // Increment tabs decluttered stat.
   service_->IncrementStatValue(LevelUpTaskStatType::kTabsDecluttered, 4);
@@ -191,14 +193,11 @@ TEST_F(LevelUpServiceTest, TestTabGroupObserverDecluttering) {
 // Tests that LevelUpPasswordCheckObserver updates kPasswordsVerified stat when
 // a password check finishes (transitions from kRunning to kIdle).
 TEST_F(LevelUpServiceTest, TestPasswordCheckObserver) {
-  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kPasswordsVerified));
-
   scoped_refptr<IOSChromePasswordCheckManager> check_manager =
       IOSChromePasswordCheckManagerFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(check_manager);
 
-  auto service_with_manager = std::make_unique<LevelUpService>(
-      profile_->GetPrefs(), nullptr, nullptr, check_manager.get());
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kPasswordsVerified));
 
   // Start and stop password check.
   check_manager->StartPasswordCheck(
@@ -206,8 +205,7 @@ TEST_F(LevelUpServiceTest, TestPasswordCheckObserver) {
   check_manager->StopPasswordCheck();
 
   // Verify kPasswordsVerified stat (0 if no saved passwords in test store).
-  EXPECT_EQ(0, service_with_manager->GetStatValue(
-                   LevelUpTaskStatType::kPasswordsVerified));
+  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kPasswordsVerified));
 }
 
 // Tests that ResetAllTasksStatus clears task completion, stats, level, and
@@ -221,9 +219,10 @@ TEST_F(LevelUpServiceTest, TestResetAllTasksStatus) {
   EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kTabGroups));
 
   service_->IncrementStatValue(LevelUpTaskStatType::kTabsDecluttered, 5);
-  service_->IncrementStatValue(LevelUpTaskStatType::kTypingSaved, 20);
+  service_->IncrementStatValue(LevelUpTaskStatType::kPasswordsAutofilled, 20);
   EXPECT_EQ(5, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
-  EXPECT_EQ(20, service_->GetStatValue(LevelUpTaskStatType::kTypingSaved));
+  EXPECT_EQ(20,
+            service_->GetStatValue(LevelUpTaskStatType::kPasswordsAutofilled));
 
   PrefService* prefs = profile_->GetPrefs();
   prefs->SetInteger(
@@ -240,7 +239,8 @@ TEST_F(LevelUpServiceTest, TestResetAllTasksStatus) {
 
   // Verify all stats are reset.
   EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTabsDecluttered));
-  EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kTypingSaved));
+  EXPECT_EQ(0,
+            service_->GetStatValue(LevelUpTaskStatType::kPasswordsAutofilled));
   EXPECT_EQ(0, service_->GetStatValue(LevelUpTaskStatType::kPasswordsVerified));
   EXPECT_EQ(
       0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));

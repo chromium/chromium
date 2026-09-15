@@ -11,6 +11,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -174,6 +175,19 @@ TEST_F(LevelUpSceneAgentTest, TestActionDoesNotTriggerTrackingWhenOptedOut) {
       0, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
 
   EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+}
+
+TEST_F(LevelUpSceneAgentTest, TestAutofillActionTriggersTaskCompletion) {
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kAutofill));
+
+  // Simulate the scene becoming active to start listening.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  // Record action that should trigger autofill task completion.
+  base::RecordAction(
+      base::UserMetricsAction(kSavePasswordsPromoDismissedAction));
+
+  // Verify that kAutofill task is completed.
+  EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kAutofill));
 }
 
 }  // namespace

@@ -4738,6 +4738,11 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_SNACKBAR_ACTION" desc="The snackbar action link button to go to the Level Up feature screen. [iOS only]">
         Go to Level Up
       </message>
+      <message name="IDS_IOS_LEVEL_UP_STAT_PASSWORDS_AUTOFILLED" desc="Title for the passwords autofilled statistic card. [iOS only]">
+        {count, plural,
+          =1 {1 password autofilled}
+          other {# passwords autofilled}}
+      </message>
       <message name="IDS_IOS_LEVEL_UP_STAT_PASSWORDS_VERIFIED" desc="Title for the passwords verified statistic card. [iOS only]">
         {count, plural,
           =1 {You checked 1 password}
@@ -4748,6 +4753,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
           =1 {You used 1 photo to search}
           other {You used # photos to search}}
       </message>
+      <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PASSWORDS_AUTOFILLED" desc="Statistic card subtitle displaying the source task for passwords autofilled. [iOS only]">
+        since using Passwords and Autofill
+      </message>
       <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PASSWORDS_VERIFIED" desc="Statistic card subtitle displaying the source task for passwords verified. [iOS only]">
         since completing "Check your passwords"
       </message>
@@ -4757,18 +4765,10 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_TABS_DECLUTTERED" desc="Statistic card subtitle displaying the source task for tabs decluttered. [iOS only]">
         since learning about Tab Groups
       </message>
-      <message name="IDS_IOS_LEVEL_UP_STAT_SUBTITLE_TYPING_SAVED" desc="Statistic card subtitle displaying the source task for typing time saved. [iOS only]">
-        since using Passwords and Autofill
-      </message>
       <message name="IDS_IOS_LEVEL_UP_STAT_TABS_DECLUTTERED" desc="Title for the tabs decluttered statistic card. [iOS only]">
         {count, plural,
           =1 {1 tab decluttered}
           other {# tabs decluttered}}
-      </message>
-      <message name="IDS_IOS_LEVEL_UP_STAT_TYPING_SAVED" desc="Title for the typing time saved statistic card. [iOS only]">
-        {count, plural,
-          =1 {1 minute of typing saved}
-          other {# minutes of typing saved}}
       </message>
       <message name="IDS_IOS_LEVEL_UP_TASKS_REMAINING" desc="Progress message explaining how many tasks remain to level up. [iOS only]">
         {count, plural,

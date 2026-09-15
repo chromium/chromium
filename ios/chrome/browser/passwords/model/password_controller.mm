@@ -60,6 +60,8 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
+#import "ios/chrome/browser/level_up/model/level_up_service.h"
+#import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
 #import "ios/chrome/browser/passwords/infobars/model/ios_chrome_password_saved_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/infobars/model/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -560,6 +562,15 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   if (suggestion.type == autofill::SuggestionType::kAllSavedPasswordsEntry) {
     // Navigate to the settings list.
     [self.delegate displaySavedPasswordList];
+  } else if (_webState) {
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(_webState->GetBrowserState());
+    LevelUpService* levelUpService =
+        LevelUpServiceFactory::GetForProfile(profile);
+    if (levelUpService) {
+      levelUpService->IncrementStatValue(
+          LevelUpTaskStatType::kPasswordsAutofilled);
+    }
   }
 }
 
