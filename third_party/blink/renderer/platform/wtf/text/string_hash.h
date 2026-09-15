@@ -79,7 +79,7 @@ struct HashTraits<String> : SimpleClassHashTraits<String> {
     return GetHash(reinterpret_cast<const char*>(key));
   }
   static uint32_t GetHash(const UChar* key) {
-    return blink::ComputeHashForWideString(
+    return HashWideString24(
         // SAFETY: Safe when input is null-terminated string.
         UNSAFE_BUFFERS({key, blink::LengthOfNullTerminatedString(key)}));
   }

@@ -26,6 +26,8 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 #include "third_party/rapidhash/rapidhash.h"
 
 namespace blink {
@@ -84,6 +86,17 @@ ALWAYS_INLINE uint32_t HashString24Inline(base::span<const uint8_t> data) {
       data.data(),
       data.size() * Reader::kExpansionFactor / Reader::kCompressionFactor));
 }
+
+// Computes the standard string hash for the given buffer,
+// with the caveat that the buffer may contain 8-bit data only.
+// In that case, it is converted from UChar to LChar on the fly,
+// so that we return the same hash as if we hashed the string as
+// LChar to begin with. This ensures that the same code points
+// are hashed to the same value, even if someone called e.g.
+// Ensure16Bit() on the string at some point.
+//
+// The implementation is in string_statics.cc.
+WTF_EXPORT uint32_t HashWideString24(base::span<const UChar> utf16_chars);
 
 }  // namespace blink
 

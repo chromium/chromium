@@ -258,14 +258,8 @@ struct StringViewLookupTranslator {
       return shared_impl->GetHash();
     }
 
-    base::span<const uint8_t> bytes = buf.RawByteSpan();
-    if (buf.Is8Bit()) {
-      return HashString24(bytes);
-    } else if (ContainsOnlyLatin1(buf.Span16())) {
-      return HashString24<ConvertTo8BitHashReader>(bytes);
-    } else {
-      return HashString24(bytes);
-    }
+    return buf.Is8Bit() ? HashString24(buf.Span8())
+                        : HashWideString24(buf.Span16());
   }
 
   static bool Equal(StringImpl* const& str, const StringView& buf) {

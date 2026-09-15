@@ -73,15 +73,6 @@ enum TextCaseSensitivity {
   kTextCaseAsciiInsensitive,
 };
 
-// Computes a standard StringHasher string for the given buffer,
-// with the caveat that the buffer may contain 8-bit data only.
-// In that case, it is converted from UChar to LChar on the fly,
-// so that we return the same hash as if we hashed the string as
-// LChar to begin with. This ensures that the same code points
-// are hashed to the same value, even if someone called e.g.
-// Ensure16Bit() on the string at some point.
-WTF_EXPORT uint32_t ComputeHashForWideString(base::span<const UChar> str);
-
 enum StripBehavior { kStripExtraWhiteSpace, kDoNotStripWhiteSpace };
 
 typedef bool (*CharacterMatchFunctionPtr)(UChar);
@@ -247,9 +238,9 @@ class WTF_EXPORT StringImpl {
   // code.
   void SetHash(uint32_t hash) const {
     // Multiple clients assume that blink::HashString24() and
-    // ComputeHashForWideString() are the canonical string hash functions.
-    DCHECK_EQ(hash, (Is8Bit() ? HashString24(Span8())
-                              : ComputeHashForWideString(Span16())));
+    // blink::HashWideString24() are the canonical string hash functions.
+    DCHECK_EQ(hash,
+              (Is8Bit() ? HashString24(Span8()) : HashWideString24(Span16())));
     DCHECK(hash);  // Verify that 0 is a valid sentinel hash value.
     SetHashRaw(hash);
   }

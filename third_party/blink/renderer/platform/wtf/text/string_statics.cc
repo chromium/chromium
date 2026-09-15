@@ -98,9 +98,9 @@ bool NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
                              [](UChar ch) { return ch == ' '; });
 }
 
-WTF_EXPORT uint32_t ComputeHashForWideString(base::span<const UChar> str) {
-  base::span<const uint8_t> bytes = base::as_bytes(str);
-  if (ContainsOnlyLatin1(str)) {
+WTF_EXPORT uint32_t HashWideString24(base::span<const UChar> utf16_chars) {
+  base::span<const uint8_t> bytes = base::as_bytes(utf16_chars);
+  if (ContainsOnlyLatin1(utf16_chars)) {
     return HashString24<ConvertTo8BitHashReader>(bytes);
   } else {
     return HashString24(bytes);
@@ -113,7 +113,7 @@ NOINLINE uint32_t StringImpl::HashSlowCase() const {
     // of the inlining here.
     SetHash(HashString24Inline(Span8()));
   } else {
-    SetHash(ComputeHashForWideString(Span16()));
+    SetHash(HashWideString24(Span16()));
   }
   return ExistingHash();
 }
