@@ -616,24 +616,20 @@ bool ClientSharedImage::IsSyncTokenSignaled(
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
     base::AutoLock auto_lock(lock_);
-    for (const auto& [_, sync_token] : sync_token_map_) {
-      if (sync_token == creation_sync_token_) {
-        continue;
-      }
-      if (sync_token.HasData() &&
-          !context_support->IsSyncTokenSignaled(sync_token)) {
-        return false;
-      }
+    SyncPointClientId client_id = context_support->GetSyncPointClientId();
+    auto it = sync_token_map_.find(client_id);
+    if (it != sync_token_map_.end() && it->second.HasData()) {
+      return context_support->IsSyncTokenSignaled(it->second);
     }
-  } else {
-    // This SyncToken should have been set by calling OrderingBarrier() before
-    // calling this.
-    DCHECK(resource_sync_token.HasData());
-
-    // IsSyncTokenSignaled is thread-safe, no need for worker context lock.
-    return context_support->IsSyncTokenSignaled(resource_sync_token);
+    return true;
   }
-  return true;
+
+  // This SyncToken should have been set by calling OrderingBarrier() before
+  // calling this.
+  DCHECK(resource_sync_token.HasData());
+
+  // IsSyncTokenSignaled is thread-safe, no need for worker context lock.
+  return context_support->IsSyncTokenSignaled(resource_sync_token);
 }
 
 std::vector<SyncToken> ClientSharedImage::GetSyncTokensForDisplayCompositor(
