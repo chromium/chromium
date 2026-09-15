@@ -18,9 +18,10 @@ export function getHtml(this: TabSearchGroupItemElement) {
       <path fill-rule="evenodd" clip-rule="evenodd"
           d="M6 5C6 4.44772 6.44772 4 7 4H29C29.5523 4 30 4.44772 30 5V23C30 23.5523 29.5523 24 29 24H7C6.44772 24 6 23.5523 6 23V5ZM7.99992 22V6.33335H17.9999V12H27.9999V22H7.99992ZM2 9C2 8.44772 2.44772 8 3 8H4V26H26V27C26 27.5523 25.5523 28 25 28H3C2.44772 28 2 27.5523 2 27V9Z"
           fill="#616161">
+      </path>
     </mask>
     <g mask="url(#mask0)">
-      <rect width="32" height="32" fill="#5F6368">
+      <rect width="32" height="32" fill="#5F6368"></rect>
     </g>
   </svg>
 </div>
@@ -28,7 +29,7 @@ export function getHtml(this: TabSearchGroupItemElement) {
   <div id="primaryText" title="${this.data.tabGroup.title}"></div>
   <div id="secondaryTextContainer">
     <svg id="groupSvg" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg">
-      <circle id= "groupDot" cx="0" cy="0" r="4">
+      <circle id="groupDot" cx="0" cy="0" r="4"></circle>
     </svg>
     <div id="secondaryText">${this.tabCountText_()}</div>
     <div class="separator">•</div>

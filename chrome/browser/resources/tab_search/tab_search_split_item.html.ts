@@ -11,11 +11,14 @@ export function getHtml(this: TabSearchSplitItemElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="iconContainer">
-  <div class="split-favicons ${this.data.layout === SplitTabLayout.kStacked ?
-      'stacked' : 'side-by-side'}">
+  <div
+      class="split-favicons ${
+          this.data.layout === SplitTabLayout.kStacked ? 'stacked' :
+                                                         'side-by-side'}">
     ${this.data.tabUrls.slice(0, 2).map((url: string, index: number) => html`
       <div class="split-favicon"
-          .style="background-image: ${this.getFaviconUrl_(url, index)}"></div>
+          .style="background-image: ${this.getFaviconUrl_(url, index)}">
+      </div>
     `)}
   </div>
 </div>
@@ -25,7 +28,8 @@ export function getHtml(this: TabSearchSplitItemElement) {
     ${this.data.tabs ? html`
       ${this.data.tabs.map(item => html`
         ${this.hasMediaAlertForTab_(item) ? html`
-          <img class="media-alert
+          <img
+              class="media-alert
               ${this.getMediaAlertImageClassForTab_(item)}">
         ` : ''}
       `)}
@@ -35,10 +39,12 @@ export function getHtml(this: TabSearchSplitItemElement) {
     <svg id="groupSvg" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg"
         display="${this.data.tabGroup ? 'block' : 'none'}"
         style="--group-dot-color: ${this.getGroupColor_()}">
-      <circle id="groupDot" cx="0" cy="0" r="4" />
+      <circle id="groupDot" cx="0" cy="0" r="4"></circle>
     </svg>
     ${this.domainTexts_.slice(0, 2).map((domainText, index: number) => html`
-      ${index > 0 ? html`<div class="separator">•</div>` : ''}
+      ${index > 0 ? html`
+        <div class="separator">•</div>
+      ` : ''}
       <div class="domain-text" title="${domainText}">
         <bdi>${domainText}</bdi>
       </div>
@@ -53,8 +59,7 @@ ${this.isCloseable_() ? html`
         aria-label="${this.tooltipForButton_()}"
         iron-icon="${this.closeButtonIcon}" ?noink="${!this.buttonRipples_}"
         no-ripple-on-focus @click="${this.onCloseButtonClick_}"
-        title="${this.tooltipForButton_()}"
-        @focus="${this.onCloseButtonFocus_}"
+        title="${this.tooltipForButton_()}" @focus="${this.onCloseButtonFocus_}"
         @blur="${this.onCloseButtonBlur_}">
     </cr-icon-button>
     <cr-tooltip for="closeButton" position="top" offset="0"

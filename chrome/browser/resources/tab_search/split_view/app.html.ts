@@ -14,40 +14,30 @@ export function getHtml(this: SplitNewTabPageAppElement) {
 <div id="header" ?hidden="${this.allEligibleTabs_.length === 0}">
   <cr-icon-button id="closeButton"
       iron-icon="${
-      this.webuiRoundedIconsEnabled_ ? 'tab-search:close' :
-                                       'tab-search:close-old'}"
+          this.webuiRoundedIconsEnabled_ ? 'tab-search:close' :
+                                           'tab-search:close-old'}"
       title="$i18n{splitViewCloseButtonAriaLabel}"
-      @click="${this.onCloseClick_}"
-      @focus="${this.onCloseButtonFocus_}"
+      @click="${this.onCloseClick_}" @focus="${this.onCloseButtonFocus_}"
       @blur="${this.onCloseButtonBlur_}">
   </cr-icon-button>
-  <cr-tooltip for="closeButton" position="top" offset="0"
-      fit-to-visible-bounds manual-mode>
+  <cr-tooltip for="closeButton" position="top" offset="0" fit-to-visible-bounds
+      manual-mode>
     $i18n{splitViewCloseButtonAriaLabel}
   </cr-tooltip>
 </div>
 <div class="tab-list" ?hidden="${this.allEligibleTabs_.length === 0}">
   <selectable-lazy-list id="splitTabsList" class="scroller"
-      .items="${this.allEligibleTabs_}"
-      item-size="66"
-      max-height="${this.minViewportHeight_}"
-      role="listbox"
-      .template="${
-      (item: TabData, index: number) =>
-          html`<tab-search-item class="mwb-list-item selectable"
-          hide-close-button
-          hide-timestamp
-          size="large"
-          .data="${item}"
-          data-index="${index}"
-          @click="${this.onTabClick_}"
-          @focus="${this.onTabFocus_}"
-          @focusout="${this.onTabFocusout_}"
-          @keydown="${this.onTabKeydown_}"
-          role="option"
-          aria-label="${ariaLabel(item)}"
-          tabindex="0">
-        </tab-search-item>`}">
+      .items="${this.allEligibleTabs_}" item-size="66"
+      max-height="${this.minViewportHeight_}" role="listbox"
+      .template="${(item: TabData, index: number) =>
+      html`
+        <tab-search-item class="mwb-list-item selectable" hide-close-button
+            hide-timestamp size="large" .data="${item}" data-index="${index}"
+            @click="${this.onTabClick_}" @focus="${this.onTabFocus_}"
+            @focusout="${this.onTabFocusout_}" @keydown="${this.onTabKeydown_}"
+            role="option" aria-label="${ariaLabel(item)}" tabindex="0">
+        </tab-search-item>
+      `}">
   </selectable-lazy-list>
 </div>
 <!--_html_template_end_-->`;
