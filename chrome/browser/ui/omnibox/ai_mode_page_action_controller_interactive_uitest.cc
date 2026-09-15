@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -26,6 +27,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_window_test.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
@@ -265,6 +268,27 @@ IN_PROC_BROWSER_TEST_F(
                   CheckChipVisible(false));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    AiModePageActionControllerHideEntryPointForUrlInteractiveUiTest,
+    HidesOnSelectedUrlSuggestion) {
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  model->AddNewURL(model->other_node(), 0, u"example bookmark",
+                   GURL("https://example.com"));
+
+  RunTestSequence(
+      OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
+      CheckChipVisible(true),
+      // Type query matching both search and bookmark.
+      EnterText(kOmniboxElementId, u"example"), CheckChipVisible(true),
+      // Move selection down to the bookmark URL match.
+      SendKeyPress(GetTargetElementId(), ui::VKEY_DOWN),
+      CheckChipVisible(false),
+      // Move selection back up to the search match.
+      SendKeyPress(GetTargetElementId(), ui::VKEY_UP), CheckChipVisible(true));
+}
+
 class AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest
     : public AiModePageActionControllerInteractiveUiTest {
  protected:
@@ -287,6 +311,27 @@ IN_PROC_BROWSER_TEST_F(
                   // Type a URL.
                   EnterText(kOmniboxElementId, u"https://google.com"),
                   CheckChipVisible(false));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest,
+    HidesOnSelectedUrlSuggestion) {
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  model->AddNewURL(model->other_node(), 0, u"example bookmark",
+                   GURL("https://example.com"));
+
+  RunTestSequence(
+      OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
+      CheckChipVisible(true),
+      // Type query matching both search and bookmark.
+      EnterText(kOmniboxElementId, u"example"), CheckChipVisible(true),
+      // Move selection down to the bookmark URL match.
+      SendKeyPress(GetTargetElementId(), ui::VKEY_DOWN),
+      CheckChipVisible(false),
+      // Move selection back up to the search match.
+      SendKeyPress(GetTargetElementId(), ui::VKEY_UP), CheckChipVisible(true));
 }
 
 IN_PROC_BROWSER_TEST_F(

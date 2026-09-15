@@ -469,6 +469,16 @@ export class OmniboxPopupSearchboxElement extends
             });
       }
     }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedProperties.has('selectedMatchIndex') ||
+        changedProperties.has('selection') ||
+        changedProperties.has('selectedMatch') ||
+        changedProperties.has('result') ||
+        changedPrivateProperties.has('aimButtonVisible_')) {
+      this.updateAimButtonCollapse_();
+    }
   }
 
   override shouldAppendDotComOnCtrlEnter(): boolean {
