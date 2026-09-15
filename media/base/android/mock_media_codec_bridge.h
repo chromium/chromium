@@ -96,7 +96,7 @@ class MockMediaCodecBridge : public MediaCodecBridge,
 
   CodecType codec_type_ = CodecType::kAny;
   std::string name_;
-  bool is_software_codec_;
+  bool is_software_codec_ = false;
 };
 
 }  // namespace media
