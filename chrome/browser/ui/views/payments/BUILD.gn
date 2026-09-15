@@ -209,6 +209,7 @@ source_set("browser_tests") {
     "//chrome/browser/payments",
     "//chrome/browser/permissions",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/views:bubble_anchor_util_views",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/page_info",

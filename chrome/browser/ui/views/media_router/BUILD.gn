@@ -190,6 +190,7 @@ source_set("browser_tests") {
     ":media_router",
     ":test_support",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/media_router",
     "//chrome/browser/ui/views/frame",
@@ -212,12 +213,6 @@ if (!is_chromeos_device) {
 
     sources = [ "media_router_dialog_controller_views_interactive_uitest.cc" ]
 
-    # media_router_ui_interactive_uitest.cc is desktop-only; it does not build
-    # on ChromeOS or Fuchsia.
-    if (is_win || is_mac || is_linux) {
-      sources += [ "media_router_ui_interactive_uitest.cc" ]
-    }
-
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
     deps = [
@@ -234,5 +229,12 @@ if (!is_chromeos_device) {
       "//testing/gtest",
       "//ui/views",
     ]
+
+    # media_router_ui_interactive_uitest.cc is desktop-only; it does not build
+    # on ChromeOS or Fuchsia.
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/browser/ui:browser_window_header" ]
+      sources += [ "media_router_ui_interactive_uitest.cc" ]
+    }
   }
 }

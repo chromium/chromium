@@ -43,6 +43,7 @@ source_set("impl") {
     "//chrome/browser:primitives",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",

@@ -46,6 +46,7 @@ source_set("browser_tests") {
   deps = [
     ":search_ai_mode",
     "//base/test:test_support",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/test:dialog",
     "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/profiles:profiles_pixel_test_utils",

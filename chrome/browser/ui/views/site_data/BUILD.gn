@@ -130,6 +130,7 @@ source_set("interactive_ui_tests") {
     "//chrome/app:command_ids",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/interaction",

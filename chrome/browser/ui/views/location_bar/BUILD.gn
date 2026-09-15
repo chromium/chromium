@@ -73,6 +73,7 @@ source_set("impl") {
     ":icon_label_bubble",
     ":location_bar",
     "//chrome/browser:defaults",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/select_file_policy",
   ]
@@ -247,6 +248,7 @@ source_set("omnibox_popup_file_selector_browsertest") {
   deps = [
     ":location_bar",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
@@ -280,6 +282,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/content_settings",
     "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_web_contents_delegate",
     "//chrome/browser/ui/find_bar",
@@ -356,6 +359,7 @@ source_set("interactive_ui_tests") {
 
   deps = [
     ":location_bar",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/views:content_setting_bubble_contents",

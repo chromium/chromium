@@ -684,6 +684,7 @@ source_set("system_menu_model_delegate_impl") {
     "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sessions",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
