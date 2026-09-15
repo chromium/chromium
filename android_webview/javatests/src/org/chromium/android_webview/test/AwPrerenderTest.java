@@ -919,6 +919,10 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals("prefetch;prerender", scriptHeaders.get("Sec-Purpose"));
     }
 
+    // Tests `saveState` and `restoreState` with prerendering.
+    //
+    // - While prerendering is ongoing, navigation history only contains the initial page load.
+    // - After activation, navigation history contains both pages and preserves extra headers.
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
@@ -938,8 +942,8 @@ public class AwPrerenderTest extends AwParameterizedTest {
         AwPrefetchParameters prerenderParameters =
                 new AwPrefetchParameters(prerenderExtraHeaders, null, false);
 
-        // --- 2. Start Prerendering ---
-        startPrerendering(
+        // --- 2. Start Prerendering and Wait for Load ---
+        startPrerenderingAndWait(
                 mPrerenderingUrl,
                 prerenderParameters,
                 /* cancellationSignal= */ null,
