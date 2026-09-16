@@ -1,14 +1,41 @@
 [document web]
 ++[section]
-++++[dialog] setsize:2
-++++++[menu item] name='File' posinset:1 setsize:2
-++++++[menu item] name='Edit' posinset:2 setsize:2
-++++++[push button] name='Invalid'
+++++[dialog] setsize:3
+++++++[menu item] name='File' posinset:1 setsize:3
+++++++[menu item] name='Edit' posinset:2 setsize:3
+++++++[push button] name='Invalid' posinset:3 setsize:3
 ++++[push button] name='Show Menu' label-for=[dialog]
-++++[dialog] name='Show Menu' labelled-by=[push button] setsize:3
-++++++[menu item] name='Copy' posinset:1 setsize:3
-++++++[push button] name='Invalid'
-++++++[menu item] name='Paste' posinset:2 setsize:3
+++++[dialog] name='Show Menu' labelled-by=[push button] setsize:4
+++++++[menu item] name='Copy' posinset:1 setsize:4
+++++++[push button] name='Invalid' posinset:2 setsize:4
+++++++[menu item] name='Paste' posinset:3 setsize:4
 ++++++[panel] setsize:1
 ++++++++[check menu item] name='Checkbox' checkable checkable:true posinset:1 setsize:1
-++++++[radio menu item] name='Radio' checkable checkable:true posinset:3 setsize:3
+++++++[radio menu item] name='Radio' checkable checkable:true posinset:4 setsize:4
+++++[dialog] setsize:3
+++++++[menu item] name='Open Submenu' label-for=[list] posinset:1 setsize:3
+++++++[list] name='Open Submenu' labelled-by=[menu item] setsize:3
+++++++++[menu item] name='Sub 1' posinset:1 setsize:3
+++++++++[push button] name='Sub Invalid' posinset:2 setsize:3
+++++++++[menu item] name='Sub 2' posinset:3 setsize:3
+++++++[push button] name='Invalid 2' posinset:2 setsize:3
+++++++[menu item] name='Top Level' posinset:3 setsize:3
+++++[dialog] setsize:2
+++++++[menu item] name='Item 1' posinset:1 setsize:2
+++++++[push button] name='Bare List Invalid' posinset:2 setsize:2
+++++++[list] setsize:5
+++++++++[list item] posinset:1 setsize:5
+++++++++++[static] name='1. '
+++++++++++[static] name='List item 1'
+++++++++[list item] posinset:2 setsize:5
+++++++++++[static] name='2. '
+++++++++++[static] name='List item 2'
+++++++++[list item] posinset:3 setsize:5
+++++++++++[static] name='3. '
+++++++++++[static] name='List item 3'
+++++++++[list item] posinset:4 setsize:5
+++++++++++[static] name='4. '
+++++++++++[static] name='List item 4'
+++++++++[list item] posinset:5 setsize:5
+++++++++++[static] name='5. '
+++++++++++[static] name='List item 5'

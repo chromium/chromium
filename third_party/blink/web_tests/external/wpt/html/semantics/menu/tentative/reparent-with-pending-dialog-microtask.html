@@ -32,6 +32,6 @@ promise_test(async () => {
   inner.showPopover();
 
   assert_equals(await test_driver.get_computed_role(outer), 'dialog', 'Outer menu should assume dialog mode because the violation was reparented into it');
-  assert_equals(await test_driver.get_computed_role(inner), 'dialog', 'Inner menu should assume dialog mode via synchronous inheritance during the reparent');
+  assert_equals(await test_driver.get_computed_role(inner), 'list', 'Inner menu should assume list mode via synchronous inheritance during the reparent');
 }, 'Synchronous reparenting correctly delegates dialog role updates to the new root');
 </script>

@@ -21,7 +21,12 @@ class CORE_EXPORT HTMLMenuOwnerElement : public HTMLElement,
   MenuItemList ItemList() const;
 
   bool ShouldIgnoreDescendantsForElementTraversals(Element* element) const;
-  bool IsTopLevelOwner() const;
+  // IsTopLevelOwnerForClickHandling assumes the content model is followed and
+  // is fast.
+  bool IsTopLevelOwnerForClickHandling() const;
+  // IsTopLevelOwnerForContentModelViolation doesn't assume anything and walks
+  // all the way to the root.
+  bool IsTopLevelOwnerForContentModelViolation() const;
 
   void DefaultEventHandler(Event&) override;
 

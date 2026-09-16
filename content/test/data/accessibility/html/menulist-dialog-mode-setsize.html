@@ -12,7 +12,7 @@
 </menubar>
 
 <button id="button" popovertarget="menu">Show Menu</button>
-<menulist id="menu" popover>
+<menulist id="menu">
   <menuitem>Copy</menuitem>
   <button>Invalid</button>
   <menuitem>Paste</menuitem>
@@ -21,8 +21,35 @@
   </fieldset>
   <menuitem role="menuitemradio">Radio</menuitem>
 </menulist>
+
+<menubar>
+  <submenu>
+    <menuitem>Open Submenu</menuitem>
+    <menulist id="submenu" popover="manual">
+      <menuitem>Sub 1</menuitem>
+      <button>Sub Invalid</button>
+      <menuitem>Sub 2</menuitem>
+    </menulist>
+  </submenu>
+  <button>Invalid 2</button>
+  <menuitem>Top Level</menuitem>
+</menubar>
+
+<menubar>
+  <menuitem>Item 1</menuitem>
+  <button>Bare List Invalid</button>
+  <ol>
+    <li>List item 1</li>
+    <li>List item 2</li>
+    <li>List item 3</li>
+    <li>List item 4</li>
+    <li>List item 5</li>
+  </ol>
+</menubar>
+
 <script>
   window.addEventListener('load', () => {
     button.click();
+    submenu.showPopover();
   });
 </script>

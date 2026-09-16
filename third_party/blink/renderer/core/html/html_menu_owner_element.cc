@@ -26,14 +26,20 @@
 namespace blink {
 
 namespace {
-HTMLMenuOwnerElement* FindMenuRoot(Node* node) {
-  HTMLMenuOwnerElement* root = nullptr;
-  for (Node* ancestor = node; ancestor; ancestor = ancestor->parentNode()) {
+const HTMLMenuOwnerElement* FindMenuRoot(const Node* node) {
+  const HTMLMenuOwnerElement* root = nullptr;
+  for (const Node* ancestor = node; ancestor;
+       ancestor = ancestor->parentNode()) {
     if (auto* menu = DynamicTo<HTMLMenuOwnerElement>(ancestor)) {
       root = menu;
     }
   }
   return root;
+}
+
+HTMLMenuOwnerElement* FindMenuRoot(Node* node) {
+  return const_cast<HTMLMenuOwnerElement*>(
+      FindMenuRoot(static_cast<const Node*>(node)));
 }
 }  // namespace
 
@@ -148,7 +154,9 @@ Node::InsertionNotificationRequest HTMLMenuOwnerElement::InsertedInto(
       this, visited_nodes, /*disconnected_parent=*/nullptr);
 
   if (total_violations_in_tree_ > 0) {
-    ScheduleDialogModeUpdate();
+    DCHECK(is_dialog_mode_update_scheduled_)
+        << "CheckNodeAndDescendantsForViolations should have scheduled an "
+           "update";
   }
 
   return result;
@@ -181,10 +189,14 @@ bool HTMLMenuOwnerElement::ShouldIgnoreDescendantsForElementTraversals(
          IsA<HTMLMenuListElement>(element) || IsA<HTMLHRElement>(element);
 }
 
-bool HTMLMenuOwnerElement::IsTopLevelOwner() const {
+bool HTMLMenuOwnerElement::IsTopLevelOwnerForClickHandling() const {
   return IsA<HTMLMenuBarElement>(this) ||
          (IsA<HTMLMenuListElement>(this) &&
           !IsA<HTMLSubMenuElement>(parentNode()));
+}
+
+bool HTMLMenuOwnerElement::IsTopLevelOwnerForContentModelViolation() const {
+  return FindMenuRoot(this) == this;
 }
 
 void HTMLMenuOwnerElement::DefaultEventHandler(Event& event) {
@@ -201,7 +213,7 @@ void HTMLMenuOwnerElement::DefaultEventHandler(Event& event) {
     NOTREACHED();
   };
 
-  if (IsA<MouseEvent>(event) && IsTopLevelOwner()) {
+  if (IsA<MouseEvent>(event) && IsTopLevelOwnerForClickHandling()) {
     if (event.type() == event_type_names::kMousedown) {
       last_mouseup_menu_item_ = nullptr;
     } else if (event.type() == event_type_names::kMouseup) {

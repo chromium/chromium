@@ -1,33 +1,86 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++dialog setSize=2
-++++++++menuItem name='File' setSize=2 posInSet=1
+++++++dialog setSize=3
+++++++++menuItem name='File' setSize=3 posInSet=1
 ++++++++++staticText name='File'
 ++++++++++++inlineTextBox name='File'
-++++++++menuItem name='Edit' setSize=2 posInSet=2
+++++++++menuItem name='Edit' setSize=3 posInSet=2
 ++++++++++staticText name='Edit'
 ++++++++++++inlineTextBox name='Edit'
-++++++++button name='Invalid'
+++++++++button name='Invalid' setSize=3 posInSet=3
 ++++++++++staticText name='Invalid'
 ++++++++++++inlineTextBox name='Invalid'
 ++++++popUpButton name='Show Menu'
 ++++++++staticText name='Show Menu'
 ++++++++++inlineTextBox name='Show Menu'
-++++++dialog name='Show Menu' setSize=3 ispopup=auto
-++++++++menuItem name='Copy' setSize=3 posInSet=1
+++++++dialog name='Show Menu' setSize=4 ispopup=auto
+++++++++menuItem name='Copy' setSize=4 posInSet=1
 ++++++++++staticText name='Copy'
 ++++++++++++inlineTextBox name='Copy'
-++++++++button name='Invalid'
+++++++++button name='Invalid' setSize=4 posInSet=2
 ++++++++++staticText name='Invalid'
 ++++++++++++inlineTextBox name='Invalid'
-++++++++menuItem name='Paste' setSize=3 posInSet=2
+++++++++menuItem name='Paste' setSize=4 posInSet=3
 ++++++++++staticText name='Paste'
 ++++++++++++inlineTextBox name='Paste'
 ++++++++group setSize=1
 ++++++++++menuItemCheckBox name='Checkbox' setSize=1 posInSet=1 checkedState=false
 ++++++++++++staticText name='Checkbox'
 ++++++++++++++inlineTextBox name='Checkbox'
-++++++++menuItemRadio name='Radio' setSize=3 posInSet=3 checkedState=false
+++++++++menuItemRadio name='Radio' setSize=4 posInSet=4 checkedState=false
 ++++++++++staticText name='Radio'
 ++++++++++++inlineTextBox name='Radio'
+++++++dialog setSize=3
+++++++++menuItem name='Open Submenu' setSize=3 posInSet=1
+++++++++++staticText name='Open Submenu'
+++++++++++++inlineTextBox name='Open Submenu'
+++++++++list name='Open Submenu' setSize=3 ispopup=manual
+++++++++++menuItem name='Sub 1' setSize=3 posInSet=1
+++++++++++++staticText name='Sub 1'
+++++++++++++++inlineTextBox name='Sub 1'
+++++++++++button name='Sub Invalid' setSize=3 posInSet=2
+++++++++++++staticText name='Sub Invalid'
+++++++++++++++inlineTextBox name='Sub Invalid'
+++++++++++menuItem name='Sub 2' setSize=3 posInSet=3
+++++++++++++staticText name='Sub 2'
+++++++++++++++inlineTextBox name='Sub 2'
+++++++++button name='Invalid 2' setSize=3 posInSet=2
+++++++++++staticText name='Invalid 2'
+++++++++++++inlineTextBox name='Invalid 2'
+++++++++menuItem name='Top Level' setSize=3 posInSet=3
+++++++++++staticText name='Top Level'
+++++++++++++inlineTextBox name='Top Level'
+++++++dialog setSize=2
+++++++++menuItem name='Item 1' setSize=2 posInSet=1
+++++++++++staticText name='Item 1'
+++++++++++++inlineTextBox name='Item 1'
+++++++++button name='Bare List Invalid' setSize=2 posInSet=2
+++++++++++staticText name='Bare List Invalid'
+++++++++++++inlineTextBox name='Bare List Invalid'
+++++++++list setSize=5
+++++++++++listItem setSize=5 posInSet=1
+++++++++++++listMarker name='1. '
+++++++++++++++staticText ignored
+++++++++++++staticText name='List item 1'
+++++++++++++++inlineTextBox name='List item 1'
+++++++++++listItem setSize=5 posInSet=2
+++++++++++++listMarker name='2. '
+++++++++++++++staticText ignored
+++++++++++++staticText name='List item 2'
+++++++++++++++inlineTextBox name='List item 2'
+++++++++++listItem setSize=5 posInSet=3
+++++++++++++listMarker name='3. '
+++++++++++++++staticText ignored
+++++++++++++staticText name='List item 3'
+++++++++++++++inlineTextBox name='List item 3'
+++++++++++listItem setSize=5 posInSet=4
+++++++++++++listMarker name='4. '
+++++++++++++++staticText ignored
+++++++++++++staticText name='List item 4'
+++++++++++++++inlineTextBox name='List item 4'
+++++++++++listItem setSize=5 posInSet=5
+++++++++++++listMarker name='5. '
+++++++++++++++staticText ignored
+++++++++++++staticText name='List item 5'
+++++++++++++++inlineTextBox name='List item 5'

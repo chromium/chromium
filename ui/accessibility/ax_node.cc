@@ -1932,14 +1932,55 @@ std::optional<int> AXNode::GetHierarchicalLevel() const {
   return std::nullopt;
 }
 
+namespace {
+
+// Return true if we want to count |item| in "X of Y" announcements when
+// |ordered_set| is a content-violated menu owner.
+bool IsCountableFallbackMenuItem(const AXNode* item,
+                                 const AXNode* ordered_set) {
+  DCHECK(ordered_set);
+  if (ordered_set->GetRole() != ax::mojom::Role::kList &&
+      ordered_set->GetRole() != ax::mojom::Role::kDialog) {
+    // Content-violated menu owners only have list or dialog roles.
+    return false;
+  }
+  const std::string& ordered_set_tag =
+      ordered_set->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+  if (ordered_set_tag != "menubar" && ordered_set_tag != "menulist") {
+    // This is a list or dialog, but not one stemming from a violated menu.
+    return false;
+  }
+  // This is a first approximation to what we don't want to include as countable
+  // in a busted menulist/bar. We'll see how it goes in practice.
+  const ax::mojom::Role item_role = item->GetRole();
+  return !item->IsOrderedSet() && !item->IsIgnoredContainerForOrderedSet() &&
+         item_role != ax::mojom::Role::kSplitter;
+}
+
+}  // namespace
+
 bool AXNode::IsOrderedSetItem() const {
+  const AXNode* ordered_set = GetOrderedSet();
+  if (!ordered_set) {
+    return false;
+  }
+
   // Tree grid rows should be treated as ordered set items. Since we don't have
   // a separate row role for tree grid rows, we can't just add the Role::kRow to
   // IsItemLike. We need to validate that the row is indeed part of a tree grid.
-  if (IsRowInTreeGrid(GetOrderedSet()))
+  if (IsRowInTreeGrid(ordered_set)) {
     return true;
+  }
 
-  return ui::IsItemLike(GetRole());
+  if (ui::IsItemLike(GetRole())) {
+    return true;
+  }
+
+  if (IsCountableFallbackMenuItem(this, ordered_set)) {
+    return true;
+  }
+
+  return false;
 }
 
 bool AXNode::IsOrderedSet() const {
@@ -1988,8 +2029,12 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
   switch (ordered_set->GetRole()) {
     case ax::mojom::Role::kFeed:
       return item_role == ax::mojom::Role::kArticle;
-    case ax::mojom::Role::kList:
-      return item_role == ax::mojom::Role::kListItem;
+    case ax::mojom::Role::kList: {
+      if (item_role == ax::mojom::Role::kListItem) {
+        return true;
+      }
+      return IsCountableFallbackMenuItem(this, ordered_set);
+    }
     case ax::mojom::Role::kGroup:
       return item_role == ax::mojom::Role::kComment ||
              item_role == ax::mojom::Role::kListItem ||
@@ -2028,14 +2073,7 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
       // kComboBoxSelect wraps a kMenuListPopUp.
       return item_role == ax::mojom::Role::kMenuListPopup;
     case ax::mojom::Role::kDialog: {
-      const std::string& tag =
-          ordered_set->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-      if (tag == "menubar" || tag == "menulist") {
-        return item_role == ax::mojom::Role::kMenuItem ||
-               item_role == ax::mojom::Role::kMenuItemRadio ||
-               item_role == ax::mojom::Role::kMenuItemCheckBox;
-      }
-      return false;
+      return IsCountableFallbackMenuItem(this, ordered_set);
     }
     default:
       return false;
@@ -2058,10 +2096,12 @@ bool AXNode::IsIgnoredContainerForOrderedSet() const {
 }
 
 bool AXNode::IsRowInTreeGrid(const AXNode* ordered_set) const {
+  DCHECK(ordered_set);
   // Tree grid rows have the requirement of being focusable, so we use it to
   // avoid iterating over rows that clearly aren't part of a tree grid.
-  if (GetRole() != ax::mojom::Role::kRow || !ordered_set || !IsFocusable())
+  if (GetRole() != ax::mojom::Role::kRow || !IsFocusable()) {
     return false;
+  }
 
   if (ordered_set->GetRole() == ax::mojom::Role::kTreeGrid)
     return true;
