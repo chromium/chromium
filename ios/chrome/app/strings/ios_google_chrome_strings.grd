@@ -501,6 +501,15 @@ Things to consider:
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE" desc="The subtitle of the welcome screen presented to the user on First Run [iOS only]">
         Get more done with a simple, secure, and faster-than-ever Google Chrome.
       </message>
+      <message name="IDS_IOS_GEMINI_SUGGESTIONS_ADAPT_DESCRIPTION" desc="Description explaining that Chrome adapts suggestions based on user selection or ignoring.">
+        If you select or ignore a suggestion, Chrome will adapt to help show you more relevant suggestions in the future.
+      </message>
+      <message name="IDS_IOS_GEMINI_SUGGESTIONS_PRIVATE_SPACE_DESCRIPTION" desc="Description explaining that Chrome processes page titles and URLs in a private space in the cloud.">
+        Chrome processes page titles and URLs in a private space in the cloud
+      </message>
+      <message name="IDS_IOS_GEMINI_SUGGESTIONS_TURNING_OFF_DESCRIPTION" desc="Description explaining that turning off suggestions does not affect processing for other features and points to sync settings.">
+        Turning off suggestions doesn't control Chrome's processing of page titles and URLs for other features. You can manage access to this data in your <ph name="BEGIN_LINK">BEGIN_LINK</ph>sync settings<ph name="END_LINK">END_LINK</ph>.
+      </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL" desc="Feature detail text in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
         Shows prompts to sign in to Chrome.
       </message>
