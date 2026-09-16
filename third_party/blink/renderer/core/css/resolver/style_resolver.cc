@@ -3376,11 +3376,11 @@ ComputedStyleBuilder StyleResolver::CreateAnonymousStyleBuilderWithDisplay(
   return builder;
 }
 
-const ComputedStyle* StyleResolver::CreateAnonymousStyleWithDisplay(
+const ComputedStyle& StyleResolver::CreateAnonymousStyleWithDisplay(
     const ComputedStyle& parent_style,
     EDisplay display) {
-  return CreateAnonymousStyleBuilderWithDisplay(parent_style, display)
-      .TakeStyle();
+  return *CreateAnonymousStyleBuilderWithDisplay(parent_style, display)
+              .TakeStyle();
 }
 
 const ComputedStyle* StyleResolver::CreateInheritedDisplayContentsStyleIfNeeded(
@@ -3389,7 +3389,7 @@ const ComputedStyle* StyleResolver::CreateInheritedDisplayContentsStyleIfNeeded(
   if (parent_style.InheritedEqual(layout_parent_style)) {
     return nullptr;
   }
-  return CreateAnonymousStyleWithDisplay(parent_style, EDisplay::kInline);
+  return &CreateAnonymousStyleWithDisplay(parent_style, EDisplay::kInline);
 }
 
 #define PROPAGATE_FROM(source, getter, setter, initial) \

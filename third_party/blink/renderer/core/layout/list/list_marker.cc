@@ -294,10 +294,10 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
       LayoutListMarkerImage* image =
           LayoutListMarkerImage::CreateAnonymous(marker.GetDocument());
       const ComputedStyle& image_style =
-          *marker.GetDocument()
-               .GetStyleResolver()
-               .CreateAnonymousStyleWithDisplay(marker.StyleRef(),
-                                                EDisplay::kInline);
+          marker.GetDocument()
+              .GetStyleResolver()
+              .CreateAnonymousStyleWithDisplay(marker.StyleRef(),
+                                               EDisplay::kInline);
       image->SetStyle(image_style);
       image->SetImageResource(
           MakeGarbageCollected<LayoutImageResourceStyleImage>(
@@ -319,7 +319,7 @@ void ListMarker::UpdateMarkerContentIfNeeded(LayoutObject& marker) {
   // full layout due by style difference. See http://crbug.com/980399
   const auto& style_parent = child ? *child->Parent() : marker;
   const ComputedStyle& text_style =
-      *marker.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+      marker.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           style_parent.StyleRef(), marker.StyleRef().Display());
   if (IsA<LayoutTextFragment>(child))
     return child->SetStyle(text_style);

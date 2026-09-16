@@ -17,7 +17,7 @@ LayoutTableSection::LayoutTableSection(Element* element)
 LayoutTableSection* LayoutTableSection::CreateAnonymousWithParent(
     const LayoutObject& parent) {
   const ComputedStyle& new_style =
-      *parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableRowGroup);
   auto* new_section = MakeGarbageCollected<LayoutTableSection>(nullptr);
   new_section->SetDocumentForAnonymous(parent.GetDocument());

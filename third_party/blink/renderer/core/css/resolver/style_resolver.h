@@ -158,7 +158,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   ComputedStyleBuilder CreateAnonymousStyleBuilderWithDisplay(
       const ComputedStyle& parent_style,
       EDisplay);
-  const ComputedStyle* CreateAnonymousStyleWithDisplay(
+  const ComputedStyle& CreateAnonymousStyleWithDisplay(
       const ComputedStyle& parent_style,
       EDisplay display);
 

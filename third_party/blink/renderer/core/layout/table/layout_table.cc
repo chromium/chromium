@@ -42,7 +42,7 @@ LayoutTable* LayoutTable::CreateAnonymousWithParent(
   const EDisplay display =
       parent.IsLayoutInline() ? EDisplay::kInlineTable : EDisplay::kTable;
   const ComputedStyle& new_style =
-      *parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), display);
   auto* new_table = MakeGarbageCollected<LayoutTable>(nullptr);
   new_table->SetDocumentForAnonymous(parent.GetDocument());

@@ -27,7 +27,7 @@ LayoutTableCell::LayoutTableCell(Element* element) : LayoutBlockFlow(element) {
 LayoutTableCell* LayoutTableCell::CreateAnonymousWithParent(
     const LayoutObject& parent) {
   const ComputedStyle& new_style =
-      *parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
+      parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableCell);
   auto* new_cell = MakeGarbageCollected<LayoutTableCell>(nullptr);
   new_cell->SetDocumentForAnonymous(parent.GetDocument());
