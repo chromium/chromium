@@ -1214,6 +1214,17 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
                                          const base::Time& delete_end,
                                          uint64_t remove_mask,
                                          bool include_protected_origins) {
+#if BUILDFLAG(IS_ANDROID)
+    // There's an Android specific race condition for x86 and x64 builds where
+    // data-clearing and the mocked services here fail to initialize bookmarks
+    // in time, which are required for history clearing.
+    // TODO(crbug.com/435317726): Revisit after launch.
+    if (remove_mask & constants::DATA_TYPE_HISTORY) {
+      bookmarks::test::WaitForBookmarkModelToLoad(
+          BookmarkModelFactory::GetForBrowserContext(GetProfile()));
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
     uint64_t origin_type_mask =
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
     if (include_protected_origins) {
