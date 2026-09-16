@@ -880,7 +880,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
 }
 
 // Selects read and unread entries and mark them as read.
-- (void)testMarkMixedEntriesRead {
+// TODO(crbug.com/560368038): Enable this test once flakyness is fixed.
+- (void)FLAKY_testMarkMixedEntriesRead {
   // TODO(crbug.com/433982582): This test fails on iPad iOS 18 with multitasking
   // enabled.
   if (!@available(iOS 26, *)) {
