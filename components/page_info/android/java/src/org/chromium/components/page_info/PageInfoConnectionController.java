@@ -208,19 +208,21 @@ public class PageInfoConnectionController
 
         int maliciousContentStatus =
                 SecurityStateModel.getMaliciousContentStatusForWebContents(mWebContents);
-        rowParams.iconResId =
-                SecurityStatusIcon.getSecurityIconResource(
-                        securityLevel,
-                        () -> maliciousContentStatus,
-                        /* isSmallDevice= */ false,
-                        /* skipIconForNeutralState= */ false,
-                        /* useLockIconForSecureState= */ true,
-                        isShowingHttpsFirstWarning);
         if (maliciousContentStatus == ConnectionMaliciousContentStatus.WARNABLE_SUSPICIOUS_SITE) {
-            rowParams.tintIcon = false;
+            rowParams.iconResId = R.drawable.page_info_shield_question;
+            rowParams.iconTint = R.color.default_text_color_error;
             rowParams.titleTint = R.color.default_text_color_error;
         } else {
+            rowParams.iconResId =
+                    SecurityStatusIcon.getSecurityIconResource(
+                            securityLevel,
+                            () -> maliciousContentStatus,
+                            /* isSmallDevice= */ false,
+                            /* skipIconForNeutralState= */ false,
+                            /* useLockIconForSecureState= */ true,
+                            isShowingHttpsFirstWarning);
             rowParams.iconTint = getSecurityIconColor(securityLevel);
+            rowParams.titleTint = 0;
         }
         if (hasClickCallback) rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);

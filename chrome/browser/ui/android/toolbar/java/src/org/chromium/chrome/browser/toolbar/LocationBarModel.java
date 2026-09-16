@@ -920,11 +920,11 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             boolean isIncognito) {
         // Return regular color scheme if the website does not show warning.
         if (connectionSecurityLevel == ConnectionSecurityLevel.DANGEROUS) {
+            // Suspicious sites display a themed neutral icon (on-surface-variant) in the Omnibox
+            // rather than a danger/error red tint.
             if (getMaliciousContentStatus()
                     == ConnectionMaliciousContentStatus.WARNABLE_SUSPICIOUS_SITE) {
-                // Return Resources.ID_NULL to skip color tinting so the shield_question icon
-                // retains its internal red fill and white question mark vector colors.
-                return Resources.ID_NULL;
+                return ThemeUtils.getThemedToolbarIconTintRes(brandedColorScheme);
             }
             // Assign red color only on light or dark background including Incognito mode.
             // We will not change the security icon to red when BrandedColorScheme is
