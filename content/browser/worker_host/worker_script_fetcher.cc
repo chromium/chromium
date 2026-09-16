@@ -621,13 +621,10 @@ WorkerScriptFetcher::CreateFactoryBundle(
   non_network_factories.emplace(url::kDataScheme,
                                 DataURLLoaderFactory::Create());
   if (filesystem_url_support) {
-    int process_id = loader_type == LoaderType::kMainResource
-                         ? ChildProcessHost::kInvalidUniqueID
-                         : worker_process_id;
     non_network_factories.emplace(
         url::kFileSystemScheme,
         CreateFileSystemURLLoaderFactory(
-            process_id, FrameTreeNodeId(),
+            worker_process_id, FrameTreeNodeId(),
             storage_partition->GetFileSystemContext(), storage_domain,
             request_initiator_storage_key));
   }

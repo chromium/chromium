@@ -35,6 +35,10 @@
 #include "build/build_config.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
+#include "content/browser/process_lock.h"
+#include "content/browser/security/cpsp/child_process_security_policy_impl.h"
+#include "content/browser/site_instance_impl.h"
+#include "content/browser/url_info.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -231,6 +235,20 @@ class FileSystemURLLoaderFactoryTest
             base::BindOnce(&FileSystemURLLoaderFactoryTest::OnOpenFileSystem,
                            loop.QuitClosure())));
     loop.Run();
+
+    ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
+        render_frame_host()->GetProcess()->GetID().GetUnsafeValue(),
+        url::Origin::Create(GURL("http://remote/")));
+    ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
+        render_frame_host()->GetProcess()->GetID().GetUnsafeValue(),
+        url::Origin::Create(GURL("http://automount/")));
+    ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
+        render_frame_host()->GetProcess()->GetID().GetUnsafeValue(),
+        url::Origin::Create(GURL("http://noauto/")));
+    // Mark the process as used so that subsequent cross-origin navigations
+    // (e.g., in CrossOriginFileBlocked) do not reuse this process while
+    // retaining the committed origins added above.
+    render_frame_host()->GetProcess()->SetIsUsed();
   }
 
   void TearDownOnMainThread() override {
@@ -499,10 +517,12 @@ class FileSystemURLLoaderFactoryTest
     return context;
   }
 
+ protected:
   RenderFrameHost* render_frame_host() const {
     return shell()->web_contents()->GetPrimaryMainFrame();
   }
 
+ private:
   std::unique_ptr<network::TestURLLoaderClient> TestLoadHelper(
       const GURL& url,
       const std::optional<url::Origin>& origin,
@@ -786,6 +806,45 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, CrossOriginFileBlocked) {
   // Try requesting filesystem:http://remote/temporary/file1.dat from that
   // frame.  This should be blocked, as foo.com isn't allowed to request a
   // filesystem URL for the http://remote origin.
+  auto client = TestLoad(CreateFileSystemURL("file1.dat"));
+  EXPECT_FALSE(client->has_received_response());
+  ASSERT_TRUE(client->has_received_completion());
+  EXPECT_EQ(net::ERR_INVALID_URL, client->completion_status().error_code);
+}
+
+// Verify that a PDF renderer process is denied access to filesystem: URLs even
+// for an origin that it has committed.
+IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, PdfProcessFileBlocked) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  WriteFile(
+      "file1.dat",
+      base::as_byte_span(kTestFileData).first(std::size(kTestFileData) - 1));
+
+  ChildProcessSecurityPolicyImpl* policy =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  ChildProcessId process_id = render_frame_host()->GetProcess()->GetID();
+
+  UrlInfo pdf_url_info(
+      UrlInfoInit(GURL("http://remote/"))
+          .WithEmbedderIsolationInfo(EmbedderIsolationInfo::CreateForPdf()));
+  scoped_refptr<SiteInstanceImpl> pdf_instance =
+      SiteInstanceImpl::CreateForUrlInfo(
+          shell()->web_contents()->GetBrowserContext(), pdf_url_info,
+          /*is_guest=*/false,
+          /*is_fenced=*/false,
+          /*is_fixed_storage_partition=*/false);
+  policy->LockProcess(pdf_instance->GetIsolationContext(), process_id,
+                      /*is_process_used=*/false,
+                      ProcessLock::FromSiteInfo(pdf_instance->GetSiteInfo()));
+
+  // Although the PDF process can commit the http://remote/ origin, it must not
+  // be allowed to access its filesystem data.
+  EXPECT_TRUE(policy->CanCommitURL(process_id.GetUnsafeValue(),
+                                   CreateFileSystemURL("file1.dat")));
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(
+      process_id.GetUnsafeValue(),
+      url::Origin::Create(GURL("http://remote/"))));
+
   auto client = TestLoad(CreateFileSystemURL("file1.dat"));
   EXPECT_FALSE(client->has_received_response());
   ASSERT_TRUE(client->has_received_completion());
