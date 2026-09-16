@@ -21,12 +21,31 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/menus/simple_menu_model.h"
+#include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
+
+namespace {
+
+// The menu's contents are irrelevant to these tests; all that matters is that
+// a menu is open and therefore capable of covering the bubble.
+class TestMenuDelegate : public ui::SimpleMenuModel::Delegate {
+ public:
+  void ExecuteCommand(int command_id, int event_flags) override {}
+  bool GetAcceleratorForCommandId(int command_id,
+                                  ui::Accelerator* accelerator) const override {
+    return false;
+  }
+};
+
+}  // namespace
 
 class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
                                        public views::WidgetObserver {
@@ -38,6 +57,11 @@ class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
   ExclusiveAccessBubbleViewsTest& operator=(
       const ExclusiveAccessBubbleViewsTest&) = delete;
 
+  void TearDownOnMainThread() override {
+    CloseMenu();
+    ExclusiveAccessTest::TearDownOnMainThread();
+  }
+
   ExclusiveAccessBubbleViewsContext* GetContext() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->GetExclusiveAccessBubbleViewsContextForTesting();
@@ -45,6 +69,37 @@ class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
 
   void ClearSnooze() {
     GetExclusiveAccessBubbleView()->snooze_until_ = base::TimeTicks::Min();
+  }
+
+  void ClearMustShowOnNextInteraction() {
+    GetExclusiveAccessBubbleView()->must_show_next_interaction_ = false;
+  }
+
+  bool MustShowOnNextInteraction() {
+    return GetExclusiveAccessBubbleView()->must_show_next_interaction_;
+  }
+
+  // Opens a menu owned by the browser window. Views menus are asynchronous, so
+  // this returns while the menu is still open.
+  void OpenMenu() {
+    menu_model_ = std::make_unique<ui::SimpleMenuModel>(&menu_delegate_);
+    menu_model_->AddItem(/*command_id=*/1, u"Item");
+    menu_runner_ = std::make_unique<views::MenuRunner>(
+        menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
+    views::Widget* const widget =
+        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+    menu_runner_->RunMenuAt(
+        widget, /*button_controller=*/nullptr,
+        gfx::Rect(widget->GetWindowBoundsInScreen().CenterPoint(), gfx::Size()),
+        views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse);
+  }
+
+  void CloseMenu() {
+    if (menu_runner_) {
+      menu_runner_->Cancel();
+      menu_runner_.reset();
+      menu_model_.reset();
+    }
   }
 
   // WidgetObserver:
@@ -58,6 +113,11 @@ class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
  protected:
   bool was_destroying_ = false;
   bool was_observing_in_destroying_ = false;
+
+ private:
+  TestMenuDelegate menu_delegate_;
+  std::unique_ptr<ui::SimpleMenuModel> menu_model_;
+  std::unique_ptr<views::MenuRunner> menu_runner_;
 };
 
 // Simulate obscure codepaths resulting in the bubble Widget being closed before
@@ -296,3 +356,84 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
             content::EvalJs(web_contents, "window.mouseupCount").ExtractInt());
 }
 #endif
+
+// Menus are excluded on Mac because `MenuRunner` runs a blocking native menu
+// there, and because the fullscreen transition only cancels menus once the
+// AppKit animation completes. See crbug.com/40060516.
+#if !BUILDFLAG(IS_MAC)
+
+// The exit instruction must not be covered by a menu when a page takes the
+// screen. `MenuController` cancels menus when the browser widget's show state
+// changes, which covers this case today, but that is incidental; this test
+// pins the behavior down.
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
+                       MenuDismissedEnteringTabFullscreen) {
+  OpenMenu();
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  EnterActiveTabFullscreen();
+  ASSERT_TRUE(GetExclusiveAccessBubbleView());
+
+  EXPECT_FALSE(views::MenuController::GetActiveInstance());
+}
+
+// As above, but the window is already fullscreen when the page requests
+// fullscreen. No show state change occurs in that case, so the bubble itself is
+// responsible for dismissing the menu.
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
+                       MenuDismissedEnteringTabFullscreenWhileFullscreen) {
+  GetFullscreenController()->ToggleBrowserFullscreenMode(
+      /*user_initiated=*/true);
+  WaitAndVerifyFullscreenState(/*browser_fullscreen=*/true,
+                               /*tab_fullscreen=*/false);
+
+  OpenMenu();
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  EnterActiveTabFullscreen();
+  ASSERT_TRUE(GetExclusiveAccessBubbleView());
+
+  EXPECT_FALSE(views::MenuController::GetActiveInstance());
+}
+
+// A menu that opens after the bubble is already showing can cover it for the
+// bubble's entire lifetime. Such a show must not consume `kSnoozeTime`, which
+// would otherwise suppress the exit instruction for the next 15 minutes.
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
+                       ObscuredBubbleReshowsOnNextInteraction) {
+  EnterActiveTabFullscreen();
+  ASSERT_TRUE(GetExclusiveAccessBubbleView());
+
+  // `EnterActiveTabFullscreen()` does not deliver a real user gesture, so the
+  // bubble already arms a re-show. Clear it to observe the menu's effect alone.
+  ClearMustShowOnNextInteraction();
+  ASSERT_FALSE(MustShowOnNextInteraction());
+
+  OpenMenu();
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  // Let the show time elapse, so the bubble hides while the menu is still open.
+  Wait(ExclusiveAccessBubble::kShowTime * 2);
+  ASSERT_TRUE(GetExclusiveAccessBubbleView());
+
+  EXPECT_TRUE(MustShowOnNextInteraction());
+}
+
+// Counterpart to the above: an unobscured show is allowed to consume the snooze
+// period as usual.
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
+                       UnobscuredBubbleDoesNotReshowOnNextInteraction) {
+  EnterActiveTabFullscreen();
+  ASSERT_TRUE(GetExclusiveAccessBubbleView());
+
+  ClearMustShowOnNextInteraction();
+  ASSERT_FALSE(MustShowOnNextInteraction());
+
+  Wait(ExclusiveAccessBubble::kShowTime * 2);
+  ASSERT_TRUE(GetExclusiveAccessBubbleView());
+  ASSERT_FALSE(views::MenuController::GetActiveInstance());
+
+  EXPECT_FALSE(MustShowOnNextInteraction());
+}
+
+#endif  // !BUILDFLAG(IS_MAC)

@@ -34,6 +34,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -65,6 +66,25 @@ bool IsFullscreenType(ExclusiveAccessBubbleType type) {
              EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION;
 }
 #endif
+
+// Dismisses any open menu, so that it cannot obscure the exit instruction.
+//
+// The bubble is created at `ui::ZOrderLevel::kSecuritySurface` specifically so
+// that nothing can cover it, but Aura collapses `ZOrderLevel` into a single
+// "always on top" bit (see `DesktopWindowTreeHostWin::SetZOrderLevel()` and
+// crbug.com/40066609). That leaves the bubble and a `TYPE_MENU` widget, which
+// defaults to `kFloatingWindow`, as indistinguishable topmost peers. Windows
+// stacks such peers by most-recently-shown, so a menu opened by the same
+// gesture that requested fullscreen reliably lands on top of the bubble and
+// hides it for its entire lifetime. See crbug.com/40060516.
+//
+// `MenuController` already cancels menus when the browser widget's show state
+// changes, which covers the common case of entering fullscreen from a windowed
+// state. It does not fire when the window is *already* fullscreen, so dismiss
+// menus explicitly here as well.
+void DismissMenusObscuringBubble() {
+  views::MenuController::CancelAllActive();
+}
 
 }  // namespace
 
@@ -135,9 +155,13 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   view_->SetBounds(0, 0, size.width(), size.height());
   popup_->AddObserver(this);
 
+  const bool entering_tab_fullscreen = IsTabFullscreenType(params.type);
+  if (entering_tab_fullscreen) {
+    DismissMenusObscuringBubble();
+  }
+
   ShowAndStartTimers();
 
-  const bool entering_tab_fullscreen = IsTabFullscreenType(params.type);
   // If the tab enters fullscreen without any recent user interaction, re-show
   // the bubble on the first user input event, by clearing the snooze time.
   content::WebContents* tab = bubble_view_context_->GetExclusiveAccessManager()
@@ -207,6 +231,11 @@ void ExclusiveAccessBubbleViews::Update(
   UpdateViewContent(params_.type);
   view_->SizeToPreferredSize();
   popup_->SetBounds(GetPopupRect());
+
+  if (entering_tab_fullscreen) {
+    DismissMenusObscuringBubble();
+  }
+
   ShowAndStartTimers();
 
   // If the tab enters fullscreen without any recent user interaction, re-show
@@ -398,6 +427,17 @@ void ExclusiveAccessBubbleViews::Hide() {
   // This function is guarded by the `ExclusiveAccessBubble::hide_timeout_`
   // timer, so the bubble has been displayed for at least
   // `ExclusiveAccessBubble::kShowTime`.
+  //
+  // Displayed is not the same as seen, however. A menu may have been covering
+  // the bubble for that entire period; see `DismissMenusObscuringBubble()` for
+  // why the bubble's z-order does not prevent that. Since `kSnoozeTime` would
+  // otherwise suppress the exit instruction for the next 15 minutes, don't let
+  // a show that may have gone unseen count. Re-show on the next user
+  // interaction instead.
+  if (views::MenuController::GetActiveInstance()) {
+    SetMustShowOnNextInteraction();
+  }
+
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kTimeout);
   presentation_cb_.Reset();
 
