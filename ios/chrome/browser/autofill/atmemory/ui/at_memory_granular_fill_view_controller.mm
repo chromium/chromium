@@ -250,6 +250,7 @@ enum ItemIdentifier {
   cell.contentConfiguration = configuration;
   cell.accessibilityIdentifier =
       GetAtMemoryGranularFillCellAccessibilityIdentifier(item.attributeName);
+  cell.isAccessibilityElement = NO;
   cell.accessoryType = UITableViewCellAccessoryNone;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   return cell;

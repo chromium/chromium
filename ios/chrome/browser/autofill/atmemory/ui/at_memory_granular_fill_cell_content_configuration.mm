@@ -5,11 +5,14 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_cell_content_configuration.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -37,7 +40,11 @@ UILabel* CreateAttributeLabel() {
 // Updates the title and accessibility label of a chip button.
 void UpdateChipButton(UIButton* button, NSString* value) {
   SetConfigurationTitle(button, value);
-  button.accessibilityLabel = value;
+  button.accessibilityLabel =
+      value.length > 0 ? l10n_util::GetNSStringF(
+                             IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL,
+                             base::SysNSStringToUTF16(value))
+                       : nil;
 }
 
 // Creates and configures the selectable chip button.
@@ -103,6 +110,8 @@ UIButton* CreateChipButton() {
     [_chipButton addTarget:self
                     action:@selector(onButtonTapped:)
           forControlEvents:UIControlEventTouchUpInside];
+
+    self.accessibilityElements = @[ _attributeLabel, _chipButton ];
 
     _containerStackView = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _attributeLabel, _chipButton ]];
