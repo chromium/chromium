@@ -2168,7 +2168,7 @@ public class TabListMediatorUnitTest {
         assertEquals(TAB1_ID, childModel.get(TabProperties.TAB_ID));
 
         // indexFromTabId should skip the header card and find the child tab.
-        assertEquals(1, mModelList.indexFromTabId(TAB1_ID));
+        assertEquals(1, mMediator.getIndexFromTabId(TAB1_ID));
     }
 
     @Test
@@ -2221,7 +2221,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void tabSelection_Nested_Header() {
         Tab tab3 = setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ false);
-        int tab3Index = mModelList.indexFromTabId(TAB3_ID);
+        int tab3Index = mMediator.getIndexFromTabId(TAB3_ID);
         mModelList.removeAt(tab3Index);
 
         PropertyModel headerModel = mModelList.get(0).model;
@@ -2619,9 +2619,9 @@ public class TabListMediatorUnitTest {
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, POSITION1);
 
         assertThat(mModelList.size(), equalTo(3));
-        assertThat(mModelList.indexFromTabId(TAB1_ID), equalTo(0));
-        assertThat(mModelList.indexFromTabId(TAB2_ID), equalTo(1));
-        assertThat(mModelList.indexFromTabId(TAB3_ID), equalTo(2));
+        assertThat(mMediator.getIndexFromTabId(TAB1_ID), equalTo(0));
+        assertThat(mMediator.getIndexFromTabId(TAB2_ID), equalTo(1));
+        assertThat(mMediator.getIndexFromTabId(TAB3_ID), equalTo(2));
     }
 
     @Test
@@ -2639,9 +2639,9 @@ public class TabListMediatorUnitTest {
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, POSITION1);
 
         assertThat(mModelList.size(), equalTo(3));
-        assertThat(mModelList.indexFromTabId(TAB1_ID), equalTo(0));
-        assertThat(mModelList.indexFromTabId(TAB2_ID), equalTo(1));
-        assertThat(mModelList.indexFromTabId(TAB3_ID), equalTo(2));
+        assertThat(mMediator.getIndexFromTabId(TAB1_ID), equalTo(0));
+        assertThat(mMediator.getIndexFromTabId(TAB2_ID), equalTo(1));
+        assertThat(mMediator.getIndexFromTabId(TAB3_ID), equalTo(2));
     }
 
     @Test
@@ -2659,9 +2659,9 @@ public class TabListMediatorUnitTest {
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab1, POSITION2);
 
         assertThat(mModelList.size(), equalTo(3));
-        assertThat(mModelList.indexFromTabId(TAB1_ID), equalTo(0));
-        assertThat(mModelList.indexFromTabId(TAB2_ID), equalTo(1));
-        assertThat(mModelList.indexFromTabId(TAB3_ID), equalTo(2));
+        assertThat(mMediator.getIndexFromTabId(TAB1_ID), equalTo(0));
+        assertThat(mMediator.getIndexFromTabId(TAB2_ID), equalTo(1));
+        assertThat(mMediator.getIndexFromTabId(TAB3_ID), equalTo(2));
     }
 
     @Test
@@ -2695,10 +2695,10 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getRelatedTabList(TAB3_ID)).thenReturn(relatedTabs);
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, POSITION1);
         assertThat(mModelList.size(), equalTo(2));
-        assertThat(mModelList.indexFromTabId(TAB1_ID), equalTo(0));
-        assertThat(mModelList.indexFromTabId(TAB2_ID), equalTo(-1));
-        assertThat(mModelList.indexFromTabId(TAB3_ID), equalTo(1));
-        assertThat(mModelList.indexFromTabId(TAB4_ID), equalTo(-1));
+        assertThat(mMediator.getIndexFromTabId(TAB1_ID), equalTo(0));
+        assertThat(mMediator.getIndexFromTabId(TAB2_ID), equalTo(-1));
+        assertThat(mMediator.getIndexFromTabId(TAB3_ID), equalTo(1));
+        assertThat(mMediator.getIndexFromTabId(TAB4_ID), equalTo(-1));
 
         // Undo tab 4
         relatedTabs = List.of(tab3, tab4);
@@ -2719,10 +2719,10 @@ public class TabListMediatorUnitTest {
         mTabGroupObserverCaptor.getValue().didMergeTabToGroup(tab4, /* isDestinationTab= */ false);
 
         assertThat(mModelList.size(), equalTo(2));
-        assertThat(mModelList.indexFromTabId(TAB1_ID), equalTo(0));
-        assertThat(mModelList.indexFromTabId(TAB2_ID), equalTo(-1));
-        assertThat(mModelList.indexFromTabId(TAB3_ID), equalTo(1));
-        assertThat(mModelList.indexFromTabId(TAB4_ID), equalTo(-1));
+        assertThat(mMediator.getIndexFromTabId(TAB1_ID), equalTo(0));
+        assertThat(mMediator.getIndexFromTabId(TAB2_ID), equalTo(-1));
+        assertThat(mMediator.getIndexFromTabId(TAB3_ID), equalTo(1));
+        assertThat(mMediator.getIndexFromTabId(TAB4_ID), equalTo(-1));
     }
 
     @Test
@@ -6067,7 +6067,7 @@ public class TabListMediatorUnitTest {
                         TabCreationState.LIVE_IN_FOREGROUND,
                         false);
 
-        int index = mModelList.indexFromTabId(TAB3_ID);
+        int index = mMediator.getIndexFromTabId(TAB3_ID);
         assertNotEquals(TabModel.INVALID_TAB_INDEX, index);
 
         PropertyModel newModel = mModelList.get(index).model;
@@ -6448,10 +6448,10 @@ public class TabListMediatorUnitTest {
         // [2] Second Child webpage row (TAB3_ID)
         assertEquals(3, mModelList.size());
 
-        // Verify that querying indexFromTabId for TAB1_ID correctly prioritizes and returns the
+        // Verify that querying getIndexFromTabId for TAB1_ID correctly prioritizes and returns the
         // nested child webpage row index (index 1) over the parent Group Header Card (index 0)
-        assertEquals(1, mModelList.indexFromTabId(TAB1_ID));
-        assertEquals(2, mModelList.indexFromTabId(TAB3_ID));
+        assertEquals(1, mMediator.getIndexFromTabId(TAB1_ID));
+        assertEquals(2, mMediator.getIndexFromTabId(TAB3_ID));
     }
 
     @Test
@@ -6797,7 +6797,7 @@ public class TabListMediatorUnitTest {
                 when(mTabModel.representativeIndexOf(tab)).thenReturn(index);
             }
         }
-        int modelIndex = mModelList.indexFromTabId(firstTabId);
+        int modelIndex = mMediator.getIndexFromTabId(firstTabId);
         if (modelIndex != TabModel.INVALID_TAB_INDEX) {
             PropertyModel model = mModelList.get(modelIndex).model;
             if (model.containsKey(TabProperties.TAB_GROUP_CARD_COLOR)) {

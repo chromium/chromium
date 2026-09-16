@@ -419,7 +419,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     Tab tab = getCurrentTabModelChecked().getTabById(tabId);
                     if (tab == null) return;
 
-                    PropertyModel model = mModelList.getModelFromTabId(tabId);
+                    PropertyModel model = getModelFromTabId(tabId);
                     if (model != null) {
                         updateActorUiState(model, state);
                     }
@@ -432,7 +432,7 @@ public class TabListMediator implements TabListNotificationHandler {
             new TabUnderlineManager.Observer() {
                 @Override
                 public void onIndicatorStateChanged(int tabId, boolean isActive) {
-                    PropertyModel model = mModelList.getModelFromTabId(tabId);
+                    PropertyModel model = getModelFromTabId(tabId);
                     if (model != null) {
                         model.set(TabProperties.IS_GLIC_ACTIVE, isActive);
                     }
@@ -446,7 +446,9 @@ public class TabListMediator implements TabListNotificationHandler {
             new TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
-                    if (mModelList.indexFromTabId(tabId) == TabModel.INVALID_TAB_INDEX) return;
+                    if (getIndexFromTabId(tabId) == TabModel.INVALID_TAB_INDEX) {
+                        return;
+                    }
 
                     mTabListLayoutDelegate.recordTabSelection(tabId);
                     if (mMultiSelectHelper != null) {
@@ -469,7 +471,7 @@ public class TabListMediator implements TabListNotificationHandler {
             new TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
-                    @Nullable PropertyModel model = mModelList.getModelFromTabId(tabId);
+                    PropertyModel model = getModelFromTabId(tabId);
                     if (model == null) return;
 
                     boolean wasSelected = model.get(TabProperties.IS_SELECTED);
@@ -717,16 +719,12 @@ public class TabListMediator implements TabListNotificationHandler {
                         assert mTrackingTabs;
 
                         removeObserversForTab(tab);
-
-                        int index = mModelList.indexFromTabId(tab.getId());
-                        if (index == TabModel.INVALID_TAB_INDEX) return;
-
-                        mModelList.removeAt(index);
+                        mTabListLayoutDelegate.onTabClose(tab);
                     }
 
                     @Override
                     public void didChangePinState(Tab tab) {
-                        int index = mModelList.indexFromTabId(tab.getId());
+                        int index = getIndexFromTabId(tab.getId());
                         if (index != TabModel.INVALID_TAB_INDEX) {
                             mModelList
                                     .get(index)
@@ -746,7 +744,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         // TODO(crbug.com/40638921): Consider disabling all touch events during
                         // animation.
 
-                        int closingTabIndex = mModelList.indexFromTabId(tabId);
+                        int closingTabIndex = getIndexFromTabId(tabId);
                         if (closingTabIndex == TabModel.INVALID_TAB_INDEX) return;
 
                         mTabListLayoutDelegate.prepareTabCloseAnimation(view, closingTabIndex);
@@ -2545,6 +2543,26 @@ public class TabListMediator implements TabListNotificationHandler {
         return TabModel.INVALID_TAB_INDEX;
     }
 
+    /**
+     * Resolves the UI index in the model list of the card representing the given tab.
+     *
+     * @param tabId The ID of the tab to locate.
+     * @return The UI index in the model list, or {@link TabModel#INVALID_TAB_INDEX} if not found.
+     */
+    int getIndexFromTabId(int tabId) {
+        return mTabListLayoutDelegate.getIndexFromTabId(tabId);
+    }
+
+    /**
+     * Resolves the {@link PropertyModel} of the card representing the given tab.
+     *
+     * @param tabId The ID of the tab to locate.
+     * @return The {@link PropertyModel} in the model list, or null if not found.
+     */
+    @Nullable PropertyModel getModelFromTabId(int tabId) {
+        return mTabListLayoutDelegate.getModelFromTabId(tabId);
+    }
+
     /** Provides the tab ID for the most recently swiped tab. */
     NonNullObservableSupplier<Integer> getRecentlySwipedTabSupplier() {
         return mTabGridItemTouchHelperCallback.getRecentlySwipedTabIdSupplier();
@@ -2609,7 +2627,7 @@ public class TabListMediator implements TabListNotificationHandler {
         if (controller != null) {
             controller.addObserver(mActorObserver);
 
-            @Nullable PropertyModel model = mModelList.getModelFromTabId(tab.getId());
+            PropertyModel model = getModelFromTabId(tab.getId());
             if (model != null) {
                 updateActorUiState(model, controller.getUiTabState());
             }
@@ -2790,7 +2808,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
         for (Tab tab : filteredTabs) {
             int id = tab.getId();
-            int index = mModelList.indexFromTabId(id);
+            int index = getIndexFromTabId(id);
             if (index == TabModel.INVALID_TAB_INDEX) {
                 continue;
             }
@@ -3043,7 +3061,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private void setUseShrinkCloseAnimation(int tabId, boolean useShrinkCloseAnimation) {
         if (!mTabListConfig.supportsShrinkCloseAnimation) return;
 
-        @Nullable PropertyModel model = mModelList.getModelFromTabId(tabId);
+        PropertyModel model = getModelFromTabId(tabId);
         if (model != null) {
             model.set(TabProperties.USE_SHRINK_CLOSE_ANIMATION, useShrinkCloseAnimation);
         }
@@ -3058,7 +3076,7 @@ public class TabListMediator implements TabListNotificationHandler {
             if (!didClose) {
                 mTabClosedFrom.delete(tabId);
                 setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ false);
-                int modelIndex = mModelList.indexFromTabId(tabId);
+                int modelIndex = getIndexFromTabId(tabId);
                 if (modelIndex != TabModel.INVALID_TAB_INDEX) {
                     resetSwipe(modelIndex);
                 }
@@ -3093,7 +3111,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
     void setThumbnailSpinnerVisibility(Tab tab, boolean isVisible) {
         assert mLayoutType == TabListLayoutType.FLAT;
-        int index = mModelList.indexFromTabId(tab.getId());
+        int index = getIndexFromTabId(tab.getId());
         if (index == TabModel.INVALID_TAB_INDEX) return;
 
         PropertyModel model = mModelList.get(index).model;

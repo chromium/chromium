@@ -108,7 +108,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      *     tab was not added to the model list (e.g. child tab of a collapsed group).
      */
     int onTabAdded(Tab tab) {
-        int existingIndex = mModelList.indexFromTabId(tab.getId());
+        int existingIndex = getIndexFromTabId(tab.getId());
         if (existingIndex != TabModel.INVALID_TAB_INDEX) return existingIndex;
 
         int newIndex = getInsertionIndexOfTab(tab);
@@ -154,7 +154,31 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      *     present.
      */
     int getUiIndexForTab(int tabId) {
+        return getIndexFromTabId(tabId);
+    }
+
+    /**
+     * Resolves the UI index in {@link #mModelList} of the card representing the given tab in this
+     * layout.
+     *
+     * @param tabId The ID of the tab to locate.
+     * @return The UI index in {@link #mModelList}, or {@link TabModel#INVALID_TAB_INDEX} if not
+     *     present.
+     */
+    int getIndexFromTabId(int tabId) {
         return mModelList.indexFromTabId(tabId);
+    }
+
+    /**
+     * Resolves the {@link PropertyModel} of the card representing the given tab in this layout.
+     *
+     * @param tabId The ID of the tab to locate.
+     * @return The {@link PropertyModel}, or null if no card represents the tab.
+     */
+    @Nullable PropertyModel getModelFromTabId(int tabId) {
+        int index = getIndexFromTabId(tabId);
+        if (index == TabModel.INVALID_TAB_INDEX) return null;
+        return mModelList.get(index).model;
     }
 
     /**
@@ -209,7 +233,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
                 || tab.getUrl().equals(navigationHandle.getUrl())) {
             return;
         }
-        @Nullable PropertyModel model = mModelList.getModelFromTabId(tab.getId());
+        PropertyModel model = getModelFromTabId(tab.getId());
         if (model == null || isChildTabRepresentedByGroupCard(tab)) {
             return;
         }
@@ -223,7 +247,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     public void onTitleUpdated(Tab updatedTab) {
         if (!mMediator.isTrackingTabs()) return;
 
-        @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
+        PropertyModel model = getModelFromTabId(updatedTab.getId());
         // TODO(crbug.com/40136874) The null check for tab here should be redundant once
         // we have resolved the bug.
         if (model == null
@@ -266,7 +290,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     public void onFaviconUpdated(Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
         if (!mMediator.isTrackingTabs()) return;
 
-        @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
+        PropertyModel model = getModelFromTabId(updatedTab.getId());
         if (model == null) return;
         mMediator.updateFaviconForTab(model, updatedTab, icon, iconUrl);
     }
@@ -281,7 +305,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     public void onUrlUpdated(Tab updatedTab) {
         if (!mMediator.isTrackingTabs()) return;
 
-        @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
+        PropertyModel model = getModelFromTabId(updatedTab.getId());
         if (!TabUtils.isValid(updatedTab) || model == null) return;
 
         model.set(TabProperties.URL_DOMAIN, mMediator.getDomainForTab(updatedTab, model));
@@ -300,7 +324,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     public void onAlertStateChanged(Tab updatedTab, @TabAlert int alertState) {
         if (!mMediator.isTrackingTabs()) return;
 
-        @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
+        PropertyModel model = getModelFromTabId(updatedTab.getId());
         if (model == null || model.get(TabProperties.USE_SHRINK_CLOSE_ANIMATION)) {
             return;
         }
@@ -312,7 +336,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     public void onTabPinnedStateChanged(Tab tab, boolean isPinned) {
         if (!mMediator.isTrackingTabs()) return;
 
-        int index = mModelList.indexFromTabId(tab.getId());
+        int index = getIndexFromTabId(tab.getId());
         if (index == TabModel.INVALID_TAB_INDEX) return;
 
         // When pinning a tab in a group it will be removed from the group so the index
@@ -355,7 +379,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
      * @param tab The {@link Tab} being removed for closure.
      */
     void onTabClose(Tab tab) {
-        int index = mModelList.indexFromTabId(tab.getId());
+        int index = getIndexFromTabId(tab.getId());
         if (index == TabModel.INVALID_TAB_INDEX) return;
 
         mModelList.removeAt(index);
@@ -385,7 +409,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
             return;
         }
 
-        int currentUiIndex = mModelList.indexFromTabId(tab.getId());
+        int currentUiIndex = getIndexFromTabId(tab.getId());
         if (currentUiIndex == TabModel.INVALID_TAB_INDEX) return;
 
         // Moving out of a group.
@@ -416,7 +440,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
 
         // Maintain correct order.
-        int curPosition = mModelList.indexFromTabId(movedTab.getId());
+        int curPosition = getIndexFromTabId(movedTab.getId());
 
         if (!mModelList.isValidIndex(curPosition)) return;
 
@@ -426,7 +450,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
                                 ? tabModelNewIndex - 1
                                 : tabModelNewIndex + 1);
         assumeNonNull(destinationTab);
-        int newPosition = mModelList.indexFromTabId(destinationTab.getId());
+        int newPosition = getIndexFromTabId(destinationTab.getId());
 
         mModelList.moveItem(curPosition, newPosition);
     }
@@ -594,7 +618,7 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
 
     private void updateLoadingState(Tab tab, boolean isLoading) {
         if (!mMediator.supportsTabLoadingState() || !mMediator.isTrackingTabs()) return;
-        @Nullable PropertyModel model = mModelList.getModelFromTabId(tab.getId());
+        PropertyModel model = getModelFromTabId(tab.getId());
         if (model == null) return;
         // Suppress loading indicator for NTP. NTP loads instantly, but the brief load events can
         // trigger visible flickers in Android Views, or get stuck if background tab loading is

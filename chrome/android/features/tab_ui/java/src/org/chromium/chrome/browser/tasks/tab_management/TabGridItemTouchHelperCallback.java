@@ -458,7 +458,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
 
             @Nullable PropertyModel cardModel = null;
             if (TabProperties.isTabOrTabGroup(viewHolderModel)) {
-                cardModel = mModel.getModelFromTabId(viewHolderModel.get(TabProperties.TAB_ID));
+                cardModel = viewHolderModel;
             } else if (viewHolderModel.get(CARD_TYPE) == MESSAGE) {
                 int index =
                         mModel.lastIndexForMessageItemFromType(viewHolderModel.get(MESSAGE_TYPE));

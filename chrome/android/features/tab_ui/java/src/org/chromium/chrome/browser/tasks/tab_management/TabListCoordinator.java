@@ -893,7 +893,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     // PriceWelcomeMessageService.PriceWelcomeMessageProvider implementation.
     @Override
     public int getTabIndexFromTabId(@TabId int tabId) {
-        return mModelList.indexFromTabId(tabId);
+        return mMediator.getIndexFromTabId(tabId);
     }
 
     @Override
@@ -1071,7 +1071,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      * Maps a tab ID to an index. For use with {@link #addSpecialListItem(int, int, PropertyModel)}.
      */
     int getIndexFromTabId(@TabId int tabId) {
-        return mModelList.indexFromTabId(tabId);
+        return mMediator.getIndexFromTabId(tabId);
     }
 
     /**
