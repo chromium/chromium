@@ -1027,6 +1027,12 @@ ci.builder(
             "grit_python_unittests": targets.remove(
                 reason = "TODO: crbug.com/346921029 - fix broken tests.",
             ),
+            "browser_tests": targets.mixin(
+                swarming = targets.swarming(
+                    # Shadow Win10 Tests x64's shard count
+                    shards = 55,
+                ),
+            ),
             "interactive_ui_tests": targets.mixin(
                 # Shadow Win10 Tests x64
                 swarming = targets.swarming(
