@@ -56,6 +56,7 @@ source_set("android_browsertests") {
   sources = [
     "webapk_icons_hasher_browsertest.cc",
     "webapk_installer_browsertest.cc",
+    "webapk_post_share_target_navigator_browsertest.cc",
     "webapk_restore_task_browsertest.cc",
   ]
   deps = [
@@ -70,10 +71,12 @@ source_set("android_browsertests") {
     "//components/ukm:test_support",
     "//components/webapk:proto",
     "//components/webapps/browser",
+    "//content/public/browser",
     "//content/test:test_support",
     "//net:test_support",
     "//services/network:test_support",
     "//skia",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",
     "//url",

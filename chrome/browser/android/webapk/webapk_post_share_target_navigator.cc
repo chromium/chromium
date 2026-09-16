@@ -18,6 +18,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/WebApkPostShareTargetNavigator_jni.h"
@@ -35,6 +36,14 @@ void NavigateShareTargetPost(
       content::OpenURLParams::CreateBrowserInitiated(
           share_target_gurl, WindowOpenDisposition::CURRENT_TAB,
           ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  // The share target action URL has already been verified to be within the web
+  // app's scope, so the app itself is the initiator of this navigation.
+  // Attributing the navigation to it makes the network stack compute SameSite
+  // the same way it would for a form submission by the app. Without an
+  // initiator the request looks like a user-typed navigation, which would
+  // attach SameSite=Strict/Lax cookies even after a server-side redirect to a
+  // cross-site URL.
+  open_url_params.initiator_origin = url::Origin::Create(share_target_gurl);
   open_url_params.post_data = post_data;
   open_url_params.extra_headers = header_list;
   web_contents->OpenURL(open_url_params, /*navigation_handle_callback=*/{});

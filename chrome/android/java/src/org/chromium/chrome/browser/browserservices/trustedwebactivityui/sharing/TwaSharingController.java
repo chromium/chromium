@@ -28,6 +28,8 @@ import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.WebApkPostShareTargetNavigator;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -99,19 +101,26 @@ public class TwaSharingController {
                                         return sendPost(finalShareData, shareTarget);
                                     }
 
-                                    mNavigationController.navigate(
+                                    LoadUrlParams params =
                                             new LoadUrlParams(
                                                     computeStartUrlForGETShareTarget(
-                                                            finalShareData, shareTarget)),
-                                            intent);
+                                                            finalShareData, shareTarget));
+                                    // The action has been verified to be within the app's scope,
+                                    // so the app is the initiator of this navigation. Attributing
+                                    // it ensures SameSite cookies are evaluated as they would be
+                                    // for a navigation started by the app itself, rather than
+                                    // treating the request as a user-typed navigation.
+                                    params.setInitiatorOrigin(
+                                            Origin.create(new GURL(shareTarget.getAction())));
+                                    mNavigationController.navigate(params, intent);
                                     return true;
                                 });
     }
 
     /**
-     * Converts to internal format.
-     * TODO(pshmakov): pull WebApkShareTarget out of WebApkInfo and rename to
-     * ShareTargetInternal. Also, replace WebApkInfo.ShareData with ShareData from TWA API.
+     * Converts to internal format. TODO(pshmakov): pull WebApkShareTarget out of WebApkInfo and
+     * rename to ShareTargetInternal. Also, replace WebApkInfo.ShareData with ShareData from TWA
+     * API.
      */
     private @Nullable WebApkShareTarget toShareTargetInternal(@Nullable ShareTarget shareTarget) {
         if (shareTarget == null) return null;
