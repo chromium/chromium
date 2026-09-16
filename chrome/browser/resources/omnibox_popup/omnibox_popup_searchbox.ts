@@ -920,6 +920,10 @@ export class OmniboxPopupSearchboxElement extends
    */
   private onSetInputState_(state: OmniboxInputState) {
     markOnce('OmniboxPopupSearchboxElement::onSetInputState_');
+    if (state.isTabSwitch) {
+      performance.mark(
+          'OmniboxPopupSearchboxElement::onSetInputState_:TabSwitch');
+    }
     this.$.input.setInputText(state.text);
     this.userInputInProgress_ = state.userInputInProgress;
     this.hasUserInput_ = state.userInputInProgress && !!state.text.trim();
@@ -973,16 +977,22 @@ export class OmniboxPopupSearchboxElement extends
     this.selectRange(state.selection);
     this.getDropdownElement().unselect();
 
-    // Records user timing marks when the input field is focused and the caret
-    // is positioned in the DOM without text selection, indicating readiness
-    // for user input. The first invocation marks the startup of the browser,
-    // while the subsequent focus event marks the first, warm new tab focus.
-    // Placed before `queryAutocomplete()` to isolate input hydration from ZPS
-    // query dispatch.
-    // TODO(crbug.com/553005514): Distinguish between New Tab Creation and Tab
-    // Switch Restoration.
-    if (state.isFocused && document.visibilityState === 'visible' &&
+    // Records user timing marks for tab state restoration and browser/tab
+    // focus readiness.
+    // TODO(crbug.com/553005514): - Add `afterNextPaint` for more accurate tab
+    // switch timing, if necessary.
+    if (state.isTabSwitch && state.isFocused) {
+      performance.mark(
+          'OmniboxPopupSearchboxElement::onSetInputState_:TabSwitchCaretReady');
+    } else if (
+        state.isFocused && document.visibilityState === 'visible' &&
         !this.hasInputSelection_) {
+      // Records user timing marks when the input field is focused and the caret
+      // is positioned in the DOM without text selection, indicating readiness
+      // for user input. The first invocation marks the startup of the browser,
+      // while the subsequent focus event marks the first, warm new tab focus.
+      // Placed before `queryAutocomplete()` to isolate input hydration from ZPS
+      // query dispatch.
       if (!markOnce(
               'OmniboxPopupSearchboxElement::onSetInputState_:StartupCaretReady')) {
         markOnce(

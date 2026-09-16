@@ -81,7 +81,8 @@ void OmniboxController::StartAutocomplete(
 }
 
 void OmniboxController::StopAutocomplete(bool clear_result) const {
-  TRACE_EVENT0("omnibox", "OmniboxController::StopAutocomplete");
+  TRACE_EVENT1("omnibox", "OmniboxController::StopAutocomplete", "clear_result",
+               clear_result);
   autocomplete_controller_->Stop(clear_result
                                      ? AutocompleteStopReason::kClobbered
                                      : AutocompleteStopReason::kInteraction);

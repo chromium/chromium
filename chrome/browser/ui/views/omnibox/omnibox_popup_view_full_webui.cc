@@ -111,9 +111,6 @@ void OmniboxPopupViewFullWebUI::UpdatePopupAppearance() {
   // focus fights during deactivation or autocomplete changes.
 }
 
-// TODO(crbug.com/553005514): Instrument callsite traces
-// (ex: OnNewTabFocus, OnFocus, OnTabChanged, SaveStateToTab) at their
-// respective entry points to capture individual trigger contexts.
 void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
   TRACE_EVENT1("omnibox", "OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI",
                "query_zps", query_zps);
@@ -184,6 +181,7 @@ void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
 
 void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
   DCHECK(tab);
+  TRACE_EVENT("omnibox", "OmniboxPopupViewFullWebUI::SaveStateToTab");
 
   auto* edit_model = controller()->edit_model();
   bool logically_focused = edit_model->has_focus();
@@ -239,7 +237,7 @@ void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
 }
 
 void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
-  TRACE_EVENT0("omnibox", "OmniboxPopupViewFullWebUI::OnTabChanged");
+  TRACE_EVENT("omnibox", "OmniboxPopupViewFullWebUI::OnTabChanged");
   last_sent_text_.reset();
   last_sent_focus_.reset();
   controller()->edit_model()->ResetDisplayTexts();
@@ -286,6 +284,11 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
     // Prevent focus state leaks by explicitly syncing the `OmniboxEditModel`'s
     // focus state with the restored state of the newly active tab.
     if (state->model_state.focus_state != OMNIBOX_FOCUS_NONE) {
+      if (!is_first_tab_changed) {
+        TRACE_EVENT_INSTANT0(
+            "omnibox", "OmniboxPopupViewFullWebUI::OnTabChanged:OnSetFocus",
+            TRACE_EVENT_SCOPE_THREAD);
+      }
       controller()->edit_model()->OnSetFocus(/*control_down=*/false);
     } else {
       controller()->edit_model()->OnKillFocus();
@@ -379,18 +382,21 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
           state->model_state.keyword_state, state->model_state.keyword,
           controller()->client()->GetTemplateURLService());
     }
+    const bool is_tab_switch =
+        !is_first_tab_changed && (state != nullptr || !should_focus_popup);
     popup_handler->SetInputState(
         base::UTF16ToUTF8(text), selection, non_empty_user_input_in_progress,
         base::UTF16ToUTF8(full_url), should_focus_popup,
         base::UTF16ToUTF8(permanent_display_text), show_full_url,
-        /*query_zps=*/false, std::move(keyword_model),
-        /*is_tab_switch=*/true);
+        /*query_zps=*/false, std::move(keyword_model), is_tab_switch);
     last_sent_text_ = text;
     last_sent_focus_ = should_focus_popup;
   }
 }
 
 void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps, bool select_all) {
+  TRACE_EVENT("omnibox", "OmniboxPopupViewFullWebUI::OnFocus", "query_zps",
+              query_zps, "select_all", select_all);
   focused_ = true;
   bool changed = controller()->popup_state_manager()->popup_state() !=
                  OmniboxPopupState::kFull;

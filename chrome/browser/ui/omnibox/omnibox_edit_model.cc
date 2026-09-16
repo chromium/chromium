@@ -328,6 +328,10 @@ OmniboxEditModel::State OmniboxEditModel::GetStateForTabSwitch() const {
 }
 
 void OmniboxEditModel::RestoreState(const State* state) {
+  TRACE_EVENT2("omnibox", "OmniboxEditModel::RestoreState",
+               "user_input_in_progress",
+               state ? state->user_input_in_progress : false, "is_focused",
+               state ? (state->focus_state != OMNIBOX_FOCUS_NONE) : false);
   // We need to update the permanent display texts correctly and revert the
   // view regardless of whether there is saved state.
   ResetDisplayTexts();
@@ -1306,6 +1310,7 @@ void OmniboxEditModel::OnWillKillFocus() {
 }
 
 void OmniboxEditModel::OnKillFocus() {
+  TRACE_EVENT0("omnibox", "OmniboxEditModel::OnKillFocus");
   metrics_tracker_.FocusChanged(false);
   SetFocusState(OMNIBOX_FOCUS_NONE, OMNIBOX_FOCUS_CHANGE_EXPLICIT);
   paste_state_ = PasteState::kNone;
