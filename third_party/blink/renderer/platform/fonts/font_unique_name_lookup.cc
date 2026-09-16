@@ -19,6 +19,8 @@ namespace blink {
 
 FontUniqueNameLookup::FontUniqueNameLookup() = default;
 
+FontUniqueNameLookup::~FontUniqueNameLookup() = default;
+
 // static
 std::unique_ptr<FontUniqueNameLookup>
 FontUniqueNameLookup::GetPlatformUniqueNameLookup() {

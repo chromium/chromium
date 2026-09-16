@@ -75,6 +75,12 @@ FontUniqueNameLookup* FontGlobalContext::GetFontUniqueNameLookup() {
   return Get().font_unique_name_lookup_.get();
 }
 
+// static
+void FontGlobalContext::SetFontUniqueNameLookupForTesting(
+    std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup) {
+  Get().font_unique_name_lookup_ = std::move(font_unique_name_lookup);
+}
+
 void FontGlobalContext::Init() {
   DCHECK(IsMainThread());
   if (auto* name_lookup = FontGlobalContext::Get().GetFontUniqueNameLookup())

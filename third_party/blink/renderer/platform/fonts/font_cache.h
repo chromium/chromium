@@ -49,10 +49,12 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/font_fallback_linux.h"
@@ -255,6 +257,9 @@ class PLATFORM_EXPORT FontCache final {
       UChar32,
       const SimpleFontData* font_data_to_substitute,
       FontFallbackPriority = FontFallbackPriority::kText);
+  // Returns the typeface matching `creation_params.Family()` as a font unique
+  // name (Postscript name or full font name), memoizing the result in
+  // `unique_name_typeface_cache_`.
   sk_sp<SkTypeface> CreateTypefaceFromUniqueName(
       const FontFaceCreationParams& creation_params);
 
@@ -331,6 +336,22 @@ class PLATFORM_EXPORT FontCache final {
   FontPlatformDataCache font_platform_data_cache_;
 
   FontDataCache font_data_cache_;
+
+  // Typefaces matched by font unique name, i.e. through
+  // `AlternateFontName::kLocalUniqueFace` for @font-face src: local().
+  // `font_platform_data_cache_` cannot serve this purpose: its key is a full
+  // `FontCacheKey`, so the same local font requested at two font sizes (or
+  // with different variation settings, orientation, ...) misses the cache and
+  // instantiates a second `SkTypeface`, which maps the underlying font file
+  // again. For large font collections that is hundreds of megabytes of
+  // duplicated mapping per distinct size. See crbug.com/325826179.
+  //
+  // Keyed case-insensitively to match `FontFaceCreationParams`, which compares
+  // family names with `DeprecatedEqualIgnoringCase()`.
+  HashMap<AtomicString,
+          sk_sp<SkTypeface>,
+          DeprecatedCaseFoldingHashTraits<AtomicString>>
+      unique_name_typeface_cache_;
 
   Member<FontFallbackMap> font_fallback_map_;
 

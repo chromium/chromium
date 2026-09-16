@@ -3283,6 +3283,11 @@
       status: "stable",
     },
     {
+      // crbug.com/325826179
+      name: "FontUniqueNameTypefaceCache",
+      status: "stable",
+    },
+    {
       // crbug.com/40398871
       name: "FontVariationSettingsDescriptor",
       status: "stable",

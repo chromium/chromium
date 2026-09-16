@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -23,7 +24,7 @@ namespace blink {
 
 class FontTableMatcher;
 
-class FontUniqueNameLookup {
+class PLATFORM_EXPORT FontUniqueNameLookup {
   USING_FAST_MALLOC(FontUniqueNameLookup);
 
  public:
@@ -43,7 +44,11 @@ class FontUniqueNameLookup {
 
   FontUniqueNameLookup(const FontUniqueNameLookup&) = delete;
   FontUniqueNameLookup& operator=(const FontUniqueNameLookup&) = delete;
-  virtual ~FontUniqueNameLookup() = default;
+  // Out-of-line so that `font_table_matcher_` is destroyed inside this
+  // component. Subclasses outside it, such as in unit tests, would
+  // otherwise need the definition of FontTableMatcher and of the protobuf
+  // it holds.
+  virtual ~FontUniqueNameLookup();
 
   // Below: Methods for asynchronously retrieving the FontUniqueNameLookup
   // table. Currently needed on Windows, on other platforms the implementation

@@ -57,6 +57,12 @@ class PLATFORM_EXPORT FontGlobalContext
 
   static FontUniqueNameLookup* GetFontUniqueNameLookup();
 
+  // Replaces this thread's `FontUniqueNameLookup`. Passing nullptr restores the
+  // platform default. Callers must also invalidate the `FontCache`, which
+  // caches typefaces obtained through the lookup.
+  static void SetFontUniqueNameLookupForTesting(
+      std::unique_ptr<FontUniqueNameLookup>);
+
   // |Init()| should be called in main thread.
   static void Init();
 

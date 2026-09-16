@@ -13,9 +13,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/font_global_context.h"
+#include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
+#include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
@@ -219,5 +223,139 @@ TEST_F(FontCacheTest, PrewarmFamily) {
             "test-font-cache-prewarm-family");
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Only these platforms resolve font unique names through
+// FontCache::CreateTypefaceFromUniqueName(); macOS goes through CoreText,
+// which shares the underlying font data itself.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
+
+namespace {
+
+// A FontUniqueNameLookup that resolves every name to the same typeface and
+// counts how often it was consulted.
+class CountingFontUniqueNameLookup : public FontUniqueNameLookup {
+ public:
+  explicit CountingFontUniqueNameLookup(sk_sp<SkTypeface> typeface)
+      : typeface_(std::move(typeface)) {}
+
+  sk_sp<SkTypeface> MatchUniqueName(const String& font_unique_name) override {
+    ++match_count_;
+    return typeface_;
+  }
+
+  wtf_size_t MatchCount() const { return match_count_; }
+
+ private:
+  sk_sp<SkTypeface> typeface_;
+  wtf_size_t match_count_ = 0;
+};
+
+// Installs a CountingFontUniqueNameLookup for the duration of the test and
+// restores the platform default afterwards.
+class ScopedCountingFontUniqueNameLookup {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ScopedCountingFontUniqueNameLookup(sk_sp<SkTypeface> typeface) {
+    auto lookup =
+        std::make_unique<CountingFontUniqueNameLookup>(std::move(typeface));
+    lookup_ = lookup.get();
+    FontGlobalContext::SetFontUniqueNameLookupForTesting(std::move(lookup));
+  }
+
+  ~ScopedCountingFontUniqueNameLookup() {
+    FontGlobalContext::SetFontUniqueNameLookupForTesting(nullptr);
+    FontCache::Get().Invalidate();
+  }
+
+  wtf_size_t MatchCount() const { return lookup_->MatchCount(); }
+
+ private:
+  CountingFontUniqueNameLookup* lookup_ = nullptr;
+};
+
+// Returns any typeface available on the system, to stand in for a local font.
+sk_sp<SkTypeface> AnyTypeface() {
+  const SimpleFontData* font_data =
+      FontCache::Get().GetLastResortFallbackFont(FontDescription());
+  return font_data ? font_data->PlatformData().TypefaceSp() : nullptr;
+}
+
+const SimpleFontData* GetUniqueNameFontData(const AtomicString& unique_name,
+                                            float size) {
+  FontDescription description;
+  description.SetComputedSize(size);
+  return FontCache::Get().GetFontData(description, unique_name,
+                                      AlternateFontName::kLocalUniqueFace);
+}
+
+}  // namespace
+
+// A local() font used at several sizes must resolve to one shared typeface,
+// rather than mapping the underlying font file once per size.
+// Regression test for crbug.com/325826179.
+TEST_F(FontCacheTest, LocalUniqueFaceTypefaceSharedAcrossFontSizes) {
+  ScopedFontUniqueNameTypefaceCacheForTest enable_cache(true);
+
+  sk_sp<SkTypeface> typeface = AnyTypeface();
+  ASSERT_TRUE(typeface);
+
+  ScopedCountingFontUniqueNameLookup lookup(typeface);
+  const AtomicString unique_name("TestFontCacheUniqueName");
+
+  for (float size : {12.0f, 16.0f, 24.0f, 48.0f}) {
+    const SimpleFontData* font_data = GetUniqueNameFontData(unique_name, size);
+    ASSERT_TRUE(font_data) << "font size " << size;
+    EXPECT_EQ(typeface.get(), font_data->PlatformData().Typeface())
+        << "font size " << size;
+  }
+
+  // Each size gets its own FontPlatformData, but the unique name must have
+  // been resolved to a typeface only once.
+  EXPECT_EQ(1u, lookup.MatchCount());
+}
+
+// The typeface cache must not outlive a font cache invalidation, which is also
+// how it is purged under memory pressure.
+TEST_F(FontCacheTest, LocalUniqueFaceTypefaceCacheClearedOnInvalidate) {
+  ScopedFontUniqueNameTypefaceCacheForTest enable_cache(true);
+
+  sk_sp<SkTypeface> typeface = AnyTypeface();
+  ASSERT_TRUE(typeface);
+
+  ScopedCountingFontUniqueNameLookup lookup(typeface);
+  const AtomicString unique_name("TestFontCacheUniqueName");
+
+  ASSERT_TRUE(GetUniqueNameFontData(unique_name, 16.0f));
+  EXPECT_EQ(1u, lookup.MatchCount());
+
+  FontCache::Get().Invalidate();
+
+  ASSERT_TRUE(GetUniqueNameFontData(unique_name, 16.0f));
+  EXPECT_EQ(2u, lookup.MatchCount());
+}
+
+// With the feature disabled, the unique name is resolved once per font size,
+// i.e. the behavior before the cache was introduced.
+TEST_F(FontCacheTest, LocalUniqueFaceTypefaceNotCachedWhenDisabled) {
+  ScopedFontUniqueNameTypefaceCacheForTest disable_cache(false);
+
+  sk_sp<SkTypeface> typeface = AnyTypeface();
+  ASSERT_TRUE(typeface);
+
+  ScopedCountingFontUniqueNameLookup lookup(typeface);
+  const AtomicString unique_name("TestFontCacheUniqueName");
+
+  for (float size : {12.0f, 16.0f, 24.0f, 48.0f}) {
+    ASSERT_TRUE(GetUniqueNameFontData(unique_name, size))
+        << "font size " << size;
+  }
+
+  EXPECT_EQ(4u, lookup.MatchCount());
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink
