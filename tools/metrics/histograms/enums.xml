@@ -23505,6 +23505,7 @@ Called by update_net_error_codes.py.-->
   <int value="79" label="Kagi"/>
   <int value="80" label="StarterPackAiMode"/>
   <int value="81" label="Yahoo! JAPAN"/>
+  <int value="82" label="Perplexity"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/search_engines/search_engine_type.h:SearchEngineType) -->
