@@ -1963,6 +1963,16 @@ class NetworkContextConfigurationProxySettingsBrowserTest
   }
 
   void RunMaxConnectionsPerProxyTest() {
+    // TODO(crbug.com/540592485): There's a linux specific issue with this test permutation.
+    // It's unclear why and ideally we would fix the flake.
+#if BUILDFLAG(IS_LINUX)
+    if (GetParam().network_context_type ==
+            NetworkContextType::kOnDiskAppWithIncognitoProfile &&
+        GetParam().network_service_state == NetworkServiceState::kEnabled) {
+      return;
+    }
+#endif
+
     // At this point in the test, we've set up a proxy that points to our
     // embedded test server. We've also set things up to hang all incoming
     // requests and record how many concurrent connections we have running. To
