@@ -1020,9 +1020,6 @@ class GlicWebClientHandler
 
   void CreateGeminiEnterpriseHandler(
       mojo::PendingReceiver<mojom::GeminiEnterpriseHandler> receiver) override {
-    if (!GlicEnabling::GetGeminiEnterpriseSettings(profile_).has_value()) {
-      return;
-    }
     host().instance_delegate().CreateGeminiEnterpriseHandler(
         std::move(receiver));
   }

@@ -764,9 +764,6 @@ void GlicInstanceImpl::CreateZeroStateSuggestionsHandler(
 
 void GlicInstanceImpl::CreateGeminiEnterpriseHandler(
     mojo::PendingReceiver<mojom::GeminiEnterpriseHandler> receiver) {
-  if (!GlicEnabling::GetGeminiEnterpriseSettings(profile_).has_value()) {
-    return;
-  }
   if (!gemini_enterprise_manager_) {
     gemini_enterprise_manager_ =
         std::make_unique<GlicGeminiEnterpriseManager>(profile_);
