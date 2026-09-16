@@ -66,10 +66,13 @@ OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
     : owner_(owner), one_time_token_service_(one_time_token_service) {
   autofill_manager_observation_.Observe(&owner);
   if (one_time_token_service_) {
-    if (one_time_token_service_->log_sink()) {
-      log_subscription_ = one_time_token_service_->log_sink()->AddLogHandler(
-          base::BindRepeating(&OtpManagerImpl::OnLogMessage,
-                              weak_ptr_factory_.GetWeakPtr()));
+    if (owner_->driver().GetParent() == nullptr &&
+        !owner_->driver().IsEmbedded()) {
+      if (one_time_token_service_->log_sink()) {
+        log_subscription_ = one_time_token_service_->log_sink()->AddLogHandler(
+            base::BindRepeating(&OtpManagerImpl::OnLogMessage,
+                                weak_ptr_factory_.GetWeakPtr()));
+      }
     }
     gmail_otp_tickle_subscription_ =
         one_time_token_service_->SubscribeToTickles(

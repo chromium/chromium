@@ -34,6 +34,8 @@ class OtpManagerImplTestApi {
     return manager_->UserOptedIntoGmailOtpFilling();
   }
 
+  bool has_log_subscription() const { return !!manager_->log_subscription_; }
+
  private:
   raw_ref<OtpManagerImpl> manager_;
 };

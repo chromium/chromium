@@ -68,9 +68,6 @@ ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
     base::Time expiration,
     Callback callback,
     base::OnceClosure expiration_callback) {
-  LOG_OTT(&log_sink_) << "Subscription updated: source="
-                      << std::to_underlying(source)
-                      << ", expiration=" << expiration;
   switch (source) {
     case OneTimeTokenSource::kOnDeviceSms: {
       ExpiringSubscription subscription = sms_subscription_manager_.Subscribe(
@@ -94,9 +91,6 @@ ExpiringSubscription OneTimeTokenServiceImpl::SubscribeToTickles(
     OneTimeTokenSource source,
     base::Time expiration,
     TickleCallback callback) {
-  LOG_OTT(&log_sink_) << "Tickle subscription updated: source="
-                      << std::to_underlying(source)
-                      << ", expiration=" << expiration;
   switch (source) {
     case OneTimeTokenSource::kGmail: {
       if (!gmail_.backend) {

@@ -38,7 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-    using ::autofill::test::FormDescription;
+using ::autofill::test::FormDescription;
 using ::autofill::test::GetServerTypes;
 using ::base::test::RunOnceCallback;
 using ::one_time_tokens::OneTimeTokenServiceImpl;
@@ -658,7 +658,8 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_NoPhishingDelegate) {
       /*OneTimeTokensPhishGuardVerdict::kUnknown*/ 0, 1);
 }
 
-// Tests that `OnOtpAvailable` is logged even if the PhishGuard check blocks delivery.
+// Tests that `OnOtpAvailable` is logged even if the PhishGuard check blocks
+// delivery.
 TEST_F(OtpManagerImplTest, OnOtpAvailable_LoggedEvenIfPhishGuardBlocks) {
   OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
 
@@ -687,7 +688,8 @@ TEST_F(OtpManagerImplTest, OnOtpAvailable_LoggedEvenIfPhishGuardBlocks) {
   // Suggestions should be empty because delivery is blocked.
   EXPECT_TRUE(future.Get().empty());
 
-  // However, the metric should still be logged as the OTP was successfully retrieved.
+  // However, the metric should still be logged as the OTP was successfully
+  // retrieved.
   EXPECT_TRUE(autofill_manager()
                   .GetOtpFormEventLogger()
                   .HasLoggedDataToFillAvailableForTesting());
@@ -1291,6 +1293,29 @@ TEST_F(OtpManagerImplTest, UserOptedIntoGmailOtpFilling_Disabled) {
 
   prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
   EXPECT_FALSE(test_api(otp_manager).UserOptedIntoGmailOtpFilling());
+}
+
+// Tests that only the outermost main frame registers a log handler with the
+// OneTimeTokenService's log sink, avoiding log duplication from subframes.
+TEST_F(OtpManagerImplTest, LogSubscriptionRestrictedToOutermostMainFrame) {
+  // Main frame:
+  OtpManagerImpl main_frame_otp_manager(autofill_manager(),
+                                        &one_time_token_service_);
+  EXPECT_TRUE(test_api(main_frame_otp_manager).has_log_subscription());
+
+  // Subframe:
+  CreateAutofillDriver();
+  autofill_driver(1).SetParent(&autofill_driver(0));
+  OtpManagerImpl subframe_otp_manager(autofill_manager(1),
+                                      &one_time_token_service_);
+  EXPECT_FALSE(test_api(subframe_otp_manager).has_log_subscription());
+
+  // Fenced frame root (GetParent() is nullptr, but IsEmbedded() is true):
+  CreateAutofillDriver();
+  autofill_driver(2).SetIsEmbedded(true);
+  OtpManagerImpl fenced_frame_otp_manager(autofill_manager(2),
+                                          &one_time_token_service_);
+  EXPECT_FALSE(test_api(fenced_frame_otp_manager).has_log_subscription());
 }
 
 }  // namespace autofill
