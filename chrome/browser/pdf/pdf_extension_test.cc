@@ -5,6 +5,8 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -22,6 +24,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -117,6 +120,8 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "pdf/pdf_features.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/cpp/features.h"
@@ -195,6 +200,36 @@ class PDFExtensionTest : public base::test::WithFeatureOverride,
       : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
 
   bool UseOopif() const override { return GetParam(); }
+
+  // PDFExtensionTestBase:
+  void RegisterTestServerRequestHandler() override {
+    PDFExtensionTestBase::RegisterTestServerRequestHandler();
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &PDFExtensionTest::HandleTextPlainRequest, base::Unretained(this)));
+  }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleTextPlainRequest(
+      const net::test_server::HttpRequest& request) {
+    constexpr std::string_view kPrefix = "/text_plain/";
+    if (!request.relative_url.starts_with(kPrefix)) {
+      return nullptr;
+    }
+
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath file_path = GetTestResourcesParentDir().AppendASCII(
+        request.relative_url.substr(kPrefix.size()));
+    std::optional<std::vector<uint8_t>> contents =
+        base::ReadFileToBytes(file_path);
+    if (!contents.has_value()) {
+      return nullptr;
+    }
+
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_content(base::as_string_view(contents.value()));
+    response->set_content_type("text/plain");
+    return response;
+  }
 };
 
 using PDFExtensionTestWithoutOopifOverride = PDFExtensionTestBase;
@@ -1014,6 +1049,33 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsureTextPdfExtensionLoaded) {
   }
 
   ASSERT_TRUE(LoadPdf(test_pdf_url));
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, BinaryPdfServedAsTextPlain) {
+  // When a PDF contains binary bytes in the first 1024 bytes,
+  // net::SniffMimeType() sniffs "text/plain" for binary content and matches the
+  // "%PDF-" magic number, overriding the MIME type to "application/pdf" and
+  // loading the PDF Viewer. However, DocumentLoaderImpl::Init() rejects HTTP
+  // responses with a "text/plain" Content-Type header, so loading the PDF
+  // document fails.
+  // TODO(crbug.com/40056239): Render as plain text instead?
+  const GURL url = embedded_test_server()->GetURL("/text_plain/pdf/test.pdf");
+  EXPECT_FALSE(LoadPdf(url));
+  EXPECT_EQ(pdf::kPDFMimeType, GetActiveWebContents()->GetContentsMimeType());
+  EXPECT_EQ(1, CountPDFProcesses());
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MostlyTextPdfServedAsTextPlain) {
+  // When a PDF contains only ASCII text in the first 1024 bytes, aside from the
+  // file header, net::SniffMimeType() concludes the content is not binary and
+  // trusts the "text/plain" MIME type without checking magic numbers. As a
+  // result, the PDF viewer does not load and the content is rendered as plain
+  // text.
+  const GURL ascii_pdf_url =
+      embedded_test_server()->GetURL("/text_plain/pdf/combobox_form.pdf");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ascii_pdf_url));
+  EXPECT_EQ("text/plain", GetActiveWebContents()->GetContentsMimeType());
+  EXPECT_EQ(0, CountPDFProcesses());
 }
 
 // TODO(crbug.com/40647731): Should be allowed?
