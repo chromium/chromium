@@ -118,7 +118,8 @@ TEST_F(ActuationWorklogMediatorTest, TestRegisterObserverEmitsInitialStep) {
 
 // Tests that tool execution emits a chip and timeline item.
 TEST_F(ActuationWorklogMediatorTest, TestToolExecutionEmitsChipAndItem) {
-  ChangeState(kActing, kInit);
+  RegisterTask();
+  [fake_consumer_.items removeAllObjects];
 
   // Empty updates are ignored.
   ExecuteTool(kType, @"");
@@ -130,11 +131,32 @@ TEST_F(ActuationWorklogMediatorTest, TestToolExecutionEmitsChipAndItem) {
   EXPECT_NSEQ(fake_consumer_.items[0].title, @"Clicking button");
   ASSERT_EQ(fake_consumer_.chips.count, 1u);
   EXPECT_GT(fake_consumer_.chips[0].text.length, 0u);
+
+  ExecuteTool(kNavigate, @"Navigating to page");
+  ASSERT_EQ(fake_consumer_.items.count, 2u);
+  EXPECT_NSEQ(fake_consumer_.items[1].title, @"Navigating to page");
+  ASSERT_EQ(fake_consumer_.chips.count, 2u);
+  EXPECT_GT(fake_consumer_.chips[1].text.length, 0u);
+
+  // Unmapped tools emit the catch-all "Processing" chip.
+  ExecuteTool(kSelect, @"Selecting item");
+  ASSERT_EQ(fake_consumer_.items.count, 3u);
+  EXPECT_NSEQ(fake_consumer_.items[2].title, @"Selecting item");
+  ASSERT_EQ(fake_consumer_.chips.count, 3u);
+  EXPECT_NSEQ(fake_consumer_.chips[2].text, @"Processing");
+
+  // Tools without chips (e.g. kWaitZeroDuration) do not emit a chip.
+  ExecuteTool(kWaitZeroDuration, @"Stabilizing");
+  ASSERT_EQ(fake_consumer_.items.count, 4u);
+  EXPECT_NSEQ(fake_consumer_.items[3].title, @"Stabilizing");
+  EXPECT_EQ(fake_consumer_.chips.count, 3u);
 }
 
 // Tests that consecutive duplicate task updates are deduplicated.
 TEST_F(ActuationWorklogMediatorTest, TestConsecutiveDeduplication) {
-  ChangeState(kActing, kInit);
+  RegisterTask();
+  [fake_consumer_.items removeAllObjects];
+
   ExecuteTool(kClick, @"Action A");
   ExecuteTool(kScroll, @"Action A");
   ExecuteTool(kType, @"Action B");

@@ -323,6 +323,12 @@
       <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_FILLING_PASSWORD" desc="Worklog chip label indicating the actor is filling a password on the page. [iOS only]">
         Filling password
       </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_NAVIGATING" desc="Worklog chip label indicating the actor is navigating to a page. [iOS only]">
+        Navigating
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_PROCESSING" desc="Worklog chip label indicating the actor is performing a general task. [iOS only]">
+        Processing
+      </message>
       <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_SCROLLING" desc="Worklog chip label indicating the actor is scrolling the page. [iOS only]">
         Scrolling
       </message>

@@ -26,9 +26,6 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
   if (!toolType) {
     return nil;
   }
-
-  // TODO(crbug.com/556191112): Add a catch-all or specific icons for the
-  // remaining tool types.
   switch (*toolType) {
     case actor::ToolType::kClick:
       return [[ActuationWorklogChip alloc]
@@ -47,18 +44,29 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
                            IDS_IOS_ACTOR_WORKLOG_CHIP_SCROLLING)
                   icon:SymbolWithPointSize(SymbolCursorArrowMotionLines,
                                            kIconSize)];
-    case actor::ToolType::kWait:
-      return [[ActuationWorklogChip alloc]
-          initWithText:l10n_util::GetNSString(
-                           IDS_IOS_ACTOR_WORKLOG_CHIP_WAITING)
-                  icon:SymbolWithPointSize(SymbolHourglass, kIconSize)];
     case actor::ToolType::kAttemptLogin:
       return [[ActuationWorklogChip alloc]
           initWithText:l10n_util::GetNSString(
                            IDS_IOS_ACTOR_WORKLOG_CHIP_FILLING_PASSWORD)
                   icon:SymbolWithPointSize(SymbolKey, kIconSize)];
-    default:
+    case actor::ToolType::kNavigate:
+      return [[ActuationWorklogChip alloc]
+          initWithText:l10n_util::GetNSString(
+                           IDS_IOS_ACTOR_WORKLOG_CHIP_NAVIGATING)
+                  icon:SymbolWithPointSize(SymbolGlobe, kIconSize)];
+    case actor::ToolType::kWait:
+      return [[ActuationWorklogChip alloc]
+          initWithText:l10n_util::GetNSString(
+                           IDS_IOS_ACTOR_WORKLOG_CHIP_WAITING)
+                  icon:SymbolWithPointSize(SymbolHourglass, kIconSize)];
+    case actor::ToolType::kWaitZeroDuration:
+    case actor::ToolType::kUnknown:
       return nil;
+    default:
+      return [[ActuationWorklogChip alloc]
+          initWithText:l10n_util::GetNSString(
+                           IDS_IOS_ACTOR_WORKLOG_CHIP_PROCESSING)
+                  icon:SymbolWithPointSize(SymbolCursorArrow, kIconSize)];
   }
 }
 
