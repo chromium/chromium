@@ -91,7 +91,7 @@ net::structured_headers::Dictionary EncodeParams(
             [](const std::string& value) {
               return net::structured_headers::ParameterizedMember(
                   net::structured_headers::Item(
-                      value, net::structured_headers::Item::kStringType),
+                      net::structured_headers::Item::string, value),
                   net::structured_headers::Parameters());
             },
             [](const std::vector<std::string>& values) {
@@ -101,8 +101,7 @@ net::structured_headers::Dictionary EncodeParams(
                       [](const auto& value) {
                         return net::structured_headers::ParameterizedItem(
                             net::structured_headers::Item(
-                                value,
-                                net::structured_headers::Item::kStringType),
+                                net::structured_headers::Item::string, value),
                             net::structured_headers::Parameters());
                       }),
                   net::structured_headers::Parameters());

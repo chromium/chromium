@@ -40,11 +40,13 @@ SpeculationRulesTags::ConvertStringToStructuredHeader() const {
       CHECK(std::all_of(tag.value().begin(), tag.value().end(),
                         base::IsAsciiPrintable<char>));
       tag_list.push_back(net::structured_headers::ParameterizedMember(
-          net::structured_headers::Item(tag.value()), {}));
+          net::structured_headers::Item(net::structured_headers::Item::string,
+                                        tag.value()),
+          {}));
     } else {
       tag_list.push_back(net::structured_headers::ParameterizedMember(
-          net::structured_headers::Item(
-              "null", net::structured_headers::Item::kTokenType),
+          net::structured_headers::Item(net::structured_headers::Item::token,
+                                        "null"),
           {}));
     }
   }

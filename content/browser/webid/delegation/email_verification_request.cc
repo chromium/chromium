@@ -51,8 +51,8 @@ std::string CreateContentDigestHeader(const std::string& post_data) {
   net::structured_headers::Dictionary dict;
   dict["sha-256"] = net::structured_headers::ParameterizedMember(
       net::structured_headers::Item(
-          std::string(base::as_string_view(digest)),
-          net::structured_headers::Item::kByteSequenceType),
+          net::structured_headers::Item::byte_sequence,
+          base::as_string_view(digest)),
       {});
   std::optional<std::string> val =
       net::structured_headers::SerializeDictionary(dict);
@@ -70,13 +70,15 @@ std::string CreateMessageSignatureKey(const sdjwt::Jwk& public_key) {
     if (!str) {
       continue;
     }
-    params.emplace_back(key, net::structured_headers::Item(std::move(*str)));
+    params.emplace_back(
+        key, net::structured_headers::Item(
+                 net::structured_headers::Item::string, std::move(*str)));
   }
 
   net::structured_headers::Dictionary dict;
   dict["sig"] = net::structured_headers::ParameterizedMember(
-      net::structured_headers::Item("hwk",
-                                    net::structured_headers::Item::kTokenType),
+      net::structured_headers::Item(net::structured_headers::Item::token,
+                                    "hwk"),
       std::move(params));
 
   std::optional<std::string> signature_key_val_opt =
@@ -88,25 +90,23 @@ std::string CreateMessageSignatureKey(const sdjwt::Jwk& public_key) {
 net::structured_headers::ParameterizedMember CreateMessageSignatureParams(
     base::Time created_time) {
   std::vector<net::structured_headers::ParameterizedItem> list_items;
+  list_items.emplace_back(net::structured_headers::Item(
+                              net::structured_headers::Item::string, "@method"),
+                          net::structured_headers::Parameters());
   list_items.emplace_back(
-      net::structured_headers::Item("@method",
-                                    net::structured_headers::Item::kStringType),
+      net::structured_headers::Item(net::structured_headers::Item::string,
+                                    "@authority"),
+      net::structured_headers::Parameters());
+  list_items.emplace_back(net::structured_headers::Item(
+                              net::structured_headers::Item::string, "@path"),
+                          net::structured_headers::Parameters());
+  list_items.emplace_back(
+      net::structured_headers::Item(net::structured_headers::Item::string,
+                                    "content-digest"),
       net::structured_headers::Parameters());
   list_items.emplace_back(
-      net::structured_headers::Item("@authority",
-                                    net::structured_headers::Item::kStringType),
-      net::structured_headers::Parameters());
-  list_items.emplace_back(
-      net::structured_headers::Item("@path",
-                                    net::structured_headers::Item::kStringType),
-      net::structured_headers::Parameters());
-  list_items.emplace_back(
-      net::structured_headers::Item("content-digest",
-                                    net::structured_headers::Item::kStringType),
-      net::structured_headers::Parameters());
-  list_items.emplace_back(
-      net::structured_headers::Item("signature-key",
-                                    net::structured_headers::Item::kStringType),
+      net::structured_headers::Item(net::structured_headers::Item::string,
+                                    "signature-key"),
       net::structured_headers::Parameters());
 
   net::structured_headers::Parameters params_input;
@@ -194,8 +194,8 @@ std::string CreateMessageSignature(
   net::structured_headers::Dictionary dict;
   dict["sig"] = net::structured_headers::ParameterizedMember(
       net::structured_headers::Item(
-          std::string(signature_opt->begin(), signature_opt->end()),
-          net::structured_headers::Item::kByteSequenceType),
+          net::structured_headers::Item::byte_sequence,
+          base::as_string_view(*signature_opt)),
       net::structured_headers::Parameters());
   std::optional<std::string> signature_val_opt =
       net::structured_headers::SerializeDictionary(dict);

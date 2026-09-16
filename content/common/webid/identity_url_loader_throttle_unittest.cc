@@ -236,8 +236,8 @@ TEST_F(IdentityUrlLoaderThrottleTest, AsyncParserCallback) {
   // Simulating async completion from DataDecoder:
   std::move(saved_completion_cb)
       .Run(net::structured_headers::ParameterizedItem(
-          net::structured_headers::Item(
-              "logged-in", net::structured_headers::Item::ItemType::kTokenType),
+          net::structured_headers::Item(net::structured_headers::Item::token,
+                                        "logged-in"),
           {}));
 
   EXPECT_EQ(1, cb_num_calls_);
@@ -286,8 +286,8 @@ TEST_F(IdentityUrlLoaderThrottleTest, InProcessParserCallback) {
           &result_item));
   ASSERT_TRUE(result_item);
   EXPECT_EQ(result_item->item,
-            net::structured_headers::Item(
-                "logged-in", net::structured_headers::Item::kTokenType));
+            net::structured_headers::Item(net::structured_headers::Item::token,
+                                          "logged-in"));
 
   result_item.reset();
   parse_cb.Run(
@@ -300,8 +300,8 @@ TEST_F(IdentityUrlLoaderThrottleTest, InProcessParserCallback) {
           &result_item));
   ASSERT_TRUE(result_item);
   EXPECT_EQ(result_item->item,
-            net::structured_headers::Item(
-                "logged-out", net::structured_headers::Item::kTokenType));
+            net::structured_headers::Item(net::structured_headers::Item::token,
+                                          "logged-out"));
 
   result_item.reset();
   parse_cb.Run(
@@ -346,8 +346,8 @@ TEST_F(IdentityUrlLoaderThrottleTest, DataDecoderParserCallback) {
   task_environment.RunUntilIdle();
   ASSERT_TRUE(result_item);
   EXPECT_EQ(result_item->item,
-            net::structured_headers::Item(
-                "logged-in", net::structured_headers::Item::kTokenType));
+            net::structured_headers::Item(net::structured_headers::Item::token,
+                                          "logged-in"));
 
   result_item.reset();
   parse_cb.Run(
@@ -361,8 +361,8 @@ TEST_F(IdentityUrlLoaderThrottleTest, DataDecoderParserCallback) {
   task_environment.RunUntilIdle();
   ASSERT_TRUE(result_item);
   EXPECT_EQ(result_item->item,
-            net::structured_headers::Item(
-                "logged-out", net::structured_headers::Item::kTokenType));
+            net::structured_headers::Item(net::structured_headers::Item::token,
+                                          "logged-out"));
 
   result_item.reset();
   parse_cb.Run(

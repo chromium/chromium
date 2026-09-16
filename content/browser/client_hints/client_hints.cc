@@ -511,10 +511,10 @@ void AddUAHeader(net::HttpRequestHeaders* headers,
 // Creates a serialized string header value out of the input type, using
 // structured headers as described in
 // https://www.rfc-editor.org/rfc/rfc8941.html.
-template <typename T>
-const std::string SerializeHeaderString(const T& value) {
+template <typename... Args>
+const std::string SerializeHeaderString(Args&&... args) {
   return net::structured_headers::SerializeItem(
-             net::structured_headers::Item(value))
+             net::structured_headers::Item(std::forward<Args>(args)...))
       .value_or(std::string());
 }
 
@@ -730,31 +730,37 @@ void UpdateNavigationRequestClientUaHeadersImpl(
 
     if (ShouldAddClientHint(data, WebClientHintsType::kUAFullVersion)) {
       AddUAHeader(headers, WebClientHintsType::kUAFullVersion,
-                  SerializeHeaderString(ua_metadata->full_version));
+                  SerializeHeaderString(net::structured_headers::Item::string,
+                                        ua_metadata->full_version));
     }
 
     if (ShouldAddClientHint(data, WebClientHintsType::kUAArch)) {
       AddUAHeader(headers, WebClientHintsType::kUAArch,
-                  SerializeHeaderString(ua_metadata->architecture));
+                  SerializeHeaderString(net::structured_headers::Item::string,
+                                        ua_metadata->architecture));
     }
 
     if (ShouldAddClientHint(data, WebClientHintsType::kUAPlatform)) {
       AddUAHeader(headers, WebClientHintsType::kUAPlatform,
-                  SerializeHeaderString(ua_metadata->platform));
+                  SerializeHeaderString(net::structured_headers::Item::string,
+                                        ua_metadata->platform));
     }
 
     if (ShouldAddClientHint(data, WebClientHintsType::kUAPlatformVersion)) {
       AddUAHeader(headers, WebClientHintsType::kUAPlatformVersion,
-                  SerializeHeaderString(ua_metadata->platform_version));
+                  SerializeHeaderString(net::structured_headers::Item::string,
+                                        ua_metadata->platform_version));
     }
 
     if (ShouldAddClientHint(data, WebClientHintsType::kUAModel)) {
       AddUAHeader(headers, WebClientHintsType::kUAModel,
-                  SerializeHeaderString(ua_metadata->model));
+                  SerializeHeaderString(net::structured_headers::Item::string,
+                                        ua_metadata->model));
     }
     if (ShouldAddClientHint(data, WebClientHintsType::kUABitness)) {
       AddUAHeader(headers, WebClientHintsType::kUABitness,
-                  SerializeHeaderString(ua_metadata->bitness));
+                  SerializeHeaderString(net::structured_headers::Item::string,
+                                        ua_metadata->bitness));
     }
     if (ShouldAddClientHint(data, WebClientHintsType::kUAWoW64)) {
       AddUAHeader(headers, WebClientHintsType::kUAWoW64,
