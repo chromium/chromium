@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/app_menu/app_menu_zoom_view.h"
 
+#include <cmath>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/i18n/number_formatting.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
@@ -29,6 +32,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/animation/ink_drop.h"
@@ -82,6 +86,36 @@ AppMenuZoomView::AppMenuZoomView(
 
 AppMenuZoomView::~AppMenuZoomView() = default;
 
+int AppMenuZoomView::GetZoomLabelMaxWidth() const {
+  const gfx::FontList& font_list = zoom_label_->font_list();
+  int max_w = 0;
+  content::WebContents* const selected_tab = GetActiveWebContents();
+  if (selected_tab) {
+    const auto* zoom_controller =
+        zoom::ZoomController::FromWebContents(selected_tab);
+    if (zoom_controller) {
+      std::vector<double> zoom_factors =
+          zoom::PageZoom::PresetZoomFactors(zoom_controller->GetZoomPercent());
+      for (double zoom : zoom_factors) {
+        int w = gfx::GetStringWidth(
+            base::FormatPercent(static_cast<int>(std::round(zoom * 100))),
+            font_list);
+        max_w = std::max(w, max_w);
+      }
+      return max_w;
+    }
+  }
+
+  // Fallback if no web_contents: check standard presets at 100% factor.
+  for (double zoom : zoom::PageZoom::PresetZoomFactors(100)) {
+    int w = gfx::GetStringWidth(
+        base::FormatPercent(static_cast<int>(std::round(zoom * 100))),
+        font_list);
+    max_w = std::max(w, max_w);
+  }
+  return max_w;
+}
+
 void AppMenuZoomView::BuildZoomChildControls(
     actions::BaseAction* zoom_row_action_item,
     views::ActionViewController* action_view_controller,
@@ -109,6 +143,8 @@ void AppMenuZoomView::BuildZoomChildControls(
       zoom_minus_button_ = zoom_child_button;
       zoom_label_ = AddChildView(std::make_unique<views::Label>(
           base::FormatPercent(GetCurrentZoomPercent())));
+      zoom_label_->SetPreferredSize(gfx::Size(
+          GetZoomLabelMaxWidth(), zoom_label_->GetPreferredSize().height()));
     } else if (zoom_action_id == kActionFullscreen) {
       zoom_fullscreen_button_ = zoom_child_button;
     }

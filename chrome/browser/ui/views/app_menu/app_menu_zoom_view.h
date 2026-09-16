@@ -58,6 +58,10 @@ class AppMenuZoomView : public views::BoxLayoutView, public zoom::ZoomObserver {
   views::Label* zoom_label_for_testing() const { return zoom_label_; }
 
  private:
+  // Returns the maximum pixel width required to display any zoom percentage
+  // string for the zoom label.
+  int GetZoomLabelMaxWidth() const;
+
   // Creates the zoom child controls (-, +, and fullscreen buttons), for the
   // zoom menu item.
   void BuildZoomChildControls(
