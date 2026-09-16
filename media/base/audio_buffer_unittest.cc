@@ -11,6 +11,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
@@ -1045,12 +1046,90 @@ TEST(AudioBufferTest, PlanarAccessors) {
   base::span<const base::raw_span<uint8_t>> planar_data = buffer->planar_data();
   EXPECT_EQ(kChannels, planar_data.size());
 
+  const size_t expected_channel_bytes = kFrames * sizeof(float);
   for (size_t ch = 0; ch < kChannels; ++ch) {
     base::span<uint8_t> channel_span = buffer->planar_channel(ch);
     EXPECT_EQ(planar_data[ch].data(), channel_span.data());
     EXPECT_EQ(planar_data[ch].size(), channel_span.size());
+    EXPECT_EQ(expected_channel_bytes, channel_span.size());
     EXPECT_EQ(buffer->channels()[ch].data(), channel_span.data());
+    EXPECT_EQ(expected_channel_bytes, buffer->channels()[ch].size());
   }
+}
+
+TEST(AudioBufferTest, PlanarChannelSpansDoNotIncludePadding) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr size_t kChannels = 2;
+  // Choose frame count such that `data_size_per_channel` is not a multiple of
+  // alignment.
+  constexpr int kFrames = 3;
+  constexpr size_t kBytesPerSample = sizeof(float);
+  constexpr size_t kDataSizePerChannel = kFrames * kBytesPerSample;
+  constexpr size_t kAlignment = AudioBus::kChannelAlignment;
+  const size_t expected_block_size =
+      base::bits::AlignUp(kDataSizePerChannel, kAlignment);
+  ASSERT_GT(expected_block_size, kDataSizePerChannel);
+
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateBuffer(
+      kSampleFormatPlanarF32, kChannelLayout, kChannels, kSampleRate, kFrames);
+
+  EXPECT_EQ(buffer->data_size(), kChannels * expected_block_size);
+  for (size_t ch = 0; ch < kChannels; ++ch) {
+    EXPECT_EQ(kDataSizePerChannel, buffer->planar_channel(ch).size());
+    EXPECT_EQ(kDataSizePerChannel, buffer->channels()[ch].size());
+    EXPECT_EQ(kDataSizePerChannel, buffer->planar_data()[ch].size());
+  }
+}
+
+TEST(AudioBufferTest, TrimUpdatesPlanarChannelSpans) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr size_t kChannels = 2;
+  constexpr int kFrames = 100;
+  constexpr size_t kBytesPerSample = sizeof(float);
+
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateBuffer(
+      kSampleFormatPlanarF32, kChannelLayout, kChannels, kSampleRate, kFrames);
+
+  EXPECT_EQ(100 * kBytesPerSample, buffer->planar_channel(0).size());
+
+  buffer->TrimEnd(20);
+  EXPECT_EQ(80, buffer->frame_count());
+  EXPECT_EQ(80 * kBytesPerSample, buffer->planar_channel(0).size());
+  EXPECT_EQ(80 * kBytesPerSample, buffer->planar_channel(1).size());
+
+  buffer->TrimStart(10);
+  EXPECT_EQ(70, buffer->frame_count());
+  EXPECT_EQ(70 * kBytesPerSample, buffer->planar_channel(0).size());
+  EXPECT_EQ(70 * kBytesPerSample, buffer->planar_channel(1).size());
+
+  buffer->TrimRange(10, 30);
+  EXPECT_EQ(50, buffer->frame_count());
+  EXPECT_EQ(50 * kBytesPerSample, buffer->planar_channel(0).size());
+  EXPECT_EQ(50 * kBytesPerSample, buffer->planar_channel(1).size());
+}
+
+TEST(AudioBufferTest, TrimUpdatesInterleavedChannelSpans) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr int kChannels = 2;
+  constexpr int kFrames = 100;
+  constexpr size_t kBytesPerFrame = kChannels * sizeof(float);
+
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateBuffer(
+      kSampleFormatF32, kChannelLayout, kChannels, kSampleRate, kFrames);
+
+  EXPECT_EQ(100 * kBytesPerFrame, buffer->interleaved_data().size());
+
+  buffer->TrimEnd(20);
+  EXPECT_EQ(80, buffer->frame_count());
+  EXPECT_EQ(80 * kBytesPerFrame, buffer->interleaved_data().size());
+
+  buffer->TrimStart(10);
+  EXPECT_EQ(70, buffer->frame_count());
+  EXPECT_EQ(70 * kBytesPerFrame, buffer->interleaved_data().size());
+
+  buffer->TrimRange(10, 30);
+  EXPECT_EQ(50, buffer->frame_count());
+  EXPECT_EQ(50 * kBytesPerFrame, buffer->interleaved_data().size());
 }
 
 TEST(AudioBufferTest, InterleavedAccessors) {
@@ -1062,6 +1141,7 @@ TEST(AudioBufferTest, InterleavedAccessors) {
 
   base::span<uint8_t> interleaved = buffer->interleaved_data();
   EXPECT_EQ(buffer->data_size(), interleaved.size());
+  EXPECT_EQ(kChannels * kFrames * sizeof(float), interleaved.size());
   EXPECT_EQ(buffer->channels()[0].data(), interleaved.data());
 }
 
