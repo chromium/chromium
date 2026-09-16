@@ -36,6 +36,7 @@ static_library("network") {
     "//chrome/browser/chromeos/network",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:scoped_tabbed_browser_displayer",
     "//chrome/browser/ui/ash/system",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/navigator",

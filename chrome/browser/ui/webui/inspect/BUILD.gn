@@ -18,6 +18,7 @@ source_set("inspect") {
     "//chrome/browser/devtools",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/inspect:resources",
+    "//chrome/browser/ui:singleton_tabs",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/common",
     "//components/prefs",

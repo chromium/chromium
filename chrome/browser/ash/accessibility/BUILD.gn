@@ -43,6 +43,7 @@ static_library("accessibility") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions/api/braille_display_private:controller",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui:singleton_tabs",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/browser/ui/aura/accessibility",
     "//chrome/common",

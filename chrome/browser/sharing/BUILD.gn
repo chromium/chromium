@@ -68,6 +68,7 @@ source_set("impl") {
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui/views/sharing",
       "//components/send_tab_to_self:features",
       "//components/sharing_message/proto",

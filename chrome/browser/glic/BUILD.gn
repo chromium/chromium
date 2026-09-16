@@ -626,6 +626,7 @@ source_set("impl") {
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui:scoped_tabbed_browser_displayer",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",

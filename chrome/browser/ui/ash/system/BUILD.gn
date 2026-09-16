@@ -34,6 +34,8 @@ static_library("system") {
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui:managed_ui",
+    "//chrome/browser/ui:scoped_tabbed_browser_displayer",
+    "//chrome/browser/ui:singleton_tabs",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/navigator",

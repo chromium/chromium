@@ -67,6 +67,7 @@ source_set("impl") {
     "//chrome/browser/language",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:singleton_tabs",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/media_router",

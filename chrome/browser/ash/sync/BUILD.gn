@@ -36,6 +36,7 @@ static_library("sync") {
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui:scoped_tabbed_browser_displayer",
     "//chrome/browser/ui:settings_window_manager_chromeos",
     "//chrome/browser/ui/webui/signin:login_ui_service",
     "//chrome/common",

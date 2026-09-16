@@ -153,6 +153,7 @@ source_set("impl") {
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui:managed_ui",
+      "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/browser_window",

@@ -137,7 +137,10 @@ static_library("safe_browsing") {
   }
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui:browser_window_header" ]
+    deps += [
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui:scoped_tabbed_browser_displayer",
+    ]
     public += [
       "generated_safe_browsing_pref.h",
       "generated_security_settings_bundle_pref.h",

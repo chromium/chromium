@@ -816,6 +816,7 @@ source_set("impl") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/services/system_signals/public/cpp/browser",
     ]

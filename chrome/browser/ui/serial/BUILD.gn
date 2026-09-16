@@ -34,6 +34,10 @@ source_set("impl") {
     "//services/device/public/mojom",
     "//ui/base",
   ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:scoped_tabbed_browser_displayer" ]
+  }
+
   if (is_chromeos) {
     deps += [
       "//ash/webui/settings/public/constants:mojom",

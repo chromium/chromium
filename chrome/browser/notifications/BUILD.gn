@@ -271,6 +271,7 @@ source_set("impl") {
       "//chrome/browser/tab_list",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui:scoped_tabbed_browser_displayer",
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/web_applications",

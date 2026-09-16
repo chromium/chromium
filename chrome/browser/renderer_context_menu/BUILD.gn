@@ -151,6 +151,7 @@ source_set("impl") {
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:confirm_bubble",
+      "//chrome/browser/ui:scoped_tabbed_browser_displayer",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/browser_window",

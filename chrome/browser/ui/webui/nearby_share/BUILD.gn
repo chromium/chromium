@@ -24,6 +24,7 @@ static_library("nearby_share") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/nearby_share:resources",
     "//chrome/browser/sharesheet",
+    "//chrome/browser/ui:scoped_tabbed_browser_displayer",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui:metrics_handler",

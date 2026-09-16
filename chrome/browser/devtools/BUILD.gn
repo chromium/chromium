@@ -240,7 +240,10 @@ static_library("devtools") {
       "//ui/shell_dialogs",
     ]
     if (!is_android) {
-      deps += [ "//chrome/browser:certificate_viewer" ]
+      deps += [
+        "//chrome/browser:certificate_viewer",
+        "//chrome/browser/ui:scoped_tabbed_browser_displayer",
+      ]
     }
   }
 

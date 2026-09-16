@@ -165,6 +165,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui:browser_tab_strip_tracker",
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui:scoped_tabbed_browser_displayer",
     ]
   }
 }

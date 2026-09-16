@@ -45,6 +45,7 @@ source_set("impl") {
     ":app_info_dialog",
     "//apps",
     "//chrome/browser/apps/platform_apps",
+    "//chrome/browser/ui:scoped_tabbed_browser_displayer",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/web_applications",

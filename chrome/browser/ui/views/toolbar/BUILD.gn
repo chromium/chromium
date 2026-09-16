@@ -217,6 +217,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_content_setting_bubble_model_delegate",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:singleton_tabs",
     "//chrome/browser/ui:toolbar_controller_util",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui:view_ids",

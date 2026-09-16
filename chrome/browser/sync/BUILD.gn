@@ -170,8 +170,8 @@ source_set("sync") {
     "//components/themes/cross_device",
     "//components/user_manager",
     "//components/variations/service",
-    "//components/webauthn/core/browser:passkey_model",
     "//components/webapps/browser",
+    "//components/webauthn/core/browser:passkey_model",
   ]
 
   allow_circular_includes_from = []
@@ -227,6 +227,7 @@ source_set("sync") {
     deps += [
       "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/themes",
+      "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui/read_anything:prefs",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs/saved_tab_groups",

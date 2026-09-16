@@ -173,6 +173,7 @@ source_set("impl") {
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui:scoped_tabbed_browser_displayer",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/omnibox/omnibox_everywhere",
       "//chrome/browser/ui/profiles",

@@ -107,6 +107,7 @@ source_set("bubble_anchor_util_views_impl") {
     "//chrome/browser/ui:bubble_anchor_util",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/payments",
     "//chrome/browser/ui/views/permissions/chip",

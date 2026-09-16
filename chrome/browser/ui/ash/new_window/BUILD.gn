@@ -37,6 +37,7 @@ static_library("new_window") {
     "//chrome/browser/extensions",
     "//chrome/browser/prefs",
     "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui:scoped_tabbed_browser_displayer",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/browser/ui/ash/shelf/app_service",

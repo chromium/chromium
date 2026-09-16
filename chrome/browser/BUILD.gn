@@ -4351,6 +4351,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:sad_tab",
+      "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/login",
       "//chrome/browser/ui/search:test_support_ui",

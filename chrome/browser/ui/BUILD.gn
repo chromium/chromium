@@ -207,6 +207,7 @@ if (!is_android) {
       ":browser_window_header",
       ":bubble_anchor_util",
       ":chrome_pages",
+      ":singleton_tabs",
       ":ui",
       "//build:branding_buildflags",
       "//chrome/app:command_ids",
@@ -424,6 +425,48 @@ if (!is_android) {
       "//third_party/blink/public/common:headers",
       "//ui/gfx/geometry",
       "//ui/gfx/range",
+    ]
+  }
+
+  source_set("scoped_tabbed_browser_displayer") {
+    public = [ "scoped_tabbed_browser_displayer.h" ]
+    sources = [ "scoped_tabbed_browser_displayer.cc" ]
+    public_deps = [ "//base" ]
+    deps = [
+      ":browser_window_header",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+    ]
+  }
+
+  source_set("singleton_tabs") {
+    public = [ "singleton_tabs.h" ]
+    sources = [ "singleton_tabs.cc" ]
+    public_deps = [ "//chrome/browser/ui/navigator" ]
+    deps = [
+      ":scoped_tabbed_browser_displayer",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common",
+      "//content/public/browser",
+      "//ui/base",
+      "//url",
+    ]
+  }
+
+  source_set("browser_tab_restorer") {
+    sources = [ "browser_tab_restorer.cc" ]
+    deps = [
+      ":browser_live_tab_context",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui/browser_window",
+      "//components/sessions",
     ]
   }
 }
@@ -1352,7 +1395,6 @@ static_library("ui") {
 
     # TODO(crbug.com/353332589): Remove this circular dependency when the
     # following headers get componentized:
-    # c/b/ui/scoped_tabbed_browser_displayer.h
     # c/b/ui/settings_window_manager_chromeos.h
     "//chrome/browser/ui/serial:impl",
 
@@ -1435,6 +1477,7 @@ static_library("ui") {
       ":browser_content_setting_bubble_model_delegate",
       ":browser_content_setting_bubble_model_delegate_impl",
       ":browser_tab_menu_model_delegate",
+      ":browser_tab_restorer",
       ":browser_tabrestore",
       ":browser_tabrestore_impl",
       ":browser_window_deleter",
@@ -1443,6 +1486,8 @@ static_library("ui") {
       ":browser_window_theme_observer_impl",
       ":chrome_pages",
       ":chrome_web_modal_dialog_manager_delegate",
+      ":scoped_tabbed_browser_displayer",
+      ":singleton_tabs",
       "//chrome/browser:certificate_viewer",
       "//chrome/browser/accessibility/phrase_segmentation",
       "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
@@ -1457,6 +1502,14 @@ static_library("ui") {
       ":browser_tabrestore_impl",
       ":browser_window_deleter_impl",
       ":browser_window_theme_observer_impl",
+
+      # browser_tab_restorer.cc includes browser_commands.h which cannot be
+      # split out yet.
+      ":browser_tab_restorer",
+
+      # scoped_tabbed_browser_displayer.cc includes browser_window.h which
+      # cannot be split out yet.
+      ":scoped_tabbed_browser_displayer",
     ]
   }
 
@@ -1534,17 +1587,12 @@ static_library("ui") {
       "browser_manager_service.h",
       "browser_manager_service_factory.cc",
       "browser_manager_service_factory.h",
-      "browser_tab_restorer.cc",
       "browser_tab_strip_model_delegate.cc",
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
       "chrome_pages.cc",
       "intent_picker_tab_helper.cc",
       "intent_picker_tab_helper.h",
-      "scoped_tabbed_browser_displayer.cc",
-      "scoped_tabbed_browser_displayer.h",
-      "singleton_tabs.cc",
-      "singleton_tabs.h",
       "unload_controller.cc",
       "unload_controller.h",
     ]
@@ -2721,6 +2769,9 @@ static_library("ui") {
     allow_circular_includes_from += [
       "//chrome/browser/ui/views:window_sizer_linux",
       "//chrome/browser/ui/views/frame:browser_desktop_window_tree_host_linux_impl",
+
+      # picture_in_picture_browser_frame_view_linux.cc includes
+      # views/frame/browser_view.h which cannot be split out yet.
       "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view_linux",
     ]
 
@@ -2781,8 +2832,6 @@ static_library("ui") {
       "views/frame/layout/browser_view_layout.h",
       "views/frame/multi_contents_view.cc",
       "views/frame/multi_contents_view.h",
-      "views/frame/picture_in_picture_browser_frame_view.cc",
-      "views/frame/picture_in_picture_browser_frame_view.h",
       "views/frame/top_container_view.cc",
       "views/frame/top_container_view.h",
       "views/frame/vertical_tab_strip_region_view.cc",
@@ -3025,6 +3074,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar",
       "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar_impl",
       "//chrome/browser/ui/views/frame:opaque_browser_frame_view_layout_delegate",
+      "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view",
       "//chrome/browser/ui/views/frame:safe_invoke",
       "//chrome/browser/ui/views/frame:scrim_view",
       "//chrome/browser/ui/views/frame:scrim_view_controller",
@@ -3345,6 +3395,12 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:tab_modal_dialog_host_impl",
       "//chrome/browser/ui/views/frame:themed_background_impl",
       "//chrome/browser/ui/views/frame:vertical_tab_strip_background_blur_backdrop",
+
+      # picture_in_picture_browser_frame_view.h and
+      # picture_in_picture_browser_frame_view.cc include browser_frame_view.h,
+      # browser_view.h, browser_widget.h, and top_container_view.h from
+      # //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_navigation_button_container_impl",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_origin_text_impl",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:window_controls_overlay_toggle_button_impl",
@@ -3567,11 +3623,6 @@ static_library("ui") {
       # - c/b/ui/browser.h,
       # - c/b/ui/views/frame/browser_view.h,
       "//chrome/browser/ui/views/accessibility:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when
-      # the following headers get modularized:
-      # - c/b/ui/scoped_tabbed_browser_displayer.h
-      "//chrome/browser/ui/views/commerce:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:
