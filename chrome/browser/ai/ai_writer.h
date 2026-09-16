@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_on_device_session.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -36,6 +37,9 @@ class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
 
   static std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
   ToProtoOptions(const blink::mojom::AIWriterCreateOptionsPtr& options);
+
+  static optimization_guide::MultimodalMessage ToInitialRequest(
+      const blink::mojom::AIWriterCreateOptionsPtr& options);
 
   // Returns a set of BCP 47 base language codes that are supported and enabled,
   // or nullopt if all languages are enabled (e.g. via local flags).

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_on_device_session.h"
+#include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -47,12 +48,11 @@ class AISummarizer : public AIContextBoundObject,
   static std::unique_ptr<optimization_guide::proto::SummarizeOptions>
   ToProtoOptions(const blink::mojom::AISummarizerCreateOptionsPtr& options);
 
-  static uint32_t GetInputContextLimit(
+  static optimization_guide::MultimodalMessage ToInitialRequest(
       const blink::mojom::AISummarizerCreateOptionsPtr& options);
 
-  // Joins `shared` and `input` contexts with a space and newline as needed.
-  static std::string CombineContexts(std::string_view shared,
-                                     std::string_view input);
+  static uint32_t GetInputContextLimit(
+      const blink::mojom::AISummarizerCreateOptionsPtr& options);
 
   // Returns a set of BCP 47 base language codes that are supported and enabled,
   // or nullopt if all languages are enabled (e.g. via local flags).

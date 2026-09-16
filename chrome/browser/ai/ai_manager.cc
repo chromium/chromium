@@ -1220,13 +1220,8 @@ base::OnceCallback<void(std::unique_ptr<optimization_guide::OnDeviceSession>)>
 AIManager::CreateSummarizerSessionCallback(
     blink::mojom::AISummarizerCreateOptionsPtr options,
     mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client) {
-  std::optional<optimization_guide::MultimodalMessage> initial_request;
-  if (options->shared_context.has_value() &&
-      !options->shared_context.value().empty()) {
-    optimization_guide::proto::SummarizeRequest request;
-    request.set_context(options->shared_context.value());
-    initial_request = optimization_guide::MultimodalMessage(request);
-  }
+  optimization_guide::MultimodalMessage initial_request =
+      AISummarizer::ToInitialRequest(options);
   tried_init_.insert(optimization_guide::mojom::OnDeviceFeature::kSummarize);
 
   return base::BindOnce(&AIManager::OnSessionCreated<
@@ -1443,13 +1438,8 @@ void AIManager::CreateWriter(
     return;
   }
 
-  std::optional<optimization_guide::MultimodalMessage> initial_request;
-  if (options->shared_context.has_value() &&
-      !options->shared_context.value().empty()) {
-    optimization_guide::proto::WritingAssistanceApiRequest request;
-    request.set_shared_context(options->shared_context.value());
-    initial_request = optimization_guide::MultimodalMessage(request);
-  }
+  optimization_guide::MultimodalMessage initial_request =
+      AIWriter::ToInitialRequest(options);
   auto callback = base::BindOnce(
       &AIManager::OnSessionCreated<AIWriter, blink::mojom::AIWriter,
                                    blink::mojom::AIManagerCreateWriterClient,
@@ -1550,13 +1540,8 @@ void AIManager::CreateRewriter(
     return;
   }
 
-  std::optional<optimization_guide::MultimodalMessage> initial_request;
-  if (options->shared_context.has_value() &&
-      !options->shared_context.value().empty()) {
-    optimization_guide::proto::WritingAssistanceApiRequest request;
-    request.set_shared_context(options->shared_context.value());
-    initial_request = optimization_guide::MultimodalMessage(request);
-  }
+  optimization_guide::MultimodalMessage initial_request =
+      AIRewriter::ToInitialRequest(options);
   auto callback = base::BindOnce(
       &AIManager::OnSessionCreated<AIRewriter, blink::mojom::AIRewriter,
                                    blink::mojom::AIManagerCreateRewriterClient,
@@ -1712,6 +1697,7 @@ void AIManager::OnSessionCreated(
   MaybeTryEagerInit();
 
   if (initial_request.has_value()) {
+    auto initial_request_copy = initial_request.value().Clone();
     session->GetExecutionInputSizeInTokens(
         initial_request.value().read(),
         base::BindOnce(
@@ -1719,7 +1705,8 @@ void AIManager::OnSessionCreated(
                 ContextBoundObjectType, ContextBoundObjectReceiverInterface,
                 ClientRemoteInterface, CreateOptionsPtrType>,
             weak_factory_.GetWeakPtr(), std::move(options),
-            std::move(client_remote), std::move(session)));
+            std::move(initial_request_copy), std::move(client_remote),
+            std::move(session)));
     return;
   }
 
@@ -1738,6 +1725,7 @@ template <typename ContextBoundObjectType,
           typename CreateOptionsPtrType>
 void AIManager::OnGotExecutionInputSizeInTokens(
     CreateOptionsPtrType options,
+    optimization_guide::MultimodalMessage initial_request,
     mojo::Remote<ClientRemoteInterface> client_remote,
     std::unique_ptr<optimization_guide::OnDeviceSession> session,
     std::optional<uint32_t> result) {
@@ -1755,7 +1743,38 @@ void AIManager::OnGotExecutionInputSizeInTokens(
         blink::mojom::QuotaErrorInfo::New(result.value(), context_window));
     return;
   }
+
+  // Pre-append the prompt template / shared context to initialize the backend
+  // session and cache the static prefix in the KV cache.
+  auto* raw_session = session.get();
+  raw_session->SetInput(
+      std::move(initial_request),
+      base::BindOnce(
+          &AIManager::OnInitialInputSet<
+              ContextBoundObjectType, ContextBoundObjectReceiverInterface,
+              ClientRemoteInterface, CreateOptionsPtrType>,
+          weak_factory_.GetWeakPtr(), std::move(options),
+          std::move(client_remote), std::move(session)));
+}
+
+template <typename ContextBoundObjectType,
+          typename ContextBoundObjectReceiverInterface,
+          typename ClientRemoteInterface,
+          typename CreateOptionsPtrType>
+void AIManager::OnInitialInputSet(
+    CreateOptionsPtrType options,
+    mojo::Remote<ClientRemoteInterface> client_remote,
+    std::unique_ptr<optimization_guide::OnDeviceSession> session,
+    base::expected<size_t, optimization_guide::OnDeviceError> result) {
+  if (!result.has_value()) {
+    on_device_ai::SendClientRemoteError(
+        client_remote,
+        blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+    return;
+  }
+
   mojo::PendingRemote<ContextBoundObjectReceiverInterface> pending_remote;
+  const uint32_t context_window = GetInputContextLimit(options, session.get());
   context_bound_object_set_.AddContextBoundObject(
       std::make_unique<ContextBoundObjectType>(
           context_bound_object_set_, std::move(session), std::move(options),

@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_summarizer.h"
 
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -56,6 +57,8 @@ using ::optimization_guide::proto::SummarizeRequest;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::HasSubstr;
+using ::testing::Not;
 
 constexpr char kSharedContextString[] = "test shared context";
 constexpr char kContextString[] = "test context";
@@ -133,6 +136,11 @@ optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
     check->mutable_input_template()->Add(FieldSubstitution(
         "%s", ProtoField({SummarizeRequest::kContextFieldNumber})));
   }
+  {
+    auto* check = safety_config.add_request_check();
+    check->mutable_input_template()->Add(FieldSubstitution(
+        "%s", ProtoField({SummarizeRequest::kSharedContextFieldNumber})));
+  }
   return safety_config;
 }
 #endif
@@ -162,6 +170,8 @@ class AISummarizerTest : public AITestUtils::AITestBase {
         "%s", ProtoField({SummarizeRequest::kArticleFieldNumber}));
     *input_config.add_execute_substitutions() = FieldSubstitution(
         "%s", ProtoField({SummarizeRequest::kContextFieldNumber}));
+    *input_config.add_execute_substitutions() = FieldSubstitution(
+        "%s", ProtoField({SummarizeRequest::kSharedContextFieldNumber}));
 
     auto& output_config = *config.mutable_output_config();
     output_config.set_proto_type(
@@ -230,13 +240,6 @@ class AISummarizerTest : public AITestUtils::AITestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-TEST(AISummarizerStandaloneTest, CombineContexts) {
-  EXPECT_EQ("", AISummarizer::CombineContexts("", ""));
-  EXPECT_EQ("a\n", AISummarizer::CombineContexts("a", ""));
-  EXPECT_EQ("b\n", AISummarizer::CombineContexts("", "b"));
-  EXPECT_EQ("a b\n", AISummarizer::CombineContexts("a", "b"));
-}
 
 TEST_F(AISummarizerTest, CanCreateDefaultOptions) {
   {
@@ -560,10 +563,9 @@ TEST_F(AISummarizerTest, MeasureUsage) {
   summarizer_remote->MeasureUsage(kInputString, kContextString,
                                   measure_future.GetCallback());
 
-  std::string context =
-      AISummarizer::CombineContexts(kSharedContextString, kContextString);
-  EXPECT_EQ(measure_future.Get(),
-            std::string(kInputString).size() + context.size());
+  EXPECT_EQ(measure_future.Get(), std::string(kInputString).size() +
+                                      std::string(kContextString).size() +
+                                      std::string(kSharedContextString).size());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -730,10 +732,9 @@ TEST_F(AISummarizerTest, CrashRecoveryMeasureInputUsage) {
   summarizer_remote->MeasureUsage(kInputString, kContextString,
                                   measure_future.GetCallback());
 
-  std::string context =
-      AISummarizer::CombineContexts(kSharedContextString, kContextString);
-  EXPECT_EQ(measure_future.Get(),
-            std::string(kInputString).size() + context.size());
+  EXPECT_EQ(measure_future.Get(), std::string(kInputString).size() +
+                                      std::string(kContextString).size() +
+                                      std::string(kSharedContextString).size());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -917,7 +918,44 @@ TEST_F(AISummarizerTest, SpeculativeDecodingDisabledUsesDefaultSampling) {
   // chunk.
   EXPECT_THAT(responses, testing::Contains(testing::HasSubstr("TopK:")));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST_F(AISummarizerTest, VerifyPromptComposition) {
+  auto options = GetDefaultOptions();
+  options->shared_context = kSharedContextString;
+  mojo::Remote<blink::mojom::AISummarizer> summarizer_remote =
+      GetAISummarizerRemote(std::move(options));
+
+  // First execution verifies that shared_context, per-call context, and input
+  // are all composed into the prompt.
+  {
+    AITestUtils::TestStreamingResponder responder;
+    summarizer_remote->Summarize("First article", "First context",
+                                 responder.BindRemote());
+    ASSERT_TRUE(responder.WaitForCompletion());
+    std::string prompt1 = base::JoinString(responder.responses(), "");
+    EXPECT_THAT(prompt1, HasSubstr(kSharedContextString));
+    EXPECT_THAT(prompt1, HasSubstr("First context"));
+    EXPECT_THAT(prompt1, HasSubstr("First article"));
+  }
+
+  // Second execution on the same session verifies that shared_context is
+  // retained while execution fields are updated without leaking previous
+  // inputs.
+  {
+    AITestUtils::TestStreamingResponder responder;
+    summarizer_remote->Summarize("Second article", "Second context",
+                                 responder.BindRemote());
+    ASSERT_TRUE(responder.WaitForCompletion());
+    std::string prompt2 = base::JoinString(responder.responses(), "");
+    EXPECT_THAT(prompt2, HasSubstr(kSharedContextString));
+    EXPECT_THAT(prompt2, HasSubstr("Second context"));
+    EXPECT_THAT(prompt2, HasSubstr("Second article"));
+    EXPECT_THAT(prompt2, Not(HasSubstr("First article")));
+  }
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 class AISummarizerWithFeatureConfigTest : public AISummarizerTest {
  public:
   void SetupBroker() override {

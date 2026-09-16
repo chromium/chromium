@@ -119,6 +119,27 @@ AIRewriter::ToProtoOptions(
 }
 
 // static
+optimization_guide::MultimodalMessage AIRewriter::ToInitialRequest(
+    const blink::mojom::AIRewriterCreateOptionsPtr& options) {
+  optimization_guide::proto::WritingAssistanceApiRequest request;
+  request.set_allocated_options(AIRewriter::ToProtoOptions(options).release());
+  if (options->shared_context.has_value() &&
+      !options->shared_context.value().empty()) {
+    request.set_shared_context(options->shared_context.value());
+  }
+  auto initial_request = optimization_guide::MultimodalMessage(request);
+  // Mark dynamic execution fields as pending so the template stops before them
+  // during SetInput() and avoids pre-populating with empty execution strings.
+  initial_request.edit().MarkPending(
+      optimization_guide::proto::WritingAssistanceApiRequest::
+          kRewriteTextFieldNumber);
+  initial_request.edit().MarkPending(
+      optimization_guide::proto::WritingAssistanceApiRequest::
+          kContextFieldNumber);
+  return initial_request;
+}
+
+// static
 std::optional<base::flat_set<std::string>>
 AIRewriter::GetEnabledLanguageBaseCodes() {
   // Comma-separated language codes to enable; or "*" enables all supported.
@@ -262,7 +283,6 @@ optimization_guide::proto::WritingAssistanceApiRequest AIRewriter::BuildRequest(
   request.set_context(context);
   request.set_allocated_options(ToProtoOptions(options_).release());
   request.set_rewrite_text(input);
-  // TODO(crbug.com/390006887): Pass shared context with session creation.
   request.set_shared_context(options_->shared_context.value_or(std::string()));
   return request;
 }
