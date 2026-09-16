@@ -653,6 +653,10 @@ public class EdgeToEdgeLayoutUnitTest {
                 newWindowInsetsBuilderWithCutout(new Rect(CUTOUT_SIZE, 0, 0, 0)).build();
         mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(mEdgeToEdgeLayout, cutoutInsets);
         assertPaddings(/* left= */ 0, /* top= */ 0, /* right= */ 0, /* bottom= */ 0);
+        assertEquals(
+                "Display cutout should not be drawn when not padded.",
+                new Rect(),
+                mEdgeToEdgeLayout.getCutoutRectLeftForTesting());
     }
 
     @Test
@@ -1109,6 +1113,58 @@ public class EdgeToEdgeLayoutUnitTest {
                 "Nav bar divider is the right most 1px for the nav bar.",
                 new Rect(149, 0, 150, 400),
                 mEdgeToEdgeLayout.getNavigationBarDividerRectForTesting());
+    }
+
+    // ┌────────┐
+    // ├────────┤
+    // │        │
+    // │o       │
+    // │        │
+    // ├────────┤
+    // └────────┘
+    @Test
+    @Config(qualifiers = "w400dp-h600dp")
+    @SuppressLint("NewApi") // layoutInDisplayCutoutMode required sdk 28+
+    public void testPortrait_CutoutModeDefault_SmallCutout_NotPadded() {
+        initializePortraitLayout();
+
+        mActivity.getWindow().getAttributes().layoutInDisplayCutoutMode =
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+
+        // Cutout <= 16dp on the left is not padded in default cutout mode.
+        WindowInsetsCompat topBottomSysBarsLeftCutoutInsets =
+                newWindowInsetsBuilderWithCutout(new Rect(SMALL_CUTOUT_SIZE, 0, 0, 0))
+                        .setInsets(STATUS_BARS, Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, NAV_BAR_SIZE))
+                        .build();
+        WindowInsetsCompat newInsets =
+                mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                        mEdgeToEdgeLayout, topBottomSysBarsLeftCutoutInsets);
+        assertInsetsConsumed(newInsets, ALL_SUPPORTED_INSETS);
+
+        measureAndLayoutRootView(400, 600);
+        assertPaddings(
+                /* left= */ 0,
+                /* top= */ STATUS_BAR_SIZE,
+                /* right= */ 0,
+                /* bottom= */ NAV_BAR_SIZE);
+
+        assertEquals(
+                "Status bar covers full width.",
+                new Rect(0, 0, 400, 100),
+                mEdgeToEdgeLayout.getStatusBarRectForTesting());
+        assertEquals(
+                "Nav bar covers full width.",
+                new Rect(0, 450, 400, 600),
+                mEdgeToEdgeLayout.getNavigationBarRectForTesting());
+        assertEquals(
+                "Display cutout left is empty when not padded.",
+                new Rect(),
+                mEdgeToEdgeLayout.getCutoutRectLeftForTesting());
+        assertEquals(
+                "Display cutout right is empty.",
+                new Rect(),
+                mEdgeToEdgeLayout.getCutoutRectRightForTesting());
     }
 
     private void initialize(InsetObserver insetObserver, boolean useBackupNavbarInsets) {

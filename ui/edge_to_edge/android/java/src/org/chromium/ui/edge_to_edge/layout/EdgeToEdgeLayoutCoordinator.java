@@ -159,20 +159,21 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         Insets navBarInsets = getNavigationBarInsets(windowInsets);
         mView.setNavigationBarInsets(navBarInsets);
 
-        Insets cutout = windowInsets.getInsets(Type.displayCutout());
-        mView.setDisplayCutoutInsetLeft(cutout.left > 0 ? cutout : Insets.NONE);
-        mView.setDisplayCutoutInsetRight(cutout.right > 0 ? cutout : Insets.NONE);
-
         Insets captionBarInsets = windowInsets.getInsets(Type.captionBar());
         mView.setCaptionBarInsets(captionBarInsets);
 
+        Insets cutout = windowInsets.getInsets(Type.displayCutout());
         int paddingInsetTypes = Type.systemBars() + Type.ime();
         if (WindowInsetsUtils.shouldPadDisplayCutout(windowInsets, mContext)) {
             paddingInsetTypes += Type.displayCutout();
             // Color display cutout padding to keep behaviour for Android 15-.
             mView.setDisplayCutoutTop(cutout.top > 0 ? cutout : Insets.NONE);
+            mView.setDisplayCutoutInsetLeft(cutout.left > 0 ? cutout : Insets.NONE);
+            mView.setDisplayCutoutInsetRight(cutout.right > 0 ? cutout : Insets.NONE);
         } else {
             mView.setDisplayCutoutTop(Insets.NONE);
+            mView.setDisplayCutoutInsetLeft(Insets.NONE);
+            mView.setDisplayCutoutInsetRight(Insets.NONE);
         }
 
         Insets overallInsets = windowInsets.getInsets(paddingInsetTypes);

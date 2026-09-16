@@ -11,7 +11,9 @@ import static org.chromium.base.test.util.Batch.PER_CLASS;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.Build;
 import android.view.View;
+import android.view.WindowManager.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.core.graphics.Insets;
@@ -19,6 +21,7 @@ import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -36,6 +39,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeFieldTrial;
 import org.chromium.ui.edge_to_edge.R;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -115,6 +119,17 @@ public class EdgeToEdgeLayoutViewTest {
                     mEdgeToEdgeLayoutCoordinator.setNavigationBarDividerColor(
                             NAV_BAR_DIVIDER_COLOR);
                 });
+    }
+
+    @After
+    public void tearDown() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        sActivity.getWindow().getAttributes().layoutInDisplayCutoutMode =
+                                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+                    });
+        }
     }
 
     @Test
@@ -270,5 +285,75 @@ public class EdgeToEdgeLayoutViewTest {
 
         CriteriaHelper.pollUiThread(() -> !mEdgeToEdgeLayout.isDirty());
         mRenderTestRule.render(mEdgeToEdgeLayout, "fullscreen_when_tappable");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    public void renderCutoutModeAlways_LeftCutout() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivity.getWindow().getAttributes().layoutInDisplayCutoutMode =
+                            LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+                });
+        WindowInsetsCompat topBottomSysBarsWithLeftCutoutInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.statusBars(),
+                                Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(
+                                WindowInsetsCompat.Type.navigationBars(),
+                                Insets.of(0, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(
+                                WindowInsetsCompat.Type.displayCutout(),
+                                Insets.of(DISPLAY_CUTOUT_SIZE, 0, 0, 0))
+                        .setDisplayCutout(
+                                new DisplayCutoutCompat(
+                                        new Rect(DISPLAY_CUTOUT_SIZE, 0, 0, 0), null))
+                        .build();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                            mContentView, topBottomSysBarsWithLeftCutoutInsets);
+                });
+
+        CriteriaHelper.pollUiThread(() -> !mEdgeToEdgeLayout.isDirty());
+        mRenderTestRule.render(mEdgeToEdgeLayout, "cutout_mode_always_left_cutout");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void renderCutoutModeDefault_SmallLeftCutout() throws IOException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivity.getWindow().getAttributes().layoutInDisplayCutoutMode =
+                            LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+                });
+        int smallCutoutSize = (int) (16 * sActivity.getResources().getDisplayMetrics().density);
+        WindowInsetsCompat topBottomSysBarsWithLeftCutoutInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.statusBars(),
+                                Insets.of(0, STATUS_BAR_SIZE, 0, 0))
+                        .setInsets(
+                                WindowInsetsCompat.Type.navigationBars(),
+                                Insets.of(0, 0, 0, NAV_BAR_SIZE))
+                        .setInsets(
+                                WindowInsetsCompat.Type.displayCutout(),
+                                Insets.of(smallCutoutSize, 0, 0, 0))
+                        .setDisplayCutout(
+                                new DisplayCutoutCompat(new Rect(smallCutoutSize, 0, 0, 0), null))
+                        .build();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(
+                            mContentView, topBottomSysBarsWithLeftCutoutInsets);
+                });
+
+        CriteriaHelper.pollUiThread(() -> !mEdgeToEdgeLayout.isDirty());
+        mRenderTestRule.render(mEdgeToEdgeLayout, "cutout_mode_default_small_left_cutout");
     }
 }
