@@ -64,6 +64,11 @@ class MandatoryReauthOptInBottomSheet implements BottomSheetContent {
     }
 
     @Override
+    public boolean showHandlebar() {
+        return true;
+    }
+
+    @Override
     public void destroy() {}
 
     @Override

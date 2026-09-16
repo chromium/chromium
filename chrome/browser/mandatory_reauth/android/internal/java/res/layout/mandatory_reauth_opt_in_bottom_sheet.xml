@@ -13,17 +13,9 @@ found in the LICENSE file.
     android:orientation="vertical">
 
     <ImageView
-        android:layout_width="32dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:importantForAccessibility="no"
-        app:srcCompat="@drawable/drag_handlebar" />
-
-    <ImageView
         android:layout_width="@dimen/mandatory_reauth_opt_in_bottom_sheet_icon_width"
         android:layout_height="@dimen/mandatory_reauth_opt_in_bottom_sheet_icon_height"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:layout_gravity="center_horizontal"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/mandatory_reauth_opt_in" />
