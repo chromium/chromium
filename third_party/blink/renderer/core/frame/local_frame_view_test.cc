@@ -20,8 +20,10 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -32,6 +34,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
@@ -387,9 +390,12 @@ TEST_F(LocalFrameViewTest,
 
 class DraggableRegionsChromeClient : public RenderingTestChromeClient {
  public:
-  bool SupportsDraggableRegions() override { return true; }
+  bool SupportsDraggableRegions() override {
+    return supports_draggable_regions_;
+  }
   void DraggableRegionsChanged() override { ++draggable_regions_changed_; }
 
+  bool supports_draggable_regions_ = true;
   int draggable_regions_changed_ = 0;
 };
 
@@ -404,6 +410,9 @@ class LocalFrameViewDraggableRegionsTest : public RenderingTest {
   }
   int DraggableRegionsChangedCount() const {
     return chrome_client_->draggable_regions_changed_;
+  }
+  void SetSupportsDraggableRegions(bool supports) {
+    chrome_client_->supports_draggable_regions_ = supports;
   }
 
  private:
@@ -475,6 +484,427 @@ TEST_F(LocalFrameViewDraggableRegionsTest, TransformChangeUpdatesRegions) {
   EXPECT_EQ(PhysicalRect(0, 10, 100, 50),
             GetDocument().DraggableRegions()[0].bounds);
   EXPECT_EQ(changed_count + 2, DraggableRegionsChangedCount());
+}
+
+// Adding, removing and restyling app-region elements updates the regions, in
+// layout tree order.
+TEST_F(LocalFrameViewDraggableRegionsTest, AddRemoveAndRestyleRegionElements) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      div { width: 100px; height: 20px; }
+      .drag { app-region: drag; }
+      .no-drag { app-region: no-drag; }
+    </style>
+    <div id="a" class="drag"></div>
+    <div id="b" class="no-drag"></div>
+    <div id="c"></div>
+  )HTML");
+
+  auto expect_regions = [&](Vector<DraggableRegionValue> expected) {
+    const Vector<DraggableRegionValue>& actual =
+        GetDocument().DraggableRegions();
+    ASSERT_EQ(expected.size(), actual.size());
+    for (wtf_size_t i = 0; i < expected.size(); ++i) {
+      EXPECT_EQ(expected[i].bounds, actual[i].bounds) << i;
+      EXPECT_EQ(expected[i].draggable, actual[i].draggable) << i;
+    }
+    EXPECT_FALSE(GetDocument().DraggableRegionsDirty());
+  };
+  expect_regions({{PhysicalRect(0, 0, 100, 20), true},
+                  {PhysicalRect(0, 20, 100, 20), false}});
+
+  Element* a = GetElementById("a");
+  Element* b = GetElementById("b");
+  Element* c = GetElementById("c");
+  c->setAttribute(html_names::kClassAttr, AtomicString("drag"));
+  UpdateAllLifecyclePhasesForTest();
+  expect_regions({{PhysicalRect(0, 0, 100, 20), true},
+                  {PhysicalRect(0, 20, 100, 20), false},
+                  {PhysicalRect(0, 40, 100, 20), true}});
+
+  a->remove();
+  UpdateAllLifecyclePhasesForTest();
+  expect_regions({{PhysicalRect(0, 0, 100, 20), false},
+                  {PhysicalRect(0, 20, 100, 20), true}});
+
+  b->removeAttribute(html_names::kClassAttr);
+  UpdateAllLifecyclePhasesForTest();
+  expect_regions({{PhysicalRect(0, 20, 100, 20), true}});
+
+  b->setAttribute(html_names::kClassAttr, AtomicString("drag"));
+  UpdateAllLifecyclePhasesForTest();
+  expect_regions({{PhysicalRect(0, 0, 100, 20), true},
+                  {PhysicalRect(0, 20, 100, 20), true}});
+
+  c->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+  UpdateAllLifecyclePhasesForTest();
+  expect_regions({{PhysicalRect(0, 0, 100, 20), true}});
+
+  c->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+  UpdateAllLifecyclePhasesForTest();
+  expect_regions({{PhysicalRect(0, 0, 100, 20), true},
+                  {PhysicalRect(0, 20, 100, 20), true}});
+}
+
+// Moving a subtree whose root has no app-region but which contains an
+// app-region descendant must keep the regions in layout tree order.
+TEST_F(LocalFrameViewDraggableRegionsTest, MoveSubtreeWithRegionDescendant) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #inner, #a { width: 100px; height: 20px; }
+      #inner { app-region: no-drag; }
+      #a { app-region: drag; }
+    </style>
+    <div id="wrapper"><div><div id="inner"></div></div></div>
+    <div id="a"></div>
+  )HTML");
+
+  Vector<DraggableRegionValue> regions = GetDocument().DraggableRegions();
+  ASSERT_EQ(2u, regions.size());
+  EXPECT_FALSE(regions[0].draggable);
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 20), regions[0].bounds);
+  EXPECT_TRUE(regions[1].draggable);
+  EXPECT_EQ(PhysicalRect(0, 20, 100, 20), regions[1].bounds);
+
+  GetDocument().body()->AppendChild(GetElementById("wrapper"));
+  UpdateAllLifecyclePhasesForTest();
+  regions = GetDocument().DraggableRegions();
+  ASSERT_EQ(2u, regions.size());
+  EXPECT_TRUE(regions[0].draggable);
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 20), regions[0].bounds);
+  EXPECT_FALSE(regions[1].draggable);
+  EXPECT_EQ(PhysicalRect(0, 20, 100, 20), regions[1].bounds);
+}
+
+// An anonymous block inherits window-drag from its app-region parent and so
+// contributes a region. When it is collapsed away (here because the multicol
+// container stops being one) it leaves the tree without
+// LayoutObject::WillBeRemovedFromTree(); the cached object list must still
+// drop it.
+TEST_F(LocalFrameViewDraggableRegionsTest, CollapsedAnonymousBlock) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #multicol { app-region: drag; columns: 2; width: 100px; height: 50px; }
+    </style>
+    <div id="multicol">x</div>
+  )HTML");
+
+  Element* multicol = GetElementById("multicol");
+  const LayoutObject* anonymous_block = nullptr;
+  for (const LayoutObject* child =
+           multicol->GetLayoutObject()->SlowFirstChild();
+       child; child = child->NextSibling()) {
+    if (child->IsAnonymousBlockFlow()) {
+      anonymous_block = child;
+    }
+  }
+  ASSERT_TRUE(anonymous_block);
+  EXPECT_EQ(EDraggableRegionMode::kMove,
+            anonymous_block->StyleRef().DraggableRegionMode());
+  EXPECT_LT(1u, GetDocument().DraggableRegions().size());
+
+  multicol->SetInlineStyleProperty(CSSPropertyID::kColumns, "auto");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(multicol->GetLayoutObject()->SlowFirstChild()->IsText());
+  Vector<DraggableRegionValue> regions = GetDocument().DraggableRegions();
+  ASSERT_EQ(1u, regions.size());
+  EXPECT_TRUE(regions[0].draggable);
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 50), regions[0].bounds);
+}
+
+// The embedder can turn draggable region support on and off at run time. While
+// it is off nothing is collected; when it is turned on again the regions must
+// reflect DOM changes made in between.
+
+// An inline app-region box that spans two lines is one region covering both
+// lines.
+TEST_F(LocalFrameViewDraggableRegionsTest, InlineAcrossLinesIsOneRegion) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; font: 10px/10px Ahem; }</style>
+    <div style="width: 600px">
+      A<br><span id="s" style="app-region: drag">BC<br>DEF</span>
+    </div>
+  )HTML");
+  const Vector<DraggableRegionValue>& regions =
+      GetDocument().DraggableRegions();
+  ASSERT_EQ(1u, regions.size());
+  EXPECT_EQ(PhysicalRect(0, 10, 30, 20), regions[0].bounds);
+  EXPECT_TRUE(regions[0].draggable);
+}
+
+// An app-region element added inside and removed from a relayout boundary is
+// picked up and dropped again.
+TEST_F(LocalFrameViewDraggableRegionsTest, RegionInsideContainStrict) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #island { contain: strict; width: 200px; height: 100px; }
+      #r { app-region: no-drag; width: 50px; height: 10px; }
+    </style>
+    <div id="island"><div id="slot"></div></div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().DraggableRegions().empty());
+
+  Element* r = GetDocument().CreateRawElement(html_names::kDivTag);
+  r->SetIdAttribute(AtomicString("r"));
+  GetElementById("slot")->AppendChild(r);
+  UpdateAllLifecyclePhasesForTest();
+  const Vector<DraggableRegionValue>& regions =
+      GetDocument().DraggableRegions();
+  ASSERT_EQ(1u, regions.size());
+  EXPECT_EQ(PhysicalRect(0, 0, 50, 10), regions[0].bounds);
+  EXPECT_FALSE(regions[0].draggable);
+
+  r->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().DraggableRegions().empty());
+  EXPECT_FALSE(GetDocument().DraggableRegionsDirty());
+}
+
+// App-region boxes inside an SVG <foreignObject> are reported, in tree order.
+TEST_F(LocalFrameViewDraggableRegionsTest, RegionInsideSVGForeignObject) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #r { app-region: no-drag; width: 30px; height: 10px; }
+      #after { app-region: drag; width: 100px; height: 20px; }
+    </style>
+    <svg id="svg" width="200" height="100">
+      <foreignObject id="fo" x="10" y="20" width="100" height="50">
+        <div xmlns="http://www.w3.org/1999/xhtml" id="r"></div>
+      </foreignObject>
+    </svg>
+    <div id="after"></div>
+  )HTML");
+  Vector<DraggableRegionValue> regions = GetDocument().DraggableRegions();
+  ASSERT_EQ(2u, regions.size());
+  EXPECT_EQ(PhysicalRect(10, 20, 30, 10), regions[0].bounds);
+  EXPECT_FALSE(regions[0].draggable);
+  EXPECT_TRUE(regions[1].draggable);
+
+  GetElementById("r")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  regions = GetDocument().DraggableRegions();
+  ASSERT_EQ(1u, regions.size());
+  EXPECT_TRUE(regions[0].draggable);
+
+  GetElementById("svg")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u, GetDocument().DraggableRegions().size());
+}
+
+// Regions are reported in layout tree order. Embedders apply them in that
+// order, so a positioned drag layer that comes first in the DOM must not end
+// up after (and so on top of) its no-drag siblings.
+TEST_F(LocalFrameViewDraggableRegionsTest, PositionedDragLayerKeepsTreeOrder) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #bar { position: relative; height: 32px; display: flex; }
+      #overlay { position: absolute; inset: 0; app-region: drag; }
+      button { app-region: no-drag; width: 40px; }
+    </style>
+    <div id="bar">
+      <div id="overlay"></div>
+      <button></button><button></button>
+    </div>
+  )HTML");
+  const Vector<DraggableRegionValue>& regions =
+      GetDocument().DraggableRegions();
+  ASSERT_EQ(3u, regions.size());
+  EXPECT_TRUE(regions[0].draggable);
+  EXPECT_EQ(PhysicalRect(0, 0, 800, 32), regions[0].bounds);
+  EXPECT_FALSE(regions[1].draggable);
+  EXPECT_FALSE(regions[2].draggable);
+}
+
+// The pruning bit is cleared once a subtree has no app-region boxes left, and
+// set again when one comes back.
+TEST_F(LocalFrameViewDraggableRegionsTest, PruningBitClearedAndSetAgain) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #r { width: 50px; height: 10px; }
+      .nd { app-region: no-drag; }
+    </style>
+    <div id="wrap"><div><div id="r" class="nd"></div></div></div>
+  )HTML");
+  LayoutObject* wrap = GetLayoutObjectByElementId("wrap");
+  EXPECT_EQ(1u, GetDocument().DraggableRegions().size());
+  EXPECT_TRUE(wrap->MayContainDraggableRegion());
+
+  GetElementById("r")->removeAttribute(html_names::kClassAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().DraggableRegions().empty());
+  EXPECT_FALSE(wrap->MayContainDraggableRegion());
+  EXPECT_FALSE(GetLayoutView().MayContainDraggableRegion());
+
+  GetElementById("r")->setAttribute(html_names::kClassAttr, AtomicString("nd"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u, GetDocument().DraggableRegions().size());
+  EXPECT_TRUE(wrap->MayContainDraggableRegion());
+}
+
+// A new LayoutObject gets its style, and with it its own
+// MayContainDraggableRegion() bit, before it is in the tree, so it is
+// LayoutObject::InsertedIntoTree() that marks the ancestors.
+TEST_F(LocalFrameViewDraggableRegionsTest,
+       AncestorsMarkedWhenInsertedIntoTree) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      div { width: 50px; height: 10px; }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().DraggableRegions().empty());
+
+  // Becoming a float re-attaches #target's LayoutObject.
+  Element* target = GetElementById("target");
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("float: left; app-region: drag"));
+  UpdateAllLifecyclePhasesForTest();
+  Vector<DraggableRegionValue> regions = GetDocument().DraggableRegions();
+  ASSERT_EQ(1u, regions.size());
+  EXPECT_TRUE(regions[0].draggable);
+  EXPECT_TRUE(GetLayoutView().MayContainDraggableRegion());
+
+  // So does inserting a new element that already has app-region.
+  Element* added = GetDocument().CreateRawElement(html_names::kDivTag);
+  added->setAttribute(html_names::kStyleAttr,
+                      AtomicString("app-region: no-drag"));
+  GetDocument().body()->AppendChild(added);
+  UpdateAllLifecyclePhasesForTest();
+  regions = GetDocument().DraggableRegions();
+  ASSERT_EQ(2u, regions.size());
+  EXPECT_FALSE(regions[1].draggable);
+}
+
+TEST_F(LocalFrameViewDraggableRegionsTest, SupportsDraggableRegionsToggle) {
+  SetSupportsDraggableRegions(false);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      div { app-region: drag; width: 100px; height: 20px; }
+    </style>
+    <div id="a"></div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().HasDraggableRegions());
+  EXPECT_TRUE(GetDocument().DraggableRegions().empty());
+
+  // This is what WebViewImpl::SetSupportsDraggableRegions(true) does.
+  SetSupportsDraggableRegions(true);
+  GetDocument().View()->UpdateDocumentDraggableRegions();
+  ASSERT_EQ(1u, GetDocument().DraggableRegions().size());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 20),
+            GetDocument().DraggableRegions()[0].bounds);
+  EXPECT_EQ(1, DraggableRegionsChangedCount());
+
+  SetSupportsDraggableRegions(false);
+  UpdateAllLifecyclePhasesForTest();
+  auto* b = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  b->SetInlineStyleProperty(CSSPropertyID::kWidth, "50px");
+  GetDocument().body()->AppendChild(b);
+  UpdateAllLifecyclePhasesForTest();
+  GetElementById("a")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1, DraggableRegionsChangedCount());
+
+  SetSupportsDraggableRegions(true);
+  GetDocument().View()->UpdateDocumentDraggableRegions();
+  ASSERT_EQ(1u, GetDocument().DraggableRegions().size());
+  EXPECT_EQ(PhysicalRect(0, 0, 50, 20),
+            GetDocument().DraggableRegions()[0].bounds);
+  EXPECT_EQ(2, DraggableRegionsChangedCount());
+}
+
+// Scrolling recomputes the regions from the cached object list. Only regions
+// inside the scroller move; a scroller without app-region descendants reports
+// nothing.
+TEST_F(LocalFrameViewDraggableRegionsTest, ScrollUpdatesRegions) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      .scroller { overflow: scroll; width: 200px; height: 100px; }
+      .content { height: 1000px; }
+      #drag { app-region: drag; width: 100px; height: 20px; }
+      #no-drag { app-region: no-drag; width: 100px; height: 20px; }
+    </style>
+    <div id="scroller" class="scroller">
+      <div id="drag"></div>
+      <div class="content"></div>
+    </div>
+    <div id="other" class="scroller"><div class="content"></div></div>
+    <div id="no-drag"></div>
+  )HTML");
+
+  Vector<DraggableRegionValue> regions = GetDocument().DraggableRegions();
+  ASSERT_EQ(2u, regions.size());
+  EXPECT_EQ(PhysicalRect(0, 0, 100, 20), regions[0].bounds);
+  EXPECT_EQ(PhysicalRect(0, 200, 100, 20), regions[1].bounds);
+  int changed_count = DraggableRegionsChangedCount();
+
+  // PaintLayerScrollableArea::UpdateScrollOffset() updates the regions
+  // synchronously.
+  GetElementById("scroller")->setScrollTop(15);
+  regions = GetDocument().DraggableRegions();
+  ASSERT_EQ(2u, regions.size());
+  EXPECT_EQ(PhysicalRect(0, -15, 100, 20), regions[0].bounds);
+  EXPECT_TRUE(regions[0].draggable);
+  EXPECT_EQ(PhysicalRect(0, 200, 100, 20), regions[1].bounds);
+  EXPECT_FALSE(regions[1].draggable);
+  EXPECT_EQ(changed_count + 1, DraggableRegionsChangedCount());
+  EXPECT_FALSE(GetDocument().DraggableRegionsDirty());
+
+  GetElementById("other")->setScrollTop(15);
+  EXPECT_EQ(changed_count + 1, DraggableRegionsChangedCount());
+  EXPECT_FALSE(GetDocument().DraggableRegionsDirty());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(regions, GetDocument().DraggableRegions());
+  EXPECT_EQ(changed_count + 1, DraggableRegionsChangedCount());
+}
+
+// With app-region inherited from body and custom scrollbar styles, the
+// (temporary and permanent) LayoutCustomScrollbarPart objects get a style with
+// a drag mode but are never in the layout tree. Styling them must not
+// invalidate the cached object list, or every LayoutView layout would force a
+// full tree walk.
+TEST_F(LocalFrameViewDraggableRegionsTest,
+       CustomScrollbarPartsDoNotAffectRegions) {
+  USE_NON_OVERLAY_SCROLLBARS_OR_QUIT();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; app-region: drag; }
+      ::-webkit-scrollbar { width: 10px; height: 10px; }
+      ::-webkit-scrollbar-thumb { background: blue; }
+      #scroller { overflow: scroll; width: 100px; height: 100px; }
+      #content { height: 500px; }
+      #sibling { height: 20px; }
+    </style>
+    <div id="scroller"><div id="content"></div></div>
+    <div id="sibling"></div>
+  )HTML");
+
+  Vector<DraggableRegionValue> regions = GetDocument().DraggableRegions();
+  EXPECT_EQ(4u, regions.size());
+
+  // Every LayoutView layout computes the hypothetical custom scrollbar
+  // thickness, which creates, styles and destroys a temporary scrollbar part.
+  EXPECT_EQ(10,
+            GetLayoutView().GetScrollableArea()->HypotheticalScrollbarThickness(
+                kVerticalScrollbar));
+
+  // A style change on the scroller restyles its scrollbar parts.
+  GetElementById("scroller")
+      ->SetInlineStyleProperty(CSSPropertyID::kColor, "red");
+  GetDocument().UpdateStyleAndLayoutTree();
+  UpdateAllLifecyclePhasesForTest();
+  regions = GetDocument().DraggableRegions();
+  EXPECT_EQ(4u, regions.size());
 }
 
 class LocalFrameViewSimTest : public SimTest {};

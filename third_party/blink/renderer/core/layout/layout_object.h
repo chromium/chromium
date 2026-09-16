@@ -1115,6 +1115,21 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   virtual void MarkMayContainAnchor();
 
+  // True if `this` or a descendant may have app-region in its style, so that
+  // collecting the draggable regions can skip the subtrees without any. Like
+  // MayContainAnchor(), but LocalFrameView clears it again when a walk of the
+  // subtree finds none.
+  bool MayContainDraggableRegion() const {
+    NOT_DESTROYED();
+    return may_contain_draggable_region_;
+  }
+  void SetMayContainDraggableRegion(bool b) {
+    NOT_DESTROYED();
+    may_contain_draggable_region_ = b;
+  }
+  // Sets the bit on `this` and its ancestors.
+  void MarkMayContainDraggableRegion();
+
   void SetHasBrokenSpine() {
     NOT_DESTROYED();
     has_broken_spine_ = true;
@@ -4051,6 +4066,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // See comments for |MayContainAnchor()|.
   unsigned may_contain_anchor_ : 1 = false;
+
+  // See comments for |MayContainDraggableRegion()|.
+  unsigned may_contain_draggable_region_ : 1 = false;
 
   // Set if we stopped rebuilding the spine because this object was marked for
   // layout. We don't need to do anything if we actually end up re-laying out

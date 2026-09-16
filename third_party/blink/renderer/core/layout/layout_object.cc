@@ -602,6 +602,14 @@ void LayoutObject::MarkMayContainAnchor() {
   }
 }
 
+void LayoutObject::MarkMayContainDraggableRegion() {
+  for (LayoutObject* runner = this;
+       runner && !runner->MayContainDraggableRegion();
+       runner = runner->Parent()) {
+    runner->SetMayContainDraggableRegion(true);
+  }
+}
+
 void LayoutObject::SetIsInsideMulticolIncludingDescendants(
     bool inside_multicol) {
   NOT_DESTROYED();
@@ -3498,6 +3506,10 @@ void LayoutObject::StyleDidChange(
     MarkMayContainAnchor();
   }
 
+  if (new_style.DraggableRegionMode() != EDraggableRegionMode::kNone) {
+    MarkMayContainDraggableRegion();
+  }
+
   if (MayContainAnchor() && old_style) {
     // If there's an anchor here, and the new style might want to run animations
     // on the compositor, anchors may affect layout of the anchored elements.
@@ -4320,6 +4332,9 @@ void LayoutObject::InsertedIntoTree() {
     MarkMayContainAnchor();
   } else if (MayContainAnchor()) {
     Parent()->MarkMayContainAnchor();
+  }
+  if (MayContainDraggableRegion()) {
+    Parent()->MarkMayContainDraggableRegion();
   }
 }
 

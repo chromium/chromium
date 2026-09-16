@@ -4717,18 +4717,32 @@ RootFrameViewport* LocalFrameView::GetRootFrameViewport() {
   return viewport_scrollable_area_.Get();
 }
 
-void LocalFrameView::CollectDraggableRegions(
+// Returns whether `layout_object` or a descendant has app-region, and updates
+// MayContainDraggableRegion() to that, so that later walks skip subtrees that
+// no longer have any.
+// static
+bool LocalFrameView::CollectDraggableRegions(
     LayoutObject& layout_object,
-    Vector<DraggableRegionValue>& regions) const {
-  // LayoutTexts don't have their own style, they just use their parent's style,
-  // so we don't want to include them.
-  if (layout_object.IsText())
-    return;
-
-  layout_object.AddDraggableRegions(regions);
-  for (LayoutObject* curr = layout_object.SlowFirstChild(); curr;
-       curr = curr->NextSibling())
-    CollectDraggableRegions(*curr, regions);
+    Vector<DraggableRegionValue>& regions) {
+  if (!layout_object.MayContainDraggableRegion()) {
+    return false;
+  }
+  bool has_region = layout_object.StyleRef().DraggableRegionMode() !=
+                    EDraggableRegionMode::kNone;
+  if (has_region) {
+    layout_object.AddDraggableRegions(regions);
+  }
+  for (LayoutObject* child = layout_object.SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    // LayoutTexts don't have their own style, they just use their parent's
+    // style, so we don't want to include them.
+    if (child->IsText()) {
+      continue;
+    }
+    has_region |= CollectDraggableRegions(*child, regions);
+  }
+  layout_object.SetMayContainDraggableRegion(has_region);
+  return has_region;
 }
 
 void LocalFrameView::UpdateIntersectionObserverStatus() {

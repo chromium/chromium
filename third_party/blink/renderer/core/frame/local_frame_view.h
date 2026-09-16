@@ -1076,8 +1076,8 @@ class CORE_EXPORT LocalFrameView final
 
   void SetLayoutSizeInternal(const gfx::Size&, DocumentResizeOptions = {});
 
-  void CollectDraggableRegions(LayoutObject&,
-                               Vector<DraggableRegionValue>&) const;
+  static bool CollectDraggableRegions(LayoutObject&,
+                                      Vector<DraggableRegionValue>&);
 
   void ForAllChildViewsAndPlugins(
       base::FunctionRef<void(EmbeddedContentView&)>);
