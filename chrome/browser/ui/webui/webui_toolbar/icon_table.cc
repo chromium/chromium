@@ -242,6 +242,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:image_search", IconType::kIconSet}},
           {{&vector_icons::kImageSearchOldIcon},
            {"webui-toolbar:image_search", IconType::kIconSet}},
+          {{&vector_icons::kInsertDriveFileOutlineOldIcon},
+           {"webui-toolbar:draft", IconType::kIconSet}},
           {{&vector_icons::kInstallDesktopIcon},
            {"webui-toolbar:install_desktop", IconType::kIconSet}},
           {{&vector_icons::kLinkIcon},
