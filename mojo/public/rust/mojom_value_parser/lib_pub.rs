@@ -23,7 +23,9 @@ chromium::import! {
     "//mojo/public/rust/mojom_value_parser:parsing_attribute";
 }
 
-pub use mojom_value_parser_core::{deserialize, deserialize_exact, serialize, ParsingResult};
+pub use mojom_value_parser_core::{
+    deserialize, deserialize_exact, extract_interface_ids, serialize, InterfaceId, ParsingResult,
+};
 pub use mojom_value_parser_core::{
     MessageHeader, MessageHeaderV1, MessageHeaderV2, MessageHeaderV3,
 };

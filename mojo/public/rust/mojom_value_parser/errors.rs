@@ -64,6 +64,9 @@ pub enum ParsingErrorType {
     InvalidHandleIndex { idx: usize, is_interface_id: bool },
     /// Indicates that the interface ID array contained an invalid value
     InvalidInterfaceId { idx: usize, value: u32 },
+    /// Indicates that the parsed MojomValue wasn't able to be turned into
+    /// a Rust value using the `MojomParse` trait.
+    UnconvertibleValue { err: String },
 }
 
 impl ParsingError {
@@ -137,6 +140,10 @@ impl ParsingError {
 
     pub fn invalid_interface_id(offset: usize, idx: usize, value: u32) -> ParsingError {
         ParsingError { offset, ty: ParsingErrorType::InvalidInterfaceId { idx, value } }
+    }
+
+    pub fn unconvertible_value(offset: usize, err: String) -> ParsingError {
+        ParsingError { offset, ty: ParsingErrorType::UnconvertibleValue { err } }
     }
 }
 
@@ -227,6 +234,9 @@ impl std::fmt::Display for ParsingError {
             }
             ParsingErrorType::InvalidInterfaceId { idx, value } => {
                 write!(f, "The interface ID at index {idx} had the invalid value {value}.")
+            }
+            ParsingErrorType::UnconvertibleValue { err } => {
+                write!(f, "Failed to convert parsed value: {err}")
             }
         }
     }

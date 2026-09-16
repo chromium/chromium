@@ -32,9 +32,14 @@ pub fn deserialize<'a, Context, T: MojomParse<Context>>(
         interface_ids_offset,
         T::wire_type(),
     )?;
-    // Convert the parsed MojomValue to a T. This conversion should never fail,
-    // since we passed T's wire type to the parser.
-    Ok((remaining_bytes, T::try_from_mojom_value(parsed_value, context).unwrap()))
+    // Convert the parsed MojomValue to a T.
+    let parsed_obj = T::try_from_mojom_value(parsed_value, context).map_err(|err| {
+        crate::errors::ParsingError::unconvertible_value(
+            data_slice.len() - remaining_bytes.len(),
+            err.to_string(),
+        )
+    })?;
+    Ok((remaining_bytes, parsed_obj))
 }
 
 /// This function is the same as `deserialize`, but returns a `TooMuchData`

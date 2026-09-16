@@ -748,10 +748,10 @@ where
 /// as the data slice with the parsed bytes removed. The elements of the array
 /// are all `Some`, but will be replaced with `None` as the rest of the message
 /// is parsed.
-fn extract_interface_ids(
+pub fn extract_interface_ids(
     data_slice: &[u8],
     interface_ids_offset: u64,
-) -> ParsingResult<(&[u8], Vec<Option<InterfaceId>>)> {
+) -> ParsingResult<(&[u8], Vec<InterfaceId>)> {
     // We will parse the array later by calling `parse_array`; this is the
     // element type we'll pass to the function. It's logically a constant,
     // but since `Arc` involves heap allocations we need to use `LazyLock`
@@ -764,16 +764,26 @@ fn extract_interface_ids(
         return Ok((data_slice, vec![]));
     }
 
-    let (data, id_array_data) =
-        data_slice.split_at_checked(interface_ids_offset.try_into().unwrap()).ok_or_else(|| {
-            // interface_ids_ptr pointed past the end of the data slice
-            ParsingError::not_enough_data(
-                data_slice.len(),
-                "Interface ID array".to_string(),
-                interface_ids_offset as usize,
-                data_slice.len(),
-            )
-        })?;
+    let Ok(offset_usize) = usize::try_from(interface_ids_offset) else {
+        // If we fail to fit into a `usize` then we must be on a 32-bit system,
+        // and the provided offset was colossal.
+        return Err(ParsingError::not_enough_data(
+            data_slice.len(),
+            "Interface ID array".to_string(),
+            data_slice.len(),
+            data_slice.len(),
+        ));
+    };
+
+    let (data, id_array_data) = data_slice.split_at_checked(offset_usize).ok_or_else(|| {
+        // interface_ids_ptr pointed past the end of the data slice
+        ParsingError::not_enough_data(
+            data_slice.len(),
+            "Interface ID array".to_string(),
+            offset_usize,
+            data_slice.len(),
+        )
+    })?;
 
     let id_array_parsed = parse_array(
         &mut ParserData::new(id_array_data, &mut [], vec![]),
@@ -800,7 +810,7 @@ fn extract_interface_ids(
                     id_u32,
                 ));
             }
-            Ok(Some(id_u32.try_into().unwrap()))
+            Ok(id_u32.try_into().unwrap())
         })
         .collect::<ParsingResult<_>>()?;
     Ok((data, id_vec))
@@ -870,7 +880,8 @@ pub fn parse_top_level_value<'a>(
     ty: &MojomWireType,
 ) -> ParsingResult<(&'a [u8], MojomValue)> {
     let (data_slice, interface_ids) = extract_interface_ids(data_slice, interface_ids_offset)?;
-    let mut data = ParserData::new(data_slice, handles, interface_ids);
+    let interface_id_opts = interface_ids.into_iter().map(Some).collect();
+    let mut data = ParserData::new(data_slice, handles, interface_id_opts);
     match ty {
         MojomWireType::Pointer {
             nested_data_type:
