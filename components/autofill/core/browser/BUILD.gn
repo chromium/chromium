@@ -1250,6 +1250,7 @@ static_library("browser") {
     "ui/payments/card_unmask_prompt_options.cc",
     "ui/payments/card_unmask_prompt_options.h",
     "ui/payments/card_unmask_prompt_view.h",
+    "ui/payments/payments_churned_users_ui_delegate.h",
     "ui/payments/payments_ui_closed_reasons.h",
     "ui/payments/payments_window_user_consent_dialog.h",
     "ui/payments/payments_window_user_consent_dialog_controller.h",

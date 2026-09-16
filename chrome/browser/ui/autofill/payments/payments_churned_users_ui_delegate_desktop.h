@@ -1,0 +1,45 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_CHURNED_USERS_UI_DELEGATE_DESKTOP_H_
+#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_CHURNED_USERS_UI_DELEGATE_DESKTOP_H_
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
+
+namespace autofill {
+
+class ContentAutofillClient;
+
+namespace payments {
+
+// Desktop implementation of PaymentsChurnedUsersUiDelegate.
+// This class handles the UI for resurrecting churned payments users on Desktop.
+// Owned by ChromePaymentsAutofillClient and lazily created upon first access to
+// GetPaymentsChurnedUsersUiDelegate(). Its lifecycle matches the remaining
+// lifetime of ChromePaymentsAutofillClient.
+class PaymentsChurnedUsersUiDelegateDesktop
+    : public PaymentsChurnedUsersUiDelegate {
+ public:
+  explicit PaymentsChurnedUsersUiDelegateDesktop(ContentAutofillClient* client);
+  PaymentsChurnedUsersUiDelegateDesktop(
+      const PaymentsChurnedUsersUiDelegateDesktop&) = delete;
+  PaymentsChurnedUsersUiDelegateDesktop& operator=(
+      const PaymentsChurnedUsersUiDelegateDesktop&) = delete;
+  ~PaymentsChurnedUsersUiDelegateDesktop() override;
+
+  // PaymentsChurnedUsersUiDelegate:
+  void ShowPaymentsChurnedUsersUI(base::OnceClosure accept_callback,
+                                  base::OnceClosure cancel_callback,
+                                  base::OnceClosure closed_callback) override;
+
+ private:
+  const raw_ref<ContentAutofillClient> client_;
+};
+
+}  // namespace payments
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_CHURNED_USERS_UI_DELEGATE_DESKTOP_H_

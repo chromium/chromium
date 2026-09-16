@@ -73,4 +73,9 @@ PaymentsAutofillClient::GetWalletReminderNoticeManager() {
   return nullptr;
 }
 
+PaymentsChurnedUsersUiDelegate*
+PaymentsAutofillClient::GetPaymentsChurnedUsersUiDelegate() {
+  return nullptr;
+}
+
 }  // namespace autofill::payments

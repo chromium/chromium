@@ -40,6 +40,7 @@ source_set("payments") {
       "android_bnpl_ui_delegate.h",
       "android_payments_window_manager.h",
       "offer_notification_controller_android.h",
+      "payments_churned_users_ui_delegate_android.h",
     ]
     public_deps += [
       "//chrome/browser/touch_to_fill/autofill/android:public",
@@ -55,6 +56,7 @@ source_set("payments") {
       "omnibox_autofill_page_action_controller.h",
       "payments_churned_users_bubble_controller.h",
       "payments_churned_users_page_action_controller.h",
+      "payments_churned_users_ui_delegate_desktop.h",
       "wallet_reminder_notice_bubble_controller.h",
       "wallet_reminder_notice_page_action_controller.h",
       "wallet_reminder_notice_ui_delegate_desktop.h",
@@ -132,6 +134,7 @@ source_set("impl") {
       "android_bnpl_ui_delegate.cc",
       "android_payments_window_manager.cc",
       "offer_notification_controller_android.cc",
+      "payments_churned_users_ui_delegate_android.cc",
     ]
     public_deps += [ "//chrome/browser/touch_to_fill/autofill/android:public" ]
     deps += [
@@ -158,6 +161,7 @@ source_set("impl") {
       "omnibox_autofill_page_action_controller.cc",
       "payments_churned_users_bubble_controller.cc",
       "payments_churned_users_page_action_controller.cc",
+      "payments_churned_users_ui_delegate_desktop.cc",
       "wallet_reminder_notice_bubble_controller.cc",
       "wallet_reminder_notice_page_action_controller.cc",
       "wallet_reminder_notice_ui_delegate_desktop.cc",

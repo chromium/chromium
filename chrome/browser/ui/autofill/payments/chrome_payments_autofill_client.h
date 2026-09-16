@@ -80,6 +80,7 @@ class BnplUiDelegate;
 class MandatoryReauthManager;
 class MultipleRequestPaymentsNetworkInterface;
 class PaymentsChurnedUsersManager;
+class PaymentsChurnedUsersUiDelegate;
 class PaymentsWindowManager;
 class WalletReminderNoticeManager;
 class WalletReminderNoticeUiDelegate;
@@ -255,6 +256,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   BnplUiDelegate* GetBnplUiDelegate() override;
   WalletReminderNoticeUiDelegate* GetWalletReminderNoticeUiDelegate() override;
   WalletReminderNoticeManager* GetWalletReminderNoticeManager() override;
+  PaymentsChurnedUsersUiDelegate* GetPaymentsChurnedUsersUiDelegate() override;
 #if !BUILDFLAG(IS_ANDROID)
   OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
   void ShowExpandedOmniboxAutofillChip(
@@ -384,6 +386,12 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       save_and_fill_dialog_controller_;
 
   std::unique_ptr<SaveAndFillManager> save_and_fill_manager_;
+
+  // The PaymentsChurnedUsersUiDelegate used to handle the resurrection UI in
+  // the Payments Churned Users flow. Lazily initialized: access only through
+  // `GetPaymentsChurnedUsersUiDelegate()`.
+  std::unique_ptr<PaymentsChurnedUsersUiDelegate>
+      payments_churned_users_ui_delegate_;
 
   // Manages the flows related to getting users that have payments autofill
   // turned off back. Initiated upon construction of `this`.

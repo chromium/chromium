@@ -65,6 +65,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/wallet_reminder_notice_ui_delegate.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -106,6 +107,7 @@
 #include "chrome/browser/ui/autofill/payments/android_bnpl_ui_delegate.h"
 #include "chrome/browser/ui/autofill/payments/android_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
+#include "chrome/browser/ui/autofill/payments/payments_churned_users_ui_delegate_android.h"
 #include "components/autofill/core/browser/payments/android_bnpl_strategy.h"
 #include "components/autofill/core/browser/payments/autofill_save_iban_ui_info.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
@@ -118,6 +120,7 @@
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/omnibox_autofill_page_action_controller.h"
 #include "chrome/browser/ui/autofill/payments/payments_churned_users_bubble_controller.h"
+#include "chrome/browser/ui/autofill/payments/payments_churned_users_ui_delegate_desktop.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_ui_delegate_desktop.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
@@ -1297,6 +1300,20 @@ ChromePaymentsAutofillClient::GetWalletReminderNoticeManager() {
         std::make_unique<WalletReminderNoticeManager>(&client_.get());
   }
   return wallet_reminder_notice_manager_.get();
+}
+
+PaymentsChurnedUsersUiDelegate*
+ChromePaymentsAutofillClient::GetPaymentsChurnedUsersUiDelegate() {
+  if (!payments_churned_users_ui_delegate_) {
+#if BUILDFLAG(IS_ANDROID)
+    payments_churned_users_ui_delegate_ =
+        std::make_unique<PaymentsChurnedUsersUiDelegateAndroid>(&client_.get());
+#else
+    payments_churned_users_ui_delegate_ =
+        std::make_unique<PaymentsChurnedUsersUiDelegateDesktop>(&client_.get());
+#endif
+  }
+  return payments_churned_users_ui_delegate_.get();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

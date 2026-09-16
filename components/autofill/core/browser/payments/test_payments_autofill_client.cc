@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
+#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -504,6 +505,11 @@ TestPaymentsAutofillClient::GetWalletReminderNoticeManager() {
         std::make_unique<WalletReminderNoticeManager>(&client_.get());
   }
   return wallet_reminder_notice_manager_.get();
+}
+
+PaymentsChurnedUsersUiDelegate*
+TestPaymentsAutofillClient::GetPaymentsChurnedUsersUiDelegate() {
+  return payments_churned_users_ui_delegate_.get();
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

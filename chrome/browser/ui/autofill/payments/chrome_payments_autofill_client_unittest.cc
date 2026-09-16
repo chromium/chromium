@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
+#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -895,6 +896,18 @@ TEST_F(ChromePaymentsAutofillClientTest, GetWalletReminderNoticeManager) {
   // Test that the same instance is returned on subsequent calls.
   EXPECT_EQ(manager,
             chrome_payments_client()->GetWalletReminderNoticeManager());
+}
+
+// Test that Payments Churned Users UI delegate is created and returned
+// correctly.
+TEST_F(ChromePaymentsAutofillClientTest, GetPaymentsChurnedUsersUiDelegate) {
+  payments::PaymentsChurnedUsersUiDelegate* ui_delegate =
+      chrome_payments_client()->GetPaymentsChurnedUsersUiDelegate();
+  ASSERT_NE(ui_delegate, nullptr);
+
+  // Test that the same instance is returned on subsequent calls.
+  EXPECT_EQ(ui_delegate,
+            chrome_payments_client()->GetPaymentsChurnedUsersUiDelegate());
 }
 
 // Test that `DisablePaymentsAutofill` correctly disables the client's support

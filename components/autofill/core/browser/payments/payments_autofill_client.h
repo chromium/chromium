@@ -85,6 +85,7 @@ class BnplStrategy;
 class BnplUiDelegate;
 class MandatoryReauthManager;
 class MultipleRequestPaymentsNetworkInterface;
+class PaymentsChurnedUsersUiDelegate;
 class PaymentsNetworkInterface;
 class PaymentsWindowManager;
 class SaveAndFillManager;
@@ -828,6 +829,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Gets the `WalletReminderNoticeManager` instance associated with the
   // client.
   virtual WalletReminderNoticeManager* GetWalletReminderNoticeManager();
+
+  // Gets the `PaymentsChurnedUsersUiDelegate` instance associated with the
+  // client. Handles the resurrection UI for the Payments Churned Users flow.
+  virtual PaymentsChurnedUsersUiDelegate* GetPaymentsChurnedUsersUiDelegate();
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Gets the `OmniboxAutofillDelegate` instance associated with the client, or
