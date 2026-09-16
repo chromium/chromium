@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
@@ -25,6 +26,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.profile_metrics.BrowserProfileType;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** This test class checks if incognito and non-incognito OTR profiles can be distinctly created. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -271,6 +273,7 @@ public class ProfileTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562149786
     public void testBrowserProfileTypeFromPrimaryOtrProfile() {
         // Open an new Incognito Tab page to create a new primary OTR profile.
         mStartingPage.openRegularTabAppMenu().openNewIncognitoTab().loadAboutBlank();
