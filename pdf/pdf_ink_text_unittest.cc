@@ -287,7 +287,8 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, SplitText) {
                             /*glyphs=*/std::vector<uint32_t>{1},
                             /*glyph_positions=*/std::vector<float>{0.0f},
                             /*location=*/gfx::RectF(10.0f, 20.5f, 1.4f, 2.0f),
-                            /*is_horizontal=*/true, u"1"));
+                            /*is_horizontal=*/true, u"1",
+                            /*join_prev_actualtext=*/false));
 
   EXPECT_THAT(
       ink_lines[0].text_info[1],
@@ -295,7 +296,8 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, SplitText) {
                             /*glyphs=*/std::vector<uint32_t>{2, 3},
                             /*glyph_positions=*/std::vector<float>{0.0f, 0.5f},
                             /*location=*/gfx::RectF(11.4f, 20.0f, 2.1f, 2.0f),
-                            /*is_horizontal=*/true, u"2"));
+                            /*is_horizontal=*/true, u"2",
+                            /*join_prev_actualtext=*/false));
 
   EXPECT_THAT(
       ink_lines[0].text_info[2],
@@ -303,7 +305,8 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, SplitText) {
                             /*glyphs=*/std::vector<uint32_t>{101, 102},
                             /*glyph_positions=*/std::vector<float>{0.0f, 0.3f},
                             /*location=*/gfx::RectF(13.5f, 20.0f, 1.5f, 2.0f),
-                            /*is_horizontal=*/true, u"345"));
+                            /*is_horizontal=*/true, u"345",
+                            /*join_prev_actualtext=*/false));
 
   ASSERT_THAT(ink_lines[1].text_info, SizeIs(2));
   EXPECT_THAT(
@@ -312,7 +315,8 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, SplitText) {
                             /*glyphs=*/std::vector<uint32_t>{1, 2},
                             /*glyph_positions=*/std::vector<float>{0.0f, 1.9f},
                             /*location=*/gfx::RectF(9.6f, 20.0f, 2.7f, 2.0f),
-                            /*is_horizontal=*/true, u"67"));
+                            /*is_horizontal=*/true, u"67",
+                            /*join_prev_actualtext=*/false));
 
   EXPECT_THAT(
       ink_lines[1].text_info[1],
@@ -320,7 +324,8 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, SplitText) {
                             /*glyphs=*/std::vector<uint32_t>{3},
                             /*glyph_positions=*/std::vector<float>{0.0f},
                             /*location=*/gfx::RectF(12.3f, 20.5f, 1.7f, 2.0f),
-                            /*is_horizontal=*/true, u"8"));
+                            /*is_horizontal=*/true, u"8",
+                            /*join_prev_actualtext=*/false));
 }
 
 TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, SyntheticBoldItalic) {

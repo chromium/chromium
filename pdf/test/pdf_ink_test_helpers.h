@@ -135,21 +135,28 @@ MATCHER_P6(InkAffineTransformEq,
 
 bool InkTextInfoEquals(const InkTextInfo& lhs, const InkTextInfo& rhs);
 
-MATCHER_P6(InkTextInfoWithTextEq,
+MATCHER_P7(InkTextInfoWithTextEq,
            font_id,
            glyphs,
            glyph_positions,
            location,
            is_horizontal,
            text,
+           join_prev_actualtext,
            testing::PrintToString(InkTextInfo(font_id,
                                               glyphs,
                                               glyph_positions,
                                               location,
                                               is_horizontal,
-                                              text))) {
-  return InkTextInfoEquals(arg, InkTextInfo(font_id, glyphs, glyph_positions,
-                                            location, is_horizontal, text));
+                                              /*is_synthetic_bold=*/false,
+                                              /*is_synthetic_italic=*/false,
+                                              text,
+                                              join_prev_actualtext))) {
+  return InkTextInfoEquals(
+      arg,
+      InkTextInfo(font_id, glyphs, glyph_positions, location, is_horizontal,
+                  /*is_synthetic_bold=*/false, /*is_synthetic_italic=*/false,
+                  text, join_prev_actualtext));
 }
 
 MATCHER_P5(InkTextInfoEq,

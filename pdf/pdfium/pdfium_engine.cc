@@ -5633,6 +5633,7 @@ void PDFiumEngine::DrawText(int page_index,
   PageObjectVector page_objects;
   page_objects.reserve(num_page_objects);
   FPDF_PAGEOBJECTMARK mark = nullptr;
+  FPDF_PAGEOBJECTMARK actualtext_span = nullptr;
 
   // 1. Create text objects for all lines.
   for (const InkTextLine& line : text_lines) {
@@ -5662,13 +5663,22 @@ void PDFiumEngine::DrawText(int page_index,
         CHECK(FPDFPageObj_AddExistingMark(text_object.get(), mark));
       }
 
-      if (!base::IsStringASCII(item.text)) {
-        FPDF_PAGEOBJECTMARK span =
-            FPDFPageObj_AddMark(text_object.get(), "Span");
-        CHECK(span);
-        std::vector<unsigned char> blob = ToUTF16BEBlob(item.text);
-        FPDFPageObjMark_SetBlobParam(doc(), text_object.get(), span,
-                                     "ActualText", blob.data(), blob.size());
+      if (item.join_prev_actualtext) {
+        if (actualtext_span) {
+          CHECK(
+              FPDFPageObj_AddExistingMark(text_object.get(), actualtext_span));
+        }
+      } else {
+        if (base::IsStringASCII(item.text)) {
+          actualtext_span = nullptr;
+        } else {
+          actualtext_span = FPDFPageObj_AddMark(text_object.get(), "Span");
+          CHECK(actualtext_span);
+          std::vector<unsigned char> blob = ToUTF16BEBlob(item.text);
+          FPDFPageObjMark_SetBlobParam(doc(), text_object.get(),
+                                       actualtext_span, "ActualText",
+                                       blob.data(), blob.size());
+        }
       }
 
       page_objects.push_back(text_object.get());

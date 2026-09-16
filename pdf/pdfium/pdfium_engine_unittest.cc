@@ -3876,7 +3876,8 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSyntheticBoldItalic) {
                        /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
                        /*is_horizontal=*/true,
                        /*is_synthetic_bold=*/true,
-                       /*is_synthetic_italic=*/true, text_data.text))},
+                       /*is_synthetic_italic=*/true, text_data.text,
+                       /*join_prev_actualtext=*/false))},
                    FontAscent(engine.get(), font_id, attribute.css_font_size),
                    /*pdf_zoom=*/1.0, attribute);
 
@@ -4836,6 +4837,149 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextNonASCII) {
 
   DrawAndVerifyMarks(engine.get(), page, font_id, text_data, InkTextId(100),
                      /*expected_textbox_id=*/0);
+}
+
+TEST_P(PDFiumEngineInkDrawTextTest, DrawTextNonASCIIJoinActualText) {
+  NiceMock<TestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  int page_count = FPDF_GetPageCount(engine->doc());
+  ASSERT_EQ(page_count, 1);
+
+  constexpr int kPageIndex = 0;
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+
+  FontId font_id = AddDefaultFont(engine.get());
+  constexpr std::string_view kNonAsciiTextToDraw = "Héllo!";
+  DrawTextData text_data =
+      GetGlyphsForText(kNonAsciiTextToDraw, /*font_size=*/10.0f);
+  ASSERT_FALSE(text_data.glyphs.empty());
+  ASSERT_FALSE(text_data.glyph_positions.empty());
+
+  const int expected_textbox_id = 0;
+  engine->set_next_textbox_id_for_testing(expected_textbox_id);
+
+  const InkTextId ink_text_id(100);
+  int initial_obj_count = FPDFPage_CountObjects(page.GetPage());
+
+  // Separate the last glyph into separate vectors
+  std::vector<uint32_t> glyphs2 = {text_data.glyphs.back()};
+  std::vector<float> glyph_positions2 = {0};
+  text_data.glyphs.pop_back();
+  text_data.glyph_positions.pop_back();
+
+  std::vector<InkTextInfo> infos;
+  infos.emplace_back(font_id, text_data.glyphs, text_data.glyph_positions,
+                     /*location=*/gfx::RectF(0.0f, 0.0f, 90.0f, 20.0f),
+                     /*is_horizontal=*/true, text_data.text);
+  infos.emplace_back(font_id, glyphs2, glyph_positions2,
+                     /*location=*/
+                     gfx::RectF(90.0f, 0.0f, 10.0f, 20.0f),
+                     /*is_horizontal=*/true, /*is_synthetic_bold=*/false,
+                     /*is_synthetic_italic=*/false, u"",
+                     /*join_prev_actualtext=*/true);
+
+  const InkTextBoxAttributes attributes = SampleInkTextBoxAttributes();
+  engine->DrawText(
+      page.index(), ink_text_id,
+      {InkTextLine(gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f), std::move(infos))},
+      FontAscent(engine.get(), font_id, attributes.css_font_size),
+      /*pdf_zoom=*/1.0, attributes);
+
+  int new_obj_count = FPDFPage_CountObjects(page.GetPage());
+  ASSERT_EQ(new_obj_count, initial_obj_count + 2);
+
+  // The new text objects should be at the end.
+  FPDF_PAGEOBJECT new_obj1 =
+      FPDFPage_GetObject(page.GetPage(), new_obj_count - 2);
+  FPDF_PAGEOBJECT new_obj2 =
+      FPDFPage_GetObject(page.GetPage(), new_obj_count - 1);
+
+  // The two text objects should have one mark for both
+  ASSERT_EQ(2, FPDFPageObj_CountMarks(new_obj2));
+
+  FPDF_PAGEOBJECTMARK mark1 = FPDFPageObj_GetMark(new_obj2, 0);
+  ASSERT_EQ(kInkTextAnnotationIdentifierKey,
+            base::UTF16ToUTF8(GetPageObjectMarkName(mark1)));
+  EXPECT_THAT(GetPageObjectMarkIntParam(mark1, "TextboxId"),
+              Optional(expected_textbox_id));
+
+  FPDF_PAGEOBJECTMARK mark2 = FPDFPageObj_GetMark(new_obj2, 1);
+  FPDF_PAGEOBJECTMARK mark3 = FPDFPageObj_GetMark(new_obj1, 1);
+  EXPECT_EQ(mark2, mark3);  // The same mark should be joined across both objs
+  ASSERT_EQ("Span", base::UTF16ToUTF8(GetPageObjectMarkName(mark2)));
+  EXPECT_THAT(GetPageObjectMarkBlobParam(mark2, "ActualText"),
+              Optional(ResultOf(UTF16BEBlobToString, text_data.text)));
+}
+
+TEST_P(PDFiumEngineInkDrawTextTest, DrawTextASCIIJoinActualText) {
+  NiceMock<TestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  int page_count = FPDF_GetPageCount(engine->doc());
+  ASSERT_EQ(page_count, 1);
+
+  constexpr int kPageIndex = 0;
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+
+  FontId font_id = AddDefaultFont(engine.get());
+  constexpr std::string_view kAsciiTextToDraw = "Hello!";
+  DrawTextData text_data =
+      GetGlyphsForText(kAsciiTextToDraw, /*font_size=*/10.0f);
+  ASSERT_FALSE(text_data.glyphs.empty());
+  ASSERT_FALSE(text_data.glyph_positions.empty());
+
+  const int expected_textbox_id = 0;
+  engine->set_next_textbox_id_for_testing(expected_textbox_id);
+
+  const InkTextId ink_text_id(100);
+  int initial_obj_count = FPDFPage_CountObjects(page.GetPage());
+
+  // Separate the last glyph into separate vectors
+  std::vector<uint32_t> glyphs2 = {text_data.glyphs.back()};
+  std::vector<float> glyph_positions2 = {0};
+  text_data.glyphs.pop_back();
+  text_data.glyph_positions.pop_back();
+
+  std::vector<InkTextInfo> infos;
+  infos.emplace_back(font_id, text_data.glyphs, text_data.glyph_positions,
+                     /*location=*/gfx::RectF(0.0f, 0.0f, 90.0f, 20.0f),
+                     /*is_horizontal=*/true, text_data.text);
+  infos.emplace_back(font_id, glyphs2, glyph_positions2,
+                     /*location=*/gfx::RectF(90.0f, 0.0f, 10.0f, 20.0f),
+                     /*is_horizontal=*/true, /*is_synthetic_bold=*/false,
+                     /*is_synthetic_italic=*/false, u"",
+                     /*join_prev_actualtext=*/true);
+
+  const InkTextBoxAttributes attributes = SampleInkTextBoxAttributes();
+  engine->DrawText(
+      page.index(), ink_text_id,
+      {InkTextLine(gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f), std::move(infos))},
+      FontAscent(engine.get(), font_id, attributes.css_font_size),
+      /*pdf_zoom=*/1.0, attributes);
+
+  int new_obj_count = FPDFPage_CountObjects(page.GetPage());
+  ASSERT_EQ(new_obj_count, initial_obj_count + 2);
+
+  // The new text objects should be at the end.
+  FPDF_PAGEOBJECT new_obj1 =
+      FPDFPage_GetObject(page.GetPage(), new_obj_count - 2);
+  FPDF_PAGEOBJECT new_obj2 =
+      FPDFPage_GetObject(page.GetPage(), new_obj_count - 1);
+
+  // The two text objects should not have /ActualText
+  ASSERT_EQ(1, FPDFPageObj_CountMarks(new_obj1));
+  ASSERT_EQ(1, FPDFPageObj_CountMarks(new_obj2));
+
+  FPDF_PAGEOBJECTMARK mark1 = FPDFPageObj_GetMark(new_obj1, 0);
+  FPDF_PAGEOBJECTMARK mark2 = FPDFPageObj_GetMark(new_obj2, 0);
+  ASSERT_EQ(kInkTextAnnotationIdentifierKey,
+            base::UTF16ToUTF8(GetPageObjectMarkName(mark1)));
+  EXPECT_THAT(GetPageObjectMarkIntParam(mark1, "TextboxId"),
+              Optional(expected_textbox_id));
+  EXPECT_EQ(mark1, mark2);  // Both objects should share the metadata mark
 }
 
 TEST_P(PDFiumEngineInkDrawTextTest, DrawTextAndDiscardStrokes) {

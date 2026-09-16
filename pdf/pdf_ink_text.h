@@ -114,7 +114,8 @@ struct InkTextInfo {
               bool is_horizontal,
               bool is_synthetic_bold,
               bool is_synthetic_italic,
-              std::u16string text);
+              std::u16string text,
+              bool join_prev_actualtext);
   InkTextInfo(InkTextInfo&&) noexcept;
   InkTextInfo& operator=(InkTextInfo&&) noexcept;
   ~InkTextInfo();
@@ -137,6 +138,14 @@ struct InkTextInfo {
   // of `glyphs` and `text` are not the same in general. So it's not possible to
   // take substrings of `text` at this point.
   std::u16string text;
+  // If true, ignore the above `text` field (it should be empty string) and
+  // combine this `InkTextInfo` with the previous one for the purposes of the
+  // /ActualText span.
+  //
+  // Note: PDFiumEngine::DrawText() sometimes ignores this in the case that the
+  // `text` this InkTextInfo was supposed to join with was all ASCII. It does
+  // not insert /ActualText at all in those cases.
+  bool join_prev_actualtext;
 };
 
 // Represents a single line of text within an annotation, containing one or more

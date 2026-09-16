@@ -73,7 +73,8 @@ InkTextInfo MakeSubstrTextInfo(const InkTextInfo& input,
   return InkTextInfo(input.font_id, std::move(glyphs),
                      std::move(glyph_positions), location, input.is_horizontal,
                      input.is_synthetic_bold, input.is_synthetic_italic,
-                     !is_rtl ? input.text.substr(start_char, num_chars) : u"");
+                     !is_rtl ? input.text.substr(start_char, num_chars) : u"",
+                     /*join_prev_actualtext=*/false);
 }
 
 // Because PDF text objects only support 1D glyph positioning, it is necessary
@@ -175,7 +176,6 @@ std::string TextAlignmentToString(TextAlignment alignment) {
   NOTREACHED();
 }
 
-
 InkTextBox::InkTextBox(int id, InkTextBoxAttributes attributes)
     : id(id), attributes(std::move(attributes)) {}
 InkTextBox::InkTextBox(InkTextBox&&) noexcept = default;
@@ -195,7 +195,8 @@ InkTextInfo::InkTextInfo(FontId font_id,
                   is_horizontal,
                   /*is_synthetic_bold=*/false,
                   /*is_synthetic_italic=*/false,
-                  std::move(text)) {}
+                  std::move(text),
+                  /*join_prev_actualtext=*/false) {}
 InkTextInfo::InkTextInfo(FontId font_id,
                          std::vector<uint32_t> glyphs,
                          std::vector<float> glyph_positions,
@@ -203,7 +204,8 @@ InkTextInfo::InkTextInfo(FontId font_id,
                          bool is_horizontal,
                          bool is_synthetic_bold,
                          bool is_synthetic_italic,
-                         std::u16string text)
+                         std::u16string text,
+                         bool join_prev_actualtext)
     : font_id(font_id),
       glyphs(std::move(glyphs)),
       glyph_positions(std::move(glyph_positions)),
@@ -211,7 +213,8 @@ InkTextInfo::InkTextInfo(FontId font_id,
       is_horizontal(is_horizontal),
       is_synthetic_bold(is_synthetic_bold),
       is_synthetic_italic(is_synthetic_italic),
-      text(std::move(text)) {}
+      text(std::move(text)),
+      join_prev_actualtext(join_prev_actualtext) {}
 InkTextInfo::InkTextInfo(InkTextInfo&&) noexcept = default;
 InkTextInfo& InkTextInfo::operator=(InkTextInfo&&) noexcept = default;
 InkTextInfo::~InkTextInfo() = default;
