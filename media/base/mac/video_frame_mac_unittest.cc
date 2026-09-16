@@ -40,15 +40,20 @@ void ExpectWrappedPixelBuffer(CVPixelBufferRef pb,
             CVPixelBufferGetWidth(pb));
   EXPECT_EQ(static_cast<size_t>(frame.coded_size().height()),
             CVPixelBufferGetHeight(pb));
-  EXPECT_EQ(VideoFrame::NumPlanes(frame.format()),
-            CVPixelBufferGetPlaneCount(pb));
-  for (size_t i = 0; i < VideoFrame::NumPlanes(frame.format()); ++i) {
-    EXPECT_EQ(static_cast<size_t>(frame.columns(i)),
-              CVPixelBufferGetWidthOfPlane(pb, i))
-        << frame.format() << " plane " << i;
-    EXPECT_EQ(static_cast<size_t>(frame.rows(i)),
-              CVPixelBufferGetHeightOfPlane(pb, i))
-        << frame.format() << " plane " << i;
+  if (CVPixelBufferIsPlanar(pb)) {
+    EXPECT_EQ(VideoFrame::NumPlanes(frame.format()),
+              CVPixelBufferGetPlaneCount(pb));
+    for (size_t i = 0; i < VideoFrame::NumPlanes(frame.format()); ++i) {
+      EXPECT_EQ(static_cast<size_t>(frame.columns(i)),
+                CVPixelBufferGetWidthOfPlane(pb, i))
+          << frame.format() << " plane " << i;
+      EXPECT_EQ(static_cast<size_t>(frame.rows(i)),
+                CVPixelBufferGetHeightOfPlane(pb, i))
+          << frame.format() << " plane " << i;
+    }
+  } else {
+    EXPECT_EQ(1u, VideoFrame::NumPlanes(frame.format()));
+    EXPECT_EQ(0u, CVPixelBufferGetPlaneCount(pb));
   }
 }
 
@@ -152,6 +157,8 @@ TEST(VideoFrameMac, CheckFormats) {
     OSType video_range;
     OSType full_range;
   } kSupportedCases[] = {
+      {PIXEL_FORMAT_ARGB, kCVPixelFormatType_32BGRA, kCVPixelFormatType_32BGRA},
+      {PIXEL_FORMAT_XRGB, kCVPixelFormatType_32BGRA, kCVPixelFormatType_32BGRA},
       {PIXEL_FORMAT_I420, kCVPixelFormatType_420YpCbCr8Planar,
        kCVPixelFormatType_420YpCbCr8PlanarFullRange},
       {PIXEL_FORMAT_NV12, kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
@@ -169,7 +176,8 @@ TEST(VideoFrameMac, CheckFormats) {
   };
   constexpr VideoPixelFormat kUnsupportedCases[] = {
       PIXEL_FORMAT_YV12, PIXEL_FORMAT_I422, PIXEL_FORMAT_I420A,
-      PIXEL_FORMAT_I444};
+      PIXEL_FORMAT_I444, PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR,
+      PIXEL_FORMAT_BGRA};
 
   gfx::Size size(kWidth, kHeight);
   for (const auto& format : kUnsupportedCases) {

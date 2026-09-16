@@ -7,9 +7,11 @@
 #include <optional>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_stretch.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_text_rendering.h"
@@ -252,6 +254,16 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
     if (host->HasPlaceholderCanvas() && UseOverlaysForCanvas2D()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
+#if BUILDFLAG(IS_MAC)
+    // VideoToolbox encoding requires an image that can be reached via
+    // ProduceOverlay() and wrapped in a CVPixelBuffer, and the usage must be
+    // decided at allocation time. All SharedImages are IOSurface-backed on
+    // macOS, so this flag only marks the image as eligible to be handed to
+    // VideoToolbox rather than adding an allocation constraint.
+    if (base::FeatureList::IsEnabled(features::kWebRtcMacSharedImageEncode)) {
+      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
+    }
+#endif
 
     shared_image_provider_ = Canvas2DResourceProvider::CreateWithClear(
         host->Size(), format, alpha_type, color_space, hdr_metadata,

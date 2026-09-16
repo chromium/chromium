@@ -1851,6 +1851,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebFontsCacheAwareTimeoutAdaption);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcHideLocalIpsWithMdns);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcIgnoreUnspecifiedColorSpace);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcMacSharedImageEncode);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcUseMinMaxVEADimensions);
 
 // If enabled, WebUI renderer processes will bypass non-critical Mojo interface

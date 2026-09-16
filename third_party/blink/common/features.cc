@@ -2487,6 +2487,13 @@ BASE_FEATURE(kWebRtcHideLocalIpsWithMdns, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebRtcIgnoreUnspecifiedColorSpace,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// On macOS, configures WebRTC's hardware video encoder (RTCVideoEncoder) to
+// request native GPU input and pass SharedImage-backed VideoFrames without CPU
+// readback. Depends on media::kVTVideoEncodeAcceleratorOpaqueSharedImageEncode
+// (and media::kVTVideoEncodeAcceleratorOpaqueRgbSharedImageEncode for RGB
+// canvas/WebGL/WebGPU frames) on the VideoToolbox encoder side.
+BASE_FEATURE(kWebRtcMacSharedImageEncode, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Instructs WebRTC to honor the Min/Max Video Encode Accelerator dimensions.
 BASE_FEATURE(kWebRtcUseMinMaxVEADimensions,
 // TODO(crbug.com/1008491): enable other platforms.

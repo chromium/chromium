@@ -47,6 +47,26 @@ struct VideoFrameCVPixelFormatInfo {
 constexpr auto kVideoFrameCVPixelFormatInfos =
     std::to_array<VideoFrameCVPixelFormatInfo>({
         {
+            PIXEL_FORMAT_ARGB,
+            kCVPixelFormatType_32BGRA,
+            gfx::ColorSpace::RangeID::LIMITED,
+        },
+        {
+            PIXEL_FORMAT_ARGB,
+            kCVPixelFormatType_32BGRA,
+            gfx::ColorSpace::RangeID::FULL,
+        },
+        {
+            PIXEL_FORMAT_XRGB,
+            kCVPixelFormatType_32BGRA,
+            gfx::ColorSpace::RangeID::LIMITED,
+        },
+        {
+            PIXEL_FORMAT_XRGB,
+            kCVPixelFormatType_32BGRA,
+            gfx::ColorSpace::RangeID::FULL,
+        },
+        {
             PIXEL_FORMAT_I420,
             kCVPixelFormatType_420YpCbCr8Planar,
             gfx::ColorSpace::RangeID::LIMITED,
@@ -163,6 +183,10 @@ void CvPixelBufferReleaseCallback(void* frame_ref,
   reinterpret_cast<const VideoFrame*>(frame_ref)->Release();
 }
 
+void CvPixelBufferReleaseBytesCallback(void* release_refcon, const void* data) {
+  reinterpret_cast<const VideoFrame*>(release_refcon)->Release();
+}
+
 bool CvPixelBufferHasColorSpace(CVPixelBufferRef pixel_buffer) {
   return CVBufferHasAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey) &&
          CVBufferHasAttachment(pixel_buffer,
@@ -183,6 +207,9 @@ void SetCvPixelBufferColorSpace(const gfx::ColorSpace& frame_cs,
     CVBufferSetAttachment(pixel_buffer, kCVImageBufferYCbCrMatrixKey, matrix,
                           kCVAttachmentMode_ShouldPropagate);
   } else if (!CvPixelBufferHasColorSpace(pixel_buffer)) {
+    // RGB color spaces (MatrixID::RGB) intentionally fall through to the
+    // BT.709 default here, as VideoToolbox performs the RGB->YUV conversion
+    // using these colorimetric attachments.
     CVBufferSetAttachment(pixel_buffer, kCVImageBufferColorPrimariesKey,
                           kCVImageBufferColorPrimaries_ITU_R_709_2,
                           kCVAttachmentMode_ShouldPropagate);
@@ -334,11 +361,12 @@ base::apple::ScopedCFTypeRef<CVPixelBufferRef> WrapVideoFrameInCVPixelBuffer(
     return pixel_buffer;
   }
 
-  // VideoFrame only supports YUV formats and most of them are 'YVU' ordered,
-  // which CVPixelBuffer does not support. This means we effectively can only
-  // represent I420 and the biplanar NV12/NV16/NV24 and P010/P210/P410 family.
-  // In addition, VideoFrame does not carry colorimetric information, so this
-  // function assumes standard video range and ITU Rec 709 primaries.
+  // Most VideoFrame YUV formats are 'YVU' ordered, which CVPixelBuffer does
+  // not support. This means we effectively can only represent I420, the
+  // biplanar NV12/NV16/NV24 and P010/P210/P410 family, and single-plane 32BGRA
+  // (for ARGB/XRGB).
+  // In addition, if the VideoFrame does not carry valid YCbCr colorimetric
+  // information, standard video range and ITU Rec 709 primaries are assumed.
   const VideoPixelFormat video_frame_format = frame->format();
   auto range = frame->ColorSpace().GetRangeID();
   if (video_frame_format == PIXEL_FORMAT_NV12A &&
@@ -358,35 +386,51 @@ base::apple::ScopedCFTypeRef<CVPixelBufferRef> WrapVideoFrameInCVPixelBuffer(
   int num_planes = VideoFrame::NumPlanes(video_frame_format);
   DCHECK_LE(num_planes, kMaxPlanes);
 
-  // Build arrays for each plane's data pointer, dimensions and byte alignment.
-  std::vector<void*> plane_ptrs(num_planes);
-  std::vector<size_t> plane_widths(num_planes);
-  std::vector<size_t> plane_heights(num_planes);
-  std::vector<size_t> plane_bytes_per_row(num_planes);
-  for (int plane_i = 0; plane_i < num_planes; ++plane_i) {
-    plane_ptrs[plane_i] = const_cast<uint8_t*>(frame->data(plane_i));
-    plane_widths[plane_i] = frame->columns(plane_i);
-    plane_heights[plane_i] = frame->rows(plane_i);
-    plane_bytes_per_row[plane_i] = frame->stride(plane_i);
+  CVReturn result;
+  if (num_planes == 1) {
+    // CVPixelBufferCreateWithPlanarBytes fails for nonplanar formats like
+    // kCVPixelFormatType_32BGRA.
+    result = CVPixelBufferCreateWithBytes(
+        kCFAllocatorDefault, coded_size.width(), coded_size.height(),
+        cv_format.value(), const_cast<uint8_t*>(frame->data(0)),
+        frame->stride(0), &CvPixelBufferReleaseBytesCallback, frame.get(),
+        nullptr, pixel_buffer.InitializeInto());
+  } else {
+    // Build arrays for each plane's data pointer, dimensions and byte
+    // alignment.
+    std::vector<void*> plane_ptrs(num_planes);
+    std::vector<size_t> plane_widths(num_planes);
+    std::vector<size_t> plane_heights(num_planes);
+    std::vector<size_t> plane_bytes_per_row(num_planes);
+    for (int plane_i = 0; plane_i < num_planes; ++plane_i) {
+      plane_ptrs[plane_i] = const_cast<uint8_t*>(frame->data(plane_i));
+      plane_widths[plane_i] = frame->columns(plane_i);
+      plane_heights[plane_i] = frame->rows(plane_i);
+      plane_bytes_per_row[plane_i] = frame->stride(plane_i);
+    }
+
+    // CVPixelBufferCreateWithPlanarBytes needs a dummy plane descriptor or the
+    // release callback will not execute. The descriptor is freed in the
+    // callback.
+    void* descriptor =
+        calloc(1, std::max(sizeof(CVPlanarPixelBufferInfo_YCbCrPlanar),
+                           sizeof(CVPlanarPixelBufferInfo_YCbCrBiPlanar)));
+
+    // Wrap the frame's data in a CVPixelBuffer. Because this is a C API, we
+    // can't give it a smart pointer to the frame, so instead pass a raw pointer
+    // and increment the frame's reference count manually.
+    result = CVPixelBufferCreateWithPlanarBytes(
+        kCFAllocatorDefault, coded_size.width(), coded_size.height(),
+        cv_format.value(), descriptor, 0, num_planes, plane_ptrs.data(),
+        plane_widths.data(), plane_heights.data(), plane_bytes_per_row.data(),
+        &CvPixelBufferReleaseCallback, frame.get(), nullptr,
+        pixel_buffer.InitializeInto());
+    if (result != kCVReturnSuccess) {
+      free(descriptor);
+    }
   }
-
-  // CVPixelBufferCreateWithPlanarBytes needs a dummy plane descriptor or the
-  // release callback will not execute. The descriptor is freed in the callback.
-  void* descriptor =
-      calloc(1, std::max(sizeof(CVPlanarPixelBufferInfo_YCbCrPlanar),
-                         sizeof(CVPlanarPixelBufferInfo_YCbCrBiPlanar)));
-
-  // Wrap the frame's data in a CVPixelBuffer. Because this is a C API, we can't
-  // give it a smart pointer to the frame, so instead pass a raw pointer and
-  // increment the frame's reference count manually.
-  CVReturn result = CVPixelBufferCreateWithPlanarBytes(
-      kCFAllocatorDefault, coded_size.width(), coded_size.height(),
-      cv_format.value(), descriptor, 0, num_planes, plane_ptrs.data(),
-      plane_widths.data(), plane_heights.data(), plane_bytes_per_row.data(),
-      &CvPixelBufferReleaseCallback, frame.get(), nullptr,
-      pixel_buffer.InitializeInto());
   if (result != kCVReturnSuccess) {
-    DLOG(ERROR) << " CVPixelBufferCreateWithPlanarBytes failed: " << result;
+    DLOG(ERROR) << " CVPixelBufferCreate failed: " << result;
     return base::apple::ScopedCFTypeRef<CVPixelBufferRef>(nullptr);
   }
 

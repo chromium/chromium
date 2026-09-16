@@ -36,6 +36,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
@@ -1358,6 +1359,280 @@ TEST_F(RTCVideoEncoderEncodeTest, NoSoftwareFallbackOnMappableNativeInput) {
                                  &frame_types));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+// Verifies that opaque SharedImage frames produced by
+// MediaStreamTrackProcessor / MediaStreamTrackGenerator (e.g., WebGL, WebGPU,
+// or Canvas video effects pipelines) take the accelerated zero-copy path
+// directly to VideoEncodeAccelerator::Encode without CPU readback or
+// RGBA-to-NV12 copy.
+TEST_F(RTCVideoEncoderEncodeTest,
+       SharedImageEncodePassesOpaqueSharedImageDirectly) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebRtcMacSharedImageEncode);
+
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  CreateEncoder(codec.codecType);
+  ExpectCreateInitAndDestroyVEA(
+      media::PIXEL_FORMAT_NV12,
+      media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  media::VideoEncoderInfo info;
+  info.supports_gpu_shared_images = true;
+  info.gpu_supported_pixel_formats = {media::PIXEL_FORMAT_NV12,
+                                      media::PIXEL_FORMAT_ARGB,
+                                      media::PIXEL_FORMAT_XRGB};
+  base::RunLoop info_run_loop;
+  encoder_thread_.task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          &media::VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
+          base::Unretained(client_), info),
+      info_run_loop.QuitClosure());
+  info_run_loop.Run();
+
+  // Matches DrawingBuffer (WebGL), WebGPUSwapBufferProvider (WebGPU), and
+  // CanvasResourceProvider SharedImage usage flags wrapped by
+  // blink::VideoFrame and pushed into MediaStreamTrackGenerator on macOS.
+  // Notably omits SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX, verifying that
+  // kWebRtcMacSharedImageEncode allows encoding opaque SharedImages produced
+  // by general rendering pipelines that were not specifically tagged for
+  // VideoToolbox at allocation time.
+  const gfx::Size frame_size(kInputFrameWidth, kInputFrameHeight);
+  gpu::SharedImageMetadata metadata;
+  metadata.format = viz::SinglePlaneFormat::kBGRA_8888;
+  metadata.size = frame_size;
+  metadata.color_space = gfx::ColorSpace::CreateSRGB();
+  metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+  metadata.alpha_type = kOpaque_SkAlphaType;
+  metadata.usage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+      gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+  auto shared_image = gpu::ClientSharedImage::CreateForTesting(metadata);
+  scoped_refptr<media::VideoFrame> media_frame =
+      media::VideoFrame::WrapSharedImage(
+          media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
+          media::VideoFrame::ReleaseMailboxCB(), gfx::Rect(frame_size),
+          frame_size, base::TimeDelta());
+
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+          media_frame,
+          WebRtcVideoFrameAdapter::SharedResources::Create(nullptr)));
+
+  base::RunLoop encode_run_loop;
+  EXPECT_CALL(*mock_vea_, Encode)
+      .WillOnce(
+          [&](scoped_refptr<media::VideoFrame> frame, bool force_keyframe) {
+            // Any non-accelerated or conversion path in RTCVideoEncoder
+            // (such as EncodeOneFrame shmem allocation, RGBA-to-NV12 GPU
+            // texture copy via CopyRGBATextureToVideoFrame, or CPU readback
+            // via CreateNV12SharedImageFrame) allocates a new
+            // media::VideoFrame instance. Pointer identity here guarantees
+            // that zero-copy pass-through occurred.
+            EXPECT_EQ(frame.get(), media_frame.get());
+            EXPECT_EQ(frame->format(), media::PIXEL_FORMAT_ARGB);
+            EXPECT_TRUE(frame->HasSharedImage());
+            EXPECT_FALSE(frame->HasMappableSharedImage());
+            encode_run_loop.Quit();
+          });
+
+  std::vector<webrtc::VideoFrameType> frame_types;
+  frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                     .set_video_frame_buffer(frame_buffer)
+                                     .set_rtp_timestamp(0)
+                                     .set_timestamp_us(0)
+                                     .set_rotation(webrtc::kVideoRotation_0)
+                                     .build(),
+                                 &frame_types));
+  encode_run_loop.Run();
+}
+
+// Verifies that mappable NV12 IOSurface-backed SharedImage frames produced by
+// VideoCaptureImpl on macOS take the accelerated zero-copy path directly to
+// VideoEncodeAccelerator::Encode.
+TEST_F(RTCVideoEncoderEncodeTest,
+       SharedImageEncodePassesCameraCaptureNv12Directly) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebRtcMacSharedImageEncode);
+
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  CreateEncoder(codec.codecType);
+  ExpectCreateInitAndDestroyVEA(
+      media::PIXEL_FORMAT_NV12,
+      media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  // Matches VideoCaptureImpl::OnBufferReady on macOS: Mappable NV12
+  // SharedImage created with SCANOUT_VEA_CPU_READ buffer usage and
+  // RASTER_READ | DISPLAY_READ | SCANOUT | MACOS_VIDEO_TOOLBOX usage flags.
+  const gfx::Size frame_size(kInputFrameWidth, kInputFrameHeight);
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  const gpu::SharedImageUsageSet si_usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
+  auto shared_image = test_sii->CreateSharedImage(
+      {viz::MultiPlaneFormat::kNV12, frame_size,
+       gfx::ColorSpace::CreateREC709(), si_usage, "VideoCaptureFrameBuffer"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_VEA_CPU_READ);
+  scoped_refptr<media::VideoFrame> media_frame =
+      media::VideoFrame::WrapMappableSharedImage(
+          std::move(shared_image), test_sii->GenVerifiedSyncToken(),
+          media::VideoFrame::ReleaseMailboxCB(), gfx::Rect(frame_size),
+          frame_size, base::TimeDelta());
+  media_frame->metadata().read_lock_fences_enabled = true;
+
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+          media_frame,
+          WebRtcVideoFrameAdapter::SharedResources::Create(nullptr)));
+
+  base::RunLoop encode_run_loop;
+  EXPECT_CALL(*mock_vea_, Encode)
+      .WillOnce(
+          [&](scoped_refptr<media::VideoFrame> frame, bool force_keyframe) {
+            // Pointer identity guarantees that the original mappable NV12
+            // SharedImage VideoFrame was passed directly without shmem copy
+            // or CPU readback.
+            EXPECT_EQ(frame.get(), media_frame.get());
+            EXPECT_EQ(frame->format(), media::PIXEL_FORMAT_NV12);
+            EXPECT_TRUE(frame->HasMappableSharedImage());
+            EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
+            encode_run_loop.Quit();
+          });
+
+  std::vector<webrtc::VideoFrameType> frame_types;
+  frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                     .set_video_frame_buffer(frame_buffer)
+                                     .set_rtp_timestamp(0)
+                                     .set_timestamp_us(0)
+                                     .set_rotation(webrtc::kVideoRotation_0)
+                                     .build(),
+                                 &frame_types));
+  encode_run_loop.Run();
+}
+
+// Verifies that when kWebRtcMacSharedImageEncode is enabled, incoming
+// software I420 frames (e.g. CPU-backed media::VideoFrame) dynamically
+// switch RTCVideoEncoder to the software frame path and encode properly.
+TEST_F(RTCVideoEncoderEncodeTest,
+       SharedImageEncodeFallsBackToSoftwareI420Frame) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebRtcMacSharedImageEncode);
+
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  CreateEncoder(codec.codecType);
+  ExpectCreateInitAndDestroyVEA(
+      media::PIXEL_FORMAT_NV12,
+      media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  const gfx::Size frame_size(kInputFrameWidth, kInputFrameHeight);
+  scoped_refptr<media::VideoFrame> media_frame =
+      media::VideoFrame::CreateZeroInitializedFrame(
+          media::PIXEL_FORMAT_I420, frame_size, gfx::Rect(frame_size),
+          frame_size, base::TimeDelta());
+
+  webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer(
+      new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(
+          media_frame,
+          WebRtcVideoFrameAdapter::SharedResources::Create(nullptr)));
+
+  base::RunLoop encode_run_loop;
+  EXPECT_CALL(*mock_vea_, Encode)
+      .WillOnce(
+          [&](scoped_refptr<media::VideoFrame> frame, bool force_keyframe) {
+            // Because media_frame is already a CPU-backed I420 frame with
+            // STORAGE_OWNED_MEMORY and matching dimensions,
+            // NeedConvertToMemoryFrame() returns false and EncodeOneFrame()
+            // passes media_frame directly without copying.
+            EXPECT_EQ(frame.get(), media_frame.get());
+            EXPECT_EQ(frame->format(), media::PIXEL_FORMAT_I420);
+            EXPECT_FALSE(frame->HasSharedImage());
+            encode_run_loop.Quit();
+          });
+
+  std::vector<webrtc::VideoFrameType> frame_types;
+  frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                     .set_video_frame_buffer(frame_buffer)
+                                     .set_rtp_timestamp(0)
+                                     .set_timestamp_us(0)
+                                     .set_rotation(webrtc::kVideoRotation_0)
+                                     .build(),
+                                 &frame_types));
+  encode_run_loop.Run();
+}
+
+// Verifies that switches::kDisableVideoCaptureUseGpuMemoryBuffer takes
+// precedence on macOS even when kWebRtcMacSharedImageEncode is enabled.
+TEST_F(RTCVideoEncoderEncodeTest,
+       RespectsDisableVideoCaptureUseGpuMemoryBufferOnMac) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebRtcMacSharedImageEncode);
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableVideoCaptureUseGpuMemoryBuffer);
+
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  CreateEncoder(codec.codecType);
+  ExpectCreateInitAndDestroyVEA(
+      media::PIXEL_FORMAT_I420,
+      media::VideoEncodeAccelerator::Config::StorageType::kShmem);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+}
+
+// Verifies that when kWebRtcMacSharedImageEncode is disabled, RTCVideoEncoder
+// defaults to software shmem I420 configuration on macOS.
+TEST_F(RTCVideoEncoderEncodeTest,
+       DefaultsToSoftwareShmemWhenFeatureDisabledOnMac) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kWebRtcMacSharedImageEncode);
+
+  const webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  CreateEncoder(codec.codecType);
+  ExpectCreateInitAndDestroyVEA(
+      media::PIXEL_FORMAT_I420,
+      media::VideoEncodeAccelerator::Config::StorageType::kShmem);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+}
+
+// Verifies that screenshare content mode on macOS bypasses zero-copy GPU
+// memory buffer encoding even when kWebRtcMacSharedImageEncode is enabled.
+TEST_F(RTCVideoEncoderEncodeTest,
+       ScreenshareDisablesZeroCopyEvenWithFeatureEnabledOnMac) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kWebRtcMacSharedImageEncode);
+
+  webrtc::VideoCodec codec = GetDefaultCodec(webrtc::kVideoCodecH264);
+  codec.mode = webrtc::VideoCodecMode::kScreensharing;
+  CreateEncoder(codec.codecType);
+  ExpectCreateInitAndDestroyVEA(
+      media::PIXEL_FORMAT_I420,
+      media::VideoEncodeAccelerator::Config::StorageType::kShmem);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
   // Make RTCVideoEncoder expect native input.

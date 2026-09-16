@@ -666,11 +666,28 @@ bool IsZeroCopyEnabled(webrtc::VideoContentType content_type) {
   if (content_type == webrtc::VideoContentType::SCREENSHARE) {
     return false;
   }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableVideoCaptureUseGpuMemoryBuffer)) {
+    return false;
+  }
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(features::kWebRtcMacSharedImageEncode)) {
+    return true;
+  }
+#endif
   // Zero copy video capture from other sources (e.g. camera).
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableVideoCaptureUseGpuMemoryBuffer) &&
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kVideoCaptureUseGpuMemoryBuffer);
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kVideoCaptureUseGpuMemoryBuffer);
+}
+
+bool ShouldCheckIncomingFrameStorage() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  return true;
+#elif BUILDFLAG(IS_MAC)
+  return base::FeatureList::IsEnabled(features::kWebRtcMacSharedImageEncode);
+#else
+  return false;
+#endif
 }
 
 bool UseSoftwareForLowResolution(const webrtc::VideoCodecType codec,
@@ -1232,11 +1249,11 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
     return;
   }
 
-// On Windows and Android it is possible that RtcVideoEncoder is configured to
-// only accept native inputs, but the incoming frame is not backed by
-// GpuMemoryBuffer and is not a black frame.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
-  {
+  // On Windows, Android, and macOS (when kWebRtcMacSharedImageEncode is
+  // enabled), it is possible that RTCVideoEncoder is configured to accept
+  // native inputs, but the incoming frame is not backed by GpuMemoryBuffer /
+  // SharedImage and is not a black frame.
+  if (ShouldCheckIncomingFrameStorage()) {
     // Check if the incoming frame is backed by owned or unowned memory type.
     // This could happen when: 1. Zero-copy capture feature is turned on but
     // device does not support MediaFoundation; 2. Zero-copy is enabled and
@@ -1275,7 +1292,6 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
       }
     }
   }
-#endif
 
   pending_frames_.push_back(std::move(frame_chunk));
   // When |input_buffers_free_| is empty, EncodeOneFrame() or

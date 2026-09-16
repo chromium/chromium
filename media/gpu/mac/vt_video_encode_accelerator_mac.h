@@ -154,6 +154,7 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   int32_t frame_rate_ = 0;
   int num_temporal_layers_ = 1;
   VideoPixelFormat input_format_ = PIXEL_FORMAT_UNKNOWN;
+  std::vector<VideoPixelFormat> gpu_supported_pixel_formats_;
   VideoCodecProfile profile_ = H264PROFILE_BASELINE;
   VideoCodec codec_ = VideoCodec::kH264;
   bool calculate_psnr_ = false;

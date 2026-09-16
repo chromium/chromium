@@ -33,10 +33,10 @@ MEDIA_EXPORT bool IsAcceptableCvPixelFormat(VideoPixelFormat format,
 // Wrap a VideoFrame's data in a CVPixelBuffer object. The frame's lifetime is
 // extended for the duration of the pixel buffer's lifetime.
 //
-// The only supported formats are I420, NV12, NV12A, NV16, NV24, P010LE, P210LE,
-// and P410LE. A visible rect smaller than the coded size is represented with a
-// clean-aperture attachment. If an unsupported frame is specified, null is
-// returned.
+// The supported formats are ARGB, XRGB, I420, NV12, NV12A, NV16, NV24, P010LE,
+// P210LE, and P410LE. A visible rect smaller than the coded size is represented
+// with a clean-aperture attachment. If an unsupported frame is specified, null
+// is returned.
 MEDIA_EXPORT base::apple::ScopedCFTypeRef<CVPixelBufferRef>
 WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame);
 

@@ -555,6 +555,12 @@ std::vector<VideoPixelFormat> GpuSupportedPixelFormatsForProfile(
     return {input_format};
   }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (base::FeatureList::IsEnabled(
+          kVTVideoEncodeAcceleratorOpaqueSharedImageEncode) &&
+      base::FeatureList::IsEnabled(
+          kVTVideoEncodeAcceleratorOpaqueRgbSharedImageEncode)) {
+    return {PIXEL_FORMAT_NV12, PIXEL_FORMAT_ARGB, PIXEL_FORMAT_XRGB};
+  }
   return {PIXEL_FORMAT_NV12};
 }
 
@@ -1013,6 +1019,15 @@ EncoderStatus VTVideoEncodeAccelerator::Initialize(
   }
 
   auto encoder_info = GetVideoEncoderInfo(compression_session_.get(), config);
+  gpu_supported_pixel_formats_.clear();
+  // Only sessions initialized with candidate GPU input formats (e.g. NV12) can
+  // encode opaque GPU SharedImages. For CPU memory sessions (e.g. I420),
+  // leaving `gpu_supported_pixel_formats_` empty ensures
+  // `CanEncodeOpaqueSharedImage()` rejects all opaque SharedImage frames.
+  if (std::ranges::contains(CandidateGpuInputFormatsForProfile(profile_),
+                            input_format_)) {
+    gpu_supported_pixel_formats_ = encoder_info.gpu_supported_pixel_formats;
+  }
 
   // Report whether hardware encode is being used.
   if (!encoder_info.is_hardware_accelerated) {
@@ -1961,15 +1976,17 @@ bool VTVideoEncodeAccelerator::CanEncodeOpaqueSharedImage(
           kVTVideoEncodeAcceleratorOpaqueSharedImageEncode)) {
     return false;
   }
-  // Opaque SharedImage encode is wired for NV12, P010, and HEVC RExt packed
-  // YUV (NV16 / NV24 / P210 / P410).
-  if (frame.format() != input_format_ ||
-      !std::ranges::contains(CandidateGpuInputFormatsForProfile(profile_),
-                             input_format_)) {
-    return false;
-  }
-  return frame.shared_image()->usage().Has(
-      gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX);
+  // SharedImages must have SCANOUT (e.g. WebGL, WebGPU) or
+  // MACOS_VIDEO_TOOLBOX (e.g. canvas, camera capture, video decoders) usage so
+  // that ProduceOverlay succeeds on the GPU thread.
+  //
+  // Note: For CPU memory sessions (such as I420),
+  // `gpu_supported_pixel_formats_` is left empty in `Initialize()`, ensuring
+  // this always returns false.
+  return frame.shared_image()->usage().HasAny(
+             gpu::SHARED_IMAGE_USAGE_SCANOUT |
+             gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX) &&
+         std::ranges::contains(gpu_supported_pixel_formats_, frame.format());
 }
 
 base::TimeDelta VTVideoEncodeAccelerator::AssignMonotonicTimestamp() {

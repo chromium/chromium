@@ -1075,9 +1075,7 @@ BASE_FEATURE(kWebCodecsVideoEncoderFrameDrop,
 
 // Inform webrtc with correct video color space information whenever
 // possible.
-BASE_FEATURE(kWebRTCColorAccuracy,
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
+BASE_FEATURE(kWebRTCColorAccuracy, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A hardware video encoder is allowed to drop a frame in WebRTC.
 BASE_FEATURE(kWebRTCHardwareVideoEncoderFrameDrop,
@@ -1401,6 +1399,11 @@ BASE_FEATURE(kVTVideoEncodeAcceleratorOpaqueSharedImageEncode,
 // Match the VideoToolbox output pixel format range to the frame color space so
 // VideoToolbox does not rescale code values.
 BASE_FEATURE(kVideoToolboxFullRangeOutput, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables VideoToolbox zero-copy encode of opaque RGB SharedImage-backed
+// VideoFrames (e.g. ARGB, XRGB).
+BASE_FEATURE(kVTVideoEncodeAcceleratorOpaqueRgbSharedImageEncode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_APPLE)
 

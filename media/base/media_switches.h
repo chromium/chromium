@@ -421,6 +421,8 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kVTVideoEncodeAcceleratorCalculatePSNR);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(
     kVTVideoEncodeAcceleratorOpaqueSharedImageEncode);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoToolboxFullRangeOutput);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(
+    kVTVideoEncodeAcceleratorOpaqueRgbSharedImageEncode);
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -596,7 +598,6 @@ MEDIA_EXPORT bool IsSystemLoopbackAsAecReferenceForcedOn();
 MEDIA_EXPORT bool IsSystemLoopbackCaptureSupported();
 
 MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
-
 
 #if BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT bool IsAndroidZeroCopyVideoCaptureEnabled(
