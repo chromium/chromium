@@ -33,12 +33,14 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using content::RenderFrameHost;
 
@@ -108,6 +110,20 @@ const net::HttpRequestHeaders GetDiscourseContext(
   net::HttpRequestHeaders headers;
   headers.SetHeader(kDiscourseContextHeaderName, encoded_context);
   return headers;
+}
+
+// Handles header removal when following redirects.
+void OnRedirect(const GURL& url_before_redirect,
+                const net::RedirectInfo& redirect_info,
+                const network::mojom::URLResponseHead& response_head,
+                std::vector<std::string>* to_be_removed_headers) {
+  variations::RemoveVariationsHeaderIfNeeded(redirect_info, response_head,
+                                             variations::InIncognito::kNo,
+                                             to_be_removed_headers);
+
+  if (!url::IsSameOriginWith(url_before_redirect, redirect_info.new_url)) {
+    to_be_removed_headers->push_back(kDiscourseContextHeaderName);
+  }
 }
 
 }  // namespace
@@ -296,6 +312,8 @@ void ContextualSearchDelegateImpl::ResolveSearchTermFromContext(
           variations::InIncognito::kNo,  // Impossible to be incognito at this
                                          // point.
           traffic_annotation);
+
+  url_loader_->SetOnRedirectCallback(base::BindRepeating(&OnRedirect));
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),

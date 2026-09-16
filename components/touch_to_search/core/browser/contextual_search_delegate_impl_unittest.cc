@@ -26,6 +26,8 @@
 #include "components/touch_to_search/core/browser/resolved_search_term.h"
 #include "components/touch_to_search/core/proto/client_discourse_context.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "components/variations/variations_ids_provider.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -173,6 +175,20 @@ class ContextualSearchDelegateImplTest : public testing::Test {
                                      base::Unretained(this)));
   }
 
+  void SetContextualSearchUrlOrigin(const std::string& origin) {
+    TemplateURLData data;
+    data.SetURL(origin + "url?bar={searchTerms}");
+    data.contextual_search_url =
+        origin +
+        "_/contextualsearch?"
+        "{google:contextualSearchVersion}{google:contextualSearchContextData}";
+    TemplateURLService& template_url_service =
+        *search_engines_test_environment_.template_url_service();
+    TemplateURL* template_url =
+        template_url_service.Add(std::make_unique<TemplateURL>(data));
+    template_url_service.SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
   void SetResponseStringAndSimulateResponse(const std::string& selected_text,
                                             const std::string& mentions_start,
                                             const std::string& mentions_end) {
@@ -274,7 +290,8 @@ class ContextualSearchDelegateImplTest : public testing::Test {
   std::unique_ptr<ContextualSearchDelegateImpl> delegate_;
   std::unique_ptr<ContextualSearchContext> test_context_;
 
-  network::TestURLLoaderFactory test_url_loader_factory_;
+  network::TestURLLoaderFactory test_url_loader_factory_{
+      /*observe_loader_requests=*/true};
 
  private:
   void recordSearchTermResolutionResponse(
@@ -758,4 +775,191 @@ TEST_F(ContextualSearchDelegateImplTest, ResponseWithEmptyRelatedSearches) {
   std::string response("{\"no_suggestions_tag\":\"test\"}");
   SimulateResponseReturned(response);
   EXPECT_TRUE(related_searches_json().empty());
+}
+
+namespace {
+
+constexpr char kSampleBasePageUrl[] = "https://example.com/page?id=123";
+constexpr char16_t kSampleSurroundings[] =
+    u"Sample context text surrounding selection";
+constexpr char kCrossOriginRedirectTarget[] =
+    "https://target.example.org/destination";
+constexpr char kSameOriginRedirectTargetFoobar[] =
+    "https://foobar.com/_/contextualsearch_v2";
+constexpr char kSameOriginRedirectTargetGoogle[] =
+    "https://www.google.com/_/contextualsearch_v2";
+
+}  // namespace
+
+TEST_F(ContextualSearchDelegateImplTest,
+       DiscourseContextHeaderRemovedOnCrossOriginRedirect_NonGoogleDSE) {
+  test_context_ =
+      MakeTestContext(std::string(), GURL(kSampleBasePageUrl), "utf-8");
+  test_context_->SetSelectionSurroundings(0, 6,
+                                          std::u16string(kSampleSurroundings));
+  CallResolveSearchTermFromContext(test_context_->AsWeakPtr());
+
+  base::RunLoop().RunUntilIdle();
+  auto* pending = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending);
+  ASSERT_TRUE(pending->test_url_loader);
+
+  discourse_context::ClientDiscourseContext cdc =
+      GetDiscourseContextFromRequest();
+  ASSERT_GT(cdc.display_size(), 0);
+  EXPECT_EQ(kSampleBasePageUrl, cdc.display(0).uri());
+  EXPECT_EQ(base::UTF16ToUTF8(kSampleSurroundings),
+            cdc.display(0).selection().content());
+
+  net::RedirectInfo redirect;
+  redirect.status_code = 302;
+  redirect.new_method = "GET";
+  redirect.new_url = GURL(kCrossOriginRedirectTarget);
+  pending->client->OnReceiveRedirect(redirect,
+                                     network::mojom::URLResponseHead::New());
+  base::RunLoop().RunUntilIdle();
+
+  const auto& follow_params =
+      pending->test_url_loader->follow_redirect_params();
+  ASSERT_EQ(1u, follow_params.size());
+
+  bool stripped_discourse_context = false;
+  for (const auto& h : follow_params[0].headers_update_params.removed_headers) {
+    if (h == kDiscourseContextHeaderName) {
+      stripped_discourse_context = true;
+    }
+  }
+  EXPECT_TRUE(stripped_discourse_context);
+}
+
+TEST_F(ContextualSearchDelegateImplTest,
+       DiscourseContextHeaderRemovedOnCrossOriginRedirect_GoogleDSE) {
+  ASSERT_EQ(variations::VariationsIdsProvider::ForceIdsResult::SUCCESS,
+            variations::VariationsIdsProvider::GetInstance()
+                ->ForceVariationIdsForTesting({"12"}, ""));
+
+  SetContextualSearchUrlOrigin("https://www.google.com/");
+
+  test_context_ =
+      MakeTestContext(std::string(), GURL(kSampleBasePageUrl), "utf-8");
+  test_context_->SetSelectionSurroundings(0, 6,
+                                          std::u16string(kSampleSurroundings));
+  CallResolveSearchTermFromContext(test_context_->AsWeakPtr());
+
+  base::RunLoop().RunUntilIdle();
+  auto* pending = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending);
+  ASSERT_TRUE(pending->test_url_loader);
+
+  ASSERT_TRUE(pending->request.cors_exempt_headers.HasHeader("X-Client-Data"));
+  discourse_context::ClientDiscourseContext cdc =
+      GetDiscourseContextFromRequest();
+  ASSERT_GT(cdc.display_size(), 0);
+  EXPECT_EQ(kSampleBasePageUrl, cdc.display(0).uri());
+  EXPECT_EQ(base::UTF16ToUTF8(kSampleSurroundings),
+            cdc.display(0).selection().content());
+
+  net::RedirectInfo redirect;
+  redirect.status_code = 302;
+  redirect.new_method = "GET";
+  redirect.new_url = GURL(kCrossOriginRedirectTarget);
+  pending->client->OnReceiveRedirect(redirect,
+                                     network::mojom::URLResponseHead::New());
+  base::RunLoop().RunUntilIdle();
+
+  const auto& follow_params =
+      pending->test_url_loader->follow_redirect_params();
+  ASSERT_EQ(1u, follow_params.size());
+
+  bool stripped_x_client_data = false;
+  bool stripped_discourse_context = false;
+  for (const auto& h : follow_params[0].headers_update_params.removed_headers) {
+    if (h == "X-Client-Data") {
+      stripped_x_client_data = true;
+    }
+    if (h == kDiscourseContextHeaderName) {
+      stripped_discourse_context = true;
+    }
+  }
+  EXPECT_TRUE(stripped_x_client_data);
+  EXPECT_TRUE(stripped_discourse_context);
+}
+
+TEST_F(ContextualSearchDelegateImplTest,
+       DiscourseContextHeaderPreservedOnSameOriginRedirect_NonGoogleDSE) {
+  test_context_ =
+      MakeTestContext(std::string(), GURL(kSampleBasePageUrl), "utf-8");
+  test_context_->SetSelectionSurroundings(0, 6,
+                                          std::u16string(kSampleSurroundings));
+  CallResolveSearchTermFromContext(test_context_->AsWeakPtr());
+
+  base::RunLoop().RunUntilIdle();
+  auto* pending = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending);
+  ASSERT_TRUE(pending->test_url_loader);
+
+  net::RedirectInfo redirect;
+  redirect.status_code = 302;
+  redirect.new_method = "GET";
+  redirect.new_url = GURL(kSameOriginRedirectTargetFoobar);
+  pending->client->OnReceiveRedirect(redirect,
+                                     network::mojom::URLResponseHead::New());
+  base::RunLoop().RunUntilIdle();
+
+  const auto& follow_params =
+      pending->test_url_loader->follow_redirect_params();
+  ASSERT_EQ(1u, follow_params.size());
+
+  bool stripped_discourse_context = false;
+  for (const auto& h : follow_params[0].headers_update_params.removed_headers) {
+    if (h == kDiscourseContextHeaderName) {
+      stripped_discourse_context = true;
+    }
+  }
+  EXPECT_FALSE(stripped_discourse_context);
+}
+
+TEST_F(ContextualSearchDelegateImplTest,
+       DiscourseContextHeaderPreservedOnSameOriginRedirect_GoogleDSE) {
+  ASSERT_EQ(variations::VariationsIdsProvider::ForceIdsResult::SUCCESS,
+            variations::VariationsIdsProvider::GetInstance()
+                ->ForceVariationIdsForTesting({"12"}, ""));
+
+  SetContextualSearchUrlOrigin("https://www.google.com/");
+
+  test_context_ =
+      MakeTestContext(std::string(), GURL(kSampleBasePageUrl), "utf-8");
+  test_context_->SetSelectionSurroundings(0, 6,
+                                          std::u16string(kSampleSurroundings));
+  CallResolveSearchTermFromContext(test_context_->AsWeakPtr());
+
+  base::RunLoop().RunUntilIdle();
+  auto* pending = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending);
+  ASSERT_TRUE(pending->test_url_loader);
+
+  net::RedirectInfo redirect;
+  redirect.status_code = 302;
+  redirect.new_method = "GET";
+  redirect.new_url = GURL(kSameOriginRedirectTargetGoogle);
+  pending->client->OnReceiveRedirect(redirect,
+                                     network::mojom::URLResponseHead::New());
+  base::RunLoop().RunUntilIdle();
+
+  const auto& follow_params =
+      pending->test_url_loader->follow_redirect_params();
+  ASSERT_EQ(1u, follow_params.size());
+
+  bool stripped_x_client_data = false;
+  bool stripped_discourse_context = false;
+  for (const auto& h : follow_params[0].headers_update_params.removed_headers) {
+    if (h == "X-Client-Data") {
+      stripped_x_client_data = true;
+    }
+    if (h == kDiscourseContextHeaderName) {
+      stripped_discourse_context = true;
+    }
+  }
+  EXPECT_FALSE(stripped_x_client_data);
+  EXPECT_FALSE(stripped_discourse_context);
 }
