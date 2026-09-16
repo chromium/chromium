@@ -1384,10 +1384,6 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kVoiceSearchCoherenceLiveTranscriptionParams[] = {
-        {"VoiceSearchCoherenceSearchboxWithLiveTranscription", "true"}};
-
 const FeatureEntry::FeatureParam kVoiceSearchCoherenceRealboxArm1Params[] = {
     {"VoiceSearchCoherenceSearchboxWithLiveTranscription", "false"},
     {"VoiceSearchCoherenceRealboxAutoEndpoint", "false"},
@@ -1408,13 +1404,8 @@ const FeatureEntry::FeatureParam kVoiceSearchCoherenceRealboxArm4Params[] = {
     {"VoiceSearchCoherenceRealboxAutoEndpoint", "true"},
     {"VoiceSearchCoherenceRealboxHelperText", "true"}};
 
-// Normal 'Enabled' option is just 'No Live Transcription'. 'Disabled' option
-// disables live transcription and the experiment.
 const FeatureEntry::FeatureVariation
     kVoiceSearchCoherenceSearchboxVariations[] = {
-        {"(No Live Transcription)", {}, nullptr},
-        {"(With Live Transcription)",
-         kVoiceSearchCoherenceLiveTranscriptionParams, nullptr},
         {"Arm 1: Wave only, manual submit + Listening",
          kVoiceSearchCoherenceRealboxArm1Params, nullptr},
         {"Arm 2: Wave only, 3s auto endpoint + Listening",
