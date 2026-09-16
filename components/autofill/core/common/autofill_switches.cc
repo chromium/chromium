@@ -22,6 +22,10 @@ const char kAutofillServerURL[] = "autofill-server-url";
 const char kAutofillUploadThrottlingPeriodInDays[] =
     "autofill-upload-throttling-period-in-days";
 
+// Automatically grants permission prompts for email verification.
+const char kAutoGrantEmailVerificationPermission[] =
+    "auto-grant-email-verification-permission";
+
 // Ignores autocomplete="off" for Autofill data (profiles + credit cards).
 const char kIgnoreAutocompleteOffForAutofill[] =
     "ignore-autocomplete-off-autofill";

@@ -6,10 +6,12 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
 #include "base/json/values_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -30,6 +32,7 @@
 #include "components/autofill/core/browser/strike_databases/evp/email_verification_not_signed_in_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/evp/email_verification_strike_database.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_switches.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -803,8 +806,15 @@ void EmailVerifierDelegate::TriggerVerification(AutofillManager& manager,
   const base::DictValue& state =
       prefs->GetDict(prefs::kAutofillEmailVerificationState);
   const base::DictValue* email_data = state.FindDict(normalized_email);
+  const bool auto_grant =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAutoGrantEmailVerificationPermission) ||
+      base::GetFieldTrialParamByFeatureAsBool(
+          ::features::kEmailVerificationProtocol, "auto_grant_permission",
+          false);
   const bool already_allowed =
-      email_data && email_data->FindBool("allowed").value_or(false);
+      auto_grant ||
+      (email_data && email_data->FindBool("allowed").value_or(false));
 
   verifier->CheckIfVerifiable(
       email,
