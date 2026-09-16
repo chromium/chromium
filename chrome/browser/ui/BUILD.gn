@@ -2749,18 +2749,12 @@ static_library("ui") {
       "views/frame/browser_view.h",
       "views/frame/browser_widget.cc",
       "views/frame/browser_widget.h",
-      "views/frame/browser_window_factory.cc",
       "views/frame/contents_container_view.cc",
       "views/frame/contents_container_view.h",
       "views/frame/horizontal_tab_strip_region_view.cc",
       "views/frame/horizontal_tab_strip_region_view.h",
-      "views/frame/immersive_mode_controller_factory_views.cc",
       "views/frame/layout/browser_view_layout.cc",
       "views/frame/layout/browser_view_layout.h",
-      "views/frame/layout/browser_view_layout_delegate_impl.cc",
-      "views/frame/layout/browser_view_layout_delegate_impl.h",
-      "views/frame/layout/browser_view_layout_impl.cc",
-      "views/frame/layout/browser_view_layout_impl.h",
       "views/frame/multi_contents_view.cc",
       "views/frame/multi_contents_view.h",
       "views/frame/picture_in_picture_browser_frame_view.cc",
@@ -2974,8 +2968,11 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:browser_root_view_impl",
       "//chrome/browser/ui/views/frame:browser_view_app_layout_impl",
       "//chrome/browser/ui/views/frame:browser_view_layout_delegate",
+      "//chrome/browser/ui/views/frame:browser_view_layout_delegate_impl",
+      "//chrome/browser/ui/views/frame:browser_view_layout_impl",
       "//chrome/browser/ui/views/frame:browser_view_popup_layout_impl",
       "//chrome/browser/ui/views/frame:browser_view_tabbed_layout_impl",
+      "//chrome/browser/ui/views/frame:browser_window_factory",
       "//chrome/browser/ui/views/frame:caption_button_placeholder_container",
       "//chrome/browser/ui/views/frame:contents_border_controller",
       "//chrome/browser/ui/views/frame:contents_border_controller_impl",
@@ -2992,6 +2989,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:custom_floating_corner_impl",
       "//chrome/browser/ui/views/frame:find_bar_owner_views",
       "//chrome/browser/ui/views/frame:find_bar_owner_views_impl",
+      "//chrome/browser/ui/views/frame:immersive_mode_controller_factory_views",
       "//chrome/browser/ui/views/frame:immersive_mode_controller_stub",
       "//chrome/browser/ui/views/frame:main_background_region_view",
       "//chrome/browser/ui/views/frame:multi_contents_background_view",
@@ -3281,9 +3279,25 @@ static_library("ui") {
       "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator_impl",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop_view_controller_impl",
 
+      # browser_view_layout_delegate_impl includes browser_view.h, etc.
+      # which cannot be split out yet.
+      "//chrome/browser/ui/views/frame:browser_view_layout_delegate_impl",
+
+      # browser_view_layout_impl includes browser_view_layout.h and
+      # multi_contents_view.h which cannot be split out yet.
+      "//chrome/browser/ui/views/frame:browser_view_layout_impl",
+
+      # browser_window_factory includes browser_view.h, etc.
+      # which cannot be split out yet.
+      "//chrome/browser/ui/views/frame:browser_window_factory",
+
       # contents_border_controller_impl includes browser_view.h and
       # contents_container_view.h which cannot be split out yet.
       "//chrome/browser/ui/views/frame:contents_border_controller_impl",
+
+      # immersive_mode_controller_factory_views includes
+      # immersive_mode_controller_chromeos.h which cannot be split out yet.
+      "//chrome/browser/ui/views/frame:immersive_mode_controller_factory_views",
 
       # TODO(crbug.com/353332589): These targets include headers from
       # //chrome/browser/ui:ui.

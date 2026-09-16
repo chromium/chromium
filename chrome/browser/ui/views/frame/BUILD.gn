@@ -369,6 +369,22 @@ source_set("immersive_mode_controller_stub") {
   ]
 }
 
+source_set("immersive_mode_controller_factory_views") {
+  sources = [ "immersive_mode_controller_factory_views.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":immersive_mode_controller_stub",
+    "//build:buildflag_header_h",
+    "//chrome/browser/ui/window_feature_controller",
+  ]
+
+  if (is_mac) {
+    deps += [ ":immersive_mode_controller_mac" ]
+  }
+}
+
 source_set("web_contents_close_handler_delegate") {
   public = [ "web_contents_close_handler_delegate.h" ]
 }
@@ -646,6 +662,31 @@ if (is_win) {
     public = [ "system_menu_insertion_delegate_win.h" ]
     sources = [ "system_menu_insertion_delegate_win.cc" ]
     public_deps = [ "//ui/views" ]
+  }
+}
+
+source_set("browser_window_factory") {
+  sources = [ "browser_window_factory.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":browser_native_widget_factory",
+    "//build:buildflag_header_h",
+    "//chrome/browser/ui:browser_window_deleter",
+    "//chrome/browser/ui/fullscreen",
+    "//chrome/browser/ui/webui_browser",
+    "//chrome/browser/ui/webui_browser:headers",
+    "//chrome/browser/ui/window_feature_controller",
+    "//ui/views",
+  ]
+
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/components/kiosk" ]
   }
 }
 
@@ -1478,11 +1519,71 @@ if (use_aura && !is_chromeos) {
   }
 }
 
+source_set("browser_view_layout_delegate_impl") {
+  public = [ "layout/browser_view_layout_delegate_impl.h" ]
+  sources = [ "layout/browser_view_layout_delegate_impl.cc" ]
+
+  public_deps = [
+    ":browser_view_layout_delegate",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//components/prefs",
+  ]
+
+  deps = [
+    ":glass_frame_service",
+    "//build:buildflag_header_h",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/animation",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/find_bar",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:features",
+    "//chrome/browser/ui/tabs:tab_model",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/infobars",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/window_feature_controller",
+    "//chrome/common:buildflags",
+    "//chrome/common:constants",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/ui:fullscreen_util_mac" ]
+  }
+}
+
+source_set("browser_view_layout_impl") {
+  public = [ "layout/browser_view_layout_impl.h" ]
+  sources = [ "layout/browser_view_layout_impl.cc" ]
+
+  public_deps = [
+    ":browser_view_layout_delegate",
+    ":browser_view_layout_params",
+    ":custom_corners_background",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+
+  deps = [
+    ":glass_frame_service",
+    "//build:buildflag_header_h",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/views/bookmarks",
+    "//ui/base:features",
+  ]
+}
+
 source_set("browser_view_app_layout_impl") {
   public = [ "layout/browser_view_app_layout_impl.h" ]
   sources = [ "layout/browser_view_app_layout_impl.cc" ]
   public_deps = [
     ":browser_view_layout_delegate",
+    ":browser_view_layout_impl",
     ":browser_view_layout_params",
     "//chrome/browser:browser_public_dependencies",
     "//ui/gfx/geometry",
@@ -1505,6 +1606,7 @@ source_set("browser_view_popup_layout_impl") {
   sources = [ "layout/browser_view_popup_layout_impl.cc" ]
   public_deps = [
     ":browser_view_layout_delegate",
+    ":browser_view_layout_impl",
     "//chrome/browser:browser_public_dependencies",
   ]
   deps = [
@@ -1520,6 +1622,7 @@ source_set("browser_view_tabbed_layout_impl") {
   sources = [ "layout/browser_view_tabbed_layout_impl.cc" ]
   public_deps = [
     ":browser_view_layout_delegate",
+    ":browser_view_layout_impl",
     ":browser_view_layout_params",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/animation",

@@ -3397,6 +3397,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/extensions:extensions_menu_view",
         "//chrome/browser/ui/views/extensions:extensions_toolbar_button",
         "//chrome/browser/ui/views/extensions:extensions_views_utils",
+        "//chrome/browser/ui/views/frame:browser_view_layout_delegate_impl",
         "//chrome/browser/ui/views/frame:custom_corners_background",
         "//chrome/browser/ui/views/frame:custom_floating_corner",
         "//chrome/browser/ui/views/frame:multi_contents_background_view",
