@@ -5,14 +5,15 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_STREAM_BLOB_H_
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_STREAM_BLOB_H_
 
+#include <memory>
+
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "content/browser/devtools/devtools_io_context.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_storage_constants.h"
-
-#include <memory>
 
 namespace net {
 class IOBufferWithSize;
@@ -38,9 +39,9 @@ class DevToolsStreamBlob : public DevToolsIOContext::Stream {
       const std::string& handle,
       const std::string& uuid);
 
- private:
-  DevToolsStreamBlob();
+  explicit DevToolsStreamBlob(base::PassKey<DevToolsStreamBlob>);
 
+ private:
   void Open(scoped_refptr<ChromeBlobStorageContext> context,
             StoragePartition* partition,
             const std::string& handle,

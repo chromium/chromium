@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/android/codec_image.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -16,7 +19,6 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/mock_media_codec_bridge.h"
-#include "media/gpu/android/codec_image.h"
 #include "media/gpu/android/mock_codec_buffer_wait_coordinator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,7 +49,8 @@ class CodecImageTest : public testing::Test {
     auto codec = std::make_unique<NiceMock<MockMediaCodecBridge>>();
     codec_ = codec.get();
     wrapper_ = std::make_unique<CodecWrapper>(
-        CodecSurfacePair(std::move(codec), new CodecSurfaceBundle()),
+        CodecSurfacePair(std::move(codec),
+                         base::MakeRefCounted<CodecSurfaceBundle>()),
         base::DoNothing(), kFrameSize, std::nullopt);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
         .WillByDefault(Return(OkStatus()));

@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -132,14 +133,16 @@ void CrxInstaller::EnsureShutdownNotifierFactoryBuilt() {
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::CreateSilent(
     content::BrowserContext* context) {
-  return new CrxInstaller(context, nullptr, nullptr);
+  return base::MakeRefCounted<CrxInstaller>(base::PassKey<CrxInstaller>(),
+                                            context, nullptr, nullptr);
 }
 
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::Create(
     content::BrowserContext* context,
     std::unique_ptr<ExtensionInstallPromptClient> client) {
-  return new CrxInstaller(context, std::move(client), nullptr);
+  return base::MakeRefCounted<CrxInstaller>(
+      base::PassKey<CrxInstaller>(), context, std::move(client), nullptr);
 }
 
 // static
@@ -147,8 +150,15 @@ scoped_refptr<CrxInstaller> CrxInstaller::Create(
     content::BrowserContext* context,
     std::unique_ptr<ExtensionInstallPromptClient> client,
     const InstallApproval* approval) {
-  return new CrxInstaller(context, std::move(client), approval);
+  return base::MakeRefCounted<CrxInstaller>(
+      base::PassKey<CrxInstaller>(), context, std::move(client), approval);
 }
+
+CrxInstaller::CrxInstaller(base::PassKey<CrxInstaller>,
+                           content::BrowserContext* context,
+                           std::unique_ptr<ExtensionInstallPromptClient> client,
+                           const InstallApproval* approval)
+    : CrxInstaller(context, std::move(client), approval) {}
 
 CrxInstaller::CrxInstaller(content::BrowserContext* context,
                            std::unique_ptr<ExtensionInstallPromptClient> client,

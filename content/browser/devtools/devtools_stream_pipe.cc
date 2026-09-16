@@ -7,9 +7,11 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/pass_key.h"
 
 namespace content {
 
@@ -26,13 +28,17 @@ struct DevToolsStreamPipe::ReadRequest {
 scoped_refptr<DevToolsStreamPipe> DevToolsStreamPipe::Create(
     DevToolsIOContext* context,
     mojo::ScopedDataPipeConsumerHandle pipe) {
-  return new DevToolsStreamPipe(context, std::move(pipe));
+  auto stream = base::MakeRefCounted<DevToolsStreamPipe>(
+      base::PassKey<DevToolsStreamPipe>(), std::move(pipe));
+  // Registering takes a reference to the stream, so it must happen after the
+  // object has been adopted by `MakeRefCounted`, not during construction.
+  stream->handle_ = stream->Register(context);
+  return stream;
 }
 
-DevToolsStreamPipe::DevToolsStreamPipe(DevToolsIOContext* context,
+DevToolsStreamPipe::DevToolsStreamPipe(base::PassKey<DevToolsStreamPipe>,
                                        mojo::ScopedDataPipeConsumerHandle pipe)
     : DevToolsIOContext::Stream(base::SequencedTaskRunner::GetCurrentDefault()),
-      handle_(Register(context)),
       pipe_(std::move(pipe)),
       pipe_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
       last_status_(StatusSuccess) {

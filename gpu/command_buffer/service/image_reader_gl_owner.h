@@ -13,6 +13,7 @@
 #include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/pass_key.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/gpu_gles2_export.h"
@@ -38,6 +39,11 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
+  ImageReaderGLOwner(base::PassKey<TextureOwner>,
+                     Mode secure_mode,
+                     scoped_refptr<SharedContextState> context_state,
+                     scoped_refptr<RefCountedLock> drdc_lock,
+                     TextureOwnerCodecType type_for_metrics);
   ImageReaderGLOwner(const ImageReaderGLOwner&) = delete;
   ImageReaderGLOwner& operator=(const ImageReaderGLOwner&) = delete;
 
@@ -68,8 +74,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
   void ReleaseResources() override;
 
  private:
-  friend class TextureOwner;
-  friend class ImageReaderGLOwnerTest;
   class ScopedHardwareBufferImpl;
 
   // Manages ownership of the latest image retrieved from AImageReader and
@@ -93,10 +97,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
     base::ScopedFD ready_fence_;
   };
 
-  ImageReaderGLOwner(Mode secure_mode,
-                     scoped_refptr<SharedContextState> context_state,
-                     scoped_refptr<RefCountedLock> drdc_lock,
-                     TextureOwnerCodecType type_for_metrics);
   ~ImageReaderGLOwner() override;
 
   // Registers and releases a ref on the image. Once the ref-count for an image

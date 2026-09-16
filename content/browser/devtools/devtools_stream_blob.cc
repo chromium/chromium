@@ -8,6 +8,8 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -29,7 +31,7 @@ DevToolsStreamBlob::ReadRequest::ReadRequest(off_t position,
 
 DevToolsStreamBlob::ReadRequest::~ReadRequest() = default;
 
-DevToolsStreamBlob::DevToolsStreamBlob()
+DevToolsStreamBlob::DevToolsStreamBlob(base::PassKey<DevToolsStreamBlob>)
     : DevToolsIOContext::Stream(GetIOThreadTaskRunner({})),
       last_read_pos_(0),
       failed_(false),
@@ -56,7 +58,8 @@ scoped_refptr<DevToolsIOContext::Stream> DevToolsStreamBlob::Create(
     StoragePartition* partition,
     const std::string& handle,
     const std::string& uuid) {
-  scoped_refptr<DevToolsStreamBlob> result = new DevToolsStreamBlob();
+  auto result = base::MakeRefCounted<DevToolsStreamBlob>(
+      base::PassKey<DevToolsStreamBlob>());
   result->Register(io_context, handle);
   result->Open(
       blob_context, partition, uuid,

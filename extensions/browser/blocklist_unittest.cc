@@ -5,6 +5,7 @@
 #include "extensions/browser/blocklist.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -147,7 +148,7 @@ TEST_F(BlocklistTest, GetBlocklistStates) {
 TEST_F(BlocklistTest, FetchBlocklistStates) {
   Blocklist blocklist(browser_context());
   scoped_refptr<FakeSafeBrowsingDatabaseManager> blocklist_db(
-      new FakeSafeBrowsingDatabaseManager(true));
+      base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(true));
   ScopedDatabaseManagerForTest scoped_blocklist_db(blocklist_db);
 
   ExtensionId a = AddExtension("a");

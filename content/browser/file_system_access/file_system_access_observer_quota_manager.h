@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/common/content_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -65,6 +66,12 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
     bool errored_ = false;
   };
 
+  FileSystemAccessObserverQuotaManager(
+      base::PassKey<FileSystemAccessWatcherManager>,
+      const blink::StorageKey& storage_key,
+      ukm::SourceId ukm_source_id,
+      FileSystemAccessWatcherManager& watcher_manager);
+
   Handle CreateHandle();
 
   size_t GetTotalUsageForTesting() { return total_usage_; }
@@ -80,16 +87,10 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
   static constexpr double kHighWaterMarkBucketSpacing = 1.1;
 
  private:
-  friend FileSystemAccessWatcherManager;
   friend class base::RefCountedDeleteOnSequence<
       FileSystemAccessObserverQuotaManager>;
   friend class base::DeleteHelper<FileSystemAccessObserverQuotaManager>;
   ~FileSystemAccessObserverQuotaManager();
-
-  explicit FileSystemAccessObserverQuotaManager(
-      const blink::StorageKey& storage_key,
-      ukm::SourceId ukm_source_id,
-      FileSystemAccessWatcherManager& watcher_manager);
 
   // Updates the total usage if the quota is available.
   // Otherwise, returns `UsageChangeResult::kQuotaUnavailable`.

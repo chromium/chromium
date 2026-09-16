@@ -8,6 +8,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "content/browser/android/java/gin_java_bridge_dispatcher_host.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
@@ -32,7 +33,8 @@ JavascriptInjector::JavascriptInjector(
     : WebContentsUserData<JavascriptInjector>(*web_contents),
       java_ref_(env, obj) {
   java_bridge_dispatcher_host_ =
-      new GinJavaBridgeDispatcherHost(web_contents, retained_objects);
+      base::MakeRefCounted<GinJavaBridgeDispatcherHost>(web_contents,
+                                                        retained_objects);
   web_contents->SetUserData(UserDataKey(), base::WrapUnique(this));
 }
 

@@ -9,8 +9,10 @@
 #include "base/atomic_sequence_num.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "base/types/pass_key.h"
 #include "gpu/command_buffer/service/image_reader_gl_owner.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
@@ -69,8 +71,9 @@ scoped_refptr<TextureOwner> TextureOwner::Create(
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<RefCountedLock> drdc_lock,
     TextureOwnerCodecType type_for_metrics) {
-  return new ImageReaderGLOwner(mode, std::move(context_state),
-                                std::move(drdc_lock), type_for_metrics);
+  return base::MakeRefCounted<ImageReaderGLOwner>(
+      base::PassKey<TextureOwner>(), mode, std::move(context_state),
+      std::move(drdc_lock), type_for_metrics);
 }
 
 void TextureOwner::OnContextLost() {

@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
@@ -189,9 +190,11 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     ASSERT_TRUE(extensions_dir_.CreateUniqueTempDir());
     in_process_utility_thread_helper_ =
         std::make_unique<content::InProcessUtilityThreadHelper>();
-    // It will delete itself.
-    client_ = new MockSandboxedUnpackerClient(
+    // `client_` is not owning; `sandboxed_unpacker_` holds the only reference
+    // and deletes the client when it is released.
+    auto client = base::MakeRefCounted<MockSandboxedUnpackerClient>(
         task_environment()->GetMainThreadTaskRunner());
+    client_ = client.get();
 
     InitSandboxedUnpacker();
 

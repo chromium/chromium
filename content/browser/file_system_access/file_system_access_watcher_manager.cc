@@ -461,9 +461,10 @@ FileSystemAccessWatcherManager::GetOrCreateQuotaManager(
   // For the purpose of UKM analysis, the first ukm_source_id used to create
   // FileSystemAccessObserverQuotaManager is used for the same StorageKey,
   // since it will be sliced per URL anyways.
-  FileSystemAccessObserverQuotaManager* quota_manager =
-      new FileSystemAccessObserverQuotaManager(storage_key, ukm_source_id,
-                                               *this);
+  auto quota_manager =
+      base::MakeRefCounted<FileSystemAccessObserverQuotaManager>(
+          base::PassKey<FileSystemAccessWatcherManager>(), storage_key,
+          ukm_source_id, *this);
 
   quota_managers_.emplace(std::piecewise_construct,
                           std::forward_as_tuple(std::move(storage_key)),

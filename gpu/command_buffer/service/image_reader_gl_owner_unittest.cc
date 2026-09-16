@@ -60,7 +60,7 @@ class ImageReaderGLOwnerTest : public testing::Test {
     context_state->InitializeGL(GpuPreferences(), workarounds,
                                 GpuFeatureInfo());
 
-    image_reader_ = new ImageReaderGLOwner(
+    image_reader_ = TextureOwner::Create(
         SecureMode(), std::move(context_state),
         features::NeedThreadSafeAndroidMedia()
             ? base::MakeRefCounted<gpu::RefCountedLockForTest>()

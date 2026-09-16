@@ -36,6 +36,7 @@ FileSystemAccessObserverQuotaManager::Handle::OnUsageChange(size_t usage) {
 }
 
 FileSystemAccessObserverQuotaManager::FileSystemAccessObserverQuotaManager(
+    base::PassKey<FileSystemAccessWatcherManager>,
     const blink::StorageKey& storage_key,
     ukm::SourceId ukm_source_id,
     FileSystemAccessWatcherManager& watcher_manager)

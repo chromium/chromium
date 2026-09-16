@@ -5,14 +5,15 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_STREAM_PIPE_H_
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_STREAM_PIPE_H_
 
+#include <memory>
+
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "content/browser/devtools/devtools_io_context.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-
-#include <memory>
 
 namespace content {
 
@@ -21,13 +22,15 @@ class DevToolsStreamPipe : public DevToolsIOContext::Stream {
   static scoped_refptr<DevToolsStreamPipe> Create(
       DevToolsIOContext* context,
       mojo::ScopedDataPipeConsumerHandle pipe);
+
+  DevToolsStreamPipe(base::PassKey<DevToolsStreamPipe>,
+                     mojo::ScopedDataPipeConsumerHandle pipe);
+
   const std::string& handle() const { return handle_; }
 
  private:
   struct ReadRequest;
 
-  DevToolsStreamPipe(DevToolsIOContext* context,
-                     mojo::ScopedDataPipeConsumerHandle pipe);
   ~DevToolsStreamPipe() override;
 
   bool SupportsSeek() const override;
@@ -38,7 +41,7 @@ class DevToolsStreamPipe : public DevToolsIOContext::Stream {
   void DispatchResponse();
   void DispatchEOFOrError(bool is_eof);
 
-  const std::string handle_;
+  std::string handle_;
   const mojo::ScopedDataPipeConsumerHandle pipe_;
 
   mojo::SimpleWatcher pipe_watcher_;

@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -577,8 +578,8 @@ void MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized(
                                        "Could not allocated TextureOwner"});
     return;
   }
-  texture_owner_bundle_ =
-      new CodecSurfaceBundle(std::move(texture_owner), GetDrDcLock());
+  texture_owner_bundle_ = base::MakeRefCounted<CodecSurfaceBundle>(
+      std::move(texture_owner), GetDrDcLock());
 
   // Overlays are disabled when |enable_threaded_texture_mailboxes| is true
   // (http://crbug.com/582170).
@@ -622,7 +623,8 @@ void MediaCodecVideoDecoder::OnSurfaceChosen(
     overlay->AddSurfaceDestroyedCallback(
         base::BindOnce(&MediaCodecVideoDecoder::OnSurfaceDestroyed,
                        weak_factory_.GetWeakPtr()));
-    target_surface_bundle_ = new CodecSurfaceBundle(std::move(overlay));
+    target_surface_bundle_ =
+        base::MakeRefCounted<CodecSurfaceBundle>(std::move(overlay));
   } else {
     target_surface_bundle_ = texture_owner_bundle_;
   }

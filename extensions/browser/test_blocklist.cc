@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/blocklist.h"
@@ -52,11 +53,13 @@ void BlocklistStateFetcherMock::Clear() {
 }
 
 TestBlocklist::TestBlocklist()
-    : blocklist_db_(new FakeSafeBrowsingDatabaseManager(true)),
+    : blocklist_db_(
+          base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(true)),
       scoped_blocklist_db_(blocklist_db_) {}
 
 TestBlocklist::TestBlocklist(Blocklist* blocklist)
-    : blocklist_db_(new FakeSafeBrowsingDatabaseManager(true)),
+    : blocklist_db_(
+          base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>(true)),
       scoped_blocklist_db_(blocklist_db_) {
   Attach(blocklist);
 }

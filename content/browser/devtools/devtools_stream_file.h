@@ -5,13 +5,14 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_STREAM_FILE_H_
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_STREAM_FILE_H_
 
+#include <string>
+
 #include "base/files/file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/pass_key.h"
 #include "content/browser/devtools/devtools_io_context.h"
 #include "content/common/content_export.h"
-
-#include <string>
 
 namespace content {
 
@@ -19,11 +20,13 @@ class CONTENT_EXPORT DevToolsStreamFile : public DevToolsIOContext::Stream {
  public:
   static scoped_refptr<DevToolsStreamFile> Create(DevToolsIOContext* context,
                                                   bool binary);
+
+  DevToolsStreamFile(base::PassKey<DevToolsStreamFile>, bool binary);
+
   const std::string& handle() const { return handle_; }
   void Append(std::unique_ptr<std::string> data);
 
  private:
-  DevToolsStreamFile(DevToolsIOContext* context, bool binary);
   ~DevToolsStreamFile() override;
 
   void Read(off_t position, size_t max_size, ReadCallback callback) override;
@@ -37,7 +40,7 @@ class CONTENT_EXPORT DevToolsStreamFile : public DevToolsIOContext::Stream {
   void AppendOnFileSequence(std::unique_ptr<std::string> data);
   bool InitOnFileSequenceIfNeeded();
 
-  const std::string handle_;
+  std::string handle_;
   const bool binary_;
 
   base::File file_;
