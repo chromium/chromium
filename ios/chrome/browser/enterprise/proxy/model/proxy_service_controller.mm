@@ -4,6 +4,19 @@
 
 #import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller.h"
 
+#import <Foundation/Foundation.h>
+
 ProxyServiceController::ProxyServiceController() = default;
 
 ProxyServiceController::~ProxyServiceController() = default;
+
+bool ProxyServiceController::MaybeHandleProxyAuthChallenge(
+    web::WebState* source,
+    NSURLProtectionSpace* protection_space,
+    NSURLCredential* proposed_credential,
+    NSURLResponse* failure_response,
+    web::WebStateDelegate::ProxyAuthCallback callback) {
+  // TODO(crbug.com/543371754): Complete enterprise proxy auth challenge
+  // handling.
+  return false;
+}

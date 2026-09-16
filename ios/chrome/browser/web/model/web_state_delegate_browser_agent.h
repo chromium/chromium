@@ -79,6 +79,12 @@ class WebStateDelegateBrowserAgent
       web::WebState* source,
       NSArray<NSNumber*>* permissions,
       web::WebStatePermissionDecisionHandler handler) override;
+  void OnProxyAuthChallenge(web::WebState* source,
+                            NSURLProtectionSpace* protection_space,
+                            NSURLCredential* proposed_credential,
+                            NSURLResponse* failure_response,
+                            web::WebStateDelegate::ProxyAuthCallback callback)
+      override API_AVAILABLE(ios(18.1));
   void OnAuthRequired(web::WebState* source,
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,

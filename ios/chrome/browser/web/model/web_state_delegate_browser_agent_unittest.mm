@@ -205,6 +205,37 @@ TEST_F(WebStateDelegateBrowserAgentTest, OnAuthRequired) {
   EXPECT_TRUE(request->GetConfig<HTTPAuthOverlayRequestConfig>());
 }
 
+// Test that OnProxyAuthChallenge defaults to OnAuthRequired and adds an HTTP
+// auth overlay request for non-managed profiles.
+TEST_F(WebStateDelegateBrowserAgentTest,
+       OnProxyAuthChallenge_DefaultsToOnAuthRequired) {
+  if (@available(iOS 18.1, *)) {
+    NSURLProtectionSpace* protection_space =
+        [[NSURLProtectionSpace alloc] initWithProxyHost:@"http://chromium.test"
+                                                   port:0
+                                                   type:nil
+                                                  realm:nil
+                                   authenticationMethod:nil];
+    NSURLCredential* credential =
+        [[NSURLCredential alloc] initWithUser:@""
+                                     password:@""
+                                  persistence:NSURLCredentialPersistenceNone];
+    web::WebState* web_state = InsertNewWebState(GURL(kURL1));
+    delegate()->OnProxyAuthChallenge(web_state, protection_space, credential,
+                                     /*failure_response=*/nil,
+                                     base::DoNothing());
+
+    OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+        web_state, OverlayModality::kWebContentArea);
+    ASSERT_TRUE(queue);
+    OverlayRequest* request = queue->front_request();
+    ASSERT_TRUE(request);
+    EXPECT_TRUE(request->GetConfig<HTTPAuthOverlayRequestConfig>());
+  } else {
+    GTEST_SKIP() << "Requires iOS 18.1+";
+  }
+}
+
 // Tests that GetJavaScriptDialogPresenter() returns an overlay-based JavaScript
 // dialog presenter.
 TEST_F(WebStateDelegateBrowserAgentTest, GetJavaScriptDialogPresenter) {

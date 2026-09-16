@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/functional/callback_helpers.h"
 #import "base/notimplemented.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -20,6 +21,8 @@
 #import "ios/chrome/browser/enterprise/client_certificates/client_certificates_service_ios.h"
 #import "ios/chrome/browser/enterprise/client_certificates/client_certificates_service_ios_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
+#import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller.h"
+#import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
@@ -396,6 +399,32 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
   }
 
   handler(web::PermissionDecisionDeny);
+}
+
+void WebStateDelegateBrowserAgent::OnProxyAuthChallenge(
+    web::WebState* source,
+    NSURLProtectionSpace* protection_space,
+    NSURLCredential* proposed_credential,
+    NSURLResponse* failure_response,
+    web::WebStateDelegate::ProxyAuthCallback callback) {
+  auto [proxy_callback, fallback_callback] =
+      base::SplitOnceCallback(std::move(callback));
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(source->GetBrowserState());
+  ProxyServiceController* proxy_service_controller =
+      ProxyServiceControllerFactory::GetForProfile(profile);
+  if (proxy_service_controller &&
+      proxy_service_controller->MaybeHandleProxyAuthChallenge(
+          source, protection_space, proposed_credential, failure_response,
+          std::move(proxy_callback))) {
+    return;
+  }
+  // If enterprise proxy logic does not handle the challenge (e.g., for
+  // non-managed profiles or non-enterprise proxies), delegate to the base
+  // `WebStateDelegate::OnProxyAuthChallenge` implementation, which handles
+  // forwarding the challenge to `OnAuthRequired`.
+  web::WebStateDelegate::OnProxyAuthChallenge(
+      source, protection_space, proposed_credential, failure_response,
+      std::move(fallback_callback));
 }
 
 void WebStateDelegateBrowserAgent::OnAuthRequired(

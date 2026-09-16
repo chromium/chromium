@@ -96,6 +96,7 @@ source_set("delegate") {
     "//ios/chrome/browser/dialogs/ui_bundled:dialogs_internal",
     "//ios/chrome/browser/enterprise/client_certificates",
     "//ios/chrome/browser/enterprise/data_controls/model",
+    "//ios/chrome/browser/enterprise/proxy/model",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/overlays/model",
