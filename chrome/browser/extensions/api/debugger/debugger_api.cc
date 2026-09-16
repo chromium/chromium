@@ -16,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -54,6 +55,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -228,6 +230,16 @@ bool ExtensionMayAttachToURL(const Extension& extension,
 
   if (extension.permissions_data()->IsRestrictedUrl(url_for_restriction_check,
                                                     error)) {
+    return false;
+  }
+
+  // Fallback to per-URL host policy check when strict attach-time restrictions
+  // are disabled via kill switch (crbug.com/561948316).
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionDebuggerStrictPolicyRestrictions) &&
+      extension.permissions_data()->IsPolicyBlockedHost(
+          url_for_restriction_check)) {
+    *error = extension_misc::kPolicyBlockedScripting;
     return false;
   }
 
@@ -961,6 +973,15 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
       if (extension()->permissions_data()->IsRestrictedUrl(url, error)) {
         return false;
       }
+      // Fallback to per-URL host policy check when strict attach-time
+      // restrictions are disabled via kill switch (crbug.com/561948316).
+      if (!base::FeatureList::IsEnabled(
+              extensions_features::
+                  kExtensionDebuggerStrictPolicyRestrictions) &&
+          extension()->permissions_data()->IsPolicyBlockedHost(url)) {
+        *error = extension_misc::kPolicyBlockedScripting;
+        return false;
+      }
       agent_host_ =
           DevToolsAgentHost::GetOrCreateFor(extension_host->host_contents());
     }
@@ -1049,11 +1070,16 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
   std::optional<Attach::Params> params = Attach::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  // Kill switch for strict attach-time enterprise policy checks
+  // (crbug.com/561948316).
+  const bool strict_policy_restrictions = base::FeatureList::IsEnabled(
+      extensions_features::kExtensionDebuggerStrictPolicyRestrictions);
+
   // Reject if an untrusted extension has any runtime blocked hosts configured
   // by enterprise policy, because attaching the debugger grants raw CDP access
   // that cannot be restricted to specific hosts.
-  // Details: crbug.com/533240995
-  if (!ExtensionIsTrusted(*extension()) &&
+  // Details: crbug.com/533240995, crbug.com/561948316
+  if (strict_policy_restrictions && !ExtensionIsTrusted(*extension()) &&
       !extension()->permissions_data()->policy_blocked_hosts().is_empty()) {
     return RespondNow(Error(kDebuggerDisabledByPolicyBlockedHosts));
   }
@@ -1079,19 +1105,20 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
   // Reject if an untrusted extension has screenshot capture disabled globally
   // by enterprise policy, because attaching the debugger grants screenshot
   // capabilities.
-  // Details: crbug.com/533240995
-  if (!ExtensionIsTrusted(*extension()) &&
+  // Details: crbug.com/533240995, crbug.com/561948316
+  if (strict_policy_restrictions && !ExtensionIsTrusted(*extension()) &&
       profile->GetPrefs()->GetBoolean(prefs::kDisableScreenshots)) {
     return RespondNow(Error(kDebuggerDisabledByScreenshotPolicy));
   }
 
   // Reject if screenshot capture is restricted on this specific target (e.g.
   // by Data Leak Prevention (DLP) policy).
-  // Details: crbug.com/533240995
+  // Details: crbug.com/533240995, crbug.com/561948316
   content::WebContents* web_contents = agent_host_->GetWebContents();
-  if (web_contents && !ExtensionsBrowserClient::Get()
-                           ->IsScreenshotRestricted(web_contents)
-                           .has_value()) {
+  if (strict_policy_restrictions && web_contents &&
+      !ExtensionsBrowserClient::Get()
+           ->IsScreenshotRestricted(web_contents)
+           .has_value()) {
     return RespondNow(Error(kDebuggerDisabledByTargetDlpPolicy));
   }
 

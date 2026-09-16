@@ -172,6 +172,16 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kMaxScriptSizeForBackgroundCompilation);
 // prompting the user.
 BASE_DECLARE_FEATURE(kExtensionAutoRejectIncognitoConnectability);
 
+// If enabled (the default), extensions calling chrome.debugger.attach are
+// rejected upfront when enterprise policy configures runtime_blocked_hosts or
+// disables/restricts screenshots. If disabled (kill switch), extension debugger
+// attachment reverts to the pre-existing behavior prior to M155: falling back
+// to per-URL IsPolicyBlockedHost checks and allowing attachment when
+// screenshots are disabled. Note that disabling this feature has security
+// implications.
+// See https://developer.chrome.com/blog/debugger-enterprise-policy-restrictions.
+BASE_DECLARE_FEATURE(kExtensionDebuggerStrictPolicyRestrictions);
+
 // If enabled, disables unpacked extensions if developer mode is off.
 BASE_DECLARE_FEATURE(kExtensionDisableUnsupportedDeveloper);
 
