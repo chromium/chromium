@@ -12,6 +12,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/thumbnail/cc/scoped_ptr_expiring_cache.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
 #include "chrome/browser/thumbnail/cc/thumbnail_capture_tracker.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/android/resources/ui_resource_provider.h"
@@ -39,7 +41,7 @@ class Time;
 
 namespace thumbnail {
 
-typedef std::list<TabId> TabIdList;
+typedef base::circular_deque<TabId> TabIdList;
 
 class ThumbnailCacheObserver {
  public:
@@ -110,7 +112,7 @@ class ThumbnailCache : ThumbnailDelegate {
   };
 
   using ExpiringThumbnailCache = ScopedPtrExpiringCache<TabId, Thumbnail>;
-  using ThumbnailMetaDataMap = std::map<TabId, ThumbnailMetaData>;
+  using ThumbnailMetaDataMap = absl::flat_hash_map<TabId, ThumbnailMetaData>;
 
   void ScheduleRecordCacheMetrics(base::TimeDelta mean_delay);
   void RecordCacheMetrics();
@@ -170,23 +172,25 @@ class ThumbnailCache : ThumbnailDelegate {
 
   const size_t compression_queue_max_size_;
   const size_t write_queue_max_size_;
-  const bool save_jpeg_thumbnails_;
   base::TimeDelta capture_min_request_time_ms_;
 
   // TODO(crbug.com/40885026): Determine if these limits are still relevant.
   // Remove or tune accordingly (i.e. split by jpeg and etc1).
   size_t compression_tasks_count_;
   size_t write_tasks_count_;
-  bool read_in_progress_;
 
   ExpiringThumbnailCache cache_;
   base::ObserverList<ThumbnailCacheObserver>::Unchecked observers_;
   ThumbnailMetaDataMap thumbnail_meta_data_;
   TabIdList read_queue_;
   TabIdList visible_ids_;
-  TabId primary_tab_id_ = -1;
 
   base::WeakPtr<ui::UIResourceProvider> ui_resource_provider_;
+
+  TabId primary_tab_id_ = -1;
+  const bool save_jpeg_thumbnails_;
+  bool read_in_progress_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ThumbnailCache> weak_factory_{this};

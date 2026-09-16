@@ -97,6 +97,20 @@ TEST_F(JpegThumbnailHelperTest, CompressThumbnail) {
   loop1.Run();
 }
 
+TEST_F(JpegThumbnailHelperTest, CompressEmptyThumbnail) {
+  SkBitmap image;
+
+  base::RunLoop loop;
+  base::OnceCallback<void(std::vector<uint8_t>)> once =
+      base::BindOnce([](std::vector<uint8_t> jpeg_data) {
+        EXPECT_TRUE(jpeg_data.empty());
+      }).Then(loop.QuitClosure());
+
+  GetInterface().Compress(image, std::move(once));
+  task_environment_.RunUntilIdle();
+  loop.Run();
+}
+
 TEST_F(JpegThumbnailHelperTest, WriteThumbnail) {
   int tab_id = 0;
 

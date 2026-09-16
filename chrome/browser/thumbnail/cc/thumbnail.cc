@@ -44,14 +44,12 @@ Thumbnail::Thumbnail(TabId tab_id,
                      float scale,
                      base::WeakPtr<ui::UIResourceProvider> ui_resource_provider,
                      ThumbnailDelegate* thumbnail_delegate)
-    : tab_id_(tab_id),
-      time_stamp_(time_stamp),
-      scale_(scale),
+    : time_stamp_(time_stamp),
       bitmap_(gfx::Size(1, 1), true),
-      ui_resource_id_(0),
-      retrieved_(false),
       ui_resource_provider_(ui_resource_provider),
-      thumbnail_delegate_(thumbnail_delegate) {}
+      thumbnail_delegate_(thumbnail_delegate),
+      tab_id_(tab_id),
+      scale_(scale) {}
 
 Thumbnail::~Thumbnail() {
   ClearUIResourceId();

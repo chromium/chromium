@@ -205,6 +205,7 @@ public class TabContentManager {
             TabContentManagerJni.get().destroy(mNativeTabContentManager);
             mNativeTabContentManager = 0;
         }
+        mListeners.clear();
     }
 
     /**

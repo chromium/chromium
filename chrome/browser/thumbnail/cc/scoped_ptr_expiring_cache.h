@@ -16,7 +16,8 @@ namespace thumbnail {
 template <class Key, class Value>
 class ScopedPtrExpiringCache {
  private:
-  typedef quiche::QuicheLinkedHashMap<Key, Value*> LinkedHashMap;
+  typedef quiche::QuicheLinkedHashMap<Key, std::unique_ptr<Value>>
+      LinkedHashMap;
 
  public:
   typedef typename LinkedHashMap::iterator iterator;
@@ -31,14 +32,14 @@ class ScopedPtrExpiringCache {
 
   void Put(const Key& key, std::unique_ptr<Value> value) {
     Remove(key);
-    map_[key] = value.release();
+    map_[key] = std::move(value);
     EvictIfFull();
   }
 
   Value* Get(const Key& key) {
     iterator iter = map_.find(key);
     if (iter != map_.end()) {
-      return iter->second;
+      return iter->second.get();
     }
     return nullptr;
   }
@@ -47,18 +48,13 @@ class ScopedPtrExpiringCache {
     iterator iter = map_.find(key);
     std::unique_ptr<Value> value;
     if (iter != map_.end()) {
-      value.reset(iter->second);
+      value = std::move(iter->second);
       map_.erase(key);
     }
-    return std::move(value);
+    return value;
   }
 
-  void Clear() {
-    for (iterator iter = map_.begin(); iter != map_.end(); iter++) {
-      delete iter->second;
-    }
-    map_.clear();
-  }
+  void Clear() { map_.clear(); }
 
   iterator begin() { return map_.begin(); }
   iterator end() { return map_.end(); }
@@ -69,7 +65,6 @@ class ScopedPtrExpiringCache {
   void EvictIfFull() {
     while (map_.size() > max_cache_size_) {
       iterator it = map_.begin();
-      delete it->second;
       map_.erase(it);
     }
   }

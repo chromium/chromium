@@ -78,21 +78,20 @@ class Thumbnail : public cc::UIResourceClient {
   void ClearUIResourceId();
   void DoInvalidate();
 
-  TabId tab_id_;
   base::Time time_stamp_;
-  float scale_;
+  size_t size_in_bytes_ = 1U;
+  cc::UIResourceBitmap bitmap_;
+  base::WeakPtr<ui::UIResourceProvider> ui_resource_provider_;
+  raw_ptr<ThumbnailDelegate> thumbnail_delegate_;
 
   gfx::SizeF scaled_content_size_;
   gfx::SizeF scaled_data_size_;
 
-  size_t size_in_bytes_ = 1U;
-  cc::UIResourceBitmap bitmap_;
-  cc::UIResourceId ui_resource_id_;
+  TabId tab_id_;
+  float scale_;
+  cc::UIResourceId ui_resource_id_ = 0;
 
-  bool retrieved_;
-
-  base::WeakPtr<ui::UIResourceProvider> ui_resource_provider_;
-  raw_ptr<ThumbnailDelegate> thumbnail_delegate_;
+  bool retrieved_ = false;
 
   base::WeakPtrFactory<Thumbnail> weak_factory_{this};
 };

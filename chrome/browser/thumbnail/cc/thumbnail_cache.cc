@@ -82,13 +82,13 @@ ThumbnailCache::ThumbnailCache(size_t default_cache_size,
       jpeg_helper_(GetCacheDirectory(), jpeg_file_sequenced_task_runner_),
       compression_queue_max_size_(compression_queue_max_size),
       write_queue_max_size_(write_queue_max_size),
-      save_jpeg_thumbnails_(save_jpeg_thumbnails),
       capture_min_request_time_ms_(kDefaultCaptureMinRequestTimeMs),
       compression_tasks_count_(0),
       write_tasks_count_(0),
-      read_in_progress_(false),
       cache_(default_cache_size),
-      ui_resource_provider_(nullptr) {
+      ui_resource_provider_(nullptr),
+      save_jpeg_thumbnails_(save_jpeg_thumbnails),
+      read_in_progress_(false) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ScheduleRecordCacheMetrics(base::Minutes(1));
 }
@@ -132,13 +132,14 @@ void ThumbnailCache::Put(
     return;
   }
 
-  if (thumbnail_meta_data_.find(tab_id) == thumbnail_meta_data_.end()) {
+  auto meta_data_iter = thumbnail_meta_data_.find(tab_id);
+  if (meta_data_iter == thumbnail_meta_data_.end()) {
     DVLOG(1) << "Thumbnail meta data was removed for tab id " << tab_id;
     tracker->MarkCaptureFailed();
     return;
   }
 
-  base::Time time_stamp = thumbnail_meta_data_[tab_id].capture_time();
+  base::Time time_stamp = meta_data_iter->second.capture_time();
 
   if (ui_resource_provider_) {
     std::unique_ptr<Thumbnail> thumbnail = Thumbnail::Create(
@@ -189,10 +190,10 @@ Thumbnail* ThumbnailCache::Get(TabId tab_id, bool force_disk_read) {
 
 void ThumbnailCache::InvalidateThumbnailIfChanged(TabId tab_id,
                                                   const GURL& url) {
-  auto meta_data_iter = thumbnail_meta_data_.find(tab_id);
-  if (meta_data_iter == thumbnail_meta_data_.end()) {
-    thumbnail_meta_data_[tab_id] = ThumbnailMetaData(base::Time(), url);
-  } else if (!url.is_empty() && meta_data_iter->second.url() != url) {
+  auto [meta_data_iter, inserted] =
+      thumbnail_meta_data_.try_emplace(tab_id, base::Time(), url);
+  if (!inserted && !url.is_empty() && meta_data_iter->second.url() != url) {
+    meta_data_iter->second = ThumbnailMetaData(base::Time(), url);
     Remove(tab_id);
   }
 }
@@ -210,15 +211,16 @@ bool ThumbnailCache::CheckAndUpdateThumbnailMetaData(TabId tab_id,
                                                      const GURL& url,
                                                      bool force_update) {
   base::Time current_time = base::Time::Now();
-  auto meta_data_iter = thumbnail_meta_data_.find(tab_id);
-  if (!force_update && meta_data_iter != thumbnail_meta_data_.end() &&
-      meta_data_iter->second.url() == url &&
-      (current_time - meta_data_iter->second.capture_time()) <
-          capture_min_request_time_ms_) {
-    return false;
+  auto [meta_data_iter, inserted] =
+      thumbnail_meta_data_.try_emplace(tab_id, current_time, url);
+  if (!inserted) {
+    if (!force_update && meta_data_iter->second.url() == url &&
+        (current_time - meta_data_iter->second.capture_time()) <
+            capture_min_request_time_ms_) {
+      return false;
+    }
+    meta_data_iter->second = ThumbnailMetaData(current_time, url);
   }
-
-  thumbnail_meta_data_[tab_id] = ThumbnailMetaData(current_time, url);
   return true;
 }
 
@@ -286,8 +288,7 @@ void ThumbnailCache::PruneCache() {
   // Intentionally ignore `primary_tab_id_` as it should have a live layer. If
   // that isn't true or may be slow the caller should include it in
   // `visible_ids_`.
-  base::flat_set<TabId> ids_to_keep(
-      std::vector<TabId>(visible_ids_.begin(), visible_ids_.end()));
+  base::flat_set<TabId> ids_to_keep(visible_ids_.begin(), visible_ids_.end());
   std::vector<TabId> ids_to_remove;
 
   for (const auto& entry : cache_) {
@@ -328,11 +329,10 @@ void ThumbnailCache::RecordCacheMetrics() {
 
 // static
 size_t ThumbnailCache::ComputeCacheSize(ExpiringThumbnailCache& cache) {
-  return std::accumulate(
-      cache.begin(), cache.end(), 0U,
-      [](size_t acc, const std::pair<TabId, Thumbnail*>& it) {
-        return acc + it.second->size_in_bytes();
-      });
+  return std::accumulate(cache.begin(), cache.end(), 0U,
+                         [](size_t acc, const auto& it) {
+                           return acc + it.second->size_in_bytes();
+                         });
 }
 
 void ThumbnailCache::RemoveFromDisk(TabId tab_id) {

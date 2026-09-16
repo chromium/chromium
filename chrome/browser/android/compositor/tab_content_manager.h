@@ -7,8 +7,6 @@
 
 #include <jni.h>
 
-#include <map>
-
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
@@ -110,9 +108,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
 
  private:
   class TabReadbackRequest;
-  // TODO(crbug.com/41314695) check sizes and consider using base::flat_map if
-  // these layer maps are small.
-  using ThumbnailLayerMap = std::map<int, scoped_refptr<ThumbnailLayer>>;
+  using ThumbnailLayerMap = base::flat_map<int, scoped_refptr<ThumbnailLayer>>;
   using TabReadbackRequestMap =
       absl::flat_hash_map<int, std::unique_ptr<TabReadbackRequest>>;
   using ThumbnailCaptureTrackerPtr =

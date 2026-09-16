@@ -45,7 +45,8 @@ void CompressTask(
   std::optional<std::vector<uint8_t>> data =
       gfx::JPEGCodec::Encode(ResizeBitmap(bitmap), kCompressionQuality);
 
-  std::move(post_processing_task).Run(std::move(data.value()));
+  std::move(post_processing_task)
+      .Run(data.has_value() ? std::move(*data) : std::vector<uint8_t>());
 }
 
 void WriteTask(base::FilePath file_path,

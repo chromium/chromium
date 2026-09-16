@@ -90,10 +90,10 @@ class TabContentManager::TabReadbackRequest : public RetryableTask {
                      float thumbnail_scale,
                      TabReadbackCallback result_callback)
       : weak_web_contents_(web_contents->GetWeakPtr()),
-        thumbnail_scale_(thumbnail_scale),
         result_callback_(std::move(result_callback)),
         retry_strategy_(std::make_unique<RetryStrategy>(kMaxReadbackRetries,
-                                                        kReadbackRetryDelay)) {
+                                                        kReadbackRetryDelay)),
+        thumbnail_scale_(thumbnail_scale) {
     auto* rwhv = GetRwhv(web_contents);
     if (!rwhv) {
       std::move(result_callback_).Run(0.f, SkBitmap());
@@ -195,11 +195,11 @@ class TabContentManager::TabReadbackRequest : public RetryableTask {
 
  private:
   base::WeakPtr<content::WebContents> weak_web_contents_;
-  const float thumbnail_scale_;
   TabReadbackCallback result_callback_;
-  bool drop_after_readback_{false};
   base::ScopedClosureRunner decrementor_;
   std::unique_ptr<RetryStrategy> retry_strategy_;
+  const float thumbnail_scale_;
+  bool drop_after_readback_{false};
 
   base::WeakPtrFactory<TabReadbackRequest> weak_factory_{this};
 };
@@ -273,7 +273,7 @@ ThumbnailLayer* TabContentManager::GetStaticLayer(int tab_id) {
 void TabContentManager::UpdateVisibleIds(const std::vector<int>& priority_ids,
                                          int primary_tab_id) {
   thumbnail_cache_.UpdateVisibleIds(priority_ids, primary_tab_id);
-  std::erase_if(static_layer_cache_, [&priority_ids](const auto& pair) {
+  base::EraseIf(static_layer_cache_, [&priority_ids](const auto& pair) {
     bool not_priority = !std::ranges::contains(priority_ids, pair.first);
     if (not_priority && pair.second) {
       pair.second->layer()->RemoveFromParent();
@@ -281,10 +281,9 @@ void TabContentManager::UpdateVisibleIds(const std::vector<int>& priority_ids,
     return not_priority;
   });
   for (int tab_id : priority_ids) {
-    auto static_layer = static_layer_cache_[tab_id];
+    scoped_refptr<ThumbnailLayer>& static_layer = static_layer_cache_[tab_id];
     if (!static_layer) {
       static_layer = ThumbnailLayer::Create();
-      static_layer_cache_[tab_id] = static_layer;
     }
     thumbnail::Thumbnail* thumbnail = thumbnail_cache_.Get(tab_id, false);
     if (thumbnail) {
