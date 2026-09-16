@@ -25,6 +25,8 @@
 
 namespace blink {
 
+BASE_FEATURE(kNoUrgentMainFrameForMouseMove, base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 constexpr base::TimeDelta kMaxRafDelay = base::Milliseconds(5 * 1000);
@@ -833,6 +835,10 @@ void MainThreadEventQueue::QueueEvent(
     bool urgent =
         ::features::IsEligibleForThrottleMainFrameTo60Hz() &&
         base::FeatureList::IsEnabled(blink::features::kUrgentMainFrameForInput);
+    if (urgent &&
+        base::FeatureList::IsEnabled(kNoUrgentMainFrameForMouseMove)) {
+      urgent = input_event_type != WebInputEvent::Type::kMouseMove;
+    }
     SetNeedsMainFrame(cc::BeginMainFrameReason::kInput, urgent);
   }
 

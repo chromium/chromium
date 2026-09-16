@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -30,6 +31,8 @@ class EventMetrics;
 }
 
 namespace blink {
+
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kNoUrgentMainFrameForMouseMove);
 
 using HandledEventCallback =
     base::OnceCallback<void(mojom::blink::InputEventResultState ack_state,

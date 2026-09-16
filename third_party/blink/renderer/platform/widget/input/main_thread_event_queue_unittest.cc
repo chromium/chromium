@@ -932,6 +932,51 @@ TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputUrgentMainFrame) {
   EXPECT_FALSE(urgent_main_frame_);
 }
 
+TEST_F(MainThreadEventQueueTest, RafAlignedMouseInputUrgentMainFrame) {
+  WebMouseEvent mouse_move = SyntheticWebMouseEventBuilder::Build(
+      WebInputEvent::Type::kMouseMove, 10, 10, 0);
+  WebMouseWheelEvent wheel_event = SyntheticWebMouseWheelEventBuilder::Build(
+      10, 10, 0, 53, 0, ui::ScrollGranularity::kScrollByPixel);
+
+  EXPECT_CALL(*widget_scheduler_, DidHandleInputEventOnMainThread(
+                                      testing::_, testing::_, testing::_))
+      .Times(3);
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({blink::features::kUrgentMainFrameForInput},
+                                  {kNoUrgentMainFrameForMouseMove});
+
+    // With kNoUrgentMainFrameForMouseMove disabled, mouse move requests an
+    // urgent main frame.
+    HandleEvent(mouse_move, blink::mojom::InputEventResultState::kNotConsumed);
+    EXPECT_TRUE(RequestedMainFramePending());
+    EXPECT_TRUE(urgent_main_frame_);
+    RunPendingTasksWithSimulatedRaf();
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({blink::features::kUrgentMainFrameForInput,
+                                   kNoUrgentMainFrameForMouseMove},
+                                  {});
+
+    // Other rAF-aligned inputs (e.g. mouse wheel) still request an urgent main
+    // frame.
+    HandleEvent(wheel_event, blink::mojom::InputEventResultState::kNotConsumed);
+    EXPECT_TRUE(RequestedMainFramePending());
+    EXPECT_TRUE(urgent_main_frame_);
+    RunPendingTasksWithSimulatedRaf();
+
+    // Mouse move does not request an urgent main frame.
+    urgent_main_frame_ = true;
+    HandleEvent(mouse_move, blink::mojom::InputEventResultState::kNotConsumed);
+    EXPECT_TRUE(RequestedMainFramePending());
+    EXPECT_FALSE(urgent_main_frame_);
+    RunPendingTasksWithSimulatedRaf();
+  }
+}
+
 TEST_F(MainThreadEventQueueTest, RafAlignedTouchInputCoalescedMoves) {
   SyntheticWebTouchEvent kEvents[2];
   kEvents[0].PressPoint(10, 10);
