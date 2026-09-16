@@ -39,6 +39,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/range/range.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
@@ -263,7 +265,8 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
             features::kAutofillAiServerModel,
             features::kAutofillAiWalletPrivatePasses,
             features::kAutofillAiWalletFlightReservation,
-            features::kAutofillAiOrder};
+            features::kAutofillAiOrder,
+            features::kAutofillAmbientAutofillSourceAttribution};
   }
 
  private:
@@ -599,9 +602,6 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
        GetFillingSuggestion_PersonalContext_DetailedSource_Photos) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillAmbientAutofillSourceAttribution);
-
   EntityInstance passport_personal_context =
       GetPassportEntityInstanceWithRandomGuid(
           {.record_type =
@@ -616,7 +616,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
   std::u16string expected_source_label =
-      u"From Photos · Pippi Långstrump · Sweden";
+      u"Suggested by Gemini · Photos\u00A0[1]";
 
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
@@ -627,7 +627,11 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           ChildrenAre(
               EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
                                expected_source_label, Suggestion::Icon::kSpark,
-                               GURL("https://photos.example.com")),
+                               Suggestion::AutofillAiPayload(
+                                   passport_personal_context.guid(),
+                                   {Suggestion::PersonalContextSourceCitation(
+                                       GURL("https://photos.example.com"),
+                                       gfx::Range(29, 32))})),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                l10n_util::GetStringUTF16(
@@ -637,9 +641,6 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
        GetFillingSuggestion_PersonalContext_DetailedSource_Gmail) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillAmbientAutofillSourceAttribution);
-
   EntityInstance passport_personal_context =
       GetPassportEntityInstanceWithRandomGuid(
           {.record_type =
@@ -654,7 +655,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
   std::u16string expected_source_label =
-      u"From Gmail · Pippi Långstrump · Sweden";
+      u"Suggested by Gemini · Gmail\u00A0[1]";
 
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
@@ -665,7 +666,11 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           ChildrenAre(
               EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
                                expected_source_label, Suggestion::Icon::kSpark,
-                               GURL("https://mail.example.com")),
+                               Suggestion::AutofillAiPayload(
+                                   passport_personal_context.guid(),
+                                   {Suggestion::PersonalContextSourceCitation(
+                                       GURL("https://mail.example.com"),
+                                       gfx::Range(28, 31))})),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                l10n_util::GetStringUTF16(
@@ -673,11 +678,9 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                                Suggestion::Icon::kSettings)))));
 }
 
-TEST_F(AutofillAiSuggestionGeneratorTest,
-       GetFillingSuggestion_PersonalContext_MultipleSources) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillAmbientAutofillSourceAttribution);
-
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_PersonalContext_MultipleSources_CombinedAttributionItem) {
   EntityInstance passport_personal_context =
       GetPassportEntityInstanceWithRandomGuid(
           {.record_type =
@@ -702,14 +705,62 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
           ChildrenAre(
+              EqualsSuggestion(
+                  SuggestionType::kAutofillAiSourceAttribution,
+                  u"Suggested by Gemini · Gmail\u00A0[1] · Photos\u00A0[1]",
+                  Suggestion::Icon::kSpark,
+                  Suggestion::AutofillAiPayload(
+                      passport_personal_context.guid(),
+                      {Suggestion::PersonalContextSourceCitation(
+                           GURL("https://mail.example.com"),
+                           gfx::Range(28, 31)),
+                       Suggestion::PersonalContextSourceCitation(
+                           GURL("https://photos.example.com"),
+                           gfx::Range(41, 44))})),
+              EqualsSuggestion(SuggestionType::kSeparator),
+              EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
+                               l10n_util::GetStringUTF16(
+                                   IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
+                               Suggestion::Icon::kSettings)))));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContext_MultipleCitationsSameApp) {
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {{.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kGmail,
+                         .url = "https://mail.example.com/1"},
+                        {.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kGmail,
+                         .url = "https://mail.example.com/2"}}},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(AllOf(
+          EqualsSuggestion(
+              SuggestionType::kFillAutofillAi,
+              Suggestion::AutofillAiPayload(passport_personal_context.guid())),
+          ChildrenAre(
               EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
-                               u"From Photos · Pippi Långstrump · Sweden",
+                               u"Suggested by Gemini · Gmail\u00A0[1]\u00A0[2]",
                                Suggestion::Icon::kSpark,
-                               GURL("https://photos.example.com")),
-              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
-                               u"From Gmail · Pippi Långstrump · Sweden",
-                               Suggestion::Icon::kSpark,
-                               GURL("https://mail.example.com")),
+                               Suggestion::AutofillAiPayload(
+                                   passport_personal_context.guid(),
+                                   {Suggestion::PersonalContextSourceCitation(
+                                        GURL("https://mail.example.com/1"),
+                                        gfx::Range(28, 31)),
+                                    Suggestion::PersonalContextSourceCitation(
+                                        GURL("https://mail.example.com/2"),
+                                        gfx::Range(32, 35))})),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                l10n_util::GetStringUTF16(
@@ -719,9 +770,6 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
        GetFillingSuggestion_PersonalContext_InvalidAndEmptyUrl_Omitted) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillAmbientAutofillSourceAttribution);
-
   EntityInstance passport_personal_context =
       GetPassportEntityInstanceWithRandomGuid(
           {.record_type =
@@ -751,9 +799,13 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
           ChildrenAre(
               EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
-                               u"From Photos · Pippi Långstrump · Sweden",
+                               u"Suggested by Gemini · Photos\u00A0[1]",
                                Suggestion::Icon::kSpark,
-                               GURL("https://photos.example.com")),
+                               Suggestion::AutofillAiPayload(
+                                   passport_personal_context.guid(),
+                                   {Suggestion::PersonalContextSourceCitation(
+                                       GURL("https://photos.example.com"),
+                                       gfx::Range(29, 32))})),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                l10n_util::GetStringUTF16(
@@ -765,9 +817,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
        GetFillingSuggestion_PersonalContext_DetailedSourceAndHideSuggestion) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kAutofillAmbientAutofillSourceAttribution,
-       features::kAutofillAmbientAutofillSuppressionUI},
-      {});
+      {features::kAutofillAmbientAutofillSuppressionUI}, {});
 
   EntityInstance passport_personal_context =
       GetPassportEntityInstanceWithRandomGuid(
@@ -783,7 +833,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
   std::u16string expected_source_label =
-      u"From Photos · Pippi Långstrump · Sweden";
+      u"Suggested by Gemini · Photos\u00A0[1]";
 
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
@@ -794,7 +844,11 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           ChildrenAre(
               EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
                                expected_source_label, Suggestion::Icon::kSpark,
-                               GURL("https://photos.example.com")),
+                               Suggestion::AutofillAiPayload(
+                                   passport_personal_context.guid(),
+                                   {Suggestion::PersonalContextSourceCitation(
+                                       GURL("https://photos.example.com"),
+                                       gfx::Range(29, 32))})),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(
                   SuggestionType::kRemoveAutofillAi,
@@ -838,9 +892,6 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
        GetFillingSuggestion_PersonalContext_NoSources_NoAttributionItem) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillAmbientAutofillSourceAttribution);
-
   EntityInstance passport_personal_context =
       GetPassportEntityInstanceWithRandomGuid(
           {.record_type =
@@ -859,15 +910,40 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
 
 TEST_F(
     AutofillAiSuggestionGeneratorTest,
-    GetFillingSuggestion_PersonalContext_EmptyAttributes_NoDuplicateDelimiters) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillAmbientAutofillSourceAttribution);
+    GetFillingSuggestion_PersonalContext_AllSourcesInvalid_NoAttributionItem) {
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {{.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kUnspecified,
+                         .url = "https://example.com/unspecified"},
+                        {.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kPhotos,
+                         .url = "invalid-url"}}},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER});
 
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              IdentityDocSuggestionsAre(
+                  AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                         Suggestion::AutofillAiPayload(
+                                             passport_personal_context.guid())),
+                        ChildrenAre())));
+}
+
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_PersonalContext_InvalidAndUnspecifiedSourcesSkipped) {
   EntityInstance passport_personal_context =
       GetPassportEntityInstanceWithRandomGuid(
           {.name = u"Jane Doe",
-           .number = u"P123",
-           .country = nullptr,
+           .number = u"12345678",
+           .country = u"Germany",
            .expiry_date = nullptr,
            .issue_date = nullptr,
            .record_type =
@@ -875,13 +951,22 @@ TEST_F(
                    .sources =
                        {{.type =
                              EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kUnspecified,
+                         .url = "https://example.com/unspecified"},
+                        {.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
                                  Source::Type::kPhotos,
-                         .url = "https://photos.example.com"}}},
+                         .url = "invalid-url"},
+                        {.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kGmail,
+                         .url = "https://mail.google.com/test"}}},
            .use_count = 0});
   SetEntities({passport_personal_context});
   SetForm({PASSPORT_NUMBER});
 
-  std::u16string expected_source_label = u"From Photos · Jane Doe";
+  std::u16string expected_source_label =
+      u"Suggested by Gemini · Gmail\u00A0[1]";
 
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
@@ -892,7 +977,11 @@ TEST_F(
           ChildrenAre(
               EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
                                expected_source_label, Suggestion::Icon::kSpark,
-                               GURL("https://photos.example.com")),
+                               Suggestion::AutofillAiPayload(
+                                   passport_personal_context.guid(),
+                                   {Suggestion::PersonalContextSourceCitation(
+                                       GURL("https://mail.google.com/test"),
+                                       gfx::Range(28, 31))})),
               EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                l10n_util::GetStringUTF16(

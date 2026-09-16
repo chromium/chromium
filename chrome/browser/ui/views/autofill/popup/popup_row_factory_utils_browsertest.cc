@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/autofill/popup/password_favicon_loader.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -40,6 +41,7 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
@@ -540,9 +542,13 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FreeformFooter) {
 }
 
 IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, AutofillAiSourceAttribution) {
-  Suggestion suggestion(u"From Photos · LR1234567 · Sweden",
+  Suggestion suggestion(u"Suggested by Gemini · Photos\u00A0[1]",
                         SuggestionType::kAutofillAiSourceAttribution);
   suggestion.icon = Suggestion::Icon::kSpark;
+  suggestion.payload = Suggestion::AutofillAiPayload(
+      autofill::EntityInstance::EntityId("test-guid"),
+      {Suggestion::PersonalContextSourceCitation(
+          GURL("https://photos.google.com/test"), gfx::Range(29, 32))});
   CreateRowView(std::move(suggestion), /*selected_cell=*/std::nullopt,
                 /*filter_match=*/std::nullopt);
   ShowAndVerifyUi();
