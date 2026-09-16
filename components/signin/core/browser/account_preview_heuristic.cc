@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -47,31 +46,55 @@ struct SyncDataTypeThresholds {
   }
 };
 
+std::pair<syncer::DataType, SyncDataTypeThresholds> GetDataTypeThresholdEntry(
+    syncer::DataType type) {
+  switch (type) {
+    case syncer::PASSWORDS:
+      return {syncer::PASSWORDS,
+              {.q1 = switches::kPasswordsQ1Threshold.Get(),
+               .median = switches::kPasswordsMedianThreshold.Get(),
+               .q3 = switches::kPasswordsQ3Threshold.Get()}};
+    case syncer::BOOKMARKS:
+      return {syncer::BOOKMARKS,
+              {.q1 = switches::kBookmarksQ1Threshold.Get(),
+               .median = switches::kBookmarksMedianThreshold.Get(),
+               .q3 = switches::kBookmarksQ3Threshold.Get()}};
+    case syncer::AUTOFILL:
+      return {syncer::AUTOFILL,
+              {.q1 = switches::kAutofillQ1Threshold.Get(),
+               .median = switches::kAutofillMedianThreshold.Get(),
+               .q3 = switches::kAutofillQ3Threshold.Get()}};
+    case syncer::AUTOFILL_WALLET_METADATA:
+      return {syncer::AUTOFILL_WALLET_METADATA,
+              {.q1 = switches::kAutofillWalletMetadataQ1Threshold.Get(),
+               .median = switches::kAutofillWalletMetadataMedianThreshold.Get(),
+               .q3 = switches::kAutofillWalletMetadataQ3Threshold.Get()}};
+    case syncer::READING_LIST:
+      return {syncer::READING_LIST,
+              {.q1 = switches::kReadingListQ1Threshold.Get(),
+               .median = switches::kReadingListMedianThreshold.Get(),
+               .q3 = switches::kReadingListQ3Threshold.Get()}};
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    case syncer::EXTENSIONS:
+      return {syncer::EXTENSIONS,
+              {.q1 = switches::kExtensionsQ1Threshold.Get(),
+               .median = switches::kExtensionsMedianThreshold.Get(),
+               .q3 = switches::kExtensionsQ3Threshold.Get()}};
+#endif
+    default:
+      NOTREACHED();
+  }
+}
+
 // Returns the list of sync data types and their respective thresholds used for
 // quartile classification when computing sync data score.
 const auto& GetScoreDataTypeThresholds() {
   static const auto kScoreDataTypeThresholds =
       std::to_array<std::pair<syncer::DataType, SyncDataTypeThresholds>>({
-          {syncer::PASSWORDS,
-           SyncDataTypeThresholds{
-               .q1 = switches::kPasswordsQ1Threshold.Get(),
-               .median = switches::kPasswordsMedianThreshold.Get(),
-               .q3 = switches::kPasswordsQ3Threshold.Get()}},
-          {syncer::BOOKMARKS,
-           SyncDataTypeThresholds{
-               .q1 = switches::kBookmarksQ1Threshold.Get(),
-               .median = switches::kBookmarksMedianThreshold.Get(),
-               .q3 = switches::kBookmarksQ3Threshold.Get()}},
-          {syncer::AUTOFILL,
-           SyncDataTypeThresholds{
-               .q1 = switches::kAutofillQ1Threshold.Get(),
-               .median = switches::kAutofillMedianThreshold.Get(),
-               .q3 = switches::kAutofillQ3Threshold.Get()}},
-          {syncer::AUTOFILL_WALLET_METADATA,
-           SyncDataTypeThresholds{
-               .q1 = switches::kAutofillWalletMetadataQ1Threshold.Get(),
-               .median = switches::kAutofillWalletMetadataMedianThreshold.Get(),
-               .q3 = switches::kAutofillWalletMetadataQ3Threshold.Get()}},
+          GetDataTypeThresholdEntry(syncer::PASSWORDS),
+          GetDataTypeThresholdEntry(syncer::BOOKMARKS),
+          GetDataTypeThresholdEntry(syncer::AUTOFILL),
+          GetDataTypeThresholdEntry(syncer::AUTOFILL_WALLET_METADATA),
       });
   return kScoreDataTypeThresholds;
 }
@@ -79,27 +102,19 @@ const auto& GetScoreDataTypeThresholds() {
 // Returns the list of all relevant sync data types and their respective
 // thresholds for quartile classification when determining preferred data
 // types for string personalization.
-std::vector<std::pair<syncer::DataType, SyncDataTypeThresholds>>
-GetPreferredDataTypeThresholds() {
-  auto thresholds = base::ToVector(GetScoreDataTypeThresholds());
-  if (base::FeatureList::IsEnabled(
-          switches::kEnableAccountPreviewPreferredAccountFollowup)) {
-    thresholds.emplace_back(
-        syncer::READING_LIST,
-        SyncDataTypeThresholds{
-            .q1 = switches::kReadingListQ1Threshold.Get(),
-            .median = switches::kReadingListMedianThreshold.Get(),
-            .q3 = switches::kReadingListQ3Threshold.Get()});
+const auto& GetPreferredDataTypeThresholds() {
+  static const auto kPreferredDataTypeThresholds =
+      std::to_array<std::pair<syncer::DataType, SyncDataTypeThresholds>>({
+          GetDataTypeThresholdEntry(syncer::PASSWORDS),
+          GetDataTypeThresholdEntry(syncer::BOOKMARKS),
+          GetDataTypeThresholdEntry(syncer::AUTOFILL),
+          GetDataTypeThresholdEntry(syncer::AUTOFILL_WALLET_METADATA),
+          GetDataTypeThresholdEntry(syncer::READING_LIST),
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    thresholds.emplace_back(
-        syncer::EXTENSIONS,
-        SyncDataTypeThresholds{
-            .q1 = switches::kExtensionsQ1Threshold.Get(),
-            .median = switches::kExtensionsMedianThreshold.Get(),
-            .q3 = switches::kExtensionsQ3Threshold.Get()});
+          GetDataTypeThresholdEntry(syncer::EXTENSIONS),
 #endif
-  }
-  return thresholds;
+      });
+  return kPreferredDataTypeThresholds;
 }
 
 std::vector<PreferredDataTypeInfo> ExtractPreferredDataTypes(
