@@ -1338,7 +1338,7 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*max_pool2d_input=*/
        {DataTypeConstraint::kFloat16To32, {3, 5}},
        /*prelu_input=*/
-       {kFloatsAndInt32, kMaxRank},
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*quantize_linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*quantize_linear_zero_point=*/
        {kInts8Ints32, kMaxRank},
