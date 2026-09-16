@@ -29,6 +29,16 @@ public class SessionHolder<T> {
         assert isCustomTab() || isAuthTab();
     }
 
+    /**
+     * Returns a holder for the given session.
+     *
+     * <p>Prefer this over the constructor: {@link SessionHolder} is being converted into a sealed
+     * interface, which cannot expose a constructor. See crbug.com/562120570.
+     */
+    public static <T> SessionHolder<T> of(T session) {
+        return new SessionHolder<>(session);
+    }
+
     public static @Nullable SessionHolder<?> getSessionHolderFromIntent(Intent intent) {
         boolean isAuthTab =
                 IntentUtils.safeGetBooleanExtra(intent, AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, false);
