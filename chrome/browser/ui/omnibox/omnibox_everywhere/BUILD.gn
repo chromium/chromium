@@ -66,6 +66,9 @@ source_set("omnibox_everywhere") {
   if (is_win) {
     public += [ "omnibox_everywhere_shortcut_win.h" ]
   }
+  if (is_mac) {
+    public += [ "mac_window_util.h" ]
+  }
 }
 
 # Omnibox Everywhere desktop implementation.
@@ -78,6 +81,9 @@ source_set("impl") {
     "omnibox_everywhere_widget_delegate.cc",
     "omnibox_everywhere_widget_delegate.h",
   ]
+  if (is_mac) {
+    sources += [ "mac_window_util.mm" ]
+  }
   public_deps = [ ":omnibox_everywhere" ]
   deps = [
     ":prefs",

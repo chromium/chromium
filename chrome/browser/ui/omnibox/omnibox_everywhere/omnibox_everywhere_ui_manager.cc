@@ -52,6 +52,7 @@
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -102,6 +103,10 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
 #include "ui/base/win/shell.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/mac_window_util.h"
 #endif
 
 namespace omnibox_everywhere {
@@ -557,6 +562,7 @@ void OmniboxEverywhereUIManager::ActivateAndFocus() {
     widget_->Restore();
   }
 #if BUILDFLAG(IS_MAC)
+  widget_->SetCanAppearInExistingFullscreenSpaces(true);
   widget_->MoveToActiveFullscreenSpace();
 #endif
   widget_->Show();
@@ -634,6 +640,14 @@ void OmniboxEverywhereUIManager::Close() {
       context_menu_runner_->Cancel();
       is_context_menu_open_ = false;
     }
+#if BUILDFLAG(IS_MAC)
+    // On macOS, reset auxiliary collection behaviors before hiding so the
+    // Window Server stops associating Chrome with the current Space. This
+    // ensures smooth Space transitions when activating browser windows.
+    if (widget_->GetNativeWindow()) {
+      omnibox_everywhere::DisassociatePopupOnMac(widget_->GetNativeWindow());
+    }
+#endif
     widget_->Hide();
   }
   ReleaseKeepAlives();
@@ -1176,7 +1190,8 @@ content::WebContents* OmniboxEverywhereUIManager::OpenURLFromTab(
         navigation_handle_callback) {
   auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
   if (service) {
-    service->OpenUrl(params.url, params.disposition, params.transition);
+    service->OpenUrl(params.url, params.disposition, params.transition,
+                     std::move(navigation_handle_callback));
   }
   return nullptr;
 }
