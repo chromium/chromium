@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/crash/core/app/crashpad.h"
+#include "components/crash/core/app/shared_memory_user_stream_args.h"
 
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -160,10 +162,16 @@ bool PlatformCrashpadInitialization(
     arguments.push_back(std::string("--monitor-self-annotation=ptype=") +
                         switches::kCrashpadHandler);
 
+    std::vector<base::ReadOnlySharedMemoryRegion> user_streams =
+        crash_reporter_client->GetUserStreamSharedMemoryRegions();
+    std::set<crashpad::FileHandle> preserve_handles;
+    internal::AppendSharedMemoryUserStreamArgs(user_streams, &arguments,
+                                               &preserve_handles);
+
     initialized = GetCrashpadClient().StartHandler(
         exe_file, *database_path, metrics_path, url, process_annotations,
         arguments, /*restartable=*/false, /*asynchronous_start=*/false,
-        attachments);
+        attachments, preserve_handles);
 
     if (initialized) {
       // If we're the browser, push the pipe name into the environment so child

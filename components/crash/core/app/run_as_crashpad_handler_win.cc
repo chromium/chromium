@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -17,6 +18,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
+#include "components/crash/core/app/shared_memory_user_stream_args.h"
+#include "components/crash/core/app/shared_memory_user_stream_data_source.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "components/stability_report/user_stream_data_source_win.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
@@ -81,9 +84,21 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
     argv_as_utf8[i] = &storage[i][0];
   }
   argv_as_utf8[argv.size()] = nullptr;
+  int argc = static_cast<int>(storage.size());
   argv.clear();
 
+  // Extract shared memory user stream regions from the command line and create
+  // data sources for them.
   crashpad::UserStreamDataSources user_stream_data_sources;
+  std::vector<base::ReadOnlySharedMemoryRegion> regions =
+      crash_reporter::internal::ExtractSharedMemoryUserStreamArgs(
+          &argc, argv_as_utf8.data());
+  crashpad::UserStreamDataSources shared_memory_sources =
+      crash_reporter::internal::CreateSharedMemoryUserStreamDataSources(
+          std::move(regions));
+  for (auto& source : shared_memory_sources) {
+    user_stream_data_sources.push_back(std::move(source));
+  }
 
   user_stream_data_sources.push_back(
       std::make_unique<stability_report::UserStreamDataSourceWin>());
@@ -93,8 +108,8 @@ int RunAsCrashpadHandler(const base::CommandLine& command_line,
       std::make_unique<gwp_asan::UserStreamDataSource>());
 #endif
 
-  return crashpad::HandlerMain(static_cast<int>(storage.size()),
-                               argv_as_utf8.data(), &user_stream_data_sources);
+  return crashpad::HandlerMain(argc, argv_as_utf8.data(),
+                               &user_stream_data_sources);
 }
 
 }  // namespace crash_reporter

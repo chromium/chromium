@@ -231,19 +231,11 @@ std::vector<base::ReadOnlySharedMemoryRegion>
 ChromeCrashReporterClient::GetUserStreamSharedMemoryRegions() {
   std::vector<base::ReadOnlySharedMemoryRegion> streams;
 
-  // Early-initialize the singleton before Crashpad spawns.
-  // This guarantees the memory region exists for Crashpad to inherit.
-  metrics::SystemProfileUserStream& stream =
-      metrics::SystemProfileUserStream::Get();
-  stream.Initialize();
-
   base::ReadOnlySharedMemoryRegion region =
-      stream.DuplicateSharedMemoryRegion();
-  // An OOM or initial allocation failure inside Initialize() would have
-  // already triggered a CHECK and crashed the browser. However,
-  // DuplicateSharedMemoryRegion() can still fail if the OS exhausts its
+      metrics::SystemProfileUserStream::Get().DuplicateSharedMemoryRegion();
+  // `DuplicateSharedMemoryRegion()` can still fail if the OS exhausts its
   // file descriptors (or Mach ports on Mac). In that case, gracefully degrade
-  // by dropping the telemetry stream rather than causing an unnecessary crash.
+  // by dropping the user stream rather than causing an unnecessary crash.
   if (region.IsValid()) {
     streams.push_back(std::move(region));
   }

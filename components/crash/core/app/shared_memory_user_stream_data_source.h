@@ -6,14 +6,17 @@
 #define COMPONENTS_CRASH_CORE_APP_SHARED_MEMORY_USER_STREAM_DATA_SOURCE_H_
 
 #include <memory>
+#include <vector>
 
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"
 
 namespace crash_reporter::internal {
 
-// A crashpad::UserStreamDataSource that extracts minidump user stream data from
-// a shared memory mapping conforming to the SharedMemoryUserStream protocol.
+// A `crashpad::UserStreamDataSource` that extracts minidump user stream data
+// from a shared memory mapping conforming to the SharedMemoryUserStream
+// protocol.
 class SharedMemoryUserStreamDataSource : public crashpad::UserStreamDataSource {
  public:
   // `mapping` must contain structured SharedMemoryUserStream data.
@@ -36,6 +39,11 @@ class SharedMemoryUserStreamDataSource : public crashpad::UserStreamDataSource {
  private:
   base::ReadOnlySharedMemoryMapping mapping_;
 };
+
+// Returns instances of `SharedMemoryUserStreamDataSource` generated from the
+// provided shared memory regions. Invalid regions are skipped.
+crashpad::UserStreamDataSources CreateSharedMemoryUserStreamDataSources(
+    std::vector<base::ReadOnlySharedMemoryRegion> regions);
 
 }  // namespace crash_reporter::internal
 

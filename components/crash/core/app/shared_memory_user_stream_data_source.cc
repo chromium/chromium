@@ -6,10 +6,15 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "components/crash/core/common/shared_memory_user_stream_reader.h"
+#include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"
 #include "third_party/crashpad/crashpad/minidump/minidump_user_extension_stream_data_source.h"
 
 namespace crash_reporter::internal {
@@ -17,7 +22,7 @@ namespace crash_reporter::internal {
 namespace {
 
 // Adapter class that wraps a `std::vector<uint8_t>` payload into a Crashpad
-// MinidumpUserExtensionStreamDataSource for inclusion in minidumps.
+// `MinidumpUserExtensionStreamDataSource` for inclusion in minidumps.
 class VectorExtensionStreamDataSource final
     : public crashpad::MinidumpUserExtensionStreamDataSource {
  public:
@@ -61,6 +66,19 @@ SharedMemoryUserStreamDataSource::ProduceStreamData(
 
   return std::make_unique<VectorExtensionStreamDataSource>(
       std::move(*stream_data));
+}
+
+crashpad::UserStreamDataSources CreateSharedMemoryUserStreamDataSources(
+    std::vector<base::ReadOnlySharedMemoryRegion> regions) {
+  crashpad::UserStreamDataSources sources;
+  for (const auto& region : regions) {
+    base::ReadOnlySharedMemoryMapping mapping = region.Map();
+    if (mapping.IsValid()) {
+      sources.push_back(std::make_unique<SharedMemoryUserStreamDataSource>(
+          std::move(mapping)));
+    }
+  }
+  return sources;
 }
 
 }  // namespace crash_reporter::internal

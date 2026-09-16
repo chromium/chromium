@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -73,6 +74,25 @@ TEST(SharedMemoryUserStreamDataSourceTest, RejectsInvalidStreamData) {
 
   SharedMemoryUserStreamDataSource source(mapped_region.region.Map());
   EXPECT_FALSE(source.ProduceStreamData(nullptr));
+}
+
+TEST(SharedMemoryUserStreamDataSourceTest, CreatesDataSourcesFromRegions) {
+  std::vector<base::ReadOnlySharedMemoryRegion> regions;
+
+  // Add an invalid region - this should be skipped.
+  regions.emplace_back();
+
+  // Add a valid region.
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(64);
+  ASSERT_TRUE(mapped_region.IsValid());
+  regions.push_back(std::move(mapped_region.region));
+
+  crashpad::UserStreamDataSources data_sources =
+      CreateSharedMemoryUserStreamDataSources(std::move(regions));
+
+  EXPECT_EQ(data_sources.size(), 1u);
+  EXPECT_NE(data_sources[0], nullptr);
 }
 
 }  // namespace crash_reporter::internal

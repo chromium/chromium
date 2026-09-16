@@ -9,6 +9,7 @@
 
 #include <limits>
 #include <map>
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -26,6 +27,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 #include "components/crash/core/app/crash_switches.h"
+#include "components/crash/core/app/shared_memory_user_stream_args.h"
 #include "content/public/common/content_descriptors.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
@@ -255,9 +257,15 @@ bool PlatformCrashpadInitialization(
     }
 #endif
 
+    std::vector<base::ReadOnlySharedMemoryRegion> user_streams =
+        crash_reporter_client->GetUserStreamSharedMemoryRegions();
+    std::set<crashpad::FileHandle> preserve_handles;
+    internal::AppendSharedMemoryUserStreamArgs(user_streams, &arguments,
+                                               &preserve_handles);
+
     CHECK(client.StartHandler(handler_path, *database_path, metrics_path, url,
-                              annotations, arguments, false, false,
-                              attachments));
+                              annotations, arguments, false, false, attachments,
+                              preserve_handles));
   } else {
     int fd = base::GlobalDescriptors::GetInstance()->Get(kCrashDumpSignal);
 

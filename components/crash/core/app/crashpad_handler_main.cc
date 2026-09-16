@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 
 #include "base/debug/debugging_buildflags.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/crash/core/app/shared_memory_user_stream_data_source.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
 #include "third_party/crashpad/crashpad/handler/user_stream_data_source.h"
@@ -24,6 +27,10 @@
 #include "components/allocation_recorder/crash_handler/user_stream_data_source.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "components/crash/core/app/shared_memory_user_stream_args.h"  // nogncheck
+#endif
+
 extern "C" {
 
 __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
@@ -36,6 +43,19 @@ __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
       std::make_unique<stability_report::UserStreamDataSourcePosix>());
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Extract shared memory user stream regions from the command line and create
+  // data sources for them.
+  std::vector<base::ReadOnlySharedMemoryRegion> regions =
+      crash_reporter::internal::ExtractSharedMemoryUserStreamArgs(&argc, argv);
+  crashpad::UserStreamDataSources shared_memory_sources =
+      crash_reporter::internal::CreateSharedMemoryUserStreamDataSources(
+          std::move(regions));
+  for (auto& source : shared_memory_sources) {
+    user_stream_data_sources.push_back(std::move(source));
+  }
+#endif
+
 #if BUILDFLAG(ENABLE_GWP_ASAN)
   user_stream_data_sources.push_back(
       std::make_unique<gwp_asan::UserStreamDataSource>());
@@ -45,8 +65,8 @@ __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
   user_stream_data_sources.push_back(
       std::make_unique<allocation_recorder::crash_handler::
                            AllocationRecorderStreamDataSource>(
-          base::MakeRefCounted<allocation_recorder::crash_handler::
-                                   AllocationRecorderHolder>(),
+          base::MakeRefCounted<
+              allocation_recorder::crash_handler::AllocationRecorderHolder>(),
           base::MakeRefCounted<
               allocation_recorder::crash_handler::StreamDataSourceFactory>()));
 #endif
