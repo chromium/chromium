@@ -12,6 +12,14 @@ namespace enterprise {
 struct BlobGenerationResult {
   std::string attestation_blob;
   std::string error_message;
+
+  // Returns whether the blob generation succeeded. This is the single
+  // definition of attestation success; prefer it over inspecting the fields
+  // directly so that all consumers agree. Note that a result carrying neither
+  // a blob nor an error message is treated as a failure.
+  bool IsSuccess() const {
+    return !attestation_blob.empty() && error_message.empty();
+  }
 };
 
 struct AttestationResult {

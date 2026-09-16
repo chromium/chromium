@@ -490,6 +490,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Dasher account"/>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseAttestationBlobResult) -->
+
+<enum name="EnterpriseAttestationBlobResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Generation failed"/>
+  <int value="2" label="Service unavailable"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/enterprise/device_attestation/device_attestation_metrics.h:AttestationBlobResult) -->
+
 <enum name="EnterpriseAttributesTPMConsistencyType">
   <int value="0" label="no attributes, other mode, TPM unlocked">
     valid: machine in pristine state

@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/enterprise/device_attestation/device_attestation_service.h"
 #include "components/enterprise/device_attestation/ios/attestation_service_ios.h"
@@ -50,8 +51,11 @@ class DeviceAttestationServiceIOS : public DeviceAttestationService {
   }
 
  private:
+  // `start_time` is the time at which the snapshot was requested, and is used
+  // to record the generation latency.
   void OnAttestationResponse(
       uint64_t request_id,
+      base::TimeTicks start_time,
       DeviceAttestationCallback callback,
       base::expected<std::string, AttestationServiceIOS::AttestationError>
           result);

@@ -162,6 +162,8 @@ TEST_F(SignalsAggregatorImplTest, GetSignalsForUser_SingleSignal_Supported) {
       "Enterprise.DeviceSignals.Collection.Request", expected_signal_name, 1);
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.UserPermission", UserPermission::kGranted, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.TotalLatency", 1);
 }
 
 // Tests how the aggregator behaves when given a parameter with a single signal
@@ -301,6 +303,9 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_SingleSignal_NoPermission) {
       "Enterprise.DeviceSignals.Collection.SignalsCount", 1, 1);
   histogram_tester_.ExpectBucketCount("Enterprise.DeviceSignals.UserPermission",
                                       UserPermission::kConsumerUser, 1);
+  // No collection happened, so no total latency should be recorded.
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.TotalLatency", 0);
 }
 
 // Tests how the aggregator behaves when encountering `kMissingConsent` user
@@ -356,6 +361,10 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_SingleSignal_MissingConsent) {
       expected_signal_name_regardless_consent, 1);
   histogram_tester_.ExpectBucketCount("Enterprise.DeviceSignals.UserPermission",
                                       UserPermission::kMissingConsent, 1);
+  // The barrier fans out over two signals, but the total latency must still be
+  // recorded exactly once for the request as a whole.
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.TotalLatency", 1);
 }
 
 // Tests that the aggregator will return an empty value when given an empty

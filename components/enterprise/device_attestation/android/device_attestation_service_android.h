@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/enterprise/device_attestation/device_attestation_service.h"
 
 namespace enterprise {
@@ -37,7 +38,10 @@ class DeviceAttestationServiceAndroid : public DeviceAttestationService {
       DeviceAttestationCallback callback) override;
 
  private:
-  void OnAttestationResponse(DeviceAttestationCallback callback,
+  // `start_time` is the time at which the blob generation was requested, and
+  // is used to record the generation latency.
+  void OnAttestationResponse(base::TimeTicks start_time,
+                             DeviceAttestationCallback callback,
                              BlobGenerationResult blob_generation_result);
 
   std::string GenerateV1ContentBindingString(

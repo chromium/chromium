@@ -16,6 +16,8 @@ static_library("device_attestation") {
     "device_attestation_service_factory.h",
   ]
   sources = [
+    "device_attestation_metrics.cc",
+    "device_attestation_metrics.h",
     "device_attestation_service.cc",
     "device_attestation_service_factory.cc",
   ]
@@ -43,6 +45,11 @@ static_library("device_attestation") {
     ]
     sources += [ "ios/device_attestation_service_ios.mm" ]
   }
+
+  # The unit tests assert on AttestationBlobResult, which is declared in the
+  # private device_attestation_metrics.h. Grant them access rather than
+  # promoting a metrics-only header into this component's public API.
+  friend = [ "//components/enterprise:unit_tests" ]
 }
 
 source_set("test_support") {

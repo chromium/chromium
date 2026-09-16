@@ -13,16 +13,24 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/device_attestation/android/android_attestation_client.h"
+#include "components/enterprise/device_attestation/device_attestation_metrics.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise {
+
+namespace {
+
+constexpr char kFakeBlob[] = "fake_blob";
+
+}  // namespace
 
 class MockAttestationClient : public AndroidAttestationClient {
  public:
@@ -49,6 +57,7 @@ class DeviceAttestationServiceAndroidTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<DeviceAttestationServiceAndroid> service_;
   raw_ptr<testing::StrictMock<MockAttestationClient>> client_;
 };
@@ -150,7 +159,7 @@ TEST_F(DeviceAttestationServiceAndroidTest,
                   "shloxL+uLwC7hyH5SxqtLSP0JylONKpUn8LJWo56XeU=",
                   "JZwzQsABfEiksUVXG+BiJ5Cmqa2YxeY9utdCViMtSMo=", testing::_))
       .WillOnce(base::test::RunOnceCallback<4>(BlobGenerationResult{
-          .attestation_blob = "fake_blob", .error_message = ""}));
+          .attestation_blob = kFakeBlob, .error_message = ""}));
 
   base::test::TestFuture<const AttestationResult&> test_future;
   service_->GetAttestationResponse("flow_name", report, "legacy_payload_2",
@@ -158,7 +167,7 @@ TEST_F(DeviceAttestationServiceAndroidTest,
                                    test_future.GetCallback());
 
   EXPECT_EQ(test_future.Get().blob_generation_result.attestation_blob,
-            "fake_blob");
+            kFakeBlob);
   EXPECT_EQ(test_future.Get().content_binding_version, 1);
 }
 
@@ -183,7 +192,7 @@ TEST_F(DeviceAttestationServiceAndroidTest,
                   "shloxL+uLwC7hyH5SxqtLSP0JylONKpUn8LJWo56XeU=",
                   "JZwzQsABfEiksUVXG+BiJ5Cmqa2YxeY9utdCViMtSMo=", testing::_))
       .WillOnce(base::test::RunOnceCallback<4>(BlobGenerationResult{
-          .attestation_blob = "fake_blob", .error_message = ""}));
+          .attestation_blob = kFakeBlob, .error_message = ""}));
 
   base::test::TestFuture<const AttestationResult&> test_future;
   service_->GetAttestationResponse("flow_name", report, "legacy_payload_2",
@@ -191,8 +200,55 @@ TEST_F(DeviceAttestationServiceAndroidTest,
                                    test_future.GetCallback());
 
   EXPECT_EQ(test_future.Get().blob_generation_result.attestation_blob,
-            "fake_blob");
+            kFakeBlob);
   EXPECT_EQ(test_future.Get().content_binding_version, 0);
+
+  // A successful generation records the request, the success result, the blob
+  // size and the success latency, but no failure latency.
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.Requested", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.Result",
+      AttestationBlobResult::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.BlobSize",
+      std::string_view(kFakeBlob).size(), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.Success.Latency", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.Failure.Latency", 0);
+}
+
+// Tests that a failed blob generation records the failure result and latency,
+// but no blob size.
+TEST_F(DeviceAttestationServiceAndroidTest,
+       GetAttestationResponse_RecordsMetricsOnFailure) {
+  enterprise_management::ChromeProfileReportRequest report;
+
+  EXPECT_CALL(*client_,
+              GenerateAttestationBlob(testing::_, testing::_, testing::_,
+                                      testing::_, testing::_))
+      .WillOnce(base::test::RunOnceCallback<4>(BlobGenerationResult{
+          .attestation_blob = "", .error_message = "some_error"}));
+
+  base::test::TestFuture<const AttestationResult&> test_future;
+  service_->GetAttestationResponse("flow_name", report, "legacy_payload",
+                                   "1713895415", "some_nonce",
+                                   test_future.GetCallback());
+
+  ASSERT_TRUE(test_future.Wait());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.Requested", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.Result",
+      AttestationBlobResult::kGenerationFailed, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.BlobSize", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.Success.Latency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.Failure.Latency", 1);
 }
 
 }  // namespace enterprise

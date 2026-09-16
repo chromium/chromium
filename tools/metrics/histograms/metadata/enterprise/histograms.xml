@@ -104,6 +104,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/enterprise/connectors/core/common.h:DeepScanAccessPoint) -->
 
+<variants name="DeviceSignalsOutcome">
+  <variant name="Failure" summary="failed"/>
+  <variant name="Success" summary="succeeded"/>
+</variants>
+
 <!-- LINT.IfChange(EncryptedCacheDecryptionSource) -->
 
 <variants name="EncryptedCacheDecryptionSource">
@@ -1569,6 +1574,65 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceSignals.Attestation.BlobSize" units="bytes"
+    expires_after="2027-09-14">
+  <owner>mickaczmarczyk@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the size, in bytes, of the device attestation blob generated to
+    bind a signals report to the device. Recorded once per attestation blob
+    generation request, only when the generation was successful. Recorded on all
+    platforms that support device attestation (currently Android and iOS).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceSignals.Attestation.Requested" enum="Boolean"
+    expires_after="2027-09-14">
+  <owner>mickaczmarczyk@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Recorded once every time a device attestation blob generation is requested,
+    before any work is done. Acts as the denominator for
+    Enterprise.DeviceSignals.Attestation.Result: the difference between the two
+    counts is the number of requests that never completed. Recorded on all
+    platforms that support device attestation (currently Android and iOS).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceSignals.Attestation.Result"
+    enum="EnterpriseAttestationBlobResult" expires_after="2027-09-14">
+  <owner>mickaczmarczyk@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the result of a device attestation blob generation request.
+    Recorded at most once per request, when the request completes. Requests that
+    are cancelled before completing, for example because the attestation service
+    is torn down while generation is in flight, record no result; compare
+    against Enterprise.DeviceSignals.Attestation.Requested to measure how often
+    that happens. Recorded on all platforms that support device attestation
+    (currently Android and iOS).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceSignals.Attestation.{Outcome}.Latency"
+    units="ms" expires_after="2027-09-14">
+  <owner>mickaczmarczyk@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Captures the time taken to generate the device attestation blob that binds a
+    signals report to the device, measured from the moment the blob generation
+    was requested until its result was received. Recorded once per attestation
+    blob generation request, only when the generation was actually attempted and
+    {Outcome}. Requests that could not be attempted at all, because no
+    attestation service was available, are excluded and are instead recorded to
+    Enterprise.DeviceSignals.Attestation.Result as service unavailable. Recorded
+    on all platforms that support device attestation (currently Android and
+    iOS).
+  </summary>
+  <token key="Outcome" variants="DeviceSignalsOutcome"/>
+</histogram>
+
 <histogram name="Enterprise.DeviceSignals.Collection.Certificates.Error"
     enum="DeviceSignalsCertificateCollectionError" expires_after="2027-07-14">
   <owner>hmare@chromium.org</owner>
@@ -1582,7 +1646,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.CrowdStrike.Error"
-    enum="DeviceSignalsParsingError" expires_after="2027-01-02">
+    enum="DeviceSignalsParsingError" expires_after="2027-09-14">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1592,7 +1656,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.CrowdStrike.FromDataFile"
-    enum="Boolean" expires_after="2027-01-02">
+    enum="Boolean" expires_after="2027-09-14">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1603,7 +1667,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.DeviceSignals.Collection.Failure.{Signal}.{ErrorType}Error"
-    enum="DeviceSignalsSignalCollectionError" expires_after="2027-01-02">
+    enum="DeviceSignalsSignalCollectionError" expires_after="2027-09-14">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1618,7 +1682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.Request.{Signal}.Items"
-    units="items" expires_after="2027-01-02">
+    units="items" expires_after="2027-09-14">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1633,7 +1697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.SignalsCount"
-    units="signals" expires_after="2027-01-02">
+    units="signals" expires_after="2027-09-14">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1642,7 +1706,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.Success.{Signal}.Items"
-    units="items" expires_after="2027-01-02">
+    units="items" expires_after="2027-09-14">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1653,24 +1717,47 @@ chromium-metrics-reviews@google.com.
   <token key="Signal" variants="EnterpriseSignals"/>
 </histogram>
 
+<histogram name="Enterprise.DeviceSignals.Collection.TotalLatency" units="ms"
+    expires_after="2027-09-14">
+  <owner>mickaczmarczyk@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Captures the total latency of a signal collection request, measured from the
+    moment the aggregated request was received until every requested signal has
+    been collected. Recorded once per signal collection request, regardless of
+    whether the individual signal collections succeeded or failed. Unlike the
+    per-signal Enterprise.DeviceSignals.Collection latency histograms, this
+    covers the whole request, including the time spent fanning out to, and
+    waiting on, every collector involved.
+
+    Caveat when interpreting: this merges two populations that are not directly
+    comparable. Requests that go through the parameterized-user-context entry
+    point are desktop-only and always carry exactly one signal, while the
+    general entry point runs on all platforms and may fan out over several
+    signals. Neither the entry point nor the number of signals is recorded
+    alongside this metric, so a shift in the distribution may reflect either a
+    latency regression or a change in how many signals callers batch per
+    request, and the two cannot currently be told apart from this histogram
+    alone.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.DeviceSignals.Collection.{Outcome}.{Signal}.Latency"
-    units="ms" expires_after="2027-01-02">
+    units="ms" expires_after="2027-09-14">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Captures the signal collection latency for the {Signal} signal. Recorded
     only when the collection {Outcome}.
   </summary>
-  <token key="Outcome">
-    <variant name="Failure" summary="failed"/>
-    <variant name="Success" summary="succeeded"/>
-  </token>
+  <token key="Outcome" variants="DeviceSignalsOutcome"/>
   <token key="Signal" variants="EnterpriseSignals"/>
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.Collection.{Signal}.Delta"
-    units="items" expires_after="2027-01-02">
+    units="items" expires_after="2027-09-14">
   <owner>seblalancette@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1700,7 +1787,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceSignals.HarmfulApps.Count" units="count"
-    expires_after="2027-01-02">
+    expires_after="2027-09-14">
   <owner>xzonghan@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1734,7 +1821,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.DeviceSignals.SystemSignalsService.Disconnect.ItemsCount"
-    units="items" expires_after="2027-01-02">
+    units="items" expires_after="2027-09-14">
   <owner>hmare@google.com</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
@@ -1745,7 +1832,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.DeviceSignals.SystemSignalsService.MissingPendingCallback"
-    enum="Boolean" expires_after="2027-01-02">
+    enum="Boolean" expires_after="2027-09-14">
   <owner>hmare@google.com</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>

@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/device_signals/core/browser/metrics_utils.h"
 #include "components/device_signals/core/browser/signals_collector.h"
@@ -47,8 +48,10 @@ void RespondWithError(SignalCollectionError error,
 }
 
 void OnSignalRetrieved(std::unique_ptr<SignalsAggregationResponse> response,
+                       base::TimeTicks start_time,
                        SignalsAggregator::GetSignalsCallback callback) {
   CHECK(response);
+  LogTotalSignalCollectionLatency(start_time);
   std::move(callback).Run(std::move(*response));
 }
 
@@ -69,6 +72,7 @@ void SignalsAggregatorImpl::GetSignalsForUser(
     const UserContext& user_context,
     const SignalsAggregationRequest& request,
     GetSignalsCallback callback) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   // Request for collection of multiple signals is not yet supported. Only the
   // first signal will be returned.
   if (request.signal_names.size() != 1) {
@@ -87,7 +91,7 @@ void SignalsAggregatorImpl::GetSignalsForUser(
   auto response = std::make_unique<SignalsAggregationResponse>();
   auto* response_ptr = response.get();
   auto done_closure = base::BindOnce(OnSignalRetrieved, std::move(response),
-                                     std::move(callback));
+                                     start_time, std::move(callback));
   GetSignal(*request.signal_names.begin(), permission, std::move(request),
             response_ptr, std::move(done_closure));
 }
@@ -95,6 +99,7 @@ void SignalsAggregatorImpl::GetSignalsForUser(
 
 void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
                                        GetSignalsCallback callback) {
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   LogSignalsCountRequested(request.signal_names.size());
   if (request.signal_names.empty()) {
     std::move(callback).Run(SignalsAggregationResponse());
@@ -117,7 +122,7 @@ void SignalsAggregatorImpl::GetSignals(const SignalsAggregationRequest& request,
   auto* response_ptr = response.get();
   auto barrier_closure = base::BarrierClosure(
       request.signal_names.size(),
-      base::BindOnce(OnSignalRetrieved, std::move(response),
+      base::BindOnce(OnSignalRetrieved, std::move(response), start_time,
                      std::move(callback)));
   for (const auto signal_name : request.signal_names) {
     GetSignal(signal_name, permission, request, response_ptr, barrier_closure);

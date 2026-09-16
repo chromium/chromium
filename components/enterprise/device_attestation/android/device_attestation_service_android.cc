@@ -11,11 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/device_attestation/android/android_attestation_client.h"
 #include "components/enterprise/device_attestation/android/attestation_utils.h"
+#include "components/enterprise/device_attestation/device_attestation_metrics.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace {
@@ -82,6 +84,11 @@ void DeviceAttestationServiceAndroid::GetAttestationResponse(
     std::string_view timestamp,
     std::string_view nonce,
     DeviceAttestationCallback callback) {
+  // Captured before any work is done so that the main-thread content binding
+  // and hashing costs below are part of the measured latency.
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  LogAttestationBlobRequested();
+
   std::string request_payload;
   if (enterprise_signals::features::IsContentBindingVersioningEnabled()) {
     request_payload = GenerateV1ContentBindingString(report);
@@ -95,12 +102,16 @@ void DeviceAttestationServiceAndroid::GetAttestationResponse(
   client_->GenerateAttestationBlob(
       flow_name, hashes.request_hash, hashes.timestamp_hash, hashes.nonce_hash,
       base::BindOnce(&DeviceAttestationServiceAndroid::OnAttestationResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), start_time,
+                     std::move(callback)));
 }
 
 void DeviceAttestationServiceAndroid::OnAttestationResponse(
+    base::TimeTicks start_time,
     DeviceAttestationCallback callback,
     BlobGenerationResult blob_generation_result) {
+  LogAttestationBlobGenerated(start_time, blob_generation_result);
+
   std::move(callback).Run(AttestationResult{
       .blob_generation_result = std::move(blob_generation_result),
       .content_binding_version = GetCurrentContentBindingsVersion()});

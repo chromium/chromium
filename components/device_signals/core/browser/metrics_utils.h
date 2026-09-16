@@ -75,6 +75,13 @@ void LogSignalCollectionSucceeded(
     std::optional<size_t> signal_collection_size,
     std::optional<size_t> signal_request_size = std::nullopt);
 
+// Records the total latency of a signal collection request, covering the
+// collection of all requested signals. `start_time` is the time at which the
+// aggregated collection request was received. Unlike the per-signal latency
+// metrics, this includes the time spent fanning out to, and waiting on, every
+// collector involved in the request.
+void LogTotalSignalCollectionLatency(base::TimeTicks start_time);
+
 // Records that an error occurred when trying to parse signals from the
 // CrowdStrike data.zta file.
 void LogCrowdStrikeParsingError(SignalsParsingError error);

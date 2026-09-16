@@ -6,15 +6,18 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/enterprise/device_attestation/common/device_attestation_types.h"
+#include "components/enterprise/device_attestation/device_attestation_metrics.h"
 #include "components/enterprise/device_attestation/device_attestation_service_factory.h"
 #include "components/enterprise/device_attestation/ios/attestation_service_ios.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -124,6 +127,7 @@ class DeviceAttestationServiceIOSTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   // Declare service_ BEFORE mock_service_ to ensure correct destruction order.
   std::unique_ptr<DeviceAttestationServiceIOS> service_;
   raw_ptr<MockAttestationServiceIOS> mock_service_ = nullptr;
@@ -143,6 +147,21 @@ TEST_F(DeviceAttestationServiceIOSTest, GetAttestationResponse_Success) {
   EXPECT_TRUE(result.blob_generation_result.error_message.empty());
   EXPECT_EQ(result.content_binding_version, 0);
   EXPECT_TRUE(mock_service_->last_content_binding().empty());
+
+  // A successful generation records the request, the success result, the blob
+  // size and the success latency, but no failure latency.
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.Requested", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.Result",
+      AttestationBlobResult::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.BlobSize",
+      std::string_view(kTestAttestationBlob).size(), 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.Success.Latency", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.Failure.Latency", 0);
 }
 
 TEST_F(DeviceAttestationServiceIOSTest,
@@ -210,14 +229,27 @@ TEST_F(DeviceAttestationServiceIOSTest, NullServiceReturnsError) {
   EXPECT_TRUE(result.blob_generation_result.attestation_blob.empty());
   EXPECT_EQ(result.blob_generation_result.error_message,
             "Attestation service unavailable");
+
+  // No generation was attempted, so the result is recorded but no latency is:
+  // a zero-duration sample here would skew the failure latency distribution.
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.Requested", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.Result",
+      AttestationBlobResult::kServiceUnavailable, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.BlobSize", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.Success.Latency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.Failure.Latency", 0);
 }
 
 TEST_F(DeviceAttestationServiceIOSTest, SnapshotGenerationFailureReturnsError) {
+  auto error_service = std::make_unique<ErrorAttestationServiceIOS>(
+      AttestationServiceIOS::AttestationError::kSnapshotGenerationFailed);
   std::unique_ptr<DeviceAttestationServiceIOS> failing_service =
-      std::make_unique<DeviceAttestationServiceIOS>(
-          std::make_unique<ErrorAttestationServiceIOS>(
-              AttestationServiceIOS::AttestationError::
-                  kSnapshotGenerationFailed));
+      std::make_unique<DeviceAttestationServiceIOS>(std::move(error_service));
   enterprise_management::ChromeProfileReportRequest report;
 
   base::test::TestFuture<const AttestationResult&> future;
@@ -229,6 +261,20 @@ TEST_F(DeviceAttestationServiceIOSTest, SnapshotGenerationFailureReturnsError) {
   EXPECT_TRUE(result.blob_generation_result.attestation_blob.empty());
   EXPECT_EQ(result.blob_generation_result.error_message,
             "Attestation snapshot generation failed");
+
+  // Generation was attempted and failed, so both the result and the failure
+  // latency are recorded, but no blob size.
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.Requested", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Attestation.Result",
+      AttestationBlobResult::kGenerationFailed, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.BlobSize", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.Success.Latency", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Attestation.Failure.Latency", 1);
 }
 
 class DeviceAttestationServiceIOSErrorTest

@@ -9,7 +9,10 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/enterprise/device_attestation/common/device_attestation_types.h"
+#include "components/enterprise/device_attestation/device_attestation_metrics.h"
 #include "components/enterprise/device_attestation/ios/attestation_service_ios.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -58,7 +61,14 @@ void DeviceAttestationServiceIOS::GetAttestationResponse(
     std::string_view /*timestamp*/,
     std::string_view /*nonce*/,
     DeviceAttestationCallback callback) {
+  // Captured before any work is done so that the content binding construction
+  // below is part of the measured latency, matching Android.
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  LogAttestationBlobRequested();
+
   if (!attestation_service_) {
+    // No generation is attempted, so no latency is recorded; only the result.
+    LogAttestationBlobServiceUnavailable();
     std::move(callback).Run(AttestationResult{
         .blob_generation_result = {.attestation_blob = "",
                                    .error_message =
@@ -95,7 +105,7 @@ void DeviceAttestationServiceIOS::GetAttestationResponse(
       attestation_service_->GetSnapshot(
           content_binding,
           base::BindOnce(&DeviceAttestationServiceIOS::OnAttestationResponse,
-                         weak_this, request_id,
+                         weak_this, request_id, start_time,
                          std::move(callback)));
 
   // If the callback ran synchronously during `GetSnapshot`, `this` may have
@@ -120,25 +130,24 @@ void DeviceAttestationServiceIOS::GetAttestationResponse(
 
 void DeviceAttestationServiceIOS::OnAttestationResponse(
     uint64_t request_id,
+    base::TimeTicks start_time,
     DeviceAttestationCallback callback,
     base::expected<std::string, AttestationServiceIOS::AttestationError>
         result) {
   attestation_subscriptions_.erase(request_id);
 
+  BlobGenerationResult blob_generation_result;
   if (result.has_value()) {
-    std::move(callback).Run(AttestationResult{
-        .blob_generation_result = {.attestation_blob =
-                                       std::move(result.value()),
-                                   .error_message = ""},
-        .content_binding_version = kDefaultContentBindingVersion});
-    return;
+    blob_generation_result.attestation_blob = std::move(result.value());
+  } else {
+    blob_generation_result.error_message =
+        std::string(AttestationErrorToString(result.error()));
   }
 
+  LogAttestationBlobGenerated(start_time, blob_generation_result);
+
   std::move(callback).Run(AttestationResult{
-      .blob_generation_result =
-          {.attestation_blob = "",
-           .error_message =
-               std::string(AttestationErrorToString(result.error()))},
+      .blob_generation_result = std::move(blob_generation_result),
       .content_binding_version = kDefaultContentBindingVersion});
 }
 
