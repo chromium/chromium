@@ -213,10 +213,13 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     def _ChooseNumWorkers(self, num_jobs):
         if self._test_instance.debug_socket:
             num_workers = 1
-        elif self._test_instance.shards is not None:
+        elif (
+            self._test_instance.shards is not None
+            and self._test_instance.shards > 0
+        ):
             num_workers = self._test_instance.shards
         else:
-            num_workers = max(1, multiprocessing.cpu_count() // 2)
+            num_workers = multiprocessing.cpu_count()
         return min(num_workers, num_jobs)
 
     def _ApplyExternalSharding(self, json_config):

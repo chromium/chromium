@@ -129,6 +129,36 @@ class LocalMachineJunitTestRunTests(unittest.TestCase):
             )
         )
 
+    def testChooseNumWorkers(self):
+        test_instance = MagicMock()
+        test_instance.debug_socket = None
+        test_instance.shards = None
+        obj = local_machine_junit_test_run.LocalMachineJunitTestRun(
+            MagicMock(), test_instance
+        )
+
+        with patch('multiprocessing.cpu_count', return_value=16):
+            self.assertEqual(obj._ChooseNumWorkers(32), 16)
+            self.assertEqual(obj._ChooseNumWorkers(8), 8)
+
+        # Debug socket forces 1 worker
+        test_instance.debug_socket = '8701'
+        self.assertEqual(obj._ChooseNumWorkers(32), 1)
+
+        # Explicit shards override
+        test_instance.debug_socket = None
+        test_instance.shards = 4
+        self.assertEqual(obj._ChooseNumWorkers(32), 4)
+        self.assertEqual(obj._ChooseNumWorkers(2), 2)
+
+        # Values less than 1 fall back to auto-select
+        test_instance.shards = 0
+        with patch('multiprocessing.cpu_count', return_value=16):
+            self.assertEqual(obj._ChooseNumWorkers(32), 16)
+        test_instance.shards = -1
+        with patch('multiprocessing.cpu_count', return_value=16):
+            self.assertEqual(obj._ChooseNumWorkers(32), 16)
+
 
 if __name__ == '__main__':
     unittest.main()
