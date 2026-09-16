@@ -532,12 +532,14 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
     };
 
     String endpoint;
-    if (auto item_and_params = value.GetWithParamsIfItem()) {
-      endpoint = GetEndpoint(item_and_params->second);
-      process_item(item_and_params->first);
-    } else if (auto inner_list_and_params = value.GetWithParamsIfInnerList()) {
-      endpoint = GetEndpoint(inner_list_and_params->second);
-      for (const auto& parameterized_item : inner_list_and_params->first) {
+    if (const net::structured_headers::ParameterizedItem* item =
+            value.GetIfItem()) {
+      endpoint = GetEndpoint(item->params);
+      process_item(item->item);
+    } else if (const net::structured_headers::InnerList* inner_list =
+                   value.GetIfInnerList()) {
+      endpoint = GetEndpoint(inner_list->params);
+      for (const auto& parameterized_item : inner_list->items) {
         if (!parameterized_item.params.empty()) {
           logger_.Warn(
               StrCat({"Feature ", feature_name, "'s parameters are ignored."}));
@@ -547,7 +549,7 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
       }
     } else {
       // Parsed dictionaries always return a value from either
-      // `GetWithParamsIfItem()` or `GetWithParamsIfInnerList()`.
+      // `GetIfItem()` or `GetIfInnerList()`.
       NOTREACHED();
     }
 
