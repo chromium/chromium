@@ -996,6 +996,13 @@ BASE_FEATURE(kAutofillPopupUseDeleteSoon, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillReplaceFormElementObserver,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, AutofillPopupControllerImpl and
+// AutofillKeyboardAccessoryControllerImpl require that the frame to which the
+// suggestions are anchored has focus.
+// TODO(crbug.com/536607604): Clean up when launched.
+BASE_FEATURE(kAutofillRequireFocusInFrameForSuggestions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Restricts OTP fields detection and fetching to forms that are in a frame
 // with the same TLD+1 as the main frame.
 BASE_FEATURE(kAutofillRestrictOtpToSameTldPlusOne,

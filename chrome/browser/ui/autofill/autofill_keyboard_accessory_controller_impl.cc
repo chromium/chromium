@@ -731,6 +731,14 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;
   }
+  if (rfh != web_contents_->GetFocusedFrame() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillRequireFocusInFrameForSuggestions)) {
+    base::UmaHistogramEnumeration("Autofill.SuggestionSuppressionDueToNoFocus",
+                                  trigger_source);
+    Hide(SuggestionHidingReason::kNoFrameHasFocus);
+    return;
+  }
 
   if (IsPointerLocked(web_contents_.get())) {
     Hide(SuggestionHidingReason::kMouseLocked);

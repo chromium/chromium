@@ -408,15 +408,17 @@ class AutofillCapturedSitesInteractiveTest
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::debug::kAutofillServerCommunication, {}},
+        {{features::kAutofillRequireFocusInFrameForSuggestions, {}},
+         {features::debug::kAutofillCapturedSiteTestsUseAutofillFlow, {}},
+         {features::debug::kAutofillServerCommunication, {}},
          {features::debug::kAutofillShowTypePredictions,
           {
-              // TODO(crbug.com/410879924): Investigate why the test fails when
-              // kAutofillShowTypePredictions is enabled without parameters.
+              // TODO(crbug.com/410879924): Investigate why the test fails
+              // when kAutofillShowTypePredictions is enabled without
+              // parameters.
               {features::debug::kAutofillShowTypePredictionsAsTitleParam.name,
                "true"},
-          }},
-         {features::debug::kAutofillCapturedSiteTestsUseAutofillFlow, {}}},
+          }}},
         /*disabled_features=*/{});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");

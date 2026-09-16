@@ -336,6 +336,14 @@ void AutofillPopupControllerImpl::Show(
     Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;
   }
+  if (rfh != web_contents_->GetFocusedFrame() && !should_ignore_focus_loss &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillRequireFocusInFrameForSuggestions)) {
+    base::UmaHistogramEnumeration("Autofill.SuggestionSuppressionDueToNoFocus",
+                                  trigger_source);
+    Hide(SuggestionHidingReason::kNoFrameHasFocus);
+    return;
+  }
 
   if (IsPointerLocked(web_contents_.get())) {
     Hide(SuggestionHidingReason::kMouseLocked);

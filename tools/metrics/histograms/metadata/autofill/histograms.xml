@@ -9635,6 +9635,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.SuggestionSuppressionDueToNoFocus"
+    enum="AutofillSuggestionTriggerSource" expires_after="2027-03-01">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the trigger source when Autofill suggestions are suppressed because
+    the suggestions' anchor frame does not have focus.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.TestAddressesEvent"
     enum="AutofillInDevtoolsTestAddressesEvents" expires_after="2027-03-07">
   <owner>brunobraga@google.com</owner>
