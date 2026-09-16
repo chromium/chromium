@@ -124,12 +124,16 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   // Mark the User Education screen as already-seen by default.
   [ChromeEarlGrey setUserDefaultsObject:@YES
                                  forKey:kInactiveTabsUserEducationShownOnceKey];
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:@"ForceInactiveTabsUserEducation"];
 }
 
 - (void)tearDownHelper {
   [ChromeEarlGrey removeUserDefaultsObjectForKey:@"InactiveTabsTestMode"];
   [ChromeEarlGrey
       removeUserDefaultsObjectForKey:kInactiveTabsUserEducationShownOnceKey];
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:@"ForceInactiveTabsUserEducation"];
   [super tearDownHelper];
 }
 
@@ -889,6 +893,44 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   // The user education screen is not shown.
   [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsUserEducation()]
       assertWithMatcher:grey_nil()];
+}
+
+// Checks that the User Education panel always appears when forced by
+// experimental settings, even after it was already shown once.
+- (void)testUserEducationForced {
+  // Set up one inactive tab.
+  CreateRegularTabs(1, self.testServer);
+  [self relaunchAppWithInactiveTabsTestMode];
+
+  // Reset the User-Education marker and force it via experimental settings.
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:kInactiveTabsUserEducationShownOnceKey];
+  [ChromeEarlGrey setUserDefaultsObject:@YES
+                                 forKey:@"ForceInactiveTabsUserEducation"];
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Enter the Inactive Tabs grid.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      performAction:grey_tap()];
+
+  // The user education screen is shown on first entry (which also sets
+  // `kInactiveTabsUserEducationShownOnceKey` to YES).
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsUserEducation()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Dismiss it, go back and re-enter the Inactive Tabs grid.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForUserEducationDoneButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:testing::NavigationBarBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      performAction:grey_tap()];
+
+  // The user education screen is shown again despite
+  // `kInactiveTabsUserEducationShownOnceKey` being YES.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsUserEducation()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Checks that Settings can be opened from the User Education panel.

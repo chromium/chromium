@@ -484,6 +484,16 @@
 		</dict>
 		<dict>
 			<key>DefaultValue</key>
+			<false/>
+			<key>Key</key>
+			<string>ForceInactiveTabsUserEducation</string>
+			<key>Title</key>
+			<string>Force inactive tabs user education</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+		</dict>
+		<dict>
+			<key>DefaultValue</key>
 			<string></string>
 			<key>Key</key>
 			<string>AsyncStartupOverrideResponse</string>

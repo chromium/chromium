@@ -156,6 +156,9 @@ bool ShouldDisplayLensShopTipWithImage();
 // considered inactive after a minute.
 bool ShouldUseInactiveTabsDemoThreshold();
 
+// Whether the Inactive Tabs user education screen should always be displayed.
+bool ShouldForceInactiveTabsUserEducation();
+
 // Whether Inactive Tabs should be in Automated Testing mode, where
 // tabs are immediately considered inactive.
 bool ShouldUseInactiveTabsTestThreshold();

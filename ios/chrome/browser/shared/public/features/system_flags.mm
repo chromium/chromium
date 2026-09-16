@@ -64,6 +64,8 @@ NSString* const kTipsMagicStackLensShopWithImage =
     @"TipsMagicStackLensShopWithImage";
 NSString* const kTipsMagicStackStateOverride = @"TipsMagicStackStateOverride";
 NSString* const kInactiveTabsDemoMode = @"InactiveTabsDemoMode";
+NSString* const kForceInactiveTabsUserEducation =
+    @"ForceInactiveTabsUserEducation";
 NSString* const kInactiveTabsTestMode = @"InactiveTabsTestMode";
 NSString* const kAsyncStartupOverrideResponse = @"AsyncStartupOverrideResponse";
 NSString* const kLensResultPanelGwsURL = @"LensResultPanelGwsURL";
@@ -336,6 +338,11 @@ bool ShouldDisplayLensShopTipWithImage() {
 bool ShouldUseInactiveTabsDemoThreshold() {
   return
       [[NSUserDefaults standardUserDefaults] boolForKey:kInactiveTabsDemoMode];
+}
+
+bool ShouldForceInactiveTabsUserEducation() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kForceInactiveTabsUserEducation];
 }
 
 bool ShouldUseInactiveTabsTestThreshold() {
