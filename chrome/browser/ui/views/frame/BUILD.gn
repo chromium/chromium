@@ -380,6 +380,7 @@ source_set("glass_frame_service") {
     "//chrome/common:constants",
     "//components/prefs",
     "//ui/base/unowned_user_data",
+    "//ui/views",
   ]
 }
 

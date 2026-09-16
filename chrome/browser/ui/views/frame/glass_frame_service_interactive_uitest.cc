@@ -12,11 +12,19 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_restore_test_helper.h"
+#include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/themes/theme_helper.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -26,9 +34,12 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
@@ -106,6 +117,49 @@ class GlassFrameServiceInteractiveTest : public InProcessBrowserTest {
     return false;
   }
 
+  bool IsTabStripGlass(BrowserWindowInterface* browser) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    TabStripRegionView* tab_strip_region_view = browser_view->tab_strip_view();
+
+    if (auto* base_region =
+            views::AsViewClass<BaseTabStripRegionView>(tab_strip_region_view)) {
+      if (TabStripCollectionController* controller =
+              base_region->GetTabStripCollectionController()) {
+        return controller->IsGlassFrame();
+      }
+    }
+
+    if (TabStrip* tab_strip = views::AsViewClass<TabStrip>(
+            tab_strip_region_view->GetTabStripView())) {
+      return tab_strip->IsGlassFrame();
+    }
+
+    return false;
+  }
+
+  BrowserWindowInterface* QuitBrowserAndRestore(Profile* profile) {
+    auto keep_alive = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+    auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
+    // Simulate an exit by shutting down the session service before closing
+    // windows. If we don't do this, any window closed before the last one is
+    // treated as an explicit user close and will not be restored.
+    SessionServiceFactory::ShutdownForProfile(profile);
+
+    while (BrowserWindowInterface* const browser =
+               GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser()) {
+      CloseBrowserSynchronously(browser);
+    }
+
+    SessionRestoreTestHelper restore_observer;
+    chrome::NewEmptyWindow(profile);
+    restore_observer.Wait();
+
+    return GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   ui::UserDataFactory::ScopedOverride glass_frame_service_override_;
@@ -163,6 +217,69 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
   EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
   EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser2));
   EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser3));
+}
+
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
+                       MultipleWindowsStartupActivation) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
+  Profile* const profile = browser()->GetProfile();
+
+  // Set startup preference to restore the last session.
+  SessionStartupPref pref(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(profile, pref);
+
+  const GURL kUrl1("data:,window 1");
+  const GURL kUrl2("data:,window 2");
+
+  // Navigate the initial browser (browser1) to a URL so it is recorded in the
+  // session.
+  BrowserWindowInterface* const browser1 = browser();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, kUrl1));
+
+  // Open a second browser window and navigate it to a URL.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  chrome::NewWindow(browser1);
+  BrowserWindowInterface* const browser2 = browser_created_observer.Wait();
+  ASSERT_TRUE(browser2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, kUrl2));
+
+  // Activate browser1 before quitting so that it is recorded as the active
+  // window to restore.
+  browser1->GetWindow()->Activate();
+  ui_test_utils::WaitUntilBrowserBecomeActive(browser1);
+
+  // Simulate closing all windows and restoring the session with multiple
+  // windows.
+  BrowserWindowInterface* const restored_active_browser =
+      QuitBrowserAndRestore(profile);
+  ASSERT_TRUE(restored_active_browser);
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
+
+  BrowserWindowInterface* restored_browser1 = nullptr;
+  BrowserWindowInterface* restored_browser2 = nullptr;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&restored_browser1, &restored_browser2, &kUrl1,
+       &kUrl2](BrowserWindowInterface* b) {
+        const GURL active_tab_url =
+            b->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL();
+        if (active_tab_url == kUrl1) {
+          restored_browser1 = b;
+        } else {
+          EXPECT_EQ(active_tab_url, kUrl2);
+          restored_browser2 = b;
+        }
+        return true;
+      });
+  ASSERT_TRUE(restored_browser1);
+  ASSERT_TRUE(restored_browser2);
+
+  EXPECT_TRUE(GlassFrameService::GetInstance()->IsBrowserWindowEligible(
+      restored_browser1));
+  EXPECT_TRUE(IsTabStripGlass(restored_browser1));
+  EXPECT_FALSE(IsTabStripGlass(restored_browser2));
 }
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
