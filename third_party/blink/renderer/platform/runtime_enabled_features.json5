@@ -1940,7 +1940,7 @@
     },
     {
       name: "CSSRandomFunction",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSRandomFunctionTypedOM",
