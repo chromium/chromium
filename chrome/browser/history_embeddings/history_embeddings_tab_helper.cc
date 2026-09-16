@@ -48,31 +48,61 @@ void HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation(
   CancelHistoryLookup();
 
   // Save data for later use in `DidFinishLoad`.
+  history_navigation_id_ = navigation_id;
   history_visit_time_ = timestamp;
   history_url_ = url;
 
-  GetHistoryEmbeddingsService()->UpdateVisitMetadata(web_contents(),
-                                                     std::nullopt);
+  if (history_embeddings::HistoryEmbeddingsService* service =
+          GetHistoryEmbeddingsService()) {
+    service->UpdateVisitMetadata(web_contents(), std::nullopt);
+  }
 }
 
 void HistoryEmbeddingsTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->HasCommitted() &&
-      !navigation_handle->IsSameDocument()) {
-    GetHistoryEmbeddingsService()->UpdateVisitMetadata(web_contents(),
-                                                       std::nullopt);
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  if (navigation_handle->IsSameDocument() ||
+      navigation_handle->IsServedFromBackForwardCache()) {
+    // Same-document and BFCache navigations do not trigger a fresh
+    // DidFinishLoad, so clear any pending navigation state so it does not
+    // linger.
+    CancelHistoryLookup();
+    history_navigation_id_.reset();
+    history_visit_time_.reset();
+    history_url_.reset();
+    if (history_embeddings::HistoryEmbeddingsService* service =
+            GetHistoryEmbeddingsService()) {
+      service->UpdateVisitMetadata(web_contents(), std::nullopt);
+    }
+    return;
+  }
+
+  // For cross-document navigations:
+  // If this navigation did not update history (e.g. 404 response, network
+  // error, or ineligible navigation), clear any stale history data and cancel
+  // pending lookups.
+  if (!history_navigation_id_.has_value() ||
+      *history_navigation_id_ != navigation_handle->GetNavigationId()) {
+    CancelHistoryLookup();
+    history_navigation_id_.reset();
+    history_visit_time_.reset();
+    history_url_.reset();
+  }
+
+  if (history_embeddings::HistoryEmbeddingsService* service =
+          GetHistoryEmbeddingsService()) {
+    service->UpdateVisitMetadata(web_contents(), std::nullopt);
   }
 }
 
 void HistoryEmbeddingsTabHelper::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (!render_frame_host->IsInPrimaryMainFrame() ||
-      !history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext())) ||
-      !GetHistoryEmbeddingsService() ||
-      !GetHistoryEmbeddingsService()->IsEligible(validated_url)) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
   }
 
@@ -82,25 +112,72 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
   // guarantees at most one delayed task is scheduled at a time.
   CancelHistoryLookup();
 
-  if (!history_url_.has_value()) {
+  if (!history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext())) ||
+      !GetHistoryEmbeddingsService() ||
+      !GetHistoryEmbeddingsService()->IsEligible(validated_url) ||
+      !history_url_.has_value() || *history_url_ != validated_url) {
+    history_navigation_id_.reset();
+    history_visit_time_.reset();
+    history_url_.reset();
     return;
   }
 
-  if (history::HistoryService* history_service = GetHistoryService()) {
-    // Callback is a member method instead of inline to enable cancellation via
-    // weak pointer in `CancelHistoryLookup()`.
-    history_service->GetMostRecentVisitsForGurl(
-        history_url_.value(), 1, history::VisitQuery404sPolicy::kExclude404s,
-        base::BindOnce(
-            &HistoryEmbeddingsTabHelper::UpdateEmbeddingsServiceWithHistoryData,
-            extraction_weak_ptr_factory_.GetWeakPtr()),
-        &task_tracker_);
+  history::HistoryService* history_service = GetHistoryService();
+  if (!history_service) {
+    history_navigation_id_.reset();
+    history_visit_time_.reset();
+    history_url_.reset();
+    return;
+  }
+
+  // Callback is a member method instead of inline to enable cancellation via
+  // weak pointer in `CancelHistoryLookup()`.
+  history_service->GetMostRecentVisitsForGurl(
+      history_url_.value(), 1, history::VisitQuery404sPolicy::kExclude404s,
+      base::BindOnce(
+          &HistoryEmbeddingsTabHelper::UpdateEmbeddingsServiceWithHistoryData,
+          extraction_weak_ptr_factory_.GetWeakPtr()),
+      &task_tracker_);
+}
+
+void HistoryEmbeddingsTabHelper::DidFailLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url,
+    int error_code) {
+  if (render_frame_host->IsInPrimaryMainFrame()) {
+    CancelHistoryLookup();
+    history_navigation_id_.reset();
+    history_visit_time_.reset();
+    history_url_.reset();
+    if (history_embeddings::HistoryEmbeddingsService* service =
+            GetHistoryEmbeddingsService()) {
+      service->UpdateVisitMetadata(web_contents(), std::nullopt);
+    }
+  }
+}
+
+void HistoryEmbeddingsTabHelper::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  CancelHistoryLookup();
+  history_navigation_id_.reset();
+  history_visit_time_.reset();
+  history_url_.reset();
+  if (history_embeddings::HistoryEmbeddingsService* service =
+          GetHistoryEmbeddingsService()) {
+    service->UpdateVisitMetadata(web_contents(), std::nullopt);
   }
 }
 
 void HistoryEmbeddingsTabHelper::WebContentsDestroyed() {
-  GetHistoryEmbeddingsService()->UpdateVisitMetadata(web_contents(),
-                                                     std::nullopt);
+  CancelHistoryLookup();
+  history_navigation_id_.reset();
+  history_visit_time_.reset();
+  history_url_.reset();
+  if (history_embeddings::HistoryEmbeddingsService* service =
+          GetHistoryEmbeddingsService()) {
+    service->UpdateVisitMetadata(web_contents(), std::nullopt);
+  }
 }
 
 void HistoryEmbeddingsTabHelper::SetHistoryTabHelperSubscription(
@@ -115,6 +192,14 @@ HistoryEmbeddingsTabHelper::GetWeakPtr() {
 
 void HistoryEmbeddingsTabHelper::UpdateEmbeddingsServiceWithHistoryData(
     history::QueryURLAndVisitsResult result) {
+  std::optional<base::Time> expected_visit_time = history_visit_time_;
+  std::optional<GURL> expected_url = history_url_;
+
+  // Clear the data. It isn't reused and will be set anew by later navigation.
+  history_navigation_id_.reset();
+  history_visit_time_.reset();
+  history_url_.reset();
+
   // `visits` can be empty for navigations that don't result in a
   // visit being added to the DB, e.g. navigations to
   // "chrome://" URLs.
@@ -128,8 +213,16 @@ void HistoryEmbeddingsTabHelper::UpdateEmbeddingsServiceWithHistoryData(
   CHECK_EQ(url_row.id(), latest_visit.url_id);
   // Make sure the visit we got actually corresponds to the
   // navigation by comparing the visit_times.
-  if (!history_visit_time_.has_value() ||
-      latest_visit.visit_time != *history_visit_time_) {
+  if (!expected_visit_time.has_value() ||
+      latest_visit.visit_time != *expected_visit_time) {
+    return;
+  }
+  // Make sure the URL from the history query matches the expected URL and
+  // the currently committed URL of the WebContents.
+  if (!expected_url.has_value() || url_row.url() != *expected_url) {
+    return;
+  }
+  if (web_contents()->GetLastCommittedURL() != url_row.url()) {
     return;
   }
   // Make sure the latest visit (the first one in the array) is
@@ -143,14 +236,14 @@ void HistoryEmbeddingsTabHelper::UpdateEmbeddingsServiceWithHistoryData(
     return;
   }
 
-  GetHistoryEmbeddingsService()->UpdateVisitMetadata(
-      web_contents(),
-      history_embeddings::HistoryEmbeddingsService::VisitMetadata{
-          latest_visit.url_id, latest_visit.visit_id, latest_visit.visit_time});
-
-  // Clear the data. It isn't reused and will be set anew by later navigation.
-  history_visit_time_.reset();
-  history_url_.reset();
+  if (history_embeddings::HistoryEmbeddingsService* service =
+          GetHistoryEmbeddingsService()) {
+    service->UpdateVisitMetadata(
+        web_contents(),
+        history_embeddings::HistoryEmbeddingsService::VisitMetadata{
+            latest_visit.url_id, latest_visit.visit_id,
+            latest_visit.visit_time});
+  }
 }
 
 void HistoryEmbeddingsTabHelper::CancelHistoryLookup() {

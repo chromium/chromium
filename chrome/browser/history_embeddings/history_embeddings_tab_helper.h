@@ -50,8 +50,13 @@ class HistoryEmbeddingsTabHelper
   // content::WebContentsObserver:
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
+  void DidFailLoad(content::RenderFrameHost* render_frame_host,
+                   const GURL& validated_url,
+                   int error_code) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
 
   void SetHistoryTabHelperSubscription(
@@ -84,6 +89,7 @@ class HistoryEmbeddingsTabHelper
   // Data saved from the `HistoryTabHelper` call to
   // `OnUpdatedHistoryForNavigation` which happens in `DidFinishNavigation`
   // and precedes `DidFinishLoad`.
+  std::optional<int64_t> history_navigation_id_;
   std::optional<base::Time> history_visit_time_;
   std::optional<GURL> history_url_;
 

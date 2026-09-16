@@ -488,6 +488,9 @@ HistoryEmbeddingsService::GetUsageMode() const {
 }
 
 void HistoryEmbeddingsService::OnPageEmbeddingsAvailable(content::Page& page) {
+  if (!page.IsPrimary()) {
+    return;
+  }
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
   const auto loc = last_history_visit_.find(web_contents);

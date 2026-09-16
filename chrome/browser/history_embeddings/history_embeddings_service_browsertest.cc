@@ -42,6 +42,10 @@
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -652,52 +656,190 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsKillSwitchBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
-                       404NavigationDoesNotPoisonHistory) {
+                       NotFoundNavigationDoesNotAssociateWithPreviousUrl) {
   OverrideVisibilityScoresForTesting({
-      {"Victim passages", 0.99},
-      {"Attacker passages", 0.99},
+      {"First sample passages", 0.99},
+      {"Second sample passages", 0.99},
   });
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // 1. Load victim page.
-  SetPagePassages({"Victim passages"});
+  // 1. Load first page to completion.
+  SetPagePassages({"First sample passages"});
   base::test::TestFuture<UrlData> store_future;
   service()->SetPassagesStoredCallbackForTesting(
       store_future.GetRepeatingCallback());
 
-  GURL victim_url = embedded_test_server()->GetURL("/links.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), victim_url));
+  GURL first_url = embedded_test_server()->GetURL("/links.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   EXPECT_TRUE(store_future.Wait());
 
-  // 2. Navigate to 404 page with attacker passages.
-  SetPagePassages({"Attacker passages"});
+  // 2. Navigate to 404 page with second passages.
+  SetPagePassages({"Second sample passages"});
 
   base::test::TestFuture<void> extraction_triggered;
   SetExtractionCallback(extraction_triggered.GetRepeatingCallback());
 
-  GURL poison_url = embedded_test_server()->GetURL("/non-existent-404");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), poison_url));
+  GURL not_found_url = embedded_test_server()->GetURL("/non-existent-404");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), not_found_url));
 
   // Wait specifically for the content extraction to be triggered for the 404
-  // page
+  // page.
   EXPECT_TRUE(extraction_triggered.Wait());
 
-  // Now check if the victim URL has been poisoned.
+  // Check that the first URL has not been associated with the second page's
+  // passages.
   base::test::TestFuture<SearchResult> search_future;
-  service()->Search(nullptr, "Attacker", {}, 1, /*skip_answering=*/false,
+  service()->Search(nullptr, "Second", {}, 1, /*skip_answering=*/false,
                     /*url_id_filter=*/{}, search_future.GetRepeatingCallback());
   SearchResult result = search_future.Take();
 
-  bool found_victim_with_attacker_content = false;
+  bool found_first_with_second_content = false;
   for (const auto& scored_url_row : result.scored_url_rows) {
-    if (scored_url_row.row.url() == victim_url) {
-      found_victim_with_attacker_content = true;
+    if (scored_url_row.row.url() == first_url) {
+      found_first_with_second_content = true;
       break;
     }
   }
-  EXPECT_FALSE(found_victim_with_attacker_content)
-      << "Victim URL was poisoned with attacker content!";
+  EXPECT_FALSE(found_first_with_second_content);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HistoryEmbeddingsBrowserTest,
+    NotFoundNavigationInterruptingInitialLoadDoesNotRetainPriorPageMetadata) {
+  OverrideVisibilityScoresForTesting({
+      {"Sample initial page content", 0.99},
+      {"Sample second page content", 0.99},
+  });
+
+  net::test_server::ControllableHttpResponse slow_response(
+      embedded_test_server(), "/slow_resource");
+
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/page_with_slow_image") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html");
+          response->set_content(
+              "<html><body><h1>First Page</h1><img "
+              "src=\"/slow_resource\"></body></html>");
+          return response;
+        }
+        return nullptr;
+      }));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1. Start navigation to the first page with a slow subresource.
+  SetPagePassages({"Sample initial page content"});
+  GURL first_url = embedded_test_server()->GetURL("/page_with_slow_image");
+  browser()->OpenURL(content::OpenURLParams(first_url, content::Referrer(),
+                                            WindowOpenDisposition::CURRENT_TAB,
+                                            ui::PAGE_TRANSITION_TYPED, false),
+                     /*navigation_handle_callback=*/{});
+
+  // Wait until the initial document commits and requests the subresource.
+  slow_response.WaitForRequest();
+
+  // 2. Before the first page completes loading or passage extraction,
+  // renavigate to a 404 page with new passages.
+  SetPagePassages({"Sample second page content"});
+
+  base::test::TestFuture<void> extraction_triggered;
+  SetExtractionCallback(extraction_triggered.GetRepeatingCallback());
+
+  GURL not_found_url = embedded_test_server()->GetURL("/non-existent-404");
+  EXPECT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "location.href = '" + not_found_url.spec() + "'"));
+  std::ignore = content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Allow the slow subresource request to complete.
+  slow_response.Send(net::HTTP_NOT_FOUND);
+  slow_response.Done();
+
+  // Wait for content extraction to complete on the 404 page.
+  EXPECT_TRUE(extraction_triggered.Wait());
+
+  // Verify that the first URL is not associated with the second page's
+  // passages.
+  base::test::TestFuture<SearchResult> search_future;
+  service()->Search(nullptr, "second page content", {}, 1,
+                    /*skip_answering=*/false,
+                    /*url_id_filter=*/{}, search_future.GetRepeatingCallback());
+  SearchResult result = search_future.Take();
+
+  bool found_first_url_with_second_content = false;
+  for (const auto& scored_url_row : result.scored_url_rows) {
+    if (scored_url_row.row.url() == first_url) {
+      found_first_url_with_second_content = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(found_first_url_with_second_content);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HistoryEmbeddingsBrowserTest,
+    SameDocumentNavigationFollowedByNotFoundDoesNotAssociateContent) {
+  OverrideVisibilityScoresForTesting({
+      {"Sample initial page content", 0.99},
+      {"Sample second page content", 0.99},
+  });
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1. Load initial page.
+  SetPagePassages({"Sample initial page content"});
+  base::test::TestFuture<UrlData> initial_store_future;
+  service()->SetPassagesStoredCallbackForTesting(
+      initial_store_future.GetRepeatingCallback());
+
+  GURL first_url = embedded_test_server()->GetURL("/links.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
+  EXPECT_TRUE(initial_store_future.Wait());
+
+  // 2. Perform a same-document navigation.
+  GURL pushed_url = embedded_test_server()->GetURL("/pushed_path");
+  EXPECT_TRUE(content::ExecJs(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "history.pushState(null, '', '" + pushed_url.spec() + "')"));
+
+  service()->SetPassagesStoredCallbackForTesting(base::DoNothing());
+
+  // 3. Navigate to a 404 page with new passages.
+  SetPagePassages({"Sample second page content"});
+
+  base::test::TestFuture<void> extraction_triggered;
+  SetExtractionCallback(extraction_triggered.GetRepeatingCallback());
+
+  GURL not_found_url = embedded_test_server()->GetURL("/non-existent-404");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), not_found_url));
+
+  // Wait for content extraction to complete on the 404 page.
+  EXPECT_TRUE(extraction_triggered.Wait());
+
+  // Verify that neither the first URL nor pushed URL is associated with the
+  // second page's passages.
+  base::test::TestFuture<SearchResult> search_future;
+  service()->Search(nullptr, "second page content", {}, 1,
+                    /*skip_answering=*/false,
+                    /*url_id_filter=*/{}, search_future.GetRepeatingCallback());
+  SearchResult result = search_future.Take();
+
+  bool found_mismatched_url = false;
+  for (const auto& scored_url_row : result.scored_url_rows) {
+    if (scored_url_row.row.url() == first_url ||
+        scored_url_row.row.url() == pushed_url) {
+      found_mismatched_url = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(found_mismatched_url);
 }
 
 }  // namespace history_embeddings
