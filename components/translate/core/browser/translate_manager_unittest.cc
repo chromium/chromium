@@ -1786,6 +1786,69 @@ TEST_F(TranslateManagerTest, DoTranslatePagePDF) {
             expected_target);
 }
 
+TEST_F(TranslateManagerTest, DisableTranslateTriggerFlag) {
+  PrepareTranslateManager();
+  manager_->set_application_locale("en");
+
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+
+  // Enable command line flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableTranslateTrigger);
+
+  mock_translate_metrics_logger_ =
+      std::make_unique<MockTranslateMetricsLogger>();
+  translate_manager_->RegisterTranslateMetricsLogger(
+      mock_translate_metrics_logger_->GetWeakPtr());
+
+  network_notifier_.SimulateOnline();
+  // Simulate a French page.
+  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+
+  // Expect 0 calls to show the UI and the metrics logger due to early exit.
+  EXPECT_CALL(mock_translate_client_, ShowTranslateUI(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_translate_metrics_logger_, LogTriggerDecision(_)).Times(0);
+
+  translate_manager_->InitiateTranslation("fr");
+
+  // Disable command line flag for subsequent tests.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kDisableTranslateTrigger);
+}
+
+TEST_F(TranslateManagerTest, DisableTranslateTriggerFlag_ManualTranslation) {
+  PrepareTranslateManager();
+  manager_->set_application_locale("en");
+
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+
+  // Enable command line flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableTranslateTrigger);
+
+  prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
+  network_notifier_.SimulateOnline();
+  // Simulate a French page.
+  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+
+  // Manual translation should be possible with flag enabled.
+  EXPECT_TRUE(translate_manager_->CanManuallyTranslate());
+
+  // Disable command line flag for subsequent tests.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kDisableTranslateTrigger);
+}
+
 }  // namespace testing
 
 }  // namespace translate

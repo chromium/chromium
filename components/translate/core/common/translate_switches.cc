@@ -20,5 +20,9 @@ const char kTranslateRankerModelURL[] = "translate-ranker-model-url";
 // pages to the new target language.
 const char kForcedTranslateLanguage[] = "forced-translate-language";
 
+// Disables translation triggering for pages, including translate page pop up
+// and auto translate feature. Manual translation unaffected.
+const char kDisableTranslateTrigger[] = "disable-translate-trigger";
+
 }  // namespace switches
 }  // namespace translate
