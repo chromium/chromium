@@ -26,8 +26,11 @@ DataProtectionUrlLookupServiceFactory::GetForBrowserContext(
 }
 
 DataProtectionUrlLookupServiceFactory::DataProtectionUrlLookupServiceFactory()
-    : ProfileKeyedServiceFactory("DataProtectionUrlLookupService",
-                                 ProfileSelections::BuildForRegularProfile()) {}
+    : ProfileKeyedServiceFactory(
+          "DataProtectionUrlLookupService",
+          ProfileSelections::Builder()
+              .WithIsolatedMode(ProfileSelection::kOwnInstance)
+              .Build()) {}
 
 DataProtectionUrlLookupServiceFactory::
     ~DataProtectionUrlLookupServiceFactory() = default;
