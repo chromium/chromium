@@ -13,6 +13,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/visibility.h"
+#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -23,6 +24,8 @@ class OneTimePermissionsPageTracker
  public:
   ~OneTimePermissionsPageTracker() override;
 
+  void OnVisibilityChanged(content::Visibility visibility);
+
  private:
   explicit OneTimePermissionsPageTracker(content::Page& page);
 
@@ -31,6 +34,7 @@ class OneTimePermissionsPageTracker
 
   url::Origin origin_;
   base::WeakPtr<OneTimePermissionsTracker> tracker_;
+  bool is_backgrounded_ = false;
 };
 
 PAGE_USER_DATA_KEY_IMPL(OneTimePermissionsPageTracker);
@@ -44,6 +48,11 @@ OneTimePermissionsPageTracker::OneTimePermissionsPageTracker(
   if (tracker) {
     tracker_ = tracker->GetWeakPtr();
     tracker_->WebContentsLoadedOrigin(origin_);
+    if (content::WebContents::FromRenderFrameHost(&page.GetMainDocument())
+            ->GetVisibility() == content::Visibility::HIDDEN) {
+      is_backgrounded_ = true;
+      tracker_->WebContentsBackgrounded(origin_);
+    }
   }
 }
 
@@ -56,6 +65,28 @@ OneTimePermissionsPageTracker::~OneTimePermissionsPageTracker() {
       FROM_HERE,
       base::BindOnce(&OneTimePermissionsTracker::WebContentsUnloadedOrigin,
                      tracker_, origin_));
+  if (tracker_) {
+    if (is_backgrounded_) {
+      tracker_->WebContentsUnbackgrounded(origin_);
+    }
+  }
+}
+
+void OneTimePermissionsPageTracker::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (!tracker_) {
+    return;
+  }
+  const bool is_hidden = (visibility == content::Visibility::HIDDEN);
+  if (is_backgrounded_ == is_hidden) {
+    return;
+  }
+  is_backgrounded_ = is_hidden;
+  if (is_backgrounded_) {
+    tracker_->WebContentsBackgrounded(origin_);
+  } else {
+    tracker_->WebContentsUnbackgrounded(origin_);
+  }
 }
 
 }  // namespace
@@ -63,14 +94,6 @@ OneTimePermissionsPageTracker::~OneTimePermissionsPageTracker() {
 OneTimePermissionsTrackerHelper::~OneTimePermissionsTrackerHelper() = default;
 
 void OneTimePermissionsTrackerHelper::WebContentsDestroyed() {
-  if (last_committed_origin_) {
-    auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
-        web_contents()->GetBrowserContext());
-    if (web_contents()->GetVisibility() == content::Visibility::HIDDEN) {
-      tracker->WebContentsUnbackgrounded(*last_committed_origin_);
-    }
-  }
-
   MediaCaptureDevicesDispatcher::GetInstance()
       ->GetMediaStreamCaptureIndicator()
       ->RemoveObserver(this);
@@ -78,34 +101,16 @@ void OneTimePermissionsTrackerHelper::WebContentsDestroyed() {
 
 void OneTimePermissionsTrackerHelper::OnVisibilityChanged(
     content::Visibility visibility) {
-  auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext());
-  const auto origin =
-      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  if (visibility != content::Visibility::HIDDEN) {
-    tracker->WebContentsUnbackgrounded(origin);
-  } else {
-    tracker->WebContentsBackgrounded(origin);
+  if (auto* tracker = OneTimePermissionsPageTracker::GetForPage(
+          web_contents()->GetPrimaryPage())) {
+    tracker->OnVisibilityChanged(visibility);
   }
-
-  last_visibility_ = std::move(visibility);
 }
 
 void OneTimePermissionsTrackerHelper::PrimaryPageChanged(content::Page& page) {
   OneTimePermissionsPageTracker::CreateForPage(page);
 
-  url::Origin new_origin = page.GetMainDocument().GetLastCommittedOrigin();
-  if (last_committed_origin_ && *last_committed_origin_ == new_origin) {
-    return;
-  }
-  auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext());
-
-  if (web_contents()->GetVisibility() == content::Visibility::HIDDEN) {
-    tracker->WebContentsBackgrounded(new_origin);
-  }
-
-  last_committed_origin_ = std::move(new_origin);
+  last_committed_origin_ = page.GetMainDocument().GetLastCommittedOrigin();
 }
 
 void OneTimePermissionsTrackerHelper::PrimaryPageWillBeDeactivated(
