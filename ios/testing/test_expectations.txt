@@ -148,3 +148,6 @@ crbug.com/561644215 ComposeboxTestCase/testComposeboxAIModeEmptyTextStartsCobrow
 crbug.com/561644215 AssistantAIMTestCase/testAssistantDoesNotReappearAfterExplicitClose [ Pass Failure ]
 crbug.com/561644215 AssistantAIMTestCase/testAssistantPersistsOnBackground [ Pass Failure ]
 crbug.com/561662655 SafeBrowsingTestCase/testEnterpriseWarningPageRefreshedThenBypass [ Pass Failure ]
+
+# Stage Manager on iPad prevents backgrounding Chrome
+crbug.com/462071614 [ iPad ] InactiveTabsTestCase [ Pass Failure ]

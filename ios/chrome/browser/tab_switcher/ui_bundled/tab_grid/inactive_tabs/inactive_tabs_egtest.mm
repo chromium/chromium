@@ -155,6 +155,8 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Relaunches the app with Inactive Tabs disabled.
 - (void)relaunchAppWithInactiveTabsDisabled {
+  [ChromeEarlGrey setIntegerValue:kInactiveTabsDisabledByUser
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -164,11 +166,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that when Inactive Tabs is not enabled, tabs are not moved to Inactive
 // Tabs.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testInactiveTabDisabled {
+- (void)testInactiveTabDisabled {
   // Create tabs.
   CreateRegularTabs(1, self.testServer);
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
@@ -199,11 +197,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that when Inactive Tabs is enabled and old tabs are found, the
 // Inactive Tabs button appears in the Tab Grid.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testActiveTabsMoveToInactive {
+- (void)testActiveTabsMoveToInactive {
   // Create tabs.
   CreateRegularTabs(1, self.testServer);
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
@@ -234,11 +228,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that when there are inactive tabs and the feature is disabled, the
 // Inactive Tabs button no longer appears in the Tab Grid.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testInactiveTabsMoveToActiveWhenDisabling {
+- (void)testInactiveTabsMoveToActiveWhenDisabling {
   // Create tabs.
   CreateRegularTabs(1, self.testServer);
   GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
@@ -286,11 +276,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 }
 
 // Checks that NTPs are not moved.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testActiveTabsDontMoveNTP {
+- (void)testActiveTabsDontMoveNTP {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey openNewTab];
@@ -316,11 +302,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 }
 
 // Checks that inactive tabs can be found with tab search.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testInactiveTabInTabSearch {
+- (void)testInactiveTabInTabSearch {
   // Create tabs with titles.
   CreateRegularTab(self.testServer, @"Tab1");
   CreateRegularTab(self.testServer, @"Tab2");
@@ -346,11 +328,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 }
 
 // Checks that tapping on an inactive tab opens it.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testReactivateInactiveTab {
+- (void)testReactivateInactiveTab {
   CreateRegularTab(self.testServer, @"Tab1");
   [self relaunchAppWithInactiveTabsTestMode];
 
@@ -385,11 +363,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that long-pressing on an inactive tab and closing it works as
 // expected.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testCloseInactiveTabByLongPressing {
+- (void)testCloseInactiveTabByLongPressing {
   CreateRegularTab(self.testServer, @"Tab1");
   [self relaunchAppWithInactiveTabsTestMode];
 
@@ -426,11 +400,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 }
 
 // Checks tap on X symbols closes the inactive tab.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testCloseInactiveTabByCellCloseSymbol {
+- (void)testCloseInactiveTabByCellCloseSymbol {
   CreateRegularTab(self.testServer, @"Tab1");
   [self relaunchAppWithInactiveTabsTestMode];
 
@@ -463,11 +433,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that long-pressing on an inactive tab and sharing it opens the share
 // sheet.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testShareInactiveTab {
+- (void)testShareInactiveTab {
   CreateRegularTab(self.testServer, @"Tab1");
   [self relaunchAppWithInactiveTabsTestMode];
 
@@ -508,11 +474,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that long-pressing on an inactive tab and bookmarking it opens the
 // "added bookmark" snackbar.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testBookmarkInactiveTab {
+- (void)testBookmarkInactiveTab {
   CreateRegularTab(self.testServer, @"Tab1");
   [self relaunchAppWithInactiveTabsTestMode];
 
@@ -551,11 +513,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that long-pressing on an inactive tab and adding it to the Reading
 // List opens the "added to Reading List" snackbar.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testAddToReadingListInactiveTab {
+- (void)testAddToReadingListInactiveTab {
   CreateRegularTab(self.testServer, @"Tab1");
   [self relaunchAppWithInactiveTabsTestMode];
   // Clear the Reading List.
@@ -602,11 +560,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that the Close All Inactive button and confirmation dialog work as
 // expected.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testCloseAllInactiveTabs {
+- (void)testCloseAllInactiveTabs {
   // Create tabs.
   CreateRegularTabs(3, self.testServer);
 
@@ -671,11 +625,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that tapping the Settings link from the Inactive Tabs grid preamble
 // opens Inactive Tabs Settings.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testSettingsFromPreamble {
+- (void)testSettingsFromPreamble {
   CreateRegularTabs(1, self.testServer);
   [self relaunchAppWithInactiveTabsTestMode];
 
@@ -715,11 +665,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that changing settings when presented from the Inactive Tabs grid
 // updates the grid, and pops it when there are no inactive tabs anymore.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testSettingsChangesPopsInactiveTabs {
+- (void)testSettingsChangesPopsInactiveTabs {
   CreateRegularTabs(1, self.testServer);
   [self relaunchAppWithInactiveTabsTestMode];
   [ChromeEarlGreyUI openTabGrid];
@@ -760,11 +706,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 }
 
 // Checks that changing settings from another window updates the regular grid.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testSettingsChangesInBackgroundUpdates {
+- (void)testSettingsChangesInBackgroundUpdates {
   CreateRegularTabs(1, self.testServer);
   [self relaunchAppWithInactiveTabsTestMode];
   [ChromeEarlGreyUI openTabGrid];
@@ -800,11 +742,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that changing settings from another window updates the grid, and pops
 // it when there are no inactive tabs anymore.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testSettingsChangesInBackgroundPopsInactiveTabs {
+- (void)testSettingsChangesInBackgroundPopsInactiveTabs {
   CreateRegularTabs(1, self.testServer);
   [self relaunchAppWithInactiveTabsTestMode];
   [ChromeEarlGreyUI openTabGrid];
@@ -839,11 +777,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 }
 
 // Checks that the count of inactive tabs appears.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testShowCount {
+- (void)testShowCount {
   CreateRegularTabs(3, self.testServer);
 
   [self relaunchAppWithInactiveTabsTestMode];
@@ -860,11 +794,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
 // Checks that the User Education panel only appears the first time Inactive
 // Tabs are opened.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testUserEducationAppearsOnce {
+- (void)testUserEducationAppearsOnce {
   // Reset the User-Education marker.
   [ChromeEarlGrey
       removeUserDefaultsObjectForKey:kInactiveTabsUserEducationShownOnceKey];
@@ -934,11 +864,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 }
 
 // Checks that Settings can be opened from the User Education panel.
-// TODO(crbug.com/462071614): Re-enable flaky test. This test is flaky due
-// to devices possibly running under Stage Manager, hence the app never goes
-// in the background. These tests expect the app to be backgrounding, and
-// fail.
-- (void)FLAKY_testUserEducationOpenSettings {
+- (void)testUserEducationOpenSettings {
   // Reset the User-Education marker.
   [ChromeEarlGrey
       removeUserDefaultsObjectForKey:kInactiveTabsUserEducationShownOnceKey];
