@@ -5,6 +5,7 @@
 #include "components/unexportable_keys/mojom/unexportable_keys_mojom_traits.h"
 
 #include "base/unguessable_token.h"
+#include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/sign.h"
@@ -34,6 +35,21 @@ TEST(UnexportableKeysTraitsTest, SignatureAlgorithm) {
     crypto::sign::SignatureKind output;
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SignatureAlgorithm>(
         input, output));
+    EXPECT_EQ(input, output);
+  }
+}
+
+TEST(UnexportableKeysTraitsTest, BackgroundTaskPriority) {
+  for (BackgroundTaskPriority input : {
+           BackgroundTaskPriority::kMinPriorityInternalUseOnly,
+           BackgroundTaskPriority::kBestEffort,
+           BackgroundTaskPriority::kUserVisible,
+           BackgroundTaskPriority::kUserBlocking,
+       }) {
+    BackgroundTaskPriority output;
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::BackgroundTaskPriority>(
+            input, output));
     EXPECT_EQ(input, output);
   }
 }

@@ -59,9 +59,10 @@ enum ServiceError {
 // The priority at which the task will run.
 // LINT.IfChange
 enum BackgroundTaskPriority {
-  kBestEffort = 0,
-  kUserVisible = 1,
-  kUserBlocking = 2,
+  kMinPriorityInternalUseOnly = 0,
+  kBestEffort = 1,
+  kUserVisible = 2,
+  kUserBlocking = 3,
 };
 
 // LINT.ThenChange(/components/unexportable_keys/background_task_priority.h)

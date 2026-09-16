@@ -16,16 +16,21 @@ namespace unexportable_keys {
 // The priorities are ordered from the lowest one to the highest one.
 // LINT.IfChange
 enum class BackgroundTaskPriority {
+  // For speculative work that must never delay any other task, such as
+  // refilling the spare key pool. This is the lowest priority that yields to
+  // everything else.
+  kMinPriorityInternalUseOnly = 0,
+
   // For non-urgent work, that will only execute if there's nothing else to do.
-  kBestEffort = 0,
+  kBestEffort = 1,
 
   // The result of these tasks are visible to the user (in the UI or as a
   // side-effect on the system) but they are not an immediate response to a user
   // interaction.
-  kUserVisible = 1,
+  kUserVisible = 2,
 
   // Tasks that affect the UI immediately after a user interaction.
-  kUserBlocking = 2,
+  kUserBlocking = 3,
 
   kMaxValue = kUserBlocking
 };

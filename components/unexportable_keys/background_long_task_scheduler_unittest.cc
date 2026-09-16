@@ -193,6 +193,31 @@ TEST_F(BackgroundLongTaskSchedulerTest, TaskPriority) {
   EXPECT_EQ(future2.Get(), 3u);
 }
 
+TEST_F(BackgroundLongTaskSchedulerTest, MinPriorityRunsLast) {
+  base::test::TestFuture<size_t> occupying_future;
+  base::test::TestFuture<size_t> spare_key_pool_future;
+  base::test::TestFuture<size_t> best_effort_future;
+  // The first posted task is dispatched to the background thread right away,
+  // so it is needed to keep the two following tasks waiting in their queues.
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kUserBlocking,
+      occupying_future.GetCallback()));
+  // The spare key pool task is queued first but ranks below `kBestEffort`, so
+  // it must be drained last.
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kMinPriorityInternalUseOnly,
+      spare_key_pool_future.GetCallback()));
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kBestEffort,
+      best_effort_future.GetCallback()));
+
+  task_environment().RunUntilIdle();
+
+  EXPECT_EQ(occupying_future.Get(), 1u);
+  EXPECT_EQ(best_effort_future.Get(), 2u);
+  EXPECT_EQ(spare_key_pool_future.Get(), 3u);
+}
+
 TEST_F(BackgroundLongTaskSchedulerTest, CancelPendingTask) {
   base::test::TestFuture<size_t> future;
   base::test::TestFuture<size_t> future2;
@@ -276,6 +301,16 @@ TEST_F(BackgroundLongTaskSchedulerTest, DurationHistogram) {
 
   expected_counts[kBaseHistogramName] = 3;
   expected_counts[kBaseHistogramName + ".UserBlocking"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(kBaseHistogramName),
+              testing::ContainerEq(expected_counts));
+
+  // Execute a `BackgroundTaskPriority::kMinPriorityInternalUseOnly` task.
+  scheduler().PostTask(std::make_unique<FakeTask>(
+      background_data(), BackgroundTaskPriority::kMinPriorityInternalUseOnly));
+  task_environment().RunUntilIdle();
+
+  expected_counts[kBaseHistogramName] = 4;
+  expected_counts[kBaseHistogramName + ".MinPriorityInternalUseOnly"] = 1;
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(kBaseHistogramName),
               testing::ContainerEq(expected_counts));
 }

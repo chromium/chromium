@@ -13,6 +13,8 @@ namespace unexportable_keys {
 std::string_view GetBackgroundTaskPrioritySuffixForHistograms(
     BackgroundTaskPriority priority) {
   switch (priority) {
+    case BackgroundTaskPriority::kMinPriorityInternalUseOnly:
+      return ".MinPriorityInternalUseOnly";
     case BackgroundTaskPriority::kBestEffort:
       return ".BestEffort";
     case BackgroundTaskPriority::kUserVisible:
