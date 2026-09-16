@@ -140,10 +140,6 @@ BASE_FEATURE(kNtpLogo, base::FEATURE_ENABLED_BY_DEFAULT);
 // This is a kill switch. Keep indefinitely.
 BASE_FEATURE(kNtpMiddleSlotPromo, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, middle slot promo will be dismissed from New Tab Page until new
-// promo message is populated
-BASE_FEATURE(kNtpMiddleSlotPromoDismissal, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Dummy feature to set param "NtpModulesLoadTimeoutMillisecondsParam".
 // This is used for an emergency Finch param. Keep indefinitely.
 BASE_FEATURE(kNtpModulesLoadTimeoutMilliseconds,
@@ -370,8 +366,6 @@ const char kNtpDriveModuleExperimentGroupParam[] =
     "NtpDriveModuleExperimentGroupParam";
 const char kNtpOutlookCalendarModuleDataParam[] =
     "NtpOutlookCalendarModuleDataParam";
-const char kNtpMiddleSlotPromoDismissalParam[] =
-    "NtpMiddleSlotPromoDismissalParam";
 const char kNtpMostRelevantTabResumptionModuleDataParam[] =
     "NtpMostRelevantTabResumptionModuleDataParam";
 const char kNtpMostRelevantTabResumptionModuleMaxVisitsParam[] =
