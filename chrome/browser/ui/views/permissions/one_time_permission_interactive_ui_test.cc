@@ -54,11 +54,13 @@
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/permissions_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
@@ -659,6 +661,84 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   OtpEventExpectBucketCount(
       ContentSettingsType::MEDIASTREAM_CAMERA,
       permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 2);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::MEDIASTREAM_MIC,
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
+  OtpEventExpectBucketCount(
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
+}
+
+// Regression test for https://crbug.com/498748871.
+// A page must not be able to keep a one time camera/microphone grant alive by
+// opening a popup and navigating it to a different origin while the popup is
+// hidden. Once every tab of the granted origin is in the background, the grant
+// has to expire.
+IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
+                       CamMicRevokedWhenHiddenPopupIsNavigatedCrossOrigin) {
+  ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT, GetWebrtcGurl()));
+  content::WebContents* tab_a =
+      current_browser()->GetTabStripModel()->GetWebContentsAt(0);
+
+  // Request cam/mic permission, expect prompt and grant it once.
+  GetUserMediaAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE, true, 0);
+
+  // Stop the local streams. Ongoing capture would keep the grant alive
+  // independently of tab visibility.
+  CloseLastLocalStreamAt(0);
+
+  // `Tab A` opens a popup to a same origin page, `Tab B`. The popup becomes
+  // the active tab, which puts `Tab A` in the background. The observer is
+  // scoped, as it only supports observing a single WebContents creation.
+  content::WebContents* tab_b = nullptr;
+  {
+    content::WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(content::ExecJs(
+        tab_a,
+        content::JsReplace("window.popup = window.open($1); true;",
+                           embedded_test_server()->GetURL("/title1.html"))));
+    tab_b = popup_observer.GetWebContents();
+  }
+  ASSERT_TRUE(content::WaitForLoadStop(tab_b));
+  ASSERT_EQ(2, current_browser()->GetTabStripModel()->count());
+
+  // The user switches back to `Tab A`, which puts `Tab B` in the HIDDEN state.
+  current_browser()->GetTabStripModel()->ActivateTabAt(0);
+  ASSERT_EQ(content::Visibility::HIDDEN, tab_b->GetVisibility());
+
+  // `Tab A` navigates the hidden `Tab B` to a different origin.
+  content::TestNavigationObserver navigation_observer(tab_b);
+  ASSERT_TRUE(content::ExecJs(
+      tab_a, content::JsReplace("window.popup.location.href = $1;",
+                                GetDifferentOriginUrl())));
+  navigation_observer.Wait();
+
+  // The user switches to an unrelated tab, which puts `Tab A` in the
+  // background as well. No page of the granted origin is visible anymore.
+  ASSERT_NO_FATAL_FAILURE(
+      Initialize(INITIALIZATION_NEWTAB, GetDifferentOriginUrl()));
+  ASSERT_EQ(content::Visibility::HIDDEN, tab_a->GetVisibility());
+
+  // Fast forward time to expire the permissions in the background.
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
+
+  // The expiry runs synchronously from the timer callback, so the camera and
+  // microphone grants are revoked as soon as the timeout has elapsed.
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            hcsm->GetContentSetting(GetWebrtcGurl(), GetWebrtcGurl(),
+                                    ContentSettingsType::MEDIASTREAM_CAMERA));
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            hcsm->GetContentSetting(GetWebrtcGurl(), GetWebrtcGurl(),
+                                    ContentSettingsType::MEDIASTREAM_MIC));
+
+  // Switch back to `Tab A`. Requesting cam/mic must trigger a prompt again.
+  current_browser()->GetTabStripModel()->ActivateTabAt(0);
+  GetUserMediaAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE, true, 0);
 
   OtpEventExpectBucketCount(
       ContentSettingsType::MEDIASTREAM_MIC,
