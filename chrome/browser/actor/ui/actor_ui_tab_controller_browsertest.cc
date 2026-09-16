@@ -111,8 +111,7 @@ class ActorUiTabControllerTest : public BaseActorUiTabControllerTest {
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
                        TabIndicatorVisibleDuringActuation) {
   Profile* const profile = browser()->GetProfile();
-  ActorUiStateManagerInterface* state_manager =
-      ActorUiStateManager::Get(profile);
+  ActorUiStateManager* state_manager = ActorUiStateManager::Get(profile);
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
@@ -269,8 +268,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
                        TabStripModelNotifiedOnUpdate) {
   Profile* const profile = browser()->GetProfile();
-  ActorUiStateManagerInterface* state_manager =
-      ActorUiStateManager::Get(profile);
+  ActorUiStateManager* state_manager = ActorUiStateManager::Get(profile);
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
@@ -309,8 +307,7 @@ class ActorUiTabControllerDisabledTest : public BaseActorUiTabControllerTest {
 IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
                        TabIndicatorNotVisibleWhenFeatureDisabled) {
   Profile* const profile = browser()->GetProfile();
-  ActorUiStateManagerInterface* state_manager =
-      ActorUiStateManager::Get(profile);
+  ActorUiStateManager* state_manager = ActorUiStateManager::Get(profile);
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
@@ -351,8 +348,7 @@ class ActorUiTabIndicatorSpinnerIgnoreReducedMotionDisabled
 IN_PROC_BROWSER_TEST_F(ActorUiTabIndicatorSpinnerIgnoreReducedMotionDisabled,
                        TabIndicatorVisibleDuringActuation) {
   Profile* const profile = browser()->GetProfile();
-  ActorUiStateManagerInterface* state_manager =
-      ActorUiStateManager::Get(profile);
+  ActorUiStateManager* state_manager = ActorUiStateManager::Get(profile);
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);

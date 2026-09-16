@@ -121,7 +121,7 @@ std::vector<actor::ui::ActorTaskRowData>
 ActorTaskListBubbleController::GetActorTaskRowsForBubble(
     Profile* profile,
     const absl::flat_hash_map<actor::TaskId, bool>& task_list) {
-  actor::ui::ActorUiStateManagerInterface* actor_ui_state_manager =
+  actor::ui::ActorUiStateManager* actor_ui_state_manager =
       actor::ui::ActorUiStateManager::Get(profile);
   if (!actor_ui_state_manager) {
     return {};
@@ -350,7 +350,7 @@ ActorTaskListBubbleController::RegisterBubbleDestroyedCallback(
 
 void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
   Profile* profile = browser_->GetProfile();
-  actor::ui::ActorUiStateManagerInterface* manager =
+  actor::ui::ActorUiStateManager* manager =
       actor::ui::ActorUiStateManager::Get(profile);
   if (auto last_tab_opt = manager->GetLastActedOnTab(task_id);
       last_tab_opt && *last_tab_opt) {

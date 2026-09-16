@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_TEST_SUPPORT_MOCK_ACTOR_UI_STATE_MANAGER_H_
 #define CHROME_BROWSER_ACTOR_UI_TEST_SUPPORT_MOCK_ACTOR_UI_STATE_MANAGER_H_
 
-#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
-#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
-#include "components/actor/core/task_id.h"
+#include "chrome/common/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace actor::ui {
@@ -23,57 +21,9 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               (AsyncUiEvent event, UiCompleteCallback callback),
               (override));
   MOCK_METHOD(void, OnUiEvent, (SyncUiEvent event), (override));
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
-  MOCK_METHOD(void, MaybeShowToast, (BrowserWindowInterface * bwi), (override));
-#endif  // BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, LazyInitTabTracker, (), (override));
 #endif
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterActorTaskStateChange,
-              (ActorTaskStateChangeCallback callback),
-              (override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterActorTaskStopped,
-              (ActorTaskStoppedCallback callback),
-              (override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterActorTaskRemoved,
-              (ActorTaskRemovedCallback callback),
-              (override));
-  MOCK_METHOD(std::optional<std::string>,
-              GetActorTaskTitle,
-              (TaskId task_id),
-              (override));
-  MOCK_METHOD(std::optional<raw_ptr<tabs::TabInterface>>,
-              GetLastActedOnTab,
-              (TaskId task_id),
-              (override));
-  MOCK_METHOD(std::optional<actor::ActorTask::State>,
-              GetActorTaskState,
-              (TaskId task_id),
-              (override));
-  MOCK_METHOD(actor::ActorTask::TaskDuration,
-              GetDuration,
-              (TaskId),
-              (override));
-  MOCK_METHOD(glic::mojom::FeatureMode,
-              GetFeatureMode,
-              (TaskId task_id),
-              (override));
-  MOCK_METHOD(std::optional<actor::ActorTask::InterruptReason>,
-              GetActorTaskInterruptReason,
-              (TaskId id),
-              (override));
-  MOCK_METHOD(size_t, GetInactiveTaskCount, (), (override));
-  MOCK_METHOD(void,
-              SetTabPendingActuation,
-              (tabs::TabHandle tab_handle),
-              (override));
-  MOCK_METHOD(bool,
-              ClearTabPendingActuation,
-              (tabs::TabHandle tab_handle),
-              (override));
 };
 
 }  // namespace actor::ui
