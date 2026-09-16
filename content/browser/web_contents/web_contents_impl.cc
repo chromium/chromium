@@ -7982,11 +7982,15 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
 
   // Any new WebContents opened while this WebContents is in fullscreen can be
   // used to confuse the user, so drop fullscreen.
+  base::WeakPtr<RenderFrameHostImpl> weak_frame = frame->GetWeakPtr();
   base::ScopedClosureRunner fullscreen_block =
       ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
   // The new view source contents will be independent of this contents, so
   // release the fullscreen block.
   fullscreen_block.RunAndReset();
+  if (!weak_frame) {
+    return;
+  }
 
   // We intentionally don't share the SiteInstance with the original frame so
   // that view source has a consistent process model and always ends up in a new
@@ -8015,7 +8019,8 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   // iframe, so preserve the IsolationInfo from the origin frame, to use the
   // same network shard and increase chances of a cache hit.
   navigation_entry->set_isolation_info(
-      frame->ComputeIsolationInfoForNavigation(navigation_entry->GetURL()));
+      weak_frame->ComputeIsolationInfoForNavigation(
+          navigation_entry->GetURL()));
 
   // Do not restore scroller position.
   // TODO(creis, lukasza, arthursonzogni): Do not reuse the original PageState,
@@ -8815,8 +8820,12 @@ void WebContentsImpl::RunJavaScriptDialog(
 
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/728276
+  base::WeakPtr<RenderFrameHostImpl> weak_rfh = render_frame_host->GetWeakPtr();
   base::ScopedClosureRunner fullscreen_block =
       ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
+  if (!fullscreen_block || !weak_rfh || !weak_rfh->IsActive()) {
+    return;
+  }
 
   auto callback = base::BindOnce(
       &WebContentsImpl::OnDialogClosed, weak_factory_.GetWeakPtr(),
@@ -8948,8 +8957,12 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
 
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/728276
+  base::WeakPtr<RenderFrameHostImpl> weak_rfh = render_frame_host->GetWeakPtr();
   base::ScopedClosureRunner fullscreen_block =
       ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
+  if (!fullscreen_block || !weak_rfh || !weak_rfh->IsActive()) {
+    return;
+  }
 
   auto callback = base::BindOnce(
       &WebContentsImpl::OnDialogClosed, weak_factory_.GetWeakPtr(),
@@ -9028,7 +9041,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
 
 void WebContentsImpl::RunFileChooser(
     base::WeakPtr<FileChooserImpl> file_chooser,
-    RenderFrameHost* render_frame_host,
+    RenderFrameHostImpl* render_frame_host,
     scoped_refptr<FileChooserImpl::FileSelectListenerImpl> listener,
     const blink::mojom::FileChooserParams& params) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RunFileChooser",
@@ -9052,13 +9065,19 @@ void WebContentsImpl::RunFileChooser(
 
   // Any explicit focusing of another window while this WebContents is in
   // fullscreen can be used to confuse the user, so drop fullscreen.
+  base::WeakPtr<RenderFrameHostImpl> weak_rfh =
+      render_frame_host ? render_frame_host->GetWeakPtr() : nullptr;
   base::ScopedClosureRunner fullscreen_block =
       ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId);
+  if (!fullscreen_block ||
+      (render_frame_host && (!weak_rfh || !weak_rfh->IsActive()))) {
+    return;
+  }
   listener->SetFullscreenBlock(std::move(fullscreen_block));
 
   if (delegate_) {
     active_file_chooser_ = std::move(file_chooser);
-    delegate_->RunFileChooser(render_frame_host, std::move(listener), params);
+    delegate_->RunFileChooser(weak_rfh.get(), std::move(listener), params);
     std::move(cancel_chooser).Cancel();
   }
 }
