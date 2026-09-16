@@ -53,6 +53,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   struct SeparatorInfo;
   struct SidePanelContentAnimation;
   struct TransientLayoutData;
+  struct OrganizerPanelAnimation;
   struct VerticalTabStripAnimation;
 
   enum class VerticalTabStripCollapsedState {
@@ -87,6 +88,7 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   // These helper functions are called during `DoPreLayoutCalculations()` to set
   // up `layout_data_`.
   HorizontalLayout CalculateHorizontalLayout(BrowserLayoutParams& params) const;
+  OrganizerPanelAnimation CalculateOrganizerPanelAnimation() const;
   VerticalTabStripAnimation CalculateVerticalTabStripAnimation();
   int GetCollapsedVerticalTabStripRelativeTop() const;
   SeparatorInfo CalculateSeparatorInfo() const;

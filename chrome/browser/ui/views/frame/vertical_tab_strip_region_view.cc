@@ -447,7 +447,7 @@ views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
     layout.child_layouts.push_back(
         {.child_view = organizer_panel_view_.get(),
          .visible = organizer_panel_show_percent_ > 0.0,
-         .bounds = contents_bounds});
+         .bounds = organizer_bounds});
   }
 
   return layout;
@@ -561,11 +561,10 @@ void VerticalTabStripRegionView::OnMouseExited(const ui::MouseEvent& event) {
 void VerticalTabStripRegionView::SetOrganizerPanelView(
     std::unique_ptr<views::View> panel_view) {
   CHECK(!organizer_panel_view_);
-  panel_view->SetVisible(false);
-  panel_view->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
-                               views::MaximumFlexSizeRule::kUnbounded));
+  // TODO(https://crbug.com/555248711): This is a placeholder for indicating
+  // where the panel is and ensure it is clipped properly; remove it when there
+  // is actual content to show.
+  panel_view->SetBackground(views::CreateSolidBackground(SK_ColorRED));
   organizer_panel_view_ =
       AddChildViewAt(std::move(panel_view), *GetIndexOf(content_area_view_));
 }
@@ -574,6 +573,10 @@ std::unique_ptr<views::View>
 VerticalTabStripRegionView::TakeOrganizerPanelView() {
   CHECK(organizer_panel_view_);
   organizer_panel_show_percent_ = 0.0;
+  // TODO(https://crbug.com/555248711): This is a placeholder for indicating
+  // where the panel is and ensure it is clipped properly; remove it when there
+  // is actual content to show.
+  organizer_panel_view_->SetBackground(nullptr);
   return RemoveChildViewT(std::exchange(organizer_panel_view_, nullptr));
 }
 
@@ -785,18 +788,11 @@ void VerticalTabStripRegionView::RequestCollapse(bool collapse) {
 }
 
 void VerticalTabStripRegionView::SetOrganizerPanelShowPercent(double percent) {
-  CHECK(organizer_panel_view_ || percent == 0.0);
   if (organizer_panel_show_percent_ == percent) {
     return;
   }
   organizer_panel_show_percent_ = percent;
-
-  // TODO(https://crbug.com/555248711): This currently displays both panels
-  // stacked during transition, which is not the correct behavior. Switch to
-  // setting visibility in the layout pass to allow the sliding animation and to
-  // avoid unnecessary layout loops.
-  organizer_panel_view_->SetVisible(percent > 0.0);
-  content_area_view_->SetVisible(percent < 1.0);
+  InvalidateLayout(/*avoid_propagate_during_layout=*/true);
 }
 
 VerticalTabStripRegionView::RegionViewFocusListener::RegionViewFocusListener(

@@ -132,19 +132,9 @@ OrganizerTrayView::OrganizerTrayView(BrowserWindowInterface& browser,
 
   // Set up the default background.
   if (browser_view) {
-    auto background = std::make_unique<CustomCornersBackground>(
+    SetBackground(std::make_unique<CustomCornersBackground>(
         *this, *browser_view, organizer_panel::kOrganizerPanelBackgroundColor,
-        organizer_panel::kOrganizerPanelBackgroundColor);
-    CustomCornersBackground::Corners corners;
-    corners[CornerOrientation::kTopLeading] = background->GetWindowCorner(true);
-    corners[CornerOrientation::kBottomLeading] =
-        background->GetWindowCorner(false);
-    corners[CornerOrientation::kTopTrailing].type =
-        CustomCornersBackground::CornerType::kRounded;
-    corners[CornerOrientation::kBottomTrailing].type =
-        CustomCornersBackground::CornerType::kRounded;
-    background->SetCorners(corners);
-    SetBackground(std::move(background));
+        organizer_panel::kOrganizerPanelBackgroundColor));
   } else {
     CHECK_IS_TEST() << "Should only happen in unit tests.";
   }
@@ -239,8 +229,17 @@ void OrganizerTrayView::AddedToWidget() {
   // This has to be done after there is a color provider, which happens after
   // attaching to a widget.
   int radius = 8;
-  if (auto* const bg = background()) {
-    radius = bg->AsA<CustomCornersBackground>()->default_radius();
+  if (background()) {
+    auto* const bg = background()->AsA<CustomCornersBackground>();
+    CustomCornersBackground::Corners corners;
+    corners[CornerOrientation::kTopLeading] = bg->GetWindowCorner(true);
+    corners[CornerOrientation::kBottomLeading] = bg->GetWindowCorner(false);
+    corners[CornerOrientation::kTopTrailing].type =
+        CustomCornersBackground::CornerType::kRounded;
+    corners[CornerOrientation::kBottomTrailing].type =
+        CustomCornersBackground::CornerType::kRounded;
+    bg->SetCorners(corners);
+    radius = bg->default_radius();
   }
   shadow_frame_->SetShadowCornerRadius(radius);
   shadow_frame_->SetShadowVisible(true);
