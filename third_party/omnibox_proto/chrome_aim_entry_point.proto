@@ -12,6 +12,7 @@ option java_package = 'org.chromium.components.omnibox';
 option java_outer_classname = 'ChromeAimEntryPointProto';
 
 package omnibox;
+
 // AIM entry points.
 enum ChromeAimEntryPoint {
   // Entry point is not set or unknown. This is the default value so that if
@@ -108,6 +109,6 @@ enum ChromeAimEntryPoint {
   // AIM is entered from a contextual search suggestion in the omnibox.
   DESKTOP_CHROME_COBROWSE_OMNIBOX_CONTEXTUAL_SUGGESTION = 207;
 
-  // AIM is entered from the omnibox popup button.
+  // AIM is entered from the omnibox popup button to enter cobrowsing.
   DESKTOP_CHROME_COBROWSE_OMNIBOX_POPUP_BUTTON = 210;
 }

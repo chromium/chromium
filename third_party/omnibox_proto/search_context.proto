@@ -13,12 +13,11 @@ option java_outer_classname = 'SearchContextProto';
 
 package omnibox;
 
-// Carries all the information to contextualize the search results page. It
-// should be serialized, web-safe base64-encoded, and passed via the "mactx" url
-// param in the search request.
+// Transport proto for carrying all Ambient-related context information from
+// client to server. It should be serialized and websafe-base64-encoded
+// into passing the proto as a CGI param keyed with "mactx".
+// NEXT-ID: 5
 message SearchContext {
-  // URL of the current page.
   optional string webpage_url = 1;
-  // Title of the current page.
   optional string webpage_title = 2;
 }

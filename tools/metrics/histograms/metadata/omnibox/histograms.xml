@@ -389,6 +389,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <variant name="ImageGen" summary="Image Generation tool"/>
   <variant name="ImageGenSelfie" summary="Image Generation Selfie tool"/>
   <variant name="ImageGenUpload" summary="Image Generation Upload tool"/>
+  <variant name="SearchMore" summary="Search More tool"/>
   <variant name="Unspecified" summary="Unspecified tool"/>
 </variants>
 

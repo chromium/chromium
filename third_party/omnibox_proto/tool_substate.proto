@@ -14,9 +14,6 @@ option java_outer_classname = 'ToolSubstateProto';
 package omnibox;
 
 // Tool specific Substate which need custom input plate UI override.
-// Please do not add new values without going through the SBS RFC process.
-// TODO: taicheng - Deprecate this once we no longer need to support custom
-// tool substate specific input plate UI override.
 // Next ID: 6
 enum ToolSubstate {
   // Should be treated as no tool specific substate treatment.

@@ -12,6 +12,7 @@ option java_package = 'org.chromium.components.omnibox';
 option java_outer_classname = 'ModelConfigProto';
 
 package omnibox;
+
 import "model_rule.proto";
 import "icon.proto";
 import "model_mode.proto";
@@ -22,6 +23,7 @@ import "url_param.proto";
 // LINT.IfChange(ModelConfig)
 message ModelConfig {
   // The model mode.
+  //
   // Note: Clients should use the *Value accessor variant (e.g. getModelValue())
   // rather than enum accessors to be future-proof against new open enum values
   // served by the backend without requiring client updates.

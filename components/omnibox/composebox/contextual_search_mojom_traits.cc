@@ -59,6 +59,8 @@ UsedToolMode EnumTraits<UsedToolMode, omnibox::ToolMode>::ToMojom(
       return UsedToolMode::kAimGenPrompt;
     case omnibox::ToolMode::TOOL_MODE_AGENT_TASK:
       return UsedToolMode::kAgentTask;
+    case omnibox::ToolMode::TOOL_MODE_SEARCH_MORE:
+      return UsedToolMode::kSearchMore;
     case omnibox::ToolMode::TOOL_MODE_DISABLE_SUGGEST:
       return UsedToolMode::kDisableSuggest;
     case omnibox::ToolMode::TOOL_MODE_GEMINI_PRO:
@@ -94,6 +96,8 @@ omnibox::ToolMode EnumTraits<UsedToolMode, omnibox::ToolMode>::FromMojom(
       return omnibox::ToolMode::TOOL_MODE_AIM_GEN_PROMPT;
     case UsedToolMode::kAgentTask:
       return omnibox::ToolMode::TOOL_MODE_AGENT_TASK;
+    case UsedToolMode::kSearchMore:
+      return omnibox::ToolMode::TOOL_MODE_SEARCH_MORE;
     case UsedToolMode::kDisableSuggest:
       return omnibox::ToolMode::TOOL_MODE_DISABLE_SUGGEST;
     case UsedToolMode::kGeminiPro:

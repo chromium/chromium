@@ -15,7 +15,7 @@ package omnibox;
 
 // The AIM tool mode that is applied to a query (e.g. on the input plate or
 // fusebox).
-// Next ID: 12
+// Next ID: 13
 // LINT.IfChange(ToolMode)
 enum ToolMode {
   TOOL_MODE_UNSPECIFIED = 0;
@@ -26,6 +26,7 @@ enum ToolMode {
   TOOL_MODE_IMAGE_GEN = 4;
   TOOL_MODE_DEEP_BROWSE = 5;
   TOOL_MODE_AGENT_TASK = 11;
+  TOOL_MODE_SEARCH_MORE = 12;
 
   // These tools do not have an explicit UI, but are used for one of the AIM
   // tools that does, and is used to trigger more granular suggestions.

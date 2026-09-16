@@ -65,7 +65,7 @@ public class FuseboxMetrics {
             "Android.Omnibox.MobileFusebox.ReanchorViews.Duration";
 
     // LINT.IfChange(ToolMode)
-    @VisibleForTesting /* package */ static final int TOOL_MODE_HISTOGRAM_BOUND = 12;
+    @VisibleForTesting /* package */ static final int TOOL_MODE_HISTOGRAM_BOUND = 13;
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxToolMode)
     // LINT.IfChange(ModelMode)
     @VisibleForTesting /* package */ static final int MODEL_MODE_HISTOGRAM_BOUND = 8;
