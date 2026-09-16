@@ -296,7 +296,6 @@ const ContainerQuerySet* ContainerQueryParser::ParseContainerQuerySet(
     }
     stream.ConsumeWhitespace();
   } while (!stream.AtEnd() &&
-           RuntimeEnabledFeatures::CommaSeparatedContainerQueriesEnabled() &&
            css_parsing_utils::ConsumeCommaIncludingWhitespace(stream));
 
   return MakeGarbageCollected<ContainerQuerySet>(std::move(queries));

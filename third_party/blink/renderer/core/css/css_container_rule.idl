@@ -7,5 +7,5 @@
 ] interface CSSContainerRule : CSSConditionRule {
   readonly attribute DOMString containerName;
   readonly attribute DOMString containerQuery;
-  [RuntimeEnabled=CommaSeparatedContainerQueries] readonly attribute FrozenArray<CSSContainerCondition> conditions;
+  readonly attribute FrozenArray<CSSContainerCondition> conditions;
 };
