@@ -94,6 +94,7 @@
 <translation id="1873233029667955273">Google Chrome ist nicht als dein Standardbrowser festgelegt</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome ist veraltet.</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chrome an. Du kannst dann auch auf allen deinen Geräten auf deine Erweiterungen und weitere Daten zugreifen.</translation>
 <translation id="1880677175115548835">Text auswählen</translation>
 <translation id="1896602904211344018">Chrome App herunterladen</translation>
 <translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
@@ -539,6 +540,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6334815226785304306">Google Chrome als Standardbrowser festlegen und an Taskleiste anpinnen</translation>
 <translation id="63540178978900677">Chrome ist nicht mehr dein Standardbrowser. Chrome als Standardbrowser verwenden?</translation>
 <translation id="6360449101159168105">Während dieser Tab inaktiv war, wurde Arbeitsspeicher freigegeben, damit Chrome schnell bleibt. Du kannst festlegen, dass diese Website nie inaktiv sein soll.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chrome an. Du kannst dann auch auf allen deinen Geräten auf deine Leseliste und weitere Daten zugreifen.</translation>
 <translation id="6388799252195623474">Hilf mir dabei</translation>
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}other{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}}</translation>
@@ -699,6 +701,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7845233973568007926">Vielen Dank für die Installation. Du musst deinen Computer neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="7847170235260850604">Chrome beim Starten von Windows öffnen</translation>
 <translation id="7849037457735762883">Mach dort weiter, wo du aufgehört hast: Chrome kann deine Tabs bei jedem Neustart wiederherstellen. Wenn du diese Funktion aktivieren möchtest, gehe zu</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chrome an. Du kannst dann auch auf deine Erweiterungen und weitere Daten von <ph name="DEVICE" /> zugreifen.</translation>
 <translation id="7869620795354551924">Wenn du deine gespeicherten Passwörter verwenden möchtest, scanne den QR-Code, lade Chrome für iOS herunter und melde dich in deinem Google-Konto an</translation>
 <translation id="7872446069773932638">Wird heruntergeladen… Noch <ph name="SECONDS" /> Sekunde(n)</translation>
 <translation id="7886087451482920026">Text mit Google Lens auswählen</translation>
@@ -796,6 +799,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="8679801911857917785">Die Erweiterung legt auch die Seite fest, die beim Start von Chrome angezeigt wird.</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8712767363896337380">Fast geschafft! Starte Chrome zum Abschluss der Aktualisierung neu.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chrome an. Du kannst dann auch auf deine Leseliste und weitere Daten von <ph name="DEVICE" /> zugreifen.</translation>
 <translation id="8718062187489036808">Von Chrome abmelden</translation>
 <translation id="873133009373065397">Google Chrome kann den Standardbrowser nicht bestimmen oder festlegen</translation>
 <translation id="8747073452963259673">Linke untere Ecke des Suchbereichs: links <ph name="LEFT" /> %, unten <ph name="BOTTOM" /> %</translation>

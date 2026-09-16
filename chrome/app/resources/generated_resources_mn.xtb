@@ -1441,6 +1441,7 @@
 <translation id="2111670510994270194">Шинэ табыг баруун тийш нь</translation>
 <translation id="2111778868023567359">Та Табын бүлгийг энэ хуудсан дээрээс дахин харахгүй</translation>
 <translation id="2112554630428445878">Тавтай морилно уу, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MБ</translation>
 <translation id="2113314491145966441">MacOS-с импортолсон сертификатыг харах</translation>
 <translation id="21133533946938348">Цонхыг урд талд гаргах</translation>
 <translation id="2113479184312716848">Файлыг &amp; нээх ...</translation>
@@ -1996,6 +1997,7 @@
 <translation id="252513908494776481">Энэ табын талаар асуух</translation>
 <translation id="2525746158911982776">Системийн хадгалах сангийн зай хангалтгүй тул шинэчилж чадсангүй.</translation>
 <translation id="2525842906387880861">Та энэ хуудсан дээр дахин зөвлөмж харахгүй</translation>
+<translation id="2526346836766369775">Шинэ тусгаарласан &amp;таб</translation>
 <translation id="2526590354069164005">Десктоп</translation>
 <translation id="2526619973349913024">Шинэчлэлт хийгдсэн эсэхийг шалгах</translation>
 <translation id="2527167509808613699">Ямар ч төрлийн холболт</translation>
@@ -8547,6 +8549,7 @@
 <translation id="7578137152457315135">Хурууны хээний тохиргоо</translation>
 <translation id="7578692661782707876">Баталгаажуулах кодоо оруулна уу.</translation>
 <translation id="757941033127302446">Нэвтэрсэн</translation>
+<translation id="7580311608678791180">Windows-н ажлын хэсгээс нээнэ үү</translation>
 <translation id="7581462281756524039">Цэвэрлэх хэрэгсэл</translation>
 <translation id="7582582252461552277">Энэ сүлжээг сонгох</translation>
 <translation id="7582844466922312471">Хөдөлгөөнт мэдээлэл</translation>
@@ -8560,6 +8563,7 @@
 <translation id="7590883480672980941">Оролтын тохиргоо</translation>
 <translation id="7592060599656252486">Зарим</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (алдааны код <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Mac-н цэсийн мөрөөс нээнэ үү</translation>
 <translation id="7600054753482800821">&amp;Хайлтын систем болон сайтын хайлтыг удирдах</translation>
 <translation id="7600218158048761260">Google Драйвыг энэ бүртгэлийн төрөлд идэвхгүй болгосон.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />-ийг хэзээ ч бүү хөрвүүл</translation>
@@ -9244,6 +9248,7 @@
 <translation id="8102139037507939978">Хувь хүнийг таних мэдээллийг system_logs.txt-с арилгана.</translation>
 <translation id="810362914482827094">Нууц үгнүүд хайх</translation>
 <translation id="8104088837833760645">eSIM-н профайл татах</translation>
+<translation id="8104388155778519213">Google Lens-р дэлгэц дээрээ байгаа зүйлийг хуваалцаарай</translation>
 <translation id="8104778744208707085">Анхаарлаа хандуулах шаардлагатай</translation>
 <translation id="8105273883928376822">Үргэлжлүүлэхийн тулд нэвтэрнэ үү.</translation>
 <translation id="8106114112474206597">Хулганын товчийг дарахын тулд “i”-г ашиглана уу</translation>

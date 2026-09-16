@@ -676,6 +676,7 @@
 <translation id="1523978563989812243">የጽሑፍ ወደ ንግግር ፕሮግራሞች</translation>
 <translation id="1524563461097350801">አይ፣ አመሰግናለሁ</translation>
 <translation id="1525740877599838384">አካባቢን ለመወሰን Wi-Fiን ብቻ ተጠቀም</translation>
+<translation id="1526274304859009691">ከ<ph name="DEVICE" /> ቅጥያዎችዎን እና ሌሎችንም ለማግኘት በመለያ ይግቡ</translation>
 <translation id="1526560967942511387">ርዕስ አልባ ሰነድ</translation>
 <translation id="1527336312600375509">የዕድሳት ፍጥነትን ይከታተሉ</translation>
 <translation id="152913213824448541">በአቅራቢያ አጋራ እውቂያዎች</translation>
@@ -6380,6 +6381,7 @@
 <translation id="5902400038326841449">Google የይለፍ ቃል አስተዳዳሪ ጠፍቷል</translation>
 <translation id="5902892210366342391">ማንነትን በማያሳውቅ ሁነታ ወደ ደህንነታቸው ያልተጠበቁ ጣቢያዎች ከመሄድዎ በፊት ማስጠንቀቂያዎችን ይመልከቱ</translation>
 <translation id="5906457147959147328">ጥበቃ የሚደረግለትን ይዘት ለማጫወት ይህ ጣቢያ ለዪዎችን እንዲጠቀም መፍቀድ ቀጥል</translation>
+<translation id="5906549184882174190">የተለየ</translation>
 <translation id="5906655207909574370">የተዘመነ ለመሆን ጥቂት ብቻ ቀርቷል! ዝማኔውን ለማጠናቀቅ መሣሪያዎን ዳግም ያስጀምሩት።</translation>
 <translation id="5906732635754427568">ከዚህ መተግበሪያ ጋር የተጎዳኘ ውሂብ ከዚህ መሣሪያ ላይ ይወገዳል።</translation>
 <translation id="5906974869830879618">እባክዎ ፒን ያስገቡ</translation>
@@ -6605,6 +6607,7 @@
 <translation id="6088475950266477163">ቅንብሮች</translation>
 <translation id="608912389580139775">ይህን ገፅ ወደ የንባብ ዝርዝርዎ ለማከል የዕልባት አዶውን ጠቅ ያድርጉ</translation>
 <translation id="6089289670051481345">ትራይታኖማሊ</translation>
+<translation id="6090068946774422711">ከ<ph name="DEVICE" /> የንባብ ዝርዝርዎን እና ሌሎችንም ለማግኘት በመለያ ይግቡ</translation>
 <translation id="6090760257419195752">የተሰናበቱ ማስጠንቀቂያዎች</translation>
 <translation id="609174145569509836">ማከማቻን አጽዳ</translation>
 <translation id="6091761513005122595">አጋራ በተሳካ ሁኔታ ተፈናጥጧል።</translation>
@@ -7959,6 +7962,7 @@
 <translation id="7124712201233930202">የድርጅትዎ መመሪያዎች አልተሟሉም</translation>
 <translation id="7125148293026877011">Crostiniን ይሰርዙ</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">በሁሉም መሣሪያዎችዎ ላይ ቅጥያዎችዎን እና ሌሎችንም ለማግኘት በመለያ ይግቡ</translation>
 <translation id="7125932261198019860">የእርስዎ ማተሚያ የእርስዎ Chromebook ከተገናኘበት ተመሳሳይ የWi-Fi አውታረ መረብ ጋር እንደተገናኘ ያረጋግጡ ወይም የዩኤስቢ ገመድ ይጠቀሙ። <ph name="LINK_BEGIN" />ስለ ተኳዃኝነት የበለጠ ይወቁ<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">የአውርድ ታሪክ</translation>
 <translation id="7130438335435247835">የመድረሻ ነጥብ ስም (ኤፒኤን)</translation>
@@ -8812,6 +8816,7 @@
 <translation id="7780992949171378848">የውሂብዎን አጠቃቀም በተመለከተ ለጣቢያዎች መርጠው የመውጣት ጥያቄ ይላኩ</translation>
 <translation id="7782102568078991263">ከGoogle ተጨማሪ የጥቆማ አስተያየቶች የሉም</translation>
 <translation id="7782717250816686129">በመለያ መግቢያ ማያ ገፅ ላይ ቀጣይነት ያለው ውሂብን ያከማቹ እና ምስክረነቶችን ወደ ክፍለ ጊዜው ያስገቡ።</translation>
+<translation id="7782885970382585765">በሁሉም መሣሪያዎችዎ ላይ የንባብ ዝርዝርዎን እና ሌሎችንም ለማግኘት በመለያ ይግቡ</translation>
 <translation id="7784020347632229094">ስለ የቁልፍ ሰሌዳ አቋራጭ የበለጠ ይወቁ</translation>
 <translation id="7784067724422331729">በኮምፒውተርዎ ላይ ያሉት የደህንነት ቅንብሮች ይህንን ፋይል አግደውታል።</translation>
 <translation id="7784796923038949829">የጣቢያን ውሂብ ማንበብ ወይም መቀየር አልተቻለም</translation>

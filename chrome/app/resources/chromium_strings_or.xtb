@@ -69,6 +69,7 @@
 <translation id="1793486931176048546">କ୍ୱିକ ଆକ୍ସେସ ପାଇଁ ଆପଣଙ୍କ ଟାସ୍କବାରରେ Chromiumକୁ ପିନ କରିବାକୁ Windows ବିଜ୍ଞପ୍ତିରେ <ph name="BEGIN_BOLD" />ହଁ<ph name="END_BOLD" />ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="1808667845054772817">Chromiumକୁ ପୁଣି ଇନ୍‍ଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> କରିବାକୁ ଚେଷ୍ଟା କରୁଛି</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> ପୂର୍ବରୁ ସାଇନ ଇନ କରିଛନ୍ତି। ଆପଣଙ୍କ ବ୍ରାଉଜିଂକୁ ଅଲଗା ରଖିବା ପାଇଁ <ph name="USER_EMAIL_ADDRESS" /> ଭାବେ ଆପଣଙ୍କ ନିଜ ପ୍ରୋଫାଇଲରେ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ। ଆପଣ <ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ଏକ୍ସଟେନସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି ମଧ୍ୟ ପାଇବେ।</translation>
 <translation id="183031085822326697">ଆଗାମୀ ଥର ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣ Chromium ଖୋଲିଲେ, Google Password Manager ବ୍ୟବହାର କରିବାକୁ ଆପଣ ଏକ ପ୍ରମ୍ପ୍ଟ ଦେଖିବେ।</translation>
 <translation id="1838374766361614909">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="18552579716432081">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ବ୍ରାଉଜିଂ ଡାଟା ରଖି କେବଳ ଏହି ଡିଭାଇସରୁ ସେହି ଡାଟା ଡିଲିଟ କରିବାକୁ <ph name="BEGIN_LINK" />Chromiumରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
@@ -191,6 +192,7 @@
 <translation id="3038232873781883849">ଇନଷ୍ଟଲ କରିବା ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି...</translation>
 <translation id="3045032126857188731">ଅନୁବାଦ କରାଯାଇଥିବା ଭାଷା: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">ମତାମତ ଡାଏଲଗକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> ପୂର୍ବରୁ ସାଇନ ଇନ କରିଛନ୍ତି। ଆପଣଙ୍କ ବ୍ରାଉଜିଂକୁ ଅଲଗା ରଖିବା ପାଇଁ <ph name="USER_EMAIL_ADDRESS" /> ଭାବେ ଆପଣଙ୍କ ନିଜ ପ୍ରୋଫାଇଲରେ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ। ଆପଣ <ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ଏବଂ ଆହୁରି ଅନେକ କିଛି ମଧ୍ୟ ପାଇବେ।</translation>
 <translation id="3068187312562070417">ଅନ୍ୟ Chromium ପ୍ରୋଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="3068290154869370196">ଏକ୍ସଟେନସନଗୁଡ଼ିକ ଆଡ-ଅନ ଅଟେ ଯାହା ଆପଣଙ୍କୁ Chromiumକୁ କଷ୍ଟମାଇଜ କରିବାକୁ ଦିଏ। ବ୍ୟବସ୍ଥିତ ରହିବାଠାରୁ ଆରମ୍ଭ କରି ଦୈନନ୍ଦିନ ଟାସ୍କଗୁଡ଼ିକୁ ସରଳ କରିବା ପର୍ଯ୍ୟନ୍ତ, ଏକ୍ସଟେନସନଗୁଡ଼ିକ ଆପଣଙ୍କୁ Chromiumକୁ ଆପଣଙ୍କ ନିଜ ଅନୁସାରେ ପ୍ରସ୍ତୁତ କରିବାରେ ସହାୟତା କରେ।</translation>
 <translation id="3068515742935458733">Googleକୁ କ୍ରାସ୍ ରିପୋର୍ଟ ଏବଂ <ph name="UMA_LINK" /> ପଠାଇ Chromiumତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
@@ -292,6 +294,7 @@
 <translation id="4147856324248078748">ଆପଣଙ୍କ Chromiumକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="4148957013307229264">ଇନଷ୍ଟଲ ହେଉଛି...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> ପୂର୍ବରୁ ସାଇନ ଇନ କରିଛନ୍ତି। ଆପଣଙ୍କ ବ୍ରାଉଜିଂକୁ ଅଲଗା ରଖିବା ପାଇଁ <ph name="USER_EMAIL_ADDRESS" /> ଭାବେ ଆପଣଙ୍କ ନିଜ ପ୍ରୋଫାଇଲରେ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ। ଆପଣ ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ଏବଂ ଆହୁରି ଅନେକ କିଛି ମଧ୍ୟ ପାଇବେ।</translation>
 <translation id="421369550622382712">Chromium ପାଇଁ ଶ୍ରେଷ୍ଠ ଆପ୍ସ, ଗେମ୍, ଏକ୍ସଟେନ୍‍ସନ୍ ଓ ଥିମ୍ ଖୋଜନ୍ତୁ।</translation>
 <translation id="4217080900579554343">ଆପଣଙ୍କର ସମସ୍ତ କମ୍ପ୍ୟୁଟରରେ ଏହି ଏକ୍ସଟେନସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବା ପାଇଁ, Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4217972271355023382">ତୁମ ବାପାମାଙ୍କ ପସନ୍ଦଗୁଡ଼ିକ ସହିତ ଅନଲାଇନରେ ସୁରକ୍ଷିତ ରହିବା ପାଇଁ ତୁମେ ପୂର୍ବରୁ <ph name="USER_EMAIL_ADDRESS" /> ଭାବରେ ସାଇନ ଇନ କରିଥିବା ତୁମ Chromium ପ୍ରୋଫାଇଲକୁ ସୁଇଚ କର</translation>
@@ -391,6 +394,7 @@
 <translation id="5382964351116519680">Chromiumରେ ସର୍ଚ୍ଚ ଖୋଲନ୍ତୁ</translation>
 <translation id="5383439451358640070">Chromium କାହିଁକି କିଛି ଫାଇଲକୁ ବ୍ଲକ କରେ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="5386450000063123300">Chromium ଅପ୍‌ଡେଟ୍ ହେଉଛି (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> ପୂର୍ବରୁ ସାଇନ ଇନ କରିଛନ୍ତି। ଆପଣଙ୍କ ବ୍ରାଉଜିଂକୁ ଅଲଗା ରଖିବା ପାଇଁ <ph name="USER_EMAIL_ADDRESS" /> ଭାବେ ଆପଣଙ୍କ ନିଜ ପ୍ରୋଫାଇଲରେ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ। ଆପଣ ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ଏକ୍ସଟେନସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି ମଧ୍ୟ ପାଇବେ।</translation>
 <translation id="538767207339317086">Chromiumରେ ସାଇନ୍-ଇନ୍‌ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="5405650547142096840">Chromiumରୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="5424544524441439284">ପରଫରମାନ୍ସ କମ କରେ କିନ୍ତୁ Chromiumକୁ ଅଧିକ ଆକ୍ରମଣ ପ୍ରତିରୋଧୀ କରେ</translation>

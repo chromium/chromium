@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">Кликнете върху <ph name="BEGIN_BOLD" />Да<ph name="END_BOLD" /> в известието от Windows, за да фиксирате Chromium в лентата на задачите за бърз достъп.</translation>
 <translation id="1808667845054772817">Повторно инсталиране на Chromium</translation>
 <translation id="1820835682567584003">Chromium се опитва да <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> вече е в профила си. За да бъде сърфирането ви отделно, влезте в Chromium със свой собствен потребителски профил като <ph name="USER_EMAIL_ADDRESS" />. Също така ще получите разширенията си и др. от <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Следващия път, когато отворите Chromium на устройството си <ph name="DEVICE_TYPE" />, ще видите подкана да използвате Google Мениджър на пароли.</translation>
 <translation id="1838374766361614909">Изчистване на търсенето</translation>
 <translation id="18552579716432081">За да изтриете данните за сърфирането само от това устройство, но да ги запазите в профила си в Google, <ph name="BEGIN_LINK" />излезте от профила си в Chromium<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">Изчаква се инсталирането да започне...</translation>
 <translation id="3045032126857188731">Език на превода: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Затваряне на диалоговия прозорец за отзиви</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> вече е в профила си. За да бъде сърфирането ви отделно, влезте в Chromium със свой собствен потребителски профил като <ph name="USER_EMAIL_ADDRESS" />. Също така ще получите списъка си за четене и др. от <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Други потребителски профили в Chromium</translation>
 <translation id="3068290154869370196">Разширенията са добавки, които ви дават възможност да персонализирате Chromium. От организирането до улесняването на ежедневните задачи – разширенията ви помагат да персонализирате Chromium.</translation>
 <translation id="3068515742935458733">Помогнете ни да подобрим Chromium, като ни изпращате <ph name="UMA_LINK" /> му и сигнали за сривове</translation>
@@ -289,6 +291,7 @@
 <translation id="4147856324248078748">Персонализиране на Chromium</translation>
 <translation id="4148957013307229264">Инсталира се...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Вход в мрежата – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> вече е в профила си. За да бъде сърфирането ви отделно, влезте в Chromium със свой собствен потребителски профил като <ph name="USER_EMAIL_ADDRESS" />. Също така ще получите списъка си за четене и др. на всичките си устройства.</translation>
 <translation id="421369550622382712">Открийте отлични приложения, игри, разширения и теми за Chromium.</translation>
 <translation id="4217080900579554343">За да получите това разширение и др. на всичките си компютри, влезте в профила си в Chromium</translation>
 <translation id="4217972271355023382">За да сърфирате по-безопасно онлайн с избраните от родителя ви настройки, превключете към потребителския си профил в Chromium, в който вече сте влезли като <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -388,6 +391,7 @@
 <translation id="5382964351116519680">Отваряне на търсенето с Chromium</translation>
 <translation id="5383439451358640070">Научете защо Chromium блокира някои файлове</translation>
 <translation id="5386450000063123300">Chromium се актуализира (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> вече е в профила си. За да бъде сърфирането ви отделно, влезте в Chromium със свой собствен потребителски профил като <ph name="USER_EMAIL_ADDRESS" />. Също така ще получите разширенията си и др. на всичките си устройства.</translation>
 <translation id="538767207339317086">Разрешаване на влизането в Chromium</translation>
 <translation id="5405650547142096840">Премахване от Chromium</translation>
 <translation id="5424544524441439284">Намалява ефективността, но прави Chromium по-устойчив на атаки</translation>

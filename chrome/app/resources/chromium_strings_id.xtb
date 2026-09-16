@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">Klik <ph name="BEGIN_BOLD" />Ya<ph name="END_BOLD" /> di notifikasi Windows untuk menyematkan Chromium ke taskbar agar dapat diakses dengan cepat.</translation>
 <translation id="1808667845054772817">Instal ulang Chromium</translation>
 <translation id="1820835682567584003">Chromium sedang mencoba <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chromium di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan ekstensi dan data lainnya dari <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Saat Anda membuka Chromium di <ph name="DEVICE_TYPE" />, Anda akan melihat perintah untuk menggunakan Pengelola Sandi Google.</translation>
 <translation id="1838374766361614909">Hapus penelusuran</translation>
 <translation id="18552579716432081">Untuk menghapus data penjelajahan hanya dari perangkat ini dan tetap menyimpannya di Akun Google Anda, <ph name="BEGIN_LINK" />logout dari Chromium<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">Menunggu untuk menginstal...</translation>
 <translation id="3045032126857188731">Bahasa terjemahan: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Tutup dialog masukan</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chromium di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan daftar bacaan dan data lainnya dari <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Profil Chromium lainnya</translation>
 <translation id="3068290154869370196">Ekstensi adalah add-on yang memungkinkan Anda menyesuaikan Chromium. Mulai dari membantu Anda tetap teratur hingga menyederhanakan tugas sehari-hari, ekstensi membantu Anda mempersonalisasi Chromium.</translation>
 <translation id="3068515742935458733">Bantu Chromium menjadi lebih baik dengan mengirim laporan kerusakan dan <ph name="UMA_LINK" /> ke Google</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">S&amp;esuaikan Chromium Anda</translation>
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Login Jaringan - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chromium di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan daftar bacaan dan data lainnya di semua perangkat Anda.</translation>
 <translation id="421369550622382712">Temukan aplikasi, game, ekstensi, dan tema yang hebat untuk Chromium.</translation>
 <translation id="4217080900579554343">Untuk mendapatkan ekstensi ini dan yang lainnya di semua komputer Anda, login ke Chromium</translation>
 <translation id="4217972271355023382">Agar tetap aman saat online dengan pilihan orang tuamu, beralihlah ke profil Chromium-mu, tempat kamu sudah login sebagai <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Buka penelusuran dengan Chromium</translation>
 <translation id="5383439451358640070">Pelajari alasan Chromium memblokir beberapa file</translation>
 <translation id="5386450000063123300">Memperbarui Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chromium di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan ekstensi dan data lainnya di semua perangkat Anda.</translation>
 <translation id="538767207339317086">Izinkan login Chromium</translation>
 <translation id="5405650547142096840">Hapus dari Chromium</translation>
 <translation id="5424544524441439284">Menurunkan performa tetapi membuat Chromium lebih tahan terhadap serangan</translation>

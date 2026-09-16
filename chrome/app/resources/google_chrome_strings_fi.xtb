@@ -94,6 +94,7 @@
 <translation id="1873233029667955273">Google Chrome ei ole oletusselain.</translation>
 <translation id="1874309113135274312">Google Chromen betaversio (saapuva mDNS)</translation>
 <translation id="1877026089748256423">Chrome on vanhentunut</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää laajennuksia ja muita ominaisuuksia kaikilla laitteillasi.</translation>
 <translation id="1880677175115548835">Valitse tekstiä</translation>
 <translation id="1896602904211344018">Lataa Chrome-sovellus</translation>
 <translation id="1919130412786645364">Salli Chrome-kirjautuminen</translation>
@@ -540,6 +541,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6334815226785304306">Tee Google Chromesta oletusselain ja kiinnitä se tehtäväpalkkiin</translation>
 <translation id="63540178978900677">Chrome ei ole enää oletusselaimesi. Haluatko tehdä Chromesta oletusselaimen?</translation>
 <translation id="6360449101159168105">Kun tämä välilehti ei ollut aktiivinen, muistia vapautettiin Chromen pitämiseksi nopeana. Voit halutessasi valita, että tämä sivusto ei ole koskaan ei-aktiivinen.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää esimerkiksi lukulistaa kaikilla laitteillasi.</translation>
 <translation id="6388799252195623474">näytä ohjeet</translation>
 <translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}other{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty # minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}}</translation>
@@ -700,6 +702,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7845233973568007926">Kiitos asennuksesta. Tietokone pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="7847170235260850604">Käynnistä Chrome, kun Windows käynnistyy</translation>
 <translation id="7849037457735762883">Jatka siitä, mihin jäit: Chrome voi palauttaa välilehdet aina, kun käynnistät sen uudelleen. Voit laittaa asetuksen päälle täältä:</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää laajennuksia ja muita tietoja laitteelta: <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Jos haluat käyttää tallennettuja salasanoja, seuraa QR-koodia, lataa Chrome iOS:lle ja kirjaudu sisään Google-tilille</translation>
 <translation id="7872446069773932638">Ladataan… <ph name="SECONDS" /> sekuntia jäljellä</translation>
 <translation id="7886087451482920026">Valitse tekstiä Google Lensilla</translation>
@@ -797,6 +800,7 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="8679801911857917785">Määrittää myös Chromen aloitussivun.</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8712767363896337380">Melkein ajan tasalla. Viimeistele päivitys käynnistämällä Chrome uudelleen.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää lukulistaa ja muita tietoja laitteelta: <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Kirjaudu ulos Chromesta</translation>
 <translation id="873133009373065397">Google Chrome ei voi tunnistaa tai asettaa oletusselainta.</translation>
 <translation id="8747073452963259673">hakualueen vasen alakulma: vasen <ph name="LEFT" /> %, ala <ph name="BOTTOM" /> %</translation>

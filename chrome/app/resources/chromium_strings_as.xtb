@@ -70,6 +70,7 @@
 <translation id="1793486931176048546">দ্ৰুত এক্সেছৰ বাবে Chromiumক আপোনাৰ টাস্কবাৰত পিন কৰিবলৈ Windowsৰ জাননীত <ph name="BEGIN_BOLD" />হয়<ph name="END_BOLD" />ত ক্লিক কৰক।</translation>
 <translation id="1808667845054772817">Chromium ৰিইনষ্টল কৰক</translation>
 <translation id="1820835682567584003">Chromiumএ <ph name="AUTHENTICATION_PURPOSE" /> চেষ্টা কৰি আছে</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> ইতিমধ্যে ছাইন ইন হৈ আছে। আপোনাৰ ব্ৰাউজিং পৃথক কৰি ৰাখিবলৈ, আপোনাৰ নিজৰ প্ৰ’ফাইলত <ph name="USER_EMAIL_ADDRESS" /> হিচাপে Chromiumত ছাইন ইন কৰক। আপুনি লগতে <ph name="DEVICE" />ৰ পৰা আপোনাৰ এক্সটেনশ্বন আৰু অধিক বস্তু পাব।</translation>
 <translation id="183031085822326697">পৰৱৰ্তী সময়ত আপুনি নিজৰ <ph name="DEVICE_TYPE" />ত Chromium খুলিলে, আপুনি Google Password Manager ব্যৱহাৰ কৰিবলৈ এটা প্ৰম্প্‌ট দেখা পাব।</translation>
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
 <translation id="18552579716432081">আপোনাৰ Google একাউণ্টত ব্ৰাউজিঙৰ ডেটা ৰাখি কেৱল এই ডিভাইচৰ পৰা সেই ডেটা মচিবলৈ <ph name="BEGIN_LINK" />Chromiumৰ পৰা ছাইন আউট কৰক<ph name="END_LINK" />।</translation>
@@ -192,6 +193,7 @@
 <translation id="3038232873781883849">ইনষ্টল কৰাৰ বাবে অপেক্ষা কৰি থকা হৈছে...</translation>
 <translation id="3045032126857188731">অনুবাদ কৰা ভাষা: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">মতামতৰ ডায়লগ বন্ধ কৰক</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> ইতিমধ্যে ছাইন ইন হৈ আছে। আপোনাৰ ব্ৰাউজিং পৃথক কৰি ৰাখিবলৈ, আপোনাৰ নিজৰ প্ৰ’ফাইলত <ph name="USER_EMAIL_ADDRESS" /> হিচাপে Chromiumত ছাইন ইন কৰক। আপুনি লগতে <ph name="DEVICE" />ৰ পৰা আপোনাৰ পঢ়াৰ সূচী আৰু অধিক বস্তু পাব।</translation>
 <translation id="3068187312562070417">Chromiumৰ অন্য প্ৰ’ফাইলসমূহ</translation>
 <translation id="3068290154869370196">এক্সটেনশ্বনসমূহ হৈছে এড-অন যিয়ে আপোনাক Chromium কাষ্টমাইজ কৰিবলৈ দিয়ে। সংগঠিত হৈ থকাৰ পৰা আৰম্ভ কৰি দৈনন্দিন কাৰ্যসমূহ সৰল কৰালৈকে, এক্সটেনশ্বনে আপোনাক Chromiumক আপোনাৰ নিজৰ কৰি তোলাত সহায় কৰে।</translation>
 <translation id="3068515742935458733">Googleলৈ ক্ৰেশ্ব ৰিপ‘ৰ্ট আৰু <ph name="UMA_LINK" /> পঠিয়াই Chromiumক উন্নত কৰাত সহায় কৰক</translation>
@@ -293,6 +295,7 @@
 <translation id="4147856324248078748">আপোনাৰ Chromium কাষ্টমাইজ কৰক</translation>
 <translation id="4148957013307229264">ইনষ্টল কৰি থকা হৈছে…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - নেটৱর্কত ছাইন ইন - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> ইতিমধ্যে ছাইন ইন হৈ আছে। আপোনাৰ ব্ৰাউজিং পৃথক কৰি ৰাখিবলৈ, আপোনাৰ নিজৰ প্ৰ’ফাইলত <ph name="USER_EMAIL_ADDRESS" /> হিচাপে Chromiumত ছাইন ইন কৰক। আপুনি লগতে আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ পঢ়াৰ সূচী আৰু অধিক বস্তু পাব।</translation>
 <translation id="421369550622382712">Chromiumৰ বাবে উৎকৃষ্ট এপ্, গে’ম, এক্সটেনশ্বন আৰু থীমসমূহ বিচাৰক।</translation>
 <translation id="4217080900579554343">আপোনাৰ আটাইবোৰ কম্পিউটাৰত এই এক্সটেনশ্বন আৰু অধিক পাবলৈ Chromiumত ছাইন ইন কৰক</translation>
 <translation id="4217972271355023382">আপোনাৰ অভিভাৱকৰ পচন্দসমূহৰ জৰিয়তে অনলাইনত সুৰক্ষিত হৈ থাকিবলৈ, আপোনাৰ Chromium প্ৰ’ফাইললৈ সলনি কৰক, য’ত আপুনি ইতিমধ্যে <ph name="USER_EMAIL_ADDRESS" /> হিচাপে ছাইন ইন কৰিছে</translation>
@@ -392,6 +395,7 @@
 <translation id="5382964351116519680">Chromiumৰ জৰিয়তে সন্ধান কৰাৰ সুবিধাটো খোলক</translation>
 <translation id="5383439451358640070">Chromiumএ কিয় কিছুমান ফাইল অৱৰোধ কৰে সেই বিষয়ে জানক</translation>
 <translation id="5386450000063123300">Chromium আপডে’ট কৰি থকা হৈছে (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> ইতিমধ্যে ছাইন ইন হৈ আছে। আপোনাৰ ব্ৰাউজিং পৃথক কৰি ৰাখিবলৈ, আপোনাৰ নিজৰ প্ৰ’ফাইলত <ph name="USER_EMAIL_ADDRESS" /> হিচাপে Chromiumত ছাইন ইন কৰক। আপুনি লগতে আপোনাৰ আটাইবোৰ ডিভাইচত আপোনাৰ এক্সটেনশ্বন আৰু অধিক বস্তু পাব।</translation>
 <translation id="538767207339317086">Chromiumত ছাইন ইন কৰাৰ অনুমতি দিয়ক</translation>
 <translation id="5405650547142096840">Chromiumৰ পৰা আঁতৰাওক</translation>
 <translation id="5424544524441439284">কাৰ্যদক্ষতা কম কৰে কিন্তু Chromiumক আক্ৰমণৰ বাবে অধিক প্ৰতিৰোধী কৰে</translation>

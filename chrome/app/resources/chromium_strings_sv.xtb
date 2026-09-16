@@ -70,6 +70,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1793486931176048546">Klicka på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-aviseringen för att fästa Chromium i aktivitetsfältet för snabb åtkomst.</translation>
 <translation id="1808667845054772817">Installera om Chromium</translation>
 <translation id="1820835682567584003">Chromium försöker att <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> är redan inloggad. Du kan hålla isär webbinformationen genom att logga in i Chromium i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även dina tillägg med mera från <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Nästa gång du öppnar Chromium på din <ph name="DEVICE_TYPE" /> visas en uppmaning om att använda Google Lösenordshantering.</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
 <translation id="18552579716432081"><ph name="BEGIN_LINK" />Logga ut från Chromium<ph name="END_LINK" /> om du vill radera webbinformation från enheten utan att ta bort den från Google-kontot.</translation>
@@ -192,6 +193,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3038232873781883849">Väntar på installation …</translation>
 <translation id="3045032126857188731">Översatt språk: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Stäng dialogrutan för feedback</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> är redan inloggad. Du kan hålla isär webbinformationen genom att logga in i Chromium i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även din läslista med mera från <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Andra Chromium-profiler</translation>
 <translation id="3068290154869370196">Tillägg är add-ons som gör att du kan anpassa Chromium. Med tillägg kan du anpassa Chromium så att det passar dig, från att hålla ordning till att förenkla vardagssysslor.</translation>
 <translation id="3068515742935458733">Hjälp oss att göra Chromium bättre genom att skicka felrapporter och <ph name="UMA_LINK" /> till Google</translation>
@@ -293,6 +295,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4147856324248078748">Anpassa Chromium</translation>
 <translation id="4148957013307229264">Installerar...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – nätverksinloggning – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> är redan inloggad. Du kan hålla isär webbinformationen genom att logga in i Chromium i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även din läslista med mera på alla dina enheter.</translation>
 <translation id="421369550622382712">Upptäck fantastiska appar, spel, tillägg och teman för Chromium.</translation>
 <translation id="4217080900579554343">Logga in i Chromium om du vill ha det här tillägget med mera på alla dina datorer</translation>
 <translation id="4217972271355023382">Du kan skydda dig online med dina föräldrars val genom att byta till din Chromium-profil där du redan är inloggad som <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -392,6 +395,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5382964351116519680">Öppna sökning med Chromium</translation>
 <translation id="5383439451358640070">Läs mer om varför vissa filer blockeras i Chromium</translation>
 <translation id="5386450000063123300">Chromium uppdateras (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> är redan inloggad. Du kan hålla isär webbinformationen genom att logga in i Chromium i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även dina tillägg med mera på alla dina enheter.</translation>
 <translation id="538767207339317086">Tillåt inloggning i Chromium</translation>
 <translation id="5405650547142096840">Ta bort från Chromium</translation>
 <translation id="5424544524441439284">Minskar prestandan men gör Chromium mer motståndskraftig mot attacker</translation>

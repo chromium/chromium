@@ -107,7 +107,6 @@
 <translation id="1381838868249179644">आपकी सुरक्षा के लिए, कुछ साइटों को दी गई अनुमतियां हटा दी गई हैं</translation>
 <translation id="1383876407941801731">खोजें</translation>
 <translation id="1384568202352682721">इस रूप में सेव करें…</translation>
-<translation id="1384704387250346179"><ph name="BEGIN_NEW" />नए<ph name="END_NEW" /> Google Lens से इमेज का अनुवाद करें</translation>
 <translation id="1390418506739274310">उन अन्य ऐप्लिकेशन का इतिहास देखा जा सकता है जो अपने लिंक Chrome में खोलते हैं. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अलग तरह का ब्राउज़िंग इतिहास हो सकता है.</translation>
 <translation id="139752016751285248">कीमत की अहम जानकारी वाली बॉटम शीट पूरी स्क्रीन पर खोल दी गई है</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> के ज़रिए खोजें</translation>
@@ -174,7 +173,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="1650979352027263879">दिखने से जुड़ी पिछली सेटिंग हटाई गईं</translation>
 <translation id="1671236975893690980">डाउनलोड लंबित…</translation>
 <translation id="1672586136351118594">फिर से न दिखाएं</translation>
-<translation id="1680919990519905526">Google Lens से इमेज खरीदें <ph name="BEGIN_NEW" />नए<ph name="END_NEW" /></translation>
 <translation id="1683774088349393383">\u0020और <ph name="MONTHS_ARCHIVED" /> महीनों के बाद बंद कर दिया जाता है</translation>
 <translation id="1689333818294560261">प्रचलित नाम</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> पर जारी रखने के लिए, दूसरे तरीके आज़माए जा सकते हैं.</translation>
@@ -413,6 +411,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2581165646603367611">यह साइट की कुकी, कैश और अन्य डेटा निकाल देगा जो Chrome के विचार में महत्वपूर्ण नहीं है.</translation>
 <translation id="2587052924345400782">नया वर्शन उपलब्ध है</translation>
 <translation id="2593272815202181319">मोनोस्पेस</translation>
+<translation id="2604138917550693049">Google Lens से इमेज खोजें</translation>
 <translation id="2604446170045642109">सेटिंग में जाकर, साइटों के लिए गहरे रंग वाली थीम बंद की जा सकती है.</translation>
 <translation id="2605017215201958293">एआई की मदद से, इस पेज का कॉन्टेंट सुनें</translation>
 <translation id="2607441479295509868">साइन आउट किया गया. अपने खाते में बुकमार्क, पासवर्ड वगैरह इस्तेमाल करने के लिए फिर से साइन इन करें.</translation>
@@ -788,6 +787,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="4162867837470729563">शेयर करने के विकल्पों की सूची पूरी स्क्रीन पर खुली हुई है.</translation>
 <translation id="4164642020717536140">तेज़ और सुरक्षित वेब ब्राउज़िंग</translation>
 <translation id="4165077084524712774">ज़्यादा टूल</translation>
+<translation id="4169156312706405526">Drive से फ़ाइलें अटैच करें</translation>
 <translation id="4170577491341606575">आपका डेटा लोड किया जा रहा है\u2026</translation>
 <translation id="4172051516777682613">हमेशा दिखाएं</translation>
 <translation id="4176838562184310003">Chrome सही तरीके से शट डाउन नहीं हुआ. इसलिए, यह बंद की गई विंडो और टैब वापस ला सकता है. विंडो वापस लाने पर, कुछ विंडो छोटी हो सकती हैं.</translation>
@@ -1027,6 +1027,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5032430150487044192">क्यूआर कोड नहीं बनाया जा सकता</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> से ज़्यादा जानकारी पाने के लिए, नीचे मौजूद "ज़्यादा जानकारी" चुनें.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टैब - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> टैब - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> टैब - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">अनुमति दें</translation>
 <translation id="5040262127954254034">निजता</translation>
 <translation id="504456571576643789">इन बातों का ध्यान रखें</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> विंडो चुनी गई}one{<ph name="WINDOW_COUNT_NORMAL" /> विंडो चुनी गई}other{<ph name="WINDOW_COUNT_NORMAL" /> विंडो चुनी गईं}}</translation>
@@ -1100,7 +1101,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5355191726083956201">बेहतर सुरक्षा की सुविधा चालू है</translation>
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, पिन किया गया ऐसा गुप्त टैब जिसका कॉन्टेंट शेयर किया जा रहा है</translation>
 <translation id="5375374982898812658">आपके लिए “<ph name="GROUP_NAME" />” टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे आपके सभी डिवाइसों से मिटा दिया जाएगा</translation>
-<translation id="5375577065097716013">Google Lens से इमेज खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">सेव करें और शेयर करें</translation>
 <translation id="5385892579392932755">लैपटॉप</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> को आपके डिजिटल वॉलेट से निजी जानकारी का इस्तेमाल करना है. इसलिए, तब ही जारी करें जब आपको इस साइट पर भरोसा हो. खतरनाक साइटें, धोखे से आपसे आपका कानूनी नाम या आईडी नंबर जैसी जानकारी ज़ाहिर करवा सकती हैं.</translation>
@@ -1540,7 +1540,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6996145122199359148">यह पेज डाउनलोड करें</translation>
 <translation id="7007648447224463482">सभी को नई विंडो में खोलें</translation>
 <translation id="7013762323294215682">यह पासकी आपके Password Manager में सेव हो जाएगी. जिन लोगों के पास इस पासकी का ऐक्सेस होगा वे इसका इस्तेमाल कर पाएंगे.</translation>
-<translation id="7020741890149022655">रीडिंग लिस्ट में जोड़ें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ब्राउज़र में खोलें</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7037994709569287156">Chrome को डिफ़ॉल्ट ब्राउज़र बनाएं</translation>
@@ -2043,6 +2042,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8957528460562961174">अपने पासवर्ड का ऐक्सेस बनाए रखने के लिए, उन्हें अभी एक्सपोर्ट करें. इसके बाद, उन्हें अपने पसंदीदा पासवर्ड मैनेजर पर इंपोर्ट करें. इस डिवाइस पर Google Play services उपलब्ध नहीं है. इसलिए, Google Password Manager की सेवा काम नहीं कर रही है.</translation>
 <translation id="8963117664422609631">साइट की सेटिंग पर जाएं</translation>
 <translation id="8965591936373831584">डाउनलोड बाकी है</translation>
+<translation id="8967427617812342790">रीडिंग लिस्ट में जोड़ें</translation>
 <translation id="8969796057708736017">अगर फ़ाइल आपके संगठन की नीतियों के मुताबिक है, तो डाउनलोड पूरा हो जाएगा</translation>
 <translation id="8970887620466824814">कुछ गड़बड़ी हुई.</translation>
 <translation id="8972098258593396643">डिफ़ॉल्ट फ़ोल्डर में डाउनलोड करें?</translation>

@@ -94,6 +94,7 @@
 <translation id="1873233029667955273">Google Chrome er ikke din standardbrowser</translation>
 <translation id="1874309113135274312">Google Chrome beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome er forældet</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chrome på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine udvidelser og meget mere på alle dine enheder.</translation>
 <translation id="1880677175115548835">Vælg tekst</translation>
 <translation id="1896602904211344018">Hent Chrome-appen</translation>
 <translation id="1919130412786645364">Tillad login i Chrome</translation>
@@ -540,6 +541,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6334815226785304306">Gør Google Chrome til din standardbrowser, og fastgør den til proceslinjen</translation>
 <translation id="63540178978900677">Chrome er ikke længere din standardbrowser. Vil du gøre Chrome til din standardbrowser?</translation>
 <translation id="6360449101159168105">Mens denne fane var inaktiv, blev der frigjort hukommelse for at sikre, at Chrome kører hurtigt. Du kan vælge, at dette website altid skal være inaktivt.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chrome på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se din læseliste og meget mere på alle dine enheder.</translation>
 <translation id="6388799252195623474">hjælp mig med dette</translation>
 <translation id="6412673304250309937">Tjekker webadresser ift. en liste over usikre websites, der er gemt i Chrome. Hvis et website forsøger at stjæle din adgangskode, eller når du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Din organisation lukker automatisk Chrome, når den ikke bruges i 1 minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}one{Din organisation lukker automatisk Chrome, når den ikke bruges i # minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}other{Din organisation lukker automatisk Chrome, når den ikke bruges i # minutter. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}}</translation>
@@ -700,6 +702,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7845233973568007926">Tak for installationen. Du skal genstarte computeren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Åbn Chrome, når Windows starter</translation>
 <translation id="7849037457735762883">Fortsæt, hvor du slap: Chrome kan gendanne dine faner, hver gang du genstarter. For at aktivere dette skal du gå til</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chrome på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine udvidelser og meget mere fra <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Hvis du vil bruge dine gemte adgangskoder, skal du følge QR-koden, downloade Chrome til iOS og logge ind på din Google-konto</translation>
 <translation id="7872446069773932638">Downloader… Der er <ph name="SECONDS" /> sekunder tilbage</translation>
 <translation id="7886087451482920026">Vælg tekst med Google Lens</translation>
@@ -797,6 +800,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="8679801911857917785">Den styrer også, hvilken side der vises, når du åbner Chrome.</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8712767363896337380">Næsten opdateret! Genstart Chrome for at fuldføre opdateringen.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chrome på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se din læseliste og meget mere fra <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Log ud af Chrome</translation>
 <translation id="873133009373065397">Google Chrome kan ikke fastlægge eller angive standardbrowseren</translation>
 <translation id="8747073452963259673">nederste venstre hjørne af søgeområdet: venstre <ph name="LEFT" /> %, nederste <ph name="BOTTOM" /> %</translation>

@@ -67,6 +67,7 @@
 <translation id="1793486931176048546">คลิก<ph name="BEGIN_BOLD" />ใช่<ph name="END_BOLD" />ในการแจ้งเตือนของ Windows เพื่อปักหมุด Chromium ไว้ที่แถบงานเพื่อให้เข้าถึงได้รวดเร็ว</translation>
 <translation id="1808667845054772817">ติดตั้ง Chromium ใหม่</translation>
 <translation id="1820835682567584003">Chromium กำลังพยายาม<ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chromium ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /> นอกจากนี้ คุณยังรับส่วนขยายและข้อมูลอื่นๆ จาก <ph name="DEVICE" /> ได้ด้วย</translation>
 <translation id="183031085822326697">ครั้งถัดไปที่เปิด Chromium ใน <ph name="DEVICE_TYPE" /> คุณจะเห็นข้อความแจ้งให้ใช้เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
 <translation id="18552579716432081">หากต้องการลบข้อมูลการท่องเว็บออกจากอุปกรณ์นี้เท่านั้น แต่ยังเก็บข้อมูลดังกล่าวไว้ในบัญชี Google ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chromium<ph name="END_LINK" /></translation>
@@ -189,6 +190,7 @@
 <translation id="3038232873781883849">กำลังรอติดตั้ง...</translation>
 <translation id="3045032126857188731">ภาษาที่แปล: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">ปิดกล่องโต้ตอบความคิดเห็น</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chromium ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /> นอกจากนี้ คุณยังรับเรื่องรออ่านและข้อมูลอื่นๆ จาก <ph name="DEVICE" /> ได้ด้วย</translation>
 <translation id="3068187312562070417">โปรไฟล์ Chromium อื่นๆ</translation>
 <translation id="3068290154869370196">ส่วนขยายคือส่วนเสริมที่ช่วยให้คุณปรับแต่ง Chromium ได้ ตั้งแต่การจัดระเบียบไปจนถึงการทำให้งานประจำวันง่ายขึ้น ส่วนขยายช่วยให้คุณปรับแต่ง Chromium ในรูปแบบของคุณเอง</translation>
 <translation id="3068515742935458733">ช่วยทำให้ Chromium ดียิ่งขึ้นโดยการส่งรายงานข้อขัดข้องและ <ph name="UMA_LINK" /> ไปยัง Google</translation>
@@ -290,6 +292,7 @@
 <translation id="4147856324248078748">ปรับแต่ง Chromium</translation>
 <translation id="4148957013307229264">กำลังติดตั้ง...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - หน้าลงชื่อเข้าใช้ของเครือข่าย - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chromium ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /> นอกจากนี้ คุณยังรับเรื่องรออ่านและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย</translation>
 <translation id="421369550622382712">พบกับแอป เกม ส่วนขยาย และธีมเด็ดๆ สำหรับ Chromium</translation>
 <translation id="4217080900579554343">ลงชื่อเข้าใช้ Chromium เพื่อรับส่วนขยายนี้และข้อมูลอื่นๆ ในคอมพิวเตอร์ทุกเครื่อง</translation>
 <translation id="4217972271355023382">หากต้องการท่องโลกออนไลน์อย่างปลอดภัยยิ่งขึ้นด้วยตัวเลือกของผู้ปกครอง ให้เปลี่ยนไปใช้โปรไฟล์ Chromium ที่คุณลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL_ADDRESS" /> อยู่แล้ว</translation>
@@ -389,6 +392,7 @@
 <translation id="5382964351116519680">เปิดการค้นหาด้วย Chromium</translation>
 <translation id="5383439451358640070">ดูสาเหตุที่ Chromium บล็อกบางไฟล์</translation>
 <translation id="5386450000063123300">กำลังอัปเดต Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chromium ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /> นอกจากนี้ คุณยังรับส่วนขยายและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย</translation>
 <translation id="538767207339317086">อนุญาตให้ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="5405650547142096840">ลบจาก Chromium</translation>
 <translation id="5424544524441439284">ลดประสิทธิภาพแต่ทำให้ Chromium ต้านทานการโจมตีได้มากขึ้น</translation>

@@ -461,7 +461,7 @@
 <translation id="2403129868389095715">無法配送包裹</translation>
 <translation id="2410754283952462441">選擇帳戶</translation>
 <translation id="2422174748424038845">如果刪除，所有使用者都會立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權，且該群組將從所有裝置中刪除。</translation>
-<translation id="2424805048070062787">繼續使用這個分頁</translation>
+<translation id="2424805048070062787">繼續瀏覽此分頁</translation>
 <translation id="2426805022920575512">選擇其他帳戶</translation>
 <translation id="2428543302546523788">在閱讀模式下顯示連結</translation>
 <translation id="243275146591958220">取消下載</translation>
@@ -526,7 +526,7 @@
 <translation id="2629543259235506452">參考這個頁面和類似網站的資訊，為這個主題建立簡短的常見問題集</translation>
 <translation id="2635918910848538771">自動填入信用卡驗證碼</translation>
 <translation id="2640733327287333451">沒有使用者名稱 ••••••</translation>
-<translation id="264215785133931186">剛剛檢查</translation>
+<translation id="264215785133931186">剛剛檢查過</translation>
 <translation id="2647434099613338025">新增語言</translation>
 <translation id="2648812801228676606">目前登入的帳戶已經是「<ph name="NAME_OR_EMAIL" />」</translation>
 <translation id="2649592894792404568">即將刪除 Google 密碼管理工具資料</translation>
@@ -2113,6 +2113,7 @@
 <translation id="7772948288262733182">歡迎回來</translation>
 <translation id="777637629667389858">當你登入帳戶後，保護你在各項 Google 服務中的安全。</translation>
 <translation id="7776604279034196531">從網址列開啟閱讀模式 (如適用)</translation>
+<translation id="7780992949171378848">針對使用你資料的方式，向網站傳送「選擇停用」要求</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7788474973847076315">拍照</translation>
 <translation id="7788868432173225918">關閉展開的檢視畫面</translation>

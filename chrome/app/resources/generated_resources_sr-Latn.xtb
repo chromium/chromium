@@ -1431,6 +1431,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2111670510994270194">Nova kartica na desnoj strani</translation>
 <translation id="2111778868023567359">Više nećete videti grupe kartica na ovoj stranici</translation>
 <translation id="2112554630428445878">Dobro došli, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Pregledajte uvezene sertifikate iz macOS-a</translation>
 <translation id="21133533946938348">Zakači karticu</translation>
 <translation id="2113479184312716848">Open &amp;File... (Otvori datoteku)</translation>
@@ -1983,6 +1984,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="252513908494776481">Postavite pitanje o ovoj kartici</translation>
 <translation id="2525746158911982776">Ažuriranje nije uspelo jer sistem nema dovoljno memorijskog prostora.</translation>
 <translation id="2525842906387880861">Više nećete videti predloge na ovoj stranici</translation>
+<translation id="2526346836766369775">Nova izolovana &amp;kartica</translation>
 <translation id="2526590354069164005">Radna površina</translation>
 <translation id="2526619973349913024">Proveri da li postoji ažuriranje</translation>
 <translation id="2527167509808613699">Bilo koja vrsta veze</translation>
@@ -8539,6 +8541,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7578137152457315135">Podešavanja otiska prsta</translation>
 <translation id="7578692661782707876">Unesite kôd za potvrdu.</translation>
 <translation id="757941033127302446">Prijavljeni ste</translation>
+<translation id="7580311608678791180">Otvorite sa Windows trake zadataka</translation>
 <translation id="7581462281756524039">Alatka za čišćenje</translation>
 <translation id="7582582252461552277">Podesi kao prioritetnu mrežu</translation>
 <translation id="7582844466922312471">podatke za mobilne uređaje</translation>
@@ -8552,6 +8555,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7590883480672980941">Podešavanja unosa</translation>
 <translation id="7592060599656252486">Delimičan</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (kôd greške <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Otvorite iz trake menija na Mac-u</translation>
 <translation id="7600054753482800821">&amp;Upravljajte pretraživačima i pretragom sajta</translation>
 <translation id="7600218158048761260">Google disk je onemogućen za ovaj tip naloga.</translation>
 <translation id="7600965453749440009">Nikad ne prevodi <ph name="LANGUAGE" /></translation>
@@ -9237,6 +9241,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8102139037507939978">Ukloni podatke koji mogu da otkriju identitet iz datoteke system_logs.txt.</translation>
 <translation id="810362914482827094">Pretražite pristupne kodove</translation>
 <translation id="8104088837833760645">Preuzmite eSIM profil</translation>
+<translation id="8104388155778519213">Delite sadržaj ekrana pomoću Google objektiva</translation>
 <translation id="8104778744208707085">Treba da obratite pažnju na ovo</translation>
 <translation id="8105273883928376822">Prijavite se da biste nastavili.</translation>
 <translation id="8106114112474206597">Koristite „i“ da biste pritisnuli taster miša</translation>

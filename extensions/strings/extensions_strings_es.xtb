@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">No se ha podido solicitar el permiso parental.</translation>
 <translation id="1803557475693955505">No se ha podido cargar la página de fondo "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="1875387611427697908">Este elemento solo se puede añadir desde <ph name="CHROME_WEB_STORE" /></translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (ID de extensión "<ph name="EXTENSION_ID" />") no se puede instalar por políticas en entornos de baja confianza.</translation>
 <translation id="2131077480075264">No se puede instalar la extensión "<ph name="APP_NAME" />" porque no tiene permiso de "<ph name="IMPORT_NAME" />".</translation>
 <translation id="2150661552845026580">¿Quieres instalar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">No se ha podido decodificar la imagen <ph name="IMAGE_NAME" />.</translation>

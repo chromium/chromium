@@ -96,6 +96,7 @@
 <translation id="1873233029667955273">Google Chrome ei ole vaikebrauser</translation>
 <translation id="1874309113135274312">Google Chrome'i beetaversioon (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome on aegunud</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chrome'i sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete kõigis seadmetes juurde oma laiendustele ja muule.</translation>
 <translation id="1880677175115548835">Valige tekst</translation>
 <translation id="1896602904211344018">Hankige Chrome'i rakendus</translation>
 <translation id="1919130412786645364">Luba Chrome'i sisselogimine</translation>
@@ -544,6 +545,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6334815226785304306">Muuda Google Chrome vaikebrauseriks ja kinnita tegumiribale</translation>
 <translation id="63540178978900677">Chrome ei ole enam teie vaikebrauser. Kas määrata Chrome vaikebrauseriks?</translation>
 <translation id="6360449101159168105">Ajal, mil see vaheleht oli inaktiivne, vabastati mälu, et Chrome oleks jätkuvalt kiire. Soovi korral võite selle saidi inaktiivseks muutumise alati välistada.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chrome'i sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete kõigis seadmetes juurde oma lugemisloendile ja muule.</translation>
 <translation id="6388799252195623474">aita mul seda teha</translation>
 <translation id="6412673304250309937">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel. Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusesse Google'i ohutu sirvimine.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
@@ -704,6 +706,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7845233973568007926">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate oma arvuti taaskäivitama.</translation>
 <translation id="7847170235260850604">Käivita Chrome Windowsi käivitamisel</translation>
 <translation id="7849037457735762883">Jätkake sealt, kus pooleli jäite: Chrome saab teie vahelehed taastada iga kord, kui brauseri uuesti käivitate. Selle sisselülitamiseks avage</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chrome'i sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma laiendustele ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Salvestatud paroolide kasutamiseks skannige QR-kood, laadige alla Chrome iOS-ile ja logige sisse oma Google’i kontole.</translation>
 <translation id="7872446069773932638">Allalaadimine … <ph name="SECONDS" /> sekund(it) on jäänud</translation>
 <translation id="7886087451482920026">Valige Google Lensi abil tekst</translation>
@@ -801,6 +804,7 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="8679801911857917785">Lisaks juhib see Chrome'i käivitamisel kuvatavat lehte.</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8712767363896337380">Peaaegu ajakohane! Värskendamise lõpuleviimiseks käivitage Chrome uuesti.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chrome'i sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma lugemisloendile ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Logi Chrome'ist välja</translation>
 <translation id="873133009373065397">Google Chrome ei saa määrata ega seadistada vaikebrauserit</translation>
 <translation id="8747073452963259673">otsinguala vasak alanurk: <ph name="LEFT" />% vasakul, <ph name="BOTTOM" />% all</translation>

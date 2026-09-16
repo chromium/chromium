@@ -67,6 +67,7 @@
 <translation id="1793486931176048546">点击 Windows 通知中的<ph name="BEGIN_BOLD" />是<ph name="END_BOLD" />，将 Chromium 固定到任务栏，以便快速访问。</translation>
 <translation id="1808667845054772817">重新安装Chromium</translation>
 <translation id="1820835682567584003">Chromium 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" />已登录。若要分开保存您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chromium。登录后，您还可以获取<ph name="DEVICE" />中的扩展程序等内容。</translation>
 <translation id="183031085822326697">下次在<ph name="DEVICE_TYPE" />上打开 Chromium 时，您会看到使用 Google 密码管理工具的提示。</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="18552579716432081">若要仅删除此设备中的浏览数据而保留 Google 账号中的浏览数据，请<ph name="BEGIN_LINK" />从 Chromium 中退出账号<ph name="END_LINK" />。</translation>
@@ -189,6 +190,7 @@
 <translation id="3038232873781883849">正在等待安装…</translation>
 <translation id="3045032126857188731">译文语言：<ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">关闭反馈对话框</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" />已登录。若要分开保存您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chromium。登录后，您还可以获取<ph name="DEVICE" />中的阅读清单等内容。</translation>
 <translation id="3068187312562070417">其他 Chromium 个人资料</translation>
 <translation id="3068290154869370196">扩展程序是可让您自定义 Chromium 的插件。从保持井然有序到简化日常任务，扩展程序可帮助您打造专属的 Chromium。</translation>
 <translation id="3068515742935458733">将崩溃报告和<ph name="UMA_LINK" />发送给Google，帮助我们完善Chromium。</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">自定义 Chromium(&amp;U)</translation>
 <translation id="4148957013307229264">正在安装...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 网络登录 - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" />已登录。若要分开保存您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chromium。登录后，您还可在所有设备上获取阅读清单等内容。</translation>
 <translation id="421369550622382712">在这里，您可以找到适用于 Chromium 的精彩应用、游戏、扩展程序和主题背景。</translation>
 <translation id="4217080900579554343">若要在您的所有计算机上使用此扩展程序等，请登录 Chromium</translation>
 <translation id="4217972271355023382">若要使用家长选择的设置更安全地上网，请切换到你已用 <ph name="USER_EMAIL_ADDRESS" /> 身份登录的 Chromium 资料</translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">使用 Chromium 打开搜索功能</translation>
 <translation id="5383439451358640070">了解 Chromium 为何屏蔽某些文件</translation>
 <translation id="5386450000063123300">正在更新 Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" />已登录。若要分开保存您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chromium。登录后，您还可在所有设备上获取扩展程序等内容。</translation>
 <translation id="538767207339317086">允许登录 Chromium</translation>
 <translation id="5405650547142096840">从Chromium中移除</translation>
 <translation id="5424544524441439284">降低性能，但提高 Chromium 防范攻击的能力</translation>

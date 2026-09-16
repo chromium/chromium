@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">Klik på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-notifikationen for at fastgøre Chromium til proceslinjen og få hurtig adgang.</translation>
 <translation id="1808667845054772817">Geninstaller Chromium</translation>
 <translation id="1820835682567584003">Chromium forsøger at <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine udvidelser og meget mere fra <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Næste gang du åbner Chromium på din <ph name="DEVICE_TYPE" />, får du en meddelelse om at bruge Google Adgangskodeadministrator.</translation>
 <translation id="1838374766361614909">Ryd søgning</translation>
 <translation id="18552579716432081"><ph name="BEGIN_LINK" />Log ud af Chromium<ph name="END_LINK" /> for kun at slette browserdata fra denne enhed uden at slette dataene på din Google-konto.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">Venter på at installere…</translation>
 <translation id="3045032126857188731">Oversat sprog: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Luk dialogboks til feedback</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se din læseliste og meget mere fra <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Andre Chromium-profiler</translation>
 <translation id="3068290154869370196">Udvidelser er tilføjelser, der giver dig mulighed for at tilpasse Chromium. Udvidelser hjælper dig med at organisere og forenkle hverdagens opgaver ved at tilpasse Chromium efter dine behov.</translation>
 <translation id="3068515742935458733">Hjælp med at gøre Chromium bedre ved at sende fejlrapporter og <ph name="UMA_LINK" /> til Google</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">Tilpas Chromium</translation>
 <translation id="4148957013307229264">Installerer...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Login på netværk – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se din læseliste og meget mere på alle dine enheder.</translation>
 <translation id="421369550622382712">Find fantastiske apps, spil, udvidelser og temaer til Chromium.</translation>
 <translation id="4217080900579554343">Log ind i Chromium for at få denne udvidelse m.m. på alle dine computere</translation>
 <translation id="4217972271355023382">Du kan skifte til din Chromium-profil, hvor du allerede er logget ind som <ph name="USER_EMAIL_ADDRESS" />, for at beskytte dig selv bedre på nettet med dine forældres valg</translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Åbn søgning med Chromium</translation>
 <translation id="5383439451358640070">Se, hvorfor Chromium blokerer visse filer</translation>
 <translation id="5386450000063123300">Opdaterer Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> er allerede logget ind. Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du kan også se dine udvidelser og meget mere på alle dine enheder.</translation>
 <translation id="538767207339317086">Tillad login via Chromium</translation>
 <translation id="5405650547142096840">Fjern fra Chromium</translation>
 <translation id="5424544524441439284">Reducerer ydeevnen, men gør Chromium mere modstandsdygtig over for angreb</translation>

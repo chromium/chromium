@@ -98,6 +98,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1873233029667955273">Hindi Google Chrome ang iyong default na browser</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
+<translation id="1877067026701708502">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chrome sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong mga extension at higit pa sa lahat ng device mo.</translation>
 <translation id="1880677175115548835">Piliin ang text</translation>
 <translation id="1896602904211344018">Kunin ang Chrome app</translation>
 <translation id="1919130412786645364">Pagayan ang pag-sign in sa Chrome</translation>
@@ -230,6 +231,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="3112458742631356345">Na-block ng Chrome ang pag-download na ito dahil hindi karaniwang dina-download ang file at posibleng mapanganib ito</translation>
 <translation id="3119573284443908657">Na-block ng Chrome ang pag-download na ito dahil naglalaman ang naka-archive na file ng iba pang file na posibleng nagtatago ng malware</translation>
 <translation id="3124332159330678621">I-customize ang Chrome para bigyan ng bagong hitsura ang iyong browser</translation>
+<translation id="3125851611828811913">Maghanap at magtanong mula sa kahit saan, kahit na naka-minimize ang Chrome. Pinapayagan ang Chrome na tumakbo sa background.</translation>
 <translation id="3130333203120345554">Bagong paghahanap</translation>
 <translation id="3135560418014806498">Magdagdag ng Profile sa Chrome</translation>
 <translation id="3137969841538672700">Mag-drag para maghanap</translation>
@@ -387,6 +389,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="4793679854893018356">Alamin kung paano ka pinapanatiling ligtas ng Chrome</translation>
 <translation id="4799870290441980300">Nag-o-on ng mga karagdagang feature para maibigay ang pinakamalalakas na proteksyon ng Chrome</translation>
 <translation id="4828579605166583682">Sinusubukang palitan ng Google Chrome ang mga kasalukuyang password. I-type ang iyong password sa Windows para payagan ito.</translation>
+<translation id="4836321460899997044">Profile sa Chrome</translation>
 <translation id="4842397268809523050">Hindi ma-sync ng ChromeOS Flex ang iyong data dahil hindi available ang Pag-sync para sa iyong domain.</translation>
 <translation id="4851866215237571846">Naka-sign in na si <ph name="EXISTING_USER" />.  Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chrome sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Para i-share ang iyong screen, payagan ang pag-record ng screen para sa Chrome sa System Settings</translation>
@@ -504,6 +507,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6014316319780893079">Gamit ang <ph name="BEGIN_LINK" />mga tool mula sa Chrome<ph name="END_LINK" />, makakapag-browse ka nang ligtas at mananatili kang may kontrol</translation>
 <translation id="6018578474045062808">Subukan ang Google Lens sa Chrome sa iyong telepono</translation>
 <translation id="6022659036123304283">Gawing iyo ang Chrome</translation>
+<translation id="6024930613143833266">Maghanap gamit ang Chrome mula sa kahit saan</translation>
 <translation id="6025087594896450715">Magre-restart ang Google Chrome sa <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="604424701295382420">Na-pin na! Maa-access mo ulit ang Google Lens mula sa bagong button sa toolbar</translation>
@@ -548,6 +552,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6334815226785304306">Gawing default browser ang Google Chrome at i-pin ito sa taskbar</translation>
 <translation id="63540178978900677">Hindi na Chrome ang iyong default browser. Gawing default browser ang Chrome?</translation>
 <translation id="6360449101159168105">Habang hindi aktibo ang tab na ito, nagbakante ng memory para mapanatiling mabilis ang Chrome. Puwede mong piliing palaging huwag isama ang site na ito sa pagiging hindi aktibo.</translation>
+<translation id="6362984640667950211">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chrome sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong listahan ng babasahin at higit pa sa lahat ng device mo.</translation>
 <translation id="6388799252195623474">tulungan ako dito</translation>
 <translation id="6412673304250309937">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chrome. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chrome sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Awtomatikong isinasara ng iyong organisasyon ang Chrome kapag hindi ito nagamit nang 1 minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}one{Awtomatikong isinasara ng iyong organisasyon ang Chrome kapag hindi ito nagamit nang # minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}other{Awtomatikong isinasara ng iyong organisasyon ang Chrome kapag hindi ito nagamit nang # na minuto. Ide-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.}}</translation>
@@ -593,6 +598,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6750954913813541382">Para ayusin ang mga error sa pagbabaybay, ipinapadala ng Chrome sa Google ang text na na-type mo sa browser</translation>
 <translation id="6760235774835597023">Pinapabilis ang mga site gamit ang V8 na engine ng Chrome pero ginagawang bahagyang hindi gaanong resistant sa mga attack ang Chrome. Naka-on ang setting na ito.</translation>
 <translation id="677276454032249905">Lumabas pa rin sa Chrome?</translation>
+<translation id="6777654166489463890">Magtanong tungkol sa content sa labas ng Chrome, tulad ng isa pang app o file na binuksan mo</translation>
 <translation id="6794858689789885890">Palaging i-delete ang data ng site mula sa iyong device kapag isinasara mo ang Chrome</translation>
 <translation id="6800285125190089494">Mas mabilis na makapag-sign in sa mga site gamit ang mga na-save na password para sa Chrome sa iOS</translation>
 <translation id="6831043979455480757">Isalin</translation>
@@ -645,6 +651,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7285990705317078173">I-download ang Chrome sa iyong telepono para i-track ang mga presyo at makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site</translation>
 <translation id="7288567540154601580">Mga tab at extension</translation>
 <translation id="7296210096911315575">Mahalagang impormasyon sa paggamit at kaligtasan</translation>
+<translation id="7299899569525778554">Maghanap mula sa desktop</translation>
 <translation id="7302361266603927550">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chrome. Subukang maghintay nang ilang minuto bago mag-sign out. Kung magsa-sign out ka ngayon, made-delete ang data na ito.</translation>
 <translation id="7306401458628386911">Masimulan kaagad ang pag-browse: Puwede na ngayong ilunsad ang Chrome kapag nagsimula na ang Windows.</translation>
 <translation id="7308322188646931570">Kailangan ng Chrome ng access sa storage para mag-download ng mga file</translation>
@@ -708,6 +715,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7845233973568007926">Salamat sa pag-install. Dapat mong i-restart ang iyong computer bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Ilunsad ang Chrome kapag nagsimula na ang Windows</translation>
 <translation id="7849037457735762883">Magpatuloy kung saan ka huminto: Puwedeng i-restore ng Chrome ang iyong mga tab sa tuwing magre-restart ka. Para i-on ito, pumunta sa</translation>
+<translation id="7868731902994556427">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chrome sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong mga extension at higit pa mula sa <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Para magamit ang iyong mga naka-save na password, sundan ang QR code, i-download ang Chrome para sa iOS, at mag-sign in sa Google Account mo</translation>
 <translation id="7872446069773932638">Dina-download... <ph name="SECONDS" /> (na) segundo ang natitira</translation>
 <translation id="7886087451482920026">Pumili ng text gamit ang Google Lens</translation>
@@ -805,6 +813,7 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="8679801911857917785">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chrome.</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8712767363896337380">Malapit nang ma-update! Muling ilunsad ang Chrome para matapos ang pag-update.</translation>
+<translation id="8717554232729236539">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chrome sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong listahan ng babasahin at higit pa mula sa <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Mag-sign Out sa Chrome</translation>
 <translation id="873133009373065397">Hindi matukoy o maitakda ng Google Chrome ang default na browser</translation>
 <translation id="8747073452963259673">kaliwang sulok sa ibaba ng lugar para sa paghahanap: kaliwa <ph name="LEFT" />%, ibaba <ph name="BOTTOM" />%</translation>

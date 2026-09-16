@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="1184166532603925201">V anonimnem načinu Chrome spletnim mestom onemogoči uporabo piškotkov tretjih oseb</translation>
+<translation id="1365023215312302966">Spletna mesta ne morejo uporabljati piškotkov tretjih oseb za osebno prilagajanje vsebine in oglasov ter za pridobivanje podatkov o dejanjih, ki jih izvajate na drugih spletnih mestih</translation>
 <translation id="1569440020357229235">V anonimnem načinu spletna mesta ne morejo uporabljati piškotkov tretjih oseb. Če spletno mesto, ki temelji na teh piškotkih, ne deluje, lahko <ph name="BEGIN_LINK" />poskusite temu spletnemu mestu omogočiti začasni dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Funkcije na nekaterih spletnih mestih morda ne bodo delovale</translation>
 <translation id="2183376768278472507">Če spletno mesto ne deluje po pričakovanjih, lahko poskusite omogočiti piškotke tretjih oseb za določeno spletno mesto, ki ga obiščete</translation>
 <translation id="2235344399760031203">Piškotki tretjih oseb so blokirani</translation>
+<translation id="2360633687155619995">Spletna mesta ne morejo uporabljati piškotkov tretjih oseb za osebno prilagajanje vsebine in oglasov ter za pridobivanje podatkov o dejanjih, ki jih izvajate na drugih spletnih mestih. Nekatere funkcije spletnega mesta morda ne bodo delovale po pričakovanjih.</translation>
 <translation id="2496115946829713659">Spletna mesta lahko uporabljajo piškotke tretjih oseb za osebno prilagajanje vsebine in oglasov ter za pridobivanje podatkov o dejanjih, ki jih izvajate na drugih spletnih mestih</translation>
 <translation id="3045333309254072201">V anonimnem načinu spletna mesta ne morejo uporabljati piškotkov tretjih oseb. Če spletno mesto, ki temelji na teh piškotkih, ne deluje, lahko <ph name="START_LINK" />poskusite temu spletnemu mestu omogočiti začasni dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Spletna mesta, ki temeljijo na piškotkih tretjih oseb, bi morala delovati po pričakovanjih</translation>

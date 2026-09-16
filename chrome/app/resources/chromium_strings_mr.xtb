@@ -148,6 +148,7 @@
 <translation id="2575822587468774919">इमेज शोध वापरून शोधण्यासाठी काहीही निवडा</translation>
 <translation id="2576118232315942160">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी, Chromium मध्ये साइन इन करा</translation>
 <translation id="2587622539943955767">Chromium डाउनलोड करण्यासाठी आणि तुमच्या Google खाते मध्ये साइन इन करण्यासाठी तुमचा फोन वापरून QR कोड स्कॅन करा.</translation>
+<translation id="2587885422541096572">Chromium वापरून शोधण्यासाठी.</translation>
 <translation id="2592940277904433508">Chromium वापरणे पुढे सुरू ठेवा</translation>
 <translation id="259935314519650377">डाउनलोड केलेला इंस्टॉलर कॅशे करता आला नाही. एरर: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">सिस्टीम</translation>
@@ -339,6 +340,7 @@
 <translation id="4621240073146040695">अद्ययावत करणे जवळजवळ पूर्ण झाले! अपडेट करणे समाप्त करण्यासाठी Chromium रीलाँच करा.</translation>
 <translation id="4625064703209785397">Chromium चे V8 इंजीन साइटचा वेग वाढवते, पण त्यामुळे Chromium ची हल्ले रोखण्याची क्षमता किंचित कमी होते</translation>
 <translation id="4626321472657185181">Chromium वापरून शोध उघडा</translation>
+<translation id="4654639495249754755">Chromium प्रोफाइल</translation>
 <translation id="4665829708273112819">चेतावणी: Chromium हे एक्स्टेंशनना तुमचा ब्राउझिंग इतिहास रेकॉर्ड करण्यापासून रोखू शकत नाही. हे एक्स्टेंशन गुप्त मोडमध्ये बंद करण्यासाठी या पर्यायाची निवड रद्द करा.</translation>
 <translation id="4673151026126227699">तुम्ही Chromium वापर अहवालदेखील शेअर केल्यास, त्या अहवालांमध्ये तुम्ही भेट दिलेल्या URLs चा समावेश होतो</translation>
 <translation id="4673710618874938871"><ph name="USER_NAME" /> म्हणून साइन इन केले आहे, सदस्यत्व. खाते मेनू उघडा</translation>
@@ -471,6 +473,7 @@
 <translation id="6174920971222007286">ही फाइल धोकादायक असू शकते<ph name="LINE_BREAK" />तुम्ही पासवर्ड दिल्यास, Chromium हे डाउनलोड तुमच्यासाठी तपासू शकते. फाइलविषयीची माहिती Google सुरक्षित ब्राउझिंग ला पाठवली जाते, पण फाइलचा आशय आणि पासवर्ड तुमच्या डिव्हाइसवर राहतो.</translation>
 <translation id="6182736845697986886">अपडेट सर्व्हरच्या अंतर्गत एररमुळे इंस्टॉलेशन यशस्वी झाले नाही.</translation>
 <translation id="6183079672144801177">तुम्ही तुमच्या <ph name="TARGET_DEVICE_NAME" /> वर Chromium मध्ये साइन इन केले असल्याची खात्री करा आणि त्यानंतर पुन्हा पाठवून पहा.</translation>
+<translation id="6192070012454216182">Chromium लहान केलेले असतानादेखील, कुठूनही शोधा आणि प्रश्न विचारा. Chromium ला बॅकग्राउंडमध्ये रन होऊ देते.</translation>
 <translation id="6212496753309875659">या कॉंप्युटरवर आधीपासून Chromium ची अगदी अलीकडील आवृत्ती आहे. सॉफ्‍टवेअर काम करत नसल्‍यास, कृपया Chromium अनइंस्टॉल करा आणि पुन्‍हा प्रयत्‍न करा.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium आता पुन्हा लाँच होईल}=1{Chromium एका सेकंदामध्ये पुन्हा लाँच होईल}other{Chromium # सेकंदांमध्ये पुन्हा लाँच होईल}}</translation>
 <translation id="6241367896540709610">Chromium ला फाइल डाउनलोड करण्यासाठी स्टोरेज अ‍ॅक्सेस करण्याची परवानगी आवश्यक आहे</translation>
@@ -597,6 +600,7 @@
 <translation id="7288567540154601580">टॅब आणि एक्स्टेंशन</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{तुम्ही ते काढून टाकावे अशी Chromium शिफारस करते}other{तुम्ही ती काढून टाकावीत अशी Chromium शिफारस करते}}</translation>
 <translation id="7296334833518879294">सिस्टीम ऑडिओ शेअर करण्यासाठी, सिस्टीम सेटिंग्ज उघडा आणि Chromium साठी 'फक्त सिस्टीम ऑडिओ रेकॉर्डिंग' ला अनुमती द्या. तुम्हाला त्यानंतर Chromium रीस्टार्ट करावे लागेल.</translation>
+<translation id="7299899569525778554">डेस्कटॉपवरून शोधा</translation>
 <translation id="731795002583552498">Chromium अपडेट होत आहे</translation>
 <translation id="7318036098707714271">तुमची प्राधान्ये फाइल दूषित किंवा चुकीची आहे.
 
@@ -652,6 +656,7 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium कॅनरी</translation>
 <translation id="7803986347287457849">तुमच्या इंटरनेट ट्रॅफिकचा ॲक्सेस असलेल्या लोकांसाठी तुम्ही कोणत्या साइटला भेट देता हे पाहणे कठीण करा. DNS (डोमेन नेम सिस्टीम) मध्ये साइटचा आयपी अ‍ॅड्रेस शोधण्यासाठी Chromium सुरक्षित कनेक्शन वापरते.</translation>
 <translation id="7810005234485217901">सोप्या अ‍ॅक्सेससाठी तुम्ही इमेज शोध पिन करू शकता</translation>
+<translation id="7813626943009612327">Chromium च्या बाहेरील आशयाबद्दल विचारा, जसे की तुम्ही उघडलेले दुसरे अ‍ॅप किंवा फाइल</translation>
 <translation id="7828527096541974699">Chromium सोबत काय शेअर करायचे आहे ते निवडा</translation>
 <translation id="7828947555739565424">या खात्यासह असलेली Chromium प्रोफाइल आधीपासून या डिव्हाइसवर अस्तित्वात आहे</translation>
 <translation id="7845233973568007926">इंस्टॉल केल्याबद्दल धन्यवाद. तुम्ही <ph name="BUNDLE_NAME" /> वापरण्यापूर्वी तुमचा कॉंप्युटर रीस्टार्ट करणे आवश्यक आहे.</translation>
@@ -742,6 +747,7 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
 <translation id="8619360774459241877">Chromium लाँच करत आहे...</translation>
 <translation id="8624541899164515475">सेटिंग्ज, नवीन टॅबमध्ये उघडते.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing ला तुमचा डीफॉल्ट ब्राउझर बनवू शकत नाही.</translation>
+<translation id="8676101123715131330">Chromium वापरून कुठूनही शोधा</translation>
 <translation id="8697124171261953979">तुम्ही Chromium सुरू करता किंवा तुम्ही ओम्निबॉक्समधून शोध घेता तेव्हा कोणते पेज दाखवावे हेदेखील ते नियंत्रित करते.</translation>
 <translation id="8704119203788522458">हे तुमचे Chromium आहे</translation>
 <translation id="8712637175834984815">समजले</translation>
@@ -775,6 +781,7 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
 <translation id="897581876605952338">Chromium Enterprise लोगो</translation>
 <translation id="8980139959902937527">तुमच्या <ph name="DEVICE_TYPE" /> वरील Chromium अ‍ॅप वापरून फिरतीवर असताना Google ची सुरक्षितता मिळवा</translation>
 <translation id="8981150672034878610">तुमची प्रोफाइल उघडताना काहीतरी चुकल्यामुळे Chromium सुरू करू शकत नाही. Chromium रीस्टार्ट करण्याचा प्रयत्न करा.</translation>
+<translation id="8981886272598860786">Chromium वापरून शोधण्यासाठी किंवा <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कस्टमाइझ करण्यासाठी</translation>
 <translation id="8988036198400390003">Chromium ची प्रोफाइल व्यवस्थापित करा</translation>
 <translation id="8993855408334954620">Chromium मधील Gemini आणि तुमचा उघडा टॅब यांदरम्यान नेव्हिगेट करण्यासाठी तुमचा कीबोर्ड वापरा.</translation>
 <translation id="9018218886431812662">इंस्टॉलेशन पूर्ण झाले</translation>

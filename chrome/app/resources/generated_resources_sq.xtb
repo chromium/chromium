@@ -676,6 +676,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1523978563989812243">Motorët e "tekstit në ligjërim"</translation>
 <translation id="1524563461097350801">Jo, faleminderit</translation>
 <translation id="1525740877599838384">Përdor vetëm Wi-Fi për të përcaktuar vendndodhjen</translation>
+<translation id="1526274304859009691">Identifikohu për të marrë shtesat e tua etj. nga <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Dokument pa titull</translation>
 <translation id="1527336312600375509">Monitoro shpejtësinë e rifreskimit</translation>
 <translation id="152913213824448541">Kontaktet e "Ndarjes në afërsi"</translation>
@@ -6372,6 +6373,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5902400038326841449">"Menaxheri i fjalëkalimeve i Google" është çaktivizuar</translation>
 <translation id="5902892210366342391">Shiko paralajmërime para se të shkosh në sajte të pasigurta në "Modalitetin 'e fshehtë'"</translation>
 <translation id="5906457147959147328">Vazhdo ta lejosh këtë sajt që të përdorë identifikuesit për të luajtur përmbajtjet e mbrojtura</translation>
+<translation id="5906549184882174190">I izoluar</translation>
 <translation id="5906655207909574370">Pothuajse i përditësuar! Rinise pajisjen për të përfunduar përditësimin.</translation>
 <translation id="5906732635754427568">Të dhënat e lidhura me këtë aplikacion do të hiqen nga kjo pajisje.</translation>
 <translation id="5906974869830879618">Fut një kod PIN</translation>
@@ -6597,6 +6599,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6088475950266477163">&amp;Cilësimet</translation>
 <translation id="608912389580139775">Për ta shtuar këtë faqe te lista jote e leximit, kliko ikonën "Faqeshënuesi"</translation>
 <translation id="6089289670051481345">Tritanomali</translation>
+<translation id="6090068946774422711">Identifikohu për të marrë listën tënde të leximit etj. nga <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Paralajmërimet e hequra</translation>
 <translation id="609174145569509836">Pastro hapësirën ruajtëse</translation>
 <translation id="6091761513005122595">Ndarja u montua me sukses.</translation>
@@ -7948,6 +7951,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7124712201233930202">Politikat e organizatës sate nuk janë respektuar</translation>
 <translation id="7125148293026877011">Fshi Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Identifikohu për të marrë shtesat e tua etj. në të gjitha pajisjet e tua</translation>
 <translation id="7125932261198019860">Sigurohu që printeri yt të jetë i lidhur me të njëjtin rrjet Wi-Fi si pajisja jote Chromebook ose përdor një kabllo USB. <ph name="LINK_BEGIN" />Mëso më shumë për përputhshmërinë<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Shkarko historikun</translation>
 <translation id="7130438335435247835">Emri i pikës së qasjes (APN)</translation>
@@ -8801,6 +8805,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7780992949171378848">Dërgo një kërkesë për tërheqje te sajtet në lidhje me përdorimin e të dhënave të tua</translation>
 <translation id="7782102568078991263">Nuk ka më sugjerime nga Google</translation>
 <translation id="7782717250816686129">Ruaj të dhënat e përhershme në ekranin e identifikimit dhe injekto kredencialet në sesion.</translation>
+<translation id="7782885970382585765">Identifikohu për të marrë listën tënde të leximit etj. në të gjitha pajisjet e tua</translation>
 <translation id="7784020347632229094">Mëso më shumë rreth shkurtores së tastierës</translation>
 <translation id="7784067724422331729">Cilësimet e sigurisë në kompjuter e bllokuan këtë skedar.</translation>
 <translation id="7784796923038949829">Të dhënat e sajtit nuk mund të lexohen ose të ndryshohen</translation>

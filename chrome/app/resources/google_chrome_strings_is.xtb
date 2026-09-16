@@ -98,6 +98,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1873233029667955273">Google Chrome er ekki sjálfgefinn vafri</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-inn)</translation>
 <translation id="1877026089748256423">Chrome er úrelt</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chrome með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig viðbæturnar þínar og fleira í öllum tækjunum þínum.</translation>
 <translation id="1880677175115548835">Velja texta</translation>
 <translation id="1896602904211344018">Sækja Chrome-forritið</translation>
 <translation id="1919130412786645364">Leyfa innskráningu í Chrome</translation>
@@ -548,6 +549,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6334815226785304306">Gera Google Chrome að sjálfgefnum vafra og festa við forritastikuna</translation>
 <translation id="63540178978900677">Chrome er ekki lengur sjálfgefni vafrinn þinn. Gera Chrome að sjálfgefnum vafra?</translation>
 <translation id="6360449101159168105">Meðan þessi flipi var óvirkur var losað um minni til að gera Chrome hraðari. Þú getur valið að undanskilja þetta vefsvæði alltaf frá því að vera óvirkt.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chrome með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig leslistann þinn og fleira í öllum tækjunum þínum.</translation>
 <translation id="6388799252195623474">hjálpa mér með þetta</translation>
 <translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í 1 mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}one{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}other{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútur. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}}</translation>
@@ -708,6 +710,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7845233973568007926">Takk fyrir að setja upp. Þú þarft að endurræsa tölvuna áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Ræsa Chrome þegar Windows er ræst</translation>
 <translation id="7849037457735762883">Haltu áfram þaðan sem frá var horfið: Chrome getur endurheimt flipana þína í hvert skipti sem þú hefst handa. Þú getur kveikt á þessu í</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chrome með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig viðbæturnar þínar og fleira úr <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Til að nota vistuð aðgangsorð skaltu skanna QR-kóðann, sækja Chrome fyrir iOS og skrá þig inn á Google-reikninginn þinn</translation>
 <translation id="7872446069773932638">Sækir... <ph name="SECONDS" /> sek. eftir</translation>
 <translation id="7886087451482920026">Notaðu Google-linsu til að velja texta</translation>
@@ -804,6 +807,7 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="8679801911857917785">Þetta stýrir því einnig hvaða síða birtist þegar þú ræsir Chrome.</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8712767363896337380">Næstum því uppfært! Endurræstu Chrome til að ljúka við uppfærsluna.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chrome með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig leslistann þinn og fleira úr <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Skrá út af Chrome</translation>
 <translation id="873133009373065397">Google Chrome getur ekki ákvarðað eða stillt sjálfgefinn vafra</translation>
 <translation id="8747073452963259673">neðsta horn leitarsvæðis vinstra megin: til vinstri <ph name="LEFT" />%, neðst <ph name="BOTTOM" />%</translation>

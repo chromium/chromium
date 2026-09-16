@@ -69,6 +69,7 @@
 <translation id="1793486931176048546">ඉක්මන් ප්‍රවේශය සඳහා Chromium ඔබේ කාර්ය තීරුවට ඇමිණීමට, Windows දැනුම්දීමෙහි ඇති <ph name="BEGIN_BOLD" />ඔව්<ph name="END_BOLD" /> යන්න ක්ලික් කරන්න.</translation>
 <translation id="1808667845054772817">Chromium ප්‍රතිස්ථාපනය කරන්න</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> සඳහා උත්සාහ කරයි</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> දැනටමත් පුරනය වී නැත. ඔබේ බ්‍රවුස් කිරීම වෙනම තබා ගැනීමට, <ph name="USER_EMAIL_ADDRESS" /> ලෙස ඔබේම පැතිකඩෙන් Chromium හට පුරන්න. ඔබට <ph name="DEVICE" /> වෙතින් ඔබේ දිගු සහ තවත් දේ ද ලැබෙනු ඇත.</translation>
 <translation id="183031085822326697">මීළඟ වතාවේ ඔබ ඔබේ <ph name="DEVICE_TYPE" /> මත Chromium විවෘත කරන විට, Google මුරපද කළමනාකරු භාවිත කිරීමට ප්‍රේරකයක් ඔබට පෙනෙනු ඇත.</translation>
 <translation id="1838374766361614909">සෙවීම හිස් කරන්න</translation>
 <translation id="18552579716432081">එය ඔබේ Google ගිණුම තුළ තබා ගන්නා අතර මෙම උපාංගයෙන් පමණක් බ්‍රවුස් කිරීමේ දත්ත මැකීමට, <ph name="BEGIN_LINK" />Chromium වෙතින් වරන්න<ph name="END_LINK" />.</translation>
@@ -191,6 +192,7 @@
 <translation id="3038232873781883849">ස්ථාපනය කිරීමට පොරොත්තුවෙන්...</translation>
 <translation id="3045032126857188731">පරිවර්තිත භාෂාව: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">ප්‍රතිපෝෂණ සංවාදය වසන්න</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> දැනටමත් පුරනය වී නැත. ඔබේ බ්‍රවුස් කිරීම වෙනම තබා ගැනීමට, <ph name="USER_EMAIL_ADDRESS" /> ලෙස ඔබේම පැතිකඩෙන් Chromium හට පුරන්න. ඔබට <ph name="DEVICE" /> වෙතින් ඔබේ කියවීම් ලැයිස්තුව සහ තවත් දේ ද ලැබෙනු ඇත.</translation>
 <translation id="3068187312562070417">වෙනත් Chromium පැතිකඩ</translation>
 <translation id="3068290154869370196">දිගු යනු ඔබට Chromium අභිරුචිකරණය කිරීමට ඉඩ දෙන ඈඳුම් වේ. සංවිධානාත්මකව සිටීම සිට, එදිනෙදා කාර්යයන් සරල කිරීම දක්වා, දිගු ඔබට Chromium ඔබේම කර ගැනීමට උදවු කරයි.</translation>
 <translation id="3068515742935458733">බිඳ වැටුම් වාර්තා සහ <ph name="UMA_LINK" /> Google වෙත යවමින් Google Chromium දියුණු කිරීමට සහය වන්න</translation>
@@ -292,6 +294,7 @@
 <translation id="4147856324248078748">ඔබේ Chromium අභිරුචි කරන්න</translation>
 <translation id="4148957013307229264">ස්ථාපනය කරමින්...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - ජාල පුරනය - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> දැනටමත් පුරනය වී නැත. ඔබේ බ්‍රවුස් කිරීම වෙනම තබා ගැනීමට, <ph name="USER_EMAIL_ADDRESS" /> ලෙස ඔබේම පැතිකඩෙන් Chromium හට පුරන්න. ඔබේ සියලු උපාංගවල ඔබේ කියවීම් ලැයිස්තුව සහ තවත් දේ ඔබට ලැබෙනු ඇත.</translation>
 <translation id="421369550622382712">Chromium සඳහා විශිෂ්ට යෙදුම්, ක්‍රීඩා, දිගු සහ තේමා අනාවරණය කර ගන්න.</translation>
 <translation id="4217080900579554343">මෙම දිගුව සහ තවත් දේ ඔබේ සියලු පරිගණකවල ලබා ගැනීමට, Chromium වෙත පුරන්න</translation>
 <translation id="4217972271355023382">ඔබේ මාපියන්ගේ තේරීම් සමග සබැඳිව ආරක්ෂිතව සිටීමට, ඔබ <ph name="USER_EMAIL_ADDRESS" /> ලෙස දැනටමත් පුරනය වී ඇති ඔබේ Chromium පැතිකඩ වෙත මාරු වන්න</translation>
@@ -391,6 +394,7 @@
 <translation id="5382964351116519680">Chromium සමග සෙවීම විවෘත කරන්න</translation>
 <translation id="5383439451358640070">Chromium සමහර ගොනු අවහිර කරන හේතුව දැන ගන්න</translation>
 <translation id="5386450000063123300">Chromium යාවත්කාලීන කරමින් (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> දැනටමත් පුරනය වී නැත. ඔබේ බ්‍රවුස් කිරීම වෙනම තබා ගැනීමට, <ph name="USER_EMAIL_ADDRESS" /> ලෙස ඔබේම පැතිකඩෙන් Chromium හට පුරන්න. ඔබේ සියලු උපාංගවල ඔබේ දිගු සහ තවත් දේ ඔබට ලැබෙනු ඇත.</translation>
 <translation id="538767207339317086">Chromium පුරනයට ඉඩ දෙන්න</translation>
 <translation id="5405650547142096840">Chromium වෙතින් ඉවත් කරන්න</translation>
 <translation id="5424544524441439284">කාර්යසාධනය අඩු කරන නමුත් Chromium ප්‍රහාරවලට ඉතා විරුද්ධයි</translation>

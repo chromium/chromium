@@ -676,6 +676,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1523978563989812243">Moteurs de synthèse vocale</translation>
 <translation id="1524563461097350801">Non, merci</translation>
 <translation id="1525740877599838384">N'utiliser que le Wi-Fi pour déterminer la position</translation>
+<translation id="1526274304859009691">Connectez-vous pour accéder à vos extensions et à d'autres données de <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Document sans titre</translation>
 <translation id="1527336312600375509">Fréquence d'actualisation du moniteur</translation>
 <translation id="152913213824448541">Contacts pour le Partage à proximité</translation>
@@ -6371,6 +6372,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5902400038326841449">Le Gestionnaire de mots de passe de Google est désactivé</translation>
 <translation id="5902892210366342391">Voir des avertissements avant d'accéder à des sites non sécurisés en mode navigation privée</translation>
 <translation id="5906457147959147328">Continuer à autoriser ce site à utiliser des identifiants pour lire du contenu protégé</translation>
+<translation id="5906549184882174190">Isolée</translation>
 <translation id="5906655207909574370">Mise à jour presque terminée. Pour la finaliser, veuillez redémarrer votre appareil.</translation>
 <translation id="5906732635754427568">Les données associées à cette application seront supprimées de cet appareil.</translation>
 <translation id="5906974869830879618">Veuillez saisir un code</translation>
@@ -6596,6 +6598,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6088475950266477163">Paramètr&amp;es</translation>
 <translation id="608912389580139775">Pour ajouter cette page à votre liste de lecture, cliquez sur l'icône Ajouter aux favoris</translation>
 <translation id="6089289670051481345">Tritanomalie</translation>
+<translation id="6090068946774422711">Connectez-vous pour accéder à votre liste de lecture et à d'autres données de <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Avertissements ignorés</translation>
 <translation id="609174145569509836">Nettoyer l'espace de stockage</translation>
 <translation id="6091761513005122595">Le partage a bien été installé.</translation>
@@ -7950,6 +7953,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7124712201233930202">Les règles de votre organisation ne sont pas respectées</translation>
 <translation id="7125148293026877011">Supprimer Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="MODIFIER_THREE" />+<ph name="MODIFIER_FOUR" />+<ph name="KEY" /></translation>
+<translation id="7125576351373654452">Connectez-vous pour accéder à vos extensions et à d'autres données sur tous vos appareils</translation>
 <translation id="7125932261198019860">Assurez-vous que votre imprimante est connectée au même réseau Wi-Fi que votre Chromebook ou utilisez un câble USB. <ph name="LINK_BEGIN" />En savoir plus sur la compatibilité<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historique des téléchargements</translation>
 <translation id="7130438335435247835">Nom du point d'accès (APN)</translation>
@@ -8803,6 +8807,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7780992949171378848">Envoyer une demande de désactivation aux sites concernant l'utilisation de vos données</translation>
 <translation id="7782102568078991263">Aucune autre suggestion de Google</translation>
 <translation id="7782717250816686129">Enregistrer les données persistantes dans l'écran de connexion et injecter les identifiants dans la session.</translation>
+<translation id="7782885970382585765">Connectez-vous pour accéder à votre liste de lecture et à d'autres données sur tous vos appareils</translation>
 <translation id="7784020347632229094">En savoir plus sur le raccourci clavier</translation>
 <translation id="7784067724422331729">Les paramètres de sécurité de votre ordinateur ont bloqué ce fichier.</translation>
 <translation id="7784796923038949829">Impossible de lire ou de modifier les données du site</translation>

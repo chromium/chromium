@@ -677,6 +677,7 @@
 <translation id="1523978563989812243">ਲਿਖਤ-ਤੋਂ-ਬੋਲੀ ਇੰਜਣ</translation>
 <translation id="1524563461097350801">ਨਹੀਂ, ਧੰਨਵਾਦ</translation>
 <translation id="1525740877599838384">ਟਿਕਾਣੇ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਸਿਰਫ਼ ਵਾਈ-ਫਾਈ ਵਰਤੋ</translation>
+<translation id="1526274304859009691"><ph name="DEVICE" /> ਤੋਂ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1526560967942511387">ਬਿਨਾਂ ਸਿਰਲੇਖ ਦਾ ਦਸਤਾਵੇਜ਼</translation>
 <translation id="1527336312600375509">ਮਾਨੀਟਰ ਦੀ ਰਿਫ੍ਰੈਸ਼ ਦਰ</translation>
 <translation id="152913213824448541">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਵਾਲੇ ਸੰਪਰਕ</translation>
@@ -6387,6 +6388,7 @@
 <translation id="5902400038326841449">Google Password Manager ਬੰਦ ਹੈ</translation>
 <translation id="5902892210366342391">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਅਸੁਰੱਖਿਅਤ ਸਾਈਟਾਂ 'ਤੇ ਜਾਣ ਤੋਂ ਪਹਿਲਾਂ ਚਿਤਾਵਨੀਆਂ ਦੇਖੋ</translation>
 <translation id="5906457147959147328">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਲਈ, ਇਸ ਸਾਈਟ ਨੂੰ ਪਛਾਣਕਰਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਦੇਣੀ ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="5906549184882174190">ਆਇਸੋਲੇਟਿਡ</translation>
 <translation id="5906655207909574370">ਲਗਭਗ ਅੱਪ ਟੂ ਡੇਟ! ਅੱਪਡੇਟ ਕਰਨਾ ਪੂਰਾ ਕਰਨ ਲਈ ਆਪਣੀ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="5906732635754427568">ਇਸ ਐਪ ਨਾਲ ਸਬੰਧਿਤ ਡਾਟੇ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="5906974869830879618">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਪਿੰਨ ਦਾਖਲ ਕਰੋ</translation>
@@ -6612,6 +6614,7 @@
 <translation id="6088475950266477163">ਸੈ&amp;ਟਿੰਗਾਂ</translation>
 <translation id="608912389580139775">ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਇਹ ਪੰਨਾ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, 'ਬੁੱਕਮਾਰਕ' ਪ੍ਰਤੀਕ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="6089289670051481345">ਟ੍ਰਾਈਟੈਨੋਮਲੀ</translation>
+<translation id="6090068946774422711"><ph name="DEVICE" /> ਤੋਂ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6090760257419195752">ਖਾਰਜ ਕੀਤੀਆਂ ਗਈਆਂ ਚਿਤਾਵਨੀਆਂ</translation>
 <translation id="609174145569509836">ਸਟੋਰੇਜ ਖਾਲੀ ਕਰੋ</translation>
 <translation id="6091761513005122595">ਸਾਂਝਾਕਰਨ ਨੂੰ ਮਾਊਂਟ ਕਰਨਾ ਸਫਲ ਰਿਹਾ।</translation>
@@ -7965,6 +7968,7 @@
 <translation id="7124712201233930202">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਦਾ ਪਾਲਣ ਨਹੀਂ ਕਰਦਾ</translation>
 <translation id="7125148293026877011">Crostini ਮਿਟਾਓ</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7125932261198019860">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਪ੍ਰਿੰਟਰ ਉਸੇ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਹੈ ਜਿਸ ਨਾਲ ਤੁਹਾਡੀ Chromebook ਕਨੈਕਟ ਹੈ ਜਾਂ USB ਕੇਬਲ ਦੀ ਵਰਤੋਂ ਕਰੋ। <ph name="LINK_BEGIN" />ਅਨੁਰੂਪਤਾ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ਡਾਊਨਲੋਡ ਇਤਿਹਾਸ</translation>
 <translation id="7130438335435247835">ਐਕਸੈੱਸ ਪੁਆਇੰਟ ਨਾਮ (APN)</translation>
@@ -8818,6 +8822,7 @@
 <translation id="7780992949171378848">ਆਪਣੇ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਸੰਬੰਧੀ ਸਾਈਟਾਂ ਨੂੰ ਹਟਣ ਦੀ ਬੇਨਤੀ ਭੇਜੋ</translation>
 <translation id="7782102568078991263">Google ਤੋਂ ਕੋਈ ਹੋਰ ਸੁਝਾਅ ਨਹੀਂ</translation>
 <translation id="7782717250816686129">ਲੌਗ-ਇਨ ਸਕ੍ਰੀਨ 'ਤੇ ਸਥਿਰ ਡਾਟਾ ਸਟੋਰ ਕਰਕੇ ਸੈਸ਼ਨ ਵਿੱਚ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਲਿਆਓ।</translation>
+<translation id="7782885970382585765">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7784020347632229094">ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="7784067724422331729">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਸੁਰੱਖਿਆ ਸੈਟਿੰਗਾਂ ਨੇ ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ।</translation>
 <translation id="7784796923038949829">ਸਾਈਟ ਦੇ ਡਾਟੇ ਨੂੰ ਪੜ੍ਹਿਆ ਜਾਂ ਬਦਲਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>

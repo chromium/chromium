@@ -146,6 +146,7 @@
 <translation id="2575822587468774919">Rasm orqali qidirish uchun istalgan obyektni tanlang</translation>
 <translation id="2576118232315942160">Barcha qurilmalarda parollaringiz va boshqalarni olish uchun Chromiumga kiring</translation>
 <translation id="2587622539943955767">Chromium ilovasini yuklab olish va Google hisobingizga kirish uchun telefoningiz bilan QR-kodni skanerlang.</translation>
+<translation id="2587885422541096572">va Chromium orqali qidiring.</translation>
 <translation id="2592940277904433508">Chromium yopilmasin</translation>
 <translation id="259935314519650377">Yuklab olingan oʻrnatish vositasi keshlanmadi. Xato: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Tizim</translation>
@@ -771,6 +772,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="897581876605952338">Chromium Enterprise logotipi</translation>
 <translation id="8980139959902937527"><ph name="DEVICE_TYPE" /> qurilmangizda Chromium ilovasi bilan Google xavfsizligi har doim yoningizda</translation>
 <translation id="8981150672034878610">Profilingizni ochishda nimadir xato ketgani uchun Chromium ishga tushmadi. Chromiumni qayta ishga tushirish.</translation>
+<translation id="8981886272598860786">va Chromium orqali qidiring yoki <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> orqali moslang.</translation>
 <translation id="8988036198400390003">Chromium profillarini boshqaring</translation>
 <translation id="8993855408334954620">Chromium ichidagi Gemini va ochiq varaq oynalarini almashtirish uchun klaviaturadan foydalaning.</translation>
 <translation id="9018218886431812662">O‘rnatildi.</translation>

@@ -70,6 +70,7 @@
 <translation id="1793486931176048546">Սեղմեք <ph name="BEGIN_BOLD" />Այո<ph name="END_BOLD" /> Windows-ի ծանուցման մեջ՝ Chromium-ը հավելվածների վահանակում ամրացնելու համար։</translation>
 <translation id="1808667845054772817">Նորից տեղադրել Chromium-ը</translation>
 <translation id="1820835682567584003">Chromium-ը փորձում է <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" />-ն արդեն մտել է հաշիվ։ Ձեր այցելությունների պատմությունն առանձին պահելու համար ձեր սեփական պրոֆիլում մուտք գործեք Chromium <ph name="USER_EMAIL_ADDRESS" /> հաշվով։ Ձեզ նաև հասանելի կլինեն ընդլայնումները և այլ տվյալներ <ph name="DEVICE" />։</translation>
 <translation id="183031085822326697">Հաջորդ անգամ, երբ ձեր <ph name="DEVICE_TYPE" /> սարքում բացեք Chromium-ը, կտեսնեք Google գաղտնաբառերի կառավարիչն օգտագործելու հրավեր։</translation>
 <translation id="1838374766361614909">Մաքրել որոնումը</translation>
 <translation id="18552579716432081">Այցելությունների պատմությունը միայն այս սարքից ջնջելու, սակայն Google հաշվում պահպանելու համար <ph name="BEGIN_LINK" />դուրս եկեք Chromium-ից<ph name="END_LINK" />։</translation>
@@ -192,6 +193,7 @@
 <translation id="3038232873781883849">Սպասում ենք տեղադրմանը…</translation>
 <translation id="3045032126857188731">Թարգմանության լեզուն՝ <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Փակել կարծիքով երկխոսության պատուհանը</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" />-ն արդեն մտել է հաշիվ։ Ձեր այցելությունների պատմությունն առանձին պահելու համար ձեր սեփական պրոֆիլում մուտք գործեք Chromium <ph name="USER_EMAIL_ADDRESS" /> հաշվով։ Ձեզ նաև հասանելի կլինեն ընթերցանության ցանկը և այլ տվյալներ <ph name="DEVICE" />։</translation>
 <translation id="3068187312562070417">Chromium-ի այլ պրոֆիլներ</translation>
 <translation id="3068290154869370196">Ընդլայնումները հավելումներ են, որոնք թույլ են տալիս անհատականացնել Chromium-ը։ Դրանք օգնում են կազմակերպել աշխատանքը, պարզեցնել առօրյա առաջադրանքները և անհատականացնել Chromium-ը։</translation>
 <translation id="3068515742935458733">Օգնեք բարելավել Chromium-ը՝ Google-ին ուղարկելով խափանման մասին հաշվետվությունները և <ph name="UMA_LINK" />ը</translation>
@@ -293,6 +295,7 @@
 <translation id="4147856324248078748">Անհատականացրեք ձեր Chromium-ը</translation>
 <translation id="4148957013307229264">Տեղադրում…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Ցանցի մուտքի էջ – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" />-ն արդեն մտել է հաշիվ։ Ձեր այցելությունների պատմությունն առանձին պահելու համար ձեր սեփական պրոֆիլում մուտք գործեք Chromium <ph name="USER_EMAIL_ADDRESS" /> հաշվով։ Ձեր ընթերցանության ցանկը և այլ տվյալները նույնպես հասանելի կլինեն ձեր բոլոր սարքերում։</translation>
 <translation id="421369550622382712">Հավելվածների, խաղերի, ընդլայնումների և թեմաների լայն ընտրանի Chromium-ի համար:</translation>
 <translation id="4217080900579554343">Ձեր բոլոր համակարգիչներում այս ընդլայնումը և ավելին ստանալու համար մուտք գործեք Chromium</translation>
 <translation id="4217972271355023382">Ձեր ծնողների ընտրած ավելի անվտանգ կարգավորումներն օգտագործելու համար անցեք Chromium պրոֆիլ, որտեղ արդեն մուտք եք գործել որպես <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -392,6 +395,7 @@
 <translation id="5382964351116519680">Բացել որոնումը Chromium-ով</translation>
 <translation id="5383439451358640070">Իմացեք, թե ինչու է Chromium-ն արգելափակում որոշ ֆայլեր</translation>
 <translation id="5386450000063123300">Chromium-ի թարմացում (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" />-ն արդեն մտել է հաշիվ։ Ձեր այցելությունների պատմությունն առանձին պահելու համար ձեր սեփական պրոֆիլում մուտք գործեք Chromium <ph name="USER_EMAIL_ADDRESS" /> հաշվով։ Ընդլայնումները և այլ տվյալները նույնպես հասանելի կլինեն ձեր բոլոր սարքերում։</translation>
 <translation id="538767207339317086">Թույլատրել մուտքը Chromium-ում</translation>
 <translation id="5405650547142096840">Հեռացնել Chromium-ից</translation>
 <translation id="5424544524441439284">Արդյունավետությունը կնվազի, սակայն Chromium-ն ավելի դիմակայուն կդառնա հարձակումների նկատմամբ</translation>

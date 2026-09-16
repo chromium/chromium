@@ -677,6 +677,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1523978563989812243">Motorer for tekst til tale</translation>
 <translation id="1524563461097350801">Nei takk</translation>
 <translation id="1525740877599838384">Bruk bare Wifi til å fastslå posisjonen</translation>
+<translation id="1526274304859009691">Logg på for å få utvidelsene med mer fra <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Dokument uten tittel</translation>
 <translation id="1527336312600375509">Oppdateringsfrekvens for skjermen</translation>
 <translation id="152913213824448541">Kontakter for nærdeling</translation>
@@ -6379,6 +6380,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5902400038326841449">Google Passordlagring er slått av</translation>
 <translation id="5902892210366342391">Få advarsler før du går til usikre nettsteder i inkognitomodus</translation>
 <translation id="5906457147959147328">Fortsett å la dette nettstedet bruke identifikatorer til å spille av beskyttet innhold</translation>
+<translation id="5906549184882174190">Isolert</translation>
 <translation id="5906655207909574370">Nå er oppdateringen snart ferdig! Start enheten på nytt for å fullføre oppdateringen.</translation>
 <translation id="5906732635754427568">Data som er tilknyttet denne appen, fjernes fra denne enheten.</translation>
 <translation id="5906974869830879618">Skriv inn en PIN-kode</translation>
@@ -6604,6 +6606,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6088475950266477163">Innstillin&amp;ger</translation>
 <translation id="608912389580139775">For å legge til denne siden på leselisten din, klikk på Bokmerke-ikonet</translation>
 <translation id="6089289670051481345">Tritanomali</translation>
+<translation id="6090068946774422711">Logg på for å få leselisten med mer fra <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Avviste varsler</translation>
 <translation id="609174145569509836">Frigjør lagringsplass</translation>
 <translation id="6091761513005122595">Delingen er aktivert.</translation>
@@ -7956,6 +7959,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7124712201233930202">Organisasjonens regler er ikke oppfylt</translation>
 <translation id="7125148293026877011">Slett Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Logg på for å få utvidelsene med mer på alle enhetene dine</translation>
 <translation id="7125932261198019860">Sørg for at skriveren er koblet til det samme wifi-nettverket som Chromebooken, eller bruk en USB-kabel. <ph name="LINK_BEGIN" />Finn ut mer om kompatibilitet<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Nedlastingslogg</translation>
 <translation id="7130438335435247835">Navn på tilgangspunkt (APN)</translation>
@@ -8809,6 +8813,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7780992949171378848">Send en forespørsel om bortvelging til nettsteder angående bruk av dataene dine</translation>
 <translation id="7782102568078991263">Google har ikke flere forslag</translation>
 <translation id="7782717250816686129">Lagre vedvarende data på påloggingsskjermen, og bruk legitimasjon i økten.</translation>
+<translation id="7782885970382585765">Logg på for å få leselisten med mer på alle enhetene dine</translation>
 <translation id="7784020347632229094">Finn ut mer om hurtigtasten</translation>
 <translation id="7784067724422331729">Sikkerhetsinnstillingene på datamaskinen din blokkerte denne filen.</translation>
 <translation id="7784796923038949829">Kan ikke lese eller endre data på nettstedet</translation>

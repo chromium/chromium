@@ -882,6 +882,7 @@
 <translation id="2467272921457885625">CPU/RAM 사용 기록과 같은 기기 하드웨어 사양 및 통계</translation>
 <translation id="2467421459221956357">센서를 사용하시겠습니까?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />네트워크 진단 프로그램 실행<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">주문</translation>
 <translation id="2469153820345007638">1-to-N 순서</translation>
 <translation id="24699311393038040">용지(코팅됨)</translation>
 <translation id="2471632709106952369">비교 테이블</translation>
@@ -1063,7 +1064,7 @@
 <translation id="277133753123645258">배송 방법</translation>
 <translation id="277499241957683684">기기 기록 없음</translation>
 <translation id="2775884851269838147">첫 인쇄 페이지</translation>
-<translation id="277828055419948999">Chromium은 표준 자동 완성에서 누락될 수 있는 어려운 필드를 자동 완성할 수 있습니다.</translation>
+<translation id="277828055419948999">Chromium은 일반적인 자동 완성에서 놓치기 쉬운 복잡한 필드도 자동으로 완성해 줍니다</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">결제 준비 중</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
@@ -2220,6 +2221,7 @@
 <translation id="4750917950439032686">비밀번호나 신용카드 번호 등의 정보는 비공개 상태로 이 사이트에 전송됩니다.</translation>
 <translation id="4754461935447132332">안전하지 않은 사이트에서 허용되지 않음</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">프로모션 코드 입력란을 선택하여 저장된 혜택을 확인하고 입력하세요</translation>
 <translation id="4757740693289347881">코드가 잘못되었습니다.</translation>
 <translation id="4757993714154412917">사기성 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="4758311279753947758">연락처 정보 추가</translation>
@@ -3152,6 +3154,7 @@
 <translation id="6319672966240656136">Google의 고급 보호 프로그램에 가입되어 있으므로 이 사이트는 차단된 상태로 유지됩니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">DNS 설정 확인</translation>
 <translation id="6322182122604171028">Windows Hello를 사용할 수 없음</translation>
+<translation id="6326175484149238433">Chrome에서 삭제</translation>
 <translation id="6326947323444967009">iOS 설정에서 Chrome을 시스템 기본 브라우저로 설정합니다.</translation>
 <translation id="6328639280570009161">네트워크 예측을 사용 중지해 보세요.</translation>
 <translation id="6329742260390895689">정보를 자동 완성하려면 월렛 설정에서 'Google 서비스 전반에 패스 사용'을 사용 설정하세요</translation>
@@ -3754,7 +3757,7 @@
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">미디어 컨트롤</translation>
 <translation id="7378810950367401542">/</translation>
-<translation id="7379321689415048316">Chrome은 표준 자동 완성에서 누락될 수 있는 어려운 필드를 자동 완성할 수 있습니다.</translation>
+<translation id="7379321689415048316">Chrome은 일반적인 자동 완성에서 놓치기 쉬운 복잡한 필드도 자동으로 완성해 줍니다</translation>
 <translation id="7380398842872229465">10x15인치</translation>
 <translation id="7381551826960739226">양식에 보안 연결이 사용되지 않아 자동 결제 수단 채우기가 사용 중지되었습니다.</translation>
 <translation id="7382980704744807223">의심스러운 파일</translation>
@@ -3843,6 +3846,7 @@
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">이번에는 VR 허용됨</translation>
+<translation id="7517198908921983825">Gemini 추천 · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">봉투 C10</translation>
 <translation id="7518003948725431193">다음 웹 주소(<ph name="URL" />)에 대해 발견된 웹페이지가 없습니다.</translation>
 <translation id="7521387064766892559">자바스크립트</translation>
@@ -4597,7 +4601,7 @@
 <translation id="883848425547221593">기타 북마크</translation>
 <translation id="8842351563145134519">터치하여 입력할 수 있는 결제 수단이 절반 높이로 열렸습니다.</translation>
 <translation id="884264119367021077">배송지 주소</translation>
-<translation id="8843516219908676469">Chrome이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다.</translation>
+<translation id="8843516219908676469">Chrome이 양식을 더 잘 이해하고, 더 빠르게 자동 완성을 제공할 수 있습니다</translation>
 <translation id="8845586173202501576">포모도로 기법과 간격 반복을 사용해 곧 있을 시험에 대비하는 7일 공부 일정표를 만들어 줘. 시험 전날 벼락치기하고 싶지 않으니 전날에는 가볍게 복습하고 잠을 잘 수 있게 일정을 짜줘.</translation>
 <translation id="8849032795302265570">직원들의 웹 탐색 방식을 간편하게 관리하세요</translation>
 <translation id="8849231003559822746">130x180mm</translation>

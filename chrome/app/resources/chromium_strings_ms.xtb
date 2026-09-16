@@ -147,6 +147,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2575822587468774919">Pilih apa-apa sahaja untuk dicari dengan Carian Imej</translation>
 <translation id="2576118232315942160">Untuk mendapatkan kata laluan anda dan pelbagai lagi pada semua peranti anda, log masuk ke Chromium</translation>
 <translation id="2587622539943955767">Imbas kod QR dengan telefon anda untuk memuat turun Chromium dan log masuk ke Google Account anda.</translation>
+<translation id="2587885422541096572">untuk membuat carian dengan Chromium.</translation>
 <translation id="2592940277904433508">Terus menggunakan Chromium</translation>
 <translation id="259935314519650377">Gagal mengcache pemasang yang dimuat turun. Ralat: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -779,6 +780,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="897581876605952338">Logo Chromium Enterprise</translation>
 <translation id="8980139959902937527">Manfaatkan keselamatan Google semasa dalam perjalanan dengan apl Chromium pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="8981150672034878610">Tidak dapat memulakan Chromium kerana terdapat masalah semasa membuka profil anda. Cuba mulakan semula Chromium.</translation>
+<translation id="8981886272598860786">untuk membuat carian dengan Chromium atau membuat penyesuaian dalam <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" /></translation>
 <translation id="8988036198400390003">Urus profil Chromium</translation>
 <translation id="8993855408334954620">Gunakan papan kekunci anda untuk menavigasi antara Gemini dalam Chromium dengan tab terbuka anda.</translation>
 <translation id="9018218886431812662">Pemasangan selesai</translation>

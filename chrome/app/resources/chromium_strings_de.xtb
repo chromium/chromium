@@ -67,6 +67,7 @@
 <translation id="1793486931176048546">Klicke in der Windows-Benachrichtigung auf <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" />, um Chromium für den Schnellzugriff an die Taskleiste anzupinnen.</translation>
 <translation id="1808667845054772817">Chromium neu installieren</translation>
 <translation id="1820835682567584003">Chromium versucht, <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chromium an. Du kannst dann auch auf deine Erweiterungen und weitere Daten von <ph name="DEVICE" /> zugreifen.</translation>
 <translation id="183031085822326697">Wenn du Chromium das nächste Mal auf deinem Gerät (<ph name="DEVICE_TYPE" />) öffnest, wirst du aufgefordert, den Google Passwortmanager zu verwenden.</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
 <translation id="18552579716432081">Wenn du Browserdaten nur von diesem Gerät, aber nicht aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich in Chromium ab<ph name="END_LINK" />.</translation>
@@ -189,6 +190,7 @@
 <translation id="3038232873781883849">Warten auf Installation…</translation>
 <translation id="3045032126857188731">Übersetzte Sprache: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Feedback-Dialogfeld schließen</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chromium an. Du kannst dann auch auf deine Leseliste und weitere Daten von <ph name="DEVICE" /> zugreifen.</translation>
 <translation id="3068187312562070417">Andere Chromium-Profile</translation>
 <translation id="3068290154869370196">Erweiterungen sind Add-ons zur Personalisierung von Chromium. Egal, ob du besser organisiert bleiben oder alltägliche Aufgaben vereinfachen möchtest – mit Erweiterungen kannst du Chromium ganz individuell anpassen.</translation>
 <translation id="3068515742935458733">Absturzberichte und <ph name="UMA_LINK" /> zur Verbesserung von Chromium an Google senden</translation>
@@ -290,6 +292,7 @@
 <translation id="4147856324248078748">Chromium a&amp;npassen</translation>
 <translation id="4148957013307229264">Installation wird ausgeführt...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chromium an. Du kannst dann auch auf allen deinen Geräten auf deine Leseliste und weitere Daten zugreifen.</translation>
 <translation id="421369550622382712">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Chromium.</translation>
 <translation id="4217080900579554343">Wenn du auf allen deinen Computern auf diese Erweiterung und mehr zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="4217972271355023382">Wenn du die von deinen Eltern festgelegten Einstellungen nutzen möchtest, um im Internet besser geschützt zu sein, wechsle zu deinem Chromium-Profil, in dem du bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet bist</translation>
@@ -389,6 +392,7 @@
 <translation id="5382964351116519680">Suche mit Chromium öffnen</translation>
 <translation id="5383439451358640070">Gründe, warum Chromium einige Dateien blockiert</translation>
 <translation id="5386450000063123300">Chromium wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich mit <ph name="USER_EMAIL_ADDRESS" /> in deinem eigenen Profil in Chromium an. Du kannst dann auch auf allen deinen Geräten auf deine Erweiterungen und weitere Daten zugreifen.</translation>
 <translation id="538767207339317086">Anmeldung in Chromium zulassen</translation>
 <translation id="5405650547142096840">Aus Chromium entfernen</translation>
 <translation id="5424544524441439284">Reduziert die Leistung, macht Chromium aber widerstandsfähiger gegen Angriffe</translation>

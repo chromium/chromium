@@ -676,6 +676,7 @@
 <translation id="1523978563989812243">文字转语音引擎</translation>
 <translation id="1524563461097350801">不用了</translation>
 <translation id="1525740877599838384">仅根据 Wi-Fi 确定位置</translation>
+<translation id="1526274304859009691">登录即可获取<ph name="DEVICE" />中的扩展程序等内容</translation>
 <translation id="1526560967942511387">无标题文档</translation>
 <translation id="1527336312600375509">显示器刷新频率</translation>
 <translation id="152913213824448541">“附近分享”功能联系人</translation>
@@ -6367,6 +6368,7 @@
 <translation id="5902400038326841449">Google 密码管理工具已关闭</translation>
 <translation id="5902892210366342391">在您以无痕模式访问不安全的网站前发出警告</translation>
 <translation id="5906457147959147328">继续允许此网站使用标识符播放受保护内容</translation>
+<translation id="5906549184882174190">隔离</translation>
 <translation id="5906655207909574370">即将更新到最新版本！重新启动您的设备即可完成更新。</translation>
 <translation id="5906732635754427568">系统将会从此设备上移除与该应用相关的数据。</translation>
 <translation id="5906974869830879618">请输入 PIN 码</translation>
@@ -6591,6 +6593,7 @@
 <translation id="6088475950266477163">设置(&amp;G)</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
 <translation id="6089289670051481345">蓝色弱</translation>
+<translation id="6090068946774422711">登录即可获取<ph name="DEVICE" />中的阅读清单等内容</translation>
 <translation id="6090760257419195752">已忽略的警告</translation>
 <translation id="609174145569509836">清理存储空间</translation>
 <translation id="6091761513005122595">已成功装载共享资源。</translation>
@@ -7943,6 +7946,7 @@
 <translation id="7124712201233930202">不符合贵组织的政策</translation>
 <translation id="7125148293026877011">删除 Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">登录即可在所有设备上获取扩展程序等内容</translation>
 <translation id="7125932261198019860">请确保您的打印机与 Chromebook 连接到同一 Wi-Fi 网络，或者使用 USB 线。<ph name="LINK_BEGIN" />详细了解兼容性<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">下载记录</translation>
 <translation id="7130438335435247835">接入点名称 (APN)</translation>
@@ -8796,6 +8800,7 @@
 <translation id="7780992949171378848">向网站发送选择拒绝请求，以限制其使用您的数据</translation>
 <translation id="7782102568078991263">Google 无法提供其他任何建议</translation>
 <translation id="7782717250816686129">存储登录屏幕上的持久性数据，并将凭据插入到会话中。</translation>
+<translation id="7782885970382585765">登录即可在所有设备上获取阅读清单等内容</translation>
 <translation id="7784020347632229094">详细了解键盘快捷键</translation>
 <translation id="7784067724422331729">您计算机的安全设置阻止了此文件。</translation>
 <translation id="7784796923038949829">无法读取或更改网站的数据</translation>

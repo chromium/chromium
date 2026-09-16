@@ -94,6 +94,7 @@
 <translation id="1873233029667955273">Google Chrome nu este browserul prestabilit</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome nu este actualizat</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa extensiile și alte date de pe toate dispozitivele.</translation>
 <translation id="1880677175115548835">Selectează text</translation>
 <translation id="1896602904211344018">Descarcă aplicația Chrome.</translation>
 <translation id="1919130412786645364">Permite conectarea la Chrome</translation>
@@ -226,6 +227,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3112458742631356345">Chrome a blocat descărcarea, deoarece fișierul nu este descărcat frecvent și ar putea fi periculos</translation>
 <translation id="3119573284443908657">Chrome a blocat descărcarea deoarece fișierul arhivă include alte fișiere care pot ascunde programe malware</translation>
 <translation id="3124332159330678621">Personalizează Chrome pentru a-i oferi browserului un nou aspect</translation>
+<translation id="3125851611828811913">Caută și pune întrebări de oriunde, chiar dacă Chrome este minimizat. Permite ca Chrome să ruleze în fundal.</translation>
 <translation id="3130333203120345554">Căutare nouă</translation>
 <translation id="3135560418014806498">Adaugă un profil Chrome</translation>
 <translation id="3137969841538672700">Trage pentru a căuta</translation>
@@ -383,6 +385,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4793679854893018356">Află cum te protejează Chrome</translation>
 <translation id="4799870290441980300">Activează funcții suplimentare ca să oferi cele mai eficiente protecții din Chrome</translation>
 <translation id="4828579605166583682">Google Chrome încearcă să înlocuiască parolele existente. Introdu parola Windows pentru a permite acest lucru.</translation>
+<translation id="4836321460899997044">Profil Chrome</translation>
 <translation id="4842397268809523050">ChromeOS Flex nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> s-a conectat deja.  Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chrome din Setări de sistem</translation>
@@ -496,6 +499,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6014316319780893079">Cu <ph name="BEGIN_LINK" />instrumentele din Chrome<ph name="END_LINK" />, navighezi în siguranță și deții controlul</translation>
 <translation id="6018578474045062808">Încearcă Google Lens cu Chrome pe telefon.</translation>
 <translation id="6022659036123304283">Personalizează Chrome</translation>
+<translation id="6024930613143833266">Caută cu Chrome de oriunde</translation>
 <translation id="6025087594896450715">Google Chrome va reporni în <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="604424701295382420">S-a fixat! Poți să accesezi din nou Google Lens folosind noul buton din bara de instrumente</translation>
@@ -540,6 +544,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6334815226785304306">Setează Google Chrome ca browser prestabilit și fixează-l în bara de activități</translation>
 <translation id="63540178978900677">Chrome nu mai este browserul prestabilit. Setezi Chrome ca browser prestabilit?</translation>
 <translation id="6360449101159168105">Cât timp fila a fost inactivă, memoria a fost eliberată pentru a menține viteza ridicată a browserului Chrome. Poți alege ca acest site să nu fie mereu inactiv.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa lista de lecturi și alte date de pe toate dispozitivele.</translation>
 <translation id="6388799252195623474">ajută-mă cu asta</translation>
 <translation id="6412673304250309937">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Organizația ta închide automat Chrome dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Organizația ta închide automat Chrome dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Organizația ta închide automat Chrome dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
@@ -585,6 +590,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6750954913813541382">Pentru a corecta erorile de scriere, Chrome trimite la Google textul pe care îl introduci în browser</translation>
 <translation id="6760235774835597023">Accelerează site-urile cu motorul V8 din Chrome, dar reduce ușor rezistența Chrome la atacuri. Setarea este activată.</translation>
 <translation id="677276454032249905">Ieși din Chrome oricum?</translation>
+<translation id="6777654166489463890">Întreabă despre conținut din afara browserului Chrome, cum ar fi o altă aplicație sau un alt fișier pe care l-ai deschis</translation>
 <translation id="6794858689789885890">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chrome</translation>
 <translation id="6800285125190089494">Conectează-te mai rapid la site-uri folosind parolele salvate pentru Chrome pe iOS</translation>
 <translation id="6831043979455480757">Tradu</translation>
@@ -637,6 +643,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7285990705317078173">Descarcă Chrome pe telefon pentru a urmări prețurile și a primi alerte atunci când scade prețul pe orice site</translation>
 <translation id="7288567540154601580">File și extensii</translation>
 <translation id="7296210096911315575">Informații importante cu privire la folosire și siguranță</translation>
+<translation id="7299899569525778554">Caută de pe computer</translation>
 <translation id="7302361266603927550">Unele date Chrome nu au fost salvate încă în Contul Google. Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="7306401458628386911">Începe să navighezi instantaneu: Chrome se poate lansa acum când pornește Windows.</translation>
 <translation id="7308322188646931570">Pentru a descărca fișiere, Chrome necesită acces la stocare</translation>
@@ -700,6 +707,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7845233973568007926">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești computerul.</translation>
 <translation id="7847170235260850604">Lansează Chrome când pornește Windows</translation>
 <translation id="7849037457735762883">Continuă de unde ai rămas: Chrome poate restabili filele de fiecare dată când repornești. Pentru a activa opțiunea, accesează</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa extensiile și alte date de pe <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Ca să-ți folosești parolele salvate, urmează codul QR, descarcă browserul Chrome pentru iOS și conectează-te la Contul Google.</translation>
 <translation id="7872446069773932638">Se descarcă… Timp rămas: <ph name="SECONDS" /> secunde</translation>
 <translation id="7886087451482920026">Selectează text cu Google Lens</translation>
@@ -797,6 +805,7 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="8679801911857917785">Stabilește și ce pagină se afișează când porniți Chrome.</translation>
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8712767363896337380">Actualizarea este aproape gata! Relansează Chrome pentru a finaliza actualizarea.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa lista de lecturi și alte date de pe <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Deconectează-te de la Chrome</translation>
 <translation id="873133009373065397">Google Chrome nu poate determina sau seta browserul prestabilit</translation>
 <translation id="8747073452963259673">colțul din stânga jos al zonei de căutare: stânga <ph name="LEFT" /> %, jos <ph name="BOTTOM" /> %</translation>

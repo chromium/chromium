@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">Kliknite <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> u obavijesti Windowsa da biste prikvačili Chromium na traku sa zadacima radi brzog pristupa.</translation>
 <translation id="1808667845054772817">Ponovo instaliraj Chromium</translation>
 <translation id="1820835682567584003">Chromium pokušava sljedeće: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> već je prijavljen/a. Da bi vaše pregledavanje ostalo odvojeno, prijavite se na Chromium na svojem profilu kao <ph name="USER_EMAIL_ADDRESS" />. Moći ćete pristupati svojim proširenjima i drugim podacima s uređaja <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Sljedeći put kad otvorite Chromium na uređaju <ph name="DEVICE_TYPE" />, prikazat će vam se upit za upotrebu Googleovog upravitelja zaporki.</translation>
 <translation id="1838374766361614909">Brisanje pretraživanja</translation>
 <translation id="18552579716432081">Da biste podatke o pregledavanju izbrisali samo s ovog uređaja, a zadržali ih na svojem Google računu, <ph name="BEGIN_LINK" />odjavite se iz Chromiuma<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">Čekanje na instaliranje...</translation>
 <translation id="3045032126857188731">Jezik prijevoda: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Zatvori dijalog povratnih informacija</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> već je prijavljen/a. Da bi vaše pregledavanje ostalo odvojeno, prijavite se na Chromium na svojem profilu kao <ph name="USER_EMAIL_ADDRESS" />. Moći ćete pristupati svojem popisu za čitanje i drugim podacima s uređaja <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Ostali profili na Chromiumu</translation>
 <translation id="3068290154869370196">Proširenja su programski dodaci koji vam omogućuju da prilagodite Chromium. Od organizacije do pojednostavljenja svakodnevnih zadataka, proširenja vam pomažu da Chromium prilagodite svojim potrebama.</translation>
 <translation id="3068515742935458733">Pomognite nam poboljšati Chromium šaljući izvješća o rušenju programa i <ph name="UMA_LINK" /> Googleu</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">P&amp;rilagodite Chromium</translation>
 <translation id="4148957013307229264">Instaliranje...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Prijava na mrežu – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> već je prijavljen/a. Da bi vaše pregledavanje ostalo odvojeno, prijavite se na Chromium na svojem profilu kao <ph name="USER_EMAIL_ADDRESS" />. Moći ćete pristupati svojem popisu za čitanje i drugim podacima na svim svojim uređajima.</translation>
 <translation id="421369550622382712">Otkrijte sjajne aplikacije, igre, proširenja i teme za Chromium.</translation>
 <translation id="4217080900579554343">Da biste imali ovo proširenje i druge mogućnosti na svim svojim računalima, prijavite se u Chromium</translation>
 <translation id="4217972271355023382">Za više sigurnosti online uz postavke koje su odabrali tvoji roditelji, prebaci se na profil u Chromiumu na koji si već prijavljen/prijavljena kao <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Otvorite pretraživanje pomoću Chromiuma</translation>
 <translation id="5383439451358640070">Saznajte zašto Chromium blokira neke datoteke</translation>
 <translation id="5386450000063123300">Ažuriranje Chromiuma (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> već je prijavljen/a. Da bi vaše pregledavanje ostalo odvojeno, prijavite se na Chromium na svojem profilu kao <ph name="USER_EMAIL_ADDRESS" />. Moći ćete pristupati svojim proširenjima i drugim podacima na svim svojim uređajima.</translation>
 <translation id="538767207339317086">Dopusti prijavu u Chromium</translation>
 <translation id="5405650547142096840">Uklanjanje iz Chromiuma</translation>
 <translation id="5424544524441439284">Slabi izvedbu, ali Chromium čini otpornijim na napade</translation>

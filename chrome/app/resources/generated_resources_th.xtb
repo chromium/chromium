@@ -676,6 +676,7 @@
 <translation id="1523978563989812243">เครื่องมือการอ่านออกเสียงข้อความ</translation>
 <translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>
 <translation id="1525740877599838384">ใช้ Wi-Fi เพื่อระบุตำแหน่งเท่านั้น</translation>
+<translation id="1526274304859009691">ลงชื่อเข้าใช้เพื่อรับส่วนขยายและอื่นๆ จาก <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">เอกสารที่ไม่ระบุชื่อ</translation>
 <translation id="1527336312600375509">อัตราการรีเฟรชจอภาพ</translation>
 <translation id="152913213824448541">รายชื่อติดต่อของการแชร์ใกล้เคียง</translation>
@@ -6368,6 +6369,7 @@
 <translation id="5902400038326841449">เครื่องมือจัดการรหัสผ่านบน Google ปิดอยู่</translation>
 <translation id="5902892210366342391">ดูคำเตือนก่อนไปยังเว็บไซต์ที่ไม่ปลอดภัยในโหมดไม่ระบุตัวตน</translation>
 <translation id="5906457147959147328">อนุญาตให้เว็บไซต์นี้ใช้ตัวระบุเพื่อเล่นเนื้อหาที่มีการคุ้มครองต่อไป</translation>
+<translation id="5906549184882174190">แยกต่างหาก</translation>
 <translation id="5906655207909574370">การอัปเดตใกล้จะเสร็จเรียบร้อยแล้ว รีสตาร์ทอุปกรณ์เพื่อให้การอัปเดตเสร็จสิ้น</translation>
 <translation id="5906732635754427568">ระบบจะนำข้อมูลที่เชื่อมโยงกับแอปนี้ออกจากอุปกรณ์เครื่องนี้</translation>
 <translation id="5906974869830879618">โปรดป้อน PIN</translation>
@@ -6592,6 +6594,7 @@
 <translation id="6088475950266477163">การตั้งค่า</translation>
 <translation id="608912389580139775">คลิกไอคอนบุ๊กมาร์กเพื่อเพิ่มหน้านี้ลงในเรื่องรออ่าน</translation>
 <translation id="6089289670051481345">ตาบอดสีน้ำเงิน</translation>
+<translation id="6090068946774422711">ลงชื่อเข้าใช้เพื่อรับเรื่องรออ่านและอื่นๆ จาก <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">คำเตือนที่ถูกปิด</translation>
 <translation id="609174145569509836">ล้างพื้นที่เก็บข้อมูล</translation>
 <translation id="6091761513005122595">ต่อเชื่อมพื้นที่แชร์สำเร็จแล้ว</translation>
@@ -7944,6 +7947,7 @@
 <translation id="7124712201233930202">ไม่เป็นไปตามนโยบายขององค์กร</translation>
 <translation id="7125148293026877011">ลบ Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">ลงชื่อเข้าใช้เพื่อรับส่วนขยายและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="7125932261198019860">ตรวจสอบว่าเครื่องพิมพ์เชื่อมต่อเครือข่าย Wi-Fi เดียวกันกับ Chromebook หรือใช้สาย USB <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติมเกี่ยวกับความสามารถในการใช้งานร่วมกัน<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ประวัติการดาวน์โหลด</translation>
 <translation id="7130438335435247835">จุดเข้าใช้งาน (APN)</translation>
@@ -8796,6 +8800,7 @@
 <translation id="7780992949171378848">ส่งคำขอเลือกไม่ใช้ไปยังเว็บไซต์ที่เกี่ยวข้องกับการใช้ข้อมูลของคุณ</translation>
 <translation id="7782102568078991263">ไม่มีคำแนะนำเพิ่มเติมจาก Google</translation>
 <translation id="7782717250816686129">บันทึกข้อมูลที่ใช้ตลอดในหน้าจอการเข้าสู่ระบบ และแทรกข้อมูลเข้าสู่ระบบลงในเซสชัน</translation>
+<translation id="7782885970382585765">ลงชื่อเข้าใช้เพื่อรับเรื่องรออ่านและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="7784020347632229094">ดูข้อมูลเพิ่มเติมเกี่ยวกับแป้นพิมพ์ลัด</translation>
 <translation id="7784067724422331729">การตั้งค่าความปลอดภัยในคอมพิวเตอร์ของคุณบล็อกไฟล์นี้</translation>
 <translation id="7784796923038949829">อ่านหรือเปลี่ยนแปลงข้อมูลของเว็บไซต์ไม่ได้</translation>

@@ -69,6 +69,7 @@
 <translation id="1793486931176048546">在 Windows 通知中點擊 [是]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />，即可將 Chromium 固定至工作列，以便快速存取</translation>
 <translation id="1808667845054772817">重新安裝 Chromium</translation>
 <translation id="1820835682567584003">Chromium 正在嘗試<ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chromium 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可取用<ph name="DEVICE" />上的擴充程式及其他內容。</translation>
 <translation id="183031085822326697">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chromium 時，系統會提示你使用「Google 密碼管理工具」。</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="18552579716432081">如果只刪除此裝置上的瀏覽資料，並保留 Google 帳戶中的資料，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>
@@ -191,6 +192,7 @@
 <translation id="3038232873781883849">正在等待安裝…</translation>
 <translation id="3045032126857188731">譯文語言：<ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">閂埋意見反映對話框</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chromium 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可取用<ph name="DEVICE" />上的閱讀清單及其他內容。</translation>
 <translation id="3068187312562070417">其他 Chromium 設定檔</translation>
 <translation id="3068290154869370196">擴充程式是可讓你自訂 Chromium 的外掛程式，從保持條理以至簡化日常工作，營造屬於你的 Chromium 體驗。</translation>
 <translation id="3068515742935458733">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
@@ -292,6 +294,7 @@
 <translation id="4147856324248078748">自訂 Chromium</translation>
 <translation id="4148957013307229264">安裝中…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 網絡登入 - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chromium 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可在你的所有裝置上取用閱讀清單及其他內容。</translation>
 <translation id="421369550622382712">為您的 Chromium 探索各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>
 <translation id="4217080900579554343">如要在所有電腦上使用此擴充程式和其他擴充程式，請登入 Chromium</translation>
 <translation id="4217972271355023382">如要按家長所選設定加強網上安全，請切換至你以 <ph name="USER_EMAIL_ADDRESS" /> 登入的 Chromium 設定檔</translation>
@@ -391,6 +394,7 @@
 <translation id="5382964351116519680">開啟 Chromium 搜尋功能</translation>
 <translation id="5383439451358640070">瞭解 Chromium 封鎖部分檔案的原因</translation>
 <translation id="5386450000063123300">正在更新 Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chromium 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可在你的所有裝置上取用擴充程式及其他內容。</translation>
 <translation id="538767207339317086">允許登入 Chromium</translation>
 <translation id="5405650547142096840">從 Chromium 中移除</translation>
 <translation id="5424544524441439284">降低效能但提高 Chromium 防範攻擊的能力</translation>

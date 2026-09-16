@@ -677,6 +677,7 @@
 <translation id="1523978563989812243">টেক্সট-টু-স্পিচ ইঞ্জিন</translation>
 <translation id="1524563461097350801">না থাক</translation>
 <translation id="1525740877599838384">লোকেশন নির্ধারণ করার জন্য ওয়াই-ফাই ব্যবহার করুন</translation>
+<translation id="1526274304859009691"><ph name="DEVICE" /> থেকে আপনার এক্সটেনশন ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="1526560967942511387">শিরোনামহীন ডকুমেন্ট</translation>
 <translation id="1527336312600375509">মনিটরের রিফ্রেশ রেট</translation>
 <translation id="152913213824448541">'নিয়ারবাই শেয়ার'-এর মাধ্যমে ম্যানেজ করা পরিচিতি</translation>
@@ -6388,6 +6389,7 @@
 <translation id="5902400038326841449">Google Password Manager বন্ধ করা আছে</translation>
 <translation id="5902892210366342391">ছদ্মবেশী মোডে অসুরক্ষিত সাইটে যাওয়ার আগে সতর্কতা দেখুন</translation>
 <translation id="5906457147959147328">সুরক্ষিত কন্টেন্ট চালানোর জন্য এই সাইটকে শনাক্তকারী ব্যবহার করার অনুমোদন দেওয়ার প্রসেস চালিয়ে যান</translation>
+<translation id="5906549184882174190">আইসোলেটেড</translation>
 <translation id="5906655207909574370">প্রায় আপ-টু-ডেট হয়েছে! আপডেট শেষ করতে আপনার ডিভাইস আবার চালু করুন।</translation>
 <translation id="5906732635754427568">এই অ্যাপ্লিকেশান সংশ্লিষ্ট ডেটা এই ডিভাইস থেকে সরিয়ে ফেলা হবে।</translation>
 <translation id="5906974869830879618">পিন নম্বর লিখুন</translation>
@@ -6613,6 +6615,7 @@
 <translation id="6088475950266477163">সেটিংস</translation>
 <translation id="608912389580139775">আপনার পড়ার তালিকায় এই পৃষ্ঠাটি যোগ করতে বুকমার্ক আইকনে ক্লিক করুন</translation>
 <translation id="6089289670051481345">ট্রিট্যানোম্যালি</translation>
+<translation id="6090068946774422711"><ph name="DEVICE" /> থেকে আপনার পড়ার তালিকা ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="6090760257419195752">বাতিল করা সতর্কতা</translation>
 <translation id="609174145569509836">স্টোরেজ খালি করুন</translation>
 <translation id="6091761513005122595">শেয়ার মাউন্ট করা হয়েছে।</translation>
@@ -7967,6 +7970,7 @@
 <translation id="7124712201233930202">আপনার সংস্থার সেট করা নীতি পূরণ করা হয়নি</translation>
 <translation id="7125148293026877011">Crostini মুছুন</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">আপনার সব ডিভাইসে এক্সটেনশন ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="7125932261198019860">আপনার Chromebook-এর মতো প্রিন্টারও একই ওয়াই-ফাই নেটওয়ার্কের সাথে কানেক্ট করা আছে কিনা তা নিশ্চিত করুন অথবা ইউএসবি কেবেল ব্যবহার করুন। <ph name="LINK_BEGIN" />কম্প্যাটিবিলিটি সম্পর্কে আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ইতিহাস ডাউনলোড করুন</translation>
 <translation id="7130438335435247835">অ্যাক্সেস পয়েন্ট নাম (APN)</translation>
@@ -8820,6 +8824,7 @@
 <translation id="7780992949171378848">আপনার ডেটা ব্যবহার সম্পর্কে সাইটগুলিতে অপ্ট-আউট করার অনুরোধ পাঠান</translation>
 <translation id="7782102568078991263">Google থেকে আর কোনো পরামর্শ নেই</translation>
 <translation id="7782717250816686129">লগ-ইন স্ক্রিনে বারবার ব্যবহার করা ডেটা স্টোর করুন এবং সেশনে ক্রেডেনশিয়াল যোগ করুন।</translation>
+<translation id="7782885970382585765">আপনার সব ডিভাইসে পড়ার তালিকা ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="7784020347632229094">কীবোর্ড শর্টকাট সম্পর্কে আরও জানুন</translation>
 <translation id="7784067724422331729">আপনার কম্পিউটারের সুরক্ষা সেটিংস এই ফাইলটি অবরুদ্ধ করেছে৷</translation>
 <translation id="7784796923038949829">সাইটের ডেটা পড়তে বা পরিবর্তন করতে পারে না</translation>

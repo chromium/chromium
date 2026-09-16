@@ -882,6 +882,7 @@
 <translation id="2467272921457885625">ડિવાઇસના હાર્ડવેરની વિશિષ્ટતાઓ અને આંકડાઓ, જેમ કે CPU/RAMના ઉપયોગનો ઇતિહાસ</translation>
 <translation id="2467421459221956357">સેન્સરનો ઉપયોગ કરીએ?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />નેટવર્ક ડાયગ્નોસ્ટિક્સ ચલાવી રહ્યાં છે<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">ઑર્ડર</translation>
 <translation id="2469153820345007638">1-થી-N સુધીનો ક્રમ</translation>
 <translation id="24699311393038040">પેપર (કોટેડ)</translation>
 <translation id="2471632709106952369">સરખામણી ટેબલ</translation>
@@ -1428,6 +1429,7 @@
 <translation id="3432601291244612633">પેજ બંધ કરો</translation>
 <translation id="3434025015623587566">Google Password Managerને વધુ ઍક્સેસની જરૂર છે</translation>
 <translation id="343474037147570563">તમે જે ફાઇલો અપલોડ કરો અથવા જોડો તેને Google Cloud અથવા ત્રીજા પક્ષોને વિશ્લેષણ માટે મોકલવામાં આવે છે. ઉદાહરણ તરીકે, તેમને કદાચ સંવેદનશીલ વ્યક્તિગત ડેટા અથવા માલવેર માટે સ્કૅન કરવામાં આવી શકે છે અને કંપનીની પૉલિસીઓના આધારે સ્ટોર કરવામાં આવી શકે છે તથા તમારા ઍડમિનિસ્ટ્રેટર તેને જોઈ શકે છે.</translation>
+<translation id="3435267628744367511">ટૅબ સ્વિચ કર્યા વિના માહિતી શોધવા અને ભરવા માટે કોઈપણ ફોર્મમાં બે વાર Ctrl દબાવો</translation>
 <translation id="3435557549311968410">સતત (નાનો)</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
 <translation id="3436125638121079308">આ થ્રેડમાં બહેતર જવાબો મેળવવા માટે સંબંધિત ટૅબ ઑટોમૅટિક રીતે શેર કરીએ?</translation>
@@ -2220,6 +2222,7 @@
 <translation id="4750917950439032686">તમારી માહિતી (ઉદાહરણ તરીકે, પાસવર્ડ્સ અથવા ક્રેડિટ કાર્ડ નંબર્સ) ખાનગી હોય છે જ્યારે તે આ સાઇટ પર મોકલવામાં આવે.</translation>
 <translation id="4754461935447132332">અસુરક્ષિત સાઇટમાં મંજૂરી આપવામાં આવતી નથી</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">તમારી સાચવેલી ઑફરો જોવા અને ભરવા માટે પ્રોમો કોડનું ફીલ્ડ પસંદ કરો</translation>
 <translation id="4757740693289347881">કોડ અમાન્ય છે</translation>
 <translation id="4757993714154412917">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો છે. તમારા એકાઉન્ટ સુરક્ષિત રાખવા માટે, Chromium તમારા સાચવેલા પાસવર્ડ હમણાં જ ચેક કરવાનો સુઝાવ આપે છે.</translation>
 <translation id="4758311279753947758">સંપર્ક માહિતી ઉમેરો</translation>
@@ -2894,6 +2897,7 @@
 <translation id="5884465125445718607">એન્વલપ ચાઇનીઝ #6</translation>
 <translation id="5887400589839399685">કાર્ડ સાચવ્યું</translation>
 <translation id="5887687176710214216">છેલ્લે કાલે મુલાકાત લીધી</translation>
+<translation id="5887791684215121787">ટૅબ સ્વિચ કર્યા વિના માહિતી શોધવા અને ભરવા માટે કોઈપણ ફોર્મમાં ⌘ ⌘ દબાવો</translation>
 <translation id="5889251770650310375">તમારા અન્ય ડિવાઇસમાંનો ઇતિહાસ મેળવવા માટે, આ તમે જ છો તેની ચકાસણી કરો તથા તમારો ઇતિહાસ અને ટૅબ સિંક કરો. તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="5895187275912066135">ના રોજ રજૂ કરાયું</translation>
@@ -3152,6 +3156,7 @@
 <translation id="6319672966240656136">આ સાઇટ બ્લૉક થયેલી રહેશે કારણ કે તમે Googleના અદ્યતન સુરક્ષા પ્રોગ્રામ હેઠળ છો. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6321917430147971392">તમારા DNS સેટિંગ તપાસો</translation>
 <translation id="6322182122604171028">Windows Helloનો ઉપયોગ કરી શક્યાં નથી</translation>
+<translation id="6326175484149238433">Chrome માંથી દૂર કરો</translation>
 <translation id="6326947323444967009">iOS સેટિંગમાં Chromeને સિસ્ટમના ડિફૉલ્ટ બ્રાઉઝર તરીકે સેટ કરો</translation>
 <translation id="6328639280570009161">નેટવર્ક પૂર્વાનુમાનને અક્ષમ કરવાનો પ્રયાસ કરો</translation>
 <translation id="6329742260390895689">તમારી માહિતી ઑટોમૅટિક રીતે ભરવા માટે, Walletના સેટિંગમાં "સમગ્ર Google પર પાસનો ઉપયોગ કરો" સુવિધા ચાલુ કરો</translation>
@@ -3844,6 +3849,7 @@
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516123895971374904">આ વખતે VRને મંજૂરી આપવામાં આવી</translation>
+<translation id="7517198908921983825">Gemini દ્વારા સૂચિત · <ph name="SOURCES" /></translation>
 <translation id="7517414872996418597">એન્વલપ C10</translation>
 <translation id="7518003948725431193">વેબ ઍડ્રેસ માટે કોઈ વેબપેજ મળ્યું નથી: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>

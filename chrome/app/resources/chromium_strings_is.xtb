@@ -70,6 +70,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1793486931176048546">Smelltu á <ph name="BEGIN_BOLD" />Já<ph name="END_BOLD" /> í Windows-tilkynningunni til að festa Chromium við forritastikuna þína til að auðvelda aðgang.</translation>
 <translation id="1808667845054772817">Setja Chromium upp aftur</translation>
 <translation id="1820835682567584003">Chromium er að reyna að <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chromium með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig viðbæturnar þínar og fleira úr <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Næst þegar þú opnar Chromium í <ph name="DEVICE_TYPE" /> muntu sjá ábendingu um að nota Google-aðgangsorðastjórnun.</translation>
 <translation id="1838374766361614909">Hreinsa leit</translation>
 <translation id="18552579716432081"><ph name="BEGIN_LINK" />Skráðu þig út af Chromium<ph name="END_LINK" /> til að eyða vefskoðunargögnum aðeins úr þessu tæki en ekki af Google-reikningnum þínum.</translation>
@@ -192,6 +193,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3038232873781883849">Bíður eftir uppsetningu...</translation>
 <translation id="3045032126857188731">Þýtt tungumál: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Loka ábendingaglugga</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chromium með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig leslistann þinn og fleira úr <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Aðrir Chromium-prófílar</translation>
 <translation id="3068290154869370196">Viðbætur gera þér kleift að sérsníða Chromium. Viðbætur hjálpa þér að gera Chromium að þínum eigin vafra, allt frá því að halda skipulagi til að einfalda dagleg verkefni.</translation>
 <translation id="3068515742935458733">Hjálpaðu til við að bæta Chromium með því að senda tilkynningar um hrun og <ph name="UMA_LINK" /> til Google</translation>
@@ -293,6 +295,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4147856324248078748">Sérsníddu Chromium-vafrann þinn</translation>
 <translation id="4148957013307229264">Setur upp...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – innskráning á net – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chromium með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig leslistann þinn og fleira í öllum tækjunum þínum.</translation>
 <translation id="421369550622382712">Uppgötvaðu frábær forrit, leiki, viðbætur og þemu fyrir Chromium.</translation>
 <translation id="4217080900579554343">Skráðu þig inn í Chromium til að fá þessa viðbót og fleira í öllum tölvunum þínum</translation>
 <translation id="4217972271355023382">Til að vera öruggari á netinu með vali foreldra þinna skaltu skipta yfir í Chromium-prófílinn þinn þar sem þú ert þegar innskráð(ur) sem <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -392,6 +395,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="5382964351116519680">Opna leit með Chromium</translation>
 <translation id="5383439451358640070">Kynntu þér hvers vegna Chromium lokar á sumar skrár</translation>
 <translation id="5386450000063123300">Uppfærir Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chromium með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig viðbæturnar þínar og fleira í öllum tækjunum þínum.</translation>
 <translation id="538767207339317086">Leyfa innskráningu í Chromium</translation>
 <translation id="5405650547142096840">Fjarlægja úr Chromium</translation>
 <translation id="5424544524441439284">Dregur úr afköstum en auðveldar Chromium að verjast árásum</translation>

@@ -5390,6 +5390,7 @@ Dit beleid heeft geen effect als je het toepast, leeg laat of niet instelt.</tra
 <translation id="4515404363392014383">Safe Browsing voor vertrouwde bronnen aanzetten</translation>
 <translation id="4517327050150780380">Instellingen voor de functie Help me met lezen</translation>
 <translation id="4518251772179446575">Goedkeuring vragen wanneer een site de fysieke locatie van gebruikers wil bijhouden</translation>
+<translation id="4521106598519506386">Vastzetten van tabbladen op de achtergrond staat aan</translation>
 <translation id="4521193243799782295">Tijdens het inloggen kan <ph name="PRODUCT_OS_NAME" /> de verificatie uitvoeren met behulp van een server (online) of door gebruik te maken van een gecachet wachtwoord (offline).
 
       Als dit beleid is ingesteld met een waarde van -1, dwingt dit beleid geen online verificatie af en kan de gebruiker offline verificatie gebruiken totdat een andere reden dan dit beleid de gebruiker dwingt online in te loggen. Als dit beleid is ingesteld met een waarde van 0, is online inloggen altijd vereist. Als dit beleid met een andere waarde is ingesteld, bepaalt het de tijdsduur na de laatste online verificatie waarna de gebruiker opnieuw online verificatie moet gebruiken om in te loggen.
@@ -8592,6 +8593,7 @@ Als je het beleid niet toepast of niet instelt, bepaalt CNAME-lookup de canoniek
 <translation id="6424486395812679373">Safe Browsing-checks uitvoeren op alle gedownloade bestanden</translation>
 <translation id="6426899507714989471">Grafische versnelling uitzetten</translation>
 <translation id="6431446111529802555">Europa.</translation>
+<translation id="6431778298276599807">Vastzetten van tabbladen op de achtergrond aanzetten</translation>
 <translation id="6433697627431665375">Voorkomen dat <ph name="PRODUCT_NAME" />-gegevens in back-ups worden opgenomen</translation>
 <translation id="6436052172226685535">Standaardgedrag voor LBS.</translation>
 <translation id="6438472072089952201"><ph name="PRODUCT_NAME" /> probeert waar mogelijk bepaalde navigatie te upgraden van HTTP naar HTTPS. Je kunt dit beleid gebruiken om dit gedrag uit te zetten. Als je dit instelt op True of niet instelt, wordt deze functie standaard aangezet.
@@ -10641,6 +10643,7 @@ Dit beleid kan worden overschreven voor specifieke geïsoleerde web-app-oorspron
 <translation id="7696412993033202071">Externe authenticator-app lanceert URL's</translation>
 <translation id="7696534428021833264">Kaart SharePoint- en OneDrive-bestand aanzetten op de pagina Nieuw tabblad</translation>
 <translation id="7699644797467448158">window.name wissen als de navigatie op het hoogste niveau is, cross-site is en van BrowsingContextGroup wisselt.</translation>
+<translation id="7700606318567398251">Gebruik van <ph name="CHROME_DEVTOOLS_NAME" /> niet toestaan</translation>
 <translation id="7701341006446125684">Formaat van cache voor apps en extensies instellen (in bytes)</translation>
 <translation id="7701825382808690457">Standaardwaarde gebruiken voor post-quantum sleutelovereenkomst voor WebRTC</translation>
 <translation id="7703041979684393741">Verzamelen van WebRTC-gebeurtenislogboeken van Google-services niet toestaan</translation>

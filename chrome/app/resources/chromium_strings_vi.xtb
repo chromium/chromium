@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">Nhấp vào <ph name="BEGIN_BOLD" />Có<ph name="END_BOLD" /> trong thông báo của Windows để ghim Chromium vào thanh tác vụ giúp truy cập nhanh.</translation>
 <translation id="1808667845054772817">Cài đặt lại Chromium</translation>
 <translation id="1820835682567584003">Chromium đang cố gắng <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chromium bằng hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể sử dụng các tiện ích và nhiều nội dung khác trên <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Lần tới, khi mở Chromium trên <ph name="DEVICE_TYPE" />, bạn sẽ thấy lời nhắc sử dụng Trình quản lý mật khẩu của Google.</translation>
 <translation id="1838374766361614909">Xóa tìm kiếm</translation>
 <translation id="18552579716432081">Để xoá dữ liệu duyệt web chỉ trên thiết bị này mà không xoá trong Tài khoản Google, hãy <ph name="BEGIN_LINK" />đăng xuất khỏi Chromium<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">Đang chờ cài đặt...</translation>
 <translation id="3045032126857188731">Ngôn ngữ dịch: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Đóng hộp thoại phản hồi</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chromium bằng hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể sử dụng danh sách đọc và nhiều nội dung khác trên <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Các hồ sơ khác trên Chromium</translation>
 <translation id="3068290154869370196">Tiện ích là các phần bổ sung giúp bạn tuỳ chỉnh Chromium. Từ sắp xếp khoa học đến đơn giản hoá các công việc hằng ngày, tiện ích giúp bạn biến Chromium thành trình duyệt của riêng mình.</translation>
 <translation id="3068515742935458733">Giúp cải thiện Chromium bằng cách gửi báo cáo sự cố và <ph name="UMA_LINK" /> tới Google</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">Tuỳ chỉnh Chromium</translation>
 <translation id="4148957013307229264">Đang cài đặt...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Đăng nhập vào mạng – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chromium bằng hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể sử dụng danh sách đọc và nhiều nội dung khác trên mọi thiết bị của mình.</translation>
 <translation id="421369550622382712">Khám phá các ứng dụng, trò chơi, tiện ích và chủ đề tuyệt vời cho Chromium.</translation>
 <translation id="4217080900579554343">Để sử dụng tiện ích này và các tiện ích khác trên tất cả máy tính của bạn, hãy đăng nhập vào Chromium</translation>
 <translation id="4217972271355023382">Để giúp bạn an toàn hơn trên mạng với các lựa chọn của cha mẹ, hãy chuyển sang hồ sơ Chromium mà bạn đã đăng nhập bằng <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Mở tính năng tìm kiếm bằng Chromium</translation>
 <translation id="5383439451358640070">Tìm hiểu lý do Chromium chặn một số tệp</translation>
 <translation id="5386450000063123300">Đang cập nhật Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chromium bằng hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể sử dụng các tiện ích và nhiều nội dung khác trên mọi thiết bị của mình.</translation>
 <translation id="538767207339317086">Cho phép đăng nhập vào Chromium</translation>
 <translation id="5405650547142096840">Xóa khỏi Chromium</translation>
 <translation id="5424544524441439284">Làm giảm hiệu suất nhưng giúp Chromium tăng khả năng chống lại các cuộc tấn công</translation>

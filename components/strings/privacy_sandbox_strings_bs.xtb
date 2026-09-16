@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="1184166532603925201">Kada ste u anonimnom načinu rada, Chrome onemogućava web lokacijama da koriste kolačiće treće strane</translation>
+<translation id="1365023215312302966">Web-lokacije ne mogu upotrebljavati kolačiće trećih strana za personalizaciju sadržaja i oglasa te da bi saznale više o radnjama koje poduzimate na drugim web-lokacijama</translation>
 <translation id="1569440020357229235">Kada ste u anonimnom načinu rada, web lokacije ne mogu koristiti kolačiće treće strane. Ako web lokacija koja se oslanja na te kolačiće ne funkcionira, <ph name="BEGIN_LINK" />pokušajte dati toj web lokaciji privremeni pristup kolačićima treće strane<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Funkcije na nekim web lokacijama možda neće funkcionirati</translation>
 <translation id="2183376768278472507">Ako web lokacija ne funkcionira prema očekivanju, možete pokušati dozvoliti kolačiće treće strane za određenu web lokaciju koju posjećujete</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
+<translation id="2360633687155619995">Web-lokacije ne mogu upotrebljavati kolačiće trećih strana za personalizaciju sadržaja i oglasa te da bi saznale više o radnjama koje poduzimate na drugim web-lokacijama. Neke značajke web-lokacije možda neće funkcionirati u skladu s očekivanjima.</translation>
 <translation id="2496115946829713659">Web lokacije mogu koristiti kolačiće treće strane da personaliziraju sadržaj i oglase te saznaju više o radnjama koje poduzimate na drugim web lokacijama</translation>
 <translation id="3045333309254072201">Kada ste u anonimnom načinu rada, web lokacije ne mogu koristiti kolačiće treće strane. Ako web lokacija koja se oslanja na te kolačiće ne funkcionira, <ph name="START_LINK" />pokušajte dati toj web lokaciji privremeni pristup kolačićima treće strane<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Web lokacije koje se oslanjanje na kolačiće treće strane trebale bi funkcionirati prema očekivanju</translation>

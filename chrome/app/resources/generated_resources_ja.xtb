@@ -676,6 +676,7 @@
 <translation id="1523978563989812243">テキスト読み上げエンジン</translation>
 <translation id="1524563461097350801">スキップ</translation>
 <translation id="1525740877599838384">Wi-Fi のみを使用して現在地を特定する</translation>
+<translation id="1526274304859009691">ログインすると、<ph name="DEVICE" /> の拡張機能などを使用できます</translation>
 <translation id="1526560967942511387">無題のドキュメント</translation>
 <translation id="1527336312600375509">モニターのリフレッシュ レート</translation>
 <translation id="152913213824448541">ニアバイシェアの連絡先</translation>
@@ -6367,6 +6368,7 @@
 <translation id="5902400038326841449">Google パスワード マネージャーはオフになっています</translation>
 <translation id="5902892210366342391">シークレット モードで安全でないサイトにアクセスする前に警告を表示する</translation>
 <translation id="5906457147959147328">このサイトによる識別子の使用と保護されたコンテンツの再生を引き続き許可する</translation>
+<translation id="5906549184882174190">アイソレート</translation>
 <translation id="5906655207909574370">デバイスを再起動して更新を完了してください。</translation>
 <translation id="5906732635754427568">このアプリに関連付けられているデータはこのデバイスから削除されます。</translation>
 <translation id="5906974869830879618">PIN を入力してください</translation>
@@ -6592,6 +6594,7 @@
 <translation id="6088475950266477163">設定(&amp;G)</translation>
 <translation id="608912389580139775">リーディング リストにこのページを追加するには、ブックマーク アイコンをクリックしてください</translation>
 <translation id="6089289670051481345">第三色弱</translation>
+<translation id="6090068946774422711">ログインすると、<ph name="DEVICE" /> のリーディング リストなどを使用できます</translation>
 <translation id="6090760257419195752">閉じた警告</translation>
 <translation id="609174145569509836">ストレージをクリーンアップ</translation>
 <translation id="6091761513005122595">共有フォルダが正常にマウントされました。</translation>
@@ -7944,6 +7947,7 @@
 <translation id="7124712201233930202">組織のポリシーに違反しています</translation>
 <translation id="7125148293026877011">Crostini を削除</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="MODIFIER_THREE" />+<ph name="MODIFIER_FOUR" />+<ph name="KEY" /></translation>
+<translation id="7125576351373654452">ログインすると、すべてのデバイスで同じ拡張機能などを使用できます</translation>
 <translation id="7125932261198019860">プリンタが Chromebook と同じ Wi-Fi ネットワークに接続されていることを確認するか、USB ケーブルを使用します。<ph name="LINK_BEGIN" />互換性について<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ダウンロード履歴</translation>
 <translation id="7130438335435247835">アクセス ポイント名（APN）</translation>
@@ -8416,7 +8420,7 @@
 <translation id="7479221278376295180">ストレージ使用状況</translation>
 <translation id="747981547666531654"><ph name="FIRST_DEVICE" /> および <ph name="SECOND_DEVICE" /> という名前の Bluetooth デバイスに接続しました</translation>
 <translation id="7480076846077373008">メッセージのその他の操作</translation>
-<translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
+<translation id="7481213027396403996">Chrome の最強の保護機能を利用</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7483732342458943943">このリンクは機能していません</translation>
 <translation id="7484645889979462775">このサイトでは保存しない</translation>
@@ -8796,6 +8800,7 @@
 <translation id="7780992949171378848">データの使用に関するオプトアウト リクエストをサイトに送信する</translation>
 <translation id="7782102568078991263">候補は以上です</translation>
 <translation id="7782717250816686129">ログイン画面での永続データの保存とセッションへの認証情報の入力。</translation>
+<translation id="7782885970382585765">ログインすると、すべてのデバイスで同じリーディング リストなどを使用できます</translation>
 <translation id="7784020347632229094">キーボード ショートカットの詳細</translation>
 <translation id="7784067724422331729">お使いのパソコンのセキュリティ設定により、このファイルはブロックされました。</translation>
 <translation id="7784796923038949829">サイトのデータを読み取れないか、変更できません</translation>

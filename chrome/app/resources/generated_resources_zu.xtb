@@ -677,6 +677,7 @@ Hlola amaphasiwedi wakho noma kunini ku-<ph name="GOOGLE_PASSWORD_MANAGER" />.</
 <translation id="1523978563989812243">Izinjini zokuguqula-umbhalo-ube-inkulumo</translation>
 <translation id="1524563461097350801">Cha, Ngiyabonga</translation>
 <translation id="1525740877599838384">Sebenzisa kuphela i-Wi-Fi ukuze unqume indawo</translation>
+<translation id="1526274304859009691">Ngena ngemvume ukuze uthole izandiso zakho nokuningi ku-<ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Idokhumenti engenasihloko</translation>
 <translation id="1527336312600375509">Gada inani lokuvuselelwa</translation>
 <translation id="152913213824448541">Thumela Eduze kwabathintwayo</translation>
@@ -6386,6 +6387,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5902400038326841449">Umphathi Wephasiwedi YeGoogle uvaliwe</translation>
 <translation id="5902892210366342391">Bona izexwayiso ngaphambi kokuya kumasayithi angavikelekile ngemodi ye-Incognito</translation>
 <translation id="5906457147959147328">Qhubeka nokuvumela le sayithi ukuba isebenzise izinkomba ukudlala ikhontenti evikelekile</translation>
+<translation id="5906549184882174190">Kuhlukanisiwe</translation>
 <translation id="5906655207909574370">Kucishe isesikhathini! Qala kabusha idivayisi yakho ukuze uqedele ukubuyekeza.</translation>
 <translation id="5906732635754427568">Idatha ephathelaniswe nalolu hlelo lokusebenza izosuswa kule divayisi.</translation>
 <translation id="5906974869830879618">Sicela ufake iphinikhodi</translation>
@@ -6611,6 +6613,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="6088475950266477163">Amasethingi</translation>
 <translation id="608912389580139775">Ukwengeza leli khasi kuhlu lwakho lokufunda, chofoza isithonjana sebhukhimakhi</translation>
 <translation id="6089289670051481345">I-Tritanomaly</translation>
+<translation id="6090068946774422711">Ngena ngemvume ukuze uthole uhlu lwakho lokufunda nokuningi ku-<ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Izexwayiso ezichithiwe</translation>
 <translation id="609174145569509836">Hlanza isitoreji</translation>
 <translation id="6091761513005122595">Yabelana ngokukhweziwe ngempumelelo.</translation>
@@ -7964,6 +7967,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7124712201233930202">Akuzange kuhlatshangezwane nezinqubomgomo zenhlangano yakho</translation>
 <translation id="7125148293026877011">Susa i-Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Ngena ngemvume ukuze uthole izandiso zakho nokuningi kuwo wonke amadivayisi</translation>
 <translation id="7125932261198019860">Qinisekisa ukuthi iphrinta yakho ixhunywe kunethiwekhi ye-Wi-Fi efanayo njenge-Chromebook yakho noma sebenzisa ikhebuli ye-USB. <ph name="LINK_BEGIN" />Funda kabanzi mayelana nokuhambelana<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Landa umlando</translation>
 <translation id="7130438335435247835">Igama lephoyinti lokufinyelela (APN)</translation>
@@ -8817,6 +8821,7 @@ Cindezela iswishi enikeziwe noma ukhiye ukuze ususe umsebenzi ozokwenziwa</trans
 <translation id="7780992949171378848">Thumela isicelo sokuphuma kumasayithi mayelana nokusetshenziswa kwedatha yakho</translation>
 <translation id="7782102568078991263">Azisekho iziphakamiso ezisuka ku-Google</translation>
 <translation id="7782717250816686129">Gcina idatha eqhubekayo kusikrini sokungena ngemvume uphinde ufake ukuqinisekisa kuseshini.</translation>
+<translation id="7782885970382585765">Ngena ngemvume ukuze uthole uhlu lwakho lokufunda nokuningi kuwo wonke amadivayisi akho</translation>
 <translation id="7784020347632229094">Funda kabanzi mayelana nesinqamuleli sekhibhodi</translation>
 <translation id="7784067724422331729">Izilungiselelo zezokuvikela kukhompyutha yakho zivimbele leli fayela.</translation>
 <translation id="7784796923038949829">Ayikwazi ukufunda noma ukuguqula idatha yesayithi</translation>

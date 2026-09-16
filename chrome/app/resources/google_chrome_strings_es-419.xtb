@@ -94,6 +94,7 @@
 <translation id="1873233029667955273">Google Chrome no es tu navegador predeterminado</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome no está actualizado.</translation>
+<translation id="1877067026701708502">Ya accedió <ph name="EXISTING_USER" />. Para mantener separados los datos de navegación, accede a Chrome en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tus extensiones y más en todos tus dispositivos.</translation>
 <translation id="1880677175115548835">Seleccionar texto</translation>
 <translation id="1896602904211344018">Instalar la app de Chrome</translation>
 <translation id="1919130412786645364">Permitir el acceso a Chrome</translation>
@@ -540,6 +541,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="6334815226785304306">Establece Google Chrome como navegador predeterminado y fíjalo a la barra de tareas</translation>
 <translation id="63540178978900677">Chrome ya no es tu navegador predeterminado. ¿Quieres establecer Chrome como el navegador predeterminado?</translation>
 <translation id="6360449101159168105">Mientras esta pestaña estaba inactiva, se liberó memoria para mantener Chrome rápido. Puedes elegir que este sitio nunca esté inactivo.</translation>
+<translation id="6362984640667950211">Ya accedió <ph name="EXISTING_USER" />. Para mantener separados los datos de navegación, accede a Chrome en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tu lista de lectura y más en todos tus dispositivos.</translation>
 <translation id="6388799252195623474">ayúdame con esto</translation>
 <translation id="6412673304250309937">Revisa las URL con una lista de sitios no seguros almacenados en Chrome. Si un sitio intenta robar tu contraseña, o cuando descargas un archivo dañino, es posible que Chrome también envíe las URL, con partes del contenido de la página, a la Navegación segura.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{La organización cierra Chrome automáticamente si no lo usas durante 1 minuto. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}other{La organización cierra Chrome automáticamente si no lo usas durante # minutos. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}}</translation>
@@ -700,6 +702,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="7845233973568007926">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu computadora antes de usarlo.</translation>
 <translation id="7847170235260850604">Ejecutar Chrome cuando se inicie Windows</translation>
 <translation id="7849037457735762883">Retoma tu actividad desde donde la dejaste: Chrome puede restablecer tus pestañas cada vez que reinicias. Para activar esta opción, ve a</translation>
+<translation id="7868731902994556427">Ya accedió <ph name="EXISTING_USER" />. Para mantener separados los datos de navegación, accede a Chrome en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tus extensiones y más de <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Para usar tus contraseñas guardadas, sigue el código QR, descarga Chrome para iOS y accede a tu Cuenta de Google</translation>
 <translation id="7872446069773932638">Descargando… Segundos restantes: <ph name="SECONDS" /></translation>
 <translation id="7886087451482920026">Selecciona texto con Google Lens</translation>
@@ -797,6 +800,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="8679801911857917785">También controla qué página se muestra al iniciar Chrome.</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8712767363896337380">Ya casi completas la actualización. Reinicia Chrome para completar la actualización.</translation>
+<translation id="8717554232729236539">Ya accedió <ph name="EXISTING_USER" />. Para mantener separados los datos de navegación, accede a Chrome en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tu lista de lectura y más de <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Salir de Chrome</translation>
 <translation id="873133009373065397">Google Chrome no puede determinar ni establecer el navegador predeterminado</translation>
 <translation id="8747073452963259673">esquina inferior izquierda del área de búsqueda: izquierda <ph name="LEFT" />%, inferior <ph name="BOTTOM" />%</translation>

@@ -70,6 +70,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="1793486931176048546">Ыкчам ачуу максатында Chromium'ду тапшырмалар тактасына кадоо үчүн Windows билдирмесиндеги <ph name="BEGIN_BOLD" />Ооба<ph name="END_BOLD" /> дегенди басыңыз.</translation>
 <translation id="1808667845054772817">Chromium'ду кайра орнотуу</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> аракет кылып жатат</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> мурунтан эле кирип турат. Сиз серептеген нерселерди ажыратуу үчүн <ph name="USER_EMAIL_ADDRESS" /> катары өз профилиңизден Chromium'га кириңиз. Ошондой эле, <ph name="DEVICE" /> аккаунтуңуздагы кеңейтүүлөрдү жана башка нерселерди аласыз.</translation>
 <translation id="183031085822326697">Кийинки жолу <ph name="DEVICE_TYPE" /> түзмөгүңүздө Chromium'ду ачканыңызда Сырсөздөрдү башкаргычты колдонуу сунушталат.</translation>
 <translation id="1838374766361614909">Изделип жаткан нерсени өчүрүү</translation>
 <translation id="18552579716432081">Серептөө дайындарын ушул түзмөктөн өчүрүп, ал эми Google аккаунтуңузда сактап калуу үчүн <ph name="BEGIN_LINK" />Chromium'дан чыгыңыз<ph name="END_LINK" />.</translation>
@@ -192,6 +193,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3038232873781883849">Орнотулушу күтүлүүдө...</translation>
 <translation id="3045032126857188731">Которулган тил: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Пикир терезесин жабуу</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> мурунтан эле кирип турат. Сиз серептеген нерселерди ажыратуу үчүн <ph name="USER_EMAIL_ADDRESS" /> катары өз профилиңизден Chromium'га кириңиз. Ошондой эле, <ph name="DEVICE" /> аккаунтуңуздагы окуу тизмесин жана башка нерселерди аласыз.</translation>
 <translation id="3068187312562070417">Башка Chromium профилдери</translation>
 <translation id="3068290154869370196">Кеңейтүүлөр — Chromium'ду ыңгайлаштырууга мүмкүндүк берген толуктоолор. Кеңейтүүлөр иреттүү болууга жана күнүмдүк иштерди жеңилдетүүгө жардам берип, Chromium'ду өзүңүзгө ылайыкташтырууга мүмкүнчүлүк берет.</translation>
 <translation id="3068515742935458733">Google'га автоматтык түрдө каталар жана <ph name="UMA_LINK" /> жөнүндө кабар берип, Chromium'ду өркүндөткөнгө кол кабыш кылыңыз!</translation>
@@ -293,6 +295,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4147856324248078748">Chromium'ду ы&amp;ңгайлаштырыңыз</translation>
 <translation id="4148957013307229264">Орнотулууда…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Тармакка кирүү – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> мурунтан эле кирип турат. Сиз серептеген нерселерди ажыратуу үчүн <ph name="USER_EMAIL_ADDRESS" /> катары өз профилиңизден Chromium'га кириңиз. Мындан тышкары, окуу тизмеңизди жана башкаларды бардык түзмөктөрүңүздө колдоно аласыз.</translation>
 <translation id="421369550622382712">Chromium үчүн укмуш колдонмолор, оюндар, кеңейтүүлөр жана темаларды таап алыңыз.</translation>
 <translation id="4217080900579554343">Бул кеңейтүүнү жана башкаларды бардык компьютерлериңизде колдонуу үчүн Chromium'га кириңиз</translation>
 <translation id="4217972271355023382">Интернетти ата-энең тандаган параметрлер менен коопсуз колдонуу үчүн <ph name="USER_EMAIL_ADDRESS" /> аккаунтуна кирип турган Chromium профилине которул.</translation>
@@ -392,6 +395,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="5382964351116519680">Chromium менен издөө</translation>
 <translation id="5383439451358640070">Chromium эмне үчүн айрым файлдарды бөгөттөй турганын билип алыңыз</translation>
 <translation id="5386450000063123300">Chromium жаңыртылууда (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> мурунтан эле кирип турат. Сиз серептеген нерселерди ажыратуу үчүн <ph name="USER_EMAIL_ADDRESS" /> катары өз профилиңизден Chromium'га кириңиз. Мындан тышкары, кеңейтүүлөрүңүздү жана башкаларды бардык түзмөктөрүңүздө колдоно аласыз.</translation>
 <translation id="538767207339317086">Chromium'га кирүүгө уруксат берүү</translation>
 <translation id="5405650547142096840">Chromium'дан чыгарып салуу</translation>
 <translation id="5424544524441439284">Майнаптуулук төмөндөйт, бирок Chromium чабуулдарга туруктуураак болуп калат</translation>

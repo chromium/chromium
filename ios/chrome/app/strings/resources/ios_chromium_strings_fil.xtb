@@ -142,6 +142,7 @@ Subukang maghintay nang ilang minuto bago lumipat ng account. Kung lilipat ka ng
 <translation id="3855938650519180865">Ano'ng Bago sa Chromium</translation>
 <translation id="3886689467633467988">Mag-sign in sa site na ito at sa Chromium para makuha mo ang iyong mga bookmark at higit pa sa lahat ng device mo.</translation>
 <translation id="3949514465204582407">Tip sa Chromium: Makuha ang iyong mga password sa anumang app</translation>
+<translation id="3983298990898629929">Itakda ang Chromium bilang iyong default browser para magbukas ng mga link sa isang pag-tap</translation>
 <translation id="4005283307739974863">Magbubukas at Magpapatakbo ng Pag-check sa Kaligtasan sa Chromium.</translation>
 <translation id="4043291146360695975">Sine-save ang mga password sa Password Manager sa device lang na ito.</translation>
 <translation id="4046625794029820944">Huwag nang kumopya ng mga URL. Itakda ang Chromium bilang default para direktang mag-load ng mga page.</translation>
@@ -302,6 +303,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Ise-save ang iyong password sa Password Manager para sa <ph name="EMAIL" />.</translation>
 <translation id="7434848749522628428">Ise-save ang passkey na ito sa Password Manager para sa <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">Gawing default browser mo ang Chromium para magbukas ng mga link sa isang pag-tap</translation>
 <translation id="7504829997542308412">Buksan ang Chromium</translation>
 <translation id="7531461704633548377">Mula sa Chromium</translation>
 <translation id="7554983317097061001">Tip sa Chromium: Ilipat ang Chromium sa dock</translation>

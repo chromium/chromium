@@ -69,6 +69,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1793486931176048546">Kliknutím na <ph name="BEGIN_BOLD" />Ano<ph name="END_BOLD" /> v oznámení systému Windows připněte prohlížeč Chromium na hlavní panel, aby byl rychle k dispozici.</translation>
 <translation id="1808667845054772817">Přeinstalovat Chromium</translation>
 <translation id="1820835682567584003">Chromium se pokouší <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">Už je přihlášen uživatel <ph name="EXISTING_USER" />. Pokud své procházení chcete oddělit, přihlaste se do prohlížeče Chromium ve svém vlastním profilu jako <ph name="USER_EMAIL_ADDRESS" />. Získáte také svá rozšíření a další položky z tohoto zařízení: <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Až příště na zařízení <ph name="DEVICE_TYPE" /> otevřete Chromium, zobrazí se výzva k použití Správce hesel Google.</translation>
 <translation id="1838374766361614909">Vymazat vyhledávání</translation>
 <translation id="18552579716432081">Pokud chcete údaje o prohlížení vymazat jen z tohoto zařízení, ale v účtu Google je ponechat, <ph name="BEGIN_LINK" />odhlaste se z prohlížeče Chromium<ph name="END_LINK" />.</translation>
@@ -191,6 +192,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3038232873781883849">Čekání na instalaci…</translation>
 <translation id="3045032126857188731">Přeložený jazyk: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Zavřít dialogové okno zpětné vazby</translation>
+<translation id="3064717200427679322">Už je přihlášen uživatel <ph name="EXISTING_USER" />. Pokud své procházení chcete oddělit, přihlaste se do prohlížeče Chromium ve svém vlastním profilu jako <ph name="USER_EMAIL_ADDRESS" />. Získáte také svůj seznam četby a další položky z tohoto zařízení: <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Ostatní profily Chromium</translation>
 <translation id="3068290154869370196">Rozšíření jsou doplňky, kterými si můžete Chromium přizpůsobit. Můžete si pomocí nich v Chromiu třeba uspořádat věci nebo zjednodušit každodenní úkoly.</translation>
 <translation id="3068515742935458733">Pomozte aplikaci Chromium zlepšovat tím, že budete společnosti Google zasílat zprávy o selhání a <ph name="UMA_LINK" />.</translation>
@@ -292,6 +294,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4147856324248078748">&amp;Přizpůsobit Chromium</translation>
 <translation id="4148957013307229264">Instalace...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – přihlášení k síti – Chromium</translation>
+<translation id="4208652172235621272">Už je přihlášen uživatel <ph name="EXISTING_USER" />. Pokud své procházení chcete oddělit, přihlaste se do prohlížeče Chromium ve svém vlastním profilu jako <ph name="USER_EMAIL_ADDRESS" />. Navíc budete mít svůj seznam četby a další položky k dispozici na všech svých zařízeních.</translation>
 <translation id="421369550622382712">Objevte skvělé aplikace, hry, rozšíření a motivy prohlížeče Chromium.</translation>
 <translation id="4217080900579554343">Pokud toto rozšíření a další funkce chcete mít na všech svých počítačích, přihlaste se do prohlížeče Chromium</translation>
 <translation id="4217972271355023382">Pokud na internetu chcete být víc v bezpečí s nastavením od rodičů, přepněte na profil Chromium, ve kterém jste už přihlášeni jako <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -391,6 +394,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="5382964351116519680">Otevřít vyhledávání v Chromiu</translation>
 <translation id="5383439451358640070">Přečtěte si, proč Chromium některé soubory blokuje</translation>
 <translation id="5386450000063123300">Aktualizace prohlížeče Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">Už je přihlášen uživatel <ph name="EXISTING_USER" />. Pokud své procházení chcete oddělit, přihlaste se do prohlížeče Chromium ve svém vlastním profilu jako <ph name="USER_EMAIL_ADDRESS" />. Navíc budete mít svá rozšíření a další položky k dispozici na všech svých zařízeních.</translation>
 <translation id="538767207339317086">Povolit přihlášení do prohlížeče Chromium</translation>
 <translation id="5405650547142096840">Odstranit z prohlížeče Chromium</translation>
 <translation id="5424544524441439284">Snižuje výkon, ale zvyšuje odolnost prohlížeče Chromium proti útokům</translation>

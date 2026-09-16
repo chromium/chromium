@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">‏انقر على <ph name="BEGIN_BOLD" />نعم<ph name="END_BOLD" /> في إشعار Windows لتثبيت Chromium في شريط التطبيقات والوصول إليه بسرعة.</translation>
 <translation id="1808667845054772817">‏إعادة تثبيت Chromium</translation>
 <translation id="1820835682567584003">‏يحاول Chromium <ph name="AUTHENTICATION_PURPOSE" />.</translation>
+<translation id="1828328511398219809">‏حساب "<ph name="EXISTING_USER" />" مسجّل الدخول حاليًا. للحصول على تجربة تصفّح منفصلة، يُرجى تسجيل الدخول إلى ملفك الشخصي في Chromium بحساب <ph name="USER_EMAIL_ADDRESS" />. سيتيح لك ذلك أيضًا الوصول إلى إضافاتك وغيرها من <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">‏عند فتح Chromium على <ph name="DEVICE_TYPE" /> في المرة القادمة، ستظهر لك رسالة تطلب منك استخدام "مدير كلمات المرور في Google".</translation>
 <translation id="1838374766361614909">محو البحث</translation>
 <translation id="18552579716432081">‏لحذف بيانات التصفّح من هذا الجهاز فقط والاحتفاظ بها في حسابك على Google، يُرجى <ph name="BEGIN_LINK" />تسجيل الخروج من Chromium<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">في انتظار التثبيت...</translation>
 <translation id="3045032126857188731">اللغة الهدف: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">إغلاق مربّع حوار الملاحظات</translation>
+<translation id="3064717200427679322">‏حساب "<ph name="EXISTING_USER" />" مسجّل الدخول حاليًا. للحصول على تجربة تصفّح منفصلة، يُرجى تسجيل الدخول إلى ملفك الشخصي في Chromium بحساب <ph name="USER_EMAIL_ADDRESS" />. سيتيح لك ذلك أيضًا الوصول إلى قائمة القراءة وغيرها من <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">‏الملفات الشخصية الأخرى على Chromium</translation>
 <translation id="3068290154869370196">‏تتيح لك الإضافات تخصيص متصفِّح Chromium وإضفاء طابعك الشخصي عليه، مع الحفاظ على التنظيم وتبسيط المهام اليومية.</translation>
 <translation id="3068515742935458733">‏يمكنك المساعدة في تحسين Chromium عن طريق إرسال تقارير الأعطال و<ph name="UMA_LINK" /> إلى Google</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">‏تخصيص Chromium</translation>
 <translation id="4148957013307229264">جارٍ التثبيت...</translation>
 <translation id="419998258129752635">‏<ph name="PAGE_TITLE" /> - تسجيل الدخول إلى الشبكة - Chromium</translation>
+<translation id="4208652172235621272">‏حساب "<ph name="EXISTING_USER" />" مسجّل الدخول حاليًا. للحصول على تجربة تصفّح منفصلة، يُرجى تسجيل الدخول إلى ملفك الشخصي في Chromium بحساب <ph name="USER_EMAIL_ADDRESS" />. سيتيح لك ذلك أيضًا الوصول إلى قائمة القراءة وغيرها على جميع أجهزتك.</translation>
 <translation id="421369550622382712">‏اكتشف تطبيقات، وألعاب، وإضافات، ومظاهر رائعة لمتصفح Chromium.</translation>
 <translation id="4217080900579554343">‏يمكنك تسجيل الدخول إلى Chromium للحصول على هذه الإضافة وغيرها على جميع أجهزة الكمبيوتر الخاصة بك</translation>
 <translation id="4217972271355023382">‏للحفاظ على أمانك على الإنترنت من خلال خيارات أحد والدَيك، انتقِل إلى ملفك الشخصي على Chromium الذي سجّلت الدخول إليه من قبل باستخدام الحساب <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">‏فتح ميزة "البحث في Chromium"</translation>
 <translation id="5383439451358640070">‏التعرّف على سبب حظر Chromium لبعض الملفات</translation>
 <translation id="5386450000063123300">‏جارٍ تحديث Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">‏حساب "<ph name="EXISTING_USER" />" مسجّل الدخول حاليًا. للحصول على تجربة تصفّح منفصلة، يُرجى تسجيل الدخول إلى ملفك الشخصي في Chromium بحساب <ph name="USER_EMAIL_ADDRESS" />. سيتيح لك ذلك أيضًا الوصول إلى الإضافات وغيرها على جميع أجهزتكِ.</translation>
 <translation id="538767207339317086">‏السماح بتسجيل الدخول إلى Chromium</translation>
 <translation id="5405650547142096840">‏إزالة من Chromium</translation>
 <translation id="5424544524441439284">‏يقلِّل هذا الخيار من مستوى الأداء ويعزِّز من مقاومة Chromium للهجمات</translation>

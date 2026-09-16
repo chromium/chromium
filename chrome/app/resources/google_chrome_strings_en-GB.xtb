@@ -98,6 +98,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1873233029667955273">Google Chrome isn't your default browser</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You’ll also get your extensions and more on all your devices.</translation>
 <translation id="1880677175115548835">Select text</translation>
 <translation id="1896602904211344018">Get the Chrome app</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
@@ -548,6 +549,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6334815226785304306">Make Google Chrome the default browser and pin to the taskbar</translation>
 <translation id="63540178978900677">Chrome is no longer your default browser. Make Chrome the default browser?</translation>
 <translation id="6360449101159168105">While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your reading list and more on all your devices.</translation>
 <translation id="6388799252195623474">help me with this</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Your organisation closes Chrome automatically when it isn't used for one minute. Browsing data is deleted. This could include history, autofill and downloads.}other{Your organisation closes Chrome automatically when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill and downloads.}}</translation>
@@ -708,6 +710,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7845233973568007926">Thanks for installing. You must restart your computer before using <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Launch Chrome when Windows starts</translation>
 <translation id="7849037457735762883">Continue where you left off: Chrome can restore your tabs every time you restart. To turn this on, go to</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You’ll also get your extensions and more from <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">To use your saved passwords, follow the QR code, download Chrome for iOS and sign in to your Google Account</translation>
 <translation id="7872446069773932638">Downloading… <ph name="SECONDS" /> second(s) remaining</translation>
 <translation id="7886087451482920026">Select text with Google Lens</translation>
@@ -805,6 +808,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8679801911857917785">It also controls what page is shown when you start Chrome.</translation>
 <translation id="8712637175834984815">Got it</translation>
 <translation id="8712767363896337380">Nearly up to date! Relaunch Chrome to finish updating.</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your reading list and more from <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Sign out of Chrome</translation>
 <translation id="873133009373065397">Google Chrome cannot determine or set the default browser</translation>
 <translation id="8747073452963259673">bottom-left corner of search area: left <ph name="LEFT" />%, bottom <ph name="BOTTOM" />%</translation>

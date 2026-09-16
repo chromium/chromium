@@ -269,6 +269,7 @@
 <translation id="17906873777101817">Понуди чување лозинки и приступних кључева</translation>
 <translation id="1794893174442046596">Група картица</translation>
 <translation id="1807893857950749072">Дозволите обавештења о праћењу цена…</translation>
+<translation id="1808142805674973090">Промени режим</translation>
 <translation id="1809929083618343438">Овим се уклањају изабране информације из Chrome-а, али се не бришу са Google налога.</translation>
 <translation id="1810976980198522421">Откажи</translation>
 <translation id="1815941218935345331">Шифра</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">Нема интернет везе.</translation>
 <translation id="3782614601387961027">Одбаци упозорење</translation>
 <translation id="3789841737615482174">Инсталирај</translation>
+<translation id="3793603310364129123">Мање корака, бржи линкови</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Понуди превод овог сајта</translation>
 <translation id="3810973564298564668">Управљај</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">Искључите прегледе Мапа</translation>
 <translation id="5474397204728336997">Породичне лозинке, нова прилагођавања и друго. Додирните да бисте сазнали више.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Није увезена ниједна лозинка}=1{Увезена је {count} лозинка}one{Увезена је {count} лозинка}few{Увезене су {count} лозинке}other{Увезено је {count} лозинки}}</translation>
+<translation id="5477188385487393357">Прескочите копирање и лепљење</translation>
 <translation id="5478327362747197944">Правите догађаје у календару директно кликом на датум на веб-страници.</translation>
 <translation id="5482922178977937393">Желите обавештења за вести, спорт и друго на основу интересовања?</translation>
 <translation id="5483838506518938965">Спремни сте</translation>
@@ -1747,6 +1750,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6585618849026997638">Ако додате обележивач, можете да се вратите на страницу која вам је важна</translation>
 <translation id="6589001036857939353">Обједините дупликате</translation>
 <translation id="659407965921887085">Ова картица приказује падове цена на вебу за производе које тренутно пратите</translation>
+<translation id="6596324345367949437">Gemini није доступан у режиму без архивирања</translation>
 <translation id="6596481460663245319">Тражи слику на Google-у</translation>
 <translation id="6601302169302852717">Слика је сачувана у Google сликама налога <ph name="USER_EMAIL" /></translation>
 <translation id="6602173570135186741">Аутоматско попуњавање и лозинке</translation>
@@ -2113,6 +2117,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7772948288262733182">Добро дошли назад</translation>
 <translation id="777637629667389858">Кад сте пријављени, штити вас у свим Google услугама.</translation>
 <translation id="7776604279034196531">Приступите режиму за читање са траке за адресу ако је доступан</translation>
+<translation id="7780992949171378848">Пошаљите сајтовима захтев за онемогућавање у вези са коришћењем ваших података</translation>
 <translation id="7781829728241885113">Јуче</translation>
 <translation id="7788474973847076315">Сними слику</translation>
 <translation id="7788868432173225918">Одбаци проширени приказ</translation>

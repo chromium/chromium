@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1184166532603925201">在无痕模式下，Chrome 会阻止网站使用第三方 Cookie</translation>
+<translation id="1365023215312302966">网站无法使用第三方 Cookie 为您提供个性化内容和广告，也无法了解您在其他网站上的操作</translation>
 <translation id="1569440020357229235">在无痕模式下，网站无法使用第三方 Cookie。如果某个依赖这些 Cookie 的网站无法正常运行，您可<ph name="BEGIN_LINK" />尝试授予该网站对第三方 Cookie 的临时访问权限<ph name="END_LINK" />。</translation>
 <translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
 <translation id="2183376768278472507">如果某个网站无法按预期运行，您可尝试允许您访问的特定网站使用第三方 Cookie</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
+<translation id="2360633687155619995">网站无法使用第三方 Cookie 为您提供个性化内容和广告，也无法了解您在其他网站上的操作。部分网站功能可能无法按预期运行。</translation>
 <translation id="2496115946829713659">网站可以使用第三方 Cookie 为您提供个性化内容和广告，以及了解您在其他网站上的操作</translation>
 <translation id="3045333309254072201">在无痕模式下，网站无法使用第三方 Cookie。如果某个依赖这些 Cookie 的网站无法正常运行，您可<ph name="START_LINK" />尝试授予该网站对第三方 Cookie 的临时访问权限<ph name="END_LINK" />。</translation>
 <translation id="3425311689852411591">依赖第三方 Cookie 的网站应该会按预期运行</translation>

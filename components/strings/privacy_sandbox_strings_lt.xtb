@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1184166532603925201">Kai įjungtas inkognito režimas, „Chrome“ neleidžia svetainėms naudoti trečiųjų šalių slapukų</translation>
+<translation id="1365023215312302966">Svetainės negali naudoti trečiųjų šalių slapukų, kad suasmenintų turinį bei skelbimus ir sužinotų apie veiksmus, kuriuos atliekate kitose svetainėse</translation>
 <translation id="1569440020357229235">Kai naršote inkognito režimu, svetainės negali naudoti trečiųjų šalių slapukų. Jei svetainė, kuri naudoja šiuos slapukus, neveikia, galite <ph name="BEGIN_LINK" />pabandyti suteikti šiai svetainei laikiną prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Funkcijos gali neveikti kai kuriose svetainėse</translation>
 <translation id="2183376768278472507">Jei svetainė neveikia taip, kaip tikėjotės, galite pabandyti leisti trečiosios šalies slapukus konkrečioje svetainėje, kurioje lankotės</translation>
 <translation id="2235344399760031203">Trečiųjų šalių slapukai užblokuoti</translation>
+<translation id="2360633687155619995">Svetainės negali naudoti trečiųjų šalių slapukų, kad suasmenintų turinį bei skelbimus ir sužinotų apie veiksmus, kuriuos atliekate kitose svetainėse. Kai kurios svetainės funkcijos gali neveikti, kaip numatyta.</translation>
 <translation id="2496115946829713659">Svetainės gali naudoti trečiųjų šalių slapukus, kad suasmenintų turinį ir skelbimus bei sužinotų apie veiksmus, kuriuos atliekate kitose svetainėse</translation>
 <translation id="3045333309254072201">Kai naršote inkognito režimu, svetainės negali naudoti trečiųjų šalių slapukų. Jei svetainė, kuri naudoja šiuos slapukus, neveikia, galite <ph name="START_LINK" />pabandyti suteikti šiai svetainei laikiną prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Svetainės, kuriose naudojami trečiųjų šalių slapukai, turėtų veikti, kaip numatyta</translation>

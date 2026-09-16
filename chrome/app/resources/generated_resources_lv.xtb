@@ -676,6 +676,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1523978563989812243">Teksta pārvēršanas runā programmas</translation>
 <translation id="1524563461097350801">Nē, paldies</translation>
 <translation id="1525740877599838384">Izmantot tikai Wi-Fi tīklu, lai noteiktu atrašanās vietu</translation>
+<translation id="1526274304859009691">Pierakstieties, lai iegūtu savus paplašinājumus un citus datus no <ph name="DEVICE" />.</translation>
 <translation id="1526560967942511387">Dokuments bez nosaukuma</translation>
 <translation id="1527336312600375509">Monitora atsvaidzināšanas biežums</translation>
 <translation id="152913213824448541">Kontaktpersonas funkcijai “Kopīgošana tuvumā”</translation>
@@ -6369,6 +6370,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5902400038326841449">Google paroļu pārvaldnieks ir izslēgts</translation>
 <translation id="5902892210366342391">Skatīt brīdinājumus pirms nedrošu vietņu apmeklēšanas inkognito režīmā</translation>
 <translation id="5906457147959147328">Arī turpmāk atļaut šai vietnei izmantot identifikatorus, lai atskaņotu aizsargātu saturu</translation>
+<translation id="5906549184882174190">Izolēts</translation>
 <translation id="5906655207909574370">Atjaunināšana ir gandrīz pabeigta. Restartējiet ierīci, lai pabeigtu atjaunināšanu.</translation>
 <translation id="5906732635754427568">Ar šo lietotni saistītie dati tiks noņemti no šīs ierīces.</translation>
 <translation id="5906974869830879618">Lūdzu, ievadiet PIN kodu</translation>
@@ -6593,6 +6595,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6088475950266477163">Iestatīju&amp;mi</translation>
 <translation id="608912389580139775">Lai pievienotu šo lapu lasīšanas sarakstam, pieskarieties grāmatzīmes ikonai</translation>
 <translation id="6089289670051481345">Tritanomālija</translation>
+<translation id="6090068946774422711">Pierakstieties, lai iegūtu lasīšanas sarakstu un citus datus no <ph name="DEVICE" />.</translation>
 <translation id="6090760257419195752">Noraidītie brīdinājumi</translation>
 <translation id="609174145569509836">Atbrīvot vietu krātuvē</translation>
 <translation id="6091761513005122595">Kopīgošana veiksmīgi iekļauta.</translation>
@@ -7949,6 +7952,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7124712201233930202">Nav ievērotas jūsu organizācijas politikas.</translation>
 <translation id="7125148293026877011">Crostini dzēšana</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Pierakstieties, lai piekļūtu paplašinājumiem un citiem datiem visās savās ierīcēs.</translation>
 <translation id="7125932261198019860">Pievienojiet printeri tam pašam Wi-Fi tīklam, kuram ir pievienots Chromebook dators, vai izmantojiet USB vadu. <ph name="LINK_BEGIN" />Uzziniet vairāk par saderību<ph name="LINK_END" />.</translation>
 <translation id="7127980134843952133">Lejupielādes vēsture</translation>
 <translation id="7130438335435247835">Piekļuves punkta nosaukums (APN)</translation>
@@ -8802,6 +8806,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7780992949171378848">Sūtīt atteikšanās pieprasījumu vietnēm saistībā ar jūsu datu izmantošanu</translation>
 <translation id="7782102568078991263">Vairāk ieteikumu no Google nav pieejams</translation>
 <translation id="7782717250816686129">Glabājiet pastāvīgos datus pieteikšanās ekrānā un ievadiet akreditācijas datus sesijā.</translation>
+<translation id="7782885970382585765">Pierakstieties, lai piekļūtu lasīšanas sarakstam un citiem datiem visās savās ierīcēs.</translation>
 <translation id="7784020347632229094">Uzzināt vairāk par īsinājumtaustiņiem</translation>
 <translation id="7784067724422331729">Šis fails tika bloķēts datora drošības iestatījumu dēļ.</translation>
 <translation id="7784796923038949829">Nevar lasīt vai mainīt vietnes datus</translation>

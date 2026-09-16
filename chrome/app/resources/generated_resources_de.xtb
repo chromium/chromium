@@ -676,6 +676,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1523978563989812243">Text-zu-Sprache-Engines</translation>
 <translation id="1524563461097350801">Nein, danke</translation>
 <translation id="1525740877599838384">Zur Standortbestimmung nur WLAN nutzen</translation>
+<translation id="1526274304859009691">Melde dich an, um auf deine Erweiterungen und weitere Daten von <ph name="DEVICE" /> zuzugreifen</translation>
 <translation id="1526560967942511387">Unbenanntes Dokument</translation>
 <translation id="1527336312600375509">Monitoraktualisierungsrate</translation>
 <translation id="152913213824448541">Nearby Share-Kontakte</translation>
@@ -6368,6 +6369,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5902400038326841449">Der Google Passwortmanager ist deaktiviert</translation>
 <translation id="5902892210366342391">Vor dem Aufrufen unsicherer Websites im Inkognitomodus Warnungen einblenden</translation>
 <translation id="5906457147959147328">Weiterhin zulassen, dass diese Website Kennungen verwendet, um geschützte Inhalte wiederzugeben</translation>
+<translation id="5906549184882174190">Isoliert</translation>
 <translation id="5906655207909574370">Fast fertig! Starte dein Gerät neu, um die Aktualisierung abzuschließen.</translation>
 <translation id="5906732635754427568">Daten, die dieser App zugewiesen sind, werden von diesem Gerät entfernt.</translation>
 <translation id="5906974869830879618">Bitte gib eine PIN ein</translation>
@@ -6592,6 +6594,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6088475950266477163">Einstellun&amp;gen</translation>
 <translation id="608912389580139775">Wenn du deiner Leseliste diese Seite hinzufügen möchtest, klicke auf das Lesezeichensymbol</translation>
 <translation id="6089289670051481345">Tritanomalie</translation>
+<translation id="6090068946774422711">Melde dich an, um auf deine Leseliste und weitere Daten von <ph name="DEVICE" /> zuzugreifen</translation>
 <translation id="6090760257419195752">Geschlossene Warnungen</translation>
 <translation id="609174145569509836">Speicherplatz freigeben</translation>
 <translation id="6091761513005122595">Freigabe wurde erfolgreich bereitgestellt.</translation>
@@ -7944,6 +7947,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7124712201233930202">Die Richtlinien deiner Organisation werden nicht erfüllt</translation>
 <translation id="7125148293026877011">Crostini löschen</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Melde dich an, um deine Erweiterungen und mehr auf allen deinen Geräten abzurufen</translation>
 <translation id="7125932261198019860">Der Drucker muss mit demselben WLAN wie Chromebook verbunden sein, du kannst aber auch ein USB-Kabel verwenden. <ph name="LINK_BEGIN" />Weitere Informationen zur Kompatibilität<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Downloadverlauf</translation>
 <translation id="7130438335435247835">Zugangspunkt (APN)</translation>
@@ -8797,6 +8801,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7780992949171378848">Anfrage zur Ablehnung der Datennutzung an Websites senden</translation>
 <translation id="7782102568078991263">Keine weiteren Vorschläge von Google</translation>
 <translation id="7782717250816686129">Vom Nutzer auf dem Anmeldebildschirm angegebene Daten speichern und mit anderen Erweiterungen in der Nutzersitzung teilen.</translation>
+<translation id="7782885970382585765">Melde dich an, damit du deine Leseliste und andere Daten auf allen deinen Geräten abrufen kannst</translation>
 <translation id="7784020347632229094">Weitere Informationen zur Tastenkombination</translation>
 <translation id="7784067724422331729">Diese Datei wurde von den Sicherheitseinstellungen auf deinem Computer blockiert.</translation>
 <translation id="7784796923038949829">Daten der Website können nicht gelesen oder geändert werden</translation>

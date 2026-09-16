@@ -67,6 +67,7 @@
 <translation id="1793486931176048546">Kliknij <ph name="BEGIN_BOLD" />Tak<ph name="END_BOLD" /> w powiadomieniu systemu Windows, aby przypiąć przeglądarkę Chromium do paska zadań i mieć do niej szybki dostęp.</translation>
 <translation id="1808667845054772817">Ponownie zainstaluj Chromium</translation>
 <translation id="1820835682567584003">Chromium próbuje <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">Konto <ph name="EXISTING_USER" /> jest już zalogowane. Aby przeglądanie dalej odbywało się osobno, zaloguj się do swojego profilu w Chromium jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do rozszerzeń oraz innych danych z urządzenia <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Gdy następnym razem otworzysz Chromium na urządzeniu <ph name="DEVICE_TYPE" />, zobaczysz prośbę o użycie Menedżera haseł Google.</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
 <translation id="18552579716432081">Aby usunąć dane przeglądania tylko z tego urządzenia, zachowując je na swoim koncie Google, <ph name="BEGIN_LINK" />wyloguj się z Chromium<ph name="END_LINK" />.</translation>
@@ -189,6 +190,7 @@
 <translation id="3038232873781883849">Czekam na instalację…</translation>
 <translation id="3045032126857188731">Język tłumaczenia: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Zamknij okno opinii</translation>
+<translation id="3064717200427679322">Konto <ph name="EXISTING_USER" /> jest już zalogowane. Aby przeglądanie dalej odbywało się osobno, zaloguj się do swojego profilu w Chromium jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do listy Do przeczytania oraz do innych danych z urządzenia <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Inne profile Chromium</translation>
 <translation id="3068290154869370196">Rozszerzenia to dodatki, które umożliwiają dostosowanie Chromium. Dzięki nim możesz dopasować Chromium do swoich potrzeb – od utrzymania porządku po łatwiejsze wykonywanie codziennych zadań.</translation>
 <translation id="3068515742935458733">Pomóż nam ulepszyć Chromium, przesyłając do Google raporty o awariach i <ph name="UMA_LINK" /></translation>
@@ -288,6 +290,7 @@
 <translation id="4147856324248078748">Spersonaliz&amp;uj Chromium</translation>
 <translation id="4148957013307229264">Trwa instalowanie...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – logowanie do sieci – Chromium</translation>
+<translation id="4208652172235621272">Konto <ph name="EXISTING_USER" /> jest już zalogowane. Aby przeglądanie dalej odbywało się osobno, zaloguj się do swojego profilu w Chromium jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do listy Do przeczytania oraz innych danych na wszystkich swoich urządzeniach.</translation>
 <translation id="421369550622382712">Odkryj znakomite aplikacje, gry, rozszerzenia i motywy do Chromium.</translation>
 <translation id="4217080900579554343">Aby móc korzystać z tego rozszerzenia i innych funkcji na wszystkich swoich komputerach, zaloguj się w Chromium</translation>
 <translation id="4217972271355023382">Aby zapewnić sobie większe bezpieczeństwo online dzięki ustawieniom wybranym przez Twojego rodzica, przełącz się na swój profil Chromium, na który jesteś już zalogowany(-a) jako <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -387,6 +390,7 @@
 <translation id="5382964351116519680">Otwórz wyszukiwanie w Chromium</translation>
 <translation id="5383439451358640070">Dowiedz się, dlaczego Chromium blokuje niektóre pliki</translation>
 <translation id="5386450000063123300">Aktualizuję Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">Konto <ph name="EXISTING_USER" /> jest już zalogowane. Aby przeglądanie dalej odbywało się osobno, zaloguj się do swojego profilu w Chromium jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do rozszerzeń oraz innych danych na wszystkich swoich urządzeniach.</translation>
 <translation id="538767207339317086">Zezwalaj na logowanie w Chromium</translation>
 <translation id="5405650547142096840">Usuń z Chromium</translation>
 <translation id="5424544524441439284">Zmniejsza wydajność, ale sprawia, że przeglądarka Chromium jest bardziej odporna na ataki</translation>

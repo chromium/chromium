@@ -69,6 +69,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="1793486931176048546">Chofoza okuthi <ph name="BEGIN_BOLD" />Yebo<ph name="END_BOLD" /> esazisweni seWindows ukuze uphine iChromium ku-taskbar yakho ukuze uyifinyelele ngokushesha.</translation>
 <translation id="1808667845054772817">Phinda ufake i-Chromium</translation>
 <translation id="1820835682567584003">I-Chromium izama uku-<ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">U-<ph name="EXISTING_USER" /> usengenile ngemvume. Ukuze ugcine ukubhrawuza kwakho kuhlukile, ngena ngemvume kuChromium kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" /> Uzophinde uthole izandiso zakho nokuningi ku-<ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Ngokuzayo uma uvula iChromium ku-<ph name="DEVICE_TYPE" /> yakho, uzobona umyalelo wokusebenzisa Umphathi Wephasiwedi YeGoogle.</translation>
 <translation id="1838374766361614909">Sula usesho</translation>
 <translation id="18552579716432081">Ukuze usule idatha yopheqululo kule divayisi kuphela, kuyilapho uyigcina ku-Google Account yakho, <ph name="BEGIN_LINK" />phuma ngemvume ku-Chromium<ph name="END_LINK" />.</translation>
@@ -191,6 +192,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="3038232873781883849">Ilinde ukufaka...</translation>
 <translation id="3045032126857188731">Ulimi oluhunyushiwe: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Vala idayalogi yempendulo</translation>
+<translation id="3064717200427679322">U-<ph name="EXISTING_USER" /> usengenile ngemvume. Ukuze ugcine ukubhrawuza kwakho kuhlukile, ngena ngemvume kuChromium kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" /> Uzophinde uthole uhlu lwakho lokufunda nokuningi ku-<ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Amanye amaphrofayela e-Chromium</translation>
 <translation id="3068290154869370196">Izandiso ziyizengezo ezikuvumela ukuthi uqambe ngokwabahlinzekelwayo iChromium. Ukusuka ekuhlaleni uhlelekile, ukuya ekwenzeni lula imisebenzi yansuku zonke, izandiso zikusiza wenze iChromium ibe ngeyakho.</translation>
 <translation id="3068515742935458733">Siza ukwenza i-Chromium ibe ngcono ngokuthumela imibiko yokuphahlazeka ne-<ph name="UMA_LINK" /> ku-Google</translation>
@@ -292,6 +294,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="4147856324248078748">Qamba ngokwabahlinzekelwayo iChromium yakho</translation>
 <translation id="4148957013307229264">Iyafaka...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Inethiwekhi Yokungena ngemvume - i-Chromium</translation>
+<translation id="4208652172235621272">U-<ph name="EXISTING_USER" /> usengenile ngemvume. Ukuze ugcine ukubhrawuza kwakho kuhlukile, ngena ngemvume kuChromium kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" /> Uzophinde uthole uhlu lwakho lokufunda nokuningi kuwo wonke amadivayisi akho.</translation>
 <translation id="421369550622382712">Thola izinhlelo zokusebenza ezinhle, amageyimu, izandiso, namatimu we-Chromium.</translation>
 <translation id="4217080900579554343">Ukuze uthole lesi sandiso nokuningi kuwo wonke amakhompyutha wakho, ngena ngemvume kuChromium</translation>
 <translation id="4217972271355023382">Ukuze uhlale uphephile ku-inthanethi ngokukhetha komzali wakho, shintshela kuphrofayela yakho yeChromium lapho usungene ngemvume kakade njengo-<ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -391,6 +394,7 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="5382964351116519680">Vula usesho ngeChromium</translation>
 <translation id="5383439451358640070">Funda ukuthi kungani i-Chromium ivimba amanye amafayela</translation>
 <translation id="5386450000063123300">Ibuyekeza i-Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">U-<ph name="EXISTING_USER" /> usengenile ngemvume. Ukuze ugcine ukubhrawuza kwakho kuhlukile, ngena ngemvume kuChromium kuphrofayela yakho njengo-<ph name="USER_EMAIL_ADDRESS" /> Uzophinde uthole izandiso zakho nokuningi kuwo wonke amadivayisi akho.</translation>
 <translation id="538767207339317086">Vumela ukungena ngemvume kwe-Chromium</translation>
 <translation id="5405650547142096840">Susa kusuka  ku-Chromium</translation>
 <translation id="5424544524441439284">Yehlisa indlela yokusebenza kodwa kwenza iChromium imelane nakakhulu nokuhlaselwa</translation>

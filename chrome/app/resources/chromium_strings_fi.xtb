@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">Klikkaa Windowsin ilmoituksesta <ph name="BEGIN_BOLD" />Kyllä<ph name="END_BOLD" />, niin voit kiinnittää Chromiumin tehtäväpalkkiin nopeaa käyttöä varten.</translation>
 <translation id="1808667845054772817">Asenna Chromium uudelleen</translation>
 <translation id="1820835682567584003">Chromium yrittää seuraavaa: <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromiumiin omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää laajennuksia ja muita tietoja laitteelta: <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Seuraavan kerran kun avaat Chromiumin laitteella (<ph name="DEVICE_TYPE" />), näet kehotteen käyttää Googlen salasanoja.</translation>
 <translation id="1838374766361614909">Tyhjennä haku</translation>
 <translation id="18552579716432081">Jos haluat poistaa selausdatan vain tältä laitteelta, mutta säilyttää sen Google-tililläsi, <ph name="BEGIN_LINK" />kirjaudu ulos Chromiumista<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">Asennetaan…</translation>
 <translation id="3045032126857188731">Käännetty kieli: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Sulje palautteen valintaikkuna</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromiumiin omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää lukulistaa ja muita tietoja laitteelta: <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Muut Chromium-profiilit</translation>
 <translation id="3068290154869370196">Laajennukset ovat lisäosia, joiden avulla voit muokata Chromiumia. Laajennusten avulla voit pitää asiat järjestyksessä, yksinkertaistaa päivittäisiä tehtäviä ja muokata Chromiumia mieleiseksesi.</translation>
 <translation id="3068515742935458733">Auta parantamaan Chromiumia lähettämällä kaatumisilmoitukset ja <ph name="UMA_LINK" /> Googlelle</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">M&amp;uokkaa Chromiumia</translation>
 <translation id="4148957013307229264">Asennetaan...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromiumiin omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää esimerkiksi lukulistaa kaikilla laitteillasi.</translation>
 <translation id="421369550622382712">Löydät hienoja sovelluksia, pelejä, laajennuksia ja teemoja Chromiumille.</translation>
 <translation id="4217080900579554343">Kirjaudu sisään Chromiumiin, niin voit käyttää tätä laajennusta ja muita ominaisuuksia kaikilla tietokoneilla</translation>
 <translation id="4217972271355023382">Jos haluat käyttää vanhempasi valitsemia asetuksia, vaihda Chromium-profiiliin, jolla olet jo kirjautuneena (<ph name="USER_EMAIL_ADDRESS" />)</translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Avaa haku Chromiumilla</translation>
 <translation id="5383439451358640070">Lue lisää siitä, miksi Chromium estää joitakin tiedostoja</translation>
 <translation id="5386450000063123300">Päivitetään Chromiumia (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromiumiin omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää laajennuksia ja muita ominaisuuksia kaikilla laitteillasi.</translation>
 <translation id="538767207339317086">Salli Chromium-kirjautuminen</translation>
 <translation id="5405650547142096840">Poista Chromiumista</translation>
 <translation id="5424544524441439284">Rajoittaa suorituskykyä, mutta tekee Chromiumista suojatumman hyökkäyksiä vastaan</translation>

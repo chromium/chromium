@@ -1351,6 +1351,7 @@
 <translation id="2026367923222947564">संपूर्ण पेज</translation>
 <translation id="2026377162111110983">भागातील आवाज</translation>
 <translation id="2028449514182362831">मोशन सेन्सरची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
+<translation id="2029064269235798707">कीबोर्ड शॉर्टकट निवडा</translation>
 <translation id="202918510990975568">सुरक्षितता कॉन्फिगर करण्यासाठी आणि साइन इन करण्यासाठी तुमचा पासवर्ड एंटर करा</translation>
 <translation id="2030455719695904263">ट्रॅकपॅड</translation>
 <translation id="2030803782168502207">डिव्हाइसवरून सदस्यत्व काढून टाका</translation>
@@ -1442,6 +1443,7 @@
 <translation id="2111670510994270194">उजवीकडील नवीन टॅब</translation>
 <translation id="2111778868023567359">तुम्हाला या पेजवर टॅब गट पुन्हा दिसणार नाहीत</translation>
 <translation id="2112554630428445878">स्वागत आहे, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">MacOS मधून इंपोर्ट केलेली प्रमाणपत्रे पहा</translation>
 <translation id="21133533946938348">टॅब पिन करा</translation>
 <translation id="2113479184312716848">&amp;फाइल उघडा...</translation>
@@ -1997,6 +1999,7 @@
 <translation id="252513908494776481">या टॅबबद्दल विचारा</translation>
 <translation id="2525746158911982776">सिस्टीममध्ये पुरेशी स्टोरेज जागा नसल्यामुळे अपडेट करता आले नाही.</translation>
 <translation id="2525842906387880861">तुम्हाला या पेजवर सूचना पुन्हा दिसणार नाही</translation>
+<translation id="2526346836766369775">नवीन अलिप्त &amp;टॅब</translation>
 <translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="2526619973349913024">अपडेटासाठी तपासा</translation>
 <translation id="2527167509808613699">कोणत्याही प्रकारचे कनेक्शन</translation>
@@ -2282,6 +2285,7 @@
 <translation id="2740531572673183784">ठीक आहे</translation>
 <translation id="2740876196999178364">या पासकी फक्त या डिव्हाइसवर सेव्ह केल्या जातात. त्या तुमच्या Google खाते मध्ये सेव्ह केल्या जात नाहीत.</translation>
 <translation id="2741912629735277980">लॉग इन स्क्रीनवर UI प्रदर्शित करा</translation>
+<translation id="274229007420507506"><ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये शॉर्टकट बदला</translation>
 <translation id="2742373789128106053">सध्या <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> उपलब्ध नाही.</translation>
 <translation id="2743301740238894839">सुरू करा</translation>
 <translation id="2743378970365831481">Google Password Manager मध्ये तुमचा पासवर्ड सेव्ह करण्यासाठी, स्थान बार मधील Password Manager आयकन</translation>
@@ -2631,6 +2635,7 @@
 <translation id="3001614333383288217">{COUNT,plural, =0{No keys customized}=1{कस्टमाइझ केलेली १ की}other{कस्टमाइझ केलेल्या {COUNT} की}}</translation>
 <translation id="3002864108328203174">Gemini च्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली.</translation>
 <translation id="3003144360685731741">प्राधान्यीकृत नेटवर्क</translation>
+<translation id="3003152206838282768">Chrome मध्ये तुमच्या Gemini अ‍ॅप टास्कवर काम करत आहे. आणखी अपडेटसाठी Chrome तपासा</translation>
 <translation id="3003253259757197230">तुम्ही भेट देता त्या URLs तुम्ही पुढे कोणत्या साइटला भेट देऊ शकता याचा अंदाज घेण्यासाठी आणि तुम्ही भेट देत असलेल्या पेजबद्दल तुम्हाला अतिरिक्त माहिती दाखवण्यासाठी Google ला पाठवल्या जातात</translation>
 <translation id="3003623123441819449">CSS कॅशे </translation>
 <translation id="3003967365858406397">तुमचे <ph name="PHONE_NAME" /> एक खाजगी वाय-फाय कनेक्शन तयार करेल.</translation>
@@ -5078,6 +5083,7 @@
 <translation id="4864805589453749318">शाळा खाते जोडण्याची परवानगी देणार असलेले पालक निवडा.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ब्लॉक केलेले)</translation>
 <translation id="486505726797718946">मेमरी सेव्ह केली आहे</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Chrome मध्ये तुमच्या Gemini अ‍ॅप टास्कवर काम करत आहे. आणखी अपडेटसाठी Chrome तपासा</translation>
 <translation id="486635084936119914">डाउनलोड केल्यानंतर काही फाईल प्रकार स्वयंचलितपणे उघडा</translation>
 <translation id="4868284252360267853">हा डायलॉग सध्या फोकस केलेला नाही. हा डायलॉग फोकस करण्यासाठी, Command-Shift-Option A प्रेस करा.</translation>
 <translation id="4869170227080975044">ChromeOS नेटवर्कशी संबंधित सूचना वाचा</translation>
@@ -7711,6 +7717,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6916818963747321523">सर्व विस्तृत करा</translation>
 <translation id="6917873303492266709">टॅब गटांमध्ये शेअर करण्यासाठी, सामील होण्यासाठी आणि सहयोग करण्यासाठी, सेटिंग्ज उघडा व Chrome मध्ये साइन-इन करण्याची अनुमती द्या</translation>
 <translation id="6919354101107095996">साइटवर साइन इन करण्याचा प्रयत्न करा. त्यानंतर, पुन्हा डाउनलोड करा</translation>
+<translation id="6919461818524183254">शॉर्टकट निवडा</translation>
 <translation id="6919952941889172531">या Chrome प्रोफाइलसाठी वर्धित सुरक्षित ब्राउझिंग देखील सुरू करायचे आहे का?</translation>
 <translation id="6920989436227028121">नियमित टॅब म्हणून वापरा</translation>
 <translation id="6921104647315081813">अ‍ॅक्टिव्हिटी साफ करा</translation>
@@ -8550,6 +8557,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7578137152457315135">फिंगरप्रिंट सेटिंग्ज</translation>
 <translation id="7578692661782707876">कृपया तुमचा कन्फर्मेशन कोड एंटर करा.</translation>
 <translation id="757941033127302446">साइन इन केले आहे</translation>
+<translation id="7580311608678791180">Windows टास्क बारमधून उघडा</translation>
 <translation id="7581462281756524039">एक क्लीनअप टूल</translation>
 <translation id="7582582252461552277">या नेटवर्कला प्राधान्य द्या</translation>
 <translation id="7582844466922312471">मोबाइल डेटा</translation>
@@ -8563,6 +8571,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग्ज</translation>
 <translation id="7592060599656252486">काही</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (एरर कोड <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Mac मेनू बारमधून उघडा</translation>
 <translation id="7600054753482800821">शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
 <translation id="7600218158048761260">Google Drive या खाते प्रकारासाठी बंद केलेले आहे.</translation>
 <translation id="7600965453749440009">कधीही <ph name="LANGUAGE" /> चा भाषांतर करु नका</translation>
@@ -9248,6 +9257,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8102139037507939978">system_logs.txt वरून वैयक्तिकरीत्या ओळखण्यायोग्य माहिती स्ट्रिप करा.</translation>
 <translation id="810362914482827094">पासकी शोधा</translation>
 <translation id="8104088837833760645">eSIM प्रोफाइल डाउनलोड करा</translation>
+<translation id="8104388155778519213">Google Lens वापरून तुमच्या स्क्रीनवर काय आहे ते शेअर करा</translation>
 <translation id="8104778744208707085">याकडे तुम्ही लक्ष देणे आवश्यक आहे</translation>
 <translation id="8105273883928376822">पुढे सुरू ठेवण्यासाठी कृपया साइन इन करा.</translation>
 <translation id="8106114112474206597">माउस बटण प्रेस करण्यासाठी “i” वापरा</translation>

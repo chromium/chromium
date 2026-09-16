@@ -676,6 +676,7 @@
 <translation id="1523978563989812243">ٹیکسٹ ٹو اسپیچ کے انجنز</translation>
 <translation id="1524563461097350801">نہیں شکریہ</translation>
 <translation id="1525740877599838384">‏مقام کا تعین کرنے کے لیے صرف Wi-Fi کا استعمال کریں</translation>
+<translation id="1526274304859009691">‫<ph name="DEVICE" /> سے اپنی ایکسٹینشنز وغیرہ حاصل کرنے کیلئے سائن ان کریں</translation>
 <translation id="1526560967942511387">بلا عنوان دستاویز</translation>
 <translation id="1527336312600375509">مانیٹر کی ریفریش ریٹ</translation>
 <translation id="152913213824448541">قریبی آلات کے ساتھ اشتراک کے رابطے</translation>
@@ -6369,6 +6370,7 @@
 <translation id="5902400038326841449">‏‫Google پاس ورڈ مینیجر آف ہے</translation>
 <translation id="5902892210366342391">پوشیدگی وضع میں غیر محفوظ سائٹس پر جانے سے پہلے وارننگز دیکھیں</translation>
 <translation id="5906457147959147328">اس سائٹ کو تحفظ یافتہ مواد چلانے کے لیے شناخت کنندگان کو استعمال کرنے کی اجازت دینا جاری رکھیں</translation>
+<translation id="5906549184882174190">الگ تھلگ کردہ</translation>
 <translation id="5906655207909574370">تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ کرنے کو مکمل کرنے کیلئے اپنا آلہ دوبارہ شروع کریں۔</translation>
 <translation id="5906732635754427568">اس ایپ سے وابستہ ڈیٹا کو اس آلہ سے ہٹا دیا جائے گا۔</translation>
 <translation id="5906974869830879618">براہ کرم پِن درج کریں</translation>
@@ -6594,6 +6596,7 @@
 <translation id="6088475950266477163">ترتیبات</translation>
 <translation id="608912389580139775">اس صفحے کو اپنی پڑھنے کی فہرست میں شامل کرنے کیلئے بُک مارک آئیکن پر کلک کریں</translation>
 <translation id="6089289670051481345">نیلے پیلے رنگ کی شناخت کرنے میں دشواری</translation>
+<translation id="6090068946774422711">‫<ph name="DEVICE" /> سے اپنی پڑھنے کی فہرست اور مزید حاصل کرنے کے لیے سائن ان کریں</translation>
 <translation id="6090760257419195752">برخاست کردہ وارننگز</translation>
 <translation id="609174145569509836">اسٹوریج صاف کریں</translation>
 <translation id="6091761513005122595">اشتراک کو کامیابی کے ساتھ ماؤنٹ کر دیا گیا۔</translation>
@@ -7945,6 +7948,7 @@
 <translation id="7124712201233930202">آپ کی تنظیم کی پالیسیوں کی تعمیل نہیں ہوتی ہے</translation>
 <translation id="7125148293026877011">‏Crostini حذف کریں</translation>
 <translation id="7125177678433853645">‎<ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" />‎</translation>
+<translation id="7125576351373654452">اپنے تمام آلات پر اپنی ایکسٹینشنز اور مزید حاصل کرنے کے لیے سائن ان کریں</translation>
 <translation id="7125932261198019860">‏یقینی بنائیں کہ آپ کا پرنٹر اسی Wi-Fi نیٹ ورک سے منسلک ہے جس سے آپ کا Chromebook منسلک ہے یا USB کیبل استعمال کریں۔ <ph name="LINK_BEGIN" />موافقت کے بارے میں مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ڈاؤن لوڈ کی سرگزشت</translation>
 <translation id="7130438335435247835">‏رسائی کی جگہ کا نام (APN)</translation>
@@ -8798,6 +8802,7 @@
 <translation id="7780992949171378848">اپنے ڈیٹا کے استعمال کے حوالے سے سائٹس کو آپٹ آؤٹ کی درخواست بھیجیں</translation>
 <translation id="7782102568078991263">‏Google کی جانب سے مزید کوئی مشورے نہیں ہیں</translation>
 <translation id="7782717250816686129">لاگ ان اسکرین پر مستقل ڈیٹا اسٹور کریں اور سیشن میں اسناد داخل کریں۔</translation>
+<translation id="7782885970382585765">اپنے سبھی آلات پر اپنی پڑھنے کی فہرست اور مزید حاصل کرنے کے لیے سائن ان کریں</translation>
 <translation id="7784020347632229094">کی بورڈ شارٹ کٹ کے بارے میں مزید جانیں</translation>
 <translation id="7784067724422331729">آپ کے کمپیوٹر پر موجود سیکیورٹی ترتیبات نے اس فائل کو مسدود کر دیا ہے۔</translation>
 <translation id="7784796923038949829">سائٹ کا ڈیٹا پڑھا یا تبدیل نہیں کیا جا سکتا</translation>

@@ -70,6 +70,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1793486931176048546">Click <ph name="BEGIN_BOLD" />Yes<ph name="END_BOLD" /> in the Windows notification to pin Chromium to your taskbar for quick access.</translation>
 <translation id="1808667845054772817">Reinstall Chromium</translation>
 <translation id="1820835682567584003">Chromium is trying to <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You’ll also get your extensions and more from <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Next time you open Chromium on your <ph name="DEVICE_TYPE" />, you'll see a prompt to use Google Password Manager.</translation>
 <translation id="1838374766361614909">Clear search</translation>
 <translation id="18552579716432081">To delete browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK" />sign out of Chromium<ph name="END_LINK" />.</translation>
@@ -192,6 +193,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3038232873781883849">Waiting to install…</translation>
 <translation id="3045032126857188731">Translated language: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Close feedback dialogue</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your reading list and more from <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Other Chromium profiles</translation>
 <translation id="3068290154869370196">Extensions are add-ons that let you customise Chromium. From staying organised to simplifying everyday tasks, extensions help you make Chromium your own.</translation>
 <translation id="3068515742935458733">Help make Chromium better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
@@ -293,6 +295,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4147856324248078748">Customise your Chromium</translation>
 <translation id="4148957013307229264">Installing...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Network sign-in – Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your reading list and more on all your devices.</translation>
 <translation id="421369550622382712">Discover great apps, games, extensions and themes for Chromium.</translation>
 <translation id="4217080900579554343">To get this extension and more on all your computers, sign in to Chromium</translation>
 <translation id="4217972271355023382">To stay safer online with your parent's choices, switch to your Chromium profile where you're already signed in as <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -392,6 +395,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5382964351116519680">Open search with Chromium</translation>
 <translation id="5383439451358640070">Learn why Chromium blocks some files</translation>
 <translation id="5386450000063123300">Updating Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You’ll also get your extensions and more on all your devices.</translation>
 <translation id="538767207339317086">Allow Chromium sign-in</translation>
 <translation id="5405650547142096840">Remove from Chromium</translation>
 <translation id="5424544524441439284">Reduces performance but makes Chromium more resistant to attacks</translation>

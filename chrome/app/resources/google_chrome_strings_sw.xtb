@@ -98,6 +98,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1873233029667955273">Google Chrome si kivinjari chako chaguomsingi</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Toleo hili la Chrome limepitwa na wakati</translation>
+<translation id="1877067026701708502">Tayari umeingia katika akaunti ya <ph name="EXISTING_USER" />. Ili utenganishe shughuli zako za kuvinjari, ingia katika akaunti kwenye Chrome katika wasifu wako binafsi ukitumia <ph name="USER_EMAIL_ADDRESS" />. Pia utapata viendelezi vyako na zaidi kwenye vifaa vyako vyote.</translation>
 <translation id="1880677175115548835">Chagua maandishi</translation>
 <translation id="1896602904211344018">Pakua programu ya Chrome</translation>
 <translation id="1919130412786645364">Ruhusu kuingia katika akaunti ya Chrome</translation>
@@ -230,6 +231,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="3112458742631356345">Chrome imezuia upakuaji huu kwa sababu faili hii kwa kawaida haipakuliwi na huenda si salama</translation>
 <translation id="3119573284443908657">Chrome imezuia upakuaji huu kwa sababu faili iliyo kwenye kumbukumbu inajumuisha faili nyingine ambazo huenda zimeficha programu hasidi</translation>
 <translation id="3124332159330678621">Badilisha Chrome yako upendavyo ili ukipe kivinjari chako mwonekano mpya</translation>
+<translation id="3125851611828811913">Tafuta na uulize maswali popote, hata wakati kidirisha cha Chrome kimepunguzwa. Huruhusu Chrome itumike chinichini.</translation>
 <translation id="3130333203120345554">Utafutaji mpya</translation>
 <translation id="3135560418014806498">Weka Wasifu wa Chrome</translation>
 <translation id="3137969841538672700">Buruta ili utafute</translation>
@@ -387,6 +389,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="4793679854893018356">Pata maelezo ya jinsi Chrome inavyohakikisha usalama wako</translation>
 <translation id="4799870290441980300">Huwasha vipengele vya ziada ili kutoa ulinzi thabiti zaidi wa Chrome</translation>
 <translation id="4828579605166583682">Google Chrome inajaribu kubadilisha manenosiri yaliyopo. Andika nenosiri lako la Windows ili uiruhusu.</translation>
+<translation id="4836321460899997044">Wasifu wa Chrome</translation>
 <translation id="4842397268809523050">ChromeOS Flex haikuweza kusawazisha data yako kwa sababu usawazishaji haupatikani katika kikoa chako.</translation>
 <translation id="4851866215237571846">Tayari umeingia katika akaunti ya <ph name="EXISTING_USER" />.  Ili utenganishe shughuli zako za kuvinjari, ingia katika akaunti kwenye Chrome katika wasifu wako binafsi ukitumia <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Ili uonyeshe skrini yako, washa kinasa skrini katika Chrome kwenye Mipangilio ya Mfumo</translation>
@@ -504,6 +507,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6014316319780893079">Kwa kutumia <ph name="BEGIN_LINK" />zana kutoka Chrome<ph name="END_LINK" />, unaweza kuvinjari kwa usalama na kuwa na udhibiti</translation>
 <translation id="6018578474045062808">Jaribu Lenzi ya Google ukitumia Chrome kwenye simu yako</translation>
 <translation id="6022659036123304283">Weka mapendeleo kwenye Chrome iwe unavyopenda</translation>
+<translation id="6024930613143833266">Tafuta ukitumia Chrome popote ulipo</translation>
 <translation id="6025087594896450715">Google Chrome itazima kisha iwake baada ya <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="604424701295382420">Imebandikwa! Unaweza kufikia tena Lenzi ya Google katika kitufe kipya kilicho kwenye upau wa vidhibiti</translation>
@@ -548,6 +552,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6334815226785304306">Fanya Google Chrome iwe kivinjari chaguomsingi na uibandike kwenye upauzana</translation>
 <translation id="63540178978900677">Chrome haitumiki tena kama kivinjari chako chaguomsingi. Ungependa kufanya Chrome iwe kivinjari chaguomsingi?</translation>
 <translation id="6360449101159168105">Kichupo hiki kilipokuwa hakitumiki, nafasi ya hifadhi ilirejeshwa ili Chrome iwe na kasi ya utendaji. Unaweza kuchagua tovuti hii iendelee kutumika kila wakati.</translation>
+<translation id="6362984640667950211">Tayari umeingia katika akaunti ya <ph name="EXISTING_USER" />. Ili utenganishe shughuli zako za kuvinjari, ingia katika akaunti kwenye Chrome katika wasifu wako binafsi ukitumia <ph name="USER_EMAIL_ADDRESS" />. Pia utapata orodha yako ya kusoma na zaidi kwenye vifaa vyako vyote.</translation>
 <translation id="6388799252195623474">nisaidie kwa hili</translation>
 <translation id="6412673304250309937">Hukagua URL zilizo na orodha ya tovuti zisizo salama zinazohifadhiwa kwenye Chrome. Iwapo tovuti inajaribu kuiba nenosiri lako au unapopakua faili hatari, Chrome inaweza pia kutuma URL, ikiwa ni pamoja na sehemu za maudhui ya ukurasa, kwenye kipengele cha Kuvinjari Salama.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Shirika lako hufunga Chrome kiotomatiki isipotumika kwa dakika 1. Data ya kuvinjari hufutwa. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa.}other{Shirika lako hufunga Chrome kiotomatiki isipotumika kwa dakika #. Data ya kuvinjari hufutwa. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa.}}</translation>
@@ -593,6 +598,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6750954913813541382">Ili kurekebisha makosa ya tahajia, Chrome hutuma kwa Google maandishi unayoandika kwenye kivinjari</translation>
 <translation id="6760235774835597023">Huongeza kasi ya tovuti kwa kutumia mtambo wa V8 wa Chrome lakini hufanya Chrome isistahimili sana mashambulio. Mipangilio hii imewashwa.</translation>
 <translation id="677276454032249905">Ungependa kufunga Chrome?</translation>
+<translation id="6777654166489463890">Uliza kuhusu maudhui yaliyo nje ya Chrome, kama vile programu au faili nyingine uliyofungua</translation>
 <translation id="6794858689789885890">Futa data ya tovuti kila wakati kwenye kifaa chako unapofunga Chrome</translation>
 <translation id="6800285125190089494">Ingia kwenye tovuti kwa haraka ukitumia manenosiri yaliyohifadhiwa katika Chrome kwenye iOS</translation>
 <translation id="6831043979455480757">Tafsiri</translation>
@@ -645,6 +651,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7285990705317078173">Pakua Chrome kwenye simu yako ili ufuatilie bei na upate arifa bei inaposhuka kwenye tovuti yoyote</translation>
 <translation id="7288567540154601580">Vichupo na viendelezi</translation>
 <translation id="7296210096911315575">Maelezo muhimu kuhusu usalama na matumizi</translation>
+<translation id="7299899569525778554">Kutafuta kwenye kompyuta ya mezani</translation>
 <translation id="7302361266603927550">Baadhi ya data yako ya Chrome bado haijahifadhiwa kwenye Akaunti yako ya Google. Jaribu kusubiri kwa dakika chache kabla ya kuondoka kwenye akaunti. Ukiondoka kwenye akaunti sasa, data hii itafutwa.</translation>
 <translation id="7306401458628386911">Anza kuvinjari papo hapo: Sasa Chrome inaweza kufunguliwa Windows inapowashwa.</translation>
 <translation id="7308322188646931570">Chrome inahitaji idhini ya kufikia hifadhi ili ipakue faili</translation>
@@ -708,6 +715,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7845233973568007926">Asante kwa kusakinisha. Ni lazima uzime kisha uwashe tena kompyuta yako kabla ya kutumia <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Fungua Chrome unapowasha Windows</translation>
 <translation id="7849037457735762883">Endelea ulikoachia: Chrome inaweza kurejesha vichupo vyako kila wakati unapoifungua upya. Ili uwashe, nenda kwenye</translation>
+<translation id="7868731902994556427">Tayari umeingia katika akaunti ya <ph name="EXISTING_USER" />. Ili utenganishe shughuli zako za kuvinjari, ingia katika akaunti kwenye Chrome katika wasifu wako binafsi ukitumia <ph name="USER_EMAIL_ADDRESS" />. Pia utapata viendelezi vyako na zaidi kwenye <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Ili utumie manenosiri yako yaliyohifadhiwa, fuata msimbo wa QR, pakua Chrome inayotumika kwenye iOS kisha uingie katika Akaunti yako ya Google</translation>
 <translation id="7872446069773932638">Inapakua... Zimesalia sekunde <ph name="SECONDS" /></translation>
 <translation id="7886087451482920026">Chagua maandishi ukitumia Lenzi ya Google</translation>
@@ -805,6 +813,7 @@ Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho
 <translation id="8679801911857917785">Pia inadhibiti ukurasa unaoonyeshwa unapoanzisha Chrome.</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8712767363896337380">Inakaribia kukamilisha usasishaji! Fungua Chrome tena ili ukamilishe mchakato wa kusasisha.</translation>
+<translation id="8717554232729236539">Tayari umeingia katika akaunti ya <ph name="EXISTING_USER" />. Ili utenganishe shughuli zako za kuvinjari, ingia katika akaunti kwenye Chrome katika wasifu wako binafsi ukitumia <ph name="USER_EMAIL_ADDRESS" />. Pia utapata orodha yako ya kusoma na zaidi kwenye <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Ondoka kwenye Chrome</translation>
 <translation id="873133009373065397">Google Chrome haijafaulu kubainisha wala kuweka kivinjari chaguomsingi</translation>
 <translation id="8747073452963259673">kona ya chini kushoto ya eneo la utafutaji: kushoto asilimia <ph name="LEFT" />, chini asilimia <ph name="BOTTOM" /></translation>

@@ -67,6 +67,7 @@
 <translation id="1793486931176048546">Fai clic su <ph name="BEGIN_BOLD" />Sì<ph name="END_BOLD" /> nella notifica di Windows per fissare Chromium alla barra delle app per un accesso rapido.</translation>
 <translation id="1808667845054772817">Reinstalla Chromium</translation>
 <translation id="1820835682567584003">Chromium sta cercando di <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> ha già fatto l’accesso. Per mantenere separata la tua attività di navigazione, accedi a Chromium con il tuo profilo personale come <ph name="USER_EMAIL_ADDRESS" />. Potrai anche accedere alle estensioni e molto altro da <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">La prossima volta che aprirai Chromium sul tuo <ph name="DEVICE_TYPE" />, ti verrà chiesto se vuoi utilizzare Gestore delle password di Google.</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
 <translation id="18552579716432081">Per eliminare i dati di navigazione solo da questo dispositivo e conservarli nel tuo Account Google, <ph name="BEGIN_LINK" />esci da Chromium<ph name="END_LINK" />.</translation>
@@ -189,6 +190,7 @@
 <translation id="3038232873781883849">In attesa dell'installazione…</translation>
 <translation id="3045032126857188731">Lingua di destinazione: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Chiudi finestra di dialogo di feedback</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> ha già fatto l’accesso. Per mantenere separata la tua attività di navigazione, accedi a Chromium con il tuo profilo personale come <ph name="USER_EMAIL_ADDRESS" />. Potrai anche accedere all'elenco di lettura e molto altro dal <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Altri profili Chromium</translation>
 <translation id="3068290154869370196">Le estensioni sono componenti aggiuntivi che ti consentono di personalizzare Chromium. Le estensioni ti aiutano a personalizzare Chromium, ad esempio tenendo tutto organizzato e semplificando le attività quotidiane.</translation>
 <translation id="3068515742935458733">Aiutaci a migliorare Chromium inviando a Google report sugli arresti anomali e <ph name="UMA_LINK" /></translation>
@@ -290,6 +292,7 @@
 <translation id="4147856324248078748">Personalizza Chromium</translation>
 <translation id="4148957013307229264">Installazione...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Accesso rete - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> ha già fatto l’accesso. Per mantenere separata la tua attività di navigazione, accedi a Chromium con il tuo profilo personale come <ph name="USER_EMAIL_ADDRESS" />. Potrai anche accedere all'elenco di lettura e molto altro su tutti i tuoi dispositivi.</translation>
 <translation id="421369550622382712">Scopri app, giochi, estensioni e temi straordinari per Chromium.</translation>
 <translation id="4217080900579554343">Accedi a Chromium per trovare questa estensione e altro su tutti i tuoi computer</translation>
 <translation id="4217972271355023382">Per navigare online in modo più sicuro con le scelte del tuo genitore, passa al tuo profilo Chromium dove hai già eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -389,6 +392,7 @@
 <translation id="5382964351116519680">Apri la ricerca con Chromium</translation>
 <translation id="5383439451358640070">Scopri perché Chromium blocca alcuni file</translation>
 <translation id="5386450000063123300">Aggiornamento di Chromium in corso (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> ha già fatto l’accesso. Per mantenere separata la tua attività di navigazione, accedi a Chromium con il tuo profilo personale come <ph name="USER_EMAIL_ADDRESS" />. Potrai anche accedere alle estensioni e molto altro su tutti i tuoi dispositivi.</translation>
 <translation id="538767207339317086">Consenti l'accesso a Chromium</translation>
 <translation id="5405650547142096840">Rimuovi da Chromium</translation>
 <translation id="5424544524441439284">Riduce le prestazioni, ma rende Chromium più resistente agli attacchi</translation>

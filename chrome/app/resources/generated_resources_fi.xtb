@@ -677,6 +677,7 @@
 <translation id="1523978563989812243">Tekstistä puheeksi ‑moottorit</translation>
 <translation id="1524563461097350801">Ei kiitos</translation>
 <translation id="1525740877599838384">Käytä vain Wi-Fi-yhteyttä sijainnin määrittämiseen</translation>
+<translation id="1526274304859009691">Kirjaudu sisään, niin voit käyttää esimerkiksi laajennuksia laitteelta (<ph name="DEVICE" />)</translation>
 <translation id="1526560967942511387">Nimetön asiakirja</translation>
 <translation id="1527336312600375509">Näytön päivitysväli</translation>
 <translation id="152913213824448541">Lähijakaminen kontaktit</translation>
@@ -6383,6 +6384,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5902400038326841449">Google Salasanat on laitettu pois päältä</translation>
 <translation id="5902892210366342391">Näytä varoitukset ennen suojaamattomille sivustoille siirtymistä incognito-tilassa</translation>
 <translation id="5906457147959147328">Salli sivuston käyttää tunnisteita suojatun sisällön toistamiseen jatkossa</translation>
+<translation id="5906549184882174190">Eristetty</translation>
 <translation id="5906655207909574370">Melkein ajan tasalla. Viimeistele päivitys käynnistämällä laite uudelleen.</translation>
 <translation id="5906732635754427568">Tähän sovellukseen liittyvät tiedot poistetaan tältä laitteelta.</translation>
 <translation id="5906974869830879618">Syötä PIN-koodi</translation>
@@ -6608,6 +6610,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6088475950266477163">Asetuks&amp;et</translation>
 <translation id="608912389580139775">Jos haluat lisätä sivun lukulistallesi, klikkaa Kirjanmerkki-kuvaketta</translation>
 <translation id="6089289670051481345">Tritanomalia</translation>
+<translation id="6090068946774422711">Kirjaudu sisään, niin voit käyttää esimerkiksi lukulistaa laitteelta (<ph name="DEVICE" />)</translation>
 <translation id="6090760257419195752">Ohitetut varoitukset</translation>
 <translation id="609174145569509836">Vapauta tallennustilaa</translation>
 <translation id="6091761513005122595">Jako otettiin käyttöön.</translation>
@@ -7960,6 +7963,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7124712201233930202">Sisältö ei noudata organisaation käytäntöjä</translation>
 <translation id="7125148293026877011">Poista Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Kirjaudu sisään, niin voit käyttää esimerkiksi laajennuksia kaikilla laitteilla</translation>
 <translation id="7125932261198019860">Varmista, että tulostin on yhdistetty samaan Wi-Fi-verkkoon kuin Chromebook tai käytät USB-johtoa. <ph name="LINK_BEGIN" />Lue lisää yhteensopivuudesta<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Lataushistoria</translation>
 <translation id="7130438335435247835">Tukiaseman nimi (APN)</translation>
@@ -8813,6 +8817,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7780992949171378848">Lähetä sivustoille pyyntö olla käyttämättä dataasi</translation>
 <translation id="7782102568078991263">Ei enää ehdotuksia Googlelta</translation>
 <translation id="7782717250816686129">Tallenna kirjautumisnäytölle pysyvää dataa ja lisää kirjautumistiedot käyttökertaan.</translation>
+<translation id="7782885970382585765">Kirjaudu sisään, niin voit käyttää esimerkiksi lukulistaa kaikilla laitteilla</translation>
 <translation id="7784020347632229094">Lue lisää pikanäppäimestä</translation>
 <translation id="7784067724422331729">Tietokoneesi suojausasetukset estivät tämän tiedoston.</translation>
 <translation id="7784796923038949829">Sivuston dataa ei voi lukea tai muuttaa</translation>

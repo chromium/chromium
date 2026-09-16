@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">দ্রুত অ্যাক্সেসের জন্য আপনার টাস্কবারে Chromium পিন করতে, Windows বিজ্ঞপ্তিতে <ph name="BEGIN_BOLD" />হ্যাঁ<ph name="END_BOLD" /> বিকল্পে ক্লিক করুন</translation>
 <translation id="1808667845054772817">Chromium আবার ইন্সটল করুন</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" />-এর চেষ্টা করছে</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনার ব্রাউজিংয়ের ডেটা আলাদা রাখতে, নিজের Chromium প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও আপনি <ph name="DEVICE" /> থেকে নিজের এক্সটেনশন ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="183031085822326697">পরেরবার আপনার <ph name="DEVICE_TYPE" />-এ Chromium খোলার সময়, Google Password Manager ব্যবহার করার জন্য আপনাকে প্রম্পট দেখানো হবে।</translation>
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
 <translation id="18552579716432081">শুধুমাত্র এই ডিভাইস থেকে ব্রাউজ করা ডেটা মুছে দিতে, তা নিজের Google অ্যাকাউন্টে রেখে দেওয়ার সময়, <ph name="BEGIN_LINK" />Chromium থেকে সাইন-আউট করুন<ph name="END_LINK" />।</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">ইনস্টল করার জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="3045032126857188731">যে ভাষায় অনুবাদ করা হয়েছে: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">মতামত ডায়ালগ বন্ধ করুন</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনার ব্রাউজিংয়ের ডেটা আলাদা রাখতে, নিজের Chromium প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও আপনি <ph name="DEVICE" /> থেকে নিজের পড়ার তালিকা ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="3068187312562070417">Chromium-এর অন্যান্য প্রোফাইল</translation>
 <translation id="3068290154869370196">এক্সটেনশন হল অ্যাড-অন যার মাধ্যমে আপনি Chromium কাস্টমাইজ করতে পারবেন। গুছিয়ে কাজ করা থেকে দৈনন্দিন টাস্ক সহজ করে তোলা, এক্সটেনশনের সাহায্যে আপনি Chromium-কে নিজের পছন্দমতো করে তুলতে পারবেন।</translation>
 <translation id="3068515742935458733">Google-এ  <ph name="UMA_LINK" /> ও ক্র্যাশ রিপোর্ট পাঠিয়ে Chromium আরও ভালো করতে সাহায্য করুন</translation>
@@ -291,6 +293,7 @@
 <translation id="4147856324248078748">আপনার Chromium কাস্টমাইজ করুন</translation>
 <translation id="4148957013307229264">ইনস্টল হচ্ছে...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - নেটওয়ার্ক সাইন-ইন - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনার ব্রাউজিংয়ের ডেটা আলাদা রাখতে, নিজের Chromium প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও, আপনার সব ডিভাইসে পড়ার তালিকা ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="421369550622382712">Chromium-এর জন্য খুব ভালো অ্যাপ্লিকেশান, গেম, এক্সটেনশন এবং থিমসমূহ আবিষ্কার করুন৷</translation>
 <translation id="4217080900579554343">আপনার সব কম্পিউটারে এই এক্সটেনশন এবং আরও অনেক কিছু পেতে, Chromium-এ সাইন-ইন করুন</translation>
 <translation id="4217972271355023382">তোমার অভিভাবকের পছন্দ মেনে অনলাইনে আরও নিরাপদ থাকতে, <ph name="USER_EMAIL_ADDRESS" /> হিসেবে আগে থেকেই সাইন-ইন করে আছো এমন Chromium প্রোফাইলে পরিবর্তন করো</translation>
@@ -390,6 +393,7 @@
 <translation id="5382964351116519680">Chromium-এর মাধ্যমে সার্চ খুলুন</translation>
 <translation id="5383439451358640070">Chromium কিছু ফাইল কেন ব্লক করে সেই সম্পর্কে জানুন</translation>
 <translation id="5386450000063123300">Chromium আপডেট হচ্ছে (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনার ব্রাউজিংয়ের ডেটা আলাদা রাখতে, নিজের Chromium প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও, আপনার সব ডিভাইসে এক্সটেনশন ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="538767207339317086">Chromium-এ সাইন-ইন করতে দিন</translation>
 <translation id="5405650547142096840">Chromium থেকে সরান</translation>
 <translation id="5424544524441439284">পারফর্ম্যান্স কমিয়ে দেয় তবে অ্যাটাকের হাত থেকে Chromium-কে আরও বেশি প্রতিরোধক করে তোলে</translation>

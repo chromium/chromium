@@ -94,6 +94,7 @@
 <translation id="1873233029667955273">Google Chrome nie jest domyślną przeglądarką</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome jest nieaktualny</translation>
+<translation id="1877067026701708502">Konto <ph name="EXISTING_USER" /> jest już zalogowane. Aby przeglądać osobno, zaloguj się w Chrome na swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do rozszerzeń oraz innych danych na wszystkich swoich urządzeniach.</translation>
 <translation id="1880677175115548835">Zaznacz tekst</translation>
 <translation id="1896602904211344018">Pobierz aplikację Chrome</translation>
 <translation id="1919130412786645364">Zezwalaj na logowanie się w Chrome</translation>
@@ -539,6 +540,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6334815226785304306">Ustaw Google Chrome jako przeglądarkę domyślną i przypnij ją do paska zadań</translation>
 <translation id="63540178978900677">Chrome nie jest już przeglądarką domyślną. Czy ma nią być?</translation>
 <translation id="6360449101159168105">Gdy ta karta była nieaktywna, pamięć została zwolniona, aby przeglądarka Chrome działała szybko. Możesz zdecydować, że ta witryna ma być zawsze aktywna.</translation>
+<translation id="6362984640667950211">Konto <ph name="EXISTING_USER" /> jest już zalogowane. Aby przeglądać osobno, zaloguj się w Chrome na swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do listy Do przeczytania oraz innych danych na wszystkich swoich urządzeniach.</translation>
 <translation id="6388799252195623474">pomóż mi w tym</translation>
 <translation id="6412673304250309937">Sprawdza, czy URL jest na liście potencjalnie niebezpiecznych stron zapisanej w Chrome. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chrome może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Twoja organizacja automatycznie zamyka przeglądarkę Chrome, gdy nie korzystasz z niej przez minutę. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}few{Twoja organizacja automatycznie zamyka przeglądarkę Chrome, gdy nie korzystasz z niej przez # minuty. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}many{Twoja organizacja automatycznie zamyka przeglądarkę Chrome, gdy nie korzystasz z niej przez # minut. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}other{Twoja organizacja automatycznie zamyka przeglądarkę Chrome, gdy nie korzystasz z niej przez # minuty. Dane przeglądania są usuwane. Może to obejmować historię, autouzupełnianie i pobrane pliki.}}</translation>
@@ -699,6 +701,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="7845233973568007926">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić komputer.</translation>
 <translation id="7847170235260850604">Uruchamiaj Chrome po uruchomieniu systemu Windows</translation>
 <translation id="7849037457735762883">Wznawianie przeglądania od tego samego miejsca: Chrome może po każdym ponownym uruchomieniu przywracać karty. Aby włączyć tę funkcję, otwórz</translation>
+<translation id="7868731902994556427">Konto <ph name="EXISTING_USER" /> jest już zalogowane. Aby przeglądać osobno, zaloguj się w Chrome na swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do rozszerzeń oraz innych danych z urządzenia <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Aby korzystać z zapisanych haseł, użyj kodu QR, pobierz Chrome na iOS i zaloguj się na konto Google</translation>
 <translation id="7872446069773932638">Pobieram… Pozostało: <ph name="SECONDS" /> s.</translation>
 <translation id="7886087451482920026">Zaznacz tekst za pomocą Obiektywu Google</translation>
@@ -796,6 +799,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="8679801911857917785">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chrome.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8712767363896337380">Prawie gotowe. Aby dokończyć aktualizowanie, uruchom ponownie Chrome.</translation>
+<translation id="8717554232729236539">Konto <ph name="EXISTING_USER" /> jest już zalogowane. Aby przeglądać osobno, zaloguj się w Chrome na swoim profilu jako <ph name="USER_EMAIL_ADDRESS" />. Będziesz też mieć dostęp do listy Do przeczytania oraz do innych danych z urządzenia <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Wyloguj się z Chrome</translation>
 <translation id="873133009373065397">Google Chrome nie może określić ani ustawić domyślnej przeglądarki</translation>
 <translation id="8747073452963259673">lewy dolny róg obszaru wyszukiwania: po lewej stronie <ph name="LEFT" />%, u dołu <ph name="BOTTOM" />%</translation>

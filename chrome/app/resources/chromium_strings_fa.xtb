@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">‏روی <ph name="BEGIN_BOLD" />بله<ph name="END_BOLD" /> در اعلان Windows کلیک کنید تا Chromium را برای دسترسی سریع به نوار وظیفه سنجاق کنید.</translation>
 <translation id="1808667845054772817">‏نصب مجدد Chromium</translation>
 <translation id="1820835682567584003">‏Chromium در تلاش است <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">‏‫<ph name="EXISTING_USER" /> از قبل به سیستم وارد شده است. برای جدا نگه داشتن مرورتان، در نمایه خود با حساب <ph name="USER_EMAIL_ADDRESS" /> به سیستم Chromium وارد شوید. همچنین افزونه‌ها و سایر موارد را از <ph name="DEVICE" /> دریافت خواهید کرد.</translation>
 <translation id="183031085822326697">‏دفعه بعد که Chromium را در <ph name="DEVICE_TYPE" /> باز می‌کنید، پیام‌واره‌ای برای استفاده از «مدیر گذرواژه Google» خواهید دید.</translation>
 <translation id="1838374766361614909">پاک کردن جستجو</translation>
 <translation id="18552579716432081">‏برای حذف کردن داده‌های مرور فقط از این دستگاه و نگهداری آن در «حساب Google»، <ph name="BEGIN_LINK" />از سیستم Chromium خارج شوید<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">درانتظار نصب…</translation>
 <translation id="3045032126857188731">زبان ترجمه‌شده: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">بستن کادر گفتگوی بازخورد</translation>
+<translation id="3064717200427679322">‏‫<ph name="EXISTING_USER" /> از قبل به سیستم وارد شده است. برای جدا نگه داشتن مرورتان، در نمایه خود با حساب <ph name="USER_EMAIL_ADDRESS" /> به سیستم Chromium وارد شوید. همچنین فهرست خواندن و سایر موارد را از <ph name="DEVICE" /> دریافت خواهید کرد.</translation>
 <translation id="3068187312562070417">‏دیگر نمایه‌های Chromium</translation>
 <translation id="3068290154869370196">‏افزونه‌ها برافزاهایی هستند که به شما امکان می‌دهند Chromium را سفارشی‌سازی کنید. از مرتب ماندن گرفته تا ساده‌سازی تکالیف روزمره، افزونه‌ها به شما کمک می‌کنند Chromium را مختص خودتان کنید.</translation>
 <translation id="3068515742935458733">‏با ارسال گزارش‌های خرابی و <ph name="UMA_LINK" /> به Google، به بهبود Google کمک کنید</translation>
@@ -290,6 +292,7 @@
 <translation id="4147856324248078748">‏سفارشی‌سازی Chromium</translation>
 <translation id="4148957013307229264">درحال نصب…</translation>
 <translation id="419998258129752635">‏<ph name="PAGE_TITLE" /> - ورود به سیستم شبکه - Chromium</translation>
+<translation id="4208652172235621272">‏‫<ph name="EXISTING_USER" /> از قبل به سیستم وارد شده است. برای جدا نگه داشتن مرورتان، در نمایه خود با حساب <ph name="USER_EMAIL_ADDRESS" /> به سیستم Chromium وارد شوید. همچنین فهرست خواندن و سایر اطلاعات در همه دستگاه‌های شما قابل دسترسی خواهد بود.</translation>
 <translation id="421369550622382712">‏برنامه‌ها، بازی‌ها، افزونه‌ها و طرح‌های زمینه Chromium را کشف کنید.</translation>
 <translation id="4217080900579554343">‏برای دریافت این افزونه و موارد دیگر در همه رایانه‌هایتان، به سیستم Chromium وارد شوید</translation>
 <translation id="4217972271355023382">‏برای ایمن‌تر ماندن در فضای آنلاین با کمک انتخاب‌های ولی‌تان، به همان نمایه Chromium بروید که قبلاً با <ph name="USER_EMAIL_ADDRESS" /> به سیستم وارد شده‌اید</translation>
@@ -389,6 +392,7 @@
 <translation id="5382964351116519680">‏باز کردن جستجو با Chromium</translation>
 <translation id="5383439451358640070">‏ببینید چرا Chromium برخی‌از فایل‌ها را مسدود می‌کند</translation>
 <translation id="5386450000063123300">‏درحال به‌روزرسانی Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">‏‫<ph name="EXISTING_USER" /> از قبل به سیستم وارد شده است. برای جدا نگه داشتن مرورتان، در نمایه خود با حساب <ph name="USER_EMAIL_ADDRESS" /> به سیستم Chromium وارد شوید. همچنین افزونه‌ها و سایر موارد را در همه دستگاه‌هایتان دریافت خواهید کرد.</translation>
 <translation id="538767207339317086">‏مجاز کردن ورود به سیستم Chromium</translation>
 <translation id="5405650547142096840">‏حذف از Chromium</translation>
 <translation id="5424544524441439284">‏عملکرد را کاهش می‌دهد اما Chromium را دربرابر حملات مقاوم‌تر می‌کند</translation>
