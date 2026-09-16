@@ -729,6 +729,9 @@ export declare interface UserProfileInfo {
   email: string;
   // Whether the profile's signed-in account is a managed account.
   isManaged?: boolean;
+  // Whether the user has an AI subscription and should show the avatar gradient
+  // ring.
+  hasAvatarRing?: boolean;
 }
 
 // The result from checking a page with Safe Browsing.

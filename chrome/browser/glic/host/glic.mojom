@@ -221,6 +221,10 @@ struct UserProfileInfo {
   /// See `policy::ManagementService::IsAccountManaged()`.
   // @glic_optional
   bool is_managed;
+  // Whether the user has an AI subscription and should show the avatar gradient
+  // ring.
+  // @glic_optional
+  bool has_avatar_ring;
 };
 
 // @generate glic_api
