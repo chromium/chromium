@@ -29,9 +29,13 @@ struct CookieManagerParams {
   // embedded frames.
   array<string> secure_origin_cookies_allowed_schemes;
 
-  // Origins that unconditionally allow cookies from secure origins.
+  // Top-level origins that unconditionally allow cookies from secure origins.
+  // The key is the top-level origin to check for, the values are
+  // permitted sites to access cookies for (and will be checked in order).
+  //
   // Note: Opaque origins are not allowed and will be ignored.
-  array<url.mojom.Origin> secure_origin_cookies_allowed_origins;
+  map<url.mojom.Origin, array<SchemefulSite>>
+      secure_origin_cookies_allowed_origins;
 
   // Schemes that unconditionally allow cookies from the same scheme.
   array<string> matching_scheme_cookies_allowed_schemes;

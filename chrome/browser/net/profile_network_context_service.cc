@@ -1134,8 +1134,11 @@ ProfileNetworkContextService::CreateCookieManagerParams(
   // TODO(crbug.com/483614998): Granting Lens side panel is a temporary
   // exception to use SameSite cookies while it migrates to a <webview>
   // approach. This should not be done for other untrusted WebUI.
-  out->secure_origin_cookies_allowed_origins.push_back(
-      url::Origin::Create(GURL(chrome::kChromeUILensUntrustedSidePanelURL)));
+  std::vector<net::SchemefulSite> accessed_by_lens{
+      net::SchemefulSite(GURL("https://google.com"))};
+  out->secure_origin_cookies_allowed_origins.insert_or_assign(
+      url::Origin::Create(GURL(chrome::kChromeUILensUntrustedSidePanelURL)),
+      std::move(accessed_by_lens));
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

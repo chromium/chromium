@@ -889,6 +889,89 @@ TEST_F(CookieSettingsTest, GetCookieSettingSecureOriginCookiesAllowed) {
             CONTENT_SETTING_BLOCK);
 }
 
+TEST_F(CookieSettingsTest, SetSecureOriginCookiesAllowedOrigins) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme(kChromeScheme, url::SCHEME_WITH_HOST);
+
+  CookieSettings settings;
+  settings.set_secure_origin_cookies_allowed_origins(
+      {{url::Origin::Create(GURL("chrome://foo")),
+        {net::SchemefulSite(GURL("https://foo.com")),
+         net::SchemefulSite(GURL("https://bar.com"))}}});
+  settings.set_block_third_party_cookies(true);
+
+  EXPECT_EQ(settings.GetCookieSetting(
+                /*url=*/GURL("https://foo.com"),
+                /*site_for_cookies=*/net::SiteForCookies(),
+                /*first_party_url=*/GURL("chrome://foo"),
+                net::CookieSettingOverrides()),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(settings.ShouldIgnoreSameSiteRestrictions(
+      /*url=*/GURL("https://foo.com"),
+      /*site_for_cookies=*/net::SiteForCookies(),
+      /*top_level_origin=*/url::Origin::Create(GURL("chrome://foo"))));
+
+  // Not applicable for http://
+  EXPECT_EQ(settings.GetCookieSetting(
+                /* url=*/GURL("http://foo.com"),
+                /* site_for_cookies=*/net::SiteForCookies(),
+                /* first_party_url=*/GURL("chrome://foo"),
+                net::CookieSettingOverrides()),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(settings.ShouldIgnoreSameSiteRestrictions(
+      /*url=*/GURL("http://foo.com"),
+      /*site_for_cookies=*/net::SiteForCookies(),
+      /*top_level_origin=*/url::Origin::Create(GURL("chrome://foo"))));
+
+  // It is schemeful-site level.
+  EXPECT_EQ(settings.GetCookieSetting(
+                /*url=*/GURL("https://www.foo.com"),
+                /*site_for_cookies=*/net::SiteForCookies(),
+                /*first_party_url=*/GURL("chrome://foo"),
+                net::CookieSettingOverrides()),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(settings.ShouldIgnoreSameSiteRestrictions(
+      /*url=*/GURL("https://www.foo.com"),
+      /*site_for_cookies=*/net::SiteForCookies(),
+      /*top_level_origin=*/url::Origin::Create(GURL("chrome://foo"))));
+
+  // Wrong first-party.
+  EXPECT_EQ(settings.GetCookieSetting(
+                /* url=*/GURL("https://foo.com"),
+                /* site_for_cookies=*/net::SiteForCookies(),
+                /* first_party_url=*/GURL("chrome://bar"),
+                net::CookieSettingOverrides()),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(settings.ShouldIgnoreSameSiteRestrictions(
+      /*url=*/GURL("https://foo.com"),
+      /*site_for_cookies=*/net::SiteForCookies(),
+      /*top_level_origin=*/url::Origin::Create(GURL("chrome://bar"))));
+
+  // bar.com is OK
+  EXPECT_EQ(settings.GetCookieSetting(
+                /* url=*/GURL("https://bar.com"),
+                /* site_for_cookies=*/net::SiteForCookies(),
+                /* first_party_url=*/GURL("chrome://foo"),
+                net::CookieSettingOverrides()),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(settings.ShouldIgnoreSameSiteRestrictions(
+      /*url=*/GURL("https://bar.com"),
+      /*site_for_cookies=*/net::SiteForCookies(),
+      /*top_level_origin=*/url::Origin::Create(GURL("chrome://foo"))));
+
+  // baz.com is not
+  EXPECT_EQ(settings.GetCookieSetting(
+                /* url=*/GURL("https://baz.com"),
+                /* site_for_cookies=*/net::SiteForCookies(),
+                /* first_party_url=*/GURL("chrome://foo"),
+                net::CookieSettingOverrides()),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(settings.ShouldIgnoreSameSiteRestrictions(
+      /*url=*/GURL("https://baz.com"),
+      /*site_for_cookies=*/net::SiteForCookies(),
+      /*top_level_origin=*/url::Origin::Create(GURL("chrome://foo"))));
+}
+
 TEST_F(CookieSettingsTest, GetCookieSettingWithThirdPartyCookiesAllowedScheme) {
   CookieSettings settings;
   settings.set_third_party_cookies_allowed_schemes({"chrome-extension"});

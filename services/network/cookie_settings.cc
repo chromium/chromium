@@ -178,7 +178,7 @@ bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
       !site_for_cookies.IsNull()) {
     return true;
   }
-  return secure_origin_cookies_allowed_origins_.contains(top_level_origin);
+  return HasSecureOriginException(top_level_origin, url);
 }
 
 bool CookieSettings::IsCookieAccessible(
@@ -218,8 +218,7 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
             first_party_url.scheme())) {
       return true;
     }
-    if (secure_origin_cookies_allowed_origins_.contains(
-            url::Origin::Create(first_party_url))) {
+    if (HasSecureOriginException(url::Origin::Create(first_party_url), url)) {
       return true;
     }
   }
@@ -308,6 +307,17 @@ bool CookieSettings::HasSessionOnlyOrigins() const {
     }
   }
   return false;
+}
+
+bool CookieSettings::HasSecureOriginException(
+    const url::Origin& first_party_origin,
+    const GURL& url) const {
+  auto it = secure_origin_cookies_allowed_origins_.find(first_party_origin);
+  if (it == secure_origin_cookies_allowed_origins_.end()) {
+    return false;
+  }
+  net::SchemefulSite url_site(url);
+  return std::ranges::contains(it->second, url_site);
 }
 
 const std::vector<content_settings::HostIndexedContentSettings>&
@@ -437,11 +447,13 @@ bool CookieSettings::ShouldAlwaysAllowCookiesForTesting(
 }
 
 void CookieSettings::set_secure_origin_cookies_allowed_origins(
-    const std::vector<url::Origin>& secure_origin_cookies_allowed_origins) {
+    std::vector<std::pair<url::Origin, std::vector<net::SchemefulSite>>>
+        secure_origin_cookies_allowed_origins) {
   secure_origin_cookies_allowed_origins_.clear();
-  for (const auto& origin : secure_origin_cookies_allowed_origins) {
-    if (!origin.opaque()) {
-      secure_origin_cookies_allowed_origins_.insert(origin);
+  for (auto& kv : secure_origin_cookies_allowed_origins) {
+    if (!kv.first.opaque()) {
+      secure_origin_cookies_allowed_origins_.insert_or_assign(
+          kv.first, std::move(kv.second));
     }
   }
 }

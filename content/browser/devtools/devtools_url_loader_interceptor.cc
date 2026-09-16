@@ -1642,8 +1642,7 @@ void InterceptionJob::ProcessSetCookies(const net::HttpResponseHeaders& headers,
       GetContentClient()
           ->browser()
           ->ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
-              top_frame_origin,
-              create_loader_params_->request.url.SchemeIsCryptographic());
+              top_frame_origin, url_chain_.back());
   CHECK_EQ(create_loader_params_->request.url, url_chain_.back(),
            base::NotFatalUntil::M159);
   bool is_main_frame_navigation =
@@ -1817,8 +1816,8 @@ void InterceptionJob::FetchCookies(base::OnceClosure callback) {
   bool should_treat_as_first_party =
       GetContentClient()
           ->browser()
-          ->ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(
-              top_frame_origin, request.url.SchemeIsCryptographic());
+          ->ShouldIgnoreSameSiteCookieRestrictionsWhenTopLevel(top_frame_origin,
+                                                               request.url);
   bool is_main_frame_navigation =
       request.trusted_params.has_value() &&
       request.trusted_params->isolation_info.request_type() ==
