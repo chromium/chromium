@@ -1487,6 +1487,7 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.XSLT,
                 "Controls whether XSLT is supported by the browser. Disabling this flag disables"
                         + " all XSLT processing."),
+        Flag.baseFeature("UseRustCborParser", "Enables the Rust-based CBOR parser instead of C++."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
