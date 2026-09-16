@@ -11,6 +11,10 @@
 
 namespace omnibox_everywhere {
 
+// Returns the channel-suffixed name shown for Omnibox Everywhere (e.g.
+// "Search with Chrome Canary"), used for the Start Menu shortcut and taskbar.
+std::wstring GetDisplayName();
+
 // Returns the AppUserModelId for the Omnibox Everywhere application.
 std::wstring GetAppUserModelId();
 

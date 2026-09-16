@@ -137,6 +137,7 @@ source_set("impl") {
       "//chrome/browser:shell_integration",
       "//chrome/browser/win",
       "//chrome/common:constants",
+      "//chrome/install_static:install_static_util",
     ]
   }
 }
@@ -178,6 +179,12 @@ if (is_mac || is_win) {
       "//ui/views",
       "//ui/views:test_support",
     ]
+    if (is_win) {
+      deps += [
+        "//chrome/install_static:install_static_util",
+        "//chrome/install_static/test:test_support",
+      ]
+    }
   }
 
   source_set("interactive_ui_tests") {

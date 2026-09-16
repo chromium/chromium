@@ -3285,6 +3285,17 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_OMNIBOX_EVERYWHERE_NAME" desc="Name of the desktop search feature (Omnibox Everywhere) used for window titles and shortcuts.">
         Search with Chrome
       </message>
+      <if expr="is_win">
+        <message name="IDS_OMNIBOX_EVERYWHERE_NAME_BETA" desc="Name of the desktop search feature (Omnibox Everywhere) used for window titles and shortcuts in Chrome Beta.">
+          Search with Chrome Beta
+        </message>
+        <message name="IDS_OMNIBOX_EVERYWHERE_NAME_DEV" desc="Name of the desktop search feature (Omnibox Everywhere) used for window titles and shortcuts in Chrome Dev.">
+          Search with Chrome Dev
+        </message>
+        <message name="IDS_OMNIBOX_EVERYWHERE_NAME_CANARY" desc="Name of the desktop search feature (Omnibox Everywhere) used for window titles and shortcuts in Chrome Canary.">
+          Search with Chrome Canary
+        </message>
+      </if>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE" desc="Title of the Omnibox Everywhere section on the search settings page.">
         Search from desktop
       </message>

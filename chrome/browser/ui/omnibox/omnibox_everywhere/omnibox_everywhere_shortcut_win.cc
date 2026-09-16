@@ -14,11 +14,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/shortcut.h"
 #include "chrome/browser/shell_integration_win.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_icon_resources_win.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/install_static/install_details.h"
+#include "components/version_info/channel.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/win/shell.h"
 
@@ -44,13 +47,22 @@ base::FilePath GetChromeProxyPath() {
   return chrome_dir.Append(FILE_PATH_LITERAL("chrome_proxy.exe"));
 }
 
-std::wstring GetDisplayName() {
-  return base::UTF16ToWide(
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_NAME));
+int GetDisplayNameMessageId() {
+  if (install_static::InstallDetails::Get().is_primary_mode()) {
+    return IDS_OMNIBOX_EVERYWHERE_NAME;
+  }
+  switch (chrome::GetChannel()) {
+    case version_info::Channel::BETA:
+      return IDS_OMNIBOX_EVERYWHERE_NAME_BETA;
+    case version_info::Channel::DEV:
+      return IDS_OMNIBOX_EVERYWHERE_NAME_DEV;
+    case version_info::Channel::CANARY:
+      return IDS_OMNIBOX_EVERYWHERE_NAME_CANARY;
+    default:
+      return IDS_OMNIBOX_EVERYWHERE_NAME;
+  }
 }
 
-// TODO(crbug.com/562072483): Make the file name channel-aware; channels
-// currently share one Start Menu entry. Land before crbug.com/562073179.
 std::wstring GetShortcutName() {
   return base::StrCat({GetDisplayName(), L".lnk"});
 }
@@ -66,6 +78,11 @@ base::FilePath GetStartMenuShortcutPath() {
 }
 
 }  // namespace
+
+std::wstring GetDisplayName() {
+  return base::UTF16ToWide(
+      l10n_util::GetStringUTF16(GetDisplayNameMessageId()));
+}
 
 std::wstring GetAppUserModelId() {
   return shell_integration::win::GetAppUserModelIdForApp(

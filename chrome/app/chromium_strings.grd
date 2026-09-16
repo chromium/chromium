@@ -3243,6 +3243,17 @@ Chromium is unable to recover your settings.
       <message name="IDS_OMNIBOX_EVERYWHERE_NAME" desc="Name of the desktop search feature (Omnibox Everywhere) used for window titles and shortcuts.">
         Search with Chromium
       </message>
+      <if expr="is_win">
+        <message name="IDS_OMNIBOX_EVERYWHERE_NAME_BETA" desc="Unused; Chromium has no side-by-side channels." translateable="false">
+          Search with Chromium Beta
+        </message>
+        <message name="IDS_OMNIBOX_EVERYWHERE_NAME_DEV" desc="Unused; Chromium has no side-by-side channels." translateable="false">
+          Search with Chromium Dev
+        </message>
+        <message name="IDS_OMNIBOX_EVERYWHERE_NAME_CANARY" desc="Unused; Chromium has no side-by-side channels." translateable="false">
+          Search with Chromium Canary
+        </message>
+      </if>
       <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TITLE" desc="Title of the Omnibox Everywhere section on the search settings page.">
         Search from desktop
       </message>
