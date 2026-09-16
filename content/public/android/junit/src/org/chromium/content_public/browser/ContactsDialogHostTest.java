@@ -4,8 +4,6 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -17,7 +15,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class ContactsDialogHostTest {
 
     @Test
-    @SmallTest
     public void testContactsDialogHostIgnoresDuplicateActions() {
         WebContents mockWebContents = Mockito.mock(WebContents.class);
         long nativePtr = 1234;

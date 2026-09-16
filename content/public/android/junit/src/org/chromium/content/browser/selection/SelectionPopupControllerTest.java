@@ -45,8 +45,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.textclassifier.TextClassification;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -1419,7 +1417,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature("ExtensionContextMenuItems")
     public void testIntersperseMenuItems() {
         ModelList items = new ModelList();
@@ -1459,7 +1456,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature("ExtensionContextMenuItems")
     public void testIntersperseMenuItems_insertsBeforeDividerOfNextGroup() {
         ModelList items = new ModelList();
@@ -1494,7 +1490,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature("ExtensionContextMenuItems")
     public void testIntersperseMenuItems_orderZeroAndNegative() {
         ModelList items = new ModelList();
@@ -1529,7 +1524,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature("ExtensionContextMenuItems")
     public void testIntersperseMenuItems_extensionAndInspectOrder() {
         ModelList items = new ModelList();
@@ -1563,7 +1557,6 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    @SmallTest
     @Feature("ExtensionContextMenuItems")
     public void testIntersperseMenuItems_sanitizesConsecutiveAndEdgeDividers() {
         ModelList items = new ModelList();

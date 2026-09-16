@@ -6,8 +6,6 @@ package org.chromium.content.browser.input;
 
 import static org.junit.Assert.assertEquals;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,7 +25,6 @@ public class OngoingGestureTest {
             "InputMethod.StylusHandwriting.GestureResult";
 
     @Test
-    @SmallTest
     public void testGestureRequestsHaveIncreasingIDs() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -43,7 +40,6 @@ public class OngoingGestureTest {
     }
 
     @Test
-    @SmallTest
     public void testGestureRequestLogsUnknownWithNullExecutor() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -58,7 +54,6 @@ public class OngoingGestureTest {
     }
 
     @Test
-    @SmallTest
     public void testGestureRequestLogsUnknownWithNullIntConsumer() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -74,7 +69,6 @@ public class OngoingGestureTest {
     }
 
     @Test
-    @SmallTest
     public void testGestureRequestLogsCorrectResult() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

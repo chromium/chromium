@@ -22,8 +22,6 @@ import android.view.inputmethod.RemoveSpaceGesture;
 import android.view.inputmethod.SelectGesture;
 import android.view.inputmethod.SelectRangeGesture;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -45,7 +43,6 @@ public class StylusGestureConverterTest {
     private static final String FALLBACK_TEXT = "this gesture failed";
 
     @Test
-    @SmallTest
     public void testSelectGesture() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -71,7 +68,6 @@ public class StylusGestureConverterTest {
     }
 
     @Test
-    @SmallTest
     public void testInsertGesture() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -97,7 +93,6 @@ public class StylusGestureConverterTest {
     }
 
     @Test
-    @SmallTest
     public void testDeleteGesture() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -123,7 +118,6 @@ public class StylusGestureConverterTest {
     }
 
     @Test
-    @SmallTest
     public void testRemoveSpaceGesture() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -148,7 +142,6 @@ public class StylusGestureConverterTest {
     }
 
     @Test
-    @SmallTest
     public void testJoinOrSplitGesture() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -174,7 +167,6 @@ public class StylusGestureConverterTest {
     }
 
     @Test
-    @SmallTest
     public void testSelectRangeGesture() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -201,7 +193,6 @@ public class StylusGestureConverterTest {
     }
 
     @Test
-    @SmallTest
     public void testDeleteRangeGesture() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -228,7 +219,6 @@ public class StylusGestureConverterTest {
     }
 
     @Test
-    @SmallTest
     public void testNullFallbackText() {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(

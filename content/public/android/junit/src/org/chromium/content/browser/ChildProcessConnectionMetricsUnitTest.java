@@ -6,8 +6,6 @@ package org.chromium.content.browser;
 
 import android.content.ComponentName;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +44,6 @@ public class ChildProcessConnectionMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEmitMetricsNoConnections() {
         ChildProcessConnection connection = createMockConnection(ChildBindingState.STRONG);
         mConnectionMetrics.addConnection(connection);
@@ -90,7 +87,6 @@ public class ChildProcessConnectionMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEmitMetrics_BindingManagerUsesNotPerceptible() {
         mConnectionMetrics.addConnection(createMockConnection(ChildBindingState.STRONG));
         mConnectionMetrics.addConnection(createMockConnection(ChildBindingState.VISIBLE));
@@ -140,7 +136,6 @@ public class ChildProcessConnectionMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEmitMetricsWithUpdate() {
         ChildProcessConnection lowestRankingConnection =
                 createMockConnection(ChildBindingState.VISIBLE);

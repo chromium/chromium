@@ -9,8 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,14 +43,12 @@ public class ViewFocusChangeSuppressionTest {
     }
 
     @Test
-    @SmallTest
     public void testFromReturnsNonNull() {
         ViewFocusChangeSuppression suppression = ViewFocusChangeSuppression.from(mWebContents);
         assertNotNull(suppression);
     }
 
     @Test
-    @SmallTest
     public void testSameInstanceReturned() {
         ViewFocusChangeSuppression suppression1 = ViewFocusChangeSuppression.from(mWebContents);
         ViewFocusChangeSuppression suppression2 = ViewFocusChangeSuppression.from(mWebContents);
@@ -60,7 +56,6 @@ public class ViewFocusChangeSuppressionTest {
     }
 
     @Test
-    @SmallTest
     public void testSetAndGetSuppressed() {
         ViewFocusChangeSuppression suppression = ViewFocusChangeSuppression.from(mWebContents);
         assertFalse(suppression.isSuppressed());
