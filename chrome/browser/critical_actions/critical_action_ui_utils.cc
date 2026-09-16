@@ -28,26 +28,38 @@ std::string GetPasswordManagerLinkoutUrl(const GURL& url) {
   return chrome::kChromeUIPasswordManagerURL;
 }
 
+std::string GetSiteDetailsLinkoutUrl(const GURL& page_url) {
+  const url::Origin origin = url::Origin::Create(page_url);
+  // An opaque origin serialises to the literal string "null", which would
+  // produce a site details page for a site that does not exist. Fall back to
+  // the settings root instead.
+  if (origin.opaque()) {
+    return chrome::kChromeUISettingsURL;
+  }
+  return net::AppendQueryParameter(
+             GURL(base::StrCat(
+                 {chrome::kChromeUISettingsURL, chrome::kSiteDetailsSubpage})),
+             "site", origin.Serialize())
+      .spec();
+}
+
 }  // namespace
 
-std::string GetCriticalActionLinkoutUrl(const CriticalActionEntry& action) {
-  switch (action.action_type) {
+std::string GetCriticalActionLinkoutUrl(ActionType action_type,
+                                        const GURL& page_url) {
+  switch (action_type) {
     case ActionType::kCredentialAccess:
     case ActionType::kGooglePasswordManager:
     case ActionType::kFederatedLogin:
     case ActionType::kCredentialsOtp:
-      return GetPasswordManagerLinkoutUrl(action.url);
+      return GetPasswordManagerLinkoutUrl(page_url);
     case ActionType::kFormFill:
       return base::StrCat(
           {chrome::kChromeUISettingsURL, chrome::kAddressesSubPage});
     case ActionType::kDownload:
       return chrome::kChromeUIDownloadsURL;
     case ActionType::kSettingChange:
-      return net::AppendQueryParameter(
-                 GURL(base::StrCat({chrome::kChromeUISettingsURL,
-                                    chrome::kSiteDetailsSubpage})),
-                 "site", url::Origin::Create(action.url).Serialize())
-          .spec();
+      return GetSiteDetailsLinkoutUrl(page_url);
     case ActionType::kUnknown:
       return chrome::kChromeUISettingsURL;
   }

@@ -376,11 +376,13 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
 }
 
 history::mojom::CriticalActionPtr CriticalActionToMojom(
-    const critical_actions::CriticalActionEntry& action) {
+    const critical_actions::CriticalActionEntry& action,
+    const GURL& page_url) {
   auto action_mojom = history::mojom::CriticalAction::New();
   action_mojom->id = action.critical_action_id;
   action_mojom->linkout_url =
-      critical_actions::GetCriticalActionLinkoutUrl(action);
+      critical_actions::GetCriticalActionLinkoutUrl(action.action_type,
+                                                    page_url);
   action_mojom->label = action.GetLabel();
   action_mojom->tooltip = action.GetTooltip();
   action_mojom->action_type =
@@ -892,25 +894,27 @@ void BrowsingHistoryHandler::HandleQueryResults(
 
   DCHECK(tracker);
 
-  absl::flat_hash_map<history::VisitID,
-                      std::vector<history::mojom::CriticalActionPtr>>
-      actions_by_visit_id;
-
   // Deduplicate actions belonging to the same task and visit.
   // 5 seconds is chosen as a safe heuristic upper bound to accommodate
   // potential latency delays between the Actor and Chrome side logs
   // of the same event, while being small enough to avoid merging separate
   // events.
+  // `processed_actions` owns the entries; `actions_by_visit_id` below borrows
+  // them so that conversion can happen in the per-entry loop, where the
+  // visit's URL is available to resolve the linkout destination.
   std::vector<critical_actions::CriticalActionEntry> processed_actions =
       DeduplicateCriticalActions(critical_actions, base::Seconds(5));
+
+  absl::flat_hash_map<history::VisitID,
+                      std::vector<const critical_actions::CriticalActionEntry*>>
+      actions_by_visit_id;
 
   for (const auto& action : processed_actions) {
     if (action.visit_id == history::kInvalidVisitID ||
         action.action_type == critical_actions::ActionType::kUnknown) {
       continue;
     }
-    actions_by_visit_id[action.visit_id].push_back(
-        CriticalActionToMojom(action));
+    actions_by_visit_id[action.visit_id].push_back(&action);
   }
 
   std::vector<history::mojom::HistoryEntryPtr> results_mojom;
@@ -924,8 +928,10 @@ void BrowsingHistoryHandler::HandleQueryResults(
       for (history::VisitID visit_id : entry.all_visit_ids) {
         auto it = actions_by_visit_id.find(visit_id);
         if (it != actions_by_visit_id.end()) {
-          for (auto& action : it->second) {
-            entry_mojom->critical_actions.push_back(std::move(action));
+          for (const critical_actions::CriticalActionEntry* action :
+               it->second) {
+            entry_mojom->critical_actions.push_back(
+                CriticalActionToMojom(*action, entry.url));
           }
         }
       }
