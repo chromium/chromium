@@ -335,11 +335,11 @@ class KeyboardAccessoryViewBinder {
                         item.maybeEmitEventForIph(mKeyboardAccessory.getFeatureEngagementTracker());
                         action.getCallback().onResult(action);
                     });
-            @Nullable Callback<Action> longPressCallback = action.getLongPressCallback();
+            @Nullable Runnable longPressCallback = action.getLongPressCallback();
             if (longPressCallback != null) {
                 chipView.setOnLongClickListener(
-                        view -> {
-                            longPressCallback.onResult(action);
+                        _ -> {
+                            longPressCallback.run();
                             return true; // Click event consumed!
                         });
             }

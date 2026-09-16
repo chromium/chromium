@@ -408,7 +408,7 @@ public class KeyboardAccessoryViewTest {
                                                 new Action(
                                                         AUTOFILL_SUGGESTION,
                                                         CallbackUtils.emptyCallback(),
-                                                        result -> clickRecorded.set(true)),
+                                                        () -> clickRecorded.set(true)),
                                                 mProfile),
                                         createSheetOpener(/* atMemoryEnabled= */ true)
                                     });
@@ -1046,7 +1046,7 @@ public class KeyboardAccessoryViewTest {
                                                 new Action(
                                                         AUTOFILL_SUGGESTION,
                                                         result -> clickRecorded.set(true),
-                                                        result -> clickRecorded.set(true)),
+                                                        () -> clickRecorded.set(true)),
                                                 mProfile),
                                         createSheetOpener(/* atMemoryEnabled= */ true)
                                     });

@@ -439,7 +439,7 @@ class KeyboardAccessoryMediator
                     }
                     delegate.suggestionAccepted(pos, suggestion.showLoadingOnAcceptance());
                 },
-                result -> {
+                () -> {
                     if (maybeShowAutofillAiSuggestionDetails(delegate, pos, suggestion)) {
                         return;
                     }

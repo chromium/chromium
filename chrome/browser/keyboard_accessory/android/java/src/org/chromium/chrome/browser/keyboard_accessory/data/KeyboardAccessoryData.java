@@ -139,7 +139,7 @@ public class KeyboardAccessoryData {
      */
     public static final class Action {
         private final Callback<Action> mActionCallback;
-        private final @Nullable Callback<Action> mLongPressCallback;
+        private final @Nullable Runnable mLongPressCallback;
         private final @Nullable Callback<Boolean> mHoverCallback;
         private final @AccessoryAction int mType;
 
@@ -150,14 +150,14 @@ public class KeyboardAccessoryData {
         public Action(
                 @AccessoryAction int type,
                 Callback<Action> actionCallback,
-                @Nullable Callback<Action> longPressCallback) {
+                @Nullable Runnable longPressCallback) {
             this(type, actionCallback, longPressCallback, /* hoverCallback= */ null);
         }
 
         public Action(
                 @AccessoryAction int type,
                 Callback<Action> actionCallback,
-                @Nullable Callback<Action> longPressCallback,
+                @Nullable Runnable longPressCallback,
                 @Nullable Callback<Boolean> hoverCallback) {
             mActionCallback = actionCallback;
             mLongPressCallback = longPressCallback;
@@ -169,7 +169,7 @@ public class KeyboardAccessoryData {
             return mActionCallback;
         }
 
-        public @Nullable Callback<Action> getLongPressCallback() {
+        public @Nullable Runnable getLongPressCallback() {
             return mLongPressCallback;
         }
 

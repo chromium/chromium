@@ -581,7 +581,7 @@ public class KeyboardAccessoryControllerTest {
         assertThat(barItems.get(0).getAction().getLongPressCallback(), notNullValue());
 
         // Simulate a long press on the suggestion.
-        barItems.get(0).getAction().getLongPressCallback().onResult(barItems.get(0).getAction());
+        barItems.get(0).getAction().getLongPressCallback().run();
 
         ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManager).showDialog(modelCaptor.capture(), anyInt());
@@ -650,7 +650,7 @@ public class KeyboardAccessoryControllerTest {
         assertThat(barItems.get(0).getAction().getLongPressCallback(), notNullValue());
 
         // Simulate a long press on the suggestion.
-        barItems.get(0).getAction().getLongPressCallback().onResult(barItems.get(0).getAction());
+        barItems.get(0).getAction().getLongPressCallback().run();
 
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
         verify(mMockAutofillDelegate).deleteSuggestion(0);
@@ -675,7 +675,7 @@ public class KeyboardAccessoryControllerTest {
         assertThat(barItems.get(0).getAction().getLongPressCallback(), notNullValue());
 
         // Simulate a long press on the suggestion.
-        barItems.get(0).getAction().getLongPressCallback().onResult(barItems.get(0).getAction());
+        barItems.get(0).getAction().getLongPressCallback().run();
 
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
         verify(mMockAutofillDelegate, never()).deleteSuggestion(anyInt());
