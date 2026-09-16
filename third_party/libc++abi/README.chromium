@@ -2,7 +2,7 @@ Name: libcxxabi
 Short Name: libc++abi
 URL: http://libcxxabi.llvm.org/
 Version: N/A
-Revision: 39df2e18a7ad77128cf1ddfed8917d56bfeb313a
+Revision: 92767730c5f8350fc53f5b3de5c3c02d00bbab8c
 Update Mechanism: Autoroll
 License: NCSA, Apache-with-LLVM-Exception, MIT
 License File: src/LICENSE.TXT
