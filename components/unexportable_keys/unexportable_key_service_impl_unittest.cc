@@ -1807,6 +1807,27 @@ TYPED_TEST(SpareKeyPoolTest, SpareKeyPoolMiss) {
       1);
 }
 
+TYPED_TEST(SpareKeyPoolTest, ReplenishesAtMinPriority) {
+  base::test::ScopedFeatureList feature_list(
+      kEnableUnexportableKeysSpareKeyPool);
+
+  this->ResetService();
+
+  // Fast forward by kSpareKeyPoolDelay to let the pool replenish to capacity.
+  this->FastForwardBy(kSpareKeyPoolDelay);
+  this->RunBackgroundTasks();
+
+  // Replenishment must never contend with user-facing TPM work, so every
+  // generation task is scheduled in the dedicated spare key pool band. The
+  // service keeps a signing pool and an attestation pool, each holding two
+  // keys, so four tasks are recorded.
+  EXPECT_THAT(this->histogram_tester().GetTotalCountsForPrefix(
+                  "Crypto.UnexportableKeys.BackgroundTaskDuration."),
+              ElementsAre(Pair("Crypto.UnexportableKeys.BackgroundTaskDuration."
+                               "MinPriorityInternalUseOnly",
+                               4)));
+}
+
 TYPED_TEST(SpareKeyPoolTest, SpareKeyPoolReplenishesOnlyOnCacheHit) {
   base::test::ScopedFeatureList feature_list(
       kEnableUnexportableKeysSpareKeyPool);

@@ -88,13 +88,15 @@ CreateGenerateKeyCallbackForSparePool(UnexportableKeyTaskManager* task_manager,
         if constexpr (std::same_as<KeyType, RefCountedUnexportableSigningKey>) {
           task_manager->GenerateSigningKeySlowlyAsync(
               origin, std::move(config), algorithms,
-              BackgroundTaskPriority::kBestEffort, std::move(callback));
+              BackgroundTaskPriority::kMinPriorityInternalUseOnly,
+              std::move(callback));
         } else if constexpr (std::same_as<
                                  KeyType,
                                  RefCountedUnexportableAttestationKey>) {
           task_manager->GenerateAttestationKeySlowlyAsync(
               origin, std::move(config), algorithms,
-              BackgroundTaskPriority::kBestEffort, std::move(callback));
+              BackgroundTaskPriority::kMinPriorityInternalUseOnly,
+              std::move(callback));
         }
       },
       base::Unretained(task_manager), origin);
