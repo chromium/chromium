@@ -30,6 +30,11 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/profiles/profile.h"
+#include "extensions/browser/extension_util.h"
+#endif
+
 DEFINE_USER_DATA(OrganizerPanelController);
 
 // Handles the work of moving the panel view around to the correct host based on
@@ -167,6 +172,12 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void OrganizerPanelController::OpenForExtension(
     const extensions::ExtensionId& extension_id) {
+  Profile* const profile = browser_window_->GetProfile();
+  if (profile->IsOffTheRecord() &&
+      !extensions::util::IsIncognitoEnabled(extension_id, profile)) {
+    return;
+  }
+
   if (is_visible_ && active_extension_id_ == extension_id) {
     return;
   }

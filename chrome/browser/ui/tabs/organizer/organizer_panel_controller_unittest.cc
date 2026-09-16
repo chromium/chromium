@@ -137,6 +137,25 @@ TEST_F(OrganizerPanelControllerTest, ExtensionOpenToggleClose) {
   EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
   EXPECT_FALSE(controller()->active_extension_id().has_value());
 }
+
+TEST_F(OrganizerPanelControllerTest, IncognitoRejectsUnauthorizedExtension) {
+  Profile* const incognito_profile =
+      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_CALL(mock_browser_window_interface_, GetProfile())
+      .WillRepeatedly(testing::Return(incognito_profile));
+
+  const extensions::ExtensionId kExt = "abcdefghijklmnopabcdefghijklmnop";
+
+  // Opening for an unauthorized extension in incognito should do nothing.
+  controller()->OpenForExtension(kExt);
+  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
+  EXPECT_FALSE(controller()->active_extension_id().has_value());
+
+  // Toggling while closed also should do nothing.
+  controller()->ToggleForExtension(kExt);
+  EXPECT_FALSE(controller()->IsOrganizerPanelVisible());
+  EXPECT_FALSE(controller()->active_extension_id().has_value());
+}
 #endif
 
 // Test suite that ensures that the panel gets parented to the tray and the

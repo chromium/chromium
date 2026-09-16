@@ -48,6 +48,10 @@ source_set("impl") {
     "//components/prefs",
     "//ui/views",
   ]
+
+  if (enable_extensions) {
+    deps += [ "//extensions/browser" ]
+  }
 }
 
 source_set("unit_tests") {

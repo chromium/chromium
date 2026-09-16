@@ -205,8 +205,9 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForExtension(
                                              std::move(delegate));
 }
 
-// Creates a view host for an extension in an incognito window. Returns NULL
-// if the extension is not allowed to run in incognito.
+// Creates a view host for an extension in an incognito window. This must only
+// be called for an incognito profile and for an extension that has been granted
+// incognito access.
 std::unique_ptr<ExtensionViewHost> CreateViewHostForIncognito(
     const Extension* extension,
     const GURL& url,
@@ -216,6 +217,15 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForIncognito(
   DCHECK(extension);
   DCHECK(profile->IsOffTheRecord());
 
+  // Callers must ensure the extension is allowed to run in incognito before
+  // attempting to create a host. Note that even in spanning mode (!IsSplitMode)
+  // where the host process belongs to the original profile, `delegate` is bound
+  // to the incognito browser window or tab. Creating a host would allow the
+  // regular-profile extension to access and manipulate incognito state (e.g.
+  // via APIs that resolve kCurrentWindowId through the host's delegate) without
+  // incognito permission.
+  CHECK(util::IsIncognitoEnabled(extension->id(), profile));
+
   if (!IncognitoInfo::IsSplitMode(extension)) {
     // If it's not split-mode the host is associated with the original profile.
     Profile* original_profile = profile->GetOriginalProfile();
@@ -223,13 +233,8 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForIncognito(
                                       view_type, std::move(delegate));
   }
 
-  // Create the host if the extension can run in incognito.
-  if (util::IsIncognitoEnabled(extension->id(), profile)) {
-    return CreateViewHostForExtension(extension, url, profile, view_type,
-                                      std::move(delegate));
-  }
-  NOTREACHED() << "We shouldn't be trying to create an incognito extension "
-                  "view unless it has been enabled for incognito.";
+  return CreateViewHostForExtension(extension, url, profile, view_type,
+                                    std::move(delegate));
 }
 
 std::unique_ptr<ExtensionViewHost> CreateExtensionViewHost(

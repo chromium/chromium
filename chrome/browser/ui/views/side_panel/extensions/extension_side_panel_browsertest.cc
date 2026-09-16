@@ -21,6 +21,8 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -65,7 +67,9 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/test_event_router_observer.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/test_image_loader.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
@@ -503,6 +507,89 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   EXPECT_FALSE(
       SidePanelRegistry::From(browser())->GetEntryForKey(extension_key));
   EXPECT_FALSE(GetActionItemForExtension(extension.get(), browser_actions));
+}
+
+// Test that an extension's SidePanelEntry, coordinator, and action item are not
+// registered for an incognito window or tab when the extension is not allowed
+// to run in incognito.
+// Regression test for crbug.com/513758047.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
+                       NoEntryInIncognitoBrowserWithoutIncognitoAccess) {
+  // Load an extension that is not allowed to run in incognito.
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
+  ASSERT_TRUE(extension);
+  ASSERT_FALSE(util::IsIncognitoEnabled(extension->id(), profile()));
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+
+  // The extension's entry is registered for the on-the-record browser.
+  EXPECT_TRUE(
+      SidePanelRegistry::From(browser())->GetEntryForKey(extension_key));
+
+  // Open an incognito browser window.
+  BrowserWindowInterface* incognito_browser =
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
+  ASSERT_TRUE(incognito_browser);
+
+  // The extension's entry, coordinator, and action item should not be
+  // registered for the incognito window or its active tab.
+  EXPECT_FALSE(SidePanelRegistry::From(incognito_browser)
+                   ->GetEntryForKey(extension_key));
+  EXPECT_FALSE(
+      SidePanelRegistry::From(incognito_browser->GetActiveTabInterface())
+          ->GetEntryForKey(extension_key));
+  EXPECT_FALSE(ExtensionSidePanelManager::From(incognito_browser)
+                   ->GetExtensionCoordinatorForTesting(extension->id()));
+  EXPECT_FALSE(GetActionItemForExtension(
+      extension.get(), BrowserActions::From(incognito_browser)));
+
+  // Enable the extension in incognito while the incognito window is already
+  // open.
+  {
+    TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()),
+                                           extension->id());
+    util::SetIsIncognitoEnabled(extension->id(), profile(), true);
+    extension = observer.WaitForExtensionLoaded();
+  }
+  ASSERT_TRUE(util::IsIncognitoEnabled(extension->id(), profile()));
+
+  // The extension's entry, coordinator, and action item should now be
+  // registered for the already-open incognito window (without creating a new
+  // side panel registry).
+  EXPECT_TRUE(SidePanelRegistry::From(incognito_browser)
+                  ->GetEntryForKey(extension_key));
+  EXPECT_TRUE(ExtensionSidePanelManager::From(incognito_browser)
+                  ->GetExtensionCoordinatorForTesting(extension->id()));
+  EXPECT_TRUE(GetActionItemForExtension(
+      extension.get(), BrowserActions::From(incognito_browser)));
+}
+
+// Test that an extension's SidePanelEntry, coordinator, and action item are
+// registered for an incognito window when the extension is allowed to run in
+// incognito.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
+                       EntryInIncognitoBrowserWithIncognitoAccess) {
+  // Load an extension that is allowed to run in incognito.
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/simple_default"),
+      {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(util::IsIncognitoEnabled(extension->id(), profile()));
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+
+  // Open an incognito browser window.
+  BrowserWindowInterface* incognito_browser =
+      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
+  ASSERT_TRUE(incognito_browser);
+
+  // The extension's entry, coordinator, and action item should be registered
+  // for the incognito window.
+  EXPECT_TRUE(SidePanelRegistry::From(incognito_browser)
+                  ->GetEntryForKey(extension_key));
+  EXPECT_TRUE(ExtensionSidePanelManager::From(incognito_browser)
+                  ->GetExtensionCoordinatorForTesting(extension->id()));
+  EXPECT_TRUE(GetActionItemForExtension(
+      extension.get(), BrowserActions::From(incognito_browser)));
 }
 
 // Test that the shared action item is created when the first SidePanelEntry

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/extensions/extension_side_panel_coordinator.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -88,13 +89,22 @@ void ExtensionSidePanelManager::OnExtensionUnloaded(
 
 void ExtensionSidePanelManager::MaybeCreateExtensionSidePanelCoordinator(
     const Extension* extension) {
-  if (extension->permissions_data()->HasAPIPermission(
+  if (!extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kSidePanel)) {
-    coordinators_.emplace(extension->id(),
-                          std::make_unique<ExtensionSidePanelCoordinator>(
-                              profile_, browser_, tab_interface_, extension,
-                              registry_, for_tab_));
+    return;
   }
+
+  // In incognito, only create a coordinator for extensions that are allowed to
+  // run in incognito.
+  if (profile_->IsOffTheRecord() &&
+      !util::IsIncognitoEnabled(extension->id(), profile_)) {
+    return;
+  }
+
+  coordinators_.emplace(
+      extension->id(),
+      std::make_unique<ExtensionSidePanelCoordinator>(
+          profile_, browser_, tab_interface_, extension, registry_, for_tab_));
 }
 
 }  // namespace extensions

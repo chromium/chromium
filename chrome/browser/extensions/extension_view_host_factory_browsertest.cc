@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest, CreateExtensionHosts) {
       LoadExtension(test_data_dir_.AppendASCII("api_test")
                         .AppendASCII("browser_action")
                         .AppendASCII("none"));
-  ASSERT_TRUE(extension.get());
+  ASSERT_TRUE(extension);
 
   content::BrowserContext* browser_context = profile();
 
@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionViewHostFactoryTest,
       LoadExtension(test_data_dir_.AppendASCII("api_test")
                         .AppendASCII("side_panel")
                         .AppendASCII("simple_default"));
-  ASSERT_TRUE(extension.get());
+  ASSERT_TRUE(extension);
 
   content::BrowserContext* browser_context = profile();
 
