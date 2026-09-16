@@ -109,6 +109,10 @@ constexpr float kNonPageNumberFooterMarginRatio = 0.95f;
 // margins to be considered a page number.
 constexpr float kMaxPageNumberWidthRatio = 0.30f;
 
+// Font size ratio below which a run counts as substantially smaller than the
+// text beside it on the same line, such as a superscript.
+constexpr float kSmallTextFontSizeRatio = 0.85f;
+
 // Tolerance used when comparing font sizes, so that sizes that differ only by
 // floating point imprecision compare as equal.
 constexpr float kFontSizeEpsilon = 0.01f;
@@ -621,19 +625,29 @@ std::string GetTrimmedText(
   return std::string(base::TrimWhitespaceASCII(result, base::TRIM_ALL));
 }
 
+bool AreRunsOnSameLine(const chrome_pdf::AccessibilityTextRunInfo& run1,
+                       const chrome_pdf::AccessibilityTextRunInfo& run2) {
+  return DoBoundsOverlapOnLine(run1.bounds.y(), run1.bounds.height(),
+                               run2.bounds.y(), run2.bounds.height());
+}
+
 // Returns the header or footer role that `current_run` qualifies for, or
 // `kNone` otherwise. A run must sit inside the top or bottom margin band,
 // contain at least one alphanumeric character, and be rendered smaller than the
 // page's median font size, since running headers and copyright notices are
 // often set smaller than body text. Page numbers are exempt from the font size
 // rule and are allowed a taller bottom margin band, because they are commonly
-// set at body text size and placed higher up the page.
+// set at body text size and placed higher up the page. `next_run`, the run
+// following `current_run` or null at the end of the page, tells whether other
+// text shares the same visual line, which separates a page number from a
+// footnote marker or a section number.
 //
 // `out_page_number_kind` receives how the run reads as a page number, so that
 // callers can order this against heading classification without classifying the
 // run's text a second time.
 HeaderFooterRole GetHeaderFooterRole(
     const chrome_pdf::AccessibilityTextRunInfo& current_run,
+    const chrome_pdf::AccessibilityTextRunInfo* next_run,
     base::span<const chrome_pdf::AccessibilityCharInfo> current_run_chars,
     const HeuristicPageProperties& page_properties,
     PageNumberKind* out_page_number_kind) {
@@ -671,18 +685,32 @@ HeaderFooterRole GetHeaderFooterRole(
     return HeaderFooterRole::kNone;
   }
 
-  // Headers and footers are not usually larger than body text. Checked first so
-  // a section heading's numeral (the "1" of "1 Introduction", which PDFium
-  // splits into its own run) is not read as a page number below.
   bool has_median_font_size = page_properties.median_font_size > 0;
-  if (has_median_font_size &&
-      current_run.style.font_size > page_properties.median_font_size) {
+  bool has_same_line_neighbor =
+      next_run && AreRunsOnSameLine(current_run, *next_run);
+  bool is_larger_than_body_text =
+      has_median_font_size &&
+      current_run.style.font_size > page_properties.median_font_size;
+  bool is_lone_numeral = page_number_kind == PageNumberKind::kPureNumber &&
+                         !has_same_line_neighbor;
+
+  // Headers and footers are not usually larger than body text. A lone numeral
+  // is exempt, since page numbers are sometimes set large, but one with text
+  // beside it on the same line is a section number, such as the "1" of
+  // "1 Introduction", which PDFium splits into its own run.
+  if (is_larger_than_body_text && !is_lone_numeral) {
     return HeaderFooterRole::kNone;
   }
 
-  // A bare number in a margin is a page number. Returns early because page
-  // numbers are often set at body text size, which the rule below rejects.
+  // A bare digit in a margin is a page number, unless it is much smaller than
+  // the text beside it on the same line. That marks a superscript footnote
+  // marker, which belongs to the body content, so leave it unclassified.
   if (page_number_kind == PageNumberKind::kPureNumber) {
+    if (current_run.style.font_size > 0.0f && has_same_line_neighbor &&
+        current_run.style.font_size <
+            next_run->style.font_size * kSmallTextFontSizeRatio) {
+      return HeaderFooterRole::kNone;
+    }
     return is_in_top_margin ? HeaderFooterRole::kHeader
                             : HeaderFooterRole::kFooter;
   }
@@ -726,12 +754,6 @@ const chrome_pdf::AccessibilityTextRunInfo* GetRunAfterIndex(
     base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
     size_t index) {
   return (index + 1 < text_runs.size()) ? &text_runs[index + 1] : nullptr;
-}
-
-bool AreRunsOnSameLine(const chrome_pdf::AccessibilityTextRunInfo& run1,
-                       const chrome_pdf::AccessibilityTextRunInfo& run2) {
-  return DoBoundsOverlapOnLine(run1.bounds.y(), run1.bounds.height(),
-                               run2.bounds.y(), run2.bounds.height());
 }
 
 bool AreStylesAndFontsEquivalent(
@@ -1146,8 +1168,9 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
   std::optional<ax::mojom::Role> header_footer_ax_role;
   PageNumberKind page_number_kind = PageNumberKind::kNone;
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
-    header_footer_ax_role = GetAXRoleForHeaderFooterRole(GetHeaderFooterRole(
-        current_run, current_run_chars, page_properties, &page_number_kind));
+    header_footer_ax_role = GetAXRoleForHeaderFooterRole(
+        GetHeaderFooterRole(current_run, next_run, current_run_chars,
+                            page_properties, &page_number_kind));
   }
 
   // A bare digit in a margin is normally a page number, so skip heading
