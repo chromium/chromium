@@ -333,7 +333,7 @@ void AutofillPopupControllerImpl::Show(
   content::RenderFrameHost* rfh = nullptr;
   if (base::FeatureList::IsEnabled(features::kAutofillSimplifyFocusCheck)) {
     rfh = FindRenderFrameHostByToken(*web_contents_,
-                                     controller_common_.frame_token);
+                                     controller_common_.anchor_frame_token);
   } else {
     // The focused frame may be different from the one the controller is
     // anchored to. This happens with race conditions: while Autofill parsed the
@@ -343,7 +343,7 @@ void AutofillPopupControllerImpl::Show(
     // event.
     rfh = web_contents_->GetFocusedFrame();
     content::RenderFrameHost* anchor_rfh = FindRenderFrameHostByToken(
-        *web_contents_, controller_common_.frame_token);
+        *web_contents_, controller_common_.anchor_frame_token);
 
     const bool focus_is_in_descendant =
         rfh && delegate_ && IsAncestorOf(anchor_rfh, rfh);
@@ -480,8 +480,9 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
   }
 }
 
-const LocalFrameToken& AutofillPopupControllerImpl::GetFrameToken() const {
-  return controller_common_.frame_token;
+const LocalFrameToken& AutofillPopupControllerImpl::GetAnchorFrameToken()
+    const {
+  return controller_common_.anchor_frame_token;
 }
 
 bool AutofillPopupControllerImpl::IsViewVisibilityAcceptingThresholdEnabled()

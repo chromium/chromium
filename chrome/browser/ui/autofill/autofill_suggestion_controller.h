@@ -107,8 +107,8 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   // Updates the data list values currently shown.
   virtual void UpdateDataListValues(base::span<const SelectOption> options) = 0;
 
-  // Returns the token of the frame that this controller is associated with.
-  virtual const LocalFrameToken& GetFrameToken() const = 0;
+  // Returns the token of the frame that this controller is anchored to.
+  virtual const LocalFrameToken& GetAnchorFrameToken() const = 0;
 
   // Returns true if the controller can be reused for the given parameters.
   virtual bool MayRecycle(

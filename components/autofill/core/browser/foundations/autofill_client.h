@@ -288,7 +288,7 @@ class AutofillClient {
   // Required arguments to create a dropdown showing autofill suggestions.
   struct PopupOpenArgs {
     PopupOpenArgs();
-    PopupOpenArgs(LocalFrameToken frame_token,
+    PopupOpenArgs(LocalFrameToken anchor_frame_token,
                   const gfx::RectF& element_bounds,
                   base::i18n::TextDirection text_direction,
                   std::vector<Suggestion> suggestions,
@@ -303,9 +303,9 @@ class AutofillClient {
     PopupOpenArgs& operator=(const PopupOpenArgs&);
     PopupOpenArgs& operator=(PopupOpenArgs&&);
     ~PopupOpenArgs();
-    // The frame in which the popup is anchored. Typically this is the frame of
+    // The frame which the popup is anchored to. Typically this is the frame of
     // the field on which the user triggered Autofill.
-    LocalFrameToken frame_token;
+    LocalFrameToken anchor_frame_token;
     // TODO(crbug.com/340817507): Update this member name since bounds can now
     // refer to the caret bounds and elements gives the idea of HTML elements
     // only.

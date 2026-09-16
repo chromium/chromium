@@ -911,7 +911,7 @@ void ChromeAutofillClient::UpdateAutofillDataListValues(
     const LocalFrameToken& frame_token,
     base::span<const SelectOption> options) {
   if (suggestion_controller_ &&
-      suggestion_controller_->GetFrameToken() == frame_token) {
+      suggestion_controller_->GetAnchorFrameToken() == frame_token) {
     suggestion_controller_->UpdateDataListValues(options);
   }
 }
@@ -1442,7 +1442,7 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
   suggestion_controller_ = AutofillSuggestionController::GetOrCreate(
       suggestion_controller_, delegate, web_contents(),
       PopupControllerCommon(
-          open_args.frame_token, element_bounds_in_screen_space,
+          open_args.anchor_frame_token, element_bounds_in_screen_space,
           open_args.text_direction, open_args.anchor_type,
           open_args.show_tabbed_popup,
           open_args.prefer_prev_arrow_side_on_suggestions_update),

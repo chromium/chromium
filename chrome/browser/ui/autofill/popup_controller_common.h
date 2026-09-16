@@ -18,7 +18,7 @@ namespace autofill {
 struct PopupControllerCommon {
  public:
   PopupControllerCommon(
-      LocalFrameToken frame_token,
+      LocalFrameToken anchor_frame_token,
       gfx::RectF element_bounds,
       base::i18n::TextDirection text_direction,
       PopupAnchorType anchor_type = PopupAnchorType::kField,
@@ -33,7 +33,7 @@ struct PopupControllerCommon {
 
   // The frame in which the popup is anchored. Typically this is the frame of
   // the field on which the user triggered Autofill.
-  LocalFrameToken frame_token;
+  LocalFrameToken anchor_frame_token;
 
   // The bounds of the DOM element that is the focus of the popup.
   // These coordinates are in screen space.

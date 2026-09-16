@@ -1283,7 +1283,7 @@ TEST_F(ChromeAutofillClientTest,
   LocalFrameToken token2(base::UnguessableToken::Create());
 
   testing::NiceMock<MockAutofillPopupController> mock_controller;
-  mock_controller.set_frame_token(token1);
+  mock_controller.set_anchor_frame_token(token1);
 
   client()->set_suggestion_controller_for_testing(mock_controller.GetWeakPtr());
 

@@ -46,7 +46,7 @@ namespace autofill {
 
 AutofillClient::PopupOpenArgs::PopupOpenArgs() = default;
 AutofillClient::PopupOpenArgs::PopupOpenArgs(
-    LocalFrameToken frame_token,
+    LocalFrameToken anchor_frame_token,
     const gfx::RectF& element_bounds,
     base::i18n::TextDirection text_direction,
     std::vector<Suggestion> suggestions,
@@ -56,7 +56,7 @@ AutofillClient::PopupOpenArgs::PopupOpenArgs(
     bool show_tabbed_popup,
     bool prefer_prev_arrow_side_on_suggestions_update,
     std::u16string search_bar_initial_value)
-    : frame_token(std::move(frame_token)),
+    : anchor_frame_token(std::move(anchor_frame_token)),
       element_bounds(element_bounds),
       text_direction(text_direction),
       suggestions(std::move(suggestions)),

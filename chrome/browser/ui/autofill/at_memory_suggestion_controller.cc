@@ -169,8 +169,9 @@ void AtMemorySuggestionController::UpdateDataListValues(
   NOTREACHED();
 }
 
-const LocalFrameToken& AtMemorySuggestionController::GetFrameToken() const {
-  return controller_common_.frame_token;
+const LocalFrameToken& AtMemorySuggestionController::GetAnchorFrameToken()
+    const {
+  return controller_common_.anchor_frame_token;
 }
 
 void AtMemorySuggestionController::HideViewAndDie() {

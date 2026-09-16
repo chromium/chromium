@@ -728,7 +728,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   content::RenderFrameHost* rfh = nullptr;
   if (base::FeatureList::IsEnabled(features::kAutofillSimplifyFocusCheck)) {
     rfh = FindRenderFrameHostByToken(*web_contents_,
-                                     controller_common_.frame_token);
+                                     controller_common_.anchor_frame_token);
   } else {
     // The focused frame may be different from the one the controller is
     // anchored to. This happens with race conditions: while Autofill parsed the
@@ -738,7 +738,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     // event.
     rfh = web_contents_->GetFocusedFrame();
     content::RenderFrameHost* anchor_rfh = FindRenderFrameHostByToken(
-        *web_contents_, controller_common_.frame_token);
+        *web_contents_, controller_common_.anchor_frame_token);
     if (!rfh || !delegate_ || !IsAncestorOf(anchor_rfh, rfh)) {
       rfh = nullptr;
     }
@@ -833,9 +833,9 @@ void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
   }
 }
 
-const LocalFrameToken& AutofillKeyboardAccessoryControllerImpl::GetFrameToken()
-    const {
-  return controller_common_.frame_token;
+const LocalFrameToken&
+AutofillKeyboardAccessoryControllerImpl::GetAnchorFrameToken() const {
+  return controller_common_.anchor_frame_token;
 }
 
 bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
