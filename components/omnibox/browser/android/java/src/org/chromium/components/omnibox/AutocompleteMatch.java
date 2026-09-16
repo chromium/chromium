@@ -461,6 +461,11 @@ public class AutocompleteMatch {
         return isWhatYouTyped(mType);
     }
 
+    /** Returns whether the match is an AI Mode threads history entrypoint. */
+    public boolean isThreadsHistorySuggestion() {
+        return mSubtypes.contains(SuggestSubtype.SUBTYPE_AI_MODE_MORE_THREADS_ENTRYPOINT_VALUE);
+    }
+
     /**
      * Returns the extra HTTP headers associated with this autocomplete match. These headers should
      * be included when navigating to the suggestion's URL.

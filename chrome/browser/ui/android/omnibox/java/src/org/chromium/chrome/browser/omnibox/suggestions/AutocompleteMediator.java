@@ -1083,6 +1083,10 @@ class AutocompleteMediator
                     && mAutocompleteInput.getSiteSearchData().isStarterPackPreview) {
                 onKeywordModeEntered(null);
             }
+            if (suggestion.isThreadsHistorySuggestion()) {
+                setOmniboxEditingText(mAutocompleteInput.getUserText(), suggestion);
+                return;
+            }
             setOmniboxEditingText(suggestion.getFillIntoEdit(), suggestion);
         }
     }

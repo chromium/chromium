@@ -113,6 +113,7 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.TypesProto.SuggestSubtype;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.StarterPackId;
@@ -1078,6 +1079,32 @@ public class AutocompleteMediatorUnitTest {
 
         assertTrue(session.getAutocompleteInput().getSiteSearchData() == null);
         verify(mAutocompleteDelegate).setOmniboxEditingText("something");
+    }
+
+    @Test
+    public void onSuggestionFocused_threadsHistorySuggestion_restoresUserText() {
+        mMediator.onNativeInitialized();
+        var session = createEmptySession();
+        session.getAutocompleteInput().setUserText("original user text");
+        mMediator.beginInput(session);
+        assertTrue("Session should be active", mMediator.isInInputSession());
+        mMediator.allowPendingItemSelection();
+
+        AutocompleteMatch match =
+                new AutocompleteMatchBuilder()
+                        .setType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .addSubtype(
+                                SuggestSubtype
+                                        .SUBTYPE_AI_MODE_MORE_THREADS_ENTRYPOINT_VALUE)
+                        .setFillIntoEdit("View your AI Mode history")
+                        .build();
+
+        mMediator.onSuggestionFocused(match);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mAutocompleteDelegate).setOmniboxEditingText("original user text");
+        verify(mAutocompleteDelegate, never()).setOmniboxEditingText("View your AI Mode history");
     }
 
     @Test
