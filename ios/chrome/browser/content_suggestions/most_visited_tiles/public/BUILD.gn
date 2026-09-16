@@ -10,5 +10,10 @@ source_set("public") {
     "most_visited_tiles_constants.mm",
     "pinned_site_action.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/ntp_tiles",
+    "//ios/chrome/browser/content_suggestions/ui/cells:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+  ]
 }

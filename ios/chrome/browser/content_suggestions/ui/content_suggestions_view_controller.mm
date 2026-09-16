@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller.h"
 
+#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
@@ -73,18 +74,34 @@ constexpr CGFloat kStackViewSpacing = 12.0;
       NO;
   [self.view addSubview:_contentSuggestionsModuleStackView];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [_contentSuggestionsModuleStackView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [_contentSuggestionsModuleStackView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
-    [_contentSuggestionsModuleStackView.topAnchor
-        constraintEqualToAnchor:self.view.topAnchor
-                       constant:content_suggestions::HeaderBottomPadding(
-                                    self.traitCollection)],
-    [_contentSuggestionsModuleStackView.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor],
-  ]];
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+    [NSLayoutConstraint activateConstraints:@[
+      [_contentSuggestionsModuleStackView.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor],
+      [_contentSuggestionsModuleStackView.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor],
+      [_contentSuggestionsModuleStackView.topAnchor
+          constraintEqualToAnchor:self.view.topAnchor
+                         constant:content_suggestions::HeaderBottomPadding(
+                                      self.traitCollection)],
+      [_contentSuggestionsModuleStackView.bottomAnchor
+          constraintEqualToAnchor:self.view.bottomAnchor],
+    ]];
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      [_contentSuggestionsModuleStackView.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor],
+      [_contentSuggestionsModuleStackView.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor],
+      [_contentSuggestionsModuleStackView.topAnchor
+          constraintEqualToAnchor:self.view.topAnchor
+                         constant:content_suggestions::HeaderBottomPadding(
+                                      self.traitCollection)],
+      [_contentSuggestionsModuleStackView.bottomAnchor
+          constraintEqualToAnchor:self.view.bottomAnchor],
+    ]];
+  }
 
   if (_mostVisitedView) {
     [self embedMostVisitedView];

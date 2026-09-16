@@ -19,10 +19,4 @@ extern NSString* const kQuerySuggestionViewA11yIdentifierPrefix;
 // Image container width when kMagicStack is enabled.
 extern const CGFloat kMagicStackImageContainerWidth;
 
-// The corner radius to give the MVT image background rounded square corners.
-extern const CGFloat kMostVisitedTileImageContainerSquareCornerRadius;
-
-// Size of the favicon or icon in a most visited tile.
-extern const CGFloat kMostVisitedTileIconSize;
-
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CELLS_CONTENT_SUGGESTIONS_CELLS_CONSTANTS_H_

@@ -26,7 +26,7 @@
       self.imageBackgroundView.layer.cornerRadius =
           kMostVisitedTileImageContainerSquareCornerRadius;
       [self setImageBackgroundSize:kMagicStackImageContainerWidth];
-      [self setTitleSpacing:kMostVisitedIconTitleSpacingUICleanup];
+      [self setTitleSpacing:MostVisitedIconTitleSpacing()];
     } else {
       self.imageBackgroundView.layer.cornerRadius =
           kMagicStackImageContainerWidth / 2;

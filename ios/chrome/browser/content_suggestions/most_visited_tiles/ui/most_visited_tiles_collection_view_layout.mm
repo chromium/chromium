@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view_layout.h"
 
+#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_cells_constants.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_tile_layout_util.h"
 
 namespace {
@@ -23,7 +24,7 @@ CGFloat PeekInsetForCollectionView(UITraitCollection* trait_collection) {
       trait_collection.horizontalSizeClass == UIUserInterfaceSizeClassCompact
           ? kPeekInsetMultiplerCompactWidth
           : kPeekInsetMultiplerRegularWidth;
-  return kMagicStackImageContainerWidth * peek_inset_multiplier;
+  return MostVisitedIconContainerSize() * peek_inset_multiplier;
 }
 
 /// Creates a section in the collection view layout.
@@ -33,7 +34,12 @@ NSCollectionLayoutSection* GetSectionForMostVisitedTilesCollectionView(
     UITraitCollection* trait_collection) {
   CGFloat items_per_group = MIN(item_count, kMaximumVisibleItemsOnScreen);
   NSCollectionLayoutDimension* estimated_height_dimension =
-      [NSCollectionLayoutDimension estimatedDimension:kMostVisitedTileIconSize];
+      [NSCollectionLayoutDimension
+          estimatedDimension:ntp_tiles::GetAimButtonRefactorArm() ==
+                                     ntp_tiles::AimButtonRefactorArm::
+                                         kAimAsModule
+                                 ? MostVisitedIconContainerSize()
+                                 : kMostVisitedTileIconSize];
 
   NSCollectionLayoutDimension* item_width_dimension =
       [NSCollectionLayoutDimension
@@ -67,7 +73,10 @@ NSCollectionLayoutSection* GetSectionForMostVisitedTilesCollectionView(
   section.orthogonalScrollingBehavior =
       UICollectionLayoutSectionOrthogonalScrollingBehaviorContinuous;
   section.interGroupSpacing = spacing;
-  section.contentInsets = kMagicStackContainerInsets;
+  section.contentInsets = ntp_tiles::GetAimButtonRefactorArm() ==
+                                  ntp_tiles::AimButtonRefactorArm::kAimAsModule
+                              ? kMostVisitedContainerInsets
+                              : kMagicStackContainerInsets;
   return section;
 }
 

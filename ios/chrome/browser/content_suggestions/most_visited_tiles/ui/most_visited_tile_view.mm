@@ -8,12 +8,12 @@
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/favicon_base/fallback_icon_style.h"
+#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
-#import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_actions_provider.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_with_payload.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -28,6 +28,10 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+constexpr CGFloat kMostVisitedFaviconWidth = 24.0;
+}  // namespace
 
 @interface MostVisitedTileView ()
 
@@ -49,10 +53,15 @@
     self.imageContainerView.layer.cornerRadius =
         IsNewTabPageUICleanupEnabled()
             ? kMostVisitedTileImageContainerSquareCornerRadius
-            : kMagicStackImageContainerWidth / 2;
+            : MostVisitedIconContainerSize() / 2;
     self.imageContainerView.layer.masksToBounds = NO;
     self.imageContainerView.clipsToBounds = YES;
     if (IsNewTabPageUICleanupEnabled()) {
+      self.titleLabel.numberOfLines = 1;
+    }
+    if (ntp_tiles::GetAimButtonRefactorArm() ==
+        ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+      self.imageContainerView.backgroundColor = UIColor.clearColor;
       self.titleLabel.numberOfLines = 1;
     }
 
@@ -62,7 +71,7 @@
 
     [NSLayoutConstraint activateConstraints:@[
       [self.imageContainerView.widthAnchor
-          constraintEqualToConstant:kMagicStackImageContainerWidth],
+          constraintEqualToConstant:MostVisitedIconContainerSize()],
       [self.imageContainerView.heightAnchor
           constraintEqualToAnchor:self.imageContainerView.widthAnchor],
     ]];
@@ -75,7 +84,11 @@
     _faviconView.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint activateConstraints:@[
       [_faviconView.heightAnchor
-          constraintEqualToConstant:kMagicStackFaviconWidth],
+          constraintEqualToConstant:ntp_tiles::GetAimButtonRefactorArm() ==
+                                            ntp_tiles::AimButtonRefactorArm::
+                                                kAimAsModule
+                                        ? kMostVisitedFaviconWidth
+                                        : kMagicStackFaviconWidth],
       [_faviconView.widthAnchor
           constraintEqualToAnchor:_faviconView.heightAnchor],
     ]];
@@ -196,6 +209,10 @@
 #pragma mark - NewTabPageColorUpdating
 
 - (void)applyBackgroundColors {
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+    return;
+  }
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
   // Favicon monogram will only be applied if defaultBackgroundColor is set.
@@ -281,9 +298,7 @@
   UIStackView* stackView = [[UIStackView alloc] init];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
-  stackView.spacing = IsNewTabPageUICleanupEnabled()
-                          ? kMostVisitedIconTitleSpacingUICleanup
-                          : kMostVisitedIconTitleSpacing;
+  stackView.spacing = MostVisitedIconTitleSpacing();
   stackView.alignment = UIStackViewAlignmentCenter;
   stackView.distribution = UIStackViewDistributionFill;
   return stackView;
