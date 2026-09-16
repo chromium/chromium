@@ -1241,7 +1241,8 @@ void VideoOverlayWindowViews::SetUpViews() {
 
   auto live_caption_dialog = std::make_unique<OverlayWindowLiveCaptionDialog>(
       Profile::FromBrowserContext(
-          controller_->GetWebContents()->GetBrowserContext()));
+          controller_->GetWebContents()->GetBrowserContext())
+          ->GetOriginalProfile());
   live_caption_dialog->SetVisible(false);
 
   auto toggle_microphone_button =

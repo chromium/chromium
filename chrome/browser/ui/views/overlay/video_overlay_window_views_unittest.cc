@@ -192,9 +192,6 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
     // web_contents_ needs to be created after the constructor, so that
     // |feature_list_| can be initialized before other threads check if a
     // feature is enabled.
-    web_contents_ = web_contents_factory_.CreateWebContents(&profile_);
-    pip_window_controller_.set_web_contents(web_contents_);
-
 #if BUILDFLAG(IS_CHROMEOS)
     test_views_delegate()->set_context(GetContext());
 #endif
@@ -204,18 +201,7 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
     // VideoOverlayWindowViews size.
     SetDisplayWorkArea({0, 0, 1000, 1000});
 
-    overlay_window_ = VideoOverlayWindowViews::Create(&pip_window_controller_);
-    overlay_window_->set_overlay_view_cb_for_testing(
-        base::BindRepeating(&VideoOverlayWindowViewsTest::GetOverlayViewImpl,
-                            base::Unretained(this)));
-    overlay_window_->set_meets_user_interaction_for_testing(true);
-
-    // On some platforms, OnNativeWidgetMove is invoked on creation.
-    WaitForMove();
-    overlay_window_->set_minimum_size_for_testing(kMinWindowSize);
-
-    event_generator_ = std::make_unique<ui::test::EventGenerator>(
-        views::GetRootWindow(overlay_window_.get()));
+    InitOverlayWindowWithProfile(&profile_);
   }
 
   void TearDown() override {
@@ -258,6 +244,22 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   void WaitForLayout() { task_environment()->FastForwardBy(base::Seconds(1)); }
 
   void DestroyOverlayWindow() { overlay_window_.reset(); }
+
+  void InitOverlayWindowWithProfile(Profile* profile) {
+    event_generator_.reset();
+    overlay_window_.reset();
+    web_contents_ = web_contents_factory_.CreateWebContents(profile);
+    pip_window_controller_.set_web_contents(web_contents_);
+    overlay_window_ = VideoOverlayWindowViews::Create(&pip_window_controller_);
+    overlay_window_->set_overlay_view_cb_for_testing(
+        base::BindRepeating(&VideoOverlayWindowViewsTest::GetOverlayViewImpl,
+                            base::Unretained(this)));
+    overlay_window_->set_meets_user_interaction_for_testing(true);
+    WaitForMove();
+    overlay_window_->set_minimum_size_for_testing(kMinWindowSize);
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        views::GetRootWindow(overlay_window_.get()));
+  }
 
   void AddEnabledFeature(base::test::FeatureRef feature) {
     enabled_features_.push_back(feature);
@@ -1397,6 +1399,28 @@ TEST_F(VideoOverlayWindowViewsTest, LiveCaption) {
   EXPECT_TRUE(live_caption_toggle_button->GetIsOn());
   EXPECT_TRUE(live_translate_toggle_button->GetEnabled());
   EXPECT_FALSE(live_translate_toggle_button->GetIsOn());
+
+  // Turn off LiveCaption, because leaving it on breaks the test harness when it
+  // tries to destroy the UI.
+  profile().GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
+}
+
+TEST_F(VideoOverlayWindowViewsTest, LiveCaption_Incognito) {
+  InitOverlayWindowWithProfile(
+      profile().GetPrimaryOTRProfile(/*create_if_needed=*/true));
+
+  profile().GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
+  views::ToggleButton* live_caption_toggle_button =
+      overlay_window()
+          .live_caption_dialog_for_testing()
+          ->live_caption_button_for_testing();
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi(live_caption_toggle_button)
+      .NotifyClick(dummy_event);
+  WaitForLayout();
+
+  EXPECT_TRUE(profile().GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
 
   // Turn off LiveCaption, because leaving it on breaks the test harness when it
   // tries to destroy the UI.
