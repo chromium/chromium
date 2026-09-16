@@ -15,6 +15,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
@@ -87,6 +88,10 @@ constexpr size_t kFlatbufferSafetyThreshold = 1536 * 1024 * 1024; /* 1.5 GiB */
 
 // The largest kernel tile size used by ruy's packing kernels (AVX-512 uses 16).
 constexpr int32_t kMaxKernelBlockSize = 16;
+
+// `sub_type` value of the `odml.group_norm` composite that selects layer
+// normalization rather than group normalization.
+constexpr int32_t kGroupNormSubTypeLayerNorm = 1;
 
 // The maximum input rank that TFLite's broadcasting binary operators natively
 // support. Inputs with a higher rank must first be reduced to a shape of this
@@ -3287,10 +3292,17 @@ auto GraphBuilderTflite::FinishAndTakeResult(
   // The inputs of subgraph are the list of non-static tensors that feed into
   // the subgraph for inference. The outputs of subgraph are considered the
   // product of the subgraph's inference. The operators are in execution order.
-  flatbuffers::Offset<::tflite::SubGraph> subgraph = ::tflite::CreateSubGraph(
+  //
+  // Decomposition subgraphs referenced by StableHLO composite operators follow
+  // the main subgraph, which must stay at index 0 since it holds the model's
+  // only signature.
+  std::vector<SubGraphOffset> subgraphs;
+  subgraphs.reserve(1 + decomposition_subgraphs_.size());
+  subgraphs.push_back(::tflite::CreateSubGraph(
       builder_, builder_.CreateVector(tensors_.data(), tensors_.size()),
       graph_input_ids_index, graph_output_ids_index,
-      builder_.CreateVector(operators_.data(), operators_.size()));
+      builder_.CreateVector(operators_.data(), operators_.size())));
+  std::ranges::copy(decomposition_subgraphs_, std::back_inserter(subgraphs));
 
   StringOffset description =
       builder_.CreateString("TFLite model converted from WebNN Graph");
@@ -3321,7 +3333,7 @@ auto GraphBuilderTflite::FinishAndTakeResult(
   flatbuffers::Offset<::tflite::Model> model_buffer = ::tflite::CreateModel(
       builder_, TFLITE_SCHEMA_VERSION,
       builder_.CreateVector(operator_codes_.data(), operator_codes_.size()),
-      builder_.CreateVector(&subgraph, 1), description,
+      builder_.CreateVector(subgraphs.data(), subgraphs.size()), description,
       builder_.CreateVector(buffers_.data(), buffers_.size()),
       /*metadata_buffer=*/0,  // deprecated, metadata buffer is in `buffers_`.
       builder_.CreateVector(metadata), /*signature_defs=*/0,
@@ -7782,14 +7794,98 @@ auto GraphBuilderTflite::SerializeInstanceNormalization(
       reshape_bias_tensor_index);
 }
 
-auto GraphBuilderTflite::SerializeLayerNormalizationAsCustomCall(
+auto GraphBuilderTflite::SerializeLayerNormalizationDecompositionSubgraph(
+    base::span<const int32_t> input_dimensions,
+    ::tflite::TensorType tensor_type,
+    float epsilon,
+    bool has_scale,
+    bool has_bias) -> base::expected<int32_t, std::string> {
+  // Tensor indices are subgraph-local, so the decomposition is built into a
+  // scratch tensor/operator list. `buffers_` and `operator_codes_` are
+  // model-global and keep being appended to as usual. The `AutoReset`s stash
+  // the outer lists and restore them on scope exit, even if an
+  // `ASSIGN_OR_RETURN` below returns early with an error.
+  base::AutoReset<std::vector<TensorOffset>> saved_tensors(
+      &tensors_, std::vector<TensorOffset>());
+  base::AutoReset<std::vector<OperatorOffset>> saved_operators(
+      &operators_, std::vector<OperatorOffset>());
+
+  // The subgraph signature must match the composite operator's operand list:
+  // `[input, scale?, bias?] -> [output]`.
+  std::vector<TensorIndex> subgraph_inputs;
+  subgraph_inputs.reserve(3);
+  auto add_input = [&](base::span<const int32_t> dimensions, const char* name) {
+    const TensorIndex index = base::checked_cast<TensorIndex>(tensors_.size());
+    tensors_.emplace_back(::tflite::CreateTensor(
+        builder_, builder_.CreateVector<int32_t>(dimensions), tensor_type,
+        /*buffer=*/0, builder_.CreateString(name)));
+    subgraph_inputs.push_back(index);
+    return index;
+  };
+
+  const TensorIndex input_tensor_index = add_input(input_dimensions, "input");
+
+  // The scale and bias operands are 1-D tensors sized like the innermost
+  // dimension of the input; reshape them so that they broadcast.
+  std::vector<int32_t> compatible_shape(input_dimensions.size(), 1);
+  CHECK_GE(input_dimensions.size(), 2u);
+  compatible_shape.back() = input_dimensions.back();
+  const std::array<int32_t, 1> parameter_shape = {input_dimensions.back()};
+  auto add_reshaped_parameter =
+      [&](const char* name) -> base::expected<TensorIndex, std::string> {
+    const TensorIndex index = add_input(parameter_shape, name);
+    ASSIGN_OR_RETURN(const TensorIndex reshape_tensor_index,
+                     SerializeTemporaryTensorWithByteSizeCheck(compatible_shape,
+                                                               tensor_type));
+    operators_.emplace_back(SerializeReshapeOperation(
+        index, reshape_tensor_index, compatible_shape));
+    return reshape_tensor_index;
+  };
+  std::optional<TensorIndex> scale_tensor_index;
+  if (has_scale) {
+    ASSIGN_OR_RETURN(scale_tensor_index, add_reshaped_parameter("scale"));
+  }
+  std::optional<TensorIndex> bias_tensor_index;
+  if (has_bias) {
+    ASSIGN_OR_RETURN(bias_tensor_index, add_reshaped_parameter("bias"));
+  }
+
+  ASSIGN_OR_RETURN(
+      const TensorIndex output_tensor_index,
+      SerializeTemporaryTensorWithByteSizeCheck(input_dimensions, tensor_type));
+
+  const std::array<int32_t, 1> normalized_axis = {
+      base::checked_cast<int32_t>(input_dimensions.size()) - 1};
+  ASSIGN_OR_RETURN(
+      (const auto [mean_tensor_index, variance_tensor_index]),
+      ComputeMeanAndVarianceForNormalization(
+          input_dimensions, tensor_type, input_tensor_index, normalized_axis));
+  ASSIGN_OR_RETURN(
+      const OperatorOffset operator_offset,
+      SerializeNormalizationOperation(
+          input_dimensions, tensor_type, input_tensor_index,
+          output_tensor_index, mean_tensor_index, variance_tensor_index,
+          epsilon, scale_tensor_index, bias_tensor_index));
+  operators_.emplace_back(operator_offset);
+
+  const std::array<TensorIndex, 1> subgraph_outputs = {output_tensor_index};
+  decomposition_subgraphs_.push_back(::tflite::CreateSubGraph(
+      builder_, builder_.CreateVector(tensors_.data(), tensors_.size()),
+      builder_.CreateVector<TensorIndex>(subgraph_inputs),
+      builder_.CreateVector<TensorIndex>(subgraph_outputs),
+      builder_.CreateVector(operators_.data(), operators_.size()),
+      builder_.CreateString("layer_norm_decomposition")));
+  // The main subgraph occupies index 0.
+  return base::checked_cast<int32_t>(decomposition_subgraphs_.size());
+}
+
+auto GraphBuilderTflite::SerializeLayerNormalizationAsComposite(
     const mojom::LayerNormalization& layer_normalization)
     -> std::optional<OperatorOffset> {
-  // Gate: the fused kernel is only registered by LiteRT when the ML Drift
-  // WebGPU accelerator is selected (see
-  // `third_party/litert/src/litert/runtime/compiled_model.cc`, which calls
-  // `resolver->AddCustom("custom_call.LayerNorm", ...)` only under
-  // `kLiteRtHwAcceleratorGpu`).
+  // Gate: the fused `layer_norm` kernel is only reachable when the ML Drift
+  // WebGPU accelerator is selected. On other devices the composite would be
+  // evaluated through its decomposition subgraph, which is slower than
+  // emitting the primitives into the main subgraph directly.
   if (context_device_ != mojom::Device::kGpu) {
     return std::nullopt;
   }
@@ -7842,11 +7938,12 @@ auto GraphBuilderTflite::SerializeLayerNormalizationAsCustomCall(
     return std::nullopt;
   }
 
-  // All preconditions satisfied — emit the custom op.
+  // All preconditions satisfied — emit the composite op.
   ASSIGN_OR_RETURN(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(layer_normalization.input_operand_id),
       [](auto) { return std::nullopt; });
+  CHECK_EQ(input_tensor_info.data_type, ::tflite::TensorType_FLOAT32);
   std::vector<TensorIndex> op_inputs;
   op_inputs.reserve(3);
   op_inputs.push_back(input_tensor_info.index);
@@ -7870,18 +7967,50 @@ auto GraphBuilderTflite::SerializeLayerNormalizationAsCustomCall(
       [](auto) { return std::nullopt; });
   const std::array<TensorIndex, 1> op_outputs = {output_tensor_info.index};
 
-  // Attributes flexbuffer: `{"epsilon": float}`.
+  ASSIGN_OR_RETURN(const int32_t decomposition_subgraph_index,
+                   SerializeLayerNormalizationDecompositionSubgraph(
+                       input_tensor_info.dimensions,
+                       input_tensor_info.data_type, layer_normalization.epsilon,
+                       layer_normalization.scale_operand_id.has_value(),
+                       layer_normalization.bias_operand_id.has_value()),
+                   [](auto) { return std::nullopt; });
+
+  // Attributes flexbuffer. `odml.group_norm` covers both group and layer
+  // normalization; `sub_type` `kGroupNormSubTypeLayerNorm` selects the latter.
+  // See `IsCompositeNodeSupported()` in
+  // `third_party/litert/src/ml_drift_delegate/tflite/support/support.cc`.
+  const int32_t channel_axis =
+      base::checked_cast<int32_t>(input_shape.size()) - 1;
   flexbuffers::Builder fbb;
-  fbb.Map([&] { fbb.Float("epsilon", layer_normalization.epsilon); });
+  fbb.Map([&] {
+    fbb.Int("sub_type", kGroupNormSubTypeLayerNorm);
+    fbb.Float("epsilon", layer_normalization.epsilon);
+    fbb.Int("channel_axis", channel_axis);
+    // Tensor-valued attributes use the `_TENSOR_V1_<name>` encoding. The
+    // ML Drift `odml.group_norm` parser only reads `TENSOR_DATA` (see
+    // `IsGroupNormSupported()` in
+    // `third_party/litert/src/ml_drift_delegate/tflite/support/support_group_norm.cc`).
+    fbb.Map("_TENSOR_V1_reduction_axes",
+            [&] { fbb.Vector("TENSOR_DATA", [&] { fbb.Add(channel_axis); }); });
+  });
   fbb.Finish();
-  const auto custom_options = builder_.CreateVector(fbb.GetBuffer());
+  const auto composite_attributes = builder_.CreateVector(fbb.GetBuffer());
+  const auto composite_options = ::tflite::CreateStableHLOCompositeOptions(
+      builder_, builder_.CreateString("odml.group_norm"),
+      decomposition_subgraph_index, composite_attributes,
+      ::tflite::CustomOptionsFormat_FLEXBUFFERS, /*version=*/1);
 
   return ::tflite::CreateOperator(
-      builder_, GetCustomOperatorCodeIndex("custom_call.LayerNorm"),
+      builder_,
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_STABLEHLO_COMPOSITE),
       builder_.CreateVector<TensorIndex>(op_inputs),
       builder_.CreateVector<TensorIndex>(op_outputs),
-      ::tflite::BuiltinOptions_NONE, /*builtin_options=*/0, custom_options,
-      ::tflite::CustomOptionsFormat_FLEXBUFFERS);
+      ::tflite::BuiltinOptions_NONE, /*builtin_options=*/0,
+      /*custom_options=*/0, ::tflite::CustomOptionsFormat_FLEXBUFFERS,
+      /*mutating_variable_inputs=*/0, /*intermediates=*/0,
+      /*large_custom_options_offset=*/0, /*large_custom_options_size=*/0,
+      ::tflite::BuiltinOptions2_StableHLOCompositeOptions,
+      composite_options.Union());
 }
 
 auto GraphBuilderTflite::SerializeLayerNormalization(
@@ -7890,14 +8019,16 @@ auto GraphBuilderTflite::SerializeLayerNormalization(
   CHECK(context_properties_.data_type_limits.layer_normalization_input.Supports(
       GetOperand(layer_normalization.input_operand_id).descriptor));
 
-  // Try the fused `custom_call.LayerNorm` path first. If any precondition
-  // fails, fall through to the primitive emulation below.
-#if BUILDFLAG(WEBNN_USE_WEBGPU_ACCELERATOR)
-  if (auto fused = SerializeLayerNormalizationAsCustomCall(layer_normalization);
+  // Try the fused `odml.group_norm` composite path first. If any precondition
+  // fails, fall through to the primitive emulation below. On devices without
+  // the ML Drift WebGPU delegate the composite still executes correctly via
+  // its decomposition subgraph, just without acceleration.
+  //
+  // TODO(crbug.com/561066235): Cache decomposition subgraphs.
+  if (auto fused = SerializeLayerNormalizationAsComposite(layer_normalization);
       fused.has_value()) {
     return *fused;
   }
-#endif  // BUILDFLAG(WEBNN_USE_WEBGPU_ACCELERATOR)
   ASSIGN_OR_RETURN(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(layer_normalization.input_operand_id));
