@@ -128,10 +128,15 @@ SkColor NativeThemeMobile::GetControlColor(
       NOTREACHED();
     case kScrollbarTrack:
       return SK_ColorTRANSPARENT;
+    // TODO(crbug.com/500167149): Resolve the scrollbar thumb color to the same
+    // colors as used by the Android Java UI after necessary plumbing work is
+    // done.
     case kScrollbarThumb:
-    case kScrollbarThumbPressed:
-    case kScrollbarThumbHovered:
       return SkColorSetARGB(0x80, 0x80, 0x80, 0x80);
+    case kScrollbarThumbHovered:
+      return SkColorSetARGB(0xC2, 0x80, 0x80, 0x80);
+    case kScrollbarThumbPressed:
+      return SkColorSetARGB(0xD7, 0x80, 0x80, 0x80);
     case kButtonBorder:
       return dark_mode ? SkColorSetRGB(0x6B, 0x6B, 0x6B)
                        : SkColorSetRGB(0x76, 0x76, 0x76);
