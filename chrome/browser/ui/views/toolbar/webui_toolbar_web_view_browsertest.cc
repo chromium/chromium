@@ -84,6 +84,8 @@
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
@@ -2937,6 +2939,75 @@ IN_PROC_BROWSER_TEST_F(WebUIAvatarButtonBrowserTest, AvatarButtonIPHPromo) {
                toolbar_ui_api::mojom::AvatarToolbarButtonState::kNormal &&
            delegate->GetState().avatar_control_state->text.empty();
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIAvatarButtonBrowserTest, ClickingClosesMenu) {
+  BrowserWindowInterface* target_browser =
+#if BUILDFLAG(IS_CHROMEOS)
+      // On ChromeOS, only incognito windows have an avatar button and profile
+      // menu in the browser window.
+      CreateIncognitoBrowser();
+#else
+      browser();
+#endif
+  WebUIToolbarWebView* webui_toolbar_view =
+      GetWebUIToolbarWebView(target_browser);
+  ASSERT_TRUE(webui_toolbar_view);
+
+  auto* avatar_button = static_cast<WebUIAvatarToolbarButton*>(
+      webui_toolbar_view->GetAvatarToolbarButtonInterface());
+  ASSERT_TRUE(avatar_button);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return avatar_button->is_initialized() &&
+           ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+               kToolbarAvatarButtonElementId);
+  }));
+
+  auto* coordinator = ProfileMenuCoordinator::From(target_browser);
+  ASSERT_TRUE(coordinator);
+
+  // 1. Open the profile menu.
+  webui_toolbar_view->OnAvatarButtonMousePressed();
+  webui_toolbar_view->ShowAvatarMenu(/*is_pointer_interaction=*/true);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
+
+  views::Widget* widget =
+      coordinator->GetProfileMenuViewBaseForTesting()->GetWidget();
+  ASSERT_TRUE(widget);
+
+  // 2. Simulate clicking the WebUI avatar button while the menu is open:
+  // Pointer down notifies C++ of the press.
+  webui_toolbar_view->OnAvatarButtonMousePressed();
+
+  // The mouse-down causes the bubble widget to lose focus and close
+  // synchronously.
+  widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !coordinator->IsShowing(); }));
+
+  // Asynchronously, WebUI dispatches the click event which calls
+  // ShowAvatarMenu().
+  webui_toolbar_view->ShowAvatarMenu(/*is_pointer_interaction=*/true);
+
+  // The menu should remain closed and NOT reopen.
+  EXPECT_FALSE(coordinator->IsShowing());
+
+  // 3. If the menu is open and click arrives before focus loss closes it,
+  // the click should close the menu directly.
+  coordinator->Show(/*is_source_accelerator=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
+
+  webui_toolbar_view->OnAvatarButtonMousePressed();
+  webui_toolbar_view->ShowAvatarMenu(/*is_pointer_interaction=*/true);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !coordinator->IsShowing(); }));
+  EXPECT_FALSE(coordinator->IsShowing());
+
+  // 4. Keyboard activation (is_pointer_interaction = false) opens the menu.
+  webui_toolbar_view->ShowAvatarMenu(/*is_pointer_interaction=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
+  EXPECT_TRUE(coordinator->IsShowing());
 }
 
 struct ButtonVisibilityToggleTestParam {

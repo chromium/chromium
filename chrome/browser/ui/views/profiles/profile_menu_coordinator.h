@@ -9,6 +9,8 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/bubble/bubble_anchor.h"
@@ -22,11 +24,21 @@ namespace signin_metrics {
 enum class AccessPoint;
 }  // namespace signin_metrics
 
+namespace views {
+class Widget;
+}  // namespace views
+
 // Handles the lifetime and showing/hidden state of the profile menu bubble.
 // Owned by the associated browser.
 class ProfileMenuCoordinator {
  public:
   DECLARE_USER_DATA(ProfileMenuCoordinator);
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnProfileMenuShown(views::Widget* widget) {}
+    virtual void OnProfileMenuCoordinatorDestroyed() {}
+  };
 
   ProfileMenuCoordinator(BrowserWindowInterface* browser, Profile* profile);
 
@@ -36,6 +48,9 @@ class ProfileMenuCoordinator {
   ProfileMenuCoordinator& operator=(const ProfileMenuCoordinator&) = delete;
   ~ProfileMenuCoordinator();
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Shows the the profile bubble for this browser.
   //
   // If `from_avatar_promo` is set, then trigger of the menu originated from a
@@ -44,6 +59,9 @@ class ProfileMenuCoordinator {
 
   // Returns true if the bubble is currently showing for the owning browser.
   bool IsShowing() const;
+
+  // Returns the profile menu widget if showing, or nullptr.
+  views::Widget* GetProfileMenuWidget();
 
   ProfileMenuViewBase* GetProfileMenuViewBaseForTesting();
 
@@ -69,6 +87,7 @@ class ProfileMenuCoordinator {
 
   const raw_ref<Profile> profile_;
   views::ViewTracker bubble_tracker_;
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<ProfileMenuCoordinator> weak_pointer_factory_{this};
 };

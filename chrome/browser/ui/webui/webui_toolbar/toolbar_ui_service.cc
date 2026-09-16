@@ -331,14 +331,21 @@ void ToolbarUIService::OnToolbarDropFile(const gfx::PointF& drop_position) {
   }
 }
 
-void ToolbarUIService::ShowAvatarMenu(ShowAvatarMenuCallback callback) {
+void ToolbarUIService::ShowAvatarMenu(bool is_pointer_interaction,
+                                      ShowAvatarMenuCallback callback) {
   if (delegate_) {
-    delegate_->ShowAvatarMenu();
+    delegate_->ShowAvatarMenu(is_pointer_interaction);
     std::move(callback).Run({});
   } else {
     std::move(callback).Run(base::unexpected(Error::New(
         Code::kFailedPrecondition,
         "ToolbarUIService: cannot show avatar menu without delegate_")));
+  }
+}
+
+void ToolbarUIService::OnAvatarButtonMousePressed() {
+  if (delegate_) {
+    delegate_->OnAvatarButtonMousePressed();
   }
 }
 

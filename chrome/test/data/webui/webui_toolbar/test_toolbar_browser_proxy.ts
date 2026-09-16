@@ -24,6 +24,7 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
       'movePinnedToolbarAction',
       'movePinnedToolbarActionBy',
       'onAppMenuFocusChanged',
+      'onAvatarButtonMousePressed',
       'onContentSettingImageAnimationEnded',
       'onContentSettingImagePointerDown',
       'onExtensionActionPointerDown',
@@ -174,8 +175,12 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     this.methodCalled('onToolbarDropFile', dropPosition);
   }
 
-  showAvatarMenu() {
-    this.methodCalled('showAvatarMenu');
+  onAvatarButtonMousePressed() {
+    this.methodCalled('onAvatarButtonMousePressed');
+  }
+
+  showAvatarMenu(isPointerInteraction: boolean) {
+    this.methodCalled('showAvatarMenu', isPointerInteraction);
     return Promise.resolve({result: {}});
   }
 

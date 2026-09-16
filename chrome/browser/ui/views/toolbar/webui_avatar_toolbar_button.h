@@ -10,6 +10,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "components/browser_apis/ui_controllers/toolbar/icon_handle.h"
 #include "ui/views/controls/button/button.h"
@@ -20,7 +23,8 @@ class AvatarToolbarButtonTestAccessor;
 
 // WebUIAvatarToolbarButton implements C++-side functionality for the
 // WebUI-based implementation of the avatar button in the toolbar.
-class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
+class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface,
+                                 public ProfileMenuCoordinator::Observer {
  public:
   explicit WebUIAvatarToolbarButton(WebUIToolbarControlDelegate* delegate);
   WebUIAvatarToolbarButton(const WebUIAvatarToolbarButton&) = delete;
@@ -28,6 +32,8 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
   ~WebUIAvatarToolbarButton() override;
 
   void Initialize();
+  void OnClicked(bool is_pointer_interaction);
+  void OnMousePressed();
   void SetAvatarButtonHovered(bool hovered);
   void SetAvatarButtonFocused(bool focused);
 
@@ -70,6 +76,10 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
 
   void NotifyIPHPromoChanged(bool has_promo);
 
+  // ProfileMenuCoordinator::Observer:
+  void OnProfileMenuShown(views::Widget* widget) override;
+  void OnProfileMenuCoordinatorDestroyed() override;
+
  private:
   // Used by tests to access the private state_manager_ for verification and
   // fallback queries when the button is hidden.
@@ -77,12 +87,20 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
   void UpdateState();
   void UpdateAccessibilityLabel();
   void AnnounceInternal(std::u16string text);
+  void EnsureProfileMenuCoordinatorObserved();
   base::OnceCallback<void(std::u16string)> announce_callback_for_testing_;
 
   const raw_ptr<WebUIToolbarControlDelegate> delegate_;
 
   // May be null.
   std::unique_ptr<AvatarToolbarButtonStateManager> state_manager_;
+
+  // Helper to prevent mouse clicks from immediately reopening a bubble that was
+  // just closed.
+  WebUIBubbleReopenSuppressor reopen_suppressor_;
+  base::ScopedObservation<ProfileMenuCoordinator,
+                          ProfileMenuCoordinator::Observer>
+      profile_menu_observation_{this};
 
   bool is_initialized_ = false;
   bool hovered_ = false;

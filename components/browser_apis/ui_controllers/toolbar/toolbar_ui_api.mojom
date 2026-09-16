@@ -208,7 +208,11 @@ interface ToolbarUIService {
   OnToolbarDropFile(gfx.mojom.PointF drop_position);
 
   // Shows the avatar menu bubble.
-  ShowAvatarMenu() => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+  ShowAvatarMenu(bool is_pointer_interaction) =>
+      result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Notifies the browser that a mouse press occurred on the avatar button.
+  OnAvatarButtonMousePressed();
 
   // Notifies the browser of the hover state of the avatar button.
   SetAvatarButtonHovered(bool hovered) =>

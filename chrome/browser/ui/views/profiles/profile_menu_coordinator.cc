@@ -32,6 +32,9 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 ProfileMenuCoordinator::~ProfileMenuCoordinator() {
+  for (Observer& observer : observers_) {
+    observer.OnProfileMenuCoordinatorDestroyed();
+  }
   // Ensure the ProfileMenuCoordinator does not outlive its associated bubble
   // widget to mitigate the risk of dangling references.
   if (bubble_tracker_ && bubble_tracker_.view()->GetWidget()) {
@@ -125,13 +128,28 @@ void ProfileMenuCoordinator::ShowWithPromoResults(
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
   bubble_ptr->CreateAXWidgetObserver(widget);
   widget->Show();
+  for (Observer& observer : observers_) {
+    observer.OnProfileMenuShown(widget);
+  }
   if (is_source_accelerator) {
     bubble_ptr->FocusFirstProfileButton();
   }
 }
 
+void ProfileMenuCoordinator::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ProfileMenuCoordinator::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 bool ProfileMenuCoordinator::IsShowing() const {
   return bubble_tracker_.view() != nullptr;
+}
+
+views::Widget* ProfileMenuCoordinator::GetProfileMenuWidget() {
+  return IsShowing() ? bubble_tracker_.view()->GetWidget() : nullptr;
 }
 
 ProfileMenuViewBase*

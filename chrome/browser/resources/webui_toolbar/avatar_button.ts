@@ -16,7 +16,7 @@ import {getCss} from './avatar_button.css.js';
 import {getHtml} from './avatar_button.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
-import {HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
+import {BUTTON_LEFT, HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 export interface AvatarButtonElement {
@@ -117,9 +117,17 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
     return classes.join(' ');
   }
 
-  protected onClick_(_: Event) {
+  protected onClick_(e: PointerEvent) {
     // TODO(behamilton): Log an error if this fails.
-    BrowserProxyImpl.getInstance().toolbarUIHandler.showAvatarMenu();
+    BrowserProxyImpl.getInstance().toolbarUIHandler.showAvatarMenu(
+        e.pointerType !== '');
+  }
+
+  protected onPointerdown_(e: PointerEvent) {
+    if (e.button === BUTTON_LEFT) {
+      BrowserProxyImpl.getInstance()
+          .toolbarUIHandler.onAvatarButtonMousePressed();
+    }
   }
 
   protected onMouseenter_() {
