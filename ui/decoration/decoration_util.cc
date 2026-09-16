@@ -49,13 +49,7 @@ class NineboxImageSource : public gfx::CanvasImageSource {
     gfx::Rect bounds(size());
     bounds.Inset(insets);
 
-    SkVector radii[4] = {
-        {rounded_corners_.upper_left(), rounded_corners_.upper_left()},
-        {rounded_corners_.upper_right(), rounded_corners_.upper_right()},
-        {rounded_corners_.lower_right(), rounded_corners_.lower_right()},
-        {rounded_corners_.lower_left(), rounded_corners_.lower_left()}};
-    SkRRect r_rect;
-    r_rect.setRectRadii(gfx::RectToSkRect(bounds), radii);
+    SkRRect r_rect = gfx::RoundedRectToSkRRect(bounds, rounded_corners_);
 
     // Clip out the center so it's not painted with the shadow.
     canvas->sk_canvas()->clipRRect(r_rect, SkClipOp::kDifference, true);
