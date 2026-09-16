@@ -350,6 +350,10 @@ ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
       IdentityManagerFactory::GetForProfile(profile);
   if (base::FeatureList::IsEnabled(switches::kSigninPromoOnAvatarPill) &&
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // Do not promote signing in if a sign in cannot be offered at all.
+    if (!CanOfferSignInForPromos(CHECK_DEREF(profile))) {
+      return {};
+    }
     return {.type = ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo,
             .local_data_count = 0u};
   }
@@ -685,24 +689,15 @@ bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
   // Consider original profile even if an off-the-record profile was
   // passed to this method as sign-in state is only defined for the
   // primary profile.
-  Profile* original_profile = profile.GetOriginalProfile();
+  Profile& original_profile = CHECK_DEREF(profile.GetOriginalProfile());
 
   // Don't show for supervised child profiles.
-  if (original_profile->IsChild()) {
+  if (original_profile.IsChild()) {
     return false;
   }
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(original_profile);
-  AccountInfo promo_account = signin_ui_util::GetSingleAccountForPromos(
-      identity_manager,
-      AccountPreviewDataServiceFactory::GetForProfile(original_profile));
-
   // Don't show if sign in can't be offered (ex: signin disallowed).
-  if (!CanOfferSignin(original_profile, promo_account.GetGaiaId(),
-                      promo_account.GetEmail(),
-                      /*allow_account_from_other_profile=*/true)
-           .IsOk()) {
+  if (!CanOfferSignInForPromos(original_profile)) {
     return false;
   }
 
@@ -1041,6 +1036,16 @@ void RecordAvatarButtonPromoAcceptedAtPromoShownCount(
                     promo_type_suffix}),
       promo_shown_count,
       /*exclusive_max=*/user_education::features::GetNewBadgeShowCount() + 1);
+}
+
+bool CanOfferSignInForPromos(Profile& profile) {
+  const AccountInfo promo_account = signin_ui_util::GetSingleAccountForPromos(
+      IdentityManagerFactory::GetForProfile(&profile),
+      AccountPreviewDataServiceFactory::GetForProfile(&profile));
+  return CanOfferSignin(&profile, promo_account.GetGaiaId(),
+                        promo_account.GetEmail(),
+                        /*allow_account_from_other_profile=*/true)
+      .IsOk();
 }
 
 void ComputeProfileMenuAvatarButtonPromoInfo(

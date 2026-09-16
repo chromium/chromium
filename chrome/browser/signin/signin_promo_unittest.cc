@@ -1754,58 +1754,11 @@ INSTANTIATE_TEST_SUITE_P(
          ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo,
          ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo}));
 
-class ComputeProfileMenuAvatarButtonPromoInfoParamTest
-    : public testing::Test,
-      public testing::WithParamInterface<
-          ProfileMenuAvatarButtonPromoInfo::Type> {
+// Sets up a profile with the services needed to compute the profile menu
+// avatar button promo info. Feature flags are configured by the derived
+// fixtures, which own their own `base::test::ScopedFeatureList`.
+class ComputeProfileMenuAvatarButtonPromoInfoTestBase : public testing::Test {
  public:
-  ComputeProfileMenuAvatarButtonPromoInfoParamTest() {
-    switch (GetParam()) {
-      case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
-      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
-      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
-      case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
-        scoped_feature_list_.InitWithFeatures(
-            // Enabling both features to ensure that
-            // `syncer::kReplaceSyncPromosWithSignInPromos` takes over.
-            // Enable
-            // `switches::kSigninWindows10DepreciationStateBypassForTesting` to
-            // allow Windows machine to test the regular flow (non-Windows10
-            // specific flow).
-            /*enabled_features=*/
-            {syncer::kReplaceSyncPromosWithSignInPromos,
-             switches::kAvatarButtonSyncPromoForTesting,
-             switches::kSigninWindows10DepreciationStateBypassForTesting,
-             switches::kSigninPromoOnAvatarPill},
-            /*disabled_features=*/{});
-        break;
-      case ProfileMenuAvatarButtonPromoInfo::Type::
-          kBatchUploadWindows10DepreciationPromo:
-        scoped_feature_list_.InitWithFeatures(
-            // Enabling both features to ensure that
-            // `syncer::kReplaceSyncPromosWithSignInPromos` takes over. Also
-            // enabling `switches::kSigninWindows10DepreciationStateForTesting`
-            // to simulate Windows10 setup.
-            /*enabled_features=*/
-            {syncer::kReplaceSyncPromosWithSignInPromos,
-             switches::kAvatarButtonSyncPromoForTesting,
-             switches::kSigninWindows10DepreciationStateForTesting,
-             switches::kSigninPromoOnAvatarPill},
-            /*disabled_features=*/{});
-        break;
-      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
-        scoped_feature_list_.InitWithFeatures(
-            // For the Sync promo to be shown
-            // `syncer::kReplaceSyncPromosWithSignInPromos` must be off.
-            /*enabled_features=*/{switches::kAvatarButtonSyncPromoForTesting,
-                                  switches::kSigninPromoOnAvatarPill},
-            /*disabled_features=*/{
-                syncer::kReplaceSyncPromosWithSignInPromos,
-                syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
-        break;
-    }
-  }
-
   void SetUp() override {
     TestingProfile::Builder builder;
     builder.AddTestingFactories(
@@ -1957,7 +1910,108 @@ class ComputeProfileMenuAvatarButtonPromoInfoParamTest
 
   std::unique_ptr<TestingProfile> profile_;
   BatchUploadServiceTestHelper batch_upload_test_helper_;
+};
 
+class ComputeProfileMenuAvatarButtonPromoInfoSignInPromoTest
+    : public ComputeProfileMenuAvatarButtonPromoInfoTestBase {
+ public:
+  ComputeProfileMenuAvatarButtonPromoInfoSignInPromoTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kSigninPromoOnAvatarPill},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ComputeProfileMenuAvatarButtonPromoInfoSignInPromoTest,
+       SigninPromoWhenSignedOut) {
+  ASSERT_FALSE(
+      IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount(
+          ConsentLevel::kSignin));
+
+  base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
+      result_callback;
+  EXPECT_CALL(result_callback,
+              Run(ProfileMenuAvatarButtonPromoInfo{
+                  .type = ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo,
+                  .local_data_count = 0u}));
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get(),
+                                          /*allow_batch_upload_promos=*/true);
+}
+
+// Regression test for the sign in promo being shown even though signing in is
+// not possible, e.g. because it is disabled by the `BrowserSignin` enterprise
+// policy.
+TEST_F(ComputeProfileMenuAvatarButtonPromoInfoSignInPromoTest,
+       NoSigninPromoWhenSigninIsNotAllowed) {
+  ASSERT_FALSE(
+      IdentityManagerFactory::GetForProfile(profile())->HasPrimaryAccount(
+          ConsentLevel::kSignin));
+  profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+
+  base::MockCallback<base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)>>
+      result_callback;
+  EXPECT_CALL(result_callback, Run(ProfileMenuAvatarButtonPromoInfo()));
+  ComputeProfileMenuAvatarButtonPromoInfo(*profile(), result_callback.Get(),
+                                          /*allow_batch_upload_promos=*/true);
+}
+
+class ComputeProfileMenuAvatarButtonPromoInfoParamTest
+    : public ComputeProfileMenuAvatarButtonPromoInfoTestBase,
+      public testing::WithParamInterface<
+          ProfileMenuAvatarButtonPromoInfo::Type> {
+ public:
+  ComputeProfileMenuAvatarButtonPromoInfoParamTest() {
+    switch (GetParam()) {
+      case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+        scoped_feature_list_.InitWithFeatures(
+            // Enabling both features to ensure that
+            // `syncer::kReplaceSyncPromosWithSignInPromos` takes over.
+            // Enable
+            // `switches::kSigninWindows10DepreciationStateBypassForTesting` to
+            // allow Windows machine to test the regular flow (non-Windows10
+            // specific flow).
+            /*enabled_features=*/
+            {syncer::kReplaceSyncPromosWithSignInPromos,
+             switches::kAvatarButtonSyncPromoForTesting,
+             switches::kSigninWindows10DepreciationStateBypassForTesting,
+             switches::kSigninPromoOnAvatarPill},
+            /*disabled_features=*/{});
+        break;
+      case ProfileMenuAvatarButtonPromoInfo::Type::
+          kBatchUploadWindows10DepreciationPromo:
+        scoped_feature_list_.InitWithFeatures(
+            // Enabling both features to ensure that
+            // `syncer::kReplaceSyncPromosWithSignInPromos` takes over. Also
+            // enabling `switches::kSigninWindows10DepreciationStateForTesting`
+            // to simulate Windows10 setup.
+            /*enabled_features=*/
+            {syncer::kReplaceSyncPromosWithSignInPromos,
+             switches::kAvatarButtonSyncPromoForTesting,
+             switches::kSigninWindows10DepreciationStateForTesting,
+             switches::kSigninPromoOnAvatarPill},
+            /*disabled_features=*/{});
+        break;
+      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+        scoped_feature_list_.InitWithFeatures(
+            // For the Sync promo to be shown
+            // `syncer::kReplaceSyncPromosWithSignInPromos` must be off.
+            /*enabled_features=*/{switches::kAvatarButtonSyncPromoForTesting,
+                                  switches::kSigninPromoOnAvatarPill},
+            /*disabled_features=*/{
+                syncer::kReplaceSyncPromosWithSignInPromos,
+                syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+        break;
+    }
+  }
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

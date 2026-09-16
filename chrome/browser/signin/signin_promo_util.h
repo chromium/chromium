@@ -127,6 +127,11 @@ inline constexpr signin_metrics::AccessPoint
     kHistoryOptinAvatarPromoAccessPoint =
         signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup;
 
+// Returns whether a sign in can be offered to `profile`, for the account that
+// would be used in promos. Returns `false` if signing in is not possible, e.g.
+// when sign in is disallowed by the `BrowserSignin` enterprise policy.
+bool CanOfferSignInForPromos(Profile& profile);
+
 // Based on the `profile` current state, compute the data to be shown for the
 // promos, if any, based on the promo priority and the profile state. The promo
 // between the ProfileMenu and the AvatarButton should always be aligned.

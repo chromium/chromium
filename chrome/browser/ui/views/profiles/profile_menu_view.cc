@@ -66,7 +66,6 @@
 #include "chrome/browser/ui/views/profiles/avatar_badge_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
-#include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
@@ -758,18 +757,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   switch (signin_util::GetSignedInState(identity_manager)) {
     case signin_util::SignedInState::kSignedOut:
     case signin_util::SignedInState::kWebOnlySignedIn: {
-      signin::AccountPreviewDataService* account_preview_data_service =
-          AccountPreviewDataServiceFactory::GetForProfile(&profile());
-      AccountInfo account_info_for_promos =
-          signin_ui_util::GetSingleAccountForPromos(
-              identity_manager, account_preview_data_service);
-      if (!CanOfferSignin(&profile(), account_info_for_promos.GetGaiaId(),
-                          std::string(account_info_for_promos.GetEmail()),
-                          /*allow_account_from_other_profile=*/true)
-               .IsOk()) {
+      if (!signin::CanOfferSignInForPromos(profile())) {
         break;
       }
-
       access_point =
           signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
       if (from_avatar_promo_) {
@@ -779,6 +769,11 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
         access_point = access_point =
             signin_metrics::AccessPoint::kAvatarPillExpandPromo;
       }
+      signin::AccountPreviewDataService* account_preview_data_service =
+          AccountPreviewDataServiceFactory::GetForProfile(&profile());
+      AccountInfo account_info_for_promos =
+          signin_ui_util::GetSingleAccountForPromos(
+              identity_manager, account_preview_data_service);
       signin_metrics::LogSignInOffered(
           access_point,
           account_info_for_promos.IsEmpty()
