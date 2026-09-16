@@ -90,6 +90,10 @@ typedef std::string (*FieldTrialParamsDecodeStringFunc)(const std::string& str);
 //
 // If the feature is not enabled, the parameter is not set, or set to an invalid
 // value, then Get() will return the default value.
+//
+// Note that FeatureParam<size_t> is backed by `int` in the underlying API,
+// so `default_value`s or field trial overrides greater than INT_MAX will
+// cause a runtime crash.
 template <typename T, bool IsEnum = std::is_enum_v<T>>
 struct FeatureParam {
   using DefaultValueType =

@@ -146,7 +146,8 @@ class FeatureListTest;
 //                         "my_feature_param", 0);
 //
 // `T` is a parameter type, one of bool, int, size_t, double, std::string, and
-// base::TimeDelta. Enum types are not supported for now.
+// base::TimeDelta. Enum types are not supported for now. Note that size_t is
+// backed by int in the underlying API, and thus should not exceed INT_MAX.
 //
 // It should *not* be defined in header files; do not use this macro in header
 // files.
