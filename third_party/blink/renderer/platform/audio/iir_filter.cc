@@ -7,13 +7,13 @@
 #include <algorithm>
 #include <complex>
 #include <limits>
+#include <numbers>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
 
 namespace blink {
@@ -146,7 +146,7 @@ void IIRFilter::GetFrequencyResponse(base::span<const float> frequency,
       phase_response[k] = std::numeric_limits<float>::quiet_NaN();
     } else {
       // zRecip = 1/z = exp(-j*frequency)
-      double omega = -kPiDouble * frequency[k];
+      double omega = -std::numbers::pi * frequency[k];
       std::complex<double> z_recip =
           std::complex<double>(fdlibm::cos(omega), fdlibm::sin(omega));
 

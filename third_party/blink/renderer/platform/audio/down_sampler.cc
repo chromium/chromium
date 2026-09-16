@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/audio/down_sampler.h"
 
 #include <memory>
+#include <numbers>
 
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -64,7 +65,7 @@ std::unique_ptr<AudioFloatArray> MakeReducedKernel(int size) {
   // processing after doing the main convolution using m_reducedKernel.
   for (int i = 1; i < n; i += 2) {
     // Compute the sinc() with offset.
-    double s = sinc_scale_factor * kPiDouble * (i - half_size);
+    double s = sinc_scale_factor * std::numbers::pi * (i - half_size);
     double sinc = !s ? 1.0 : fdlibm::sin(s) / s;
     sinc *= sinc_scale_factor;
 
