@@ -36,7 +36,6 @@
 #include "chrome/browser/ai/ai_writer.h"
 #include "chrome/browser/ai/features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"

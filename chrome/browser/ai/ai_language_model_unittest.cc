@@ -30,7 +30,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/ai/features.h"
-#include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/fake_manifest_broker.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"

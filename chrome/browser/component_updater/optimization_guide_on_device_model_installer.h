@@ -6,34 +6,10 @@
 #define CHROME_BROWSER_COMPONENT_UPDATER_OPTIMIZATION_GUIDE_ON_DEVICE_MODEL_INSTALLER_H_
 
 #include <memory>
-#include <string>
 
-#include "base/files/file_path.h"
-#include "base/values.h"
-#include "base/version.h"
-#include "components/component_updater/component_installer.h"
-#include "components/component_updater/component_updater_service.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 
 namespace component_updater {
-
-// Base class for on-device model installer policies.
-class OptimizationGuideOnDeviceModelInstallerPolicy
-    : public ComponentInstallerPolicy {
- public:
-  // Overrides for ComponentInstallerPolicy.
-  bool SupportsGroupPolicyEnabledComponentUpdates() const final;
-  bool RequiresNetworkEncryption() const final;
-  update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictValue& manifest,
-      const base::FilePath& install_dir) final;
-  bool AllowCachedCopies() const final;
-  bool AllowUpdatesOnMeteredConnections() const final;
-  update_client::InstallerAttributes GetInstallerAttributes() const override;
-
-  static void UpdateOnDemand(const std::string& id,
-                             OnDemandUpdater::Priority priority);
-};
 
 // Creates a generic delegate for Manifest Component.
 std::unique_ptr<optimization_guide::ManifestAssetManager::Delegate>
