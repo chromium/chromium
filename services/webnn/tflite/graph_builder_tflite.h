@@ -391,6 +391,14 @@ class GraphBuilderTflite final {
   base::expected<TensorIndex, std::string> CastGatherIndices(
       const TensorInfo& indices_tensor_info);
 
+  // Constant-folded equivalent of `SerializeGatherIndices()`: clamps
+  // `indices_operand_id` to `[-N, N - 1]` and shifts negatives by `N`, where
+  // `N` is the size of the indexed axis.
+  base::FixedArray<int32_t> ClampConstantIndices(
+      OperandId indices_operand_id,
+      base::span<const int32_t> input_dimensions,
+      std::optional<uint32_t> gather_axis);
+
   // This function is called by `SerializeGatherND` to serialize WebNN
   // gatherND or gatherElements.
   OperatorOffset SerializeGatherNDOperation(TensorIndex input_tensor_index,

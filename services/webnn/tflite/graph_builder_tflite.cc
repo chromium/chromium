@@ -5890,6 +5890,41 @@ base::expected<TensorIndex, std::string> GraphBuilderTflite::CastGatherIndices(
   }
 }
 
+base::FixedArray<int32_t> GraphBuilderTflite::ClampConstantIndices(
+    OperandId indices_operand_id,
+    base::span<const int32_t> input_dimensions,
+    std::optional<uint32_t> gather_axis) {
+  const mojom::Operand& indices_operand = GetOperand(indices_operand_id);
+  CHECK_EQ(indices_operand.kind, mojom::Operand::Kind::kConstant);
+
+  // For gatherND, the axis bounding a value is its position within the
+  // coordinate stored in the last dimension of `indices`.
+  const std::vector<uint32_t>& indices_shape =
+      indices_operand.descriptor.shape();
+  const size_t indices_nd =
+      gather_axis ? 1u : indices_shape[indices_shape.size() - 1];
+
+  const base::FixedArray<int64_t> indices_value =
+      GetConstantInt64Value(indices_operand_id);
+  base::FixedArray<int32_t> clamped_indices(indices_value.size());
+  for (size_t i = 0; i < indices_value.size(); ++i) {
+    const int32_t axis_boundary =
+        input_dimensions[gather_axis.value_or(i % indices_nd)];
+    // A valid WebNN dimension is greater than zero, so the clamp range below
+    // is never empty.
+    CHECK_GT(axis_boundary, 0);
+    int32_t clamped_index = base::checked_cast<int32_t>(std::clamp<int64_t>(
+        indices_value[i], -axis_boundary, axis_boundary - 1));
+    // TFLite doesn't support indexing from the end of an axis, so shift a
+    // negative index to the equivalent non-negative one.
+    if (clamped_index < 0) {
+      clamped_index += axis_boundary;
+    }
+    clamped_indices[i] = clamped_index;
+  }
+  return clamped_indices;
+}
+
 auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
     -> base::expected<OperatorOffset, std::string> {
   CHECK(context_properties_.data_type_limits.gather_input.Supports(
@@ -5926,50 +5961,77 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
                                   input_tensor_info.data_type));
   }
 
-  ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
-                   SerializeInputTensorInfo(gather.indices_operand_id));
-  TensorIndex indices_tensor_index;
-  if (indices_tensor_info.data_type == ::tflite::TensorType_UINT32 ||
-      indices_tensor_info.data_type == ::tflite::TensorType_INT64) {
-    ASSIGN_OR_RETURN(indices_tensor_index,
-                     SerializeGatherIndices<int64_t>(
-                         indices_tensor_info, input_tensor_info, gather.axis));
-  } else {
-    CHECK_EQ(indices_tensor_info.data_type, ::tflite::TensorType_INT32);
-    ASSIGN_OR_RETURN(indices_tensor_index,
-                     SerializeGatherIndices<int32_t>(
-                         indices_tensor_info, input_tensor_info, gather.axis));
-  }
+  const mojom::Operand& indices_operand = GetOperand(gather.indices_operand_id);
+  const bool constant_indices =
+      indices_operand.kind == mojom::Operand::Kind::kConstant;
+  ASSIGN_OR_RETURN(const std::vector<int32_t> indices_dims,
+                   ToSignedDimensions(indices_operand.descriptor.shape()));
 
-  // The ML Drift accelerator only supports 1-D INT32 indices. Reshape the
+  // The ML Drift accelerator only supports 1-D INT32 indices. Flatten the
   // indices to 1-D here and reshape the gathered result back; the
   // empty dimension list of a scalar has product 1, so it becomes [1]
-  // and needs no special case.
+  // and needs no special case. Constant indices are folded to INT32 below, so
+  // they qualify whatever the WebNN indices data type is.
   const bool requires_1d_int32_indices =
       context_device_ == mojom::Device::kGpu &&
-      indices_tensor_info.data_type == ::tflite::TensorType_INT32;
-  const std::vector<int32_t>& indices_dims = indices_tensor_info.dimensions;
+      (constant_indices ||
+       indices_operand.descriptor.data_type() == OperandDataType::kInt32);
   const bool flatten_indices =
       requires_1d_int32_indices && indices_dims.size() != 1 && !fuse_dequantize;
-  TensorIndex gather_output_index = output_tensor_info.index;
+  int32_t indices_count = 1;
   if (flatten_indices) {
     base::CheckedNumeric<int32_t> checked_count = 1;
     for (int32_t dim : indices_dims) {
       checked_count *= dim;
     }
-    int32_t indices_count;
     if (!checked_count.AssignIfValid(&indices_count)) {
       return base::unexpected("The gather indices are too large.");
     }
-    const std::array<int32_t, 1> flat_dims = {indices_count};
-    CHECK_EQ(indices_tensor_info.data_type, ::tflite::TensorType_INT32);
-    ASSIGN_OR_RETURN(const TensorIndex flat_indices_index,
-                     SerializeTemporaryTensorWithByteSizeCheck(
-                         flat_dims, indices_tensor_info.data_type));
-    operators_.emplace_back(SerializeReshapeOperation(
-        indices_tensor_index, flat_indices_index, flat_dims));
-    indices_tensor_index = flat_indices_index;
+  }
+  const std::array<int32_t, 1> flat_dims = {indices_count};
 
+  TensorIndex indices_tensor_index;
+  if (constant_indices) {
+    // Clamp at build time instead of emitting a runtime clamping subgraph.
+    // This also keeps `indices` as GATHER's only constant input and gives it
+    // its final shape, both required by the ML Drift accelerator, which needs
+    // at least one runtime input and rejects a no-op RESHAPE.
+    const base::FixedArray<int32_t> clamped_indices = ClampConstantIndices(
+        gather.indices_operand_id, input_tensor_info.dimensions, gather.axis);
+    ASSIGN_OR_RETURN(
+        indices_tensor_index,
+        SerializeTensorWithBuffer<int32_t>(
+            clamped_indices, flatten_indices
+                                 ? base::span<const int32_t>(flat_dims)
+                                 : base::span<const int32_t>(indices_dims)));
+  } else {
+    ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
+                     SerializeInputTensorInfo(gather.indices_operand_id));
+    if (indices_tensor_info.data_type == ::tflite::TensorType_UINT32 ||
+        indices_tensor_info.data_type == ::tflite::TensorType_INT64) {
+      ASSIGN_OR_RETURN(
+          indices_tensor_index,
+          SerializeGatherIndices<int64_t>(indices_tensor_info,
+                                          input_tensor_info, gather.axis));
+    } else {
+      CHECK_EQ(indices_tensor_info.data_type, ::tflite::TensorType_INT32);
+      ASSIGN_OR_RETURN(
+          indices_tensor_index,
+          SerializeGatherIndices<int32_t>(indices_tensor_info,
+                                          input_tensor_info, gather.axis));
+    }
+    if (flatten_indices) {
+      ASSIGN_OR_RETURN(const TensorIndex flat_indices_index,
+                       SerializeTemporaryTensorWithByteSizeCheck(
+                           flat_dims, ::tflite::TensorType_INT32));
+      operators_.emplace_back(SerializeReshapeOperation(
+          indices_tensor_index, flat_indices_index, flat_dims));
+      indices_tensor_index = flat_indices_index;
+    }
+  }
+
+  TensorIndex gather_output_index = output_tensor_info.index;
+  if (flatten_indices) {
     // The gathered result before the reshape: the input dimensions with `axis`
     // replaced by the number of indices.
     std::vector<int32_t> gathered_dims = input_tensor_info.dimensions;
@@ -6230,22 +6292,36 @@ auto GraphBuilderTflite::SerializeGatherND(const mojom::GatherND& gather_nd)
       GetOperand(gather_nd.input_operand_id).descriptor));
   CHECK(context_properties_.data_type_limits.gather_nd_indices.Supports(
       GetOperand(gather_nd.indices_operand_id).descriptor));
-  ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
-                   SerializeInputTensorInfo(gather_nd.indices_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(gather_nd.input_operand_id));
 
+  const mojom::Operand& indices_operand =
+      GetOperand(gather_nd.indices_operand_id);
   TensorIndex indices_tensor_index;
-  if (indices_tensor_info.data_type == ::tflite::TensorType_UINT32 ||
-      indices_tensor_info.data_type == ::tflite::TensorType_INT64) {
-    ASSIGN_OR_RETURN(indices_tensor_index,
-                     SerializeGatherIndices<int64_t>(indices_tensor_info,
-                                                     input_tensor_info));
+  if (indices_operand.kind == mojom::Operand::Kind::kConstant) {
+    // See `SerializeGather()` for why constant indices are clamped at build
+    // time rather than by a runtime subgraph.
+    ASSIGN_OR_RETURN(const std::vector<int32_t> indices_dims,
+                     ToSignedDimensions(indices_operand.descriptor.shape()));
+    const base::FixedArray<int32_t> clamped_indices = ClampConstantIndices(
+        gather_nd.indices_operand_id, input_tensor_info.dimensions,
+        /*gather_axis=*/std::nullopt);
+    ASSIGN_OR_RETURN(indices_tensor_index, SerializeTensorWithBuffer<int32_t>(
+                                               clamped_indices, indices_dims));
   } else {
-    CHECK_EQ(indices_tensor_info.data_type, ::tflite::TensorType_INT32);
-    ASSIGN_OR_RETURN(indices_tensor_index,
-                     SerializeGatherIndices<int32_t>(indices_tensor_info,
-                                                     input_tensor_info));
+    ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
+                     SerializeInputTensorInfo(gather_nd.indices_operand_id));
+    if (indices_tensor_info.data_type == ::tflite::TensorType_UINT32 ||
+        indices_tensor_info.data_type == ::tflite::TensorType_INT64) {
+      ASSIGN_OR_RETURN(indices_tensor_index,
+                       SerializeGatherIndices<int64_t>(indices_tensor_info,
+                                                       input_tensor_info));
+    } else {
+      CHECK_EQ(indices_tensor_info.data_type, ::tflite::TensorType_INT32);
+      ASSIGN_OR_RETURN(indices_tensor_index,
+                       SerializeGatherIndices<int32_t>(indices_tensor_info,
+                                                       input_tensor_info));
+    }
   }
 
   ASSIGN_OR_RETURN(const TensorInfo output_tensor_info,
@@ -9936,17 +10012,29 @@ auto GraphBuilderTflite::SerializeScatterND(const mojom::ScatterND& scatter_nd)
                    SerializeInputTensorInfo(scatter_nd.updates_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(scatter_nd.input_operand_id));
-  ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
-                   SerializeInputTensorInfo(scatter_nd.indices_operand_id));
 
-  CHECK_EQ(indices_tensor_info.data_type, ::tflite::TensorType_INT32);
-  // The values in `indices` are computed at runtime, so they can exceed the
-  // boundary of the input. Clamp the values in `indices` to be in range of
-  // [-N, N-1] and transform negative indices to positive as TFLite doesn't
-  // support negative indexing, the logic is the same as GatherND.
-  ASSIGN_OR_RETURN(
-      const TensorIndex indices_tensor_index,
-      SerializeGatherIndices<int32_t>(indices_tensor_info, input_tensor_info));
+  const mojom::Operand& indices_operand =
+      GetOperand(scatter_nd.indices_operand_id);
+  CHECK_EQ(indices_operand.descriptor.data_type(), OperandDataType::kInt32);
+  // The values in `indices` can exceed the input's boundary, so clamp them
+  // to [-N, N-1] and shift negatives to positive, matching GatherND's
+  // handling (constant indices at build time, otherwise a runtime subgraph).
+  TensorIndex indices_tensor_index;
+  if (indices_operand.kind == mojom::Operand::Kind::kConstant) {
+    ASSIGN_OR_RETURN(const std::vector<int32_t> indices_dims,
+                     ToSignedDimensions(indices_operand.descriptor.shape()));
+    const base::FixedArray<int32_t> clamped_indices = ClampConstantIndices(
+        scatter_nd.indices_operand_id, input_tensor_info.dimensions,
+        /*gather_axis=*/std::nullopt);
+    ASSIGN_OR_RETURN(indices_tensor_index, SerializeTensorWithBuffer<int32_t>(
+                                               clamped_indices, indices_dims));
+  } else {
+    ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
+                     SerializeInputTensorInfo(scatter_nd.indices_operand_id));
+    ASSIGN_OR_RETURN(indices_tensor_index,
+                     SerializeGatherIndices<int32_t>(indices_tensor_info,
+                                                     input_tensor_info));
+  }
   ASSIGN_OR_RETURN(const TensorInfo output_tensor_info,
                    SerializeOutputTensorInfo(scatter_nd.output_operand_id));
   return SerializeWebNNScatterND(input_tensor_info, updates_tensor_info,
