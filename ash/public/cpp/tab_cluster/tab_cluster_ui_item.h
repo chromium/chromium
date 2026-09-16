@@ -47,8 +47,8 @@ class ASH_PUBLIC_EXPORT TabClusterUIItem {
   // Load in info.
   void Init(const Info& info);
 
-  Info current_info() const { return current_info_; }
-  Info old_info() const { return old_info_; }
+  const Info& current_info() const { return current_info_; }
+  const Info& old_info() const { return old_info_; }
 
  private:
   // Current tab item info.
