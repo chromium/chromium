@@ -31,15 +31,6 @@ FillingValueAndType GetFillingValueAndTypeForProfile(
     AddressNormalizer* address_normalizer,
     std::string* failure_to_fill = nullptr);
 
-// Returns the phone number value for the given `field_max_length`. The
-// returned value might be `number`, or `city_and_number`, or could possibly
-// be a meaningful subset `number`, if that's appropriate for the field.
-// TODO(crbug.com/40286472): Move to anonymous namespace in source file.
-std::u16string GetPhoneNumberValueForInput(
-    uint64_t field_max_length,
-    const std::u16string& number,
-    const std::u16string& city_and_number);
-
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_ADDRESSES_FIELD_FILLING_ADDRESS_UTIL_H_

@@ -157,6 +157,32 @@ std::optional<SelectOption> GetPhoneCountryCodeSelectControlValue(
   return {};
 }
 
+// Returns the phone number value for the given `field_max_length`. The
+// returned value might be `number`, or `city_and_number`, or could possibly
+// be a meaningful subset `number`, if that's appropriate for the field.
+std::u16string GetPhoneNumberValueForInput(
+    uint64_t field_max_length,
+    const std::u16string& number,
+    const std::u16string& city_and_number) {
+  // If the complete `number` fits into the field return it as is.
+  // `field_max_length == 0` means that there's no size limit.
+  if (field_max_length == 0 || field_max_length >= number.length()) {
+    return number;
+  }
+
+  // Try after removing the country code, if `number` exceeds the maximum size
+  // of the field.
+  if (city_and_number.length() <= field_max_length) {
+    return city_and_number;
+  }
+
+  // If `number` exceeds the maximum size of the field, cut the first part to
+  // provide a valid number for the field. For example, the number 15142365264
+  // with a field with a max length of 10 would return 5142365264, thus
+  // filling in the last `field_data.max_length` characters from the `number`.
+  return number.substr(number.length() - field_max_length, field_max_length);
+}
+
 // Returns the appropriate `profile` value based on `field_type` to fill
 // into the input `field`.
 std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
@@ -251,29 +277,6 @@ FillingValueAndType GetFillingValueAndTypeForProfile(
   }
 
   return filling_value_and_type;
-}
-
-std::u16string GetPhoneNumberValueForInput(
-    uint64_t field_max_length,
-    const std::u16string& number,
-    const std::u16string& city_and_number) {
-  // If the complete `number` fits into the field return it as is.
-  // `field_max_length == 0` means that there's no size limit.
-  if (field_max_length == 0 || field_max_length >= number.length()) {
-    return number;
-  }
-
-  // Try after removing the country code, if `number` exceeds the maximum size
-  // of the field.
-  if (city_and_number.length() <= field_max_length) {
-    return city_and_number;
-  }
-
-  // If `number` exceeds the maximum size of the field, cut the first part to
-  // provide a valid number for the field. For example, the number 15142365264
-  // with a field with a max length of 10 would return 5142365264, thus
-  // filling in the last `field_data.max_length` characters from the `number`.
-  return number.substr(number.length() - field_max_length, field_max_length);
 }
 
 }  // namespace autofill
