@@ -1663,6 +1663,43 @@ source_set("sad_tab_view") {
   }
 }
 
+source_set("tab_search_bubble_host") {
+  public = [ "tab_search_bubble_host.h" ]
+  sources = [ "tab_search_bubble_host.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/views/bubble",
+    "//chrome/browser/ui/views/tabs:base",
+    "//chrome/browser/ui/webui/tab_search",
+    "//chrome/browser/ui/webui/tab_search:mojo_bindings",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":views",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/feature_engagement",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs/organizer",
+    "//chrome/browser/ui/views/tabs:tab_strip",
+    "//chrome/browser/ui/views/tabs/organizer",
+    "//chrome/common",
+    "//components/feature_engagement/public",
+    "//components/prefs",
+    "//components/saved_tab_groups/public:features",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/gfx",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

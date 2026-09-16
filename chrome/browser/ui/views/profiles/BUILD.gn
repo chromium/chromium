@@ -23,6 +23,44 @@ if (is_chromeos) {
 }
 
 if (is_win || is_mac || is_linux || is_chromeos) {
+  source_set("incognito_menu_view") {
+    public = [ "incognito_menu_view.h" ]
+    sources = [ "incognito_menu_view.cc" ]
+    public_deps = [ "//ui/views" ]
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/color:color_headers",
+      "//components/vector_icons",
+      "//ui/base",
+    ]
+  }
+
+  source_set("isolated_mode_menu_view") {
+    public = [ "isolated_mode_menu_view.h" ]
+    sources = [ "isolated_mode_menu_view.cc" ]
+    public_deps = [ "//ui/views" ]
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui:managed_ui",
+      "//chrome/browser/ui/browser_window",
+      "//components/signin/public/identity_manager",
+      "//components/vector_icons",
+      "//ui/base",
+    ]
+  }
+
   source_set("avatar_badge_view") {
     public = [ "avatar_badge_view.h" ]
     sources = [ "avatar_badge_view.cc" ]
@@ -270,6 +308,75 @@ if (toolkit_views) {
 }
 
 if (is_win || is_mac || is_linux) {
+  source_set("profile_menu_view") {
+    public = [ "profile_menu_view.h" ]
+    sources = [ "profile_menu_view.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/password_manager",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/browser_window",
+      "//components/signin/core/browser",
+      "//components/signin/public/base",
+      "//components/signin/public/base:signin_buildflags",
+      "//components/sync/service",
+      "//ui/views",
+    ]
+    deps = [
+      ":avatar_badge_view",
+      "//build:branding_buildflags",
+      "//chrome/app:branded_strings",
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/enterprise",
+      "//chrome/browser/profiles",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/profiles/batch_upload",
+      "//chrome/browser/subscription_eligibility",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui:managed_ui",
+      "//chrome/browser/ui/dialogs:browser_dialogs",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/passwords",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/signin",
+      "//chrome/browser/ui/sync",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views:color_provider_browser_helper",
+      "//chrome/browser/ui/views/controls",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:signin_ui_error",
+      "//chrome/browser/user_education",
+      "//chrome/browser/webauthn",
+      "//chrome/common",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/feature_engagement/public",
+      "//components/prefs",
+      "//components/signin/public/identity_manager",
+      "//components/subscription_eligibility",
+      "//components/sync/base:features",
+      "//components/user_education/common",
+      "//components/vector_icons",
+      "//ui/base",
+      "//ui/color:color_headers",
+      "//ui/gfx",
+      "//ui/strings:ui_strings",
+    ]
+    if (is_mac) {
+      deps += [
+        "//chrome/browser/apps/app_shim",
+        "//chrome/browser/web_applications",
+      ]
+    }
+  }
+
   source_set("badged_profile_photo") {
     public = [ "badged_profile_photo.h" ]
     sources = [ "badged_profile_photo.cc" ]

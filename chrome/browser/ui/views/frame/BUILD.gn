@@ -1493,6 +1493,7 @@ source_set("browser_tests") {
       "//chrome/browser/ui/ash/session",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/find_bar",
+      "//chrome/browser/ui/views:tab_search_bubble_host",
       "//chrome/browser/ui/views/fullscreen_control",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/profiles:profile_indicator_icon",

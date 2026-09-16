@@ -2398,10 +2398,6 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
-      "views/profiles/incognito_menu_view.cc",
-      "views/profiles/incognito_menu_view.h",
-      "views/profiles/isolated_mode_menu_view.cc",
-      "views/profiles/isolated_mode_menu_view.h",
       "views/profiles/profile_menu_coordinator.cc",
       "views/profiles/profile_menu_coordinator.h",
       "views/profiles/profile_menu_view_base.cc",
@@ -2417,12 +2413,20 @@ static_library("ui") {
       "//chrome/browser/ui/views/hats",
       "//chrome/browser/ui/views/hats:impl",
       "//chrome/browser/ui/views/profiles:avatar_badge_view",
+      "//chrome/browser/ui/views/profiles:incognito_menu_view",
+      "//chrome/browser/ui/views/profiles:isolated_mode_menu_view",
       "//chrome/browser/ui/views/profiles:signin_view_controller_delegate_views",
       "//chrome/browser/ui/views/profiles:signin_view_controller_delegate_views_impl",
       "//chrome/browser/ui/wallet",
     ]
 
     allow_circular_includes_from += [
+      # incognito_menu_view.h includes profile_menu_view_base.h.
+      "//chrome/browser/ui/views/profiles:incognito_menu_view",
+
+      # isolated_mode_menu_view.h includes profile_menu_view_base.h and
+      # isolated_mode_menu_view.cc includes singleton_tabs.h.
+      "//chrome/browser/ui/views/profiles:isolated_mode_menu_view",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_controller",
       "//chrome/browser/ui/wallet",
       "//chrome/browser/ui/views/hats:impl",
@@ -2443,8 +2447,6 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "views/profiles/profile_menu_view.cc",
-      "views/profiles/profile_menu_view.h",
       "views/profiles/profile_picker_view.cc",
       "views/profiles/profile_picker_view.h",
     ]
@@ -2460,6 +2462,7 @@ static_library("ui") {
       "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller",
       "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller_impl",
       "//chrome/browser/ui/views/profiles:profile_management_types",
+      "//chrome/browser/ui/views/profiles:profile_menu_view",
       "//chrome/browser/ui/views/profiles:profile_picker_feature_promo_controller",
       "//chrome/browser/ui/views/profiles:profile_picker_feature_promo_controller_impl",
       "//chrome/browser/ui/views/profiles:profile_picker_web_contents_host",
@@ -2480,6 +2483,9 @@ static_library("ui") {
     # "//chrome/browser:browser_public_dependencies". Non-android and
     # non-chromeos-ash circular deps.
     allow_circular_includes_from += [
+      # profile_menu_view.h includes profile_menu_view_base.h and
+      # profile_menu_view.cc includes browser_commands.h.
+      "//chrome/browser/ui/views/profiles:profile_menu_view",
       "//chrome/browser/ui/startup/default_browser_prompt:impl",
       "//chrome/browser/ui/webui/signin:profile_impl",
 
@@ -2781,8 +2787,6 @@ static_library("ui") {
       "views/frame/top_container_view.h",
       "views/frame/vertical_tab_strip_region_view.cc",
       "views/frame/vertical_tab_strip_region_view.h",
-      "views/tab_search_bubble_host.cc",
-      "views/tab_search_bubble_host.h",
       "views/web_apps/frame_toolbar/web_app_frame_toolbar_view.cc",
       "views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h",
       "views/web_apps/frame_toolbar/web_app_menu_button.cc",
@@ -2868,6 +2872,7 @@ static_library("ui") {
       "//chrome/browser/ui/views:status_bubble",
       "//chrome/browser/ui/views:sub_apps_permission_explanation",
       "//chrome/browser/ui/views:tab_icon_view",
+      "//chrome/browser/ui/views:tab_search_bubble_host",
       "//chrome/browser/ui/views:task_manager_search_bar_view",
       "//chrome/browser/ui/views:task_manager_view",
       "//chrome/browser/ui/views:theme_copying_widget",
@@ -3238,6 +3243,9 @@ static_library("ui") {
       "//chrome/browser/ui/views:idle_bubble",
       "//chrome/browser/ui/views:session_crashed_bubble_view",
 
+      # tab_search_bubble_host.cc includes browser_view.h.
+      "//chrome/browser/ui/views:tab_search_bubble_host",
+
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following header gets componentized:
       # c/b/ui/browser.h (video_overlay_window_views.cc reads
@@ -3465,7 +3473,6 @@ static_library("ui") {
       # following headers get componentized:
       # - c/b/ui/browser_commands.h
       # - c/b/ui/views/frame/browser_view.h
-      # - c/b/ui/views/tab_search_bubble_host.h
       "//chrome/browser/ui/views/tabs/shared:impl",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
@@ -4251,6 +4258,10 @@ if (!is_android) {
         "//ui/accelerated_widget_mac",
         "//ui/base:test_support",
       ]
+    }
+
+    if (toolkit_views) {
+      deps += [ "//chrome/browser/ui/views:tab_search_bubble_host" ]
     }
 
     if (toolkit_views && !is_chromeos) {
