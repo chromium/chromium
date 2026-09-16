@@ -14,6 +14,7 @@ import type {SearchboxInputElement} from '//resources/cr_components/searchbox/se
 import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_match.js';
 import type {SearchboxMixinInterface} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {SearchboxMixin} from '//resources/cr_components/searchbox/searchbox_mixin.js';
+import type {OmniboxPopupSelection, SelectionDirection, SelectionStep} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {selectionIsNativelySupported, selectionsEqual} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
 import {afterNextPaint, markOnce, sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
@@ -445,7 +446,7 @@ export class OmniboxPopupSearchboxElement extends
 
         const entrypoint = this.getContextualEntrypointButton();
         if (entrypoint) {
-          entrypoint.hasPopupFocus = this.isContextEntrypointVirtualFocused();
+          entrypoint.hasVirtualFocus = this.isContextEntrypointVirtualFocused();
         }
       }
     } else {
@@ -526,6 +527,13 @@ export class OmniboxPopupSearchboxElement extends
 
   override openContextMenu(): void {
     this.getContextualEntrypointButton()?.showContextMenu();
+  }
+
+  override stepCyclesSelection(
+      _result: AutocompleteResult|null, _from: OmniboxPopupSelection,
+      _direction: SelectionDirection, _step: SelectionStep): boolean {
+    // In Omnibox, cycle within the popup matches rather than exiting.
+    return false;
   }
 
   /**

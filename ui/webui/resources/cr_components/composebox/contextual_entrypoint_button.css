@@ -356,7 +356,7 @@ cr-icon-button {
   }
 }
 
-:host([has-popup-focus]) #entrypoint {
+:host([has-virtual-focus]) #entrypoint {
   box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
 }
 

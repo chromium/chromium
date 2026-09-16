@@ -76,23 +76,23 @@ suite('OmniboxPopupContextualEntrypointButtonTest', () => {
     assertFalse(element.classList.contains('menu-open'));
   });
 
-  test('RapidHasPopupFocusToggling', async () => {
-    element.hasPopupFocus = true;
-    element.hasPopupFocus = false;
-    element.hasPopupFocus = true;
-    element.hasPopupFocus = false;
-    element.hasPopupFocus = true;
+  test('RapidHasVirtualFocusToggling', async () => {
+    element.hasVirtualFocus = true;
+    element.hasVirtualFocus = false;
+    element.hasVirtualFocus = true;
+    element.hasVirtualFocus = false;
+    element.hasVirtualFocus = true;
     await microtasksFinished();
 
-    assertTrue(element.hasPopupFocus);
+    assertTrue(element.hasVirtualFocus);
     const innerEntrypoint =
         element.shadowRoot
-            ?.querySelector<HTMLElement&{hasPopupFocus?: boolean}>(
+            ?.querySelector<HTMLElement&{hasVirtualFocus?: boolean}>(
                 'cr-composebox-contextual-entrypoint-button');
     assertTrue(!!innerEntrypoint);
     assertTrue(
-        innerEntrypoint.hasPopupFocus ??
-        innerEntrypoint.hasAttribute('has-popup-focus'));
+        innerEntrypoint.hasVirtualFocus ??
+        innerEntrypoint.hasAttribute('has-virtual-focus'));
   });
 
   test('RapidShowContextMenuCycles', async () => {

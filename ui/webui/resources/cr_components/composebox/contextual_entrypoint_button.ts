@@ -52,7 +52,7 @@ export class ContextualEntrypointButtonElement extends
       inputState: {type: Object},
       glifAnimationState: {type: String, reflect: true},
       uploadButtonDisabled: {type: Boolean},
-      hasPopupFocus: {type: Boolean, reflect: true},
+      hasVirtualFocus: {type: Boolean, reflect: true},
       applyContextButtonBackground: {type: Boolean, reflect: true},
       isOblongShape: {type: Boolean, reflect: true},
       windowWidthBelowThreshold_: {type: Boolean},
@@ -77,7 +77,7 @@ export class ContextualEntrypointButtonElement extends
   accessor glifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor uploadButtonDisabled: boolean = false;
-  accessor hasPopupFocus: boolean = false;
+  accessor hasVirtualFocus: boolean = false;
   accessor applyContextButtonBackground: boolean = false;
   accessor isOblongShape: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;

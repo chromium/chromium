@@ -14,7 +14,7 @@ export function getHtml(this: OmniboxPopupContextualEntrypointButtonElement) {
         .inputState="${this.inputState}"
         .applyContextButtonBackground="${this.applyContextButtonBackground}"
         .isOblongShape="${this.isOblongShape}"
-        .hasPopupFocus="${this.hasPopupFocus}"
+        .hasVirtualFocus="${this.hasVirtualFocus}"
         @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}">
     </cr-composebox-contextual-entrypoint-button>
 <!--_html_template_end_-->`;

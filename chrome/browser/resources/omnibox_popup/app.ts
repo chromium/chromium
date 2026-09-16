@@ -264,7 +264,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
 
     const entrypoint = this.getContextualEntrypointButton_();
     if (entrypoint) {
-      entrypoint.hasPopupFocus = this.isContextEntrypointVirtualFocused();
+      entrypoint.hasVirtualFocus = this.isContextEntrypointVirtualFocused();
     }
   }
 
@@ -284,8 +284,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
   // Opens the current popup selection (the one visually indicated by the
   // element with popup-focus).
   private openCurrentSelection_(disposition: WindowOpenDisposition) {
-    if (this.selection.state ===
-        SelectionLineState.kFocusedButtonContextEntrypoint) {
+    if (this.isContextEntrypointVirtualFocused()) {
       this.getContextualEntrypointButton_()?.showContextMenu();
     } else if (selectionIsNativelySupported(this.selection)) {
       this.searchboxBrowserProxy_.handler.openPopupSelection(
