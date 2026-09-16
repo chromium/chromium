@@ -32,6 +32,7 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/controls/resize_area_delegate.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/layout/delegating_layout_manager.h"
 
 class BrowserView;
 class VerticalTabStripTopContainer;
@@ -47,7 +48,6 @@ namespace views {
 class ResizeArea;
 class Separator;
 class View;
-class FlexLayout;
 }  // namespace views
 
 // Container for the vertical tabstrip and the other views sharing space with
@@ -57,7 +57,8 @@ class VerticalTabStripRegionView final
       public views::ResizeAreaDelegate,
       public OmniboxTabHelper::Observer,
       public tabs::VerticalTabStripStateController::Delegate,
-      public OrganizerPanelHost {
+      public OrganizerPanelHost,
+      public views::LayoutDelegate {
   METADATA_HEADER(VerticalTabStripRegionView, BaseTabStripRegionView)
 
  public:
@@ -103,6 +104,10 @@ class VerticalTabStripRegionView final
   void SetIsExitingExpandOnHoverForLayout(bool is_exiting_expand_on_hover);
   void SetTransitionButtonOpacity(float opacity);
   bool WillWrapDueToOverflow(int available_width) const;
+
+  // views::LayoutDelegate:
+  views::ProposedLayout CalculateProposedLayout(
+      const views::SizeBounds& size_bounds) const override;
 
   // views::View:
   void AddedToWidget() override;
@@ -260,7 +265,6 @@ class VerticalTabStripRegionView final
   raw_ptr<views::ResizeArea> resize_area_ = nullptr;
   raw_ptr<ShadowFrameView> shadow_frame_ = nullptr;
   int resize_area_width_;
-  raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
 
   const raw_ptr<tabs::VerticalTabStripStateController> state_controller_;
   std::optional<base::CallbackListSubscription>

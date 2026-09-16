@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
@@ -73,10 +74,12 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -114,55 +117,40 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   // Because corners may be transparent, this must be set to false.
   layer()->SetFillsBoundsOpaquely(false);
 
-  const int region_horizontal_padding =
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
-
-  const auto default_flex =
-      views::FlexSpecification(views::LayoutOrientation::kVertical,
-                               views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kPreferred);
-
-  flex_layout_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  flex_layout_->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCollapseMargins(true)
-      .SetDefault(views::kFlexBehaviorKey, default_flex);
-  flex_layout_->SetInteriorMargin(gfx::Insets::TLBR(
-      0, 0,
-      GetLayoutConstant(
-          LayoutConstant::kVerticalTabStripUncollapsedVerticalPadding),
-      0));
+  SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
   // Create child views.
   top_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripTopContainer>(
           state_controller_, root_action_item, browser_view->browser()));
-  top_button_container_->SetProperty(
-      views::kMarginsKey, gfx::Insets::VH(0, region_horizontal_padding));
 
-  views::View* content_parent = this;
-  if (organizer_panel::ShouldShowOrganizerPanelInVerticalTabStrip()) {
-    auto content_area_view = std::make_unique<views::FlexLayoutView>();
-    content_area_view->SetOrientation(views::LayoutOrientation::kVertical);
-    content_area_view->SetCollapseMargins(true);
-    content_area_view->SetDefault(views::kFlexBehaviorKey, default_flex);
-    content_area_view->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(content_area_view->GetDefaultFlexRule()));
-    content_area_view_ = AddChildView(std::move(content_area_view));
-    content_parent = content_area_view_;
-  }
+  auto content_area_view = std::make_unique<views::FlexLayoutView>();
+  content_area_view->SetOrientation(views::LayoutOrientation::kVertical);
+  content_area_view->SetCollapseMargins(true);
+  content_area_view->SetDefault(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kVertical,
+                               views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kPreferred));
+  content_area_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(content_area_view->GetDefaultFlexRule()));
+  content_area_view_ = AddChildView(std::move(content_area_view));
 
   // --------------
-  // Views that go into the content parent below
+  // Views that go into the content area below
+
+  const int region_horizontal_padding =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
 
   top_button_separator_ =
-      content_parent->AddChildView(std::make_unique<views::Separator>());
+      content_area_view_->AddChildView(std::make_unique<views::Separator>());
   // The TopContainer handles the padding distance to the separator so that we
   // can control how far it is in the various states.
   top_button_separator_->SetProperty(
       views::kMarginsKey, gfx::Insets::VH(0, region_horizontal_padding));
 
-  bottom_button_container_ = content_parent->AddChildView(
+  bottom_button_container_ = content_area_view_->AddChildView(
       std::make_unique<VerticalTabStripBottomContainer>(
           state_controller_, root_action_item, browser_view->browser(),
           base::BindRepeating(
@@ -180,9 +168,9 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
           region_horizontal_padding, 0, region_horizontal_padding));
 
   gemini_button_ =
-      content_parent->AddChildView(std::make_unique<views::View>());
+      content_area_view_->AddChildView(std::make_unique<views::View>());
 
-  // Views that go into the content parent above
+  // Views that go into the content area above
   // --------------
 
   resize_area_ = AddChildView(std::make_unique<views::ResizeArea>(this));
@@ -395,6 +383,74 @@ void VerticalTabStripRegionView::RemovedFromWidget() {
     GetFocusManager()->RemoveFocusChangeListener(&focus_listener_);
   }
   BaseTabStripRegionView::RemovedFromWidget();
+}
+
+views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
+    const views::SizeBounds& size_bounds) const {
+  views::ProposedLayout layout;
+
+  // Get some constants that will be used for calculations.
+  const auto horizontal_padding =
+      GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+  const auto vertical_padding = GetLayoutConstant(
+      LayoutConstant::kVerticalTabStripUncollapsedVerticalPadding);
+
+  const gfx::Size button_size =
+      top_button_container_->GetPreferredSize(size_bounds);
+  const gfx::Size tab_strip_size =
+      tab_strip_view() ? tab_strip_view()->GetPreferredSize() : gfx::Size();
+  const gfx::Size organizer_panel_size =
+      organizer_panel_view_ ? organizer_panel_view_->GetPreferredSize()
+                            : gfx::Size();
+
+  // Host size will be based on given bounds, or on preferred sizes if not
+  // specified.
+  layout.host_size = gfx::Size(
+      size_bounds.width().value_or(
+          std::max({button_size.width() + 2 * horizontal_padding,
+                    tab_strip_size.width(), organizer_panel_size.width()})),
+      size_bounds.height().value_or(
+          button_size.height() +
+          std::max(tab_strip_size.height(), organizer_panel_size.height()) +
+          vertical_padding));
+  gfx::Rect available(layout.host_size);
+
+  // There's a bit of padding at the bottom of the tabstrip.
+  available.Inset(gfx::Insets::TLBR(0, 0, vertical_padding, 0));
+
+  // Lay out the top button container.
+  layout.child_layouts.push_back(
+      {.child_view = top_button_container_.get(),
+       .visible = true,
+       .bounds =
+           gfx::Rect(horizontal_padding, 0,
+                     std::max(0, available.width() - 2 * horizontal_padding),
+                     button_size.height())});
+  available.Inset(gfx::Insets::TLBR(button_size.height(), 0, 0, 0));
+
+  // Just so that there's never a zero-size tabstrip.
+  available.set_height(std::max(1, available.height()));
+
+  // Lay out the contents and organizer panels (if present) in the remaining
+  // space. A region that is entirely slid out of the visible area is hidden.
+  gfx::Rect contents_bounds = available;
+  gfx::Rect organizer_bounds = available;
+  const int adjustment =
+      base::ClampRound(available.width() * organizer_panel_show_percent_);
+  contents_bounds.Offset(-adjustment, 0);
+  organizer_bounds.Offset(available.width() - adjustment, 0);
+  layout.child_layouts.push_back(
+      {.child_view = content_area_view_.get(),
+       .visible = organizer_panel_show_percent_ < 1.0,
+       .bounds = contents_bounds});
+  if (organizer_panel_view_) {
+    layout.child_layouts.push_back(
+        {.child_view = organizer_panel_view_.get(),
+         .visible = organizer_panel_show_percent_ > 0.0,
+         .bounds = contents_bounds});
+  }
+
+  return layout;
 }
 
 void VerticalTabStripRegionView::Layout(PassKey) {
@@ -889,7 +945,8 @@ gfx::Rect VerticalTabStripRegionView::GetTabStripDraggableBounds() const {
   tab_strip_draggable_bounds.set_height(
       GetBoundsInScreen().bottom() -
       bottom_button_container_->GetMinimumSize().height() -
-      flex_layout_->interior_margin().height() -
+      GetLayoutConstant(
+          LayoutConstant::kVerticalTabStripUncollapsedVerticalPadding) -
       tab_strip_draggable_bounds.y());
   return tab_strip_draggable_bounds;
 }
