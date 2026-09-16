@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -28,6 +29,9 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
+#include "extensions/common/permissions/permission_set.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -230,6 +234,16 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
         Extension::NO_FLAGS, extension_id, &error);
   }
 
+  void GrantMDnsPermission(extensions::Extension* extension) {
+    extensions::APIPermissionSet apis;
+    apis.insert(extensions::mojom::APIPermissionID::kMDns);
+    auto active_perms = std::make_unique<extensions::PermissionSet>(
+        std::move(apis), extensions::ManifestPermissionSet(),
+        extensions::URLPatternSet(), extensions::URLPatternSet());
+    extension->permissions_data()->SetPermissions(std::move(active_perms),
+                                                  nullptr);
+  }
+
   content::RenderProcessHost* render_process_host() const {
     return render_process_host_.get();
   }
@@ -319,6 +333,86 @@ TEST_F(MDnsAPIDiscoveryTest, ServiceListenersAddedAndRemoved) {
   AddEventListener(kExtId, kService1, render_process_host(), &listeners);
   EXPECT_CALL(*dns_sd_registry(), RegisterDnsSdListener(kService1));
   mdns_api_->OnListenerAdded(listener_info);
+}
+
+TEST_F(MDnsAPITest, UnauthorizedExtensionCannotAddListener) {
+  scoped_refptr<const Extension> extension =
+      CreateExtension("unauthorized", false, kExtId);
+  ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+
+  // Since the extension does not hold the `mdns` permission, no registration
+  // should occur in the DNS-SD registry.
+  EXPECT_CALL(*dns_sd_registry(), RegisterDnsSdListener(_)).Times(0);
+
+  extensions::EventRouter::Get(browser_context())
+      ->AddFilteredEventListener(
+          api::mdns::OnServiceList::kEventName, render_process_host(),
+          mojom::EventListenerOwner::NewExtensionId(kExtId), nullptr,
+          base::DictValue().Set(kEventFilterServiceTypeKey, kService1),
+          /*add_lazy_listener=*/false);
+
+  extensions::EventRouter::Get(browser_context())
+      ->RemoveFilteredEventListener(
+          api::mdns::OnServiceList::kEventName, render_process_host(),
+          mojom::EventListenerOwner::NewExtensionId(kExtId), nullptr,
+          base::DictValue().Set(kEventFilterServiceTypeKey, kService1),
+          /*remove_lazy_listener=*/false);
+}
+
+TEST_F(MDnsAPITest, MaxListenersLimitEnforced) {
+  scoped_refptr<Extension> extension =
+      CreateExtension("authorized", false, kExtId);
+  GrantMDnsPermission(extension.get());
+  ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+
+  // Register 10 listeners (the maximum allowed).
+  for (int i = 0; i < 10; ++i) {
+    std::string service_type = base::StringPrintf("service%d", i);
+    EXPECT_CALL(*dns_sd_registry(), RegisterDnsSdListener(service_type))
+        .Times(1);
+    extensions::EventRouter::Get(browser_context())
+        ->AddFilteredEventListener(
+            api::mdns::OnServiceList::kEventName, render_process_host(),
+            mojom::EventListenerOwner::NewExtensionId(kExtId), nullptr,
+            base::DictValue().Set(kEventFilterServiceTypeKey, service_type),
+            /*add_lazy_listener=*/false);
+  }
+
+  // Register an 11th and 12th listener. Extra listeners should be ignored.
+  EXPECT_CALL(*dns_sd_registry(), RegisterDnsSdListener("service10")).Times(0);
+  EXPECT_CALL(*dns_sd_registry(), RegisterDnsSdListener("service11")).Times(0);
+
+  extensions::EventRouter::Get(browser_context())
+      ->AddFilteredEventListener(
+          api::mdns::OnServiceList::kEventName, render_process_host(),
+          mojom::EventListenerOwner::NewExtensionId(kExtId), nullptr,
+          base::DictValue().Set(kEventFilterServiceTypeKey, "service10"),
+          /*add_lazy_listener=*/false);
+
+  extensions::EventRouter::Get(browser_context())
+      ->AddFilteredEventListener(
+          api::mdns::OnServiceList::kEventName, render_process_host(),
+          mojom::EventListenerOwner::NewExtensionId(kExtId), nullptr,
+          base::DictValue().Set(kEventFilterServiceTypeKey, "service11"),
+          /*add_lazy_listener=*/false);
+
+  // Remove the listeners in reverse order so that listeners 10 and 11
+  // are removed before any of the active 0..9 listeners, ensuring they never
+  // become active.
+  for (int i = 11; i >= 0; --i) {
+    if (i < 10) {
+      std::string service_type = base::StringPrintf("service%d", i);
+      EXPECT_CALL(*dns_sd_registry(), UnregisterDnsSdListener(service_type))
+          .Times(1);
+    }
+    extensions::EventRouter::Get(browser_context())
+        ->RemoveFilteredEventListener(
+            api::mdns::OnServiceList::kEventName, render_process_host(),
+            mojom::EventListenerOwner::NewExtensionId(kExtId), nullptr,
+            base::DictValue().Set(kEventFilterServiceTypeKey,
+                                  base::StringPrintf("service%d", i)),
+            /*remove_lazy_listener=*/false);
+  }
 }
 
 TEST_F(MDnsAPIMaxServicesTest, OnServiceListDoesNotExceedLimit) {
