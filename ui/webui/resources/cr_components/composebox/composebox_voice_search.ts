@@ -189,6 +189,16 @@ export class ComposeboxVoiceSearchElement extends
       detailsUrl_: {type: String},
       detailedError: {type: Number},
       hasErrorTimer: {type: Boolean},
+      hasMultilineTranscript: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'has-multiline-transcript',
+      },
+      transcriptLines: {
+        type: Number,
+        reflect: true,
+        attribute: 'transcript-lines',
+      },
       isPermissionPromptOpen: {
         type: Boolean,
         reflect: true,
@@ -244,12 +254,14 @@ export class ComposeboxVoiceSearchElement extends
   accessor detailedError: VoiceSearchError|null = null;
   accessor dynamicTimeoutEnabled: boolean = false;
   accessor hasErrorTimer: boolean = false;
+  accessor hasMultilineTranscript: boolean = false;
   accessor helperTextEnabled: boolean = false;
   accessor idleTimeout: number = 3000;
   accessor isPermissionPromptOpen: boolean = false;
   accessor liveTranscriptEnabled: boolean = true;
   accessor manualSubmitIdleTimeout: number|undefined = undefined;
   accessor metricSource: string = '';
+  accessor transcriptLines: number = 1;
   // Accept page callback router attribute asynchronously, so that the parent
   // and voice search component can share the same mojo connection and source of
   // truth (to avoid race conditions).
@@ -322,8 +334,8 @@ export class ComposeboxVoiceSearchElement extends
     super.disconnectedCallback();
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
+  override updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties as PropertyValues<this>);
     // When `pageCallbackRouter` is set by the parent,
     // add all listeners for the callback router if not already added.
     if (changedProperties.has('pageCallbackRouter') &&
@@ -332,6 +344,23 @@ export class ComposeboxVoiceSearchElement extends
           this.pageCallbackRouter.onPermissionPromptChanged.addListener(
               this.onVoicePermissionPromptChanged.bind(this)),
       );
+    }
+    if (changedProperties.has('transcript_') ||
+        changedProperties.has('audioWaveEnabled') ||
+        changedProperties.has('liveTranscriptEnabled')) {
+      const input = this.shadowRoot?.querySelector<HTMLElement>('#input');
+      if (input && this.audioWaveEnabled && this.liveTranscriptEnabled) {
+        input.scrollTop = input.scrollHeight;
+        const lines = !this.transcript_ ?
+            1 :
+            Math.min(
+                7, Math.max(1, Math.round((input.scrollHeight - 20) / 24)));
+        this.transcriptLines = lines;
+        this.hasMultilineTranscript = lines > 1;
+      } else {
+        this.transcriptLines = 1;
+        this.hasMultilineTranscript = false;
+      }
     }
   }
 
@@ -857,6 +886,8 @@ export class ComposeboxVoiceSearchElement extends
     this.error_ = null;
     this.errorMessage_ = '';
     this.detailedError = null;
+    this.hasMultilineTranscript = false;
+    this.transcriptLines = 1;
     WindowProxy.getInstance().clearTimeout(this.timerId_);
     this.timerId_ = null;
   }
