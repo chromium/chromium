@@ -331,7 +331,13 @@ suite('Basic', function() {
     assertEquals(routes, routesLocal2);
   });
 
-
+  test('web app installations route path', function() {
+    loadTimeData.overrideValues({enableWebAppInstallation: true});
+    resetRouterForTesting();
+    assertEquals(
+        'chrome://settings/content/webAppInstallations',
+        routes.SITE_SETTINGS_WEB_APP_INSTALLATION.getAbsolutePath());
+  });
 
   // <if expr="not is_chromeos">
   test('account route existence', function() {

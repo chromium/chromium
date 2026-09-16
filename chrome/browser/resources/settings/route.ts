@@ -125,7 +125,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
       r.SITE_SETTINGS.createChild('automaticFullScreen');
   if (loadTimeData.getBoolean('enableWebAppInstallation')) {
     r.SITE_SETTINGS_WEB_APP_INSTALLATION =
-        r.SITE_SETTINGS.createChild('webApplications');
+        r.SITE_SETTINGS.createChild('webAppInstallations');
   }
   if (loadTimeData.getBoolean('enableLocalNetworkAccessSetting')) {
     r.SITE_SETTINGS_LOCAL_NETWORK = r.SITE_SETTINGS.createChild('localNetwork');
