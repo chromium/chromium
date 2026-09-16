@@ -703,10 +703,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // and platform-specific bookkeeping needed.
   virtual void CancelSuccessfulPresentationTimeRequestForHostAndDelegate() = 0;
 
-  // The model object. Access is protected to allow access to
-  // RenderWidgetHostViewChildFrame.
-  raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> host_;
-
   std::unique_ptr<UnboundedSurfaceWindow> unbounded_surface_window_;
 
   // Whether this view is a frame or a popup.
@@ -781,6 +777,14 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // Helper function to return whether the current background color is fully
   // opaque.
   bool IsBackgroundColorOpaque();
+
+  // This is only ever assigned in the constructor and cleared in
+  // `DestroyOrDefer()`. RenderWidgetHostImpl::Destroy() always routes through
+  // `view_->DestroyOrDefer()`, so `host_` is cleared before the
+  // RenderWidgetHostImpl is destroyed. This holds even when this view outlives
+  // the host, which happens when teardown is deferred while input is being
+  // dispatched (`pin_count_ > 0`).
+  raw_ptr<RenderWidgetHostImpl> host_;
 
   bool is_evicted_ = false;
 

@@ -730,15 +730,16 @@ void RenderWidgetHostViewChildFrame::UpdateViewportIntersection(
 void RenderWidgetHostViewChildFrame::SetIsInert() {
   // Do not send inert to main frames.
   if (host() && frame_connector_ && !host()->owner_delegate()) {
-    host_->GetAssociatedFrameWidget()->SetIsInertForSubFrame(
+    host()->GetAssociatedFrameWidget()->SetIsInertForSubFrame(
         frame_connector_->IsInert());
   }
 }
 
 void RenderWidgetHostViewChildFrame::UpdateInheritedEffectiveTouchAction() {
   // Do not send inherited touch action to main frames.
-  if (host_ && frame_connector_ && !host()->owner_delegate()) {
-    host_->GetAssociatedFrameWidget()
+  if (host() && frame_connector_ && !host()->owner_delegate()) {
+    host()
+        ->GetAssociatedFrameWidget()
         ->SetInheritedEffectiveTouchActionForSubFrame(
             frame_connector_->InheritedEffectiveTouchAction());
   }
@@ -748,7 +749,7 @@ void RenderWidgetHostViewChildFrame::UpdateRenderThrottlingStatus() {
   // Send throttling status to subframes and embedded main frames except fenced
   // frames.
   if (host() && frame_connector_ && !host()->frame_tree()->is_fenced_frame()) {
-    host_->GetAssociatedFrameWidget()->UpdateRenderThrottlingStatusForSubFrame(
+    host()->GetAssociatedFrameWidget()->UpdateRenderThrottlingStatusForSubFrame(
         frame_connector_->IsThrottled(), frame_connector_->IsSubtreeThrottled(),
         frame_connector_->IsDisplayLocked());
   }

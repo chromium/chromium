@@ -1633,7 +1633,7 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
 
   // Receiving any other touch event before the double-tap timeout expires
   // cancels opening the spellcheck menu.
-  if (auto* focused_frame = host_->frame_tree()->GetFocusedFrame()) {
+  if (auto* focused_frame = host()->frame_tree()->GetFocusedFrame()) {
     if (auto* suggestion_host =
             TextSuggestionHostAndroid::GetForCurrentDocument(
                 focused_frame->current_frame_host())) {
@@ -2793,11 +2793,11 @@ void RenderWidgetHostViewAndroid::UnlockPointer() {
     Java_RenderWidgetHostViewImpl_hidePointerLockToast(env, GetJavaObject());
   }
 
-  host_->LostPointerLock();
+  host()->LostPointerLock();
 }
 
 void RenderWidgetHostViewAndroid::OnPointerLockRelease() {
-  host_->LostPointerLock();
+  host()->LostPointerLock();
 }
 
 bool RenderWidgetHostViewAndroid::LockKeyboard(
@@ -2847,7 +2847,7 @@ void RenderWidgetHostViewAndroid::SendKeyEvent(
 
   // Receiving a key event before the double-tap timeout expires cancels opening
   // the spellcheck menu. If the suggestion menu is open, we close the menu.
-  if (auto* focused_frame = host_->frame_tree()->GetFocusedFrame()) {
+  if (auto* focused_frame = host()->frame_tree()->GetFocusedFrame()) {
     if (auto* suggestion_host =
             TextSuggestionHostAndroid::GetForCurrentDocument(
                 focused_frame->current_frame_host())) {

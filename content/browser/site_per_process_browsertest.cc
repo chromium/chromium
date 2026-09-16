@@ -11104,7 +11104,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Make sure the child frame keeps generating compositor frames.
   RenderFrameSubmissionObserver frame_counter(
-      child_view->host_->render_frame_metadata_provider());
+      child_view->host()->render_frame_metadata_provider());
   while (frame_counter.render_frame_count() < 10)
     frame_counter.WaitForAnyFrameSubmission();
 }

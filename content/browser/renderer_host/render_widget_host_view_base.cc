@@ -70,11 +70,11 @@ namespace content {
 void RenderWidgetHostViewBase::OnUnconfirmedTapConvertedToTap() {}
 
 RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
-    : host_(RenderWidgetHostImpl::From(host)),
-      // `screen_infos_` must be initialized, to permit unconditional access to
-      // its current display. A placeholder ScreenInfo is used here, so the
-      // first call to UpdateScreenInfo will trigger the expected updates.
-      screen_infos_(display::ScreenInfos(display::ScreenInfo())) {}
+    // `screen_infos_` must be initialized, to permit unconditional access to
+    // its current display. A placeholder ScreenInfo is used here, so the
+    // first call to UpdateScreenInfo will trigger the expected updates.
+    : screen_infos_(display::ScreenInfos(display::ScreenInfo())),
+      host_(RenderWidgetHostImpl::From(host)) {}
 
 RenderWidgetHostViewBase::~RenderWidgetHostViewBase() {
   CHECK(!keyboard_locked_);

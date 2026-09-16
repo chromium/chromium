@@ -564,7 +564,7 @@ void RenderWidgetHostViewMac::Hide() {
 void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
     std::optional<blink::RecordContentToVisibleTimeRequest>
         tab_switch_start_state) {
-  CHECK(host_->IsHidden(), base::NotFatalUntil::M152);
+  CHECK(host()->IsHidden(), base::NotFatalUntil::M152);
 
   // SetRenderWidgetHostIsHidden may cause a state transition that switches to
   // a new instance of DelegatedFrameHost and calls WasShown without a
@@ -593,7 +593,7 @@ void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
 void RenderWidgetHostViewMac::
     RequestSuccessfulPresentationTimeFromHostOrDelegate(
         blink::RecordContentToVisibleTimeRequest visible_time_request) {
-  CHECK(!host_->IsHidden(), base::NotFatalUntil::M152);
+  CHECK(!host()->IsHidden(), base::NotFatalUntil::M152);
 
   // If the frame for the renderer is already available, then the tab-switching
   // time is the presentation time for the browser-compositor.
@@ -609,7 +609,7 @@ void RenderWidgetHostViewMac::
 
 void RenderWidgetHostViewMac::
     CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
-  CHECK(!host_->IsHidden(), base::NotFatalUntil::M152);
+  CHECK(!host()->IsHidden(), base::NotFatalUntil::M152);
   host()->CancelSuccessfulPresentationTimeRequest();
   browser_compositor_->GetDelegatedFrameHost()
       ->CancelSuccessfulPresentationTimeRequest();

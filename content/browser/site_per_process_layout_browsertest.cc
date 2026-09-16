@@ -1620,11 +1620,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
           root->child_at(0)->child_at(0)->current_frame_host()->GetView());
 
   RenderFrameSubmissionObserver first_frame_counter(
-      first_child_view->host_->render_frame_metadata_provider());
+      first_child_view->host()->render_frame_metadata_provider());
   RenderFrameSubmissionObserver second_frame_counter(
-      second_child_view->host_->render_frame_metadata_provider());
+      second_child_view->host()->render_frame_metadata_provider());
   RenderFrameSubmissionObserver third_frame_counter(
-      nested_child_view->host_->render_frame_metadata_provider());
+      nested_child_view->host()->render_frame_metadata_provider());
 
   const int kFrameCountLimit = 20;
 
@@ -1741,9 +1741,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(first_child_view->CanBecomeVisible());
 
   RenderFrameSubmissionObserver first_frame_counter(
-      first_child_view->host_->render_frame_metadata_provider());
+      first_child_view->host()->render_frame_metadata_provider());
   RenderFrameSubmissionObserver second_frame_counter(
-      second_child_view->host_->render_frame_metadata_provider());
+      second_child_view->host()->render_frame_metadata_provider());
 
   const int kFrameCountLimit = 20;
 
