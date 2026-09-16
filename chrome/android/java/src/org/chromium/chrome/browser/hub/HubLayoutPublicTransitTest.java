@@ -90,6 +90,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154748
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
