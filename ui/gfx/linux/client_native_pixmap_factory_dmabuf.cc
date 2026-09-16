@@ -34,7 +34,7 @@ class ClientNativePixmapOpaque : public ClientNativePixmap {
   size_t GetNumberOfPlanes() const override {
     return pixmap_handle_.planes.size();
   }
-  void* GetMemoryAddress(size_t plane) const override { NOTREACHED(); }
+  base::span<uint8_t> GetMemoryAsSpan(size_t plane) override { NOTREACHED(); }
   int GetStride(size_t plane) const override {
     CHECK_LT(plane, pixmap_handle_.planes.size());
     // Even though a ClientNativePixmapOpaque should not be mapped, we may still
@@ -44,9 +44,6 @@ class ClientNativePixmapOpaque : public ClientNativePixmap {
   }
   NativePixmapHandle CloneHandleForIPC() const override {
     return gfx::CloneHandleForIPC(pixmap_handle_);
-  }
-  uint64_t GetPlaneSize(size_t plane) const override {
-    return pixmap_handle_.planes[plane].size;
   }
 
  private:

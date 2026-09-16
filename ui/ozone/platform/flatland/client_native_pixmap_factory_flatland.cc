@@ -105,10 +105,15 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
 
   size_t GetNumberOfPlanes() const override { return handle_.planes.size(); }
 
-  void* GetMemoryAddress(size_t plane) const override {
+  base::span<uint8_t> GetMemoryAsSpan(size_t plane) override {
     DCHECK_LT(plane, handle_.planes.size());
     DCHECK(mapping_);
-    return UNSAFE_TODO(mapping_ + handle_.planes[plane].offset);
+    CHECK(logically_mapped_);
+    const size_t offset =
+        base::checked_cast<size_t>(handle_.planes[plane].offset);
+    const size_t size = base::checked_cast<size_t>(handle_.planes[plane].size);
+    return UNSAFE_TODO(base::span(mapping_.get(), mapping_size_))
+        .subspan(offset, size);
   }
 
   int GetStride(size_t plane) const override {
@@ -118,10 +123,6 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
 
   gfx::NativePixmapHandle CloneHandleForIPC() const override {
     return gfx::CloneHandleForIPC(handle_);
-  }
-
-  uint64_t GetPlaneSize(size_t plane) const override {
-    return handle_.planes[plane].size;
   }
 
   static std::unique_ptr<gfx::ClientNativePixmap> CreateFromHandle(
@@ -219,7 +220,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
   SEQUENCE_CHECKER(sequence_checker_);
 
   bool logically_mapped_ = false;
-  raw_ptr<uint8_t, AllowPtrArithmetic> mapping_ = nullptr;
+  raw_ptr<uint8_t> mapping_ = nullptr;
   size_t mapping_size_ = 0;
 };
 

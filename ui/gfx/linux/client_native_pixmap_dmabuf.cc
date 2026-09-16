@@ -268,13 +268,11 @@ size_t ClientNativePixmapDmaBuf::GetNumberOfPlanes() const {
   return pixmap_handle_.planes.size();
 }
 
-void* ClientNativePixmapDmaBuf::GetMemoryAddress(size_t plane) const {
+base::span<uint8_t> ClientNativePixmapDmaBuf::GetMemoryAsSpan(size_t plane) {
   DCHECK_LT(plane, pixmap_handle_.planes.size());
   CHECK(mapped_);
-  // The const_cast is necessary because the `ClientNativePixmap` interface
-  // requires returning a non-const pointer from a const method.
-  return const_cast<uint8_t*>(
-      &plane_info_[plane].data[plane_info_[plane].offset]);
+  auto& plane_info = plane_info_[plane];
+  return plane_info.data.subspan(plane_info.offset, plane_info.size);
 }
 
 int ClientNativePixmapDmaBuf::GetStride(size_t plane) const {
@@ -284,10 +282,6 @@ int ClientNativePixmapDmaBuf::GetStride(size_t plane) const {
 
 NativePixmapHandle ClientNativePixmapDmaBuf::CloneHandleForIPC() const {
   return gfx::CloneHandleForIPC(pixmap_handle_);
-}
-
-uint64_t ClientNativePixmapDmaBuf::GetPlaneSize(size_t plane) const {
-  return pixmap_handle_.planes[plane].size;
 }
 
 }  // namespace gfx

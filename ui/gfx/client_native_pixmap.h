@@ -5,7 +5,10 @@
 #ifndef UI_GFX_CLIENT_NATIVE_PIXMAP_H_
 #define UI_GFX_CLIENT_NATIVE_PIXMAP_H_
 
+#include <stdint.h>
+
 #include "base/component_export.h"
+#include "base/containers/span.h"
 
 namespace gfx {
 
@@ -24,10 +27,9 @@ class COMPONENT_EXPORT(GFX) ClientNativePixmap {
   virtual void Unmap() = 0;
 
   virtual size_t GetNumberOfPlanes() const = 0;
-  virtual void* GetMemoryAddress(size_t plane) const = 0;
+  virtual base::span<uint8_t> GetMemoryAsSpan(size_t plane) = 0;
   virtual int GetStride(size_t plane) const = 0;
   virtual NativePixmapHandle CloneHandleForIPC() const = 0;
-  virtual uint64_t GetPlaneSize(size_t plane) const = 0;
 };
 
 }  // namespace gfx

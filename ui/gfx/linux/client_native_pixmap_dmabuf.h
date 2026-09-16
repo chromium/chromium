@@ -44,10 +44,9 @@ class ClientNativePixmapDmaBuf : public gfx::ClientNativePixmap {
   void Unmap() override;
 
   size_t GetNumberOfPlanes() const override;
-  void* GetMemoryAddress(size_t plane) const override;
+  base::span<uint8_t> GetMemoryAsSpan(size_t plane) override;
   int GetStride(size_t plane) const override;
   NativePixmapHandle CloneHandleForIPC() const override;
-  uint64_t GetPlaneSize(size_t plane) const override;
 
  private:
   static constexpr size_t kMaxPlanes = 4;

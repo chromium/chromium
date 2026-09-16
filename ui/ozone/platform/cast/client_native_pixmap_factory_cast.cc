@@ -29,11 +29,10 @@ class ClientNativePixmapCast : public gfx::ClientNativePixmap {
   // ClientNativePixmap implementation:
   bool Map() override { NOTREACHED(); }
   size_t GetNumberOfPlanes() const override { NOTREACHED(); }
-  void* GetMemoryAddress(size_t plane) const override { NOTREACHED(); }
+  base::span<uint8_t> GetMemoryAsSpan(size_t plane) override { NOTREACHED(); }
   void Unmap() override { NOTREACHED(); }
   int GetStride(size_t plane) const override { NOTREACHED(); }
   gfx::NativePixmapHandle CloneHandleForIPC() const override { NOTREACHED(); }
-  uint64_t GetPlaneSize(size_t plane) const override { NOTREACHED(); }
 
  private:
   gfx::NativePixmapHandle pixmap_handle_;

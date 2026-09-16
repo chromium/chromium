@@ -319,10 +319,6 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     native_pixmap->Unmap();
   };
 
-  // Get the encoded output. DownloadFromVABuffer() is a blocking call. It
-  // would wait until encoding is finished.
-  uint8_t* output_memory =
-      static_cast<uint8_t*>(native_pixmap->GetMemoryAddress(0));
   size_t encoded_size = 0;
   // Since the format of |native_pixmap| is viz::SinglePlaneFormat::kR_8, we
   // can use its area as the maximum bytes we need to download to avoid buffer
@@ -353,58 +349,62 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
-  UNSAFE_TODO({
-    uint8_t* frame_content = output_memory + output_offset;
-    const size_t max_frame_size = output_size - output_offset;
-    if (!vaapi_wrapper_->DownloadFromVABuffer(cached_output_buffer_->id(),
-                                              va_surface_id_, frame_content,
-                                              max_frame_size, &encoded_size)) {
-      VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
+  auto output_plane = native_pixmap->GetMemoryAsSpan(0);
+  if (output_plane.size() < output_size) {
+    VLOGF(1) << "Native pixmap plane is too small";
+    notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+    return;
+  }
+  auto output_buffer = output_plane.first(output_size);
+  auto frame_content = output_buffer.subspan(output_offset);
+  // Get the encoded output. DownloadFromVABuffer() is a blocking call. It
+  // would wait until encoding is finished.
+  if (!vaapi_wrapper_->DownloadFromVABuffer(
+          cached_output_buffer_->id(), va_surface_id_, frame_content.data(),
+          frame_content.size(), &encoded_size)) {
+    VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
+    notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+    return;
+  }
+  CHECK_LE(encoded_size, frame_content.size());
+
+  if (exif_buffer_size > 0) {
+    // Check the output header is 2+2+14 bytes APP0 as expected.
+    constexpr uint8_t kJpegSoiAndApp0Header[] = {
+        0xFF, JPEG_SOI, 0xFF, JPEG_APP0, 0x00, 0x10,
+    };
+    if (encoded_size < std::size(kJpegSoiAndApp0Header)) {
+      VLOGF(1) << "Unexpected JPEG data size received from encoder";
       notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
       return;
     }
-    CHECK_LE(encoded_size, max_frame_size);
-
-    if (exif_buffer_size > 0) {
-      // Check the output header is 2+2+14 bytes APP0 as expected.
-      constexpr uint8_t kJpegSoiAndApp0Header[] = {
-          0xFF, JPEG_SOI, 0xFF, JPEG_APP0, 0x00, 0x10,
-      };
-      if (encoded_size < std::size(kJpegSoiAndApp0Header)) {
-        VLOGF(1) << "Unexpected JPEG data size received from encoder";
-        notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
-        return;
-      }
-      for (size_t i = 0; i < std::size(kJpegSoiAndApp0Header); ++i) {
-        if (frame_content[i] != kJpegSoiAndApp0Header[i]) {
-          VLOGF(1) << "Unexpected JPEG header received from encoder";
-          notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
-          return;
-        }
-      }
-      // Copy the EXIF data into preserved space.
-      const uint8_t jpeg_soi_and_app1_header[] = {
-          0xFF,
-          JPEG_SOI,
-          0xFF,
-          JPEG_APP1,
-          static_cast<uint8_t>((exif_buffer_size + 2) / 256),
-          static_cast<uint8_t>((exif_buffer_size + 2) % 256),
-      };
-      CHECK_GE(output_size, std::size(jpeg_soi_and_app1_header));
-      if (exif_buffer_size >
-          output_size - std::size(jpeg_soi_and_app1_header)) {
-        VLOGF(1) << "Insufficient buffer size reserved for JPEG APP1 data";
-        notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
-        return;
-      }
-      memcpy(output_memory, jpeg_soi_and_app1_header,
-             std::size(jpeg_soi_and_app1_header));
-      memcpy(output_memory + std::size(jpeg_soi_and_app1_header),
-             exif_buffer.data(), exif_buffer_size);
-      encoded_size += output_offset;
+    if (frame_content.first<std::size(kJpegSoiAndApp0Header)>() !=
+        kJpegSoiAndApp0Header) {
+      VLOGF(1) << "Unexpected JPEG header received from encoder";
+      notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+      return;
     }
-  });
+    // Copy the EXIF data into preserved space.
+    const uint8_t jpeg_soi_and_app1_header[] = {
+        0xFF,
+        JPEG_SOI,
+        0xFF,
+        JPEG_APP1,
+        static_cast<uint8_t>((exif_buffer_size + 2) / 256),
+        static_cast<uint8_t>((exif_buffer_size + 2) % 256),
+    };
+    CHECK_GE(output_size, std::size(jpeg_soi_and_app1_header));
+    if (exif_buffer_size > output_size - std::size(jpeg_soi_and_app1_header)) {
+      VLOGF(1) << "Insufficient buffer size reserved for JPEG APP1 data";
+      notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
+      return;
+    }
+    output_buffer.first<std::size(jpeg_soi_and_app1_header)>().copy_from(
+        jpeg_soi_and_app1_header);
+    output_buffer.subspan(std::size(jpeg_soi_and_app1_header), exif_buffer_size)
+        .copy_from(exif_buffer);
+    encoded_size += output_offset;
+  }
 
   video_frame_ready_cb_.Run(task_id, encoded_size);
 }
@@ -463,19 +463,15 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
     cached_output_buffer_ = std::move(output_buffer);
   }
 
-  uint8_t* exif_buffer = nullptr;
-  size_t exif_buffer_size = 0;
-  if (request->exif_mapping.IsValid()) {
-    exif_buffer = request->exif_mapping.GetMemoryAs<uint8_t>();
-    exif_buffer_size = request->exif_mapping.size();
-  }
+  const base::span<const uint8_t> exif_buffer =
+      request->exif_mapping.GetMemoryAsSpan<uint8_t>();
 
   // When the exif buffer contains a thumbnail, the VAAPI encoder would
   // generate a corrupted JPEG. We can work around the problem by supplying an
   // all-zero buffer with the same size and fill in the real exif buffer after
   // encoding.
   // TODO(shenghao): Remove this mechanism after b/79840013 is fixed.
-  std::vector<uint8_t> exif_buffer_dummy(exif_buffer_size, 0);
+  std::vector<uint8_t> exif_buffer_dummy(exif_buffer.size(), 0);
   size_t exif_offset = 0;
   if (!jpeg_encoder_->Encode(input_size, exif_buffer_dummy, request->quality,
                              va_surface_id_, cached_output_buffer_->id(),
@@ -487,27 +483,27 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeTask(
 
   // Get the encoded output. DownloadFromVABuffer() is a blocking call. It
   // would wait until encoding is finished.
+  auto output_buffer = request->output_mapping.GetMemoryAsSpan<uint8_t>();
   size_t encoded_size = 0;
   if (!vaapi_wrapper_->DownloadFromVABuffer(
-          cached_output_buffer_->id(), va_surface_id_,
-          request->output_mapping.GetMemoryAs<uint8_t>(),
-          request->output_mapping.size(), &encoded_size)) {
+          cached_output_buffer_->id(), va_surface_id_, output_buffer.data(),
+          output_buffer.size(), &encoded_size)) {
     VLOGF(1) << "Failed to retrieve output image from VA coded buffer";
     notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
     return;
   }
 
   // Copy the real exif buffer into preserved space.
-  if (exif_buffer_size > 0) {
-    if (exif_offset + exif_buffer_size > request->output_mapping.size()) {
+  if (!exif_buffer.empty()) {
+    if (exif_offset > output_buffer.size() ||
+        exif_buffer.size() > output_buffer.size() - exif_offset) {
       VLOGF(1) << "Output buffer size is too small for EXIF data";
       notify_error_cb_.Run(task_id, PLATFORM_FAILURE);
       return;
     }
 
-    UNSAFE_TODO(
-        memcpy(request->output_mapping.GetMemoryAs<uint8_t>() + exif_offset,
-               exif_buffer, exif_buffer_size));
+    output_buffer.subspan(exif_offset, exif_buffer.size())
+        .copy_from(exif_buffer);
   }
 
   video_frame_ready_cb_.Run(task_id, encoded_size);
