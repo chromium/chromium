@@ -1386,6 +1386,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/push_messaging",
     "//chrome/browser/push_messaging:service_impl_public",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:simple_message_box_internal",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/navigator:browser_tests",

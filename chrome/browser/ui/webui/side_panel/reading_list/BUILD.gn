@@ -47,6 +47,7 @@ source_set("impl") {
     "//chrome/browser/reading_list",
     "//chrome/browser/resources/side_panel/reading_list:resources",
     "//chrome/browser/resources/side_panel/shared:resources_grit",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/profiles",

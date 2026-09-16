@@ -60,6 +60,7 @@ source_set("impl") {
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/prefs",

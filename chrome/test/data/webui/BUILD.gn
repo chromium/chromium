@@ -58,7 +58,10 @@ source_set("browser_tests") {
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/webui/net_internals:test_support" ]
+    deps += [
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/webui/net_internals:test_support",
+    ]
   }
 
   if (enable_webui_ntp) {

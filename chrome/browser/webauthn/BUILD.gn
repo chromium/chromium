@@ -166,6 +166,7 @@ source_set("impl") {
       "//chrome/browser/profiles",
       "//chrome/browser/signin",
       "//chrome/browser/sync",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/navigator",
@@ -563,6 +564,7 @@ if (!is_android) {
     ]
 
     if (!is_chromeos) {
+      deps += [ "//chrome/browser/ui:browser_window_header" ]
       sources += [
         "change_pin_controller_impl_browsertest.cc",
         "enclave_authenticator_browsertest.cc",

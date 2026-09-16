@@ -247,6 +247,7 @@ source_set("impl") {
     "//chrome/browser/subresource_filter",
     "//chrome/browser/sync",
     "//chrome/browser/themes",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui:confirm_bubble",
     "//chrome/browser/ui:managed_ui",

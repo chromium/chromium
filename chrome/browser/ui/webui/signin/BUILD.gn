@@ -440,6 +440,7 @@ if (!is_chromeos) {
       "//chrome/browser/search/background",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:managed_ui",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/color:color_headers",

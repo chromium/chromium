@@ -87,6 +87,7 @@ if (!is_android) {
     ]
     deps = [
       ":interaction",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/views/tabs:tab_strip",
       "//chrome/test/base:in_process_browser_test",
       "//chrome/test/base:test_switches",
@@ -111,6 +112,7 @@ if (toolkit_views) {
     ]
     deps = [
       ":interaction",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_menu",
       "//chrome/browser/ui/views/bubble",

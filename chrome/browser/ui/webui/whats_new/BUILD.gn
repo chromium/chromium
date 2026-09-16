@@ -166,6 +166,7 @@ source_set("interactive_ui_tests") {
       "//chrome/browser:browser_process",
       "//chrome/browser:global_features",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:ui_features",
       "//chrome/common:version_header",
       "//chrome/test:test_support_ui",

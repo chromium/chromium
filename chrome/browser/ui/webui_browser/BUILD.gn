@@ -51,6 +51,8 @@ source_set("webui_browser") {
     "//ui/views",
     "//ui/webui",
   ]
+
+  deps = [ "//chrome/browser/ui:browser_window_header" ]
 }
 
 source_set("impl") {
@@ -96,6 +98,7 @@ source_set("impl") {
     "//chrome/browser/themes",
     "//chrome/browser/ui:accelerator_table",
     "//chrome/browser/ui:browser_init_state",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:browser_window_state",
     "//chrome/browser/ui:browser_window_theme_observer",
     "//chrome/browser/ui/bookmarks",
@@ -213,10 +216,6 @@ source_set("interactive_ui_tests") {
 
   sources = []
 
-  if (!is_chromeos) {
-    sources += [ "webui_browser_interactive_uitest.cc" ]
-  }
-
   deps = [
     ":impl",
     ":webui_browser",
@@ -229,4 +228,9 @@ source_set("interactive_ui_tests") {
     "//ui/gfx/geometry",
     "//ui/views:test_support",
   ]
+
+  if (!is_chromeos) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
+    sources += [ "webui_browser_interactive_uitest.cc" ]
+  }
 }
