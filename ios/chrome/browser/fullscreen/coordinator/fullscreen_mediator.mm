@@ -86,6 +86,9 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   // Whether the time spent scrolling to bottom has been recorded for the
   // current page session.
   BOOL _isScrollingTimeRecorded;
+  // Whether the current drag gesture started while scrolled to the bottom of
+  // the page.
+  BOOL _startedDragAtBottom;
 }
 
 #pragma mark - Public
@@ -173,6 +176,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   _webState = webState;
   _startScrollingTime = std::nullopt;
   _isScrollingTimeRecorded = NO;
+  _startedDragAtBottom = NO;
   if (_webState) {
     _webState->AddObserver(_webStateObserver.get());
     WebViewProxyTabHelper* tabHelper =
@@ -245,6 +249,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   if (!navigationContext->IsSameDocument()) {
     _startScrollingTime = std::nullopt;
     _isScrollingTimeRecorded = NO;
+    _startedDragAtBottom = NO;
     _browserAgent->ExitFullscreen(
         PassKey(), FullscreenModeTransitionTrigger::kForcedByCode,
         /*animated=*/true);
@@ -352,6 +357,9 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   _lastContentOffset = webViewScrollViewProxy.contentOffset.y;
   _scrollTotal = 0;
+  _startedDragAtBottom =
+      [self isScrolledToBottom] &&
+      _browserAgent->State() == FullscreenState::kUICollapsed;
   if (!_startScrollingTime.has_value() && [self canCollapseToolbar]) {
     _startScrollingTime = base::TimeTicks::Now();
     _isScrollingTimeRecorded = NO;
@@ -363,6 +371,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
                          willDecelerate:(BOOL)decelerate {
   if (!decelerate) {
     [self snap];
+    _startedDragAtBottom = NO;
     [self recordScrollToBottomMetricIfApplicable];
   }
 }
@@ -370,6 +379,7 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 - (void)webViewScrollViewDidEndDecelerating:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   [self snap];
+  _startedDragAtBottom = NO;
   [self recordScrollToBottomMetricIfApplicable];
 }
 
@@ -527,6 +537,19 @@ inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
 
 // Snaps the fullscreen progress to 0.0 or 1.0.
 - (void)snap {
+  // Show the toolbars if the user started dragging at the bottom of the page
+  // and finished dragging while still at the bottom with the toolbars fully
+  // collapsed.
+  if (_startedDragAtBottom && [self isScrolledToBottom] &&
+      _browserAgent->IsEnabled() && !_browserAgent->IsForceFullscreen() &&
+      _browserAgent->State() != FullscreenState::kUIExpanded &&
+      [self canCollapseToolbar]) {
+    _browserAgent->ExitFullscreen(
+        PassKey(), FullscreenModeTransitionTrigger::kBottomReached,
+        /*animated=*/true);
+    return;
+  }
+
   CGFloat topProgress = _browserAgent->top_progress();
   CGFloat bottomProgress = _browserAgent->bottom_progress();
   if (_lastContentOffset != 0) {

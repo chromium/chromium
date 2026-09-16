@@ -46,6 +46,7 @@ namespace {
 class FullscreenMediatorTestObserver : public FullscreenBrowserAgentObserver {
  public:
   void WillUpdateObscuredInsetRange(FullscreenBrowserAgent* agent) override {
+    agent->AddObscuredInsetRange(UIRectEdgeTop, 0, 50);
     will_update_obscured_inset_range_count_++;
   }
 
@@ -70,6 +71,7 @@ class FullscreenMediatorTest : public PlatformTest {
     FullscreenBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = FullscreenBrowserAgent::FromBrowser(browser_.get());
     agent_->AddObserver(&observer_);
+    agent_->InvalidateInsetRange();
     mediator_ = [[FullscreenMediator alloc]
         initWithBrowserAgent:agent_
                 webStateList:browser_->GetWebStateList()
@@ -381,4 +383,47 @@ TEST_F(FullscreenMediatorTest,
                              willDecelerate:NO];
 
   histogram_tester.ExpectTotalCount(kFullscreenScrollToTheBottomTime, 0);
+}
+
+// Test that the browser remains in fullscreen after the first scroll to bottom.
+TEST_F(FullscreenMediatorTest, StaysFullscreenOnFirstScrollToBottom) {
+  auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
+  id<CRWWebViewScrollViewProxyObserver> observer =
+      static_cast<id<CRWWebViewScrollViewProxyObserver>>(mediator_);
+
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+  scroll_view.contentOffset = CGPointMake(0, 1520);
+  [observer webViewScrollViewDidScroll:scroll_view_proxy];
+  [observer webViewScrollViewDidEndDragging:scroll_view_proxy
+                             willDecelerate:NO];
+
+  EXPECT_EQ(agent_->State(), FullscreenState::kUICollapsed);
+  EXPECT_EQ(agent_->top_progress(), 0.0);
+}
+
+// Test that starting a new scroll while already scrolled to the bottom in
+// fullscreen exits fullscreen when dragging ends at the bottom.
+TEST_F(FullscreenMediatorTest, ExitsFullscreenOnSecondScrollToBottom) {
+  auto [scroll_view, scroll_view_proxy] = SetUpActiveWebStateWithScrollView();
+  id<CRWWebViewScrollViewProxyObserver> observer =
+      static_cast<id<CRWWebViewScrollViewProxyObserver>>(mediator_);
+
+  // First scroll to bottom enters fullscreen.
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+  scroll_view.contentOffset = CGPointMake(0, 1520);
+  [observer webViewScrollViewDidScroll:scroll_view_proxy];
+  [observer webViewScrollViewDidEndDragging:scroll_view_proxy
+                             willDecelerate:NO];
+  EXPECT_EQ(agent_->State(), FullscreenState::kUICollapsed);
+
+  // Second drag starting at the bottom and ending at the bottom exits
+  // fullscreen.
+  [observer webViewScrollViewWillBeginDragging:scroll_view_proxy];
+  scroll_view.contentOffset = CGPointMake(0, 1550);
+  [observer webViewScrollViewDidScroll:scroll_view_proxy];
+  [observer webViewScrollViewDidEndDragging:scroll_view_proxy
+                             willDecelerate:NO];
+
+  EXPECT_EQ(agent_->State(), FullscreenState::kUIExpanded);
+  EXPECT_EQ(agent_->top_progress(), 1.0);
 }
