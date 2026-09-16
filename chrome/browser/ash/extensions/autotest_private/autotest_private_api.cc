@@ -522,25 +522,26 @@ api::autotest_private::WakefulnessMode GetWakefulnessMode(
 
 // Helper function to set allowed user pref based on |pref_name| with any
 // specific pref validations. Returns error messages if any.
-std::string SetAllowedPref(Profile* profile,
+std::string SetAllowedPref(PrefService& local_state,
+                           Profile* profile,
                            const std::string& pref_name,
                            const base::Value& value) {
   // Special case for the preference that is stored in the "Local State"
   // profile.
   if (pref_name == arc::prefs::kEnableAdbSideloadingRequested) {
     DCHECK(value.is_bool());
-    g_browser_process->local_state()->Set(pref_name, value);
+    local_state.Set(pref_name, value);
     return std::string();
   }
   if (pref_name == variations::prefs::kVariationsCompressedSeed ||
       pref_name == variations::prefs::kVariationsSeedSignature) {
     DCHECK(value.is_string());
-    g_browser_process->local_state()->Set(pref_name, value);
+    local_state.Set(pref_name, value);
     return std::string();
   }
   if (pref_name == chrome_urls::kInternalOnlyUisEnabled) {
     DCHECK(value.is_bool());
-    g_browser_process->local_state()->Set(pref_name, value);
+    local_state.Set(pref_name, value);
     return std::string();
   }
 
@@ -3109,7 +3110,8 @@ ExtensionFunction::ResponseAction AutotestPrivateSetAllowedPrefFunction::Run() {
   const base::Value& value = params->value;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  const std::string& err_msg = SetAllowedPref(profile, pref_name, value);
+  const std::string& err_msg = SetAllowedPref(
+      CHECK_DEREF(g_browser_process->local_state()), profile, pref_name, value);
 
   if (!err_msg.empty()) {
     return RespondNow(Error(err_msg));
@@ -3157,7 +3159,8 @@ AutotestPrivateSetWhitelistedPrefFunction::Run() {
   const base::Value& value = params->value;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  const std::string& err_msg = SetAllowedPref(profile, pref_name, value);
+  const std::string& err_msg = SetAllowedPref(
+      CHECK_DEREF(g_browser_process->local_state()), profile, pref_name, value);
 
   if (!err_msg.empty()) {
     return RespondNow(Error(err_msg));
