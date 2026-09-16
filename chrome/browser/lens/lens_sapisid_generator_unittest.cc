@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,6 +16,7 @@ namespace lens {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST(LensSapisidGeneratorTest, GenerateSapisidHash_GoldenTest) {
+  base::HistogramTester histogram_tester;
   // Use fixed inputs to verify the hash algorithm.
   std::string email = "user@gmail.com";
   std::string sapisid = "sapisid_cookie_value";
@@ -37,6 +39,8 @@ TEST(LensSapisidGeneratorTest, GenerateSapisidHash_GoldenTest) {
   EXPECT_EQ(
       hash.value(),
       "SAPISIDHASH 1781265600000_9bd27681bae726e0f13c8da3f7ec536243912710_e");
+  histogram_tester.ExpectTotalCount(
+      "Lens.IdentityDelegation.TimeToGenerateSapisidHash", 1);
 }
 #endif
 

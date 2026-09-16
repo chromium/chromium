@@ -22,6 +22,21 @@ class IdentityManager;
 
 namespace lens {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(LensIdentityDelegationFetchStatus)
+enum class LensIdentityDelegationFetchStatus {
+  kSuccess = 0,
+  kSignedOut = 1,
+  kAccountError = 2,
+  kNoSapisidCookie = 3,
+  kHashFailed = 4,
+  kNoCookieManager = 5,
+  kMaxValue = kNoCookieManager,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensIdentityDelegationFetchStatus)
+
 using GenerateSapisidHashCallback =
     base::RepeatingCallback<std::optional<std::string>(
         const std::string& email,

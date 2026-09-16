@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -47,6 +48,7 @@ std::optional<std::string> GenerateSapisidHash(
   }
 
   char* out_hash = nullptr;
+  base::TimeTicks start_time = base::TimeTicks::Now();
   int result =
       generate_func(email.c_str(), sapisid_cookie.c_str(), origin.c_str(),
                     timestamp.InMillisecondsSinceUnixEpoch(), &out_hash);
@@ -57,6 +59,9 @@ std::optional<std::string> GenerateSapisidHash(
     return std::nullopt;
   }
 
+  base::UmaHistogramMicrosecondsTimes(
+      "Lens.IdentityDelegation.TimeToGenerateSapisidHash",
+      base::TimeTicks::Now() - start_time);
   std::string hash_str(out_hash);
   free_func(out_hash);
   return hash_str;
