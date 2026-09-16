@@ -3667,6 +3667,24 @@
             ]
         }
     ],
+    "BrowserStratus": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeDarkNeutrals26"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserThreadPoolAdjustmentForAndroid": [
         {
             "platforms": [
@@ -4126,24 +4144,6 @@
                     },
                     "enable_features": [
                         "ChildProcessSecurityPolicyRust"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ChromeDarkNeutrals26": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ChromeDarkNeutrals26"
                     ]
                 }
             ]
@@ -13962,25 +13962,7 @@
             ]
         }
     ],
-    "NtpRealboxCyclingPlaceholders": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260828",
-                    "enable_features": [
-                        "NtpRealboxCyclingPlaceholders"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NtpScaledActionChips": [
+    "NtpNextScaledAIMerch": [
         {
             "platforms": [
                 "chromeos",
@@ -13998,6 +13980,24 @@
                         "NtpNextFeatures",
                         "NtpScaledActionChips",
                         "NtpScaledActionChipsSmall"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NtpRealboxCyclingPlaceholders": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260828",
+                    "enable_features": [
+                        "NtpRealboxCyclingPlaceholders"
                     ]
                 }
             ]
