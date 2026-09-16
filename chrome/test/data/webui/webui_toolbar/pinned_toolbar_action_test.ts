@@ -170,4 +170,61 @@ suite('PinnedToolbarAction', function() {
     assertEquals(1, movedByCalls[1]![0]);
     assertEquals(1, movedByCalls[1]![1]);
   });
+
+  test('Click and pointerdown call mojo handlers', () => {
+    let pointerDownAction: number|null = null;
+    let invokedAction: number|null = null;
+    let invokedIsPointerInteraction: boolean|null = null;
+
+    const mockHandler = {
+      onPinnedToolbarActionPointerDown: (actionId: number) => {
+        pointerDownAction = actionId;
+      },
+      invokePinnedToolbarAction:
+          (actionId: number, isPointerInteraction: boolean) => {
+            invokedAction = actionId;
+            invokedIsPointerInteraction = isPointerInteraction;
+          },
+    };
+    BrowserProxyImpl.setInstance({toolbarUIHandler: mockHandler} as any);
+
+    const button = action.shadowRoot!.querySelector('cr-icon-button')!;
+
+    // Non-primary pointerdown should not trigger
+    // onPinnedToolbarActionPointerDown.
+    button.dispatchEvent(new PointerEvent('pointerdown', {
+      button: 1,
+      bubbles: true,
+      composed: true,
+    }));
+    assertEquals(null, pointerDownAction);
+
+    // Primary pointerdown (left click) triggers
+    // onPinnedToolbarActionPointerDown.
+    button.dispatchEvent(new PointerEvent('pointerdown', {
+      button: 0,
+      bubbles: true,
+      composed: true,
+    }));
+    assertEquals(1, pointerDownAction);
+
+    // Mouse click sets isPointerInteraction to true.
+    button.dispatchEvent(new PointerEvent('click', {
+      pointerType: 'mouse',
+      bubbles: true,
+      composed: true,
+    }));
+    assertEquals(1, invokedAction);
+    assertEquals(true, invokedIsPointerInteraction);
+
+    // Keyboard activation sets pointerType to '' so isPointerInteraction is
+    // false.
+    button.dispatchEvent(new PointerEvent('click', {
+      pointerType: '',
+      bubbles: true,
+      composed: true,
+    }));
+    assertEquals(1, invokedAction);
+    assertEquals(false, invokedIsPointerInteraction);
+  });
 });

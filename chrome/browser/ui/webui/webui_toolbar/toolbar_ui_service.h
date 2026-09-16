@@ -62,6 +62,9 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
         OnPageActionChipShowingChangedCallback callback) = 0;
     virtual void OnPageInitialized() = 0;
     virtual void InvokePinnedToolbarAction(
+        toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+        bool is_pointer_interaction) = 0;
+    virtual void OnPinnedToolbarActionPointerDown(
         toolbar_ui_api::mojom::PinnedToolbarAction action_id) = 0;
     virtual void OnLocationBarFocusWithinChanged(bool focused) = 0;
     virtual void MovePinnedToolbarAction(
@@ -170,6 +173,9 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
       ::toolbar_ui_api::mojom::PageActionId action_id,
       OnPageActionChipShowingChangedCallback callback) override;
   void InvokePinnedToolbarAction(
+      toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+      bool is_pointer_interaction) override;
+  void OnPinnedToolbarActionPointerDown(
       toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
   void OnLocationBarFocusWithinChanged(bool focused) override;
   void MovePinnedToolbarAction(

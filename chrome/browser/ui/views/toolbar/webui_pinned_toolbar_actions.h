@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -65,11 +66,17 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
                          const gfx::Rect& screen_rect,
                          ui::mojom::MenuSourceType source_type);
 
+  // Handle a pointer down event from WebUI.
+  void OnPointerDown(toolbar_ui_api::mojom::PinnedToolbarAction action_id);
+
   // Invoke an action that is currently displaying.
-  void Invoke(toolbar_ui_api::mojom::PinnedToolbarAction action_id);
+  void Invoke(toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+              bool is_pointer_interaction);
 
   // Calculate width.
   int GetWidth() const;
+
+  void SetSuppressionThresholdForTesting(base::TimeDelta threshold);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
@@ -113,6 +120,13 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   std::optional<actions::ActionId> active_context_menu_action_;
   // Pending requests for bubble anchors.
   std::list<std::unique_ptr<PendingAnchorRequest>> pending_anchor_requests_;
+  WebUIBubbleReopenSuppressor& GetReopenSuppressor(actions::ActionId action_id);
+
+  // Helper to prevent pointer interactions from immediately reopening a bubble
+  // that was just closed.
+  std::map<actions::ActionId, WebUIBubbleReopenSuppressor> reopen_suppressors_;
+  std::map<actions::ActionId, bool> was_showing_bubble_;
+  std::optional<base::TimeDelta> suppression_threshold_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PINNED_TOOLBAR_ACTIONS_H_

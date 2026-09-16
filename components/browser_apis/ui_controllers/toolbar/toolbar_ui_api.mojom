@@ -144,7 +144,13 @@ interface ToolbarUIService {
   // corresponding pinned toolbar action button is visible and enabled, i.e.
   // `action_id` is one of the `PinnedToolbarActionState.action`'s that's
   // passed to `OnNavigationControlsStateChanged()`.
-  InvokePinnedToolbarAction(PinnedToolbarAction action_id);
+  // `is_pointer_interaction` is true if the click was triggered by a pointer
+  // interaction (mouse, touch, etc.) rather than a keyboard interaction.
+  InvokePinnedToolbarAction(PinnedToolbarAction action_id,
+                            bool is_pointer_interaction);
+
+  // Called when a pinned toolbar action button is pressed (e.g. pointerdown).
+  OnPinnedToolbarActionPointerDown(PinnedToolbarAction action_id);
 
   // Called when whether the focus is inside or outside the location bar is
   // changed. Note that focus on a subwidget (security icon, omnibox input,

@@ -171,6 +171,10 @@ class MockToolbarUIDelegate
   MOCK_METHOD(void, OnPageInitialized, (), (override));
   MOCK_METHOD(void,
               InvokePinnedToolbarAction,
+              (toolbar_ui_api::mojom::PinnedToolbarAction, bool),
+              (override));
+  MOCK_METHOD(void,
+              OnPinnedToolbarActionPointerDown,
               (toolbar_ui_api::mojom::PinnedToolbarAction),
               (override));
   MOCK_METHOD(void, OnLocationBarFocusWithinChanged, (bool), (override));
@@ -362,10 +366,29 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, InvokePinnedToolbarAction) {
 
   EXPECT_CALL(toolbar_ui_delegate(),
               InvokePinnedToolbarAction(
-                  toolbar_ui_api::mojom::PinnedToolbarAction::kPrint))
+                  toolbar_ui_api::mojom::PinnedToolbarAction::kPrint,
+                  /*is_pointer_interaction=*/true))
       .Times(1);
 
   service_remote->InvokePinnedToolbarAction(
+      toolbar_ui_api::mojom::PinnedToolbarAction::kPrint,
+      /*is_pointer_interaction=*/true);
+  service_remote.FlushForTesting();
+}
+
+// Tests that calling OnPinnedToolbarActionPointerDown from Mojo calls the
+// delegate.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest,
+                       OnPinnedToolbarActionPointerDown) {
+  mojo::Remote<toolbar_ui_api::mojom::ToolbarUIService> service_remote;
+  ui()->BindInterface(service_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(toolbar_ui_delegate(),
+              OnPinnedToolbarActionPointerDown(
+                  toolbar_ui_api::mojom::PinnedToolbarAction::kPrint))
+      .Times(1);
+
+  service_remote->OnPinnedToolbarActionPointerDown(
       toolbar_ui_api::mojom::PinnedToolbarAction::kPrint);
   service_remote.FlushForTesting();
 }

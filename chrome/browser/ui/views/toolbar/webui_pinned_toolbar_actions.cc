@@ -90,6 +90,12 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
         base::BindRepeating(&WebUIPinnedToolbarActions::OnActionsChanged,
                             base::Unretained(this))));
 
+    const bool is_showing_bubble = item->GetIsShowingBubble();
+    if (was_showing_bubble_[id] && !is_showing_bubble) {
+      GetReopenSuppressor(id).RecordBubbleClosed();
+    }
+    was_showing_bubble_[id] = is_showing_bubble;
+
     if (!ShouldDisplayAction(item)) {
       return;
     }
@@ -413,20 +419,41 @@ void WebUIPinnedToolbarActions::MovePinnedActionBy(actions::ActionId action_id,
   }
 }
 
-void WebUIPinnedToolbarActions::Invoke(
+void WebUIPinnedToolbarActions::OnPointerDown(
     toolbar_ui_api::mojom::PinnedToolbarAction action_id) {
   std::optional<actions::ActionId> id =
       webui_toolbar::PinnedToolbarActionToActionId(action_id);
   if (!id) {
     return;
   }
-  if (actions::ActionItem* action = GetActionItemFor(*id)) {
-    action->InvokeAction(
-        actions::ActionInvocationContext::Builder()
-            .SetProperty(kSidePanelOpenTriggerKey,
-                         SidePanelOpenTrigger::kPinnedEntryToolbarButton)
-            .Build());
+  actions::ActionItem* item = GetActionItemFor(*id);
+  const bool is_showing_bubble = item && item->GetIsShowingBubble();
+  GetReopenSuppressor(*id).OnMousePressed(is_showing_bubble);
+}
+
+void WebUIPinnedToolbarActions::Invoke(
+    toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+    bool is_pointer_interaction) {
+  std::optional<actions::ActionId> id =
+      webui_toolbar::PinnedToolbarActionToActionId(action_id);
+  if (!id) {
+    return;
   }
+  actions::ActionItem* action = GetActionItemFor(*id);
+  if (!action) {
+    return;
+  }
+  const bool is_showing_bubble = action->GetIsShowingBubble();
+  const bool suppress =
+      GetReopenSuppressor(*id).ShouldSuppressBubbleShow(is_pointer_interaction);
+  if (is_showing_bubble || suppress) {
+    return;
+  }
+  action->InvokeAction(
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(kSidePanelOpenTriggerKey,
+                       SidePanelOpenTrigger::kPinnedEntryToolbarButton)
+          .Build());
 }
 
 void WebUIPinnedToolbarActions::HandleContextMenu(
@@ -574,4 +601,22 @@ int WebUIPinnedToolbarActions::GetWidth() const {
   }
   width -= !!width * gap;  // Remove last gap if there was a last gap.
   return width;
+}
+
+WebUIBubbleReopenSuppressor& WebUIPinnedToolbarActions::GetReopenSuppressor(
+    actions::ActionId action_id) {
+  auto [it, inserted] = reopen_suppressors_.try_emplace(action_id);
+  if (inserted && suppression_threshold_for_testing_) {
+    it->second.SetSuppressionThresholdForTesting(  // IN-TEST
+        *suppression_threshold_for_testing_);
+  }
+  return it->second;
+}
+
+void WebUIPinnedToolbarActions::SetSuppressionThresholdForTesting(
+    base::TimeDelta threshold) {
+  suppression_threshold_for_testing_ = threshold;
+  for (auto& [_, suppressor] : reopen_suppressors_) {
+    suppressor.SetSuppressionThresholdForTesting(threshold);  // IN-TEST
+  }
 }

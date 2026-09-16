@@ -40,6 +40,7 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
       'onLocationBarFocusWithinChanged',
       'onMediaButtonClicked',
       'onMediaButtonMousePressed',
+      'onPinnedToolbarActionPointerDown',
       'onOmniboxAction',
       'onPageActionChipShowingChanged',
       'onPageActionClick',
@@ -115,8 +116,14 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     return Promise.resolve({result: {}});
   }
 
-  invokePinnedToolbarAction(actionId: PinnedToolbarAction) {
-    this.methodCalled('invokePinnedToolbarAction', actionId);
+  invokePinnedToolbarAction(
+      actionId: PinnedToolbarAction, isPointerInteraction: boolean) {
+    this.methodCalled(
+        'invokePinnedToolbarAction', [actionId, isPointerInteraction]);
+  }
+
+  onPinnedToolbarActionPointerDown(actionId: PinnedToolbarAction) {
+    this.methodCalled('onPinnedToolbarActionPointerDown', actionId);
   }
 
   movePinnedToolbarAction(actionId: PinnedToolbarAction, targetIndex: number) {

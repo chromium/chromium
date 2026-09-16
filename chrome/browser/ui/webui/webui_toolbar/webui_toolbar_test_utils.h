@@ -116,6 +116,11 @@ class MockToolbarUIServiceDelegate
   MOCK_METHOD(void, OnPageInitialized, (), (override));
   MOCK_METHOD(void,
               InvokePinnedToolbarAction,
+              (toolbar_ui_api::mojom::PinnedToolbarAction action_id,
+               bool is_pointer_interaction),
+              (override));
+  MOCK_METHOD(void,
+              OnPinnedToolbarActionPointerDown,
               (toolbar_ui_api::mojom::PinnedToolbarAction action_id),
               (override));
   MOCK_METHOD(void, OnLocationBarFocusWithinChanged, (bool), (override));
