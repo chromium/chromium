@@ -245,7 +245,7 @@ void ChromeNewWindowClient::NewTab() {
     Profile* profile = ProfileManager::GetActiveUserProfile();
     bool is_otr_forced =
         IncognitoModePrefs::ShouldOpenSubsequentBrowsersInIncognito(
-            *base::CommandLine::ForCurrentProcess(), profile->GetPrefs());
+            *base::CommandLine::ForCurrentProcess(), profile);
 
     if (is_otr_forced) {
       profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);

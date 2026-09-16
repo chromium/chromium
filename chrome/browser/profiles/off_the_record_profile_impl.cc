@@ -201,7 +201,7 @@ void OffTheRecordProfileImpl::Init() {
 
   // Always crash when incognito is not available.
   CHECK(!IsIncognitoProfile() ||
-        IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) !=
+        IncognitoModePrefs::GetAvailability(profile_) !=
             policy::IncognitoModeAvailability::kDisabled);
 
   TrackZoomLevelsFromParent();

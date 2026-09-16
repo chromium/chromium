@@ -493,7 +493,7 @@ bool IsOpenInIncognitoAllowed(
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection,
     Profile* profile) {
   policy::IncognitoModeAvailability incognito_avail =
-      IncognitoModePrefs::GetAvailability(profile->GetPrefs());
+      IncognitoModePrefs::GetAvailability(profile);
   return HasBookmarkURLsAllowedInIncognitoMode(selection) &&
          !profile->IsOffTheRecord() &&
          incognito_avail != policy::IncognitoModeAvailability::kDisabled;

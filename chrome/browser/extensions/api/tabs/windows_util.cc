@@ -107,7 +107,7 @@ IncognitoResult ShouldOpenIncognitoWindow(Profile* profile,
                                           std::vector<GURL>* urls,
                                           std::string* error) {
   const policy::IncognitoModeAvailability incognito_availability =
-      IncognitoModePrefs::GetAvailability(profile->GetPrefs());
+      IncognitoModePrefs::GetAvailability(profile);
   bool incognito_result = false;
   if (incognito.has_value()) {
     incognito_result = incognito.value();

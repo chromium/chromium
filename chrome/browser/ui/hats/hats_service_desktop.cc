@@ -662,7 +662,7 @@ HatsService::LaunchError HatsServiceDesktop::RunLaunchChecks(
     return LaunchError::kWrongBrowserType;
   }
 
-  if (IncognitoModePrefs::GetAvailability(profile()->GetPrefs()) ==
+  if (IncognitoModePrefs::GetAvailability(profile()) ==
       policy::IncognitoModeAvailability::kDisabled) {
     UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
                               ShouldShowSurveyReasons::kNoIncognitoDisabled);

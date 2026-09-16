@@ -262,7 +262,7 @@ BrowserWindowInterface* AuthSessionRequest::CreateBrowser(
   }
 
   bool ephemeral_sessions_allowed_by_policy =
-      IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+      IncognitoModePrefs::GetAvailability(profile) !=
       policy::IncognitoModeAvailability::kDisabled;
 
   // As per the documentation for `shouldUseEphemeralSession`: "Whether the

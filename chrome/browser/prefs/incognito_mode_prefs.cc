@@ -48,8 +48,8 @@ bool IncognitoModePrefs::IntToAvailability(
 
 // static
 IncognitoModeAvailability IncognitoModePrefs::GetAvailability(
-    const PrefService* pref_service) {
-  return GetAvailabilityInternal(pref_service, CHECK_PARENTAL_CONTROLS);
+    const Profile* profile) {
+  return GetAvailabilityInternal(profile, CHECK_PARENTAL_CONTROLS);
 }
 
 // static
@@ -75,20 +75,20 @@ void IncognitoModePrefs::RegisterProfilePrefs(
 // static
 bool IncognitoModePrefs::ShouldLaunchIncognito(
     const base::CommandLine& command_line,
-    const PrefService* prefs) {
-  return ShouldLaunchIncognitoInternal(command_line, prefs, false);
+    const Profile* profile) {
+  return ShouldLaunchIncognitoInternal(command_line, profile, false);
 }
 
 // static
 bool IncognitoModePrefs::ShouldOpenSubsequentBrowsersInIncognito(
     const base::CommandLine& command_line,
-    const PrefService* prefs) {
-  return ShouldLaunchIncognitoInternal(command_line, prefs, true);
+    const Profile* profile) {
+  return ShouldLaunchIncognitoInternal(command_line, profile, true);
 }
 
 // static
 bool IncognitoModePrefs::CanOpenBrowser(Profile* profile) {
-  switch (GetAvailability(profile->GetPrefs())) {
+  switch (GetAvailability(profile)) {
     case IncognitoModeAvailability::kEnabled:
       return true;
 
@@ -106,7 +106,7 @@ bool IncognitoModePrefs::CanOpenBrowser(Profile* profile) {
 // static
 bool IncognitoModePrefs::IsIncognitoAllowed(Profile* profile) {
   return !profile->IsGuestSession() &&
-         IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+         IncognitoModePrefs::GetAvailability(profile) !=
              IncognitoModeAvailability::kDisabled &&
          // For enterprise profiles, Isolated Mode replaces standard Incognito
          // Mode. Therefore, Incognito is not allowed when Isolated Mode is
@@ -127,8 +127,10 @@ bool IncognitoModePrefs::ArePlatformParentalControlsEnabled() {
 
 // static
 IncognitoModeAvailability IncognitoModePrefs::GetAvailabilityInternal(
-    const PrefService* pref_service,
+    const Profile* profile,
     GetAvailabilityMode mode) {
+  DCHECK(profile);
+  const PrefService* pref_service = profile->GetPrefs();
   DCHECK(pref_service);
   int pref_value = pref_service->GetInteger(
       policy::policy_prefs::kIncognitoModeAvailability);
@@ -148,7 +150,7 @@ IncognitoModeAvailability IncognitoModePrefs::GetAvailabilityInternal(
 // static
 bool IncognitoModePrefs::ShouldLaunchIncognitoInternal(
     const base::CommandLine& command_line,
-    const PrefService* prefs,
+    const Profile* profile,
     const bool for_subsequent_browsers) {
   // Note: This code only checks parental controls if the user requested
   // to launch in incognito mode or if it was forced via prefs. This way,
@@ -163,9 +165,9 @@ bool IncognitoModePrefs::ShouldLaunchIncognitoInternal(
   }
   bool should_use_incognito =
       forced_by_switch ||
-      GetAvailabilityInternal(prefs, DONT_CHECK_PARENTAL_CONTROLS) ==
+      GetAvailabilityInternal(profile, DONT_CHECK_PARENTAL_CONTROLS) ==
           IncognitoModeAvailability::kForced;
   return should_use_incognito &&
-         GetAvailabilityInternal(prefs, CHECK_PARENTAL_CONTROLS) !=
+         GetAvailabilityInternal(profile, CHECK_PARENTAL_CONTROLS) !=
              IncognitoModeAvailability::kDisabled;
 }

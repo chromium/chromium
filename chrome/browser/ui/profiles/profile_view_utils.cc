@@ -181,8 +181,7 @@ bool IsOpenLinkOTREnabled(Profile* source_profie, const GURL& url) {
   }
 
   policy::IncognitoModeAvailability incognito_avail =
-      IncognitoModePrefs::GetAvailability(
-          user_prefs::UserPrefs::Get(source_profie));
+      IncognitoModePrefs::GetAvailability(source_profie);
   return incognito_avail != policy::IncognitoModeAvailability::kDisabled;
 }
 

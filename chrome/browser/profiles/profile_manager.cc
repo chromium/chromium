@@ -580,7 +580,7 @@ Profile* ProfileManager::MaybeForceOffTheRecordMode(Profile* profile) {
   if (!profile)
     return nullptr;
   if (profile->IsGuestSession() || profile->IsSystemProfile() ||
-      IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
+      IncognitoModePrefs::GetAvailability(profile) ==
           policy::IncognitoModeAvailability::kForced) {
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   }

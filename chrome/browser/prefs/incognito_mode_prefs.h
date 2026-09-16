@@ -32,10 +32,9 @@ class IncognitoModePrefs {
   // Register incognito related preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Returns kIncognitoModeAvailability preference value stored
-  // in the given pref service.
+  // Returns kIncognitoModeAvailability preference value for the given profile.
   static policy::IncognitoModeAvailability GetAvailability(
-      const PrefService* prefs);
+      const Profile* profile);
 
   // Sets kIncognitoModeAvailability preference to the specified availability
   // value.
@@ -51,12 +50,12 @@ class IncognitoModePrefs {
 
   // Returns true if the initial browser should start in incognito mode.
   static bool ShouldLaunchIncognito(const base::CommandLine& command_line,
-                                    const PrefService* prefs);
+                                    const Profile* profile);
 
   // Returns true if subsequent browsers should be opened in incognito mode.
   static bool ShouldOpenSubsequentBrowsersInIncognito(
       const base::CommandLine& command_line,
-      const PrefService* prefs);
+      const Profile* profile);
 
   // Returns true if |profile| can open a new Browser. This checks the incognito
   // availability policies and verifies if the |profile| type is allowed to
@@ -83,7 +82,7 @@ class IncognitoModePrefs {
   // controls should be checked (which is expensive and not always necessary
   // to do - such as when checking for FORCED state).
   static policy::IncognitoModeAvailability GetAvailabilityInternal(
-      const PrefService* pref_service,
+      const Profile* profile,
       GetAvailabilityMode mode);
 
   // Internal version of ShouldLaunchIncognito() and
@@ -91,7 +90,7 @@ class IncognitoModePrefs {
   // subsequent browsers or not.
   static bool ShouldLaunchIncognitoInternal(
       const base::CommandLine& command_line,
-      const PrefService* prefs,
+      const Profile* profile,
       const bool for_subsequent_browsers);
 };
 

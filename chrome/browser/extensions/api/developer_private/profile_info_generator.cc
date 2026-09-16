@@ -27,7 +27,7 @@ developer::ProfileInfo CreateProfileInfo(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
   const PrefService::Preference* pref =
       prefs->FindPreference(prefs::kExtensionsUIDeveloperMode);
-  info.is_incognito_available = IncognitoModePrefs::GetAvailability(prefs) !=
+  info.is_incognito_available = IncognitoModePrefs::GetAvailability(profile) !=
                                 policy::IncognitoModeAvailability::kDisabled;
   info.is_developer_mode_controlled_by_policy = pref->IsManaged();
   info.in_developer_mode = !info.is_child_account &&

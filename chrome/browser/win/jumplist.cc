@@ -624,7 +624,7 @@ void JumpList::PostRunUpdate() {
 
   // Check if incognito windows (or normal windows) are disabled by policy.
   policy::IncognitoModeAvailability incognito_availability =
-      IncognitoModePrefs::GetAvailability(profile_->GetPrefs());
+      IncognitoModePrefs::GetAvailability(profile_);
 
   bool isolated_mode_enabled =
       enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile_);

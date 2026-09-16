@@ -226,7 +226,7 @@ MenuItems CreateBrowserMenuItems(const Profile* profile) {
   MenuItems menu_items;
 
   // "Normal" windows are not allowed when incognito is enforced.
-  if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+  if (IncognitoModePrefs::GetAvailability(profile) !=
       policy::IncognitoModeAvailability::kForced) {
     AddCommandItem(ash::APP_CONTEXT_MENU_NEW_WINDOW, IDS_APP_LIST_NEW_WINDOW,
                    menu_items);
@@ -234,7 +234,7 @@ MenuItems CreateBrowserMenuItems(const Profile* profile) {
 
   // Incognito windows are not allowed when incognito is disabled.
   if (!profile->IsOffTheRecord() &&
-      IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+      IncognitoModePrefs::GetAvailability(profile) !=
           policy::IncognitoModeAvailability::kDisabled) {
     AddCommandItem(ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW,
                    IDS_APP_LIST_NEW_INCOGNITO_WINDOW, menu_items);

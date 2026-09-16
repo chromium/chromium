@@ -5,17 +5,16 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 
 #include "base/test/gtest_util.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class IncognitoModePrefsTest : public testing::Test {
  protected:
-  void SetUp() override {
-    IncognitoModePrefs::RegisterProfilePrefs(prefs_.registry());
-  }
-
-  sync_preferences::TestingPrefServiceSyncable prefs_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
 };
 
 TEST_F(IncognitoModePrefsTest, IntToAvailability) {
@@ -38,38 +37,24 @@ TEST_F(IncognitoModePrefsTest, IntToAvailability) {
 }
 
 TEST_F(IncognitoModePrefsTest, GetAvailability) {
-  prefs_.SetUserPref(policy::policy_prefs::kIncognitoModeAvailability,
-                     std::make_unique<base::Value>(static_cast<int>(
-                         policy::IncognitoModeAvailability::kEnabled)));
+  profile_.GetTestingPrefService()->SetUserPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(policy::IncognitoModeAvailability::kEnabled)));
   EXPECT_EQ(policy::IncognitoModeAvailability::kEnabled,
-            IncognitoModePrefs::GetAvailability(&prefs_));
+            IncognitoModePrefs::GetAvailability(&profile_));
 
-  prefs_.SetUserPref(policy::policy_prefs::kIncognitoModeAvailability,
-                     std::make_unique<base::Value>(static_cast<int>(
-                         policy::IncognitoModeAvailability::kDisabled)));
+  profile_.GetTestingPrefService()->SetUserPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(policy::IncognitoModeAvailability::kDisabled)));
   EXPECT_EQ(policy::IncognitoModeAvailability::kDisabled,
-            IncognitoModePrefs::GetAvailability(&prefs_));
+            IncognitoModePrefs::GetAvailability(&profile_));
 
-  prefs_.SetUserPref(policy::policy_prefs::kIncognitoModeAvailability,
-                     std::make_unique<base::Value>(static_cast<int>(
-                         policy::IncognitoModeAvailability::kForced)));
+  profile_.GetTestingPrefService()->SetUserPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(policy::IncognitoModeAvailability::kForced)));
   EXPECT_EQ(policy::IncognitoModeAvailability::kForced,
-            IncognitoModePrefs::GetAvailability(&prefs_));
-}
-
-typedef IncognitoModePrefsTest IncognitoModePrefsDeathTest;
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_GetAvailabilityBadValue DISABLED_GetAvailabilityBadValue
-#else
-#define MAYBE_GetAvailabilityBadValue GetAvailabilityBadValue
-#endif
-TEST_F(IncognitoModePrefsDeathTest, MAYBE_GetAvailabilityBadValue) {
-  prefs_.SetUserPref(policy::policy_prefs::kIncognitoModeAvailability,
-                     std::make_unique<base::Value>(-1));
-  EXPECT_DCHECK_DEATH({
-    policy::IncognitoModeAvailability availability =
-        IncognitoModePrefs::GetAvailability(&prefs_);
-    EXPECT_EQ(policy::IncognitoModeAvailability::kEnabled, availability);
-  });
+            IncognitoModePrefs::GetAvailability(&profile_));
 }

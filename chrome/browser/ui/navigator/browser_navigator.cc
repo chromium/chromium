@@ -155,7 +155,7 @@ BrowserWindowInterface* GetOrCreateBrowser(Profile* profile,
 }
 
 bool IncognitoModeForced(const Profile* profile) {
-  return IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
+  return IncognitoModePrefs::GetAvailability(profile) ==
          policy::IncognitoModeAvailability::kForced;
 }
 

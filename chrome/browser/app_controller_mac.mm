@@ -2171,7 +2171,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   bool isolated_mode_enabled =
       enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile);
 
-  if (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+  if (IncognitoModePrefs::GetAvailability(profile) !=
       policy::IncognitoModeAvailability::kDisabled) {
     titleStr = l10n_util::GetNSStringWithFixup(IDS_NEW_INCOGNITO_WINDOW_MAC);
     item = [[NSMenuItem alloc] initWithTitle:titleStr

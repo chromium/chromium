@@ -201,9 +201,8 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
                      profile->GetPrefs()->GetBoolean(
                          ash::prefs::kShouldSkipInlineLoginWelcomePage));
 
-  bool is_incognito_enabled =
-      (IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
-       policy::IncognitoModeAvailability::kDisabled);
+  bool is_incognito_enabled = (IncognitoModePrefs::GetAvailability(profile) !=
+                               policy::IncognitoModeAvailability::kDisabled);
   int message_id =
       is_incognito_enabled
           ? IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY

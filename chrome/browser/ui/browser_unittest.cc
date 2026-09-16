@@ -88,7 +88,7 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeForced) {
 // incognito mode.
 TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
   ASSERT_EQ(policy::IncognitoModeAvailability::kEnabled,
-            IncognitoModePrefs::GetAvailability(profile_.GetPrefs()));
+            IncognitoModePrefs::GetAvailability(&profile_));
 
   // Creating a browser in the original test profile should succeed.
   EXPECT_EQ(BrowserWindowInterface::CreationStatus::kOk,

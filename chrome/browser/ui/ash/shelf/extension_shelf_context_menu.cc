@@ -167,11 +167,11 @@ bool ExtensionShelfContextMenu::IsCommandIdEnabled(int command_id) const {
       return UninstallAllowed(item().id.app_id, profile);
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
       // "Normal" windows are not allowed when incognito is enforced.
-      return IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+      return IncognitoModePrefs::GetAvailability(profile) !=
              policy::IncognitoModeAvailability::kForced;
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
       // Incognito windows are not allowed when incognito is disabled.
-      return IncognitoModePrefs::GetAvailability(profile->GetPrefs()) !=
+      return IncognitoModePrefs::GetAvailability(profile) !=
              policy::IncognitoModeAvailability::kDisabled;
     default:
       if (command_id < ash::COMMAND_ID_COUNT) {

@@ -705,7 +705,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
       });
 
   policy::IncognitoModeAvailability incognito_avail =
-      IncognitoModePrefs::GetAvailability(prefs);
+      IncognitoModePrefs::GetAvailability(profile_);
 
   bool isolated_mode_enabled =
       enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile_);

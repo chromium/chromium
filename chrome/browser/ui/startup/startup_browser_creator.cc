@@ -309,8 +309,7 @@ Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
   }
 
   Profile* profile = profile_info.profile;
-  if (IncognitoModePrefs::ShouldLaunchIncognito(command_line,
-                                                profile->GetPrefs())) {
+  if (IncognitoModePrefs::ShouldLaunchIncognito(command_line, profile)) {
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   } else {
     bool expect_incognito = command_line.HasSwitch(switches::kIncognito);
@@ -612,8 +611,8 @@ ProfileSetupResult SetupProfileAndIncognito(
       // TODO(crbug.com/40819749): Refactor command line processing logic
       // to validate the flag sets and reliably determine the startup mode.
       profile_info.mode != StartupProfileMode::kProfilePicker &&
-      IncognitoModePrefs::ShouldLaunchIncognito(
-          command_line, profile_info.profile->GetPrefs());
+      IncognitoModePrefs::ShouldLaunchIncognito(command_line,
+                                                profile_info.profile);
 
   result.can_use_profile =
       CanOpenProfileOnStartup(profile_info) && !result.should_launch_incognito;

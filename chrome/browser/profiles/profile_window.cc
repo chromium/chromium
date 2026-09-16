@@ -94,7 +94,7 @@ void FindOrCreateNewWindowForProfile(
 
   if (!always_create) {
     const bool match_original_profiles =
-        IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
+        IncognitoModePrefs::GetAvailability(profile) ==
         policy::IncognitoModeAvailability::kForced;
     BrowserWindowInterface* browser =
         ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser(
@@ -178,7 +178,7 @@ void OpenBrowserWindowForProfile(
   // a false positive.
   if (!always_create) {
     const bool match_original_profiles =
-        IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
+        IncognitoModePrefs::GetAvailability(profile) ==
         policy::IncognitoModeAvailability::kForced;
     BrowserWindowInterface* browser =
         ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser(
@@ -280,7 +280,7 @@ void BrowserAddedForProfileObserver::OnBrowserCreated(
   // browser is an off-the-record window for that original profile.
   const bool is_matching_browser =
       (browser->GetProfile() == profile_.get()) ||
-      (IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) ==
+      (IncognitoModePrefs::GetAvailability(profile_.get()) ==
            policy::IncognitoModeAvailability::kForced &&
        browser->GetProfile()->GetOriginalProfile() ==
            profile_->GetOriginalProfile());

@@ -1429,7 +1429,7 @@ TEST_F(ProfileManagerTest, GetLastUsedProfileAllowedByPolicy) {
   EXPECT_FALSE(profile->IsOffTheRecord());
   PrefService* prefs = profile->GetPrefs();
   EXPECT_EQ(IncognitoModePrefs::kDefaultAvailability,
-            IncognitoModePrefs::GetAvailability(prefs));
+            IncognitoModePrefs::GetAvailability(profile));
 
   ASSERT_TRUE(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
