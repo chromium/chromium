@@ -4,13 +4,15 @@
 
 #import "ios/chrome/browser/overlays/model/public/web_content_area/permissions_dialog_overlay.h"
 
+#import <utility>
+
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
+#import "ios/chrome/browser/permissions/model/permissions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/permissions/permissions.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -34,7 +36,7 @@ class PermissionsDialogOverlayTest : public PlatformTest {
 // camera permission.
 TEST_F(PermissionsDialogOverlayTest, DialogTitleCameraOnly) {
   std::unique_ptr<OverlayRequest> request =
-      CreateRequest(@[ @(web::PermissionCamera) ]);
+      CreateRequest(@[ @(std::to_underlying(ContentPermission::kCamera)) ]);
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
   NSString* expected_string = l10n_util::GetNSStringF(
@@ -64,7 +66,7 @@ TEST_F(PermissionsDialogOverlayTest, DialogTitleCameraOnly) {
 // microphone permission.
 TEST_F(PermissionsDialogOverlayTest, DialogMicrophoneOnly) {
   std::unique_ptr<OverlayRequest> request =
-      CreateRequest(@[ @(web::PermissionMicrophone) ]);
+      CreateRequest(@[ @(std::to_underlying(ContentPermission::kMicrophone)) ]);
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
   NSString* expected_string = l10n_util::GetNSStringF(
@@ -93,8 +95,10 @@ TEST_F(PermissionsDialogOverlayTest, DialogMicrophoneOnly) {
 // Tests that the alert config is set correctly for dialogs requesting both
 // camera and microphone permission.
 TEST_F(PermissionsDialogOverlayTest, DialogCameraAndMicrophone) {
-  std::unique_ptr<OverlayRequest> request = CreateRequest(
-      @[ @(web::PermissionCamera), @(web::PermissionMicrophone) ]);
+  std::unique_ptr<OverlayRequest> request = CreateRequest(@[
+    @(std::to_underlying(ContentPermission::kCamera)),
+    @(std::to_underlying(ContentPermission::kMicrophone))
+  ]);
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
   NSString* expected_string = l10n_util::GetNSStringF(
@@ -124,7 +128,7 @@ TEST_F(PermissionsDialogOverlayTest, DialogCameraAndMicrophone) {
 // PermissionsDialogOverlayResponse after tapping "Don't Allow".
 TEST_F(PermissionsDialogOverlayTest, DialogResponseDeny) {
   std::unique_ptr<OverlayRequest> request =
-      CreateRequest(@[ @(web::PermissionCamera) ]);
+      CreateRequest(@[ @(std::to_underlying(ContentPermission::kCamera)) ]);
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
   // Simulate a response where the "Don't Allow" button is tapped.
@@ -147,7 +151,7 @@ TEST_F(PermissionsDialogOverlayTest, DialogResponseDeny) {
 // PermissionsDialogOverlayResponse after tapping "Allow".
 TEST_F(PermissionsDialogOverlayTest, DialogResponseAllow) {
   std::unique_ptr<OverlayRequest> request =
-      CreateRequest(@[ @(web::PermissionMicrophone) ]);
+      CreateRequest(@[ @(std::to_underlying(ContentPermission::kMicrophone)) ]);
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
   // Simulate a response where the "Allow" button is tapped.
@@ -173,7 +177,7 @@ TEST_F(PermissionsDialogOverlayTest, DomainLevelSitePermissionsChoices) {
   scoped_feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
 
   std::unique_ptr<OverlayRequest> request =
-      CreateRequest(@[ @(web::PermissionCamera) ]);
+      CreateRequest(@[ @(std::to_underlying(ContentPermission::kCamera)) ]);
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 

@@ -4,6 +4,14 @@
 
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
+source_set("permissions") {
+  sources = [
+    "permissions.h",
+    "permissions.mm",
+  ]
+  deps = [ "//ios/web/public/permissions" ]
+}
+
 source_set("infobar_delegate") {
   sources = [
     "permissions_infobar_delegate.h",
@@ -97,10 +105,14 @@ optimize_ts("media_js") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "permissions_tab_helper_unittest.mm" ]
+  sources = [
+    "permissions_tab_helper_unittest.mm",
+    "permissions_unittest.mm",
+  ]
   deps = [
     ":infobar_delegate",
     ":js_tests",
+    ":permissions",
     ":tab_helper",
     "//base",
     "//base/test:test_support",

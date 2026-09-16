@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/permissions/model/permissions.h",
   "+ios/chrome/browser/tabs/model/tabs_dependency_installer.h",
   # keep-sorted end
 ]

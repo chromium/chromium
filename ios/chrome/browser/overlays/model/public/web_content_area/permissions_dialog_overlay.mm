@@ -4,13 +4,15 @@
 
 #import "ios/chrome/browser/overlays/model/public/web_content_area/permissions_dialog_overlay.h"
 
+#import <utility>
+
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
+#import "ios/chrome/browser/permissions/model/permissions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/permissions/permissions.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using alert_overlays::AlertRequest;
@@ -71,10 +73,10 @@ PermissionsDialogRequest::PermissionsDialogRequest(
     NSArray<NSNumber*>* requested_permissions) {
   // Computes the dialog message based on the website and permissions requested.
   int string_id_for_permission = 0;
-  BOOL camera_permission_requested =
-      [requested_permissions containsObject:@(web::PermissionCamera)];
-  BOOL mic_permission_requested =
-      [requested_permissions containsObject:@(web::PermissionMicrophone)];
+  BOOL camera_permission_requested = [requested_permissions
+      containsObject:@(std::to_underlying(ContentPermission::kCamera))];
+  BOOL mic_permission_requested = [requested_permissions
+      containsObject:@(std::to_underlying(ContentPermission::kMicrophone))];
   if (camera_permission_requested && mic_permission_requested) {
     string_id_for_permission =
         IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA_AND_MICROPHONE;
