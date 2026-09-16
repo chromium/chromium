@@ -13,22 +13,18 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/metrics_hashes.h"
+#include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
-#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
-#include "chrome/browser/segmentation_platform/ukm_data_manager_test_utils.h"
 #include "chrome/browser/tips/core/tips_feature.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/segmentation_platform/internal/dummy_segmentation_platform_service.h"
-#include "components/segmentation_platform/public/database_client.h"
-#include "components/segmentation_platform/public/features.h"
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
-#include "components/segmentation_platform/public/service_proxy.h"
-#include "components/ukm/test_ukm_recorder.h"
-#include "content/public/test/browser_task_environment.h"
+#include "chrome/browser/tips/core/tips_prefs.h"
+#include "chrome/browser/tips/core/tips_service_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -74,245 +70,9 @@ class MockTipsFeature : public TipsFeature {
   bool is_eligible_;
 };
 
-class TestDatabaseClient : public segmentation_platform::DatabaseClient {
- public:
-  explicit TestDatabaseClient(
-      segmentation_platform::SegmentationPlatformService* real_service)
-      : real_service_(real_service) {}
-
-  ~TestDatabaseClient() override = default;
-
-  // Calling this will bypass real database query results and instead return
-  // the specified override values.
-  void SetOverrideSignalValues(const std::vector<float>& override_values) {
-    override_values_ = override_values;
-  }
-
-  void SetSimulateError(bool simulate_error) {
-    simulate_error_ = simulate_error;
-  }
-
-  // Overrides the DatabaseClient's feature processing logic to perform test
-  // validations:
-  // - It always forwards the metadata to the real service first to ensure the
-  //   metadata configuration compiles and processes successfully without crash
-  //   or error.
-  // - If mock overrides are registered (via SetOverrideSignalValues), they are
-  //   returned upon successful validation, bypassing the real database query
-  //   results.
-  // - If no overrides are set (standard integration test), the real database
-  //    query results are returned directly.
-  void ProcessFeatures(
-      const segmentation_platform::proto::SegmentationModelMetadata& metadata,
-      base::Time end_time,
-      FeaturesCallback callback) override {
-    last_metadata_ = metadata;
-    segmentation_platform::DatabaseClient* real_client =
-        real_service_ ? real_service_->GetDatabaseClient() : nullptr;
-    if (!real_client || simulate_error_) {
-      std::move(callback).Run(ResultStatus::kError, {});
-      return;
-    }
-
-    // Forward metadata to the real segmentation platform service to verify
-    // high-fidelity validation of the protobuf and query processing.
-    real_client->ProcessFeatures(
-        metadata, end_time,
-        base::BindOnce(
-            [](FeaturesCallback original_callback,
-               std::optional<std::vector<float>> override_vals,
-               ResultStatus status,
-               const segmentation_platform::ModelProvider::Request& inputs) {
-              // Verify that the real query processing ran successfully. If it
-              // failed, there is likely an issue with the constructed metadata
-              // schema (e.g. invalid feature configurations).
-              EXPECT_EQ(status, ResultStatus::kSuccess);
-
-              // If override values are provided for mock test features, return
-              // them but still report success so that feature ranking logic
-              // works.
-              if (override_vals.has_value()) {
-                std::move(original_callback)
-                    .Run(ResultStatus::kSuccess, *override_vals);
-              } else {
-                std::move(original_callback).Run(status, inputs);
-              }
-            },
-            std::move(callback), override_values_));
-  }
-
-  void AddEvent(const StructuredEvent& event) override {
-    segmentation_platform::DatabaseClient* real_client =
-        real_service_ ? real_service_->GetDatabaseClient() : nullptr;
-    if (real_client) {
-      real_client->AddEvent(event);
-    }
-  }
-
-  segmentation_platform::proto::SegmentationModelMetadata last_metadata_;
-  raw_ptr<segmentation_platform::SegmentationPlatformService> real_service_;
-  std::optional<std::vector<float>> override_values_;
-  bool simulate_error_ = false;
-};
-
-class TestSegmentationPlatformService
-    : public segmentation_platform::DummySegmentationPlatformService {
- public:
-  explicit TestSegmentationPlatformService(
-      segmentation_platform::SegmentationPlatformService* real_service)
-      : real_service_(real_service) {
-    if (real_service_) {
-      test_database_client_ =
-          std::make_unique<TestDatabaseClient>(real_service_);
-    }
-  }
-
-  ~TestSegmentationPlatformService() override = default;
-
-  TestDatabaseClient* test_database_client() {
-    return test_database_client_.get();
-  }
-
-  segmentation_platform::DatabaseClient* GetDatabaseClient() override {
-    return test_database_client_.get();
-  }
-
- private:
-  raw_ptr<segmentation_platform::SegmentationPlatformService> real_service_;
-  std::unique_ptr<TestDatabaseClient> test_database_client_;
-};
-
-class WaitServiceInitializedObserver
-    : public segmentation_platform::ServiceProxy::Observer {
- public:
-  explicit WaitServiceInitializedObserver(base::OnceClosure closure)
-      : closure_(std::move(closure)) {}
-  void OnServiceStatusChanged(bool initialized, int status_flags) override {
-    if (initialized) {
-      std::move(closure_).Run();
-    }
-  }
-
- private:
-  base::OnceClosure closure_;
-};
-
 }  // namespace
 
-struct FeatureTestConfig {
-  std::unique_ptr<TipsFeature> feature;
-  std::optional<std::map<std::string, float>> mock_signal_values;
-};
-
-class TipsServiceTest : public ::testing::Test {
- public:
-  TipsServiceTest() = default;
-  ~TipsServiceTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {segmentation_platform::features::kSegmentationPlatformFeature,
-         segmentation_platform::features::kSegmentationPlatformUkmEngine},
-        {});
-    test_utils_ =
-        std::make_unique<segmentation_platform::UkmDataManagerTestUtils>(
-            &ukm_recorder_);
-    test_utils_->PreProfileInit({});
-    profile_ = std::make_unique<TestingProfile>();
-    test_utils_->SetupForProfile(profile_.get());
-    real_segmentation_service_ = segmentation_platform::
-        SegmentationPlatformServiceFactory::GetForProfile(profile_.get());
-    if (real_segmentation_service_ &&
-        !real_segmentation_service_->IsPlatformInitialized()) {
-      base::RunLoop wait_for_init;
-      WaitServiceInitializedObserver wait_observer(wait_for_init.QuitClosure());
-      real_segmentation_service_->GetServiceProxy()->AddObserver(
-          &wait_observer);
-      wait_for_init.Run();
-      real_segmentation_service_->GetServiceProxy()->RemoveObserver(
-          &wait_observer);
-    }
-    test_segmentation_service_ =
-        std::make_unique<TestSegmentationPlatformService>(
-            real_segmentation_service_);
-    service_ = std::make_unique<TipsService>(&pref_service_,
-                                             test_segmentation_service_.get());
-  }
-
-  void TearDown() override {
-    service_.reset();
-    test_segmentation_service_.reset();
-    real_segmentation_service_ = nullptr;
-    test_utils_->WillDestroyProfile(profile_.get());
-    profile_.reset();
-    test_utils_.reset();
-  }
-
- protected:
-  void RunDetermineBestTipTest(
-      std::vector<std::unique_ptr<TipsFeature>> features,
-      std::optional<TipsNotificationsFeatureType> expected_best_tip) {
-    for (auto& feature : features) {
-      service_->RegisterFeature(std::move(feature));
-    }
-
-    std::optional<TipsNotificationsFeatureType> actual_best_tip;
-    base::RunLoop run_loop;
-    service_->DetermineBestTip(base::BindOnce(
-        [](std::optional<TipsNotificationsFeatureType>* out,
-           base::OnceClosure quit,
-           std::optional<TipsNotificationsFeatureType> res) {
-          *out = res;
-          std::move(quit).Run();
-        },
-        &actual_best_tip, run_loop.QuitClosure()));
-    run_loop.Run();
-
-    EXPECT_EQ(actual_best_tip, expected_best_tip);
-  }
-
-  void RunDetermineBestTipTestWithOverrides(
-      std::vector<FeatureTestConfig> configs,
-      std::optional<TipsNotificationsFeatureType> expected_best_tip) {
-    std::vector<float> flat_inputs;
-    std::vector<std::unique_ptr<TipsFeature>> features;
-
-    for (auto& config : configs) {
-      auto signals = config.feature->GetRequiredSignals();
-      for (const auto& signal : signals) {
-        float value = 0.0f;
-        if (config.mock_signal_values.has_value()) {
-          auto it = config.mock_signal_values->find(signal.name);
-          if (it != config.mock_signal_values->end()) {
-            value = it->second;
-          }
-        }
-        flat_inputs.push_back(value);
-      }
-      features.push_back(std::move(config.feature));
-    }
-
-    if (test_segmentation_service_->test_database_client()) {
-      test_segmentation_service_->test_database_client()
-          ->SetOverrideSignalValues(flat_inputs);
-    }
-
-    RunDetermineBestTipTest(std::move(features), expected_best_tip);
-  }
-
-  TestingPrefServiceSimple pref_service_;
-  std::unique_ptr<TestSegmentationPlatformService> test_segmentation_service_;
-  std::unique_ptr<TipsService> service_;
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  ukm::TestAutoSetUkmRecorder ukm_recorder_;
-  std::unique_ptr<segmentation_platform::UkmDataManagerTestUtils> test_utils_;
-  std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<segmentation_platform::SegmentationPlatformService>
-      real_segmentation_service_;
-};
+class TipsServiceTest : public TipsServiceTestBase {};
 
 TEST_F(TipsServiceTest, DetermineBestTip_NoDatabaseClient) {
   service_ = std::make_unique<TipsService>(&pref_service_, nullptr);

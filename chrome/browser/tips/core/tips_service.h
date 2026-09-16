@@ -30,6 +30,11 @@ using ResultStatus = segmentation_platform::DatabaseClient::ResultStatus;
 
 // Service to handle Tips notifications and orchestrate modular TipsFeature
 // implementations.
+//
+// TODO(crbug.com/559726350): If TipsNotificationsRanker is deprecated, a new
+// tips_config file will need to be created and registered in
+// segmentation_platform_config.cc so that UMA signals continue to be monitored
+// by the Segmentation Platform allowlist.
 class TipsService : public KeyedService, public base::SupportsUserData {
  public:
   using OnBestTipChosen =

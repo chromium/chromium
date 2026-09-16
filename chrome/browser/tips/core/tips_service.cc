@@ -62,6 +62,11 @@ void TipsService::DetermineBestTip(OnBestTipChosen callback) {
     return;
   }
 
+  // TODO(crbug.com/559726350): Signal registration in the Segmentation
+  // Platform currently relies on TipsNotificationsRanker being registered in
+  // segmentation_platform_config.cc. If TipsNotificationsRanker is deprecated,
+  // a new tips_config file will need to be created and registered so that UMA
+  // signals continue to be monitored.
   auto* db_client = segmentation_service_->GetDatabaseClient();
   if (!db_client) {
     // Platform database client is not initialized yet.

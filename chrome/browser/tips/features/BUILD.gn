@@ -1,0 +1,42 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_android)
+
+source_set("features") {
+  sources = [
+    "enhanced_safe_browsing_tip.cc",
+    "enhanced_safe_browsing_tip.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser/notifications/scheduler/public",
+    "//chrome/browser/tips/core",
+  ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/segmentation_platform/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "enhanced_safe_browsing_tip_unittest.cc" ]
+
+  deps = [
+    ":features",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/notifications/scheduler/public",
+    "//chrome/browser/tips/core",
+    "//chrome/browser/tips/core:test_support",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/segmentation_platform/public",
+    "//testing/gtest",
+  ]
+}
