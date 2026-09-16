@@ -5,7 +5,6 @@
 #ifndef GIN_PER_ISOLATE_DATA_H_
 #define GIN_PER_ISOLATE_DATA_H_
 
-#include <map>
 #include <memory>
 
 #include "base/check.h"
@@ -15,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "gin/gin_export.h"
 #include "gin/public/isolate_holder.h"
-#include "gin/public/wrapper_info.h"
 #include "gin/v8_foreground_task_runner_base.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-forward.h"
@@ -51,11 +49,6 @@ class GIN_EXPORT PerIsolateData {
 
   static PerIsolateData* From(v8::Isolate* isolate);
 
-  void SetObjectTemplate(const WrapperInfo* info,
-                         v8::Local<v8::ObjectTemplate> object_template);
-
-  v8::Local<v8::ObjectTemplate> GetObjectTemplate(const WrapperInfo* info);
-
   void AddDisposeObserver(DisposeObserver* observer);
   void RemoveDisposeObserver(DisposeObserver* observer);
   void NotifyBeforeDispose();
@@ -74,14 +67,10 @@ class GIN_EXPORT PerIsolateData {
   }
 
  private:
-  typedef std::map<const WrapperInfo*, v8::Eternal<v8::ObjectTemplate>>
-      ObjectTemplateMap;
-
   // PerIsolateData doesn't actually own |isolate_|. Instead, the isolate is
   // owned by the IsolateHolder, which also owns the PerIsolateData.
   raw_ptr<v8::Isolate, AcrossTasksDanglingUntriaged> isolate_;
   raw_ptr<v8::ArrayBuffer::Allocator, DanglingUntriaged> allocator_;
-  ObjectTemplateMap object_templates_;
   base::ObserverList<DisposeObserver> dispose_observers_;
   std::shared_ptr<V8ForegroundTaskRunnerBase> task_runner_;
   std::shared_ptr<V8ForegroundTaskRunnerBase> user_visible_task_runner_;

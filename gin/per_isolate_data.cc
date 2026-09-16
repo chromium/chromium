@@ -16,12 +16,7 @@
 #include "v8/include/v8-isolate.h"
 
 using v8::ArrayBuffer;
-using v8::Eternal;
-using v8::FunctionTemplate;
 using v8::Isolate;
-using v8::Local;
-using v8::Object;
-using v8::ObjectTemplate;
 
 namespace {
 std::shared_ptr<gin::V8ForegroundTaskRunnerBase> CreateV8ForegroundTaskRunner(
@@ -73,21 +68,6 @@ PerIsolateData::~PerIsolateData() = default;
 
 PerIsolateData* PerIsolateData::From(Isolate* isolate) {
   return static_cast<PerIsolateData*>(isolate->GetData(kEmbedderNativeGin));
-}
-
-void PerIsolateData::SetObjectTemplate(
-    const WrapperInfo* info,
-    Local<ObjectTemplate> templ) {
-  object_templates_[info] = Eternal<ObjectTemplate>(isolate_, templ);
-}
-
-v8::Local<v8::ObjectTemplate> PerIsolateData::GetObjectTemplate(
-    const WrapperInfo* info) {
-  ObjectTemplateMap::iterator it = object_templates_.find(info);
-  if (it == object_templates_.end()) {
-    return v8::Local<v8::ObjectTemplate>();
-  }
-  return it->second.Get(isolate_);
 }
 
 void PerIsolateData::AddDisposeObserver(DisposeObserver* observer) {
