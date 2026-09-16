@@ -130,6 +130,38 @@ TEST_F(AutofillEntityInstanceTest, ServerEntityWithUnmaskedAttributes) {
   EXPECT_TRUE(entity.IsUnmaskedEntity());
 }
 
+TEST_F(AutofillEntityInstanceTest, CopyWithNewRecordTypeSetsWalletPayload) {
+  EntityInstance local_entity = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+
+  // Converting kLocal to kServerWallet initializes an empty
+  // WalletRecordTypePayload.
+  EntityInstance converted_wallet_entity = local_entity.CopyWithNewRecordType(
+      EntityInstance::RecordType::kServerWallet);
+  const EntityInstance::WalletRecordTypePayload* converted_payload =
+      std::get_if<EntityInstance::WalletRecordTypePayload>(
+          &converted_wallet_entity.record_type_data());
+  ASSERT_NE(converted_payload, nullptr);
+  EXPECT_EQ(converted_payload->management_url, "");
+}
+
+TEST_F(AutofillEntityInstanceTest,
+       CopyWithNewRecordTypeSameTypeCopiesThePayload) {
+  constexpr char kWalletUrl[] =
+      "https://wallet.google.com/synthetic_pass?id=fake123";
+  EntityInstance wallet_entity = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::WalletRecordTypePayload{.management_url =
+                                                                  kWalletUrl}});
+
+  EntityInstance converted_wallet_entity = wallet_entity.CopyWithNewRecordType(
+      EntityInstance::RecordType::kServerWallet);
+  const EntityInstance::WalletRecordTypePayload* converted_payload =
+      std::get_if<EntityInstance::WalletRecordTypePayload>(
+          &converted_wallet_entity.record_type_data());
+  ASSERT_NE(converted_payload, nullptr);
+  EXPECT_EQ(converted_payload->management_url, kWalletUrl);
+}
+
 TEST_F(AutofillEntityInstanceTest, Attributes) {
   const char16_t kName[] = u"Pippi";
   EntityInstance pp =

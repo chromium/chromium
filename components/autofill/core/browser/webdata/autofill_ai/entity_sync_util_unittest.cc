@@ -417,7 +417,7 @@ TEST(EntitySyncUtilTest,
       EntityType(EntityTypeName::kVehicle), std::move(attributes),
       EntityInstance::EntityId("00000000-0000-4000-8000-200000000000"),
       /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/0, /*use_date=*/{},
-      EntityInstance::WalletRecordTypePayload{},
+      EntityInstance::WalletRecordTypePayload{.management_url = ""},
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 

@@ -49,11 +49,19 @@ struct EntityInstanceAndroid {
   EntityInstanceAndroid& operator=(EntityInstanceAndroid&&) = default;
   ~EntityInstanceAndroid();
 
-  // Convert `EntityInstanceAndroid` to `EntityInstance`.
-  // If `existing_entity` exists, this method reuses the attribute instances
-  // from `existing_entity` iff it's raw value is the same as the one in `this`.
-  // This guarantees that for unmodified attributes, their field types structure
-  // (such as for names) remain the same.
+  // Convert `EntityInstanceAndroid` to `EntityInstance`
+  //
+  // Since the Java-backed `EntityInstanceAndroid` does not contain all data of
+  // a full `EntityInstance`, the existing `EntityInstance` object needs to be
+  // passed as additional context to enable a loss-less construction of the
+  // modified `EntityInstance` in case of updates:
+  //
+  // If `existing_entity` is provided, this method reuses the attribute
+  // instances from `existing_entity` iff its raw value is the same as the one
+  // in `this`. This guarantees that for unmodified attributes, their field
+  // types structure (such as for names) remain the same.
+  //
+  // Furthermore, the record type payload is copied from the existing entity.
   EntityInstance ToEntityInstance(
       base::optional_ref<const EntityInstance> existing_entity) const;
 

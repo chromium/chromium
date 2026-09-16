@@ -57,6 +57,7 @@ constexpr std::string_view kKeyRecordType = "record_type";
 constexpr std::string_view kKeyNickname = "nickname";
 constexpr std::string_view kKeyEntityType = "entity_type";
 constexpr std::string_view kKeyAttributes = "attributes";
+constexpr std::string_view kKeyManagementUrl = "management_url";
 constexpr std::string_view kKeySources = "sources";
 constexpr std::string_view kKeySourceType = "type";
 constexpr std::string_view kKeySourceUrl = "url";
@@ -286,8 +287,11 @@ std::optional<EntityInstance> MakeEntity(const base::DictValue& dict) {
     switch (*record_type) {
       case EntityInstance::RecordType::kLocal:
         return EntityInstance::LocalRecordTypePayload{};
-      case EntityInstance::RecordType::kServerWallet:
-        return EntityInstance::WalletRecordTypePayload{};
+      case EntityInstance::RecordType::kServerWallet: {
+        const std::string* management_url = dict.FindString(kKeyManagementUrl);
+        return EntityInstance::WalletRecordTypePayload{
+            .management_url = management_url ? *management_url : ""};
+      }
       case EntityInstance::RecordType::kPersonalContext:
         return EntityInstance::PersonalContextRecordTypePayload{
             .sources = GetPersonalContextSourcesFromDict(dict)};

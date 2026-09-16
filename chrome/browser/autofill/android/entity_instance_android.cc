@@ -137,14 +137,22 @@ EntityInstance EntityInstanceAndroid::ToEntityInstance(
   }
 
   // TODO(crbug.com/542083924): The Java EntityInstance doesn't support
-  // RecordTypeData. Until metadata exists that is relevant in Android or can be
-  // created by Android, creating an empty payload from the RecordType suffices.
+  // RecordTypeData. Until RecordTypeData exists that is relevant in Android or
+  // can be/ created by Android, copying the RecordTypeData from the existing
+  // entity (if available) or default constructing it suffices.
   auto record_type_data = [&] -> EntityInstance::RecordTypeData {
+    if (existing_entity) {
+      return existing_entity->record_type_data();
+    }
+    // If there is no existing entity, we default construct the record type
+    // data.
     switch (record_type) {
       case EntityInstance::RecordType::kLocal:
         return EntityInstance::LocalRecordTypePayload{};
       case EntityInstance::RecordType::kServerWallet:
-        return EntityInstance::WalletRecordTypePayload{};
+        // If there was no existing entity, the newly created entity cannot yet
+        // have a management URL, which is provided by the Wallet server.
+        return EntityInstance::WalletRecordTypePayload{.management_url = ""};
       case EntityInstance::RecordType::kPersonalContext:
         // pContext entities cannot be created from settings.
         NOTREACHED();

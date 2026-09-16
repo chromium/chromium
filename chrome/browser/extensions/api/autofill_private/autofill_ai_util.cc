@@ -211,10 +211,13 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
       entity_supports_wallet_storage;
 
   EntityInstance::RecordTypeData record_type_data =
-      save_entity_to_wallet ? EntityInstance::RecordTypeData(
-                                  EntityInstance::WalletRecordTypePayload{})
-                            : EntityInstance::RecordTypeData(
-                                  EntityInstance::LocalRecordTypePayload{});
+      save_entity_to_wallet
+          // Wallet passes can only be created (not updated) from settings, at
+          // which point the server-provided management URL is not yet known.
+          ? EntityInstance::RecordTypeData(
+                EntityInstance::WalletRecordTypePayload{.management_url = ""})
+          : EntityInstance::RecordTypeData(
+                EntityInstance::LocalRecordTypePayload{});
 
   return EntityInstance(
       std::move(entity_type), attribute_instances, std::move(guid),

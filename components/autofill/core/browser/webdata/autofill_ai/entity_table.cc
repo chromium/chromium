@@ -691,7 +691,8 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
       case EntityInstance::RecordType::kLocal:
         return EntityInstance::LocalRecordTypePayload{};
       case EntityInstance::RecordType::kServerWallet:
-        return EntityInstance::WalletRecordTypePayload{};
+        // TODO(crbug.com/560061580): Read the management URL from the DB.
+        return EntityInstance::WalletRecordTypePayload{.management_url = ""};
       case EntityInstance::RecordType::kPersonalContext:
         // pContext entities are not stored in `EntityTable`.
         NOTREACHED();

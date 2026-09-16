@@ -139,8 +139,20 @@ EntityInstance GetMergedEntity(
     switch (target_record_type) {
       case EntityInstance::RecordType::kLocal:
         return EntityInstance::LocalRecordTypePayload{};
-      case EntityInstance::RecordType::kServerWallet:
-        return EntityInstance::WalletRecordTypePayload{};
+      case EntityInstance::RecordType::kServerWallet: {
+        // `observed_entity` is extracted from a form submission and never has a
+        // management URL. If `saved_entity` is already a Wallet entity (an
+        // update), preserve its management URL. If `saved_entity` is a local
+        // entity being migrated to Wallet, `std::get_if` returns nullptr and
+        // the management URL is default-constructed to empty until provisioned
+        // by the Wallet backend.
+        const EntityInstance::WalletRecordTypePayload* saved_payload =
+            std::get_if<EntityInstance::WalletRecordTypePayload>(
+                &saved_entity.record_type_data());
+        return EntityInstance::WalletRecordTypePayload{
+            .management_url =
+                saved_payload ? saved_payload->management_url : ""};
+      }
       case EntityInstance::RecordType::kPersonalContext:
         // pContext entities are read-only.
         NOTREACHED();

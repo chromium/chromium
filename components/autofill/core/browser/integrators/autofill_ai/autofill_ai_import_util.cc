@@ -221,7 +221,11 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
           MayPerformAutofillAiAction(client, AutofillAiAction::kImportToWallet,
                                      entity_name)
               ? EntityInstance::RecordTypeData(
-                    EntityInstance::WalletRecordTypePayload{})
+                    // Observed entities extracted from form submissions do not
+                    // exist on Google Wallet servers yet. Their management URL
+                    // is empty until the pass is created by the Wallet service.
+                    EntityInstance::WalletRecordTypePayload{.management_url =
+                                                                ""})
               : EntityInstance::RecordTypeData(
                     EntityInstance::LocalRecordTypePayload{});
       EntityInstance entity = EntityInstance(

@@ -501,6 +501,12 @@ std::ostream& operator<<(std::ostream& os, const EntityInstance& e) {
               os << "- source " << s << std::endl;
             }
           },
+          [&](const EntityInstance::WalletRecordTypePayload& p) {
+            if (!p.management_url.empty()) {
+              os << "- management url: \"" << p.management_url << '"'
+                 << std::endl;
+            }
+          },
           [](const auto&) {}},
       e.record_type_data());
   return os;
@@ -762,12 +768,21 @@ EntityInstance EntityInstance::CopyWithNewEntityId(EntityId id) const {
 EntityInstance EntityInstance::CopyWithNewRecordType(
     RecordType record_type) const {
   EntityInstance new_entity = *this;
+  // Safeguard against the corner case of creating a copy with the same type.
+  if (this->record_type() == record_type) {
+    return new_entity;
+  }
+  // Adapt the record type specific payload.
   switch (record_type) {
     case RecordType::kLocal:
       new_entity.record_type_data_ = LocalRecordTypePayload();
       break;
     case RecordType::kServerWallet:
-      new_entity.record_type_data_ = WalletRecordTypePayload();
+      // When converting from a different record type (e.g. local)
+      // the management URL is empty because it needs to be provisioned
+      // by the Google Wallet servers.
+      new_entity.record_type_data_ =
+          WalletRecordTypePayload{.management_url = ""};
       break;
     case RecordType::kPersonalContext:
       // TODO(crbug.com/542083924): Converting to a pContext entity is currently

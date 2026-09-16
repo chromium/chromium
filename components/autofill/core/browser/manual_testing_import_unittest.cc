@@ -425,6 +425,55 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_PersonalContext_Sources) {
                           }}));
 }
 
+// Tests that the WalletRecordTypePayload is read correctly.
+TEST_F(ManualTestingImportTest,
+       LoadEntitiesFromFile_ServerWallet_WalletRecordTypePayload) {
+  base::FilePath file_path = GetFilePath();
+  base::WriteFile(file_path, R"({
+    "entities" : [
+      {
+        "entity_type" : "Passport",
+        "record_type" : "serverWallet",
+        "attributes" : {
+          "Number" : "12345"
+        }
+      },
+      {
+        "entity_type" : "Passport",
+        "record_type" : "serverWallet",
+        "management_url" : "https://wallet.google.com/synthetic_pass?id=fake123",
+        "attributes" : {
+          "Number" : "67890"
+        }
+      }
+    ]
+  })");
+
+  std::optional<std::vector<EntityInstance>> entities =
+      LoadEntitiesFromFile(file_path);
+  ASSERT_TRUE(entities.has_value());
+  ASSERT_EQ(entities->size(), 2u);
+
+  using WalletRecordTypePayload = EntityInstance::WalletRecordTypePayload;
+
+  ASSERT_EQ(entities->at(0).record_type(),
+            EntityInstance::RecordType::kServerWallet);
+  const auto* payload0 =
+      std::get_if<WalletRecordTypePayload>(&entities->at(0).record_type_data());
+  ASSERT_TRUE(payload0);
+  EXPECT_EQ(*payload0, WalletRecordTypePayload{.management_url = ""});
+
+  ASSERT_EQ(entities->at(1).record_type(),
+            EntityInstance::RecordType::kServerWallet);
+  const auto* payload1 =
+      std::get_if<WalletRecordTypePayload>(&entities->at(1).record_type_data());
+  ASSERT_TRUE(payload1);
+  EXPECT_EQ(*payload1,
+            (WalletRecordTypePayload{
+                .management_url =
+                    "https://wallet.google.com/synthetic_pass?id=fake123"}));
+}
+
 // Tests that invalid entity record_type fails import.
 TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_InvalidRecordType) {
   base::FilePath file_path = GetFilePath();
@@ -488,7 +537,8 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_OrderAndShipment) {
                        "Widget, Gadget")},
       EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
       /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time(), EntityInstance::WalletRecordTypePayload{},
+      /*use_date=*/base::Time(),
+      EntityInstance::WalletRecordTypePayload{.management_url = ""},
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 
@@ -507,7 +557,8 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_OrderAndShipment) {
                        "Widget, Gadget")},
       EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
       /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time(), EntityInstance::WalletRecordTypePayload{},
+      /*use_date=*/base::Time(),
+      EntityInstance::WalletRecordTypePayload{.management_url = ""},
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 

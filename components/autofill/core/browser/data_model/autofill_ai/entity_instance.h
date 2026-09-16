@@ -307,6 +307,11 @@ class EntityInstance final {
                            const LocalRecordTypePayload&) = default;
   };
   struct WalletRecordTypePayload {
+    // Canonical management URL for this entity on wallet.google.com.
+    // Empty if not provided by the server or before sync propagation.
+    // TODO(crbug.com/560061580): This field is not yet populated.
+    std::string management_url = internal::IsRequired();
+
     friend bool operator==(const WalletRecordTypePayload&,
                            const WalletRecordTypePayload&) = default;
   };

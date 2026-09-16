@@ -176,7 +176,7 @@ TEST_F(AutofillAIEntityEditCoordinatorTest, OpenWalletURLForServerWalletItem) {
   autofill::EntityType type(autofill::EntityTypeName::kVehicle);
   autofill::EntityInstanceBuilder builder(type);
   builder.SetRecordTypeData(
-      autofill::EntityInstance::WalletRecordTypePayload{});
+      autofill::EntityInstance::WalletRecordTypePayload{.management_url = ""});
 
   for (autofill::AttributeType attr_type : type.attributes()) {
     builder.AddAttribute(autofill::AttributeInstance(attr_type));

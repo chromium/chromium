@@ -53,8 +53,8 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_BasicConversion) {
       EntityMetadataAndroid(kGuid, base::Time::Now(), 0, base::Time::Now()),
       /*requires_reauth_to_see=*/false, /*is_masked_server_entity=*/false);
 
-  EntityInstance entity_instance =
-      entity_instance_android.ToEntityInstance(std::nullopt);
+  EntityInstance entity_instance = entity_instance_android.ToEntityInstance(
+      /*existing_entity=*/std::nullopt);
 
   EXPECT_EQ(entity_instance.type(), entity_type);
   EXPECT_EQ(entity_instance.guid().value(), kGuid);
@@ -215,7 +215,7 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
 }
 
 // Makes sure the `EntityInstance` C++ -> Java -> C++ conversion results in the
-// object equal to the initial entity. This process has to known caveats:
+// object equal to the initial entity. This process has known caveats:
 // * The name attributes have a parsed substructure in C++, which is not stored
 //   in Java. An existing entity instance is provided to the conversion method
 //   to keep the substructure.
@@ -223,7 +223,10 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
 //   precision in C++ and millisecond precision in Java. This means the test
 //   will work as long as the dates have zero microseconds.
 TEST_F(EntityInstanceAndroidTest, DoubleConversion) {
-  EntityInstance passport = test::GetPassportEntityInstance();
+  EntityInstance passport = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::WalletRecordTypePayload{
+           .management_url =
+               "https://wallet.google.com/synthetic_pass?id=fake123"}});
   EntityInstanceAndroid entity_instance_android(
       passport, /*is_enabled=*/true, /*is_eligible_for_wallet_storage=*/true,
       /*requires_reauth_to_see=*/true);
@@ -239,6 +242,63 @@ TEST_F(EntityInstanceAndroidTest, DoubleConversion) {
       converted_entity.ToEntityInstance(passport);
 
   EXPECT_EQ(passport, converted_passport);
+}
+
+// Test that the Wallet record type payload is initialized with default data
+// when converting an EntityInstanceAndroid back to an EntityInstance
+// without providing an existing entity instance (i.e. when creating a new
+// entity instance).
+TEST_F(EntityInstanceAndroidTest,
+       ToEntityInstance_NewWalletEntityInitializesPayload) {
+  EntityType entity_type(EntityTypeName::kPassport);
+  EntityTypeAndroid entity_type_android(entity_type,
+                                        /*is_enabled=*/true,
+                                        /*is_eligible_for_wallet_storage=*/true,
+                                        /*is_masked_storage_supported=*/true);
+  AttributeType attribute_type(AttributeTypeName::kPassportName);
+  AttributeTypeAndroid passport_name_attribute_type_android(attribute_type);
+  AttributeInstanceAndroid attribute_instance_android(
+      passport_name_attribute_type_android, u"John Doe",
+      VerificationStatus::kNoStatus);
+  EntityInstanceAndroid entity_instance_android(
+      entity_type_android, EntityInstance::RecordType::kServerWallet,
+      {attribute_instance_android}, kNickname,
+      EntityMetadataAndroid(kGuid, base::Time::Now(), 0, base::Time::Now()),
+      /*requires_reauth_to_see=*/false, /*is_masked_server_entity=*/false);
+
+  EntityInstance entity_instance = entity_instance_android.ToEntityInstance(
+      /*existing_entity=*/std::nullopt);
+
+  EXPECT_EQ(entity_instance.record_type(),
+            EntityInstance::RecordType::kServerWallet);
+  EXPECT_EQ(entity_instance.record_type_data(),
+            EntityInstance::RecordTypeData(
+                EntityInstance::WalletRecordTypePayload{.management_url = ""}));
+}
+
+// Test that the Wallet record type payload is added when converting an
+// EntityInstanceAndroid back to an EntityInstance with ToEntityInstance().
+TEST_F(EntityInstanceAndroidTest,
+       ToEntityInstance_ExistingWalletEntityCopiesPayload) {
+  EntityInstance existing_entity = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::WalletRecordTypePayload{
+           .management_url =
+               "https://wallet.google.com/synthetic_pass?id=fake123"}});
+
+  EntityInstance entity_without_payload = test::GetPassportEntityInstance();
+  EntityInstanceAndroid entity_instance_android(
+      entity_without_payload, /*is_enabled=*/true,
+      /*is_eligible_for_wallet_storage=*/true,
+      /*requires_reauth_to_see=*/false);
+
+  EntityInstance entity_instance =
+      entity_instance_android.ToEntityInstance(existing_entity);
+
+  EXPECT_EQ(entity_instance.record_type(),
+            EntityInstance::RecordType::kServerWallet);
+  // The record type data has been copied from existing_entity.
+  EXPECT_EQ(entity_instance.record_type_data(),
+            existing_entity.record_type_data());
 }
 
 }  // namespace
