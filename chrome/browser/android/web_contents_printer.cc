@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/printing/print_view_manager_basic.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "content/public/browser/browser_thread.h"
@@ -30,14 +32,20 @@ content::RenderFrameHost* GetTargetFrame(content::WebContents* web_contents,
     CHECK_EQ(content::WebContents::FromRenderFrameHost(rfh), web_contents);
   }
   // If the target frame is invalid, inactive, or no longer live:
-  // - For selection printing, fail safely to avoid printing the whole
-  //   page/wrong frame.
-  // - For normal printing, fall back to the default main frame.
+  // - For selection printing, fail safely to avoid printing the whole page.
+  // - For normal printing, fall back to the primary main frame instead of
+  //   GetFrameToPrint(), which targets a focused subframe when it has a
+  //   selection (e.g. hidden text-input iframes in web editors).
   if (!rfh || !rfh->IsActive() || !rfh->IsRenderFrameLive()) {
     if (print_selection_only) {
       return nullptr;
     }
-    rfh = GetFrameToPrint(web_contents);
+    if (base::FeatureList::IsEnabled(
+            chrome::android::kPrintFallbackToPrimaryMainFrame)) {
+      rfh = web_contents->GetPrimaryMainFrame();
+    } else {
+      rfh = GetFrameToPrint(web_contents);
+    }
   }
 
   if (!rfh || !rfh->IsActive() || !rfh->IsRenderFrameLive()) {
