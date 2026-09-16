@@ -368,7 +368,6 @@ ukm::SourceId WorkletGlobalScope::UkmSourceID() const {
 
 mojo::PendingRemote<mojom::blink::BlobURLStore>
 WorkletGlobalScope::TakeBlobUrlStorePendingRemote() {
-  DCHECK(blob_url_store_pending_remote_.is_valid());
   return std::move(blob_url_store_pending_remote_);
 }
 

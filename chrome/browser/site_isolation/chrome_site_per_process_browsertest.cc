@@ -499,6 +499,76 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
                             "})()"));
   EXPECT_TRUE(pdf_frame->IsRenderFrameLive());
 }
+
+// Check that navigating to a PDF and then trying to create a blob URL in the
+// context of the PDF document fails gracefully and doesn't lead to a renderer
+// kill. PDF documents don't create blob URLs directly, but the access could
+// still happen via DevTools. See https://crbug.com/540051167 and
+// https://crbug.com/550946804.
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
+                       CreateBlobUrlInPDFDocument) {
+  GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_EQ(pdf_url, web_contents->GetLastCommittedURL());
+  ASSERT_TRUE(GetTestMimeHandlerStreamManager()->WaitUntilPdfLoaded(
+      web_contents->GetPrimaryMainFrame()));
+
+  // The PDF document should be in the grandchild frame, embedded in the PDF
+  // viewer extension frame.
+  content::RenderFrameHost* pdf_extension_frame =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(pdf_extension_frame);
+  content::RenderFrameHost* pdf_frame =
+      content::ChildFrameAt(pdf_extension_frame, 0);
+  ASSERT_TRUE(pdf_frame);
+  EXPECT_TRUE(pdf_frame->GetProcess()->IsPdf());
+
+  // Attempting to create a blob URL in the PDF document should return an empty
+  // string (rather than throwing a SecurityError, matching the File API spec
+  // and DOM storage behavior) and should not kill the renderer.
+  EXPECT_EQ(
+      "", content::EvalJs(pdf_frame, "URL.createObjectURL(new Blob(['foo']))"));
+  EXPECT_TRUE(pdf_frame->IsRenderFrameLive());
+}
+
+// Check that navigating to a PDF and then trying to create an AudioWorklet in
+// the context of the PDF document fails gracefully and doesn't lead to a
+// renderer kill. Creating an AudioWorklet causes the renderer to obtain a
+// BlobURLStore remote for the worklet, but in PDF processes
+// LocalFrame::GetBlobUrlStorePendingRemote returns an invalid remote to avoid
+// requesting the interface from the browser. See https://crbug.com/540051167.
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
+                       CreateAudioWorkletInPDFDocument) {
+  GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_EQ(pdf_url, web_contents->GetLastCommittedURL());
+  ASSERT_TRUE(GetTestMimeHandlerStreamManager()->WaitUntilPdfLoaded(
+      web_contents->GetPrimaryMainFrame()));
+
+  // The PDF document should be in the grandchild frame, embedded in the PDF
+  // viewer extension frame.
+  content::RenderFrameHost* pdf_extension_frame =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(pdf_extension_frame);
+  content::RenderFrameHost* pdf_frame =
+      content::ChildFrameAt(pdf_extension_frame, 0);
+  ASSERT_TRUE(pdf_frame);
+  EXPECT_TRUE(pdf_frame->GetProcess()->IsPdf());
+
+  // Creating an AudioWorklet causes the renderer to get a BlobURLStore for the
+  // worklet. In PDF processes, LocalFrame::GetBlobUrlStorePendingRemote avoids
+  // requesting this interface from the browser, so the renderer should not be
+  // killed.
+  EXPECT_TRUE(
+      ExecJs(pdf_frame,
+             "const context = new OfflineAudioContext(1, 1, 44100);"
+             "context.audioWorklet.addModule('data:text/javascript,');"));
+  EXPECT_TRUE(pdf_frame->IsRenderFrameLive());
+}
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 // A helper class to verify that a "mailto:" external protocol request succeeds.

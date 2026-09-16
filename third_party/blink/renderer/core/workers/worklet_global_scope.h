@@ -84,7 +84,9 @@ class CORE_EXPORT WorkletGlobalScope : public WorkerOrWorkletGlobalScope {
 
   // Returns `blob_url_store_pending_remote_` for use when instantiating the
   // PublicURLManager in threaded worklet contexts. This method should only be
-  // called once. See `blob_url_store_pending_remote_` for more details.
+  // called once. The returned remote may be invalid if blob storage is
+  // disabled for the creating frame (e.g., in PDF processes). See
+  // `blob_url_store_pending_remote_` for more details.
   mojo::PendingRemote<mojom::blink::BlobURLStore>
   TakeBlobUrlStorePendingRemote();
 
@@ -222,6 +224,8 @@ class CORE_EXPORT WorkletGlobalScope : public WorkerOrWorkletGlobalScope {
   // parent frame's BrowserInterfaceBroker and used when instantiating the
   // worklet's PublicURLManager. This remote is used for Blob URL related
   // functionality such as registering, revoking, and navigating to Blob URLs.
+  // It may be invalid if blob storage is disabled for the creating frame
+  // (e.g., in PDF processes).
   mojo::PendingRemote<mojom::blink::BlobURLStore>
       blob_url_store_pending_remote_;
 };

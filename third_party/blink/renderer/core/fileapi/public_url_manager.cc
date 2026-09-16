@@ -30,11 +30,13 @@
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/html/media/media_source_registry.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -64,7 +66,21 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
       worker_url_store_(execution_context) {
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     LocalFrame* frame = window->GetFrame();
-    if (!frame) {
+    // In PDF processes, DOM storage and Blob URLs are disabled to avoid
+    // accessing or registering data for the origin that served the PDF (see
+    // ChildProcessSecurityPolicyImpl::IsAccessAllowedForPdfProcess).
+    // Marking PublicURLManager as stopped ensures we do not bind
+    // frame_url_store_ (which would trigger a bad message renderer kill in the
+    // browser process) and causes URL.createObjectURL to return an empty
+    // string. An empty string was chosen rather than throwing a SecurityError
+    // to match the W3C File API specification when a blob URL cannot be
+    // generated, as well as the behavior of DOM storage in PDF processes (where
+    // localStorage returns null instead of throwing) and to avoid breaking
+    // extensions or scripts that do not expect createObjectURL to throw an
+    // exception.
+    if (!frame ||
+        (base::FeatureList::IsEnabled(features::kEnforcePdfBlobRestrictions) &&
+         frame->Client()->IsDomStorageDisabled())) {
       is_stopped_ = true;
       return;
     }
@@ -93,7 +109,9 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
 
     if (worklet_global_scope->IsMainThreadWorkletGlobalScope()) {
       LocalFrame* frame = worklet_global_scope->GetFrame();
-      if (!frame) {
+      if (!frame || (base::FeatureList::IsEnabled(
+                         features::kEnforcePdfBlobRestrictions) &&
+                     frame->Client()->IsDomStorageDisabled())) {
         is_stopped_ = true;
         return;
       }
@@ -107,7 +125,12 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
       // this worklet.
       mojo::PendingRemote<mojom::blink::BlobURLStore> pending_remote =
           worklet_global_scope->TakeBlobUrlStorePendingRemote();
-      DCHECK(pending_remote.is_valid());
+      // The BlobURLStore remote may be invalid if blobs are not allowed in
+      // this process (e.g., in PDF processes where DOM storage is disabled).
+      if (!pending_remote.is_valid()) {
+        is_stopped_ = true;
+        return;
+      }
       worker_url_store_.Bind(
           std::move(pending_remote),
           execution_context->GetTaskRunner(TaskType::kFileReading));

@@ -8,10 +8,12 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_media_source.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -20,6 +22,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/media/media_source_attachment.h"
 #include "third_party/blink/renderer/core/html/media/media_source_registry.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_url_store.h"
@@ -250,6 +253,58 @@ TEST_F(PublicURLManagerTest, RevokeInvalidURL) {
   url_store_receiver_.FlushForTesting();
   // All three should have been silently ignored.
   EXPECT_TRUE(url_store_.revocations.empty());
+}
+
+namespace {
+
+class TestPdfLocalFrameClient : public EmptyLocalFrameClient {
+ public:
+  bool IsDomStorageDisabled() const override { return true; }
+};
+
+}  // namespace
+
+TEST_F(PublicURLManagerTest, DisabledWhenDomStorageDisabled) {
+  // In PDF processes (or other contexts where IsDomStorageDisabled() is true),
+  // PublicURLManager should be stopped by default, returning an empty string
+  // instead of binding the BlobURLStore.
+  {
+    auto page_holder = std::make_unique<DummyPageHolder>(
+        gfx::Size(), /*chrome_client=*/nullptr,
+        MakeGarbageCollected<TestPdfLocalFrameClient>());
+    auto* window = page_holder->GetFrame().DomWindow();
+    PublicURLManager& manager = window->GetPublicURLManager();
+
+    Blob* blob = MakeGarbageCollected<Blob>(
+        BlobDataHandle::Create("id", "", 0, CreateMojoBlob("id")));
+    EXPECT_TRUE(manager.RegisterUrl(blob).empty());
+  }
+
+  // When the EnforcePdfBlobRestrictions killswitch is disabled,
+  // PublicURLManager should not be stopped even if IsDomStorageDisabled() is
+  // true.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kEnforcePdfBlobRestrictions);
+
+    auto page_holder = std::make_unique<DummyPageHolder>(
+        gfx::Size(), /*chrome_client=*/nullptr,
+        MakeGarbageCollected<TestPdfLocalFrameClient>());
+    auto* window = page_holder->GetFrame().DomWindow();
+    PublicURLManager& manager = window->GetPublicURLManager();
+
+    HeapMojoAssociatedRemote<mojom::blink::BlobURLStore> url_store_remote(
+        window);
+    FakeBlobURLStore url_store;
+    mojo::AssociatedReceiver<mojom::blink::BlobURLStore> url_store_receiver(
+        &url_store, url_store_remote.BindNewEndpointAndPassDedicatedReceiver());
+    manager.SetURLStoreForTesting(std::move(url_store_remote));
+
+    Blob* blob = MakeGarbageCollected<Blob>(
+        BlobDataHandle::Create("id", "", 0, CreateMojoBlob("id")));
+    EXPECT_FALSE(manager.RegisterUrl(blob).empty());
+  }
 }
 
 }  // namespace blink
