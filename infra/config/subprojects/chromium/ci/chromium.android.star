@@ -4143,6 +4143,7 @@ ci.builder(
                     "--emulator-debug-tags=all",
                     "--enable-leak-checks",
                 ],
+                enable_rts_filtering = True,
                 swarming = targets.swarming(
                     shards = 47,
                 ),
