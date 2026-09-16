@@ -477,6 +477,22 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     public boolean takeFocus(boolean reverse) {
         if (mActivity == null) return false;
         if (reverse) {
+            // The tab sharing toolbar is the bottommost top control, sitting directly above the
+            // web contents, so reverse traversal must land there before continuing up to the
+            // browser toolbar. FOCUS_BACKWARD makes the container walk its descendants in reverse
+            // order, so focus lands on its last focusable item. The container is absent when the
+            // feature is disabled, and hidden when no sharing session is active in this window;
+            // in both cases we fall through to the toolbar buttons below.
+            View tabSharingToolbar = mActivity.findViewById(R.id.tab_sharing_toolbar_container);
+            if (tabSharingToolbar != null
+                    && tabSharingToolbar.isShown()
+                    && tabSharingToolbar.requestFocus(View.FOCUS_BACKWARD)) {
+                return true;
+            }
+
+            // TODO(crbug.com/561238564): The bookmark bar is also a focusable top control below
+            // the browser toolbar and is skipped by reverse traversal for the same reason. It
+            // needs equivalent handling here.
             View menuButton = mActivity.findViewById(R.id.menu_button);
             if (menuButton != null && menuButton.isShown()) {
                 return menuButton.requestFocus(View.FOCUS_BACKWARD);
