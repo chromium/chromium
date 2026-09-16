@@ -195,8 +195,12 @@ void UrlLoader::DidReceiveResponse(const blink::WebURLResponse& response) {
   // Modeled on `content::DataFromWebURLResponse()`.
   response_.status_code = response.HttpStatusCode();
 
-  HeadersToString headers_to_string(response_.headers);
-  response.VisitHttpHeaderFields(&headers_to_string);
+  // `headers_to_string` holds a `raw_ref` to `response_.headers`. Destroy it
+  // before running `open_callback_`, which may synchronously destroy `this`.
+  {
+    HeadersToString headers_to_string(response_.headers);
+    response.VisitHttpHeaderFields(&headers_to_string);
+  }
 
   state_ = LoadingState::kStreamingData;
   std::move(open_callback_).Run(Result::kSuccess);

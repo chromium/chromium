@@ -321,6 +321,18 @@ TEST_F(UrlLoaderTest, DidReceiveResponseWithHeaders) {
                              }));
 }
 
+TEST_F(UrlLoaderTest, DidReceiveResponseDestroysLoader) {
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
+  EXPECT_CALL(mock_open_callback_, Run(Result::kSuccess)).WillOnce([&]() {
+    loader_.reset();
+  });
+
+  blink::WebURLResponse response;
+  response.AddHttpHeaderField("Content-Type", "text/plain");
+  loader_->DidReceiveResponse(response);
+  EXPECT_FALSE(loader_);
+}
+
 TEST_F(UrlLoaderTest, DidReceiveData) {
   char buffer[kFakeData.size()] = {};
   loader_->Open(UrlRequest(), mock_open_callback_.Get());
