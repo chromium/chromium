@@ -95,10 +95,9 @@ class V5GetHashProtocolManager : public KeyedService {
   // of threat types.
   // `callback` is the callback that will be run with the threat type and threat
   // metadata once the check completes.
-  virtual void GetFullHashes(
-      const std::map<FullHashStr, std::vector<SBThreatType>>&
-          full_hash_to_threat_types,
-      FullHashCallback callback);
+  virtual void GetFullHashes(std::map<FullHashStr, std::vector<SBThreatType>>
+                                 full_hash_to_threat_types,
+                             FullHashCallback callback);
 
   // KeyedService:
   void Shutdown() override;

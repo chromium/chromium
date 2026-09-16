@@ -148,8 +148,7 @@ void V5GetHashProtocolManager::Shutdown() {
 }
 
 void V5GetHashProtocolManager::GetFullHashes(
-    const std::map<FullHashStr, std::vector<SBThreatType>>&
-        full_hash_to_threat_types,
+    std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types,
     FullHashCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!full_hash_to_threat_types.empty());
@@ -296,11 +295,12 @@ void V5GetHashProtocolManager::GetFullHashes(
   base::TimeTicks request_start_time = base::TimeTicks::Now();
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(
-          &V5GetHashProtocolManager::OnURLLoaderComplete,
-          weak_factory_.GetWeakPtr(), loader, full_hash_to_threat_types,
-          std::move(hash_prefixes_to_request), std::move(cached_full_hashes),
-          std::move(callback), request_start_time));
+      base::BindOnce(&V5GetHashProtocolManager::OnURLLoaderComplete,
+                     weak_factory_.GetWeakPtr(), loader,
+                     std::move(full_hash_to_threat_types),
+                     std::move(hash_prefixes_to_request),
+                     std::move(cached_full_hashes), std::move(callback),
+                     request_start_time));
 
   pending_loaders_.insert(std::move(owned_loader));
 }

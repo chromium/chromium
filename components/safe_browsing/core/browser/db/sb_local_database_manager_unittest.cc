@@ -145,10 +145,10 @@ class FakeV5GetHashProtocolManager : public V5GetHashProtocolManager {
 
   ~FakeV5GetHashProtocolManager() override = default;
 
-  void GetFullHashes(const std::map<FullHashStr, std::vector<SBThreatType>>&
+  void GetFullHashes(std::map<FullHashStr, std::vector<SBThreatType>>
                          full_hash_to_threat_types,
                      FullHashCallback callback) override {
-    last_full_hash_to_threat_types_ = full_hash_to_threat_types;
+    last_full_hash_to_threat_types_ = std::move(full_hash_to_threat_types);
     if (hold_callback_) {
       held_callback_ = std::move(callback);
       return;

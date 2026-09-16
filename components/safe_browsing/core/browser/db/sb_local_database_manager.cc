@@ -1259,7 +1259,6 @@ void SBLocalDatabaseManager::PerformFullHashCheck(
       return;
     }
 
-    // TODO(crbug.com/362791941): Can we eliminate copies?
     std::map<FullHashStr, std::vector<SBThreatType>> full_hash_to_threat_types;
     for (const auto& [full_hash, store_and_prefixes] :
          check->full_hash_to_store_and_hash_prefixes) {
@@ -1269,7 +1268,7 @@ void SBLocalDatabaseManager::PerformFullHashCheck(
           });
     }
     v5_get_hash_protocol_manager->GetFullHashes(
-        full_hash_to_threat_types,
+        std::move(full_hash_to_threat_types),
         // Wrap with WrapCallbackWithDefaultInvokeIfNotRun to ensure
         // OnFullHashResponseV5 runs if V5GetHashProtocolManager is destroyed,
         // which ensure the caller gets a response and removes the check from
