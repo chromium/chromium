@@ -365,13 +365,15 @@ void SessionAccessor::CreateInternal(
           base::FeatureList::IsEnabled(
               on_device_model::features::kOnDeviceModelSpeculativeDecoding) &&
           (params->top_k <= 1 || params->temperature == 0.0f),
+      .allow_speculative_decoding = base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelSpeculativeDecoding),
   };
   VLOG(1) << __func__ << " starting session with: "
           << "max_tokens=" << descriptor.max_tokens << ", "
           << "top_k=" << descriptor.top_k << ", "
           << "temperature=" << descriptor.temperature << ", "
-          << "enable_speculative_decoding="
-          << descriptor.enable_speculative_decoding << ", "
+          << "allow_speculative_decoding="
+          << descriptor.allow_speculative_decoding << ", "
           << "enable_image_input=" << descriptor.enable_image_input << ", "
           << "enable_audio_input=" << descriptor.enable_audio_input;
   ChromeMLModelData data;

@@ -181,7 +181,7 @@ struct FakeSessionInstance {
   bool enable_audio_input;
   uint32_t top_k;
   float temperature;
-  bool enable_speculative_decoding = false;
+  bool allow_speculative_decoding = false;
   // Whether tool declarations have been appended in a system prompt.
   bool has_tool_declarations = false;
   // Whether tool calls have been emitted and tool responses are expected.
@@ -216,8 +216,8 @@ ChromeMLSession CreateSession(ChromeMLModel model,
     instance->enable_audio_input = descriptor->enable_audio_input;
     instance->top_k = descriptor->top_k;
     instance->temperature = descriptor->temperature;
-    instance->enable_speculative_decoding =
-        descriptor->enable_speculative_decoding;
+    instance->allow_speculative_decoding =
+        descriptor->allow_speculative_decoding;
     if (descriptor->model_data) {
       instance->adaptation_file_id = descriptor->model_data->file_id;
       if (model_instance->backend_type == ml::ModelBackendType::kGpuBackend) {
@@ -246,7 +246,7 @@ ChromeMLSession CloneSession(ChromeMLSession session) {
       .enable_audio_input = instance->enable_audio_input,
       .top_k = instance->top_k,
       .temperature = instance->temperature,
-      .enable_speculative_decoding = instance->enable_speculative_decoding,
+      .allow_speculative_decoding = instance->allow_speculative_decoding,
       .has_tool_declarations = instance->has_tool_declarations,
       .awaiting_tool_responses = instance->awaiting_tool_responses,
   });
@@ -356,6 +356,10 @@ bool SessionGenerate(ChromeMLSession session,
     OutputChunk(base::StrCat(
         {"TopK: ", base::NumberToString(instance->top_k),
          ", Temp: ", base::NumberToString(instance->temperature)}));
+  }
+
+  if (instance->allow_speculative_decoding) {
+    OutputChunk("SpeculativeDecodingAllowed");
   }
 
   if (!instance->context.empty()) {

@@ -20,6 +20,7 @@
 #include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/ml/gpu_blocklist.h"
 #include "services/on_device_model/on_device_model_mojom_impl.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
@@ -649,6 +650,36 @@ TEST_F(OnDeviceModelServiceTest, ClampedSamplingParams) {
 
     EXPECT_THAT(response.responses(), ElementsAre("TopK: 128, Temp: 0.5"));
   }
+}
+
+TEST_F(OnDeviceModelServiceTest, SpeculativeDecodingDisabledByDefault) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre());
+}
+
+TEST_F(OnDeviceModelServiceTest, SpeculativeDecodingEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kOnDeviceModelSpeculativeDecoding);
+
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+
+  session->Generate(mojom::GenerateOptions::New(), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre("SpeculativeDecodingAllowed"));
 }
 
 TEST_F(OnDeviceModelServiceTest, CloneContextAndContinue) {
