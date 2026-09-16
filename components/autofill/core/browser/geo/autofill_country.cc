@@ -19,6 +19,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
@@ -57,6 +58,10 @@ constexpr auto kRequiredFieldMapping =
           RequiredFieldsForAddressImport::ADDRESS_REQUIRES_ZIP}});
 
 }  // namespace
+
+AutofillCountry::AutofillCountry(std::u16string_view country_code,
+                                 std::optional<std::string_view> locale)
+    : AutofillCountry(base::UTF16ToUTF8(country_code), std::move(locale)) {}
 
 AutofillCountry::AutofillCountry(std::string_view country_code,
                                  std::optional<std::string_view> locale) {
