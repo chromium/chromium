@@ -603,7 +603,7 @@ void DevToolsSession::DispatchProtocolResponseOrNotification(
     }
     return;
   }
-  client->DispatchProtocolMessage(agent_host, message->data);
+  client->DispatchProtocolMessage(agent_host, message_span);
 }
 
 void DevToolsSession::DispatchProtocolResponse(
