@@ -36,8 +36,8 @@ public class StartupController {
         /** Wait until it's possible to access Android resources defined in the Chromium APK. */
         void waitForJavaResourcesSetup();
 
-        /** Returns whether to use native sandboxed services. */
-        boolean shouldForceNativeSandboxedServices();
+        /** Configures ChildProcessCreationParams and initializes ChildProcessLauncherHelper. */
+        void configureChildProcessLauncher();
 
         // TODO(abhijithnair): Rethink whether `getDrawFnFunctionTable` and `getDrawSWFunctionTable`
         // are the right interface. See

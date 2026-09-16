@@ -40,7 +40,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.content_public.browser.ChildProcessCreationParams;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.ResourceBundle;
@@ -97,15 +96,7 @@ public final class StartupTasks {
         // NOTE: Finished writing Java resources. From this point on, it's safe
         // to use them.
 
-        ChildProcessCreationParams.set(
-                AwBrowserProcess.getWebViewPackageName(),
-                AwBrowserProcess.getWebViewPackageName(),
-                /* isExternalSandboxedService= */ true,
-                LibraryProcessType.PROCESS_WEBVIEW_CHILD,
-                /* bindToCallerCheck= */ true,
-                /* ignoreVisibilityForImportance= */ true,
-                delegate.shouldForceNativeSandboxedServices());
-        ChildProcessLauncherHelper.initialize();
+        delegate.configureChildProcessLauncher();
 
         // finishInit() must precede native initialization so
         // the seed is available when AwFeatureListCreator::SetUpFieldTrials()

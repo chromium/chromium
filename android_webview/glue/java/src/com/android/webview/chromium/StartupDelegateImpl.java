@@ -10,6 +10,7 @@ import android.os.Build;
 import android.webkit.SelectionActionMenuClient;
 import android.webkit.WebViewDelegate;
 
+import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.StartupController;
@@ -21,11 +22,14 @@ import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.SelectionActionMenuClientWrapper;
+import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.ChildProcessCreationParams;
+import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.ExecutionException;
@@ -138,7 +142,20 @@ class StartupDelegateImpl implements StartupController.Delegate {
     }
 
     @Override
-    public boolean shouldForceNativeSandboxedServices() {
+    public void configureChildProcessLauncher() {
+        final String webViewPackageName = AwBrowserProcess.getWebViewPackageName();
+        ChildProcessCreationParams.set(
+                webViewPackageName,
+                webViewPackageName,
+                /* isExternalSandboxedService= */ true,
+                LibraryProcessType.PROCESS_WEBVIEW_CHILD,
+                /* bindToCallerCheck= */ true,
+                /* ignoreVisibilityForImportance= */ true,
+                shouldForceNativeSandboxedServices());
+        ChildProcessLauncherHelper.initialize();
+    }
+
+    private boolean shouldForceNativeSandboxedServices() {
         AconfigFlaggedApiDelegate aconfigDelegate = AconfigFlaggedApiDelegate.getInstance();
         return aconfigDelegate != null
                 && aconfigDelegate.isNativeWebViewZygoteEnabled(mWebViewDelegate);
