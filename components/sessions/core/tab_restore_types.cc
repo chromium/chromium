@@ -5,6 +5,7 @@
 #include "components/sessions/core/tab_restore_types.h"
 
 #include "base/trace_event/memory_usage_estimator.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace sessions::tab_restore {
 
@@ -49,7 +50,8 @@ std::unique_ptr<Split> Split::FromTab(const Tab& tab) {
   return split;
 }
 
-Window::Window() : Entry(WINDOW) {}
+Window::Window()
+    : Entry(WINDOW), show_state(ui::mojom::WindowShowState::kDefault) {}
 Window::~Window() = default;
 
 size_t Window::EstimateMemoryUsage() const {
