@@ -5974,14 +5974,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "glic-selection-prompt",
-    "owners": [
-      "gklassen@chromium.org",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "glic-settings-a11y-context-fix",
     "owners": [ "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 160

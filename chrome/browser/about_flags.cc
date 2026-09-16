@@ -3890,12 +3890,6 @@ const FeatureEntry::FeatureParam kAiOverlayDialog_Mes[] = {{"use_mes", "true"}};
 const FeatureEntry::FeatureVariation kAiOverlayDialogVariations[] = {
     {"with MES", kAiOverlayDialog_Mes, nullptr}};
 
-const FeatureEntry::Choice kGlicSelectionPromptChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"Enabled", switches::kEnableFeatures,
-     "GlicSelectionPrompt:updates_only/false,GlicShakeTrigger,GlicSelectionOverlayPrompt,GlicSelectionSmallChip"}
-    };
-
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};
 const FeatureEntry::FeatureVariation kAutofillShowTypePredictionsVariations[] =
@@ -11219,10 +11213,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicGeminiEnterpriseConsentEnabledDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicGeminiEnterpriseConsentEnabled)},
-
-    {"glic-selection-prompt", flag_descriptions::kGlicSelectionPromptName,
-     flag_descriptions::kGlicSelectionPromptDescription, kOsDesktop,
-     MULTI_VALUE_TYPE(kGlicSelectionPromptChoices)},
 
     {"glic-disable-actor-safety-checks",
      flag_descriptions::kGlicDisableActorSafetyChecksName,

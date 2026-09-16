@@ -8775,10 +8775,6 @@ inline constexpr char kGlicAndroidOffscreenRenderingDescription[] =
     "Android so that it keeps executing JavaScript, servicing Mojo IPC and "
     "scheduling frames while Chrome is not in the foreground.";
 
-inline constexpr char kGlicSelectionPromptName[] = "Glic Selection Prompt";
-inline constexpr char kGlicSelectionPromptDescription[] =
-    "Enables the Glic prompt suggestion when text is selected.";
-
 inline constexpr char kGlicShareImageName[] = "Glic Share Image";
 inline constexpr char kGlicShareImageDescription[] =
     "Enables the Create Image with Gemini context menu item";
