@@ -84,13 +84,12 @@ class TestRenderingContext2D final
             CanvasContextCreationAttributesCore(),
             scheduler::GetSingleThreadTaskRunnerForTesting()),
         execution_context_(scope.GetExecutionContext()) {
-    recorder_ = std::make_unique<MemoryManagedPaintRecorder>(
-        gfx::Size(Width(), Height()), this);
+    CreateRecorder(gfx::Size(Width(), Height()));
   }
   ~TestRenderingContext2D() override = default;
 
   // Returns the content of the paint recorder, leaving it empty.
-  cc::PaintRecord FlushRecorder() { return recorder_->ReleaseMainRecording(); }
+  cc::PaintRecord FlushRecorder() { return Recorder()->ReleaseMainRecording(); }
 
   bool OriginClean() const override { return true; }
   void SetOriginTainted() override {}
@@ -113,12 +112,12 @@ class TestRenderingContext2D final
       return nullptr;
     }
 
-    return &recorder_->getRecordingCanvas();
+    return &Recorder()->getRecordingCanvas();
   }
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
   using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
   const MemoryManagedPaintCanvas* GetPaintCanvas() const override {
-    return &recorder_->getRecordingCanvas();
+    return &Recorder()->getRecordingCanvas();
   }
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) override {}
@@ -154,7 +153,7 @@ class TestRenderingContext2D final
   }
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override {
-    return recorder_->ReleaseMainRecording();
+    return Recorder()->ReleaseMainRecording();
   }
 
   bool ResolveFont(const String& new_font) override {

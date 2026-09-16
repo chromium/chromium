@@ -515,21 +515,15 @@ const MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetPaintCanvas()
 
 std::unique_ptr<MemoryManagedPaintRecorder>
 CanvasRenderingContext2D::ReleaseRecorder() {
-  if (recorder_) {
-    recorder_->SetClient(nullptr);
-  }
-  return std::move(recorder_);
+  return BaseRenderingContext2D::ReleaseRecorder();
 }
 
 void CanvasRenderingContext2D::SetRecorder(
     std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
-  if (recorder) {
-    recorder->SetClient(this);
-  }
-  recorder_ = std::move(recorder);
-  if (recorder_ && shared_image_provider_ &&
+  BaseRenderingContext2D::SetRecorder(std::move(recorder));
+  if (Recorder() && shared_image_provider_ &&
       shared_image_provider_->IsGraphite()) {
-    recorder_->DisableLineDrawingAsPaths();
+    Recorder()->DisableLineDrawingAsPaths();
   }
 }
 
@@ -589,7 +583,7 @@ void CanvasRenderingContext2D::DidFlushRecording(
 void CanvasRenderingContext2D::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
   if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
-    if (recorder_->getRecordingCanvas().IsCachingImage(content_id)) {
+    if (Recorder()->getRecordingCanvas().IsCachingImage(content_id)) {
       FlushCanvas(FlushReason::kOther);
     }
     shared_image_provider_->OnFlushForImage(content_id);
@@ -1222,10 +1216,9 @@ void CanvasRenderingContext2D::CreateProvider() {
         canvas());
   }
   if (shared_image_provider_ || bitmap_provider_) {
-    recorder_ =
-        std::make_unique<MemoryManagedPaintRecorder>(canvas()->Size(), this);
+    CreateRecorder(canvas()->Size());
     if (shared_image_provider_ && shared_image_provider_->IsGraphite()) {
-      recorder_->DisableLineDrawingAsPaths();
+      Recorder()->DisableLineDrawingAsPaths();
     }
     UpdateRecordingLimits(shared_image_provider_ &&
                           shared_image_provider_->IsGraphite());
@@ -1333,7 +1326,7 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
 void CanvasRenderingContext2D::ResetResourceProvider() {
   auto old_shared = std::move(shared_image_provider_);
   auto old_bitmap = std::move(bitmap_provider_);
-  recorder_.reset();
+  ResetRecorder();
   last_recording_ = std::nullopt;
   if (canvas()) {
     canvas()->UpdateMemoryUsage();
@@ -1468,9 +1461,9 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
   ResetResourceProvider();
   shared_image_provider_ = std::move(provider);
   if (shared_image_provider_) {
-    recorder_ = std::make_unique<MemoryManagedPaintRecorder>(size, this);
+    CreateRecorder(size);
     if (shared_image_provider_->IsGraphite()) {
-      recorder_->DisableLineDrawingAsPaths();
+      Recorder()->DisableLineDrawingAsPaths();
     }
     UpdateRecordingLimits(shared_image_provider_->IsGraphite());
   }
@@ -1485,7 +1478,7 @@ void CanvasRenderingContext2D::SetBitmapProviderForTesting(
   ResetResourceProvider();
   bitmap_provider_ = std::move(provider);
   if (bitmap_provider_) {
-    recorder_ = std::make_unique<MemoryManagedPaintRecorder>(size, this);
+    CreateRecorder(size);
     UpdateRecordingLimits(/*is_graphite=*/false);
   }
 }

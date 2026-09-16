@@ -299,6 +299,11 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void FlushIfRecordingLimitExceeded();
 
+  void CreateRecorder(const gfx::Size& size);
+  void ResetRecorder();
+  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
+  void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);
+
   explicit BaseRenderingContext2D(
       CanvasRenderingContextHost* canvas,
       const CanvasContextCreationAttributesCore& attrs,
@@ -344,7 +349,6 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   bool context_restorable_{true};
   Canvas2DColorParams color_params_;
-  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 
  private:
   virtual bool IsHibernating() const { return false; }
@@ -366,6 +370,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void WillUseCurrentFont() const;
 
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   bool clear_frame_ = true;
   size_t max_recorded_op_bytes_ = 0;
   size_t max_pinned_image_bytes_ = 0;
