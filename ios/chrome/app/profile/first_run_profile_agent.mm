@@ -408,6 +408,9 @@ const char kGuidedTourStepDidFinishHistogram[] = "IOS.GuidedTour.DidFinishStep";
 // Helper method that performs actions sequentially after the FRE screens are
 // finished presenting.
 - (void)performNextPostFirstRunAction {
+  if (_postActionsCompleted) {
+    return;
+  }
   if (!_postActionsProvider) {
     PrefService* prefService = [self profilePrefs];
     _postActionsProvider =

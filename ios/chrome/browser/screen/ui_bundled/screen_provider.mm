@@ -21,8 +21,9 @@
 
 - (ScreenType)nextScreenType {
   DCHECK(self.screens);
-  DCHECK(self.index == -1 ||
-         ![self.screens[self.index] isEqual:@(kStepsCompleted)]);
+  if (self.index + 1 >= static_cast<NSInteger>(self.screens.count)) {
+    return kStepsCompleted;
+  }
   return static_cast<ScreenType>([self.screens[++self.index] integerValue]);
 }
 
