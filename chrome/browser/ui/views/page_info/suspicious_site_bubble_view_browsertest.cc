@@ -53,6 +53,9 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBubbleViewBrowserTest,
       PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
   ASSERT_NE(bubble, nullptr);
   EXPECT_TRUE(bubble->GetWidget()->IsVisible());
+
+  EXPECT_TRUE(web_contents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
 }
 
 IN_PROC_BROWSER_TEST_F(SuspiciousSiteBubbleViewBrowserTest, MarkAsSafeAction) {
@@ -69,6 +72,8 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBubbleViewBrowserTest, MarkAsSafeAction) {
   auto* bubble = static_cast<SuspiciousSiteBubbleView*>(
       PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
   ASSERT_NE(bubble, nullptr);
+  EXPECT_TRUE(web_contents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
 
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
   views::test::ButtonTestApi(bubble->mark_as_safe_button_for_testing())
@@ -81,6 +86,8 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBubbleViewBrowserTest, MarkAsSafeAction) {
   EXPECT_TRUE(allowlist.IsSiteAllowedForHost("a.test"));
   EXPECT_EQ(PageInfoBubbleViewBase::GetShownBubbleType(),
             PageInfoBubbleViewBase::BUBBLE_NONE);
+  EXPECT_FALSE(web_contents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_FALSE(browser()->GetTabStripModel()->IsTabBlocked(0));
 }
 
 IN_PROC_BROWSER_TEST_F(SuspiciousSiteBubbleViewBrowserTest,
@@ -97,6 +104,8 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBubbleViewBrowserTest,
   auto* bubble = static_cast<SuspiciousSiteBubbleView*>(
       PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
   ASSERT_NE(bubble, nullptr);
+  EXPECT_TRUE(web_contents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
 
   content::TestNavigationObserver nav_observer(web_contents());
   views::test::ButtonTestApi(bubble->back_to_safety_button_for_testing())
@@ -107,4 +116,6 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteBubbleViewBrowserTest,
   nav_observer.Wait();
 
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), first_url);
+  EXPECT_FALSE(web_contents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_FALSE(browser()->GetTabStripModel()->IsTabBlocked(0));
 }

@@ -5,17 +5,23 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_SUSPICIOUS_SITE_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_SUSPICIOUS_SITE_BUBBLE_VIEW_H_
 
+#include <memory>
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-namespace content {
-class WebContents;
-}  // namespace content
+class BrowserWindowInterface;
 
 namespace gfx {
 class Rect;
 }  // namespace gfx
+
+namespace tabs {
+class ScopedTabModalUI;
+}  // namespace tabs
 
 namespace views {
 class MdTextButton;
@@ -39,6 +45,9 @@ class SuspiciousSiteBubbleView : public PageInfoBubbleViewBase {
 
   ~SuspiciousSiteBubbleView() override;
 
+  // views::BubbleDialogDelegateView:
+  void OnWidgetDestroying(views::Widget* widget) override;
+
   views::MdTextButton* back_to_safety_button_for_testing() {
     return back_to_safety_button_;
   }
@@ -52,6 +61,10 @@ class SuspiciousSiteBubbleView : public PageInfoBubbleViewBase {
  private:
   friend class SuspiciousSiteBubbleViewTest;
 
+  void BlockWebContents();
+  void UnblockWebContents();
+  BrowserWindowInterface* GetBrowser() const;
+
   void OnBackToSafetyClicked();
   void OnMarkAsSafeClicked();
   void OpenHelpCenter();
@@ -59,9 +72,12 @@ class SuspiciousSiteBubbleView : public PageInfoBubbleViewBase {
   raw_ptr<views::MdTextButton> back_to_safety_button_ = nullptr;
   raw_ptr<views::MdTextButton> mark_as_safe_button_ = nullptr;
   raw_ptr<views::StyledLabel> description_label_ = nullptr;
-};
 
-class BrowserWindowInterface;
+  bool is_web_contents_blocked_ = false;
+  std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
+      scoped_ignore_input_events_;
+};
 
 // Displays the suspicious site warning bubble dialog anchored to the location
 // bar.

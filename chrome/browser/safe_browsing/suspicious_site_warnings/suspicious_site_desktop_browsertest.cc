@@ -110,6 +110,9 @@ class SuspiciousSiteDesktopBrowserTest : public InProcessBrowserTest {
       ASSERT_TRUE(bubble->GetWidget());
       EXPECT_TRUE(bubble->GetWidget()->IsVisible());
 
+      EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+      EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
+
       auto security_state = chrome_security_state::GetVisibleSecurityState(
           GetActiveWebContents());
       ASSERT_TRUE(security_state);
@@ -161,6 +164,8 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest, MarkAsSafeAllowsHost) {
   ASSERT_TRUE(bubble_view);
   ASSERT_TRUE(bubble_view->GetWidget());
   EXPECT_TRUE(bubble_view->GetWidget()->IsVisible());
+  EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
 
   views::test::ButtonTestApi(bubble_view->mark_as_safe_button_for_testing())
       .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
@@ -175,6 +180,8 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest, MarkAsSafeAllowsHost) {
 
   EXPECT_FALSE(safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
       GetActiveWebContents()));
+  EXPECT_FALSE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_FALSE(browser()->GetTabStripModel()->IsTabBlocked(0));
 
   auto security_state =
       chrome_security_state::GetVisibleSecurityState(GetActiveWebContents());
@@ -204,6 +211,8 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   ASSERT_TRUE(bubble_view);
   ASSERT_TRUE(bubble_view->GetWidget());
   EXPECT_TRUE(bubble_view->GetWidget()->IsVisible());
+  EXPECT_TRUE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_TRUE(browser()->GetTabStripModel()->IsTabBlocked(0));
 
   views::test::ButtonTestApi(bubble_view->back_to_safety_button_for_testing())
       .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
@@ -213,6 +222,8 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
 
   EXPECT_FALSE(safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
       GetActiveWebContents()));
+  EXPECT_FALSE(GetActiveWebContents()->ShouldIgnoreInputEventsForTesting());
+  EXPECT_FALSE(browser()->GetTabStripModel()->IsTabBlocked(0));
 }
 
 IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,

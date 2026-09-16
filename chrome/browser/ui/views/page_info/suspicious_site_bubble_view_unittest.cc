@@ -100,6 +100,18 @@ TEST_F(SuspiciousSiteBubbleViewTest, BubbleTypeAndElements) {
   EXPECT_NE(bubble_->back_to_safety_button_for_testing(), nullptr);
   EXPECT_NE(bubble_->mark_as_safe_button_for_testing(), nullptr);
   EXPECT_NE(bubble_->description_label_for_testing(), nullptr);
+  EXPECT_TRUE(
+      web_contents_helper_.web_contents()->ShouldIgnoreInputEventsForTesting());
+}
+
+TEST_F(SuspiciousSiteBubbleViewTest, WebContentsInputIgnoredWhileBubbleOpen) {
+  EXPECT_TRUE(
+      web_contents_helper_.web_contents()->ShouldIgnoreInputEventsForTesting());
+  views::Widget* widget = bubble_->GetWidget();
+  bubble_ = nullptr;
+  widget->CloseNow();
+  EXPECT_FALSE(
+      web_contents_helper_.web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
 TEST_F(SuspiciousSiteBubbleViewTest, MarkAsSafeAllowsHost) {
@@ -116,6 +128,8 @@ TEST_F(SuspiciousSiteBubbleViewTest, MarkAsSafeAllowsHost) {
 
   EXPECT_TRUE(allowlist.IsSiteAllowedForHost("suspicious.example.com"));
   EXPECT_TRUE(bubble_->GetWidget()->IsClosed());
+  EXPECT_FALSE(
+      web_contents_helper_.web_contents()->ShouldIgnoreInputEventsForTesting());
 }
 
 TEST_F(SuspiciousSiteBubbleViewTest, BackToSafetyClick) {
@@ -128,4 +142,6 @@ TEST_F(SuspiciousSiteBubbleViewTest, BackToSafetyClick) {
   EXPECT_TRUE(bubble_->GetWidget()->IsClosed());
   EXPECT_EQ(web_contents_helper_.web_contents()->GetVisibleURL(),
             GURL(chrome::kChromeUINewTabURL));
+  EXPECT_FALSE(
+      web_contents_helper_.web_contents()->ShouldIgnoreInputEventsForTesting());
 }
