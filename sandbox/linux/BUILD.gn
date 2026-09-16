@@ -262,6 +262,10 @@ component("seccomp_bpf") {
       "seccomp-bpf-helpers/baseline_policy_android.h",
     ]
   }
+
+  # Clang warngs that Syscall::Call() cannot get -fstack-clash-protection
+  # since the inline asm clobbers the stack pointer. This is fine.
+  cflags = [ "-Wno-stack-protector" ]
 }
 
 if (is_android) {
