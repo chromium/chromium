@@ -1388,7 +1388,7 @@ public class TabPersistentStoreUnitTest {
         when(realizedTab.getId()).thenReturn(101);
         when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
         BackgroundPoolTab backgroundPoolTab = mock(BackgroundPoolTab.class);
-        when(mBackgroundTabPool.loadTab(101)).thenReturn(backgroundPoolTab);
+        when(mBackgroundTabPool.loadTabByPlaceholderId(101)).thenReturn(backgroundPoolTab);
         when(backgroundPoolTab.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(realizedTab);
         when(mNormalTabModel.indexOf(realizedTab)).thenReturn(0);
 
@@ -1409,7 +1409,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTab(details, /* tabState= */ null, /* setAsActive= */ false);
 
         verify(mBackgroundTabPool).getAllPlaceholderTabIds();
-        verify(mBackgroundTabPool).loadTab(101);
+        verify(mBackgroundTabPool).loadTabByPlaceholderId(101);
         verify(backgroundPoolTab).attachTab(eq(mNormalTabModel), eq(0));
         verify(mNormalTabCreator, never()).createNewTab(any(), anyInt(), any(), anyInt());
     }
@@ -1443,7 +1443,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTab(details, null, /* setAsActive= */ false);
 
         verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
-        verify(mBackgroundTabPool, never()).loadTab(anyInt());
+        verify(mBackgroundTabPool, never()).loadTabByPlaceholderId(anyInt());
         verify(mNormalTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
     }
 
@@ -1457,7 +1457,7 @@ public class TabPersistentStoreUnitTest {
         Tab restoredTab = mock(Tab.class);
         when(restoredTab.getId()).thenReturn(101);
         when(backgroundPoolTab.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(restoredTab);
-        when(mBackgroundTabPool.loadTab(101)).thenReturn(backgroundPoolTab);
+        when(mBackgroundTabPool.loadTabByPlaceholderId(101)).thenReturn(backgroundPoolTab);
         when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
 
         mPersistentStore =
@@ -1477,11 +1477,11 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTab(details, null, /* setAsActive= */ false);
 
         // First call restores via pool.
-        verify(mBackgroundTabPool, times(1)).loadTab(101);
+        verify(mBackgroundTabPool, times(1)).loadTabByPlaceholderId(101);
 
         // Second call with same tab ID should be ignored because of mSeenTabIds.
         mPersistentStore.restoreTab(details, null, /* setAsActive= */ false);
-        verify(mBackgroundTabPool, times(1)).loadTab(101);
+        verify(mBackgroundTabPool, times(1)).loadTabByPlaceholderId(101);
         verify(mNormalTabCreator, never()).createNewTab(any(), anyInt(), any(), anyInt());
     }
 
@@ -1515,7 +1515,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTab(details, /* tabState= */ null, /* setAsActive= */ false);
 
         verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
-        verify(mBackgroundTabPool, never()).loadTab(anyInt());
+        verify(mBackgroundTabPool, never()).loadTabByPlaceholderId(anyInt());
         verify(mNormalTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
     }
 
@@ -1548,7 +1548,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTab(details, /* tabState= */ null, /* setAsActive= */ false);
 
         verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
-        verify(mBackgroundTabPool, never()).loadTab(anyInt());
+        verify(mBackgroundTabPool, never()).loadTabByPlaceholderId(anyInt());
         verify(mNormalTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
     }
 
@@ -1582,7 +1582,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTabs(/* setActiveTab= */ true);
         mPersistentStore.restoreTab(details, tabState, /* setAsActive= */ false);
 
-        verify(mBackgroundTabPool, never()).loadTab(anyInt());
+        verify(mBackgroundTabPool, never()).loadTabByPlaceholderId(anyInt());
         verify(mIncognitoTabCreator).createFrozenTab(eq(tabState), eq(101), eq(0));
     }
 
@@ -1591,7 +1591,7 @@ public class TabPersistentStoreUnitTest {
     public void testRestoreTab_poolLoadFailure_fallsBackToTabCreator() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(101));
-        when(mBackgroundTabPool.loadTab(101)).thenReturn(null);
+        when(mBackgroundTabPool.loadTabByPlaceholderId(101)).thenReturn(null);
 
         TabRestoreDetails details =
                 new TabRestoreDetails(
@@ -1621,7 +1621,7 @@ public class TabPersistentStoreUnitTest {
         mPersistentStore.restoreTab(details, tabState, /* setAsActive= */ false);
 
         verify(mBackgroundTabPool).getAllPlaceholderTabIds();
-        verify(mBackgroundTabPool).loadTab(101);
+        verify(mBackgroundTabPool).loadTabByPlaceholderId(101);
         verify(mNormalTabCreator).createFrozenTab(eq(tabState), eq(101), eq(0));
     }
 
