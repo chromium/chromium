@@ -50,6 +50,8 @@ class PrivateVerificationTokensService : public KeyedService {
    public:
     virtual void OnInitializationComplete() {}
     virtual void OnTokensStored() {}
+    virtual void OnTokensDeleted() {}
+    virtual void OnShutdown() {}
   };
 
   void AddObserver(Observer* observer);

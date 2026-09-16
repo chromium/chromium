@@ -136,6 +136,9 @@ void PrivateVerificationTokensService::Shutdown() {
     return;
   }
   is_shutting_down_ = true;
+  for (auto& observer : observers_) {
+    observer.OnShutdown();
+  }
   auto operations = std::move(pending_operations_);
   for (auto& operation : operations) {
     std::move(operation).Run();
@@ -281,8 +284,21 @@ void PrivateVerificationTokensService::DeleteTokens(
   }
 
   CHECK(store_);
-  store_->DeleteTokens(delete_begin, delete_end, std::move(issuers),
-                       std::move(callback));
+  store_->DeleteTokens(
+      delete_begin, delete_end, std::move(issuers),
+      base::BindOnce(
+          [](base::WeakPtr<PrivateVerificationTokensService> service,
+             base::OnceClosure callback) {
+            if (service) {
+              for (auto& observer : service->observers_) {
+                observer.OnTokensDeleted();
+              }
+            }
+            if (callback) {
+              std::move(callback).Run();
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void PrivateVerificationTokensService::DeleteTokensByFilter(
@@ -536,7 +552,20 @@ void PrivateVerificationTokensService::DeleteToken(int64_t token_id,
         weak_ptr_factory_.GetWeakPtr(), token_id, std::move(callback)));
     return;
   }
-  store_->DeleteToken(token_id, std::move(callback));
+  store_->DeleteToken(
+      token_id, base::BindOnce(
+                    [](base::WeakPtr<PrivateVerificationTokensService> service,
+                       base::OnceClosure callback) {
+                      if (service) {
+                        for (auto& observer : service->observers_) {
+                          observer.OnTokensDeleted();
+                        }
+                      }
+                      if (callback) {
+                        std::move(callback).Run();
+                      }
+                    },
+                    weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 bool PrivateVerificationTokensService::IsRegisteredRedeemer(
