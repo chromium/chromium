@@ -36,6 +36,7 @@ namespace content {
 class BrowserContext;
 class RenderFrameHost;
 class WebContents;
+struct PermissionResult;
 }  // namespace content
 
 namespace content_settings {
@@ -246,6 +247,15 @@ class PermissionsClient {
   virtual std::optional<GURL> GetEmbeddingOriginOverride(
       const GURL& requesting_origin,
       content::RenderFrameHost* render_frame_host);
+
+  // Allows embedders to override the permission result for a specific
+  // RenderFrameHost (e.g. for PrivilegedWebContents). `requesting_origin` is
+  // the origin making the request. Returns std::nullopt if no embedder
+  // override applies.
+  virtual std::optional<content::PermissionResult> GetPermissionResultOverride(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      ContentSettingsType permission);
 
   // Only verifies that WebUI is internal (chrome://) and trusted enough to skip
   // tab interface usage and use embedded permission prompt. Its identity is

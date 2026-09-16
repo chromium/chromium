@@ -119,6 +119,10 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   std::optional<GURL> GetEmbeddingOriginOverride(
       const GURL& requesting_origin,
       content::RenderFrameHost* render_frame_host) override;
+  std::optional<content::PermissionResult> GetPermissionResultOverride(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      ContentSettingsType permission) override;
 
   bool IsFromNewTabPage(content::WebContents* web_contents,
                         const GURL& requester,

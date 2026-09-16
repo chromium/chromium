@@ -11,6 +11,7 @@
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -163,6 +164,14 @@ std::optional<GURL> PermissionsClient::GetCanonicalOriginOverride(
 std::optional<GURL> PermissionsClient::GetEmbeddingOriginOverride(
     const GURL& requesting_origin,
     content::RenderFrameHost* render_frame_host) {
+  return std::nullopt;
+}
+
+std::optional<content::PermissionResult>
+PermissionsClient::GetPermissionResultOverride(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& requesting_origin,
+    ContentSettingsType permission) {
   return std::nullopt;
 }
 

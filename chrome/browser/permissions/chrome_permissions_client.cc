@@ -38,6 +38,7 @@
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
@@ -886,6 +887,37 @@ std::optional<GURL> ChromePermissionsClient::GetEmbeddingOriginOverride(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
 
   return std::nullopt;
+}
+
+std::optional<content::PermissionResult>
+ChromePermissionsClient::GetPermissionResultOverride(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& requesting_origin,
+    ContentSettingsType permission) {
+  if (!render_frame_host || url::Origin::Create(requesting_origin) !=
+                                render_frame_host->GetLastCommittedOrigin()) {
+    return std::nullopt;
+  }
+  auto override_result = pwc::PrivilegedWebContents::GetPermissionStatus(
+      render_frame_host, permission);
+  if (!override_result) {
+    return std::nullopt;
+  }
+  // Callers such as GeolocationServiceImpl::GetPermissionLevel and permission
+  // subscription handlers CHECK that `retrieved_permission_setting` is
+  // populated when status is GRANTED (e.g. GeolocationSetting when approximate
+  // geolocation is enabled).
+  if (override_result->status == blink::mojom::PermissionStatus::GRANTED &&
+      !override_result->retrieved_permission_setting.has_value()) {
+    const content_settings::PermissionSettingsInfo* info =
+        content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+            permission);
+    if (info) {
+      override_result->retrieved_permission_setting =
+          info->delegate().ToPermissionSetting(CONTENT_SETTING_ALLOW);
+    }
+  }
+  return override_result;
 }
 
 // Considers any `new tab page` or `new tab` origins as being from the new tab

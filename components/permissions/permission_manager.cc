@@ -70,6 +70,19 @@ PermissionSetting GetPermissionSettingForSubscription(
       NOTREACHED();
   }
 }
+
+// Returns an embedder-provided permission override if one applies to the given
+// `render_frame_host` and `requesting_origin` (e.g. for PrivilegedWebContents).
+std::optional<content::PermissionResult> GetPermissionResultOverride(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& requesting_origin,
+    ContentSettingsType permission) {
+  if (!render_frame_host) {
+    return std::nullopt;
+  }
+  return PermissionsClient::Get()->GetPermissionResultOverride(
+      render_frame_host, requesting_origin, permission);
+}
 }  // anonymous namespace
 
 class PermissionManager::PendingRequest {
@@ -270,6 +283,14 @@ void PermissionManager::RequestPermissionsInternal(
 
     auto response_callback = std::make_unique<PermissionResponseCallback>(
         weak_factory_.GetWeakPtr(), request_local_id, i);
+
+    if (auto override_result = GetPermissionResultOverride(
+            render_frame_host, request_description.requesting_origin,
+            permission)) {
+      response_callback->OnPermissionsRequestResponse(*override_result);
+      continue;
+    }
+
     PermissionContextBase* context = GetPermissionContext(permission);
     if (!context || PermissionUtil::IsPermissionBlockedInPartition(
                         permission, request_description.requesting_origin,
@@ -751,13 +772,19 @@ content::PermissionResult PermissionManager::GetPermissionStatusInternal(
     bool should_include_device_status) {
   DCHECK(!render_process_host || !render_frame_host);
 
+  auto content_settings_type =
+      PermissionUtil::PermissionTypeToContentSettingsType(
+          blink::PermissionDescriptorToPermissionType(permission_descriptor));
+
+  if (auto override_result = GetPermissionResultOverride(
+          render_frame_host, requesting_origin, content_settings_type)) {
+    return *override_result;
+  }
+
   // TODO(crbug.com/40218610): Move this to PermissionContextBase.
   content::RenderProcessHost* rph =
       render_frame_host ? render_frame_host->GetProcess() : render_process_host;
 
-  auto content_settings_type =
-      PermissionUtil::PermissionTypeToContentSettingsType(
-          blink::PermissionDescriptorToPermissionType(permission_descriptor));
   PermissionContextBase* context = GetPermissionContext(content_settings_type);
 
   if (!context || (rph && PermissionUtil::IsPermissionBlockedInPartition(
