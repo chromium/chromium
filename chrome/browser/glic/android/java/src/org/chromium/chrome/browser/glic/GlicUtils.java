@@ -4,17 +4,54 @@
 
 package org.chromium.chrome.browser.glic;
 
+import android.content.Context;
+
+import org.chromium.base.DeviceInfo;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Utility class for Glic related functions. */
 @NullMarked
 public class GlicUtils {
+    @Nullable private static Boolean sIsSidePanelFormFactorForTesting;
+
+    /**
+     * Returns whether the current device form factor should use the Glic side panel rather than the
+     * bottom sheet.
+     *
+     * <p>Desktop always uses the side panel. Tablets only use it when {@code GlicAndroidTablet} is
+     * enabled. Phones never use it.
+     *
+     * @param context An Android context used to determine the form factor. Must be an Activity, or
+     *     a context wrapping one, since only those are meaningfully associated with a display. See
+     *     {@link DeviceFormFactor#isNonMultiDisplayContextOnTablet(Context)}.
+     * @return True if the side panel should be used on this form factor.
+     */
+    public static boolean isSidePanelFormFactor(Context context) {
+        if (sIsSidePanelFormFactorForTesting != null) {
+            return sIsSidePanelFormFactorForTesting;
+        }
+        if (DeviceInfo.isDesktop()) {
+            return true;
+        }
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                && ChromeFeatureList.sGlicAndroidTablet.isEnabled();
+    }
+
+    /** Sets whether the Glic side panel form factor is supported for testing. */
+    public static void setIsSidePanelFormFactorForTesting(@Nullable Boolean isFormFactorSupported) {
+        sIsSidePanelFormFactorForTesting = isFormFactorSupported;
+        ResettersForTesting.register(() -> sIsSidePanelFormFactorForTesting = null);
+    }
+
     /**
      * Returns whether the Glic button is supported on the tab strip for the given profile.
      *

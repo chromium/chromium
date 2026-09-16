@@ -275,6 +275,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/glic/GlicTaskMenuCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonControllerTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicUiHelperUnitTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicUtilsUnitTest.java",
   ]
   deps = [
     ":common_java",
