@@ -38,12 +38,6 @@ namespace {
 constexpr std::string_view kNoticeInteractionsHistogram =
     "PersonalContext.AtMemory.NoticeInteractions";
 
-// TODO(crbug.com/556290278): Fix placeholder once the focused field ID is
-// plumbed.
-autofill::FieldGlobalId GetPlaceholderFieldId() {
-  return {autofill::LocalFrameToken(), autofill::FieldRendererId(1)};
-}
-
 }  // namespace
 
 @implementation AtMemorySearchMediator {
@@ -55,6 +49,8 @@ autofill::FieldGlobalId GetPlaceholderFieldId() {
   base::WeakPtr<web::WebState> _webState;
   // Service for managing the first-run notice state.
   raw_ptr<personal_context::PersonalContextFirstRunService> _firstRunService;
+  // Field ID that initiated AtMemory.
+  autofill::FieldGlobalId _fieldId;
 
   // Suggestions returned by AtMemoryManager.
   std::vector<autofill::Suggestion> _suggestions;
@@ -72,7 +68,8 @@ autofill::FieldGlobalId GetPlaceholderFieldId() {
             autofillManager:(autofill::BrowserAutofillManager*)autofillManager
                    webState:(web::WebState*)webState
             firstRunService:(personal_context::PersonalContextFirstRunService*)
-                                firstRunService {
+                                firstRunService
+                    fieldId:(autofill::FieldGlobalId)fieldId {
   self = [super init];
   if (self) {
     CHECK(atMemoryManager);
@@ -81,6 +78,7 @@ autofill::FieldGlobalId GetPlaceholderFieldId() {
     _autofillManager = autofillManager;
     _webState = webState ? webState->GetWeakPtr() : nullptr;
     _firstRunService = firstRunService;
+    _fieldId = fieldId;
 
     _noticeIsVisible =
         _firstRunService &&
@@ -104,14 +102,14 @@ autofill::FieldGlobalId GetPlaceholderFieldId() {
     url::Origin origin =
         webState ? url::Origin::Create(webState->GetLastCommittedURL())
                  : url::Origin();
-    _atMemoryManager->GetStateForField(GetPlaceholderFieldId(), origin);
+    _atMemoryManager->GetStateForField(_fieldId, origin);
 
     // TODO(crbug.com/527392582): Update trigger source once a dedicated
     // manual fallback / accessory trigger source is introduced.
     _atMemoryManager->OnPopupShown(
         /*bam=*/*autofillManager,
         /*form_id=*/autofill::FormGlobalId(),
-        /*field_id=*/GetPlaceholderFieldId(),
+        /*field_id=*/_fieldId,
         /*trigger_source=*/
         autofill::AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
         /*metadata=*/{},

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/autofill/core/common/unique_ids.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol AtMemoryFillCommands;
@@ -23,9 +24,15 @@
 // Handler for search result commands.
 @property(nonatomic, weak) id<AtMemorySearchResultCommands> searchResultHandler;
 
+// Initializes the coordinator. `navigationController` is the base navigation
+// controller used to present the search UI. `browser` provides access to
+// profile-keyed services. `fieldId` specifies the focused field that initiated
+// AtMemory.
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
+                                         fieldId:
+                                             (autofill::FieldGlobalId)fieldId
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

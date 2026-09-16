@@ -4,15 +4,11 @@
 
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_mediator.h"
 
-#import <variant>
-
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#import "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/manual_fill/public/manual_fill_content_injector.h"
@@ -23,7 +19,6 @@ using autofill::FieldGlobalId;
 using autofill::FormGlobalId;
 using autofill::FormStructure;
 using autofill::IsAsync;
-using autofill::IsSpiiMemoryDataType;
 using autofill::Suggestion;
 
 @implementation AtMemoryMediator {
@@ -77,27 +72,6 @@ using autofill::Suggestion;
 }
 
 - (void)fillWithSuggestion:(const Suggestion&)suggestion {
-  const Suggestion::AtMemoryPayload* payload =
-      std::get_if<Suggestion::AtMemoryPayload>(&suggestion.payload);
-  bool isObfuscated =
-      payload && IsSpiiMemoryDataType(payload->memory_data_type);
-
-  if (isObfuscated) {
-    [self fillObfuscatedSuggestion:suggestion];
-  } else {
-    NSString* value = nil;
-    if (payload && !payload->value.empty()) {
-      value = base::SysUTF16ToNSString(payload->value);
-    } else {
-      value = base::SysUTF16ToNSString(suggestion.main_text.value);
-    }
-    [self fillWithContent:value];
-  }
-}
-
-#pragma mark - Private
-
-- (void)fillObfuscatedSuggestion:(const Suggestion&)suggestion {
   if (!_atMemoryManager || !_autofillManager) {
     return;
   }

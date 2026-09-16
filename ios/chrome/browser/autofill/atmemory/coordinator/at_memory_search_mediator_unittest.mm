@@ -10,6 +10,7 @@
 #import "base/test/gmock_callback_support.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/unguessable_token.h"
 #import "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
@@ -17,6 +18,8 @@
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
@@ -38,6 +41,7 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using autofill::AutofillMetrics;
+using autofill::FieldGlobalId;
 using autofill::MemoryDataType;
 using autofill::MemoryEntrySource;
 using autofill::MemoryEntrySourceType;
@@ -168,7 +172,7 @@ class AtMemorySearchMediatorTest : public PlatformTest {
   }
 
   // Creates an AtMemorySearchMediator.
-  void CreateMediator() {
+  void CreateMediator(FieldGlobalId field_id = FieldGlobalId()) {
     autofill::BrowserAutofillManager* autofill_manager =
         static_cast<autofill::BrowserAutofillManager*>(
             autofill_client_->GetAutofillManagerForPrimaryMainFrame());
@@ -176,7 +180,8 @@ class AtMemorySearchMediatorTest : public PlatformTest {
         initWithAtMemoryManager:at_memory_manager_.get()
                 autofillManager:autofill_manager
                        webState:&web_state_
-                firstRunService:&first_run_service_];
+                firstRunService:&first_run_service_
+                        fieldId:field_id];
     mediator_.consumer = mock_consumer_;
   }
 
@@ -510,4 +515,45 @@ TEST_F(AtMemorySearchMediatorTest, LogsDismissedMetricOnDisconnect) {
   histogram_tester.ExpectBucketCount(
       "PersonalContext.AtMemory.NoticeInteractions",
       AutofillMetrics::PopupNoticeInteractions::kDismissed, 1);
+}
+
+#pragma mark - Recent Fills (0-State) Tests
+
+// Tests that when recent fills exist for the field, they are pushed to the
+// consumer.
+TEST_F(AtMemorySearchMediatorTest, PushesRecentFillsToConsumer) {
+  base::test::ScopedFeatureList statefulness_feature;
+  statefulness_feature.InitWithFeatures(
+      /*enabled_features=*/
+      {autofill::features::kAutofillAtMemorySearchStatefulness,
+       autofill::features::kAutofillAtMemoryPreviouslyFilled},
+      /*disabled_features=*/{});
+
+  FieldGlobalId field_id(
+      autofill::LocalFrameToken(base::UnguessableToken::Create()),
+      autofill::FieldRendererId(42));
+
+  Suggestion suggestion(base::SysNSStringToUTF16(kPassportValue),
+                        SuggestionType::kAtMemorySearchResult);
+  suggestion.payload = Suggestion::AtMemoryPayload(
+      base::SysNSStringToUTF16(kPassportValue), MemoryDataType::kNameFull);
+  autofill::BrowserAutofillManager* autofill_manager =
+      static_cast<autofill::BrowserAutofillManager*>(
+          autofill_client_->GetAutofillManagerForPrimaryMainFrame());
+  at_memory_manager_->FillSearchResult(*autofill_manager,
+                                       autofill::FormGlobalId(), field_id,
+                                       suggestion, /*metadata=*/{});
+
+  OCMExpect([mock_consumer_
+      setRecentFills:[OCMArg checkWithBlock:^BOOL(
+                                 NSArray<AtMemorySearchItem*>* items) {
+        if (items.count != 1) {
+          return NO;
+        }
+        return [items[0].title isEqualToString:kPassportValue];
+      }]]);
+
+  CreateMediator(field_id);
+
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }

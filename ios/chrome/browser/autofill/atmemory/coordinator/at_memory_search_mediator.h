@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/autofill/core/common/unique_ids.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_mutator.h"
 
 namespace autofill {
@@ -46,12 +47,15 @@ class WebState;
 // AtMemory manager. `autofillManager` provides the primary main frame autofill
 // manager. `webState` is used to retrieve context like the UKM source ID.
 // `firstRunService` is used to read and update notice confirmation states.
+// `fieldId` specifies the focused field that initiated AtMemory.
 - (instancetype)
     initWithAtMemoryManager:(autofill::AtMemoryManager*)atMemoryManager
             autofillManager:(autofill::BrowserAutofillManager*)autofillManager
                    webState:(web::WebState*)webState
             firstRunService:(personal_context::PersonalContextFirstRunService*)
-                                firstRunService NS_DESIGNATED_INITIALIZER;
+                                firstRunService
+                    fieldId:(autofill::FieldGlobalId)fieldId
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

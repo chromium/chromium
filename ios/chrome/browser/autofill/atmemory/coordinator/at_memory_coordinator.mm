@@ -84,7 +84,8 @@ using autofill::FieldGlobalId;
 
   _atMemorySearchCoordinator = [[AtMemorySearchCoordinator alloc]
       initWithBaseNavigationController:_navigationController
-                               browser:self.browser];
+                               browser:self.browser
+                               fieldId:_fieldId];
   _atMemorySearchCoordinator.searchResultHandler = self;
   _atMemorySearchCoordinator.fillHandler = _mediator;
   [_atMemorySearchCoordinator start];

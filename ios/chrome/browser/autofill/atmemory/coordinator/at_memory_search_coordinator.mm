@@ -26,17 +26,22 @@
   AtMemorySearchViewController* _atMemorySearchViewController;
   // Mediator for the AtMemory search coordinator.
   AtMemorySearchMediator* _mediator;
+  // Field ID that initiated AtMemory.
+  autofill::FieldGlobalId _fieldId;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+                                         browser:(Browser*)browser
+                                         fieldId:
+                                             (autofill::FieldGlobalId)fieldId {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
+    _fieldId = fieldId;
   }
   return self;
 }
@@ -74,7 +79,8 @@
       [[AtMemorySearchMediator alloc] initWithAtMemoryManager:atMemoryManager
                                               autofillManager:autofillManager
                                                      webState:webState
-                                              firstRunService:firstRunService];
+                                              firstRunService:firstRunService
+                                                      fieldId:_fieldId];
   _mediator.fillHandler = self.fillHandler;
   _mediator.searchResultHandler = self.searchResultHandler;
   _mediator.atMemoryHandler = HandlerForProtocol(
