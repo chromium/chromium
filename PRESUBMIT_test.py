@@ -7381,7 +7381,6 @@ class CheckUnwantedDependenciesTest(unittest.TestCase):
             self.assertEqual('error', results[0].type)
 
 
-
 class ExtensionFastPathsTest(unittest.TestCase):
 
     def _make_input(self, *files):
@@ -7392,13 +7391,6 @@ class ExtensionFastPathsTest(unittest.TestCase):
             for f in files
         ]
         return mock_input_api
-
-    def testGetAffectedExtensions(self):
-        mock_input_api = self._make_input(
-            'base/foo.cc', 'base/foo.h', 'docs/readme.md', '.gn', '.gitignore')
-        exts = PRESUBMIT._GetAffectedExtensions(mock_input_api)
-        self.assertEqual(exts, frozenset(
-            {'.cc', '.h', '.md', '.gn', '.gitignore'}))
 
     def testHasFileHelpers(self):
         inp = self._make_input('assets/logo.png')

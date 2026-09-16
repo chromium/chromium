@@ -2795,31 +2795,10 @@ _INVALID_GRD_FILE_LINE = [(r'<file lang=.* path=.*',
 #        _RUST_EXTENSIONS = frozenset(('.rs', ))
 #   b. Add a helper:
 #        def _HasRustFiles(input_api):
-#            return not _GetAffectedExtensions(
-#                input_api).isdisjoint(_RUST_EXTENSIONS)
+#            return not input_api.AffectedExtensions().isdisjoint(
+#                _RUST_EXTENSIONS)
 #   c. Add unit test coverage in ExtensionFastPathsTest in PRESUBMIT_test.py.
 # -----------------------------------------------------------------------------
-
-
-def _GetAffectedExtensions(input_api):
-    """Returns a frozenset of lowercase extensions of all affected files."""
-    cached = getattr(input_api, '_cached_affected_extensions', None)
-    if cached is None:
-        cached = _ExtractExtensions(input_api)
-        input_api._cached_affected_extensions = cached
-    return cached
-
-
-def _ExtractExtensions(input_api):
-    """Helper to extract a frozenset of lowercase file extensions."""
-    exts = set()
-    for f in input_api.AffectedFiles(include_deletes=True):
-        basename = input_api.os_path.basename(f.LocalPath()).lower()
-        if basename.startswith('.') and '.' not in basename[1:]:
-            exts.add(basename)
-        else:
-            exts.add(input_api.os_path.splitext(basename)[1])
-    return frozenset(exts)
 
 
 _CXX_EXTENSIONS = frozenset((
@@ -2834,36 +2813,35 @@ _MACRO_EXTENSIONS = _CXX_EXTENSIONS | frozenset(
 
 
 def _HasCPlusPlusFiles(input_api):
-    return not _GetAffectedExtensions(input_api).isdisjoint(_CXX_EXTENSIONS)
+    return not input_api.AffectedExtensions().isdisjoint(_CXX_EXTENSIONS)
 
 
 def _HasCPlusPlusHeaderFiles(input_api):
-    return not _GetAffectedExtensions(
-        input_api).isdisjoint(_CXX_HEADER_EXTENSIONS)
+    return not input_api.AffectedExtensions().isdisjoint(_CXX_HEADER_EXTENSIONS)
 
 
 def _HasJavaFiles(input_api):
-    return '.java' in _GetAffectedExtensions(input_api)
+    return '.java' in input_api.AffectedExtensions()
 
 
 def _HasKotlinFiles(input_api):
-    return not _GetAffectedExtensions(input_api).isdisjoint(_KOTLIN_EXTENSIONS)
+    return not input_api.AffectedExtensions().isdisjoint(_KOTLIN_EXTENSIONS)
 
 
 def _HasPythonFiles(input_api):
-    return '.py' in _GetAffectedExtensions(input_api)
+    return '.py' in input_api.AffectedExtensions()
 
 
 def _HasGnFiles(input_api):
-    return not _GetAffectedExtensions(input_api).isdisjoint(_GN_EXTENSIONS)
+    return not input_api.AffectedExtensions().isdisjoint(_GN_EXTENSIONS)
 
 
 def _HasMojomFiles(input_api):
-    return '.mojom' in _GetAffectedExtensions(input_api)
+    return '.mojom' in input_api.AffectedExtensions()
 
 
 def _HasPotentialMacroFiles(input_api):
-    return not _GetAffectedExtensions(input_api).isdisjoint(_MACRO_EXTENSIONS)
+    return not input_api.AffectedExtensions().isdisjoint(_MACRO_EXTENSIONS)
 
 
 
