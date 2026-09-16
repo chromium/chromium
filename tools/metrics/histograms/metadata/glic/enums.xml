@@ -423,7 +423,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="StopActorTask"/>
   <int value="14" label="PauseActorTask"/>
   <int value="15" label="ResumeActorTask"/>
-  <int value="16" label="CaptureScreenshot"/>
+  <int value="16" label="(Obsolete) CaptureScreenshot"/>
   <int value="17" label="ResizeWindow"/>
   <int value="18" label="EnableDragResize"/>
   <int value="19" label="(Obsolete) SetWindowDraggableAreas"/>

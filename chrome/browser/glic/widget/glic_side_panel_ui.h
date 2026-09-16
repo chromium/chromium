@@ -12,7 +12,6 @@
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/common/panel_focus_dependent_hotkey_manager.h"
 #include "chrome/browser/glic/common/panel_visibility_dependent_hotkey_manager.h"
-#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
 #include "chrome/browser/glic/host/host.h"
@@ -67,9 +66,6 @@ class GlicSidePanelUi
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
-  void CaptureScreenshot(
-      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback)
-      override;
 
   // GlicUiEmbedder and Host::Delegate:
   bool IsShowing() const override;
@@ -120,8 +116,6 @@ class GlicSidePanelUi
       panel_focus_dependent_hotkey_manager_;
   base::CallbackListSubscription activation_subscription_;
   base::CallbackListSubscription deactivation_subscription_;
-
-  std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
 
   base::ScopedObservation<Host, Host::Observer> host_observation_{this};
 

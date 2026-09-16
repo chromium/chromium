@@ -42,8 +42,6 @@ std::string_view ToString(GlicHostApiRequestId request_id) {
       return "PauseActorTask";
     case GlicHostApiRequestId::kResumeActorTask:
       return "ResumeActorTask";
-    case GlicHostApiRequestId::kCaptureScreenshot:
-      return "CaptureScreenshot";
     case GlicHostApiRequestId::kResizeWindow:
       return "ResizeWindow";
     case GlicHostApiRequestId::kEnableDragResize:

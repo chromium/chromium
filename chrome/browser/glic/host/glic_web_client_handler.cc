@@ -1043,10 +1043,6 @@ class GlicWebClientHandler
     contents->GetDelegate()->ActivateContents(contents);
   }
 
-  void CaptureScreenshot(CaptureScreenshotCallback callback) override {
-    host().CaptureScreenshot(std::move(callback));
-  }
-
   void CaptureRegion(mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
                      mojom::CaptureRegionParamsPtr params) override {
     LogApiRequest(GlicHostApiRequestId::kSubscribeToCaptureRegion);

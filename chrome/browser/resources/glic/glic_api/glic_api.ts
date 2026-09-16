@@ -117,8 +117,6 @@ export import ActuationTarget = generated.ActuationTarget;
 export import AdditionalContextSource = generated.AdditionalContextSource;
 export import CancelActionsResult = generated.CancelActionsResult;
 export import CaptureRegionErrorReason = generated.CaptureRegionErrorReason;
-export import CaptureScreenshotErrorReason =
-    generated.CaptureScreenshotErrorReason;
 export import ClientCapabilities = generated.ClientCapabilities;
 export import ClientErrorDialogType = generated.ClientErrorDialogType;
 export import CloseSignInTabResult = generated.CloseSignInTabResult;
@@ -640,18 +638,6 @@ export declare interface GlicBrowserHost {
    * No-op if the tab doesn't exist or is already in the foreground.
    */
   activateTab?(tabId: string): void;
-
-  /**
-   * Requests the host to capture a screenshot. The choice of the screenshot
-   * target is made by the host, possibly allowing the user to choose between a
-   * desktop, window or arbitrary region.
-   *
-   * The promise will be failed if the user rejects the capture or another
-   * problem happens.
-   *
-   * @throws {CaptureScreenshotError} on failure.
-   */
-  captureScreenshot?(): Promise<Screenshot>;
 
   /**
    * Starts a user-interactive process to select content from a tab. The user
@@ -1781,7 +1767,6 @@ export declare interface ImageOriginAnnotations { }
 
 /** Maps the ErrorWithReason.reasonType to the type of reason. */
 export declare interface ErrorReasonTypes {
-  captureScreenshot: CaptureScreenshotErrorReason;
   captureRegion: CaptureRegionErrorReason;
   scrollTo: ScrollToErrorReason;
   webClientInitialize: WebClientInitializeErrorReason;
@@ -1846,9 +1831,6 @@ export declare interface ActInFocusedTabParams {
   // Tab context options to gather context after acting.
   tabContextOptions: TabContextOptions;
 }
-
-/** Error type used for screenshot capture errors. */
-export type CaptureScreenshotError = ErrorWithReason<'captureScreenshot'>;
 
 export type CaptureRegionError = ErrorWithReason<'captureRegion'>;
 

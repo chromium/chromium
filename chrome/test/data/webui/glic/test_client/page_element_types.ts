@@ -75,7 +75,6 @@ export interface PageElementTypes {
   mic: HTMLAudioElement;
   audioDuckingOn: HTMLButtonElement;
   audioDuckingOff: HTMLButtonElement;
-  desktopScreenshot: HTMLButtonElement;
   desktopScreenshotImg: HTMLImageElement;
   desktopScreenshotErrorReason: HTMLSpanElement;
   panelScreenshot: HTMLButtonElement;

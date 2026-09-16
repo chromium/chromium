@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PageMetadata, PdfDocumentData, PinTabsOptions, PromptType, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
+import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PageMetadata, PdfDocumentData, PinTabsOptions, PromptType, ResumeActorTaskResult, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 
 import type {InterfaceDef, InterfaceDefMethods} from './transport/messaging.js';
 import {defInterface, defMessage} from './transport/messaging.js';
@@ -101,13 +101,6 @@ export const WebClientHostDef = defInterface({
         tabId: string,
       }>(),
       histogram: {id: 76},
-    },
-    {
-      name: 'captureScreenshot',
-      response: defMessage<{
-        screenshot: Screenshot,
-      }>(),
-      histogram: {id: 16},
     },
     {
       name: 'resizeWindow',
@@ -456,7 +449,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 13,
   // Do not reuse deleted request ID: 14,
   // Do not reuse deleted request ID: 15,
-  CaptureScreenshot: 16,
+  // Do not reuse deleted request ID: 16,
   ResizeWindow: 17,
   EnableDragResize: 18,
   // Do not reuse deleted request ID: 19,

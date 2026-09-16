@@ -232,23 +232,6 @@ $.maybeRefreshUserStatusBn.addEventListener('click', async () => {
 
 window.addEventListener('load', () => {
   initCaptureRegion();
-  $.desktopScreenshot.addEventListener('click', async () => {
-    logMessage('Requesting desktop screenshot...');
-    try {
-      const screenshot = await getBrowser()!.captureScreenshot!();
-      if (screenshot) {
-        const blob = new Blob([screenshot.data], {type: 'image/jpeg'});
-        $.desktopScreenshotImg.src = URL.createObjectURL(blob);
-        $.desktopScreenshotErrorReason!.innerText =
-            'Desktop screenshot captured.';
-      } else {
-        $.desktopScreenshotErrorReason!.innerText =
-            'Failed to capture desktop screenshot.';
-      }
-    } catch (error) {
-      $.desktopScreenshotErrorReason!.innerText = `Caught error: ${error}`;
-    }
-  });
   $.panelScreenshot.addEventListener('click', async () => {
     const stream = await navigator.mediaDevices.getDisplayMedia({
       video: {

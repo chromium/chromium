@@ -10,8 +10,8 @@ import {assertNotReached} from '//resources/js/assert.js';
 import {enumFromClient} from '../../enum_conversions.js';
 import {PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo, TabDataHandlerReceiver} from '../../glic.mojom-webui.js';
 import type {TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
-import {CaptureScreenshotErrorReason, ResponseStopCause} from '../../glic_api/glic_api.js';
-import type {ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PinTabsOptions, PromptType, Screenshot, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
+import {ResponseStopCause} from '../../glic_api/glic_api.js';
+import type {ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PinTabsOptions, PromptType, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import type {GlicException, ImageBytesResultPrivate, RgbaImage, TabContextResultPrivate, WebClientHost, WebClientTabDataObserver} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
@@ -172,30 +172,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
   deleteCapturedRegion(request: {tabId: string, regionId: string}) {
     this.handler.deleteCapturedRegion(
         idFromClient(request.tabId), request.regionId);
-  }
-
-  async captureScreenshot(_request: void, extras: ResponseExtras):
-      Promise<{screenshot: Screenshot}> {
-    const {
-      result: {screenshot, errorReason},
-    } = await this.handler.captureScreenshot();
-    if (!screenshot) {
-      throw new ErrorWithReasonImpl(
-          'captureScreenshot',
-          (errorReason as CaptureScreenshotErrorReason | undefined) ??
-              CaptureScreenshotErrorReason.UNKNOWN);
-    }
-    const screenshotArray = new Uint8Array(screenshot.data);
-    extras.addTransfer(screenshotArray.buffer);
-    return {
-      screenshot: {
-        widthPixels: screenshot.widthPixels,
-        heightPixels: screenshot.heightPixels,
-        data: screenshotArray.buffer,
-        mimeType: screenshot.mimeType,
-        originAnnotations: {},
-      },
-    };
   }
 
   setMinimumWidgetSize(request: {

@@ -126,19 +126,6 @@ export enum ActorTaskInterruptReason {
   WAITING_FOR_EXPERIMENTAL_TRIGGERING_CONSENT = 8,
 }
 
-// Reason why capturing desktop screenshot failed. NOTE: This may be extended in
-// the future so avoid using complete switches on the currently used enum
-// values.
-export enum CaptureScreenshotErrorReason {
-  // Screen capture or frame encoding failure.
-  UNKNOWN = 0,
-  // Screen capture requested but already in progress of serving another
-  // request.
-  SCREEN_CAPTURE_REQUEST_THROTTLED = 1,
-  // User declined screen capture dialog before taking a screenshot.
-  USER_CANCELLED_SCREEN_PICKER_DIALOG = 2,
-}
-
 // Safe Browsing Threat Type.
 export enum SbThreatType {
   // Default value.

@@ -30,7 +30,6 @@ enum class GlicHostApiRequestId {
   kStopActorTask = 13,
   kPauseActorTask = 14,
   kResumeActorTask = 15,
-  kCaptureScreenshot = 16,
   kResizeWindow = 17,
   kEnableDragResize = 18,
   kSetMinimumWidgetSize = 20,

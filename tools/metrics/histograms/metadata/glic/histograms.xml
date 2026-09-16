@@ -32,7 +32,6 @@ chromium-metrics-reviews@google.com.
   <variant name="AutofillSuggestionDialogOnFormPresented"/>
   <variant name="AutofillSuggestionDialogOnFormPreviewChanged"/>
   <variant name="CancelActions"/>
-  <variant name="CaptureScreenshot"/>
   <variant name="ClosePanel"/>
   <variant name="ClosePanelAndShutdown"/>
   <variant name="CreateActorTab"/>

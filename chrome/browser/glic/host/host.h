@@ -71,8 +71,6 @@ class Host : public GlicSharingManagerProvider {
     // Sets the minimum widget size that the widget will allow the user to
     // resize to.
     virtual void SetMinimumWidgetSize(const gfx::Size& size);
-    virtual void CaptureScreenshot(
-        glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) = 0;
 
     // Returns true if the glic widget is visible.
     virtual bool IsShowing() const = 0;
@@ -383,9 +381,6 @@ class Host : public GlicSharingManagerProvider {
   // to.
   void SetMinimumWidgetSize(const gfx::Size& size);
 
-  void CaptureScreenshot(
-      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
-
   // Returns true if the widget is visible.
   bool IsWidgetShowing(GlicWebClientAccess* client) const;
 
@@ -490,9 +485,6 @@ class EmptyEmbedderDelegate : public Host::EmbedderDelegate {
   void ClosePanel() override {}
   void OnReload() override {}
   void SetMinimumWidgetSize(const gfx::Size& size) override {}
-  void CaptureScreenshot(
-      glic::mojom::WebClientHandler::CaptureScreenshotCallback callback)
-      override;
   bool IsShowing() const override;
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,

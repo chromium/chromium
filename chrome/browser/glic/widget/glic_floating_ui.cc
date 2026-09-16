@@ -372,9 +372,6 @@ void GlicFloatingUi::Close(const CloseOptions& options) {
   }
   scoped_modal_dialog_delegate_.SetWebContents(nullptr);
   CloseSelectionOverlay();
-  if (screenshot_capturer_) {
-    screenshot_capturer_->CloseScreenPicker();
-  }
   FloatingPanelCanAttachChanged(false);
   glic_window_animator_.reset();
   glic_widget_observation_.Reset();
@@ -515,15 +512,6 @@ void GlicFloatingUi::SwitchConversation(
   delegate_->SwitchConversation(
       ShowOptions::ForFloating(GetGlicWidget()->GetWindowBoundsInScreen()),
       std::move(info), std::move(callback));
-}
-
-void GlicFloatingUi::CaptureScreenshot(
-    glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) {
-  if (!screenshot_capturer_) {
-    screenshot_capturer_ = GlicScreenshotCapturer::Create();
-  }
-  screenshot_capturer_->CaptureScreenshot(GetGlicWidget()->GetNativeWindow(),
-                                          std::move(callback));
 }
 
 void GlicFloatingUi::ClosePanel() {

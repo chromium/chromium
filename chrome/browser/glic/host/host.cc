@@ -78,12 +78,6 @@ void EmptyEmbedderDelegate::SwitchConversation(
   std::move(callback).Run(std::nullopt);
 }
 
-void EmptyEmbedderDelegate::CaptureScreenshot(
-    glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) {
-  std::move(callback).Run(nullptr);
-}
-
-
 Host::Host(Profile* profile,
            GlicSharingManagerProvider* sharing_manager_provider,
            GlicInstance* glic_instance,
@@ -670,11 +664,6 @@ void Host::ClosePanel() {
 
 void Host::SetMinimumWidgetSize(const gfx::Size& size) {
   delegate_->SetMinimumWidgetSize(size);
-}
-
-void Host::CaptureScreenshot(
-    glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) {
-  delegate_->CaptureScreenshot(std::move(callback));
 }
 
 bool Host::IsWidgetShowing(GlicWebClientAccess* client) const {

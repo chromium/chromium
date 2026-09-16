@@ -168,21 +168,6 @@ enum ActorTaskInterruptReason {
   [MinVersion=2] kWaitingForExperimentalTriggeringConsent = 8,
 };
 
-// @generate glic_api
-// Reason why capturing desktop screenshot failed. NOTE: This may be extended in
-// the future so avoid using complete switches on the currently used enum
-// values.
-[Stable, Extensible]
-enum CaptureScreenshotErrorReason {
-  // Screen capture or frame encoding failure.
-  [Default] kUnknown = 0,
-  // Screen capture requested but already in progress of serving another
-  // request.
-  kScreenCaptureRequestThrottled = 1,
-  // User declined screen capture dialog before taking a screenshot.
-  kUserCancelledScreenPickerDialog = 2,
-};
-
 union GetContextResult {
   string error_reason;
   TabContextResult tab_context;
@@ -195,11 +180,6 @@ struct GetContextResultWithActionResultCode {
   // need the type, so we just use an int here. It is expected that the client
   // has an equivalent enum definition. See http://shortn/_gLyPxrRm6p
   int32? action_result;
-};
-
-union CaptureScreenshotResult {
-  CaptureScreenshotErrorReason error_reason;
-  Screenshot screenshot;
 };
 
 // @generate glic_api
@@ -1303,11 +1283,6 @@ interface WebClientHandler {
   // If the widget doesn't exist yet, `size` will be used as its initial size
   // when it's created later.
   ResizeWidget(gfx.mojom.Size size, mojo_base.mojom.TimeDelta duration) => ();
-
-  // Returns the screenshot result or error reason. 'screenshot' is null when an
-  // error occurs during capture. This can also fail if the user cancels the
-  // screen picker dialog.
-  CaptureScreenshot() => (CaptureScreenshotResult result);
 
   // Starts a user-interactive process to select content from a tab. Multiple
   // regions can be captured. Results for each region, and errors, are sent

@@ -2681,17 +2681,6 @@ class ApiTests extends ApiTestFixtureBase {
     metrics.onUserInputSubmitted(WebClientMode.TEXT, PromptType.TYPED_TEXT);
   }
 
-  // TODO(crbug.com/454083080): Fix this, it hangs.
-  async testCaptureScreenshot() {
-    assertDefined(this.host.captureScreenshot);
-    const screenshot = await this.host.captureScreenshot?.();
-    assertDefined(screenshot);
-    assertTrue(screenshot.widthPixels > 0);
-    assertTrue(screenshot.heightPixels > 0);
-    assertTrue(screenshot.data.byteLength > 0);
-    assertEquals(screenshot.mimeType, 'image/jpeg');
-  }
-
   async fetchInactiveTabScreenshot(expectNoFocus: boolean = false) {
     assertDefined(this.host.getFocusedTabStateV2);
     assertDefined(this.host.getContextFromTab);
