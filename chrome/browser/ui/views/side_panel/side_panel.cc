@@ -121,14 +121,8 @@ class ContentParentBackground : public views::Background {
   }
 
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    gfx::RoundedCornersF radii = get_rounded_corners_callback_.Run();
-    SkVector sk_radii[4] = {{radii.upper_left(), radii.upper_left()},
-                            {radii.upper_right(), radii.upper_right()},
-                            {radii.lower_right(), radii.lower_right()},
-                            {radii.lower_left(), radii.lower_left()}};
-    SkRRect rrect;
-    rrect.setRectRadii(gfx::RectToSkRect(view->GetLocalBounds()), sk_radii);
-    SkPath path = SkPath::RRect(rrect);
+    SkPath path = SkPath::RRect(gfx::RoundedRectToSkRRect(
+        view->GetLocalBounds(), get_rounded_corners_callback_.Run()));
     canvas->ClipPath(path, /*do_anti_alias=*/true);
 
       ThemedBackground::PaintBackground(canvas, view, browser_view_);

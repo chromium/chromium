@@ -803,14 +803,8 @@ SkPath IconLabelBubbleView::GetHighlightPath() const {
   }
   highlight_bounds = GetMirroredRect(highlight_bounds);
 
-  const SkRect rect = RectToSkRect(highlight_bounds);
-  gfx::RoundedCornersF radii = GetCornerRadii();
-  const SkVector sk_radii[4] = {{radii.upper_left(), radii.upper_left()},
-                                {radii.upper_right(), radii.upper_right()},
-                                {radii.lower_right(), radii.lower_right()},
-                                {radii.lower_left(), radii.lower_left()}};
-
-  return SkPath::RRect(SkRRect::MakeRectRadii(rect, sk_radii));
+  return SkPath::RRect(
+      RoundedRectToSkRRect(highlight_bounds, GetCornerRadii()));
 }
 
 bool IconLabelBubbleView::PaintedOnSolidBackground() const {

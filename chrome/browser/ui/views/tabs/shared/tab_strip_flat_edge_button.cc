@@ -317,18 +317,7 @@ gfx::RoundedCornersF TabStripFlatEdgeButton::GetButtonCornerRadii() const {
 }
 
 SkRRect TabStripFlatEdgeButton::GetButtonShape() const {
-  const gfx::RoundedCornersF corners = GetButtonCornerRadii();
-  const SkRect rect = gfx::RectToSkRect(GetLocalBounds());
-
-  SkVector radii[4];
-  radii[0] = {corners.upper_left(), corners.upper_left()};
-  radii[1] = {corners.upper_right(), corners.upper_right()};
-  radii[2] = {corners.lower_right(), corners.lower_right()};
-  radii[3] = {corners.lower_left(), corners.lower_left()};
-
-  SkRRect rrect;
-  rrect.setRectRadii(rect, radii);
-  return rrect;
+  return gfx::RoundedRectToSkRRect(GetLocalBounds(), GetButtonCornerRadii());
 }
 
 void TabStripFlatEdgeButton::UpdateLabel(bool should_show) {
