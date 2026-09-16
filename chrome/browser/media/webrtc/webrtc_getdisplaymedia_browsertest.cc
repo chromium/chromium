@@ -2256,7 +2256,7 @@ IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
   const base::expected<std::vector<int>, std::string> result =
       capture_session.GetSupportedZoomLevels();
   EXPECT_FALSE(result.has_value());
-  EXPECT_NE(result.error().find("InvalidStateError"), std::string::npos);
+  EXPECT_TRUE(result.error().contains("InvalidStateError"));
 }
 
 IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
@@ -2303,7 +2303,7 @@ IN_PROC_BROWSER_TEST_F(CapturedSurfaceControlTest,
   const base::expected<std::vector<int>, std::string> result =
       capture_session.GetSupportedZoomLevels();
   EXPECT_FALSE(result.has_value());
-  EXPECT_NE(result.error().find("InvalidStateError"), std::string::npos);
+  EXPECT_TRUE(result.error().contains("InvalidStateError"));
 }
 
 IN_PROC_BROWSER_TEST_F(

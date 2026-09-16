@@ -161,7 +161,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     }
 #endif  // BUILDFLAG(IS_WIN)
     std::string prefix = std::string(media::kExternalClearKeyKeySystem) + '.';
-    return key_system.substr(0, prefix.size()) == prefix;
+    return key_system.starts_with(prefix);
   }
 
 #if BUILDFLAG(IS_WIN)

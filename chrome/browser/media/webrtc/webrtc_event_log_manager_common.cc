@@ -937,13 +937,11 @@ bool IsValidRemoteBoundLogFilename(const std::string& filename) {
     return false;
   }
 
-  size_t index = 0;
-
   // Expect prefix.
-  if (filename.find(kRemoteBoundWebRtcEventLogFileNamePrefix) != index) {
+  if (!filename.starts_with(kRemoteBoundWebRtcEventLogFileNamePrefix)) {
     return false;
   }
-  index += kPrefixLength;
+  size_t index = kPrefixLength;
 
   // Expect underscore.
   if (filename[index] != '_') {
@@ -981,7 +979,7 @@ bool IsValidRemoteBoundLogFilename(const std::string& filename) {
     const std::string diagnostic_uuid = rest.substr(0, underscore_pos);
     std::string session_id = rest.substr(underscore_pos + 1);
 
-    if (base::EndsWith(session_id, "_local", base::CompareCase::SENSITIVE)) {
+    if (session_id.ends_with("_local")) {
       session_id = session_id.substr(0, session_id.length() - 6);
     }
 
@@ -1008,7 +1006,7 @@ bool IsValidRemoteBoundLogFilePath(const base::FilePath& path) {
 
 bool IsLocalOnlyRemoteBoundLogFilename(const std::string& filename) {
   return IsValidRemoteBoundLogFilename(filename) &&
-         base::EndsWith(filename, "_local", base::CompareCase::SENSITIVE);
+         filename.ends_with("_local");
 }
 
 bool IsLocalOnlyRemoteBoundLogFilePath(const base::FilePath& path) {

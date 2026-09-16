@@ -210,7 +210,7 @@ struct TabInfo {
                             ToString(frame), ToString(track)))
             .ExtractString();
 
-    EXPECT_EQ(0u, script_result.rfind(ToString(frame), 0)) << script_result;
+    EXPECT_TRUE(script_result.starts_with(ToString(frame))) << script_result;
     return script_result == base::StringPrintf("%s-%s-success", ToString(frame),
                                                ToString(sub_capture_type));
   }
@@ -254,11 +254,11 @@ struct TabInfo {
             .ExtractString();
 
     if (frame == Frame::kEmbeddedFrame) {
-      EXPECT_EQ(0u, script_result.rfind("embedded-", 0)) << script_result;
+      EXPECT_TRUE(script_result.starts_with("embedded-")) << script_result;
       return script_result == "embedded-new-element-success";
     }
     DCHECK(frame == Frame::kTopLevelDocument);
-    EXPECT_EQ(0u, script_result.rfind("top-level-", 0)) << script_result;
+    EXPECT_TRUE(script_result.starts_with("top-level-")) << script_result;
     return script_result == "top-level-new-element-success";
   }
 

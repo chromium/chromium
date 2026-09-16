@@ -213,8 +213,9 @@ std::set<std::string> FindAllSsrcIdentifiers(
     const base::DictValue& stats_dict) {
   std::set<std::string> result;
   for (auto kv : stats_dict) {
-    if (kv.first.find("ssrc_") != std::string::npos)
+    if (kv.first.contains("ssrc_")) {
       result.insert(ExtractSsrcIdentifier(kv.first));
+    }
   }
   return result;
 }

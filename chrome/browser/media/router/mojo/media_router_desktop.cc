@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -943,8 +942,7 @@ MediaRouterDesktop::GetProviderIdForPresentation(
     const std::string& presentation_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (presentation_id == kAutoJoinPresentationId ||
-      base::StartsWith(presentation_id, kCastPresentationIdPrefix,
-                       base::CompareCase::SENSITIVE)) {
+      presentation_id.starts_with(kCastPresentationIdPrefix)) {
     return mojom::MediaRouteProviderId::CAST;
   }
   for (const auto& provider_to_routes : routes_query_.providers_to_routes()) {

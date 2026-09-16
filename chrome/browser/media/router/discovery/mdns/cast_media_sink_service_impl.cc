@@ -187,7 +187,7 @@ constexpr int CastMediaSinkServiceImpl::kMaxDialSinkFailureCount;
 // static
 MediaSink::Id CastMediaSinkServiceImpl::GetCastSinkIdFromDial(
     MediaSink::IdView dial_sink_id) {
-  DCHECK_EQ("dial:", dial_sink_id.substr(0, 5));
+  DCHECK(dial_sink_id.starts_with("dial:"));
   // Replace the "dial:" prefix with "cast:".
   return base::StrCat({"cast:", dial_sink_id.substr(5)});
 }
@@ -195,7 +195,7 @@ MediaSink::Id CastMediaSinkServiceImpl::GetCastSinkIdFromDial(
 // static
 MediaSink::Id CastMediaSinkServiceImpl::GetDialSinkIdFromCast(
     const MediaSink::IdView cast_sink_id) {
-  DCHECK_EQ("cast:", cast_sink_id.substr(0, 5));
+  DCHECK(cast_sink_id.starts_with("cast:"));
   // Replace the "cast:" prefix with "dial:".
   return base::StrCat({"dial:", cast_sink_id.substr(5)});
 }

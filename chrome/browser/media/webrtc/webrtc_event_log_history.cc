@@ -71,7 +71,7 @@ base::Time StringToTime(const std::string& time) {
 bool ParseTime(const std::string& line,
                const std::string& prefix,
                base::Time* out) {
-  DCHECK(line.find(prefix) == 0);
+  DCHECK(line.starts_with(prefix));
   DCHECK(out);
 
   if (!out->is_null()) {
@@ -93,7 +93,7 @@ bool ParseTime(const std::string& line,
 bool ParseString(const std::string& line,
                  const std::string& prefix,
                  std::string* out) {
-  DCHECK(line.find(prefix) == 0);
+  DCHECK(line.starts_with(prefix));
   DCHECK(out);
 
   if (!out->empty()) {
@@ -381,15 +381,15 @@ bool WebRtcEventLogHistoryFileReader::Parse(const std::string& file_contents) {
                         base::SplitResult::SPLIT_WANT_NONEMPTY);
 
   for (const std::string& line : lines) {
-    if (line.find(kCaptureTimeLinePrefix) == 0) {
+    if (line.starts_with(kCaptureTimeLinePrefix)) {
       if (!ParseTime(line, kCaptureTimeLinePrefix, &capture_time_)) {
         return false;
       }
-    } else if (line.find(kUploadTimeLinePrefix) == 0) {
+    } else if (line.starts_with(kUploadTimeLinePrefix)) {
       if (!ParseTime(line, kUploadTimeLinePrefix, &upload_time_)) {
         return false;
       }
-    } else if (line.find(kUploadIdLinePrefix) == 0) {
+    } else if (line.starts_with(kUploadIdLinePrefix)) {
       if (!ParseString(line, kUploadIdLinePrefix, &upload_id_)) {
         return false;
       }

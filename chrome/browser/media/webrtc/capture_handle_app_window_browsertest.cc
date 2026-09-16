@@ -271,8 +271,7 @@ class NativeWindowTitleWatcher : public aura::WindowObserver {
 
  private:
   bool HasExpectedTitle() const {
-    return window_ &&
-           window_->GetTitle().find(expected_title_) != std::u16string::npos;
+    return window_ && window_->GetTitle().contains(expected_title_);
   }
 
   raw_ptr<aura::Window> window_ = nullptr;

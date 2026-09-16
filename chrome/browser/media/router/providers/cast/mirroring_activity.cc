@@ -201,7 +201,7 @@ bool ShouldForceLetterboxing(std::string_view model_name) {
           "disable-cast-letterboxing")) {
     return false;
   }
-  return model_name.find("Nest Hub") != std::string_view::npos;
+  return model_name.contains("Nest Hub");
 }
 
 struct LatePacketResult {

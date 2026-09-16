@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest, CanExposeOnlyHandle) {
   TabInfo captured_tab =
       SetUpCapturedPage(/*expose_origin=*/false, "handle", {"*"});
-  ASSERT_EQ(captured_tab.capture_handle.find("origin"), std::string::npos);
+  ASSERT_FALSE(captured_tab.capture_handle.contains("origin"));
 
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   TabInfo captured_tab =
       SetUpCapturedPage(/*expose_origin=*/true, /*handle=*/"", {"*"});
   // Still expecting "handle: \"\"" in there.
-  ASSERT_NE(captured_tab.capture_handle.find("handle"), std::string::npos);
+  ASSERT_TRUE(captured_tab.capture_handle.contains("handle"));
 
   TabInfo capturing_tab = SetUpCapturingPage(/*start_capturing=*/true);
 

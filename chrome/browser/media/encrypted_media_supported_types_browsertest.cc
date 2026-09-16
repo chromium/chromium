@@ -427,8 +427,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
       init_data_type = "webm";
     }
 
-    bool is_audio = mime_type.compare(0, 5, "audio") == 0;
-    DCHECK(is_audio || mime_type.compare(0, 5, "video") == 0);
+    bool is_audio = mime_type.starts_with("audio");
+    DCHECK(is_audio || mime_type.starts_with("video"));
     auto capabilities =
         MakeMediaCapabilities(mime_type, codecs, robustness, encryption_scheme);
     auto audio_capabilities = is_audio ? capabilities : "null";

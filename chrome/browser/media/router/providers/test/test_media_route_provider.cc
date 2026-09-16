@@ -33,13 +33,13 @@ namespace {
 const char kPresentationURL2UATestOrigin[] = "https://www.example.com";
 
 bool IsValidSource(const std::string& source_urn) {
-  return (source_urn.find("test:") == 0 ||
+  return (source_urn.starts_with("test:") ||
           IsValidStandardPresentationSource(source_urn));
 }
 
 bool Is1UAPresentationSource(const std::string& source_urn) {
   return (IsValidStandardPresentationSource(source_urn) &&
-          source_urn.find(kPresentationURL2UATestOrigin) != 0);
+          !source_urn.starts_with(kPresentationURL2UATestOrigin));
 }
 
 }  // namespace

@@ -223,7 +223,7 @@ class WebRtcVideoQualityBrowserTest : public WebRtcTestBase,
     // Print to stdout to ensure the perf numbers are parsed properly by the
     // buildbot step. The tool should print a handful RESULT lines.
     printf("Output was:\n\n%s\n", output.c_str());
-    bool has_result_lines = output.find("RESULT") != std::string::npos;
+    bool has_result_lines = output.contains("RESULT");
     if (!ok || !has_result_lines) {
       LOG(ERROR) << "Failed to compare videos; see output to see what "
                  << "the error was:\n\n"

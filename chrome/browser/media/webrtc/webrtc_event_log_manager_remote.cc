@@ -692,7 +692,7 @@ void WebRtcRemoteEventLogManager::StopLogging(
     const std::string& uuid = *diagnostic_uuid;
     for (auto it = pending_logs_.begin(); it != pending_logs_.end();) {
       const std::string filename = it->path.BaseName().MaybeAsASCII();
-      if (filename.find(uuid) != std::string::npos) {
+      if (filename.contains(uuid)) {
         if (!base::DeleteFile(it->path)) {
           DVLOG(1) << "Failed to delete " << it->path << ".";
         }
@@ -703,7 +703,7 @@ void WebRtcRemoteEventLogManager::StopLogging(
     }
     for (auto it = local_only_logs_.begin(); it != local_only_logs_.end();) {
       const std::string filename = it->path.BaseName().MaybeAsASCII();
-      if (filename.find(uuid) != std::string::npos) {
+      if (filename.contains(uuid)) {
         if (!base::DeleteFile(it->path)) {
           DVLOG(1) << "Failed to delete " << it->path << ".";
         }

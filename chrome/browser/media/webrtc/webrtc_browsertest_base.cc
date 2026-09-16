@@ -87,10 +87,11 @@ bool JavascriptErrorDetectingLogHandler(int severity,
     return false;
 
   // TODO(crbug.com/40608140): Fix AppRTC and stop ignoring this error.
-  if (str.find("Synchronous XHR in page dismissal") != std::string::npos)
+  if (str.contains("Synchronous XHR in page dismissal")) {
     return false;
+  }
 
-  bool contains_uncaught = str.find("\"Uncaught ") != std::string::npos;
+  bool contains_uncaught = str.contains("\"Uncaught ");
   if (severity == logging::LOGGING_ERROR ||
       (severity == logging::LOGGING_INFO && contains_uncaught)) {
     hit_javascript_errors_.Get() = true;
@@ -476,7 +477,7 @@ std::string WebRtcTestBase::GetStreamSize(
   std::string javascript =
       base::StringPrintf("getStreamSize('%s')", video_element.c_str());
   std::string result = ExecuteJavascript(javascript, tab_contents);
-  EXPECT_TRUE(base::StartsWith(result, "ok-", base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(result.starts_with("ok-"));
   return result.substr(3);
 }
 
@@ -502,7 +503,7 @@ void WebRtcTestBase::GenerateAndCloneCertificate(
 scoped_refptr<content::TestStatsReportDictionary>
 WebRtcTestBase::GetStatsReportDictionary(content::WebContents* tab) const {
   std::string result = ExecuteJavascript("getStatsReportDictionary()", tab);
-  EXPECT_TRUE(base::StartsWith(result, "ok-", base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(result.starts_with("ok-"));
   std::optional<base::Value> parsed_json = base::JSONReader::Read(
       result.substr(3), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(parsed_json);
@@ -515,7 +516,7 @@ WebRtcTestBase::GetStatsReportDictionary(content::WebContents* tab) const {
 double WebRtcTestBase::MeasureGetStatsPerformance(
     content::WebContents* tab) const {
   std::string result = ExecuteJavascript("measureGetStatsPerformance()", tab);
-  EXPECT_TRUE(base::StartsWith(result, "ok-", base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(result.starts_with("ok-"));
   double ms;
   if (!base::StringToDouble(result.substr(3), &ms))
     return std::numeric_limits<double>::infinity();

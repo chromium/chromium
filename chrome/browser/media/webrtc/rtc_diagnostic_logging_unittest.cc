@@ -805,7 +805,7 @@ TEST_F(RTCDiagnosticLoggingTest,
   EXPECT_FALSE(log_file_path.empty());
   const std::string filename =
       log_file_path.BaseName().RemoveExtension().AsUTF8Unsafe();
-  EXPECT_TRUE(base::StartsWith(filename, "webrtc_event_log_01"));
+  EXPECT_TRUE(filename.starts_with("webrtc_event_log_01"));
   EXPECT_THAT(filename, testing::HasSubstr(start_future.Get()));
   EXPECT_TRUE(webrtc_event_logging::IsValidRemoteBoundLogFilename(filename));
 }
@@ -967,9 +967,9 @@ TEST_F(RTCDiagnosticLoggingTest,
   EXPECT_TRUE(future.Wait());
 
   EXPECT_FALSE(log_file_path.empty());
-  EXPECT_TRUE(base::StartsWith(
-      log_file_path.BaseName().RemoveExtension().AsUTF8Unsafe(),
-      "webrtc_event_log_99"));
+  EXPECT_TRUE(
+      log_file_path.BaseName().RemoveExtension().AsUTF8Unsafe().starts_with(
+          "webrtc_event_log_99"));
 }
 
 TEST_F(

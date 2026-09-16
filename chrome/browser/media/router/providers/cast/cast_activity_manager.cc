@@ -17,7 +17,6 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -241,8 +240,7 @@ AppActivity* CastActivityManager::FindActivityForSessionJoin(
   // We only allow joining by session ID. The Cast SDK uses
   // "cast-session_<Session ID>" as the presentation ID in the reconnect
   // request.
-  if (!base::StartsWith(presentation_id, kCastPresentationIdPrefix,
-                        base::CompareCase::SENSITIVE)) {
+  if (!presentation_id.starts_with(kCastPresentationIdPrefix)) {
     // TODO(crbug.com/1291725): Find session by presentation_id.
     return nullptr;
   }
