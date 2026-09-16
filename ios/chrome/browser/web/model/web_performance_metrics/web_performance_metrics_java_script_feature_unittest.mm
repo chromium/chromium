@@ -7,7 +7,10 @@
 #import <memory>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/time/time.h"
 #import "base/values.h"
+#import "ios/chrome/browser/web/model/web_performance_metrics/features.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature_util.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/web/public/js_messaging/script_message.h"
@@ -25,6 +28,9 @@ using WebPerformanceMetricsJavaScriptFeatureTest = PlatformTest;
 // the metric.
 TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
        ScriptMessageReceived_InteractionToNextPaint) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIOSWebPerformanceMetricsINP);
+
   base::HistogramTester histogram_tester;
   web::FakeWebState fake_web_state;
   WebPerformanceMetricsTabHelper::CreateForWebState(&fake_web_state);
@@ -60,9 +66,53 @@ TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
       1);
 }
 
+// Tests that ScriptMessageReceived ignores INP messages when the killswitch is
+// disabled.
+TEST_F(WebPerformanceMetricsJavaScriptFeatureTest,
+       ScriptMessageReceived_InteractionToNextPaint_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kIOSWebPerformanceMetricsINP);
+
+  base::HistogramTester histogram_tester;
+  web::FakeWebState fake_web_state;
+  WebPerformanceMetricsTabHelper::CreateForWebState(&fake_web_state);
+  WebPerformanceMetricsTabHelper* tab_helper =
+      WebPerformanceMetricsTabHelper::FromWebState(&fake_web_state);
+
+  base::DictValue main_frame_dict;
+  main_frame_dict.Set(web_performance_metrics::kMetricKey,
+                      web_performance_metrics::kInteractionToNextPaintMetric);
+  base::ListValue main_durations;
+  main_durations.Append(base::Milliseconds(85).InMillisecondsF());
+  main_frame_dict.Set(web_performance_metrics::kDurationsKey,
+                      std::move(main_durations));
+  main_frame_dict.Set(web_performance_metrics::kInteractionCountKey, 1);
+  main_frame_dict.Set(web_performance_metrics::kFrameIdKey, "main_1");
+  web::ScriptMessage main_frame_message(
+      std::make_unique<base::Value>(std::move(main_frame_dict)),
+      /*is_user_interacting=*/true, /*is_main_frame=*/true,
+      /*request_url=*/GURL("https://chromium.org"),
+      url::Origin::Create(GURL("https://chromium.org")));
+
+  WebPerformanceMetricsJavaScriptFeature::GetInstance()->ScriptMessageReceived(
+      &fake_web_state, main_frame_message);
+
+  tab_helper->FlushInteractionToNextPaintMetrics();
+
+  histogram_tester.ExpectTotalCount(
+      web_performance_metrics::kInteractionToNextPaintMainFrameHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      web_performance_metrics::kInteractionToNextPaintSubFrameHistogram, 0);
+  histogram_tester.ExpectTotalCount(
+      web_performance_metrics::kAggregateInteractionToNextPaintHistogram, 0);
+}
+
 // Tests that LogInteractionToNextPaint parses dictionary payloads and records
 // interaction timing data for both main frame and subframes.
 TEST_F(WebPerformanceMetricsJavaScriptFeatureTest, LogInteractionToNextPaint) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIOSWebPerformanceMetricsINP);
+
   base::HistogramTester histogram_tester;
   web::FakeWebState fake_web_state;
   WebPerformanceMetricsTabHelper::CreateForWebState(&fake_web_state);

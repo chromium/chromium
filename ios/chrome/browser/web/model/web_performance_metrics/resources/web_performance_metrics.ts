@@ -18,9 +18,15 @@ const WEB_PERFORMANCE_METRICS_HANDLER_NAME = 'WebPerformanceMetricsHandler';
 let loadedFromCache = false;
 let inpObserver: PerformanceObserver|null = null;
 
-// TODO(crbug.com/525390779): Enable INP monitoring once bugs have been ironed
-// out.
-const isINPEnabled = false;
+// Placeholder replaced at script injection time based on the state of
+// `kIOSWebPerformanceMetricsINP`.
+declare const gCrWebPlaceholderWebPerformanceMetricsINP: boolean;
+
+// Returns true when Interaction to Next Paint (INP) monitoring is enabled.
+// Corresponds to `kIOSWebPerformanceMetricsINP`.
+function isWebPerformanceMetricsINPEnabled(): boolean {
+  return gCrWebPlaceholderWebPerformanceMetricsINP;
+}
 
 // Manager to handle the Interaction To Next Paint (INP) metric.
 const interactionManager = new InteractionManager();
@@ -65,7 +71,8 @@ function processINPEvents(eventEntries: PerformanceObserverEntryList): void {
 // destroyed or the page is navigated away from. This only sends to the browser
 // the data needed to calculate the metric.
 function sendINPData(): void {
-  if (!isINPEnabled || interactionManager.totalCount === 0) {
+  if (!isWebPerformanceMetricsINPEnabled() ||
+      interactionManager.totalCount === 0) {
     return;
   }
   const response = {
@@ -133,7 +140,7 @@ function registerPerformanceObserver(): void {
 
 // Register PerformanceObserver to observe 'event' timing entries for INP.
 function registerINPObserver(): void {
-  if (!isINPEnabled) {
+  if (!isWebPerformanceMetricsINPEnabled()) {
     return;
   }
   try {
@@ -173,6 +180,6 @@ function registerPageCacheListeners(): void {
 }
 
 registerPerformanceObserver();
-registerINPObserver();
 registerInputEventListeners();
 registerPageCacheListeners();
+registerINPObserver();

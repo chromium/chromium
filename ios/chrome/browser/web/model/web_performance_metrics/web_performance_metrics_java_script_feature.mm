@@ -6,12 +6,15 @@
 
 #import <limits>
 
+#import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/strings/strcat.h"
 #import "base/values.h"
+#import "ios/chrome/browser/web/model/web_performance_metrics/features.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_java_script_feature_util.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
@@ -21,14 +24,29 @@ namespace {
 constexpr char kPerformanceMetricsScript[] = "web_performance_metrics";
 constexpr char kWebPerformanceMetricsScriptName[] =
     "WebPerformanceMetricsHandler";
+
+// Helper function to return the dynamic map of feature placeholders to their
+// corresponding C++ feature states.
+web::JavaScriptFeature::FeatureScript::PlaceholderReplacements
+GetReplacements() {
+  return @{
+    @"gCrWebPlaceholderWebPerformanceMetricsINP" :
+            base::FeatureList::IsEnabled(kIOSWebPerformanceMetricsINP)
+        ? @"true"
+        : @"false",
+  };
+}
 }  // namespace
 
 WebPerformanceMetricsJavaScriptFeature::WebPerformanceMetricsJavaScriptFeature()
-    : JavaScriptFeature(web::ContentWorld::kIsolatedWorld,
-                        {FeatureScript::CreateWithFilename(
-                            kPerformanceMetricsScript,
-                            FeatureScript::InjectionTime::kDocumentStart,
-                            FeatureScript::TargetFrames::kAllFrames)}) {}
+    : JavaScriptFeature(
+          web::ContentWorld::kIsolatedWorld,
+          {FeatureScript::CreateWithFilename(
+              kPerformanceMetricsScript,
+              FeatureScript::InjectionTime::kDocumentStart,
+              FeatureScript::TargetFrames::kAllFrames,
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow,
+              base::BindRepeating(&GetReplacements))}) {}
 
 WebPerformanceMetricsJavaScriptFeature::
     ~WebPerformanceMetricsJavaScriptFeature() = default;
@@ -104,6 +122,10 @@ void WebPerformanceMetricsJavaScriptFeature::LogInteractionToNextPaint(
     web::WebState* web_state,
     const base::DictValue& body_dict,
     bool is_main_frame) {
+  if (!base::FeatureList::IsEnabled(kIOSWebPerformanceMetricsINP)) {
+    return;
+  }
+
   // Extract durations data for the frame.
   const auto* durations_list =
       body_dict.FindList(web_performance_metrics::kDurationsKey);

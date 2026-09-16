@@ -6,8 +6,17 @@ import("//ios/build/config.gni")
 import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("web_performance_metrics") {
   deps = [
+    ":features",
     ":web_performance_metrics_js",
     "//base",
     "//ios/web/public",
@@ -29,6 +38,7 @@ source_set("unit_tests") {
   testonly = true
 
   deps = [
+    ":features",
     ":web_performance_metrics",
     "//base",
     "//base/test:test_support",
