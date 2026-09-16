@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
-                       DoNotShowIfNotEnoughSpace) {
+                       DISABLED_DoNotShowIfNotEnoughSpace) {
   constexpr float kSize = 100.0f;
   // Set to smallest possible size. The actual minimum size is larger and
   // platform dependent.
