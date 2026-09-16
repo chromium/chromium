@@ -227,6 +227,7 @@ enum ItemIdentifier {
   configuration.titleColor = [UIColor colorNamed:kBlueColor];
   cell.accessibilityIdentifier =
       kAtMemoryManageEnhancedAutofillItemAccessibilityIdentifier;
+  cell.accessibilityTraits |= UIAccessibilityTraitButton;
   cell.contentConfiguration = configuration;
   cell.accessoryType = UITableViewCellAccessoryNone;
   cell.selectionStyle = UITableViewCellSelectionStyleDefault;
@@ -248,6 +249,7 @@ enum ItemIdentifier {
     [weakSelf.mutator didSelectGranularFillItem:item];
   };
   cell.contentConfiguration = configuration;
+  cell.accessibilityTraits &= ~UIAccessibilityTraitButton;
   cell.accessibilityIdentifier =
       GetAtMemoryGranularFillCellAccessibilityIdentifier(item.attributeName);
   cell.isAccessibilityElement = NO;

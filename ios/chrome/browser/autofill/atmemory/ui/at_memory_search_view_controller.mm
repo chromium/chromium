@@ -636,6 +636,7 @@ enum class ItemIdentifier {
       [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
   cell.contentConfiguration = configuration;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.accessibilityTraits |= UIAccessibilityTraitButton;
   cell.accessibilityIdentifier =
       GetAtMemorySearchResultCellAccessibilityIdentifier(itemIdentifier.title);
 
@@ -660,6 +661,7 @@ enum class ItemIdentifier {
               forState:UIControlStateNormal];
   infoButton.tintColor = [UIColor colorNamed:kBlueColor];
   infoButton.tag = item.index;
+  infoButton.accessibilityTraits |= UIAccessibilityTraitButton;
   infoButton.accessibilityIdentifier =
       GetAtMemorySearchResultInfoButtonAccessibilityIdentifier(item.title);
   infoButton.accessibilityLabel = l10n_util::GetNSStringF(
@@ -695,6 +697,7 @@ enum class ItemIdentifier {
   UITableViewCell* cell =
       [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
   cell.contentConfiguration = configuration;
+  cell.accessibilityTraits |= UIAccessibilityTraitButton;
   cell.accessibilityIdentifier = kAtMemorySearchCellAccessibilityIdentifier;
 
   return cell;
@@ -721,6 +724,7 @@ enum class ItemIdentifier {
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.contentView.alpha = kDefaultCellAlpha;
   cell.userInteractionEnabled = NO;
+  cell.accessibilityTraits &= ~UIAccessibilityTraitButton;
   cell.accessibilityIdentifier = kAtMemoryNoDataCellAccessibilityIdentifier;
 
   return cell;
@@ -749,6 +753,7 @@ enum class ItemIdentifier {
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.contentView.alpha = kDisabledCellAlpha;
   cell.userInteractionEnabled = NO;
+  cell.accessibilityTraits &= ~UIAccessibilityTraitButton;
   cell.accessibilityIdentifier =
       kAtMemoryNoConnectionCellAccessibilityIdentifier;
 
@@ -782,6 +787,7 @@ enum class ItemIdentifier {
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   cell.contentView.alpha = kDefaultCellAlpha;
   cell.userInteractionEnabled = YES;
+  cell.accessibilityTraits |= UIAccessibilityTraitButton;
   cell.accessibilityIdentifier =
       kAtMemoryUnsupportedQueryCellAccessibilityIdentifier;
 
@@ -808,6 +814,7 @@ enum class ItemIdentifier {
   cell.contentConfiguration = configuration;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.userInteractionEnabled = NO;
+  cell.accessibilityTraits &= ~UIAccessibilityTraitButton;
   cell.accessibilityIdentifier = kAtMemoryFetchingCellAccessibilityIdentifier;
 
   return cell;
