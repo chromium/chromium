@@ -225,6 +225,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void DismissFre(searchbox::mojom::FreStage stage) override {}
   void ShowHotkeyDropdown(const gfx::Rect& anchor_bounds) override {}
   void OpenHotkeySettings() override {}
+  void OnEscapePressed() override {}
   void set_delegate(Delegate* delegate) { omnibox_delegate_ = delegate; }
 
  protected:

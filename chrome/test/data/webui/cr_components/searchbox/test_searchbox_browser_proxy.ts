@@ -33,6 +33,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'addFileContext',
       'addTabContext',
       'clearFiles',
+      'onEscapePressed',
       'deleteAutocompleteMatch',
       'deleteContext',
       'deleteTabContext',
@@ -363,6 +364,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   openHotkeySettings() {
     this.methodCalled('openHotkeySettings');
+  }
+
+  onEscapePressed() {
+    this.methodCalled('onEscapePressed');
   }
 }
 

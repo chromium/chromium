@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -98,6 +99,7 @@ class MockOmniboxEverywhereService : public OmniboxEverywhereService {
                    navigation_handle_callback),
               (override));
   MOCK_METHOD(void, ShowProfilePicker, (), (override));
+  MOCK_METHOD(void, HidePopup, (), (override));
   MOCK_METHOD(void, OnDrivePickerOpened, (), (override));
   MOCK_METHOD(void, OnDrivePickerClosed, (), (override));
   MOCK_METHOD(void, OnHotkeyDropdownOpened, (), (override));
@@ -636,4 +638,12 @@ TEST_F(OmniboxEverywhereHandlerTest, CalculateContextMenuAnchorPoint_RTL) {
                 anchor_rect, container_bounds),
             gfx::Point(140, 260));
 }
+
+TEST_F(OmniboxEverywhereHandlerTest, OnEscapePressedHidesPopup) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_service_, HidePopup()).WillOnce([&]() { run_loop.Quit(); });
+  handler_->OnEscapePressed();
+  run_loop.Run();
+}
+
 }  // namespace

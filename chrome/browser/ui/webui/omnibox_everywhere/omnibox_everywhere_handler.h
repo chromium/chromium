@@ -64,6 +64,7 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
                         StartScreenshareCallback callback) override;
   void CaptureRegionScreenshot(
       CaptureRegionScreenshotCallback callback) override;
+  void OnEscapePressed() override;
 
   // SearchboxHandler:
   bool SupportsKeywordMode() const override;

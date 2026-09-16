@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -475,6 +476,14 @@ void OmniboxEverywhereHandler::PushFreState() {
 
 void OmniboxEverywhereHandler::OpenHotkeySettings() {
   chrome::ShowSettingsSubPageForProfile(profile_, chrome::kSearchSubPage);
+}
+
+void OmniboxEverywhereHandler::OnEscapePressed() {
+  if (service_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&OmniboxEverywhereService::HidePopup,
+                                  base::Unretained(service_)));
+  }
 }
 
 void OmniboxEverywhereHandler::OnProfileAvatarChanged(

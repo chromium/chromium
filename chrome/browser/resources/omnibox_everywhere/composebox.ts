@@ -388,6 +388,10 @@ export class OmniboxEverywhereComposeboxElement extends
       }, timeoutMs);
     });
   }
+
+  override handleEscapeKeyLogic() {
+    this.onCancelClick();
+  }
 }
 
 
