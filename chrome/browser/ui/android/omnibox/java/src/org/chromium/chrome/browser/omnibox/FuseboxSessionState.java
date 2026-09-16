@@ -28,6 +28,7 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.PageClassificationUtils;
 import org.chromium.components.omnibox.TextSelection;
+import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -332,6 +333,7 @@ public class FuseboxSessionState implements UserData {
 
     private void onRequestTypeChanged(@AutocompleteRequestType int requestType) {
         if (mComposeBoxQueryControllerBridge != null) {
+            @ToolMode
             int toolMode =
                     ToolModeUtils.getToolModeForRequestType(
                             requestType, /* hasAttachments= */ false);

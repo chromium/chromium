@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
+import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.url.GURL;
 
@@ -418,7 +419,7 @@ public class AutocompleteInput implements UserData {
     }
 
     /** Returns the Autocomplete Tool that is currently selected. */
-    public int getToolMode() {
+    public @ToolMode int getToolMode() {
         return ToolModeUtils.getToolModeForRequestType(getRequestType(), mHasAttachments);
     }
 
