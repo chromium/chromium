@@ -62,8 +62,17 @@ PassageEmbedderModelLoader::PassageEmbedderModelLoader(
 }
 
 PassageEmbedderModelLoader::~PassageEmbedderModelLoader() {
-  model_provider_->RemoveObserverForOptimizationTargetModel(
-      optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER, this);
+  Shutdown();
+}
+
+void PassageEmbedderModelLoader::Shutdown() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (model_provider_) {
+    model_provider_->RemoveObserverForOptimizationTargetModel(
+        optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER, this);
+    model_provider_ = nullptr;
+  }
+  current_metadata_.reset();
 }
 
 bool PassageEmbedderModelLoader::IsModelLoaded() const {

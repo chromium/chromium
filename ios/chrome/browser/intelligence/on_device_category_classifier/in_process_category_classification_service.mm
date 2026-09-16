@@ -69,8 +69,15 @@ InProcessCategoryClassificationService::
 
 void InProcessCategoryClassificationService::Shutdown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
+  if (category_classifier_) {
+    category_classifier_->RemoveObserver(this);
+    category_classifier_.reset();
+  }
+  model_loader_.Shutdown();
+  model_provider_ = nullptr;
   embedder_wrapper_.Reset();
   request_tracker_.CancelAll();
+  in_memory_embeddings_cache_.Clear();
 }
 
 bool InProcessCategoryClassificationService::HasCachedEmbeddings(
