@@ -137,8 +137,7 @@
   transition: var(--voice-search-fade-transition);
 }
 
-:host([live-transcript-enabled]:not([audio-wave-enabled]))
-    #container:not(.has-error) {
+:host([live-transcript-enabled]) #container:not(.has-error) {
   height: auto;
   inset: auto;
   justify-content: space-between;
@@ -157,7 +156,7 @@
   word-break: break-word;
 }
 
-:host([live-transcript-enabled]:not([audio-wave-enabled])) #bottomActions {
+:host([live-transcript-enabled]) #bottomActions {
   align-self: flex-end;
   margin-bottom: 0;
   margin-inline-end: var(--voice-bottom-actions-inset-inline-end, 12px);
@@ -211,7 +210,7 @@
 }
 
 :host([audio-wave-enabled]) #container {
-  padding-bottom: 0;
+  height: 100%;
   padding-top: 0;
 }
 
@@ -221,19 +220,14 @@
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
-  max-height: 188px;
-  overflow-y: auto;
   padding-bottom: 0;
-  padding-inline-end: 20px;
-  padding-inline-start: 20px;
-  padding-top: 20px;
+  padding-inline-end: 48px;
+  padding-inline-start: 48px;
+  padding-top: 18px;
   text-align: start;
-  word-break: break-word;
 }
 
 :host([audio-wave-enabled]) #input.empty {
-  max-height: 44px;
-  overflow-y: hidden;
   padding-inline-end: 0;
   padding-inline-start: 0;
   padding-top: 20px;
@@ -245,16 +239,6 @@
   font-size: 18px;
   font-weight: 500;
   line-height: 24px;
-}
-
-/* Positioned absolute at bottom-end to stay fixed during dynamic height
- * expansion (16px bottom in single-line, 8px in multiline per Figma spec). */
-:host([audio-wave-enabled]) #bottomActions {
-  bottom: var(--voice-bottom-actions-bottom, 12px);
-  inset-inline-end: var(--voice-bottom-actions-inset-inline-end, 16px);
-  margin: 0;
-  position: absolute;
-  transition: bottom 200ms ease-in-out, var(--voice-search-fade-transition);
 }
 
 /* Use opacity and pointer-events to utilize fade transition
