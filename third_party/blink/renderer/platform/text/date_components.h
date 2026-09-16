@@ -52,16 +52,7 @@ class PLATFORM_EXPORT DateComponents {
   DISALLOW_NEW();
 
  public:
-  DateComponents()
-      : millisecond_(0),
-        second_(0),
-        minute_(0),
-        hour_(0),
-        month_day_(0),
-        month_(0),
-        year_(0),
-        week_(0),
-        type_(kInvalid) {}
+  DateComponents() = default;
 
   enum Type {
     kInvalid,
@@ -209,16 +200,16 @@ class PLATFORM_EXPORT DateComponents {
     kSaturday,
   };
 
-  int millisecond_;  // 0 - 999
-  int second_;
-  int minute_;
-  int hour_;
-  int month_day_;  // 1 - 31
-  int month_;      // 0:January - 11:December
-  int year_;       // 1 - 275760
-  int week_;       // 1 - 53
+  int millisecond_ = 0;  // 0 - 999
+  int second_ = 0;
+  int minute_ = 0;
+  int hour_ = 0;
+  int month_day_ = 0;  // 1 - 31
+  int month_ = 0;      // 0:January - 11:December
+  int year_ = 0;       // 1 - 275760
+  int week_ = 0;       // 1 - 53
 
-  Type type_;
+  Type type_ = kInvalid;
 };
 
 }  // namespace blink

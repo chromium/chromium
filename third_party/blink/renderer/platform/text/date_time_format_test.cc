@@ -36,18 +36,15 @@ class DateTimeFormatTest : public testing::Test {
 
   struct Token {
     String string;
-    int count;
-    FieldType field_type;
+    int count = 0;
+    FieldType field_type = DateTimeFormat::kFieldTypeLiteral;
 
-    Token(FieldType field_type, int count = 1)
+    explicit Token(FieldType field_type, int count = 1)
         : count(count), field_type(field_type) {
       DCHECK_NE(field_type, DateTimeFormat::kFieldTypeLiteral);
     }
 
-    Token(const String& string)
-        : string(string),
-          count(0),
-          field_type(DateTimeFormat::kFieldTypeLiteral) {}
+    explicit Token(const String& string) : string(string) {}
 
     bool operator==(const Token& other) const {
       return field_type == other.field_type && count == other.count &&

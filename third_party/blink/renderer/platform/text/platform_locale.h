@@ -202,7 +202,7 @@ class PLATFORM_EXPORT Locale {
       "January", "February", "March",     "April",   "May",      "June",
       "July",    "August",   "September", "October", "November", "December"};
 
-  Locale() : has_locale_data_(false) {}
+  Locale() = default;
   virtual void InitializeLocaleData() = 0;
   void SetLocaleData(const Vector<String, kDecimalSymbolsSize>&,
                      const String& positive_prefix,
@@ -223,10 +223,10 @@ class PLATFORM_EXPORT Locale {
   String negative_prefix_;
   String negative_suffix_;
   String acceptable_number_characters_;
-  bool has_locale_data_;
+  bool has_locale_data_ = false;
   // Does the locale use single character filtering to do additional number
   // input validation?
-  bool uses_single_char_number_filtering_;
+  bool uses_single_char_number_filtering_ = false;
 };
 
 }  // namespace blink

@@ -96,8 +96,7 @@ static inline String NormalizeWhitespace(const String& date_time_format) {
 LocaleMac::LocaleMac(NSLocale* locale)
     : locale_(locale),
       gregorian_calendar_([[NSCalendar alloc]
-          initWithCalendarIdentifier:NSCalendarIdentifierGregorian]),
-      did_initialize_number_data_(false) {
+          initWithCalendarIdentifier:NSCalendarIdentifierGregorian]) {
   NSArray* available_languages = NSLocale.ISOLanguageCodes;
   // NSLocale returns a lower case NSLocaleLanguageCode so we don't have care
   // about case.

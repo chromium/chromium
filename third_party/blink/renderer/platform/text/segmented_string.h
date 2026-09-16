@@ -183,20 +183,10 @@ class PLATFORM_EXPORT SegmentedString {
   DISALLOW_NEW();
 
  public:
-  SegmentedString()
-      : number_of_characters_consumed_prior_to_current_string_(0),
-        number_of_characters_consumed_prior_to_current_line_(0),
-        current_line_(0),
-        closed_(false),
-        empty_(true),
-        current_char_('\0') {}
+  SegmentedString() = default;
 
   SegmentedString(const String& str)
       : current_string_(str),
-        number_of_characters_consumed_prior_to_current_string_(0),
-        number_of_characters_consumed_prior_to_current_line_(0),
-        current_line_(0),
-        closed_(false),
         empty_(!str.length()),
         current_char_(empty_ ? '\0' : current_string_.GetCurrentChar()) {}
 
@@ -390,13 +380,13 @@ class PLATFORM_EXPORT SegmentedString {
   bool IsComposite() const { return !substrings_.empty(); }
 
   SegmentedSubstring current_string_;
-  int number_of_characters_consumed_prior_to_current_string_;
-  int number_of_characters_consumed_prior_to_current_line_;
-  int current_line_;
+  int number_of_characters_consumed_prior_to_current_string_ = 0;
+  int number_of_characters_consumed_prior_to_current_line_ = 0;
+  int current_line_ = 0;
   Deque<SegmentedSubstring> substrings_;
-  bool closed_;
-  bool empty_;
-  UChar current_char_;
+  bool closed_ = false;
+  bool empty_ = true;
+  UChar current_char_ = '\0';
   raw_ptr<const SegmentedString> next_segmented_string_ = nullptr;
 };
 
