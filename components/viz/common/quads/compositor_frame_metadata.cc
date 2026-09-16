@@ -161,6 +161,7 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       display_transform_hint(other.display_transform_hint),
       is_mobile_optimized(other.is_mobile_optimized),
       transition_directives(other.transition_directives),
+      capture_bounds(other.capture_bounds),
       has_shared_element_resources(other.has_shared_element_resources),
       screenshot_destination(other.screenshot_destination),
       is_software(other.is_software),

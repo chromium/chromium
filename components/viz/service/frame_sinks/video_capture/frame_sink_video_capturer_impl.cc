@@ -1111,6 +1111,28 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
                                    1.0f / scale_factor)
             : region_properties->render_pass_subrect;
     metadata.source_size = source_size;
+  } else if (IsEntireTabCapture(target_->sub_target) &&
+             !frame_metadata.capture_bounds.IsEmpty()) {
+    // In full-frame mode (multi-target or uncropped capture), populate
+    // region_capture_bounds with the bounding rectangles for active targets.
+    const float scale_x =
+        static_cast<float>(content_rect.width()) / source_size.width();
+    const float scale_y =
+        static_cast<float>(content_rect.height()) / source_size.height();
+    std::vector<std::pair<base::Token, gfx::Rect>> scaled_bounds;
+    scaled_bounds.reserve(frame_metadata.capture_bounds.bounds().size());
+    for (const auto& [crop_id, rect] : frame_metadata.capture_bounds.bounds()) {
+      gfx::Rect scaled_rect = gfx::ScaleToEnclosingRect(rect, scale_x, scale_y);
+      scaled_rect.Offset(content_rect.OffsetFromOrigin());
+      scaled_rect.Intersect(content_rect);
+      scaled_bounds.emplace_back(crop_id, scaled_rect);
+    }
+    // `bounds()` is a `base::flat_map<base::Token, gfx::Rect>`, so elements are
+    // iterated in strictly increasing key order with unique keys. Since we only
+    // modify the rect values, `scaled_bounds` preserves this sorted unique
+    // order.
+    metadata.region_capture_bounds = base::flat_map<base::Token, gfx::Rect>(
+        base::sorted_unique, std::move(scaled_bounds));
   }
   // Note that this is done unconditionally, as a new sub-capture-target version
   // may indicate that the stream has been successfully uncropped.

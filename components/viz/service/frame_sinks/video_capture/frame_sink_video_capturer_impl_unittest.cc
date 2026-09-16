@@ -2404,6 +2404,112 @@ TEST_P(FrameSinkVideoCapturerTest, ConfiguresSharedImageBlitRequest) {
   StopCapture();
 }
 
+TEST_P(FrameSinkVideoCapturerTest,
+       RegionCaptureBoundsPropagatedInFullFrameMode) {
+  SwitchToSizeSet(kSizeSets[2]);
+  const auto kCropId1 = RegionCaptureCropId::CreateRandom();
+  const auto kCropId2 = RegionCaptureCropId::CreateRandom();
+  constexpr gfx::Rect kBounds1{10, 2, 20, 10};
+  constexpr gfx::Rect kBounds2{30, 4, 20, 10};
+
+  CompositorFrameMetadata metadata;
+  metadata.device_scale_factor = 1.0f;
+  metadata.capture_bounds.Set(kCropId1, kBounds1);
+  metadata.capture_bounds.Set(kCropId2, kBounds2);
+  frame_sink_.set_metadata(metadata);
+
+  // Set target to entire tab (full frame).
+  VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id,
+                            VideoCaptureSubTarget());
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(target))
+      .WillRepeatedly(Return(&frame_sink_));
+  capturer_->ChangeTarget(std::move(target), /*sub_capture_target_version=*/0);
+
+  MockConsumer consumer;
+  EXPECT_CALL(consumer, OnFrameCapturedMock()).Times(1);
+  StartCapture(&consumer);
+
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  frame_sink_.SendCopyOutputResult(0);
+  ASSERT_EQ(1, consumer.num_frames_received());
+
+  scoped_refptr<media::VideoFrame> frame = consumer.TakeFrame(0);
+  ASSERT_TRUE(frame);
+  const auto& bounds = frame->metadata().region_capture_bounds;
+  EXPECT_EQ(bounds.size(), 2u);
+  EXPECT_EQ(bounds.at(kCropId1), kBounds1);
+  EXPECT_EQ(bounds.at(kCropId2), kBounds2);
+  EXPECT_FALSE(frame->metadata().region_capture_rect.has_value());
+
+  StopCapture();
+}
+
+TEST_P(FrameSinkVideoCapturerTest,
+       RegionCaptureBoundsEmptyInFullFrameModeWhenNoBounds) {
+  SwitchToSizeSet(kSizeSets[2]);
+  CompositorFrameMetadata metadata;
+  metadata.device_scale_factor = 1.0f;
+  // capture_bounds is empty.
+  frame_sink_.set_metadata(metadata);
+
+  // Set target to entire tab (full frame).
+  VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id,
+                            VideoCaptureSubTarget());
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(target))
+      .WillRepeatedly(Return(&frame_sink_));
+  capturer_->ChangeTarget(std::move(target), /*sub_capture_target_version=*/0);
+
+  MockConsumer consumer;
+  EXPECT_CALL(consumer, OnFrameCapturedMock()).Times(1);
+  StartCapture(&consumer);
+
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  frame_sink_.SendCopyOutputResult(0);
+  ASSERT_EQ(1, consumer.num_frames_received());
+
+  scoped_refptr<media::VideoFrame> frame = consumer.TakeFrame(0);
+  ASSERT_TRUE(frame);
+  EXPECT_TRUE(frame->metadata().region_capture_bounds.empty());
+  EXPECT_FALSE(frame->metadata().region_capture_rect.has_value());
+
+  StopCapture();
+}
+
+TEST_P(FrameSinkVideoCapturerTest,
+       RegionCaptureBoundsEmptyDuringSubtreeCapture) {
+  SwitchToSizeSet(kSizeSets[2]);
+  const auto kCropId = RegionCaptureCropId::CreateRandom();
+  constexpr gfx::Rect kBounds{10, 2, 20, 10};
+
+  CompositorFrameMetadata metadata;
+  metadata.device_scale_factor = 1.0f;
+  metadata.capture_bounds.Set(kCropId, kBounds);
+  frame_sink_.set_metadata(metadata);
+  frame_sink_.set_capture_bounds(gfx::Rect(kSizeSets[2].source_size));
+
+  // Set target to subtree capture (e.g. restrictTo).
+  VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id,
+                            SubtreeCaptureId(base::Token(0u, 1234567u)));
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(target))
+      .WillRepeatedly(Return(&frame_sink_));
+  capturer_->ChangeTarget(std::move(target), /*sub_capture_target_version=*/0);
+
+  MockConsumer consumer;
+  EXPECT_CALL(consumer, OnFrameCapturedMock()).Times(1);
+  StartCapture(&consumer);
+
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  frame_sink_.SendCopyOutputResult(0);
+  ASSERT_EQ(1, consumer.num_frames_received());
+
+  scoped_refptr<media::VideoFrame> frame = consumer.TakeFrame(0);
+  ASSERT_TRUE(frame);
+  EXPECT_TRUE(frame->metadata().region_capture_bounds.empty());
+  EXPECT_FALSE(frame->metadata().region_capture_rect.has_value());
+
+  StopCapture();
+}
+
 std::vector<std::tuple<mojom::BufferFormatPreference, media::VideoPixelFormat>>
 GetFrameSinkVideoCapturerTestParams() {
   std::vector<
