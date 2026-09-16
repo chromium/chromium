@@ -304,7 +304,7 @@ ______________________________________________________________________
    reviewers before Pinpoint validation:
 
    ```bash
-   git cl upload -o wip --no-autocc --bypass-hooks -f -m "Performance optimization for Speedometer 3"
+   git cl upload -o wip --no-autocc -m "[Description]" --cq-dry-run
    ```
 
 4. Retrieve the Gerrit Issue ID:

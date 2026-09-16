@@ -203,7 +203,7 @@ ______________________________________________________________________
   1. Commit the changes on branch `[BranchName]` with a detailed CL description:
      - Include architectural explanation and benchmark targets.
      - Include tags at bottom: `TAG=agy` and `CONV=[ConversationID]`.
-  2. Upload CL: `git cl upload -m "[Description]" --cq-dry-run`
+  2. Upload CL: `git cl upload -o wip --no-autocc -m "[Description]" --cq-dry-run`
   3. Retrieve Issue ID: `git cl issue`
   4. Trigger 150-iteration Pinpoint try job:
      `pp c -c m1 -t sp3 -r 150`
