@@ -385,7 +385,8 @@ class GPU_GLES2_EXPORT FramebufferManager {
   bool IsComplete(const Framebuffer* framebuffer);
 
   std::vector<std::pair<scoped_refptr<Framebuffer>, GLenum>>
-  GetBindingFramebuffersForTexture(TextureRef* texture_ref);
+  GetBindingFramebuffersForTexture(TextureRef* texture_ref,
+                                   bool include_color_attachments = false);
 
   std::vector<std::pair<scoped_refptr<Framebuffer>, GLenum>>
   GetBindingFramebuffersForRenderbuffer(Renderbuffer* renderbuffer);
