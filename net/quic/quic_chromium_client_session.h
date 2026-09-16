@@ -142,6 +142,13 @@ enum class ProbingResult {
   FAILURE,                          // Probing failed for other reason.
 };
 
+// Reason for cancelling an in-flight connectivity probing attempt.
+enum class ProbingCancellationReason {
+  kWriterError,          // Socket write error during probing.
+  kNetworkDisconnected,  // Candidate network disconnected.
+  kSuperseded,           // Preempted by a newer migration or probing attempt.
+};
+
 // All possible combinations of observed ECN codepoints in a session. Several of
 // these should not be sent by a well-behaved sender.
 // These values are persisted to logs. Entries should not be renumbered
@@ -743,8 +750,16 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnServerPreferredAddressProbeSucceeded(
       std::unique_ptr<QuicMigrationAttemptContext> migration_context);
 
-  void OnProbeFailed(handles::NetworkHandle network,
-                     const quic::QuicSocketAddress& peer_address);
+  void LogProbeFailure(handles::NetworkHandle network,
+                       const quic::QuicSocketAddress& peer_address);
+
+  // If there is an ongoing probing on <network, peer_address>, marks the
+  // attempt according to `reason` and cancels path validation.
+  void MaybeCancelProbing(
+      handles::NetworkHandle network,
+      const quic::QuicSocketAddress& peer_address,
+      ProbingCancellationReason reason,
+      std::optional<QuicMigrationAttemptCause> superseded_cause = std::nullopt);
 
   // quic::QuicSpdySession methods:
   size_t WriteHeadersOnHeadersStream(

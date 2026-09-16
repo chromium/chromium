@@ -967,7 +967,8 @@ void QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
 
 void QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
     NotifySessionProbeFailed(handles::NetworkHandle network) {
-  session_->OnProbeFailed(network, peer_address_);
+  session_->MaybeCancelProbing(network, peer_address_,
+                               ProbingCancellationReason::kWriterError);
 }
 
 void QuicChromiumClientSession::QuicChromiumPathValidationWriterDelegate::
@@ -2692,7 +2693,7 @@ void QuicChromiumClientSession::OnServerPreferredAddressProbeSucceeded(
   HistogramAndLogMigrationSuccess(connection_id());
 }
 
-void QuicChromiumClientSession::OnProbeFailed(
+void QuicChromiumClientSession::LogProbeFailure(
     handles::NetworkHandle network,
     const quic::QuicSocketAddress& peer_address) {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_CONNECTIVITY_PROBING_FINISHED,
@@ -2703,18 +2704,6 @@ void QuicChromiumClientSession::OnProbeFailed(
 
   LogProbeResultToHistogram(current_migration_cause_, false);
 
-  auto* context = static_cast<QuicChromiumPathValidationContext*>(
-      connection()->GetPathValidationContext());
-
-  if (!context) {
-    return;
-  }
-
-  if (context->network() == network &&
-      context->peer_address() == peer_address) {
-    connection()->CancelPathValidation();
-  }
-
   if (network != handles::kInvalidNetworkHandle) {
     // Probing failure can be ignored.
     DVLOG(1) << "Connectivity probing failed on <network: " << network
@@ -2724,6 +2713,50 @@ void QuicChromiumClientSession::OnProbeFailed(
         << "Client probing failed on the default network, still using "
            "non-default network.";
   }
+}
+
+void QuicChromiumClientSession::MaybeCancelProbing(
+    handles::NetworkHandle network,
+    const quic::QuicSocketAddress& peer_address,
+    ProbingCancellationReason reason,
+    std::optional<QuicMigrationAttemptCause> superseded_cause) {
+  auto* context = static_cast<QuicChromiumPathValidationContext*>(
+      connection()->GetPathValidationContext());
+  if (!context || context->network() != network ||
+      context->peer_address() != peer_address) {
+    return;
+  }
+
+  quic::PathValidationFailure::Reason failure_reason =
+      quic::PathValidationFailure::Reason::kUnknown;
+  switch (reason) {
+    case ProbingCancellationReason::kWriterError:
+      // No need to set the migration attempt context outcome here. This will be
+      // done within LogPathValidationFailure.
+      CHECK(!superseded_cause.has_value());
+      failure_reason = quic::PathValidationFailure::Reason::kUnknown;
+      break;
+    case ProbingCancellationReason::kNetworkDisconnected:
+      // No need to set the migration attempt context outcome here. This will be
+      // done within LogPathValidationFailure.
+      CHECK(!superseded_cause.has_value());
+      failure_reason = quic::PathValidationFailure::Reason::kNotConnected;
+      break;
+    case ProbingCancellationReason::kSuperseded:
+      // We need to set the superseded cause here because within
+      // LogPathValidationFailure we do not have access to the new attempt that
+      // is superseding this one. TODO(crbug.com/557126867): Consider, for
+      // example, extending QUICHE's quic::PathValidationFailure::Reason to
+      // support all of QuicMigrationAttemptCause's values. This would let us
+      // move all logging for probes to LogPathValidationFailure.
+      CHECK(superseded_cause.has_value());
+      context->migration_context()->SetSuperseded(*superseded_cause);
+      failure_reason = quic::PathValidationFailure::Reason::kNewerValidation;
+      break;
+  }
+
+  connection()->CancelPathValidation(
+      quic::PathValidationFailure{failure_reason});
 }
 
 void QuicChromiumClientSession::OnNetworkConnected(
@@ -2786,15 +2819,8 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
       NetLogEventType::QUIC_CONNECTION_MIGRATION_ON_NETWORK_DISCONNECTED,
       "disconnected_network", disconnected_network);
 
-  // Stop probing the disconnected network if there is one.
-  auto* context = static_cast<QuicChromiumPathValidationContext*>(
-      connection()->GetPathValidationContext());
-  if (context && context->network() == disconnected_network &&
-      context->peer_address() == peer_address()) {
-    context->migration_context()->SetIneligible(
-        QuicMigrationAttemptIneligibleReason::kDisconnectedDuringProbing);
-    connection()->CancelPathValidation();
-  }
+  MaybeCancelProbing(disconnected_network, peer_address(),
+                     ProbingCancellationReason::kNetworkDisconnected);
 
   if (disconnected_network == default_network_) {
     DVLOG(1) << "Default network: " << default_network_ << " is disconnected.";
@@ -2957,15 +2983,9 @@ void QuicChromiumClientSession::MigrateNetworkImmediately(
     return;
   }
 
-  // Cancel probing on |network| if there is any.
-  auto* context = static_cast<QuicChromiumPathValidationContext*>(
-      connection()->GetPathValidationContext());
-  if (context && context->network() == network &&
-      context->peer_address() == peer_address()) {
-    context->migration_context()->SetSuperseded(
-        ToQuicMigrationAttemptCause(migration_cause));
-    connection()->CancelPathValidation();
-  }
+  MaybeCancelProbing(network, peer_address(),
+                     ProbingCancellationReason::kSuperseded,
+                     ToQuicMigrationAttemptCause(migration_cause));
   pending_migrate_network_immediately_ = true;
   MigrateWithoutProbing(
       migration_cause, network, ToIPEndPoint(connection()->peer_address()),
@@ -3550,6 +3570,16 @@ void QuicChromiumClientSession::FinishStartProbing(
     return;
   }
 
+  MigrationCause cause = context->cause();
+  if (auto* existing_context = static_cast<QuicChromiumPathValidationContext*>(
+          connection()->GetPathValidationContext())) {
+    // If present, mark the existing probing attempt as superseded to record
+    // what type of migration attempt caused this superseding. The validation
+    // itself will be canceled by `ValidatePath`.
+    existing_context->migration_context()->SetSuperseded(
+        ToQuicMigrationAttemptCause(cause));
+  }
+
   context->reader()->StartReading();
   path_validation_writer_delegate_.set_network(context->target_network());
   path_validation_writer_delegate_.set_peer_address(
@@ -3558,7 +3588,6 @@ void QuicChromiumClientSession::FinishStartProbing(
   IPEndPoint local_address;
   context->reader()->socket()->GetLocalAddress(&local_address);
 
-  MigrationCause cause = context->cause();
   auto path_validation_context =
       std::make_unique<QuicChromiumPathValidationContext>(
           ToQuicSocketAddress(local_address), std::move(context));
@@ -3867,41 +3896,39 @@ void QuicChromiumClientSession::LogPathValidationFailure(
   using enum quic::PathValidationFailure::Reason;
 
   CHECK(context->migration_context());
+  QuicMigrationAttemptContext* migration_context = context->migration_context();
 
   switch (context->failure_reason().value_or(kUnknown)) {
     case kUnknown:
       status = MIGRATION_STATUS_INTERNAL_ERROR;
       reason = "Unknown";
-      context->migration_context()->SetFailure(
+      migration_context->SetFailure(
           QuicMigrationAttemptFailureReason::kProbeFailed);
       break;
     case kStatelessReset:
       status = MIGRATION_STATUS_STATELESS_RESET;
       reason = "Received Stateless Reset";
-      context->migration_context()->SetFailure(
+      migration_context->SetFailure(
           QuicMigrationAttemptFailureReason::kStatelessReset);
       break;
     case kNewerValidation:
       status = MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION;
       reason = "New migration, canceling old validation";
-      // QUICHE cancels pending path validation synchronously when a newer
-      // validation is initiated, but does not propagate the new attempt's
-      // cause across the boundary. Due to that, we report `kUnknown` here.
-      // We should consider marking the context as superseded before triggering
-      // the new validation.
-      context->migration_context()->SetSuperseded(
-          QuicMigrationAttemptCause::kUnknown);
+      // Active cancellations originating from Chromium (e.g., a newer probe
+      // in `FinishStartProbing` or immediate migration in
+      // `MigrateNetworkImmediately`) will have already marked the attempt with
+      // the specific superseded cause before path validation is canceled.
       break;
     case kRetryTimeout:
       status = MIGRATION_STATUS_TIMEOUT;
       reason = "Retry Timeout";
-      context->migration_context()->SetFailure(
+      migration_context->SetFailure(
           QuicMigrationAttemptFailureReason::kProbeTimeout);
       break;
     case kNotConnected:
       status = MIGRATION_STATUS_DISCONNECTING;
       reason = "Disconnecting, abandoning validation";
-      context->migration_context()->SetIneligible(
+      migration_context->SetIneligible(
           QuicMigrationAttemptIneligibleReason::kDisconnectedDuringProbing);
       break;
   }
@@ -3911,7 +3938,7 @@ void QuicChromiumClientSession::LogPathValidationFailure(
   // connection ID. Add the probe connection ID to the Path Validation Context,
   // or add a member to QuicConnection to return the alternate path connection
   // ID.
-  OnProbeFailed(context->network(), context->peer_address());
+  LogProbeFailure(context->network(), context->peer_address());
   HistogramAndLogMigrationFailure(status, connection_id(), reason);
 }
 

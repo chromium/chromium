@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -246,6 +247,84 @@ TEST_F(QuicMigrationAttemptContextTest, SpuriousOutcome) {
   context->SetSuccess();
   histogram_tester.ExpectUniqueSample(
       "Net.Quic.Migration.Attempt.SpuriousOutcome", true, 4);
+}
+
+TEST_F(QuicMigrationAttemptContextTest, SetSuccess) {
+  base::HistogramTester histogram_tester;
+  {
+    auto context = CreateAttemptContext(ON_NETWORK_MADE_DEFAULT);
+    context->SetSuccess();
+  }
+
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger.OnNetworkMadeDefault",
+      true, 1);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.FailureReason",
+                                    0);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Ineligible", 0);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.RedundantOutcome", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
+}
+
+TEST_F(QuicMigrationAttemptContextTest, SetFailure) {
+  struct TestCase {
+    MigrationCause cause;
+    const char* trigger_name;
+    QuicMigrationAttemptFailureReason failure_reason;
+  } test_cases[] = {
+      {ON_WRITE_ERROR, "OnWriteError",
+       QuicMigrationAttemptFailureReason::kSocketConfigFailed},
+      {ON_NETWORK_MADE_DEFAULT, "OnNetworkMadeDefault",
+       QuicMigrationAttemptFailureReason::kProbeTimeout},
+      {ON_NETWORK_DISCONNECTED, "OnNetworkDisconnected",
+       QuicMigrationAttemptFailureReason::kNoUnusedConnectionId},
+      {CHANGE_NETWORK_ON_PATH_DEGRADING, "ChangeNetworkOnPathDegrading",
+       QuicMigrationAttemptFailureReason::kStatelessReset},
+      {ON_NETWORK_MADE_DEFAULT, "OnNetworkMadeDefault",
+       QuicMigrationAttemptFailureReason::kProbeFailed},
+  };
+
+  base::HistogramTester histogram_tester;
+  for (const auto& test_case : test_cases) {
+    auto context = CreateAttemptContext(test_case.cause);
+    context->SetFailure(test_case.failure_reason);
+  }
+
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
+                                      false, std::size(test_cases));
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger.OnWriteError", false, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger.OnNetworkMadeDefault",
+      false, 2);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger.OnNetworkDisconnected",
+      false, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger."
+      "ChangeNetworkOnPathDegrading",
+      false, 1);
+
+  for (const auto& test_case : test_cases) {
+    histogram_tester.ExpectBucketCount(
+        "Net.Quic.Migration.Attempt.FailureReason", test_case.failure_reason, 1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"Net.Quic.Migration.Attempt.FailureReason.ByTrigger.",
+                      test_case.trigger_name}),
+        test_case.failure_reason, 1);
+  }
+
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Ineligible", 0);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Superseded", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.RedundantOutcome", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
 }
 
 }  // namespace
