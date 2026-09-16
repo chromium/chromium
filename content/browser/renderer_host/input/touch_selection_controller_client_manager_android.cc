@@ -21,6 +21,11 @@ TouchSelectionControllerClientManagerAndroid::
     observer.OnManagerWillDestroy(this);
 }
 
+void TouchSelectionControllerClientManagerAndroid::Detach() {
+  rwhv_ = nullptr;
+  active_client_ = nullptr;
+}
+
 // TouchSelectionControllerClientManager implementation.
 void TouchSelectionControllerClientManagerAndroid::DidStopFlinging() {
   // TODO(wjmaclean): determine what, if anything, needs to happen here.
@@ -46,6 +51,9 @@ void TouchSelectionControllerClientManagerAndroid::UpdateClientSelectionBounds(
     const gfx::SelectionBound& end,
     ui::TouchSelectionControllerClient* client,
     ui::TouchSelectionMenuClient* menu_client) {
+  if (!rwhv_) {
+    return;
+  }
   if (client != active_client_ && (!start.HasHandle() || !start.visible()) &&
       (!end.HasHandle() || !end.visible()) &&
       (manager_selection_start_.HasHandle() ||
@@ -75,7 +83,7 @@ void TouchSelectionControllerClientManagerAndroid::InvalidateClient(
 
 ui::TouchSelectionController*
 TouchSelectionControllerClientManagerAndroid::GetTouchSelectionController() {
-  return rwhv_->touch_selection_controller();
+  return rwhv_ ? rwhv_->touch_selection_controller() : nullptr;
 }
 
 void TouchSelectionControllerClientManagerAndroid::AddObserver(
@@ -90,36 +98,49 @@ void TouchSelectionControllerClientManagerAndroid::RemoveObserver(
 
 void TouchSelectionControllerClientManagerAndroid::ShowContextMenu(
     const gfx::Point& location) {
-  active_client_->ShowTouchSelectionContextMenu(location);
+  if (active_client_) {
+    active_client_->ShowTouchSelectionContextMenu(location);
+  }
 }
 
 // TouchSelectionControllerClient implementation.
 bool TouchSelectionControllerClientManagerAndroid::SupportsAnimation() const {
-  return rwhv_->SupportsAnimation();
+  return rwhv_ && rwhv_->SupportsAnimation();
 }
 
 void TouchSelectionControllerClientManagerAndroid::SetNeedsAnimate() {
-  rwhv_->SetNeedsAnimate();
+  if (rwhv_) {
+    rwhv_->SetNeedsAnimate();
+  }
 }
 
 void TouchSelectionControllerClientManagerAndroid::MoveCaret(
     const gfx::PointF& position) {
-  active_client_->MoveCaret(position);
+  if (active_client_) {
+    active_client_->MoveCaret(position);
+  }
 }
 
 void TouchSelectionControllerClientManagerAndroid::MoveRangeSelectionExtent(
     const gfx::PointF& extent) {
-  active_client_->MoveRangeSelectionExtent(extent);
+  if (active_client_) {
+    active_client_->MoveRangeSelectionExtent(extent);
+  }
 }
 
 void TouchSelectionControllerClientManagerAndroid::SelectBetweenCoordinates(
     const gfx::PointF& base,
     const gfx::PointF& extent) {
-  active_client_->SelectBetweenCoordinates(base, extent);
+  if (active_client_) {
+    active_client_->SelectBetweenCoordinates(base, extent);
+  }
 }
 
 void TouchSelectionControllerClientManagerAndroid::OnSelectionEvent(
     ui::SelectionEventType event) {
+  if (!rwhv_) {
+    return;
+  }
   // Always defer to the top-level RWHV TSC for this.
   rwhv_->OnSelectionEvent(event);
 }
@@ -127,12 +148,15 @@ void TouchSelectionControllerClientManagerAndroid::OnSelectionEvent(
 void TouchSelectionControllerClientManagerAndroid::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
+  if (!rwhv_) {
+    return;
+  }
   rwhv_->OnDragUpdate(type, position);
 }
 
 std::unique_ptr<ui::TouchHandleDrawable>
 TouchSelectionControllerClientManagerAndroid::CreateDrawable() {
-  return rwhv_->CreateDrawable();
+  return rwhv_ ? rwhv_->CreateDrawable() : nullptr;
 }
 
 void TouchSelectionControllerClientManagerAndroid::DidScroll() {
@@ -141,7 +165,9 @@ void TouchSelectionControllerClientManagerAndroid::DidScroll() {
 
 void TouchSelectionControllerClientManagerAndroid::
     ShowTouchSelectionContextMenu(const gfx::Point& location) {
-  active_client_->ShowTouchSelectionContextMenu(location);
+  if (active_client_) {
+    active_client_->ShowTouchSelectionContextMenu(location);
+  }
 }
 
 }  // namespace content

@@ -28,6 +28,8 @@ class TouchSelectionControllerClientManagerAndroid
 
   ~TouchSelectionControllerClientManagerAndroid() override;
 
+  void Detach();
+
   // TouchSelectionControllerClientManager implementation.
   void DidStopFlinging() override;
   void OnSwipeToMoveCursorBegin() override;
@@ -66,7 +68,8 @@ class TouchSelectionControllerClientManagerAndroid
   }
 
  private:
-  // Not owned, assumed to be non-null for the lifetime of this object.
+  // Not owned. Cleared by `Detach()` when the owning
+  // RenderWidgetHostViewAndroid tears down.
   raw_ptr<RenderWidgetHostViewAndroid> rwhv_;
 
   raw_ptr<TouchSelectionControllerClient> active_client_;

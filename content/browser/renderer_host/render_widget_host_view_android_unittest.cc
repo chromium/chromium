@@ -14,6 +14,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/input/touch_selection_controller_client_manager_android.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
 #include "content/browser/renderer_host/mojo_render_input_router_delegate_impl.h"
 #include "content/browser/site_instance_group.h"
@@ -184,6 +185,8 @@ class RenderWidgetHostViewAndroidTest : public RenderViewHostImplTestHarness {
   cc::slim::Layer* GetParentLayer();
 
  protected:
+  void ResetViewForTesting() { render_widget_host_view_android_ = nullptr; }
+
   virtual RenderWidgetHostViewAndroid* CreateRenderWidgetHostViewAndroid(
       RenderWidgetHostImpl* widget_host);
 
@@ -293,7 +296,9 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
 }
 
 void RenderWidgetHostViewAndroidTest::TearDown() {
-  render_widget_host_view_android_->DestroyOrDefer();
+  if (render_widget_host_view_android_) {
+    render_widget_host_view_android_->DestroyOrDefer();
+  }
   render_view_host_.reset();
 
   delegate_.reset();
@@ -1967,6 +1972,38 @@ TEST_F(RenderWidgetHostViewAndroidTest, UpdateVisibilityWhileDetached) {
   // Explicitly notify visibility change to false since it's a hidden window.
   window3->get()->OnVisibilityChanged(nullptr, false);
   EXPECT_TRUE(rwhva->host()->IsHidden());
+}
+
+TEST_F(RenderWidgetHostViewAndroidTest, DeferredTeardownSafety) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  // `rwhva` is deleted when `pin` goes out of scope below. Drop the
+  // harness' reference now so an early return from a failed ASSERT cannot
+  // leave TearDown() holding a dangling pointer.
+  ResetViewForTesting();
+  {
+    input::ScopedInputDispatchPin pin(rwhva);
+    rwhva->DestroyOrDefer();
+    EXPECT_TRUE(rwhva->destroy_pending());
+    EXPECT_EQ(rwhva->host(), nullptr);
+
+    // Verify methods that previously crashed with NPD or CHECK failures during
+    // the deferred destruction window now safely no-op.
+    rwhva->SetNeedsAnimate();
+    rwhva->GotFocus();
+    rwhva->LostFocus();
+    EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+    rwhva->OnPhysicalBackingSizeChanged(std::nullopt);
+    rwhva->ShowTouchSelectionContextMenu(gfx::Point());
+    gfx::PointF pt;
+    rwhva->TransformPointToRootSurface(&pt);
+
+    auto* manager = static_cast<TouchSelectionControllerClientManagerAndroid*>(
+        rwhva->GetTouchSelectionControllerClientManager());
+    ASSERT_NE(manager, nullptr);
+    manager->ShowContextMenu(gfx::Point());
+    manager->SetNeedsAnimate();
+    manager->OnSelectionEvent(ui::SELECTION_HANDLES_SHOWN);
+  }
 }
 
 }  // namespace content

@@ -924,11 +924,17 @@ RenderWidgetHostViewAndroid::GetNativeViewAccessible() {
 }
 
 void RenderWidgetHostViewAndroid::GotFocus() {
+  if (destroy_pending()) {
+    return;
+  }
   host()->GotFocus();
   OnFocusInternal();
 }
 
 void RenderWidgetHostViewAndroid::LostFocus() {
+  if (destroy_pending()) {
+    return;
+  }
   host()->LostFocus();
   LostFocusInternal();
 }
@@ -1933,6 +1939,15 @@ void RenderWidgetHostViewAndroid::ShutdownAndDisconnect() {
   }
   destruction_observers_.Clear();
 
+  // Detach first so the manager's null checks absorb any selection event
+  // the hide below synchronously emits back into this view.
+  if (touch_selection_controller_client_manager_) {
+    touch_selection_controller_client_manager_->Detach();
+  }
+  if (touch_selection_controller_) {
+    touch_selection_controller_->HideAndDisallowShowingAutomatically();
+  }
+
   UpdateNativeViewTree(nullptr, nullptr);
   view_.set_event_handler(nullptr);
 
@@ -2101,6 +2116,9 @@ void RenderWidgetHostViewAndroid::CopySharedImageFromExactSurface(
 }
 
 bool RenderWidgetHostViewAndroid::CanSynchronizeVisualProperties() {
+  if (destroy_pending()) {
+    return false;
+  }
   // When a rotation begins, the new visual properties are not all notified to
   // RenderWidgetHostViewAndroid at the same time. The process begins when
   // OnSynchronizedDisplayPropertiesChanged is called, and ends with
@@ -2130,6 +2148,9 @@ bool RenderWidgetHostViewAndroid::ShouldRouteEvents() const {
 }
 
 void RenderWidgetHostViewAndroid::UpdateWebViewBackgroundColorIfNecessary() {
+  if (destroy_pending() || !host()->delegate()) {
+    return;
+  }
   // Android WebView had a bug the BG color was always set to black when
   // fullscreen (see https://crbug.com/961223#c5). As applications came to rely
   // on this behavior, preserve it here.
@@ -2191,6 +2212,9 @@ bool RenderWidgetHostViewAndroid::SupportsAnimation() const {
 }
 
 void RenderWidgetHostViewAndroid::SetNeedsAnimate() {
+  if (destroy_pending()) {
+    return;
+  }
   if (features::IsFluidResizeEnabled()) {
     // The synchronous (WebView) compositor does not have a proper browser
     // compositor with which to drive animations.
@@ -2297,6 +2321,9 @@ void RenderWidgetHostViewAndroid::DidScroll() {}
 
 void RenderWidgetHostViewAndroid::ShowTouchSelectionContextMenu(
     const gfx::Point& location) {
+  if (destroy_pending()) {
+    return;
+  }
   host()->ShowContextMenuAtPoint(location,
                                  ui::mojom::MenuSourceType::kTouchHandle);
 }
@@ -2650,8 +2677,9 @@ void RenderWidgetHostViewAndroid::RequestDisallowInterceptTouchEvent() {
 
 void RenderWidgetHostViewAndroid::TransformPointToRootSurface(
     gfx::PointF* point) {
-  if (!host()->delegate())
+  if (destroy_pending() || !host()->delegate()) {
     return;
+  }
   RenderViewHostDelegateView* rvh_delegate_view =
       host()->delegate()->GetDelegateView();
   if (rvh_delegate_view->DoBrowserControlsShrinkRendererSize())
@@ -2833,8 +2861,9 @@ void RenderWidgetHostViewAndroid::UnlockKeyboard() {
 
 void RenderWidgetHostViewAndroid::SendKeyEvent(
     input::NativeWebKeyboardEvent& event) {
-  if (!host())
+  if (destroy_pending()) {
     return;
+  }
 
   RenderWidgetHostImpl* target_host = host();
 
@@ -2875,8 +2904,9 @@ void RenderWidgetHostViewAndroid::SendKeyEvent(
 void RenderWidgetHostViewAndroid::SendMouseEvent(
     const blink::WebMouseEvent& event,
     const ui::LatencyInfo& info) {
-  if (!host() || !host()->delegate())
+  if (destroy_pending() || !host()->delegate()) {
     return;
+  }
 
   if (ShouldRouteEvents()) {
     host()->delegate()->GetInputEventRouter()->RouteMouseEvent(this, &event,
@@ -2912,8 +2942,9 @@ void RenderWidgetHostViewAndroid::UpdateMouseState(int action_button,
 
 void RenderWidgetHostViewAndroid::SendMouseWheelEvent(
     const blink::WebMouseWheelEvent& event) {
-  if (!host() || !host()->delegate())
+  if (destroy_pending() || !host()->delegate()) {
     return;
+  }
 
   ui::LatencyInfo latency_info;
   latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
@@ -3240,6 +3271,7 @@ bool RenderWidgetHostViewAndroid::OnMouseWheelEvent(
   if (destroy_pending()) {
     return false;
   }
+  input::ScopedInputDispatchPin pin(this);
   SendMouseWheelEvent(input::WebMouseWheelEventBuilder::Build(event));
   return true;
 }
@@ -3265,6 +3297,9 @@ void RenderWidgetHostViewAndroid::OnSizeChanged() {
 
 void RenderWidgetHostViewAndroid::OnPhysicalBackingSizeChanged(
     std::optional<base::TimeDelta> deadline_override) {
+  if (destroy_pending()) {
+    return;
+  }
   // We may need to update the background color to match pre-surface-sync
   // behavior of EvictFrameIfNecessary.
   UpdateWebViewBackgroundColorIfNecessary();
