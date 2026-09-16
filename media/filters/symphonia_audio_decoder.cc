@@ -152,6 +152,8 @@ SampleFormat ToSampleFormat(SymphoniaSampleFormat value) {
       return SampleFormat::kSampleFormatS32;
     case SymphoniaSampleFormat::F32:
       return SampleFormat::kSampleFormatF32;
+    case SymphoniaSampleFormat::PlanarF32:
+      return SampleFormat::kSampleFormatPlanarF32;
   }
   NOTREACHED();
 }

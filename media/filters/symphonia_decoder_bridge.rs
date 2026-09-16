@@ -42,7 +42,7 @@
 //! This bridge is built using the `cxx` crate, which automates the generation
 //! of safe FFI bindings between the two languages.
 
-use symphonia::core::audio::{Channels, GenericAudioBufferRef, Position};
+use symphonia::core::audio::{Audio, Channels, GenericAudioBufferRef, Position};
 use symphonia::core::codecs::audio::{AudioCodecId, AudioCodecParameters, AudioDecoder};
 use symphonia::core::errors::Error;
 use symphonia::core::packet::PacketRef;
@@ -78,8 +78,7 @@ pub mod ffi {
         Vorbis,
     }
 
-    /// We currently only output interleaved data, and usually in F32. However,
-    /// that is not guaranteed by Symphonia.
+    /// We output planar data for F32, and interleaved data for integer formats.
     #[derive(Debug)]
     enum SymphoniaSampleFormat {
         Unknown,
@@ -88,6 +87,7 @@ pub mod ffi {
         S24,
         S32,
         F32,
+        PlanarF32,
     }
 
     /// Configuration parameters required to initialize a Symphonia decoder.
@@ -280,7 +280,8 @@ fn default_audio_buffer() -> ffi::SymphoniaAudioBuffer {
 /// methods to access it as a raw byte slice (`&[u8]`). This is crucial
 /// for passing the data across the FFI boundary.
 pub struct SymphoniaRawSampleBuffer {
-    /// Interleaved audio sample data as bytes.
+    /// Audio sample data as bytes. F32 audio is planar; integer formats are
+    /// interleaved.
     data: Vec<u8>,
     /// The sample format of the data.
     sample_format: ffi::SymphoniaSampleFormat,
@@ -309,7 +310,7 @@ impl SymphoniaRawSampleBuffer {
                     ffi::SymphoniaSampleFormat::S32
                 }
             }
-            GenericAudioBufferRef::F32(_) => ffi::SymphoniaSampleFormat::F32,
+            GenericAudioBufferRef::F32(_) => ffi::SymphoniaSampleFormat::PlanarF32,
             _ => return Err("unsupported format".to_string()),
         };
         Ok(Self { data: Vec::new(), sample_format, codec })
@@ -346,21 +347,32 @@ impl SymphoniaRawSampleBuffer {
                     src.copy_bytes_to_vec_interleaved_as::<i32>(&mut self.data)
                 }
             }
-            GenericAudioBufferRef::F32(_) => {
-                src.copy_bytes_to_vec_interleaved_as::<f32>(&mut self.data);
-                if matches!(self.codec, ffi::SymphoniaAudioCodec::Mp3) {
-                    // Symphonia v0.6+ does not clamp float samples to a valid
-                    // range. While some codecs like Opus and Vorbis can
-                    // legitimately exceed [-1.0, 1.0], Symphonia's MP3 decoder
-                    // can produce extreme values on corrupted streams. We clamp
-                    // MP3 in-place to maintain parity with FFmpegAudioDecoder's
-                    // handling of corrupt files.
-                    for chunk in self.data.chunks_exact_mut(std::mem::size_of::<f32>()) {
-                        let sample = f32::from_ne_bytes(chunk.try_into().unwrap());
-                        if sample < -1.0 {
-                            chunk.copy_from_slice(&(-1.0_f32).to_ne_bytes());
-                        } else if sample > 1.0 {
-                            chunk.copy_from_slice(&1.0_f32.to_ne_bytes());
+            GenericAudioBufferRef::F32(buf) => {
+                let num_frames = buf.frames();
+                let num_channels = buf.spec().channels().count();
+                let plane_bytes = num_frames * std::mem::size_of::<f32>();
+                let total_bytes = num_channels * plane_bytes;
+                self.data.resize(total_bytes, 0);
+                if plane_bytes > 0 {
+                    for (ch, chunk) in self.data.chunks_exact_mut(plane_bytes).enumerate() {
+                        let plane = buf.plane(ch).unwrap();
+                        if matches!(self.codec, ffi::SymphoniaAudioCodec::Mp3) {
+                            // Symphonia v0.6+ does not clamp float samples to a
+                            // valid range. While some codecs like Opus and
+                            // Vorbis can legitimately exceed [-1.0, 1.0],
+                            // Symphonia's MP3 decoder can produce extreme
+                            // values on corrupted streams. We clamp MP3
+                            // in-place to maintain parity with
+                            // FFmpegAudioDecoder's handling of corrupt files.
+                            for (&sample, dest) in plane.iter().zip(chunk.chunks_exact_mut(4)) {
+                                let clamped =
+                                    if sample.is_nan() { 0.0 } else { sample.clamp(-1.0, 1.0) };
+                                dest.copy_from_slice(&clamped.to_ne_bytes());
+                            }
+                        } else {
+                            for (&sample, dest) in plane.iter().zip(chunk.chunks_exact_mut(4)) {
+                                dest.copy_from_slice(&sample.to_ne_bytes());
+                            }
                         }
                     }
                 }

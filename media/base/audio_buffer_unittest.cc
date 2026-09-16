@@ -411,6 +411,54 @@ TEST(AudioBufferTest, WrapExternalMemory) {
   EXPECT_EQ(buffer->channel_data()[1], second_channel_ptr);
 }
 
+TEST(AudioBufferTest, CreateFromExternalMemoryPlanarF32OddFrames) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr int kChannelCount = 2;
+  constexpr int kFrameCount = 5;
+  constexpr base::TimeDelta kTimestamp = base::Microseconds(1337);
+
+  constexpr std::array<float, kFrameCount> kChannel0 = {0.1f, 0.2f, 0.3f, 0.4f,
+                                                        0.5f};
+  constexpr std::array<float, kFrameCount> kChannel1 = {-0.1f, -0.2f, -0.3f,
+                                                        -0.4f, -0.5f};
+
+  std::vector<uint8_t> test_data;
+  auto ch0_bytes = base::as_byte_span(base::allow_nonunique_obj, kChannel0);
+  auto ch1_bytes = base::as_byte_span(base::allow_nonunique_obj, kChannel1);
+  test_data.insert(test_data.end(), ch0_bytes.begin(), ch0_bytes.end());
+  test_data.insert(test_data.end(), ch1_bytes.begin(), ch1_bytes.end());
+
+  uint8_t* first_channel_ptr = test_data.data();
+  uint8_t* second_channel_ptr =
+      base::span(test_data).subspan(ch0_bytes.size()).data();
+
+  auto external_memory =
+      std::make_unique<TestExternalMemory>(std::move(test_data));
+  auto buffer = AudioBuffer::CreateFromExternalMemory(
+      kSampleFormatPlanarF32, kChannelLayout, kChannelCount, kSampleRate,
+      kFrameCount, kTimestamp, std::move(external_memory));
+
+  EXPECT_EQ(buffer->channel_data()[0], first_channel_ptr);
+  EXPECT_EQ(buffer->channel_data()[1], second_channel_ptr);
+
+  auto read_bus = AudioBus::Create(kChannelCount, kFrameCount);
+  buffer->ReadFrames(kFrameCount, 0, 0, read_bus.get());
+  for (int i = 0; i < kFrameCount; ++i) {
+    EXPECT_FLOAT_EQ(read_bus->channel(0)[i], kChannel0[i]);
+    EXPECT_FLOAT_EQ(read_bus->channel(1)[i], kChannel1[i]);
+  }
+
+  // Plane 1 is at byte offset 20 (not 32-byte aligned), so WrapOrCopyToAudioBus
+  // should safely fall back to copying into an aligned AudioBus.
+  std::unique_ptr<AudioBus> wrapped_or_copied_bus =
+      AudioBuffer::WrapOrCopyToAudioBus(buffer);
+  ASSERT_TRUE(wrapped_or_copied_bus);
+  for (int i = 0; i < kFrameCount; ++i) {
+    EXPECT_FLOAT_EQ(wrapped_or_copied_bus->channel(0)[i], kChannel0[i]);
+    EXPECT_FLOAT_EQ(wrapped_or_copied_bus->channel(1)[i], kChannel1[i]);
+  }
+}
+
 TEST(AudioBufferTest, CreateBitstreamBufferIECDts) {
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_MONO;
   const int kChannelCount = ChannelLayoutToChannelCount(kChannelLayout);

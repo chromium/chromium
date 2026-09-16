@@ -99,25 +99,26 @@ fn test_no_bit_depth_adjusting_f32() {
         SAMPLES,
         SAMPLE_RATE,
         BYTES_PER_SAMPLE,
-        ffi::SymphoniaSampleFormat::F32,
+        ffi::SymphoniaSampleFormat::PlanarF32,
         SAMPLES,
         |b| GenericAudioBufferRef::F32(b),
         ffi::SymphoniaAudioCodec::Unknown,
     );
 }
 
-// Verify that we clip F32 values outside [-1.0, 1.0] for MP3 only.
+// Verify that we clip F32 values outside [-1.0, 1.0] and silence NaNs for MP3
+// only.
 #[gtest(SymphoniaDecoderBridgeTest, F32Clamping)]
 fn test_f32_clamping() {
-    const SAMPLES: &[f32] = &[2.0, -2.0, 1.0, -1.0];
-    const EXPECTED: &[f32] = &[1.0, -1.0, 1.0, -1.0];
+    const SAMPLES: &[f32] = &[2.0, -2.0, 1.0, -1.0, f32::NAN, f32::INFINITY, f32::NEG_INFINITY];
+    const EXPECTED: &[f32] = &[1.0, -1.0, 1.0, -1.0, 0.0, 1.0, -1.0];
     const SAMPLE_RATE: u32 = 48000;
     const BYTES_PER_SAMPLE: u8 = 4;
     test_conversion(
         SAMPLES,
         SAMPLE_RATE,
         BYTES_PER_SAMPLE,
-        ffi::SymphoniaSampleFormat::F32,
+        ffi::SymphoniaSampleFormat::PlanarF32,
         EXPECTED,
         |b| GenericAudioBufferRef::F32(b),
         ffi::SymphoniaAudioCodec::Mp3,
@@ -127,14 +128,14 @@ fn test_f32_clamping() {
 // Verify that we do not clip F32 values outside [-1.0, 1.0] for non-MP3 codecs.
 #[gtest(SymphoniaDecoderBridgeTest, NoF32ClampingForNonMp3)]
 fn test_no_f32_clamping_for_non_mp3() {
-    const SAMPLES: &[f32] = &[2.0, -2.0, 1.0, -1.0];
+    const SAMPLES: &[f32] = &[2.0, -2.0, 1.0, -1.0, f32::INFINITY, f32::NEG_INFINITY];
     const SAMPLE_RATE: u32 = 48000;
     const BYTES_PER_SAMPLE: u8 = 4;
     test_conversion(
         SAMPLES,
         SAMPLE_RATE,
         BYTES_PER_SAMPLE,
-        ffi::SymphoniaSampleFormat::F32,
+        ffi::SymphoniaSampleFormat::PlanarF32,
         SAMPLES,
         |b| GenericAudioBufferRef::F32(b),
         ffi::SymphoniaAudioCodec::Unknown,
@@ -357,9 +358,9 @@ fn test_flac_init_with_other_block() {
     expect_ne!(result.status, ffi::SymphoniaInitStatus::Ok);
 }
 
-// Verify that stereo data is correctly interleaved.
-#[gtest(SymphoniaDecoderBridgeTest, StereoInterleaving)]
-fn test_stereo_interleaving() {
+// Verify that stereo F32 data is output in planar layout (channel planes).
+#[gtest(SymphoniaDecoderBridgeTest, StereoPlanarF32)]
+fn test_stereo_planar_f32() {
     const SAMPLE_RATE: u32 = 44100;
     let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO);
     let mut audio_buf = AudioBuffer::<f32>::new(spec, 2);
@@ -375,8 +376,74 @@ fn test_stereo_interleaving() {
             .unwrap();
     let result = create_audio_buffer(buffer_ref, sample_buffer).unwrap();
 
-    // Expected interleaved: [0.5, -0.5, 0.1, -0.1]
-    let expected: &[f32] = &[0.5, -0.5, 0.1, -0.1];
+    expect_eq!(result.sample_format, ffi::SymphoniaSampleFormat::PlanarF32);
+    expect_eq!(result.channel_count, 2);
+    expect_eq!(result.num_frames, 2);
+
+    // Expected planar: [L0, L1, R0, R1]
+    let expected: &[f32] = &[0.5, 0.1, -0.5, -0.1];
+    let actual_f32: Vec<f32> =
+        result.data.chunks_exact(4).map(|c| f32::from_ne_bytes(c.try_into().unwrap())).collect();
+
+    expect_eq!(actual_f32, expected);
+}
+
+// Verify that stereo F32 clamping for MP3 operates in planar layout and
+// silences NaNs to 0.0 while clamping +/- Inf to +/- 1.0.
+#[gtest(SymphoniaDecoderBridgeTest, StereoPlanarF32Clamping)]
+fn test_stereo_planar_f32_clamping() {
+    const SAMPLE_RATE: u32 = 44100;
+    let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO);
+    let mut audio_buf = AudioBuffer::<f32>::new(spec, 4);
+    audio_buf.render_uninit(Some(4));
+
+    // Planar data: L[2.0, 0.5, NaN, -Inf], R[-2.0, -0.5, +Inf, 1.5]
+    audio_buf.plane_mut(0).unwrap().copy_from_slice(&[2.0, 0.5, f32::NAN, f32::NEG_INFINITY]);
+    audio_buf.plane_mut(1).unwrap().copy_from_slice(&[-2.0, -0.5, f32::INFINITY, 1.5]);
+
+    let buffer_ref = GenericAudioBufferRef::F32(&audio_buf);
+    let sample_buffer =
+        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Mp3, 4)
+            .unwrap();
+    let result = create_audio_buffer(buffer_ref, sample_buffer).unwrap();
+
+    expect_eq!(result.sample_format, ffi::SymphoniaSampleFormat::PlanarF32);
+    expect_eq!(result.channel_count, 2);
+    expect_eq!(result.num_frames, 4);
+
+    // Expected planar clamped: [1.0, 0.5, 0.0, -1.0, -1.0, -0.5, 1.0, 1.0]
+    let expected: &[f32] = &[1.0, 0.5, 0.0, -1.0, -1.0, -0.5, 1.0, 1.0];
+    let actual_f32: Vec<f32> =
+        result.data.chunks_exact(4).map(|c| f32::from_ne_bytes(c.try_into().unwrap())).collect();
+
+    expect_eq!(actual_f32, expected);
+}
+
+// Verify that odd frame counts of stereo F32 (where channel plane size is not
+// a multiple of 32 bytes) are tightly packed in planar layout.
+#[gtest(SymphoniaDecoderBridgeTest, StereoPlanarF32OddFrames)]
+fn test_stereo_planar_f32_odd_frames() {
+    const SAMPLE_RATE: u32 = 44100;
+    let spec = AudioSpec::new(SAMPLE_RATE, layouts::CHANNEL_LAYOUT_STEREO);
+    let mut audio_buf = AudioBuffer::<f32>::new(spec, 3);
+    audio_buf.render_uninit(Some(3));
+
+    // 3 frames = 12 bytes per channel plane.
+    audio_buf.plane_mut(0).unwrap().copy_from_slice(&[0.1, 0.2, 0.3]);
+    audio_buf.plane_mut(1).unwrap().copy_from_slice(&[-0.1, -0.2, -0.3]);
+
+    let buffer_ref = GenericAudioBufferRef::F32(&audio_buf);
+    let sample_buffer =
+        SymphoniaRawSampleBuffer::new_buffer_for(&buffer_ref, ffi::SymphoniaAudioCodec::Flac, 4)
+            .unwrap();
+    let result = create_audio_buffer(buffer_ref, sample_buffer).unwrap();
+
+    expect_eq!(result.sample_format, ffi::SymphoniaSampleFormat::PlanarF32);
+    expect_eq!(result.channel_count, 2);
+    expect_eq!(result.num_frames, 3);
+    expect_eq!(result.data.len(), 24);
+
+    let expected: &[f32] = &[0.1, 0.2, 0.3, -0.1, -0.2, -0.3];
     let actual_f32: Vec<f32> =
         result.data.chunks_exact(4).map(|c| f32::from_ne_bytes(c.try_into().unwrap())).collect();
 
