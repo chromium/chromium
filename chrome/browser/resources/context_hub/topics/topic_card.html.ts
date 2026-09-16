@@ -16,24 +16,28 @@ ${this.hasContent_() ? html`
         <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
           <path fill="${this.getBackgroundColor_()}" d="${this.getFlowerPath_()}"></path>
         </svg>
-      ` : this.getBadgeShape_() === 'diamond' ? html`
-        <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
-          <rect x="9" y="9" width="38" height="38" rx="12"
-              fill="${this.getBackgroundColor_()}" transform="rotate(45 28 28)"></rect>
-        </svg>
-      ` : this.getBadgeShape_() === 'circle' ? html`
-        <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
-          <circle cx="28" cy="28" r="26" fill="${this.getBackgroundColor_()}"></circle>
-        </svg>
       ` : html`
-        <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
-          <path fill="${this.getBackgroundColor_()}" d="${this.getCloudPath_()}"></path>
-        </svg>
+        ${this.getBadgeShape_() === 'diamond' ? html`
+          <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
+            <rect x="9" y="9" width="38" height="38" rx="12"
+                fill="${this.getBackgroundColor_()}" transform="rotate(45 28 28)"></rect>
+          </svg>
+        ` : html`
+          ${this.getBadgeShape_() === 'circle' ? html`
+            <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
+              <circle cx="28" cy="28" r="26" fill="${this.getBackgroundColor_()}"></circle>
+            </svg>
+          ` : html`
+            <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
+              <path fill="${this.getBackgroundColor_()}" d="${this.getCloudPath_()}"></path>
+            </svg>
+          `}
+        `}
       `}
       <span class="badge-icon" aria-hidden="true">
         ${this.isCrIcon_() ? html`
           <cr-icon .icon="${this.getIcon_()}"></cr-icon>
-        ` : this.getIcon_()}
+        ` : html`${this.getIcon_()}`}
       </span>
     </div>
 

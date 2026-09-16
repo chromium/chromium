@@ -679,6 +679,32 @@ class EslintTsTest(unittest.TestCase):
       f"Didn't find expected error: {_INVALID_GET_HTML_RETURN_ERROR}",
     )
 
+  def testWebUiEslintPlugin_LitElementTemplateStructure_Ternaries(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(
+        [
+          "with_webui_plugin_lit_element_template_structure_ternary_violations.html.ts"
+        ]
+      )
+
+    _EXPECTED_STRING = "@webui-eslint/lit-element-template-structure"
+    self.assertTrue(
+      _EXPECTED_STRING in str(context.exception),
+      f"Exception was: {context.exception}",
+    )
+
+    _INVALID_TERNARY_CONSEQUENT_ERROR = "Ternary operator in template must return a tagged template literal (html`...`) in its true branch. Invert the condition if necessary"
+    self.assertTrue(
+      _INVALID_TERNARY_CONSEQUENT_ERROR in str(context.exception),
+      f"Didn't find expected error: {_INVALID_TERNARY_CONSEQUENT_ERROR}",
+    )
+
+    _INVALID_TERNARY_ALTERNATE_ERROR = "Ternary operator in template must return a tagged template literal (html`...`). Nested ternaries should be within the literal, i.e. '${cond1 ? html`<template>` : html`${cond2 ? html`<template>` : ''}`}'"
+    self.assertTrue(
+      _INVALID_TERNARY_ALTERNATE_ERROR in str(context.exception),
+      f"Didn't find expected error: {_INVALID_TERNARY_ALTERNATE_ERROR}",
+    )
+
   def testWebUiEslintPlugin_LitReactiveProperties(self):
     with self.assertRaises(RuntimeError) as context:
       self._run_test(

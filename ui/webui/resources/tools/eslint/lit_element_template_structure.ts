@@ -9,9 +9,36 @@ import assert from 'node:assert';
 import {dashCaseToCamelCase, isIdentifier, LIT_IMPORT_REGEX} from './query_utils.js';
 
 type Options = [];
-type MessageIds = 'ifStatementFound'|'forStatementFound'|
-    'variableDeclarationFound'|'functionDefinitionFound'|
-    'incorrectEventListenerNameFound'|'invalidGetHtmlReturn';
+type MessageIds =
+    'ifStatementFound'|'forStatementFound'|'variableDeclarationFound'|
+    'functionDefinitionFound'|'incorrectEventListenerNameFound'|
+    'invalidGetHtmlReturn'|'invalidTernaryConsequent'|'invalidTernaryAlternate';
+
+function isLitTemplate(node: TSESTree.Node): boolean {
+  return node.type === Node.TaggedTemplateExpression &&
+      node.tag.type === Node.Identifier && node.tag.name === 'html';
+}
+
+
+function isValidAlternate(node: TSESTree.Node): boolean {
+  if (isLitTemplate(node)) {
+    return true;
+  }
+  // Case of returning "" or ''
+  if (node.type === Node.Literal && node.value === '') {
+    return true;
+  }
+  // Case of returning ``
+  if (node.type === Node.TemplateLiteral && node.quasis.length === 1 &&
+      node.quasis[0]!.value.raw === '') {
+    return true;
+  }
+  // Case of returning Lit's nothing identifier.
+  if (node.type === Node.Identifier && node.name === 'nothing') {
+    return true;
+  }
+  return false;
+}
 
 export const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs<
     Options, MessageIds>({
@@ -34,6 +61,10 @@ export const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs<
           'Incorrect event listener naming found for event \'{{eventName}}\'. Rename \'{{listenerName}}\' to follow the \'{{suggestedListenerName}}\' pattern',
       invalidGetHtmlReturn:
           'getHtml() function does not return a tagged template literal. Use the following format: \'return html`<all template and template logic goes here>`;\'',
+      invalidTernaryConsequent:
+          'Ternary operator in template must return a tagged template literal (html`...`) in its true branch. Invert the condition if necessary',
+      invalidTernaryAlternate:
+          'Ternary operator in template must return a tagged template literal (html`...`). Nested ternaries should be within the literal, i.e. \'${cond1 ? html`<template>` : html`${cond2 ? html`<template>` : \'\'}`}\'',
     },
     schema: [],
   },
@@ -179,6 +210,29 @@ export const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs<
               variableName: declaration.id.name,
             },
           });
+        }
+      },
+      ['ConditionalExpression'](node: TSESTree.ConditionalExpression) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        if (isLitTemplate(node.consequent)) {
+          if (!isValidAlternate(node.alternate)) {
+            context.report({
+              node: node.alternate,
+              messageId: 'invalidTernaryAlternate',
+            });
+          }
+          return;
+        }
+
+        if (isLitTemplate(node.alternate)) {
+          context.report({
+            node: node.consequent,
+            messageId: 'invalidTernaryConsequent',
+          });
+          return;
         }
       },
     };

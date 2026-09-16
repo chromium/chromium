@@ -30,14 +30,16 @@ export function getHtml(this: OrganizerListSectionItemElement) {
     <div slot="customIcon">
       ${this.item.prefixIcon.element}
     </div>
-  ` : this.item.prefixIcon?.stackedFavicons ? html`
-    <stacked-favicons id="stackedFavicons" slot="customIcon"
-        .url="${this.item.prefixIcon.stackedFavicons.urls[0]}"
-        .secondaryUrl="${this.item.prefixIcon.stackedFavicons.urls[1]}"
-        ?stack-vertically="${
-            this.item.prefixIcon.stackedFavicons.stackVertically}">
-    </stacked-favicons>
-  ` : ''}
+  ` : html`
+    ${this.item.prefixIcon?.stackedFavicons ? html`
+      <stacked-favicons id="stackedFavicons" slot="customIcon"
+          .url="${this.item.prefixIcon.stackedFavicons.urls[0]}"
+          .secondaryUrl="${this.item.prefixIcon.stackedFavicons.urls[1]}"
+          ?stack-vertically="${
+              this.item.prefixIcon.stackedFavicons.stackVertically}">
+      </stacked-favicons>
+    ` : ''}
+  `}
   ${this.item.trailingIcon ? html`
     <cr-icon id="trailingIcon" slot="suffix" .icon="${this.item.trailingIcon}"
         class="${this.hasActionButton_() ? 'has-action-button' : ''}">

@@ -21,13 +21,15 @@ ${this.variant === TodoItemVariant.TAB ?
               @click="${this.onMarkActiveClick_}">
             Mark active
           </cr-button>
-        ` : (this.groupType !== AutoTodoGroup.kReadingList ? html`
-          <cr-icon-button id="check-circle"
-              ?disabled="${this.disable_state_mgmt}"
-              iron-icon="cr:check-circle"
-              @click="${this.onCheckCircleClick_}">
-          </cr-icon-button>
-        ` : '')}
+        ` : html`
+          ${this.groupType !== AutoTodoGroup.kReadingList ? html`
+            <cr-icon-button id="check-circle"
+                ?disabled="${this.disable_state_mgmt}"
+                iron-icon="cr:check-circle"
+                @click="${this.onCheckCircleClick_}">
+            </cr-icon-button>
+          ` : ''}
+        `}
         <div class="todo-info">
           <h3 title="${this.heading}">${this.heading}</h3>
           <p class="description">${this.description}</p>
