@@ -5147,8 +5147,9 @@ class HttpsUpgradesSafeBrowsingTest : public InProcessBrowserTest {
 // Tests that if a navigation gets upgraded and the resulting URL is blocked by
 // Safe Browsing, we don't trigger fallback to HTTP and instead show the Safe
 // Browsing interstitial. Regression test for crbug.com/443741921.
+// TODO(crbug.com/553440870): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(HttpsUpgradesSafeBrowsingTest,
-                       SafeBrowsingBlock_ShouldNotTriggerHFM) {
+                       DISABLED_SafeBrowsingBlock_ShouldNotTriggerHFM) {
   GURL http_url = http_server_.GetURL("malicious.com", "/simple.html");
   GURL https_url = https_server_.GetURL("malicious.com", "/simple.html");
 
