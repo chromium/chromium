@@ -219,6 +219,10 @@
 #include "services/network/p2p/socket_manager.h"
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
 
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+#include "services/network/disk_cache/mojo_shared_http_cache_client_remote.h"
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #include "net/ssl/ech_mode_getter_android.h"
@@ -3649,6 +3653,39 @@ void NetworkContext::ClearSharedDictionaryCacheForIsolationKey(
   shared_dictionary_manager_->ClearDataForIsolationKey(isolation_key,
                                                        std::move(callback));
 }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+void NetworkContext::RegisterHttpCacheClient(
+    const net::NetworkIsolationKey& key,
+    mojo::PendingRemote<network::mojom::SharedHttpCacheClientFactory>
+        shared_http_cache_client) {
+  if (key.IsTransient()) {
+    return;
+  }
+  net::HttpCache* http_cache = GetHttpCache();
+  if (!http_cache) {
+    return;
+  }
+  auto split_callback = base::SplitOnceCallback(base::BindOnce(
+      [](const net::NetworkIsolationKey& key,
+         mojo::PendingRemote<network::mojom::SharedHttpCacheClientFactory>
+             shared_http_cache_client,
+         net::HttpCache::GetBackendResult result) {
+        if (result.first == net::OK && result.second &&
+            result.second->SupportsSharedCache()) {
+          result.second->RegisterSharedCacheClientRemote(
+              key, std::make_unique<MojoSharedHttpCacheClientRemote>(
+                       std::move(shared_http_cache_client)));
+        }
+      },
+      key, std::move(shared_http_cache_client)));
+  net::HttpCache::GetBackendResult result =
+      http_cache->GetBackend(std::move(split_callback.first));
+  if (result.first != net::ERR_IO_PENDING) {
+    std::move(split_callback.second).Run(result);
+  }
+}
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
 void NetworkContext::ClearSharedDictionarySessionOnlyData(
     ClearSharedDictionarySessionOnlyDataCallback callback) {

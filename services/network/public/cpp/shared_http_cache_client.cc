@@ -69,7 +69,11 @@ class CacheClient : public network::mojom::SharedHttpCacheClient {
                   pending_receiver,
               scoped_refptr<ThreadSafeSet> shared_state)
       : receiver_(this, std::move(pending_receiver)),
-        shared_state_(std::move(shared_state)) {}
+        shared_state_(std::move(shared_state)) {
+    // TODO(crbug.com/473666511): Handle Mojo pipe disconnection (e.g., when
+    // the network service crashes or restarts) so that subsequent lookups are
+    // treated as cache misses and fall back to normal `URLLoader` requests.
+  }
   ~CacheClient() override = default;
   CacheClient(const CacheClient&) = delete;
   CacheClient& operator=(const CacheClient&) = delete;

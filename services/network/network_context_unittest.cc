@@ -13418,6 +13418,26 @@ TEST_F(NetworkContextTest,
       run_loop.QuitClosure());
   run_loop.Run();
 }
+
+TEST_F(NetworkContextTest, RegisterHttpCacheClientTransientKey) {
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->http_cache_enabled = true;
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  mojo::PendingRemote<mojom::SharedHttpCacheClientFactory> factory_remote;
+  mojo::ScopedMessagePipeHandle receiver_pipe =
+      factory_remote.InitWithNewPipeAndPassReceiver().PassPipe();
+  EXPECT_FALSE(receiver_pipe->QuerySignalsState().peer_closed());
+
+  // Passing a transient NetworkIsolationKey should early-return and drop
+  // `factory_remote`, closing its message pipe.
+  network_context->RegisterHttpCacheClient(
+      net::NetworkIsolationKey::CreateTransientForTesting(),
+      std::move(factory_remote));
+  EXPECT_TRUE(receiver_pipe->QuerySignalsState().peer_closed());
+}
 #endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
 }  // namespace

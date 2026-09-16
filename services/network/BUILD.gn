@@ -288,6 +288,13 @@ component("network_service") {
     ]
   }
 
+  if (enable_disk_cache_sql_backend) {
+    sources += [
+      "disk_cache/mojo_shared_http_cache_client_remote.cc",
+      "disk_cache/mojo_shared_http_cache_client_remote.h",
+    ]
+  }
+
   if (enable_mdns) {
     sources += [
       "mdns_responder.cc",
@@ -554,6 +561,10 @@ source_set("tests") {
       "p2p/socket_test_utils.h",
       "p2p/socket_udp_unittest.cc",
     ]
+  }
+
+  if (enable_disk_cache_sql_backend) {
+    sources += [ "disk_cache/mojo_shared_http_cache_client_remote_unittest.cc" ]
   }
 
   if (enable_mdns) {

@@ -27,6 +27,7 @@ class NET_EXPORT SharedCacheClientRemote {
 
   // Sends the read-only file set for the isolated cache database to the remote
   // client, allowing it to initialize its local database connection.
+  // `SetDisconnectHandler()` must be called before `Initialize()`.
   virtual void Initialize(sqlite_vfs::PendingFileSet pending_file_set) = 0;
 
   // Notifies the remote client that new resources matching the given URL
@@ -34,7 +35,7 @@ class NET_EXPORT SharedCacheClientRemote {
   virtual void OnResourcesAdded(const std::vector<uint32_t>& new_hashes) = 0;
 
   // Sets the disconnect handler callback that is invoked when the remote
-  // client connection is severed.
+  // client connection is severed. Must be called before `Initialize()`.
   virtual void SetDisconnectHandler(base::OnceClosure disconnect_handler) = 0;
 };
 

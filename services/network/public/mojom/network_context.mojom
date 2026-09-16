@@ -99,6 +99,9 @@ import "services/network/public/mojom/p2p.mojom";
 [EnableIf=is_p2p_enabled]
 import "services/network/public/mojom/p2p_trusted.mojom";
 
+[EnableIf=enable_disk_cache_sql_backend]
+import "services/network/public/mojom/shared_http_cache_client.mojom";
+
 const uint32 kWebSocketOptionNone = 0;
 
 // Disallow the request from sending cookies. Disallow the response from writing
@@ -1315,6 +1318,30 @@ interface NetworkContext {
   // Clears dictionaries from the shared dictionary cache for sites configured
   // with session-only cookie policy.
   ClearSharedDictionarySessionOnlyData() => ();
+
+  // Registers a `SharedHttpCacheClientFactory` remote for `key` to enable the
+  // Renderer-Accessible HTTP Cache. Transient `NetworkIsolationKey`s are
+  // ignored.
+  //
+  // Once the isolated SQLite shared cache database files for `key` are ready,
+  // the network service calls `SharedHttpCacheClientFactory::CreateClient` on
+  // `shared_http_cache_client` to provide read-only database file handles and
+  // bind a `SharedHttpCacheClient` receiver for subsequent URL hash
+  // notifications (`OnResourcesAdded`).
+  //
+  // Each call registers an independent client instance and receives its own set
+  // of database file descriptors.
+  //
+  // The registration lifetime is bound to `shared_http_cache_client` until
+  // `CreateClient` is invoked, after which it transfers to the resulting
+  // `SharedHttpCacheClient` connection.
+  // TODO(crbug.com/473666511): If the network service restarts or the Mojo pipe
+  // disconnects, `SharedHttpCacheClient` should treat subsequent lookups as
+  // cache misses and fall back to normal `URLLoader` requests.
+  [EnableIf=enable_disk_cache_sql_backend]
+  RegisterHttpCacheClient(
+    NetworkIsolationKey key,
+    pending_remote<SharedHttpCacheClientFactory> shared_http_cache_client);
 
   // Configures per-resource reporting endpoints set with the
   // Reporting-Endpoints header.

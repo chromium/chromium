@@ -2056,6 +2056,10 @@ mojom("mojom") {
     public_deps += [ "//components/vrp_flags:mojom" ]
   }
 
+  if (enable_disk_cache_sql_backend) {
+    enabled_features += [ "enable_disk_cache_sql_backend" ]
+  }
+
   # Typemaps which apply to both Blink and non-Blink bindings.
   shared_cpp_typemaps = []
 
