@@ -71,7 +71,7 @@ using ::testing::Pointee;
 
 DEFINE_SPECIFICS_TO_VALUE_TEST(encrypted)
 
-static_assert(65 == syncer::GetNumDataTypes(),
+static_assert(64 == syncer::GetNumDataTypes(),
               "When adding a new field, add a DEFINE_SPECIFICS_TO_VALUE_TEST "
               "for your field below, and optionally a test for the specific "
               "conversions.");
@@ -85,7 +85,6 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(app_setting)
 DEFINE_SPECIFICS_TO_VALUE_TEST(arc_package)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_entity_suppression)
-DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_offer)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_profile)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_valuable)
 DEFINE_SPECIFICS_TO_VALUE_TEST(autofill_valuable_metadata)

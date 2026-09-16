@@ -236,9 +236,8 @@ class MigrationTest : public SyncTest,
 
     // Autofill wallet will be unready during this test, so we
     // should not request that it be migrated.
-    preferred_data_types.RemoveAll({syncer::AUTOFILL_WALLET_DATA,
-                                    syncer::AUTOFILL_WALLET_METADATA,
-                                    syncer::AUTOFILL_WALLET_OFFER});
+    preferred_data_types.RemoveAll(
+        {syncer::AUTOFILL_WALLET_DATA, syncer::AUTOFILL_WALLET_METADATA});
 
     // ARC package will be unready during this test, so we should not request
     // that it be migrated.

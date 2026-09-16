@@ -9,7 +9,6 @@
 
 
 namespace sync_pb {
-class AutofillOfferSpecifics;
 class AutofillWalletSpecifics;
 class AutofillValuableSpecifics;
 }  // namespace sync_pb
@@ -22,12 +21,6 @@ namespace autofill {
 // consistent.
 std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
     const sync_pb::AutofillWalletSpecifics& specifics);
-
-// Helper function to extract client tag from the specifics. For offer data,
-// every time it is synced, it will be a full sync and this client tag is not
-// populated by server.
-std::string GetUnhashedClientTagFromAutofillOfferSpecifics(
-    const sync_pb::AutofillOfferSpecifics& specifics);
 
 // Helper function to extract client tag from the specifics. For valuable data,
 // every time it is synced, it will be a full sync and this client tag is not

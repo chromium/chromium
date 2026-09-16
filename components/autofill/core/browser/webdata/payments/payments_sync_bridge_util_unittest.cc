@@ -36,7 +36,6 @@
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -710,71 +709,6 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   EXPECT_EQ(wallet_cards.back().cvc(), u"123");
 }
 
-// Test to ensure the general-purpose fields from an AutofillOfferData are
-// correctly converted to an AutofillOfferSpecifics.
-TEST_F(PaymentsSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
-  sync_pb::AutofillOfferSpecifics offer_specifics;
-  AutofillOfferData offer_data = test::GetCardLinkedOfferData1();
-  SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
-
-  EXPECT_EQ(offer_specifics.id(), offer_data.GetOfferId());
-  EXPECT_EQ(offer_specifics.offer_details_url(),
-            offer_data.GetOfferDetailsUrl());
-  EXPECT_EQ(offer_specifics.offer_expiry_date(),
-            (offer_data.GetExpiry() - base::Time::UnixEpoch()).InSeconds());
-  EXPECT_EQ(offer_specifics.merchant_domain().size(),
-            (int)offer_data.GetMerchantOrigins().size());
-  for (int i = 0; i < offer_specifics.merchant_domain().size(); ++i) {
-    EXPECT_EQ(offer_specifics.merchant_domain(i),
-              offer_data.GetMerchantOrigins()[i].spec());
-  }
-  EXPECT_EQ(offer_specifics.display_strings().value_prop_text(),
-            offer_data.GetDisplayStrings().value_prop_text);
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_EQ(offer_specifics.display_strings().see_details_text_mobile(),
-            offer_data.GetDisplayStrings().see_details_text);
-  EXPECT_EQ(offer_specifics.display_strings().usage_instructions_text_mobile(),
-            offer_data.GetDisplayStrings().usage_instructions_text);
-#else
-  EXPECT_EQ(offer_specifics.display_strings().see_details_text_desktop(),
-            offer_data.GetDisplayStrings().see_details_text);
-  EXPECT_EQ(offer_specifics.display_strings().usage_instructions_text_desktop(),
-            offer_data.GetDisplayStrings().usage_instructions_text);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-}
-
-// Test to ensure the card-linked offer-specific fields from an
-// AutofillOfferData are correctly converted to an AutofillOfferSpecifics.
-TEST_F(PaymentsSyncBridgeUtilTest, OfferSpecificsFromCardLinkedOfferData) {
-  sync_pb::AutofillOfferSpecifics offer_specifics;
-  AutofillOfferData offer_data = test::GetCardLinkedOfferData1();
-  SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
-
-  EXPECT_TRUE(offer_specifics.percentage_reward().percentage() ==
-                  offer_data.GetOfferRewardAmount() ||
-              offer_specifics.fixed_amount_reward().amount() ==
-                  offer_data.GetOfferRewardAmount());
-  EXPECT_EQ(offer_specifics.card_linked_offer_data().instrument_id().size(),
-            (int)offer_data.GetEligibleInstrumentIds().size());
-  for (int i = 0;
-       i < offer_specifics.card_linked_offer_data().instrument_id().size();
-       ++i) {
-    EXPECT_EQ(offer_specifics.card_linked_offer_data().instrument_id(i),
-              offer_data.GetEligibleInstrumentIds()[i]);
-  }
-}
-
-// Test to ensure the promo code offer-specific fields from an AutofillOfferData
-// are correctly converted to an AutofillOfferSpecifics.
-TEST_F(PaymentsSyncBridgeUtilTest, OfferSpecificsFromPromoCodeOfferData) {
-  sync_pb::AutofillOfferSpecifics offer_specifics;
-  AutofillOfferData offer_data = test::GetPromoCodeOfferData();
-  SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
-
-  EXPECT_EQ(offer_specifics.promo_code_offer_data().promo_code(),
-            offer_data.GetPromoCode());
-}
-
 // Ensures that the ShouldResetAutofillWalletData function works correctly, if
 // the two given data sets have the same size.
 TEST_F(PaymentsSyncBridgeUtilTest,
@@ -829,61 +763,6 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   std::vector<CreditCardBenefit> new_card_benefits = {
       test::GetActiveCreditCardMerchantBenefit()};
   EXPECT_TRUE(AreAnyItemsDifferent(old_card_benefits, new_card_benefits));
-}
-
-// Ensures that function IsOfferSpecificsValid is working correctly.
-TEST_F(PaymentsSyncBridgeUtilTest, IsOfferSpecificsValid) {
-  sync_pb::AutofillOfferSpecifics specifics;
-  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
-                                         &specifics);
-  // Expects default card-linked offer specifics is valid.
-  EXPECT_TRUE(IsOfferSpecificsValid(specifics));
-
-  specifics.clear_id();
-  // Expects specifics without id to be invalid.
-  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
-
-  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
-                                         &specifics);
-  specifics.clear_merchant_domain();
-  // Expects specifics without merchant domain to be invalid.
-  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
-  specifics.add_merchant_domain("invalid url");
-  // Expects specifics with an invalid merchant_domain to be invalid.
-  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
-
-  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
-                                         &specifics);
-  specifics.mutable_card_linked_offer_data()->clear_instrument_id();
-  // Expects card-linked offer specifics without linked card instrument id to be
-  // invalid.
-  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
-  specifics.clear_card_linked_offer_data();
-  // Expects specifics without card linked offer data or promo code offer data
-  // to be invalid.
-  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
-
-  SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
-                                         &specifics);
-  specifics.mutable_percentage_reward()->set_percentage("5");
-  // Expects card-linked offer specifics without correct reward text to be
-  // invalid.
-  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
-  specifics.clear_percentage_reward();
-  // Expects card-linked offer specifics without reward text to be invalid.
-  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
-  specifics.mutable_fixed_amount_reward()->set_amount("$5");
-  // Expects card-linked offer specifics with only fixed amount reward text to
-  // be valid.
-  EXPECT_TRUE(IsOfferSpecificsValid(specifics));
-
-  SetAutofillOfferSpecificsFromOfferData(test::GetPromoCodeOfferData(),
-                                         &specifics);
-  // Expects default promo code offer specifics is valid.
-  EXPECT_TRUE(IsOfferSpecificsValid(specifics));
-  // Expects promo code offer specifics without promo code to be invalid.
-  specifics.mutable_promo_code_offer_data()->clear_promo_code();
-  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
 }
 
 // Test to ensure that Wallet Usage Data for virtual card retrieval is correctly

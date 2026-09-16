@@ -104,9 +104,10 @@ void DataTypeController::InitDataTypeController(
     // * For many types, transport mode is implemented and launched on
     //   desktop/mobile, but not on ChromeOS yet, and may still run in
     //   full-sync-only mode in tests or when feature flags are disabled:
-    //   AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER, BOOKMARKS, HISTORY,
-    //   HISTORY_DELETE_DIRECTIVES, PASSWORDS, PREFERENCES, PRIORITY_PREFERENCES,
-    //   READING_LIST, SEARCH_ENGINES, SESSIONS, THEMES, USER_EVENTS.
+    //   AUTOFILL_WALLET_METADATA, BOOKMARKS, HISTORY,
+    //   HISTORY_DELETE_DIRECTIVES, PASSWORDS, PREFERENCES,
+    //   PRIORITY_PREFERENCES, READING_LIST, SEARCH_ENGINES, SESSIONS, THEMES,
+    //   USER_EVENTS.
     // * ChromeOS-specific types (COOKIES, PRINTERS,
     //   PRINTERS_AUTHORIZATION_SERVERS, WIFI_CONFIGURATIONS, WORKSPACE_DESK):
     //   Single-storage. Transport mode support is implemented but not launched
@@ -117,7 +118,6 @@ void DataTypeController::InitDataTypeController(
         AUTOFILL,
         AUTOFILL_PROFILE,
         AUTOFILL_WALLET_METADATA,
-        AUTOFILL_WALLET_OFFER,
         BOOKMARKS,
         DICTIONARY,
         HISTORY,

@@ -74,7 +74,6 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case AUTOFILL_WALLET_CREDENTIAL:
     case AUTOFILL_WALLET_DATA:
     case AUTOFILL_WALLET_METADATA:
-    case AUTOFILL_WALLET_OFFER:
     case AUTOFILL_WALLET_USAGE:
     case COLLABORATION_GROUP:
     case CONTACT_INFO:
@@ -153,7 +152,6 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case AUTOFILL_WALLET_CREDENTIAL:
     case AUTOFILL_WALLET_DATA:
     case AUTOFILL_WALLET_METADATA:
-    case AUTOFILL_WALLET_OFFER:
     case AUTOFILL_WALLET_USAGE:
     case THEMES:
     case THEMES_IOS:

@@ -16,6 +16,10 @@ package sync_pb;
 
 // Properties of Autofill wallet offer related objects.
 
+// Deprecated on the client: the AUTOFILL_WALLET_OFFER data type was removed and
+// the corresponding EntitySpecifics field is now EmptySpecifics. This message
+// is only kept because the specifics may still be used on the server.
+// TODO(crbug.com/546252995): Remove once the server no longer needs it.
 // Next tag: 11
 message AutofillOfferSpecifics {
   // The id for this offer data. Will be used as the client tag.

@@ -118,10 +118,10 @@ void MaybeAdaptClientTagIfMissing(DataType data_type,
     // Client tag hash is already set, nothing to do.
     return;
   }
-  // Server does not send any client tags for wallet data entities or offer data
+  // Server does not send any client tags for wallet data entities or valuable
   // entities. This code manually asks the bridge to create the client tags for
   // each entity, so that we can use ClientTagBasedDataTypeProcessor for
-  // AUTOFILL_WALLET_DATA or AUTOFILL_WALLET_OFFER.
+  // AUTOFILL_WALLET_DATA or AUTOFILL_VALUABLE.
   if (data.legacy_parent_id == "0") {
     // Ignore the permanent root node as that one should have no client tag
     // hash.
@@ -134,13 +134,6 @@ void MaybeAdaptClientTagIfMissing(DataType data_type,
           AUTOFILL_WALLET_DATA,
           autofill::GetUnhashedClientTagFromAutofillWalletSpecifics(
               data.specifics.autofill_wallet()));
-      break;
-    case AUTOFILL_WALLET_OFFER:
-      CHECK(data.specifics.has_autofill_offer());
-      data.client_tag_hash = ClientTagHash::FromUnhashed(
-          AUTOFILL_WALLET_OFFER,
-          autofill::GetUnhashedClientTagFromAutofillOfferSpecifics(
-              data.specifics.autofill_offer()));
       break;
     case AUTOFILL_VALUABLE:
       CHECK(data.specifics.has_autofill_valuable());

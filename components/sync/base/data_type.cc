@@ -236,24 +236,6 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
             .local_sync_support_policy = LocalSyncSupportPolicy::kUnsupported,
         },
         {
-            .type = AUTOFILL_WALLET_OFFER,
-            .specifics_field_number =
-                sync_pb::EntitySpecifics::kAutofillOfferFieldNumber,
-            .debug_string = "Autofill Wallet Offer",
-            .histogram_suffix = "AUTOFILL_OFFER",
-            .stable_lowercase_string = "autofill_wallet_offer",
-            // Wallet data is not encrypted since it actually originates on the
-            // server.
-            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
-            .priority = DataTypePriority::kRegular,
-            .communication_direction = CommunicationDirection::kRegularTwoWay,
-            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
-            .unsynced_data_check_on_signout_policy =
-                UnsyncedDataCheckOnSignoutPolicy::kNone,
-            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
-            .local_sync_support_policy = LocalSyncSupportPolicy::kUnsupported,
-        },
-        {
             .type = AUTOFILL_WALLET_USAGE,
             .specifics_field_number =
                 sync_pb::EntitySpecifics::kAutofillWalletUsageFieldNumber,
@@ -1195,7 +1177,7 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
     }};
 
 // LINT.IfChange(DataTypeHistogramSuffix)
-static_assert(GetNumDataTypes() == 65,
+static_assert(GetNumDataTypes() == 64,
               "When adding a new type, update kDataTypeInfoTable, update "
               "histograms.xml and follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
@@ -1249,9 +1231,6 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
       break;
     case AUTOFILL_WALLET_METADATA:
       specifics->mutable_wallet_metadata();
-      break;
-    case AUTOFILL_WALLET_OFFER:
-      specifics->mutable_autofill_offer();
       break;
     case AUTOFILL_WALLET_USAGE:
       specifics->mutable_autofill_wallet_usage();
@@ -1644,8 +1623,6 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kAutofillWalletData;
     case AUTOFILL_WALLET_METADATA:
       return DataTypeForHistograms::kAutofillWalletMetadata;
-    case AUTOFILL_WALLET_OFFER:
-      return DataTypeForHistograms::kAutofillWalletOffer;
     case AUTOFILL_WALLET_USAGE:
       return DataTypeForHistograms::kAutofillWalletUsage;
     case THEMES:

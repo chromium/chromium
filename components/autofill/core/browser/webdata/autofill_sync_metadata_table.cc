@@ -39,6 +39,15 @@ constexpr std::string_view kAutofillDataTypeStateTable =
 // kModelType = "model_type"
 // kValue = "value"
 
+// The `kModelType` value that was persisted for the removed
+// `AUTOFILL_WALLET_OFFER` data type. This mirrors
+// `syncer::DataTypeToStableIdentifier()`, which is not usable here anymore
+// since the data type no longer exists.
+constexpr int kDeprecatedAutofillWalletOfferModelType =
+    static_cast<int>(
+        syncer::DataTypeForHistograms::kDeprecatedAutofillWalletOffer) +
+    1;
+
 WebDatabaseTable::TypeKey GetKey() {
   // We just need a unique constant. Use the address of a static that
   // COMDAT folding won't touch in an optimizing linker.
@@ -68,7 +77,6 @@ bool AutofillSyncMetadataTable::SupportsMetadataForDataType(
          data_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
          data_type == syncer::AUTOFILL_WALLET_DATA ||
          data_type == syncer::AUTOFILL_WALLET_METADATA ||
-         data_type == syncer::AUTOFILL_WALLET_OFFER ||
          data_type == syncer::AUTOFILL_WALLET_USAGE ||
          data_type == syncer::CONTACT_INFO;
 }
@@ -100,9 +108,13 @@ bool AutofillSyncMetadataTable::
   sql::Transaction transaction(db());
   return transaction.Begin() &&
          (!db()->DoesTableExist(kAutofillSyncMetadataTable) ||
-          DeleteAllSyncMetadata(syncer::AUTOFILL_WALLET_OFFER)) &&
+          sql::DeleteWhereColumnEq(*db(), kAutofillSyncMetadataTable,
+                                   kModelType,
+                                   kDeprecatedAutofillWalletOfferModelType)) &&
          (!db()->DoesTableExist(kAutofillDataTypeStateTable) ||
-          ClearDataTypeState(syncer::AUTOFILL_WALLET_OFFER)) &&
+          sql::DeleteWhereColumnEq(*db(), kAutofillDataTypeStateTable,
+                                   kModelType,
+                                   kDeprecatedAutofillWalletOfferModelType)) &&
          transaction.Commit();
 }
 

@@ -601,7 +601,7 @@ TEST_F(SyncEngineImplTest, ShouldStartHandlingInvalidations) {
 }
 
 TEST_F(SyncEngineImplTest, DoNotUseOldInvalidationsAtAll) {
-  enabled_types_.PutAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
+  enabled_types_.Put(AUTOFILL_WALLET_DATA);
 
   EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
       .WillRepeatedly(Return(enabled_types_));

@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 
@@ -49,11 +48,6 @@ std::string GetUnhashedClientTagFromAutofillWalletSpecifics(
       return std::string();
   }
   return std::string();
-}
-
-std::string GetUnhashedClientTagFromAutofillOfferSpecifics(
-    const sync_pb::AutofillOfferSpecifics& specifics) {
-  return base::NumberToString(specifics.id());
 }
 
 std::string GetUnhashedClientTagFromAutofillValuableSpecifics(

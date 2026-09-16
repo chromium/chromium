@@ -316,7 +316,6 @@ void PaymentsDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
   if (data_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
       data_type == syncer::AUTOFILL_WALLET_DATA ||
       data_type == syncer::AUTOFILL_WALLET_METADATA ||
-      data_type == syncer::AUTOFILL_WALLET_OFFER ||
       data_type == syncer::AUTOFILL_WALLET_USAGE) {
     Refresh();
   }

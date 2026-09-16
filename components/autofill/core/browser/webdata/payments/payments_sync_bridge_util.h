@@ -11,14 +11,12 @@
 
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
 
 namespace autofill {
 
-class AutofillOfferData;
 struct ServerCvc;
 class AutofillWalletUsageData;
 class BankAccount;
@@ -74,16 +72,6 @@ void SetAutofillWalletSpecificsFromCardBenefit(
 void SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(
     const AutofillWalletUsageData& wallet_usage_data,
     sync_pb::AutofillWalletUsageSpecifics* wallet_usage_specifics);
-
-// Sets the fields of the |offer_specifics| based on the specified |offer_data|.
-void SetAutofillOfferSpecificsFromOfferData(
-    const AutofillOfferData& offer_data,
-    sync_pb::AutofillOfferSpecifics* offer_specifics);
-
-// Creates an AutofillOfferData from the specified |offer_specifics|.
-// |offer_specifics| must be valid (as per IsOfferSpecificsValid()).
-AutofillOfferData AutofillOfferDataFromOfferSpecifics(
-    const sync_pb::AutofillOfferSpecifics& offer_specifics);
 
 // Returns a AutofillWalletCredentialSpecifics object based on the specified
 // `server_cvc` data. The CVC must be present in the `server_cvc`.
@@ -180,9 +168,6 @@ bool AreAnyItemsDifferent(
 bool IsVirtualCardUsageDataSpecificsValid(
     const sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData&
         specifics);
-
-// Returns whether the Wallet Offer |specifics| is valid data.
-bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics);
 
 // Returns whether the fields of VirtualCardUsageData `virtual_card_usage_data`
 // were initialized and set.

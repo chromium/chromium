@@ -62,9 +62,6 @@ enum DataType {
   // Usage counts and last use dates for Wallet cards. This data is both
   // readable and writable.
   AUTOFILL_WALLET_METADATA,
-  // Offers and rewards from the user's account. These are read-only on the
-  // client side.
-  AUTOFILL_WALLET_OFFER,
   // Autofill usage data of a payment method related to a specific merchant.
   AUTOFILL_WALLET_USAGE,
   // A theme object.
@@ -283,7 +280,7 @@ enum class DataTypeForHistograms {
   kOsPreferences = 46,
   kOsPriorityPreferences = 47,
   kSharingMessage = 48,
-  kAutofillWalletOffer = 49,
+  kDeprecatedAutofillWalletOffer = 49,
   kWorkspaceDesk = 50,
   kHistory = 51,
   kPrintersAuthorizationServers = 52,

@@ -17,7 +17,6 @@ class AppSpecifics;
 class ArcPackageSpecifics;
 class AutofillProfileSpecifics;
 class AutofillSpecifics;
-class AutofillOfferSpecifics;
 class AutofillValuableMetadataSpecifics;
 class AutofillWalletCredentialSpecifics;
 class AutofillWalletSpecifics;
@@ -120,9 +119,6 @@ base::Value AppSpecificsToValue(const sync_pb::AppSpecifics& app_specifics);
 
 base::Value ArcPackageSpecificsToValue(
     const sync_pb::ArcPackageSpecifics& proto);
-
-base::Value AutofillOfferSpecificsToValue(
-    const sync_pb::AutofillOfferSpecifics& autofill_offer_specifics);
 
 base::Value AutofillProfileSpecificsToValue(
     const sync_pb::AutofillProfileSpecifics& autofill_profile_specifics);

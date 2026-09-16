@@ -55,7 +55,6 @@ FakeServer::FakeServer(const base::FilePath& loopback_server_dir)
 
   SetUpdateMode(syncer::AUTOFILL_VALUABLE, UpdateMode::kFull);
   SetUpdateMode(syncer::AUTOFILL_WALLET_DATA, UpdateMode::kFull);
-  SetUpdateMode(syncer::AUTOFILL_WALLET_OFFER, UpdateMode::kFull);
 
   LoadFakeStateFromDisk();
 }

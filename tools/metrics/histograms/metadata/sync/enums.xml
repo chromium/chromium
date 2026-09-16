@@ -1030,7 +1030,7 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="OS Preferences"/>
   <int value="47" label="OS Priority Preferences"/>
   <int value="48" label="Sharing Message"/>
-  <int value="49" label="Autofill Wallet Offer"/>
+  <int value="49" label="(Obsolete) Autofill Wallet Offer"/>
   <int value="50" label="Workspace Desk"/>
   <int value="51" label="History"/>
   <int value="52" label="Printers Authorization Servers"/>

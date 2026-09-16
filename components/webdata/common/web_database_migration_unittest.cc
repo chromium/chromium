@@ -2110,8 +2110,8 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion154ToCurrent) {
 // offer tables.
 TEST_F(WebDatabaseMigrationTest, MigrateVersion155ToCurrent) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_155.sql")));
-  const int offer_model_type =
-      syncer::DataTypeToStableIdentifier(syncer::AUTOFILL_WALLET_OFFER);
+  // Stable identifier for deprecated syncer::AUTOFILL_WALLET_OFFER.
+  constexpr int offer_model_type = 50;
   const int card_model_type =
       syncer::DataTypeToStableIdentifier(syncer::AUTOFILL_WALLET_DATA);
 
