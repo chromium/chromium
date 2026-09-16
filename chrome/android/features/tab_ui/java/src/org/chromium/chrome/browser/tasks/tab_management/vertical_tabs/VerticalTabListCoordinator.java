@@ -1718,6 +1718,10 @@ public class VerticalTabListCoordinator {
         };
     }
 
+    /**
+     * Creates a {@link DragHandlerDelegate} to handle drag events when an external drag originates
+     * from this vertical tab list.
+     */
     private DragHandlerDelegate createDragHandlerDelegate(
             RecyclerView recyclerView,
             ItemTouchHelper2 itemTouchHelper,
@@ -1899,20 +1903,6 @@ public class VerticalTabListCoordinator {
             public boolean handleDrop(View view, float xPx, float yPx) {
                 float[] coords = toRvCoordinates(view, xPx, yPx);
                 return handleDrop(coords[0], coords[1]);
-            }
-
-            @Override
-            public int handleInternalDragEnd() {
-                reselectDraggedTabIfNeeded();
-                updateSingleTabListMinHeight(model, /* useMinHeight= */ false);
-                itemTouchHelper.stopInternalDrag();
-                dragHandler.setDragHandlerDelegate(nonOriginatingDelegate);
-                return BackPressHandler.BackPressResult.SUCCESS;
-            }
-
-            @Override
-            public boolean isDragInProcess() {
-                return itemTouchHelper.isDragInProcess();
             }
         };
     }

@@ -161,6 +161,11 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
     @Override
     public Boolean handleEscPress() {
         assumeNonNull(mDragHandlerDelegate);
+        // If an external Android view drag is actively in progress, ESC always cancels the OS
+        // drag via cancelDragAndDrop().
+        if (isViewDraggingInProgress()) {
+            return super.handleEscPress();
+        }
         if (mDragHandlerDelegate.isDragInProcess()) {
             return mDragHandlerDelegate.handleInternalDragEnd() == BackPressResult.SUCCESS;
         }

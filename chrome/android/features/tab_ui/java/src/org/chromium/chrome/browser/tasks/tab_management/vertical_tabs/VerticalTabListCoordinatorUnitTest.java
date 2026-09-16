@@ -2589,7 +2589,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         delegate.handleDragStart(0f, 0f);
         assertEquals(expectedMinHeight, pinnedRecyclerView.getMinimumHeight());
-        delegate.handleInternalDragEnd();
+        delegate.handleExternalDragEnd(0f, 0f, /* isOSNewWindowDrop= */ false);
         assertEquals(0, pinnedRecyclerView.getMinimumHeight());
     }
 
@@ -2635,7 +2635,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         delegate.handleDragStart(0f, 0f);
         assertEquals(expectedMinHeight, mainRecyclerView.getMinimumHeight());
-        delegate.handleInternalDragEnd();
+        delegate.handleExternalDragEnd(0f, 0f, /* isOSNewWindowDrop= */ false);
         assertEquals(0, mainRecyclerView.getMinimumHeight());
     }
 
@@ -4781,6 +4781,7 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mMainTabSwitcherDragHandler, atLeastOnce())
                 .setDragHandlerDelegate(delegateCaptor.capture());
         TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
+        assertFalse(delegate.isDragInProcess());
 
         delegate.handleDragStart(0f, 0f);
         verify(mTabModel).setIndex(1, TabSelectionType.FROM_DRAG);
@@ -4844,33 +4845,6 @@ public class VerticalTabListCoordinatorUnitTest {
         verify(mTabModel).setIndex(2, TabSelectionType.FROM_DRAG);
 
         delegate.handleDragEnter();
-        verify(mTabModel).setIndex(0, TabSelectionType.FROM_DRAG);
-    }
-
-    @Test
-    @SmallTest
-    public void testOriginatingDrag_InternalDragEndCancelled_ReselectsTab() {
-        Tab tab1 = prepareMockTab(mMockTab1, TAB_ID_1);
-        Tab tab2 = prepareMockTab(mMockTab2, TAB_ID_2);
-        setupMockTabModelWithTabs(List.of(tab1, tab2), 0);
-
-        createCoordinator();
-        PropertyModel model = createTabPropertyModel();
-        model.set(TabProperties.TAB_ID, TAB_ID_1);
-        model.set(TabProperties.IS_PINNED, false);
-
-        getOnDragOutListener().onDragOut(createViewHolder(model), /* dX= */ 100f, /* dY= */ 50f);
-
-        ArgumentCaptor<TabSwitcherDragHandler.DragHandlerDelegate> delegateCaptor =
-                ArgumentCaptor.forClass(TabSwitcherDragHandler.DragHandlerDelegate.class);
-        verify(mMainTabSwitcherDragHandler, atLeastOnce())
-                .setDragHandlerDelegate(delegateCaptor.capture());
-        TabSwitcherDragHandler.DragHandlerDelegate delegate = delegateCaptor.getValue();
-
-        delegate.handleDragStart(0f, 0f);
-        verify(mTabModel).setIndex(1, TabSelectionType.FROM_DRAG);
-
-        delegate.handleInternalDragEnd();
         verify(mTabModel).setIndex(0, TabSelectionType.FROM_DRAG);
     }
 

@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler.AnimatedDragShadowBuilder;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler.DragHandlerDelegate;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -643,5 +644,51 @@ public class TabSwitcherDragHandlerUnitTest {
     @Test
     public void testHasActiveDragShadow() {
         assertFalse(mDragHandler.hasActiveDragShadow());
+    }
+
+    @Test
+    public void testHandleEscPress_ExternalDragInProgress_CancelsDragAndDrop() {
+        Token token = new Token(1L, 2L);
+        TabDragHandlerBase.setDragTokenForTesting(token);
+
+        View dragSourceView = mock(View.class);
+        mDragHandler.mDragSourceView = dragSourceView;
+        when(mDragHandlerDelegate.isDragInProcess()).thenReturn(true);
+
+        assertTrue(mDragHandler.handleEscPress());
+        verify(dragSourceView).cancelDragAndDrop();
+        verify(mDragHandlerDelegate, never()).handleInternalDragEnd();
+    }
+
+    @Test
+    public void testHandleEscPress_InternalDragInProgress_DelegatesToInternalDragEnd() {
+        TabDragHandlerBase.setDragTokenForTesting(null);
+        when(mDragHandlerDelegate.isDragInProcess()).thenReturn(true);
+        when(mDragHandlerDelegate.handleInternalDragEnd())
+                .thenReturn(BackPressHandler.BackPressResult.SUCCESS);
+
+        assertTrue(mDragHandler.handleEscPress());
+        verify(mDragHandlerDelegate).handleInternalDragEnd();
+    }
+
+    @Test
+    public void testHandleEscPress_InternalDragInProgress_Failure() {
+        TabDragHandlerBase.setDragTokenForTesting(null);
+        when(mDragHandlerDelegate.isDragInProcess()).thenReturn(true);
+        when(mDragHandlerDelegate.handleInternalDragEnd())
+                .thenReturn(BackPressHandler.BackPressResult.FAILURE);
+
+        assertFalse(mDragHandler.handleEscPress());
+        verify(mDragHandlerDelegate).handleInternalDragEnd();
+    }
+
+    @Test
+    public void testHandleEscPress_NoDragInProgress_FallsBackToSuper() {
+        TabDragHandlerBase.setDragTokenForTesting(null);
+        when(mDragHandlerDelegate.isDragInProcess()).thenReturn(false);
+        mDragHandler.mDragSourceView = null;
+
+        assertFalse(mDragHandler.handleEscPress());
+        verify(mDragHandlerDelegate, never()).handleInternalDragEnd();
     }
 }
