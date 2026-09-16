@@ -829,6 +829,10 @@ BASE_DECLARE_FEATURE(kSearchAIModeSignInPromoSelfDismissal);
 // Android.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSigninButtonProfileMenu);
+
+// Shows an error card in the profile menu on Desktop Android.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSigninButtonProfileMenuErrorCard);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables the new visual design for the profile switch interception bubble,

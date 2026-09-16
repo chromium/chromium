@@ -51,6 +51,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kEnableWebSigninLoadingDialog,
     &switches::kForceShowWebSigninLoadingDialog,
     &switches::kSigninButtonProfileMenu,
+    &switches::kSigninButtonProfileMenuErrorCard,
     &switches::kSigninLevelUpButton,
     &switches::kSupportForcedSigninPolicy,
     &switches::kProfileDiscOnAllPages,
