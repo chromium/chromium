@@ -96,6 +96,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #else
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -750,6 +751,20 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       infobars::ContentInfoBarManager::FromWebContents(
           tab_list2->GetTab(1)->GetContents());
 
+  // The infobar framework shows a global infobar only in the
+  // active tab of each browser window, moving it as the active tab changes.
+  // The legacy GlobalConfirmInfoBar instead puts an infobar in every tab. Only
+  // `manager2` is a background tab (browser2's active tab is `manager3`), so
+  // it is the only expectation that differs between the two implementations.
+  const bool global_infobar_in_active_tab_only = infobars::IsInfoBarMigrated(
+      infobars::InfoBarDelegate::EXTENSION_DEV_TOOLS_INFOBAR_DELEGATE);
+  const size_t background_tab_infobars =
+      global_infobar_in_active_tab_only ? 0u : 1u;
+  // The infobar the user would click the close button on must be one that is
+  // actually showing.
+  infobars::ContentInfoBarManager* dismissal_manager =
+      global_infobar_in_active_tab_only ? manager3 : manager2;
+
   // Attaching to one tab should create infobars in both browsers.
   attach_function = new DebuggerAttachFunction();
   attach_function->set_extension(extension());
@@ -757,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
   EXPECT_EQ(1u, manager1->infobars().size());
-  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(background_tab_infobars, manager2->infobars().size());
   EXPECT_EQ(1u, manager3->infobars().size());
 
   // Attaching to another tab should not create more infobars.
@@ -767,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id2), profile()));
   EXPECT_EQ(1u, manager1->infobars().size());
-  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(background_tab_infobars, manager2->infobars().size());
   EXPECT_EQ(1u, manager3->infobars().size());
 
   // Detaching from one of the tabs should not remove infobars.
@@ -777,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id2),
       profile()));
   EXPECT_EQ(1u, manager1->infobars().size());
-  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(background_tab_infobars, manager2->infobars().size());
   EXPECT_EQ(1u, manager3->infobars().size());
 
   // Detaching from the other tab also should not remove infobars, since even
@@ -789,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
       profile()));
   EXPECT_EQ(1u, manager1->infobars().size());
-  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(background_tab_infobars, manager2->infobars().size());
   EXPECT_EQ(1u, manager3->infobars().size());
 
   // Attach again; should not create infobars.
@@ -799,15 +814,15 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
   EXPECT_EQ(1u, manager1->infobars().size());
-  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(background_tab_infobars, manager2->infobars().size());
   EXPECT_EQ(1u, manager3->infobars().size());
 
   // Remove the global infobar by simulating what happens when the user clicks
   // the close button (see InfoBarView::ButtonPressed()).  The
   // InfoBarDismissed() call will remove the infobars everywhere except on
-  // |manager2| itself; the RemoveSelf() call removes that one.
-  manager2->infobars()[0]->delegate()->InfoBarDismissed();
-  manager2->infobars()[0]->RemoveSelf();
+  // |dismissal_manager| itself; the RemoveSelf() call removes that one.
+  dismissal_manager->infobars()[0]->delegate()->InfoBarDismissed();
+  dismissal_manager->infobars()[0]->RemoveSelf();
   EXPECT_EQ(0u, manager1->infobars().size());
   EXPECT_EQ(0u, manager2->infobars().size());
   EXPECT_EQ(0u, manager3->infobars().size());
@@ -825,14 +840,17 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       attach_function.get(),
       base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
   EXPECT_EQ(1u, manager1->infobars().size());
-  EXPECT_EQ(1u, manager2->infobars().size());
+  EXPECT_EQ(background_tab_infobars, manager2->infobars().size());
   EXPECT_EQ(1u, manager3->infobars().size());
 
-  // Closing tab should not affect anything.
+  // Closing tab should not affect anything. Note that under the infobar
+  // framework this makes `manager2`'s tab active, so the global
+  // infobar moves there.
   EXPECT_EQ(2, tab_list2->GetTabCount());
   tab_list2->CloseTab(tab_list2->GetTab(1)->GetHandle());
   EXPECT_EQ(1, tab_list2->GetTabCount());
   manager3 = nullptr;
+  dismissal_manager = nullptr;
   EXPECT_EQ(1u, manager1->infobars().size());
   EXPECT_EQ(1u, manager2->infobars().size());
 
@@ -895,14 +913,19 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        InfoBarIsNotRemovedWhenAnotherDebuggerAttached) {
   const int tab_id1 =
       sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
-  infobars::ContentInfoBarManager* manager =
-      infobars::ContentInfoBarManager::FromWebContents(GetActiveWebContents());
 
   ASSERT_TRUE(embedded_test_server()->Started());
   ASSERT_TRUE(
       NavigateToURLInNewTab(embedded_test_server()->GetURL("/simple.html")));
   const int tab_id2 =
       sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
+
+  // Watch the active tab's manager: the infobar framework only
+  // shows a global infobar in the active tab of each browser window, while the
+  // legacy GlobalConfirmInfoBar shows one in every tab. The active tab has an
+  // infobar either way.
+  infobars::ContentInfoBarManager* manager =
+      infobars::ContentInfoBarManager::FromWebContents(GetActiveWebContents());
 
   // Attaching to a tab should create an infobar.
   {
