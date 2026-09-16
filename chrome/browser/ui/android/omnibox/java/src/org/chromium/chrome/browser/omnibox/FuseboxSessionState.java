@@ -67,8 +67,7 @@ public class FuseboxSessionState implements UserData {
                     FuseboxSessionState.this.onAttachmentListChanged();
                 }
             };
-    private final Callback<@AutocompleteRequestType Integer> mOnRequestTypeChanged =
-            this::onRequestTypeChanged;
+    private final Callback<Integer> mOnRequestTypeChanged = this::onRequestTypeChanged;
 
     /**
      * Details about the user input in the Omnibox. Retained to allow session reconstruction, for

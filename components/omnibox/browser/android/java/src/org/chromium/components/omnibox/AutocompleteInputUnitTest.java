@@ -26,8 +26,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
-import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
-import org.chromium.components.omnibox.AutocompleteInput.RefineActionUsage;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.url.GURL;
@@ -43,8 +41,7 @@ public class AutocompleteInputUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private Callback<@AutocompleteState Integer> mCallback;
-    @Mock private Callback<@DisplayState Integer> mDisplayStateCallback;
+    @Mock private Callback<Integer> mCallback;
     @Mock private Callback<GURL> mGurlCallback;
     private final AutocompleteInput mInput = new AutocompleteInput();
 
@@ -397,7 +394,7 @@ public class AutocompleteInputUnitTest {
         boolean[] called = new boolean[1];
         mInput.getRequestTypeSupplier()
                 .addSyncObserver(
-                        (@AutocompleteRequestType Integer requestType) -> {
+                        requestType -> {
                             if (requestType == AutocompleteRequestType.IMAGE_GENERATION) {
                                 assertEquals(ToolMode.TOOL_MODE_IMAGE_GEN, mInput.getToolMode());
                                 called[0] = true;
@@ -523,22 +520,6 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
-    public void getDisplayStateSupplier_notifiesObservers() {
-        mInput.setDisplayState(DisplayState.WEBSITE);
-        mInput.getDisplayStateSupplier().addSyncObserver(mDisplayStateCallback);
-        mInput.setDisplayState(DisplayState.DRAFTING);
-        verify(mDisplayStateCallback).onResult(DisplayState.DRAFTING);
-    }
-
-    @Test
-    public void getDisplayStateSupplier_resetNotifiesObservers() {
-        mInput.setDisplayState(DisplayState.DRAFTING);
-        mInput.getDisplayStateSupplier().addSyncObserver(mDisplayStateCallback);
-        mInput.reset();
-        verify(mDisplayStateCallback).onResult(DisplayState.WEBSITE);
-    }
-
-    @Test
     public void testCopyFrom() {
         long urlFocusTime = 12345L;
         GURL pageUrl = GURL.emptyGURL();
@@ -548,14 +529,13 @@ public class AutocompleteInputUnitTest {
         String initialUserText = "initialUserText";
         GURL initialPreviewMatchUrl = JUnitTestGURLs.BLUE_1;
         boolean hasAttachments = true;
-        @AutocompleteState int autocompleteState = AutocompleteState.STANDBY;
-        @DisplayState int displayState = DisplayState.DRAFTING;
+        int autocompleteState = AutocompleteState.STANDBY;
         int selectionStart = 1;
         int selectionEnd = 2;
-        @RefineActionUsage int refineActionUsage = RefineActionUsage.SEARCH_WITH_PREFIX;
-        @OmniboxFocusReason int focusReason = OmniboxFocusReason.OMNIBOX_TAP;
+        int refineActionUsage = AutocompleteInput.RefineActionUsage.SEARCH_WITH_PREFIX;
+        int focusReason = OmniboxFocusReason.OMNIBOX_TAP;
         @ModelMode int modelMode = ModelMode.MODEL_MODE_GEMINI_REGULAR;
-        @AutocompleteRequestType int requestType = AutocompleteRequestType.IMAGE_GENERATION;
+        int requestType = AutocompleteRequestType.IMAGE_GENERATION;
         SiteSearchData siteSearchData = new SiteSearchData("keyword", "name");
 
         AutocompleteInput input1 = new AutocompleteInput();
@@ -567,7 +547,6 @@ public class AutocompleteInputUnitTest {
         input1.setInitialInput(initialUserText, initialPreviewMatchUrl);
         input1.setHasAttachments(hasAttachments);
         input1.setAutocompleteState(autocompleteState);
-        input1.setDisplayState(displayState);
         input1.setSelection(new TextSelection(selectionStart, selectionEnd));
         input1.setRefineActionUsage(refineActionUsage);
         input1.setSuggestionsListScrolled();
@@ -588,7 +567,6 @@ public class AutocompleteInputUnitTest {
         assertEquals(initialPreviewMatchUrl, input2.getInitialPreviewMatchUrl());
         assertEquals(input1.allowExactKeywordMatch(), input2.allowExactKeywordMatch());
         assertEquals(autocompleteState, input2.getAutocompleteState());
-        assertEquals(displayState, input2.getDisplayState());
         assertEquals(selectionStart, input2.getSelection().from);
         assertEquals(selectionEnd, input2.getSelection().to);
         assertEquals(refineActionUsage, input2.getRefineActionUsage());
@@ -644,7 +622,7 @@ public class AutocompleteInputUnitTest {
         mInput.setInitialUserText("initial");
         mInput.getAutocompleteStateSupplier()
                 .addSyncObserver(
-                        (@AutocompleteState Integer state) -> {
+                        (state) -> {
                             if (state == AutocompleteState.ENABLED) {
                                 assertEquals(2, mInput.getSelection().from);
                                 assertEquals(2, mInput.getSelection().to);
