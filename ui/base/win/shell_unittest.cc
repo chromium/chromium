@@ -18,11 +18,36 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/platform_thread.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_com_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ui::win {
+
+namespace {
+
+// Runs OpenFileViaShell on a detached, non-joinable thread. For a file with an
+// unregistered extension the shell can show a modal "Open With" dialog and
+// SEE_MASK_NOASYNC blocks until it is dismissed, which never happens on a
+// headless bot. A ThreadPool task can't be used because TaskEnvironment drains
+// its workers at teardown and would still wall the process; a detached,
+// non-joinable thread is abandoned at process exit so nothing waits on it.
+class OpenFileViaShellRunner : public base::PlatformThread::Delegate {
+ public:
+  explicit OpenFileViaShellRunner(base::FilePath path)
+      : path_(std::move(path)) {}
+
+  void ThreadMain() override {
+    base::win::ScopedCOMInitializer com_initializer;
+    OpenFileViaShell(path_);
+  }
+
+ private:
+  const base::FilePath path_;
+};
+
+}  // namespace
 
 class ShellTest : public testing::Test {
  public:
@@ -89,7 +114,13 @@ TEST_F(ShellTest, OpenFileWithSpaceInExtension) {
         }
       })));
 
-  ASSERT_TRUE(OpenFileViaShell(file_path));
+  // Run OpenFileViaShell on a detached, non-joinable thread so a blocking modal
+  // "Open With" dialog can't wall the test. Intentionally leaked -- the runner
+  // may block in the dialog and its thread is non-joinable, so neither can be
+  // destroyed. The sentinel check below still catches the real regression (the
+  // sibling test. txt.exe being launched).
+  base::PlatformThread::CreateNonJoinable(
+      0, new OpenFileViaShellRunner(file_path));
 
   // This test cannot easily check that the openwith dialog will appear.
   // As a workaround, OpenFileViaShell only invoke a sentinel program in the
