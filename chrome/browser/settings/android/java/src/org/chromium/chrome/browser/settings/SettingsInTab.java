@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Build;
 
 import org.chromium.base.ApplicationStatus;
@@ -13,6 +14,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.display.DisplayUtil;
 
 /** Utility class for checking if Settings in Tab feature is enabled. */
 @NullMarked
@@ -49,6 +51,14 @@ public class SettingsInTab {
         Context context = ApplicationStatus.getLastTrackedFocusedActivity();
         if (context == null) {
             context = ContextUtils.getApplicationContext();
+            // Automotive activities scale up UI density (see ChromeBaseAppCompatActivity),
+            // which reduces smallestScreenWidthDp. Apply automotive scaling to the fallback
+            // application context so the tablet check matches what activities will experience.
+            if (DeviceInfo.isAutomotive()) {
+                Configuration config = new Configuration();
+                DisplayUtil.scaleUpConfigurationForAutomotive(context, config);
+                context = context.createConfigurationContext(config);
+            }
         }
         return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }

@@ -69,6 +69,22 @@ public class SettingsInTabTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testIsEnabled_FeatureEnabledOnAutomotive_ReturnsFalse() {
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        assertFalse(SettingsInTab.isEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "w1600dp-h1200dp")
+    public void testIsEnabled_FeatureEnabledOnLargeAutomotive_ReturnsTrue() {
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        assertTrue(SettingsInTab.isEnabled());
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP)
     public void testIsEnabled_Desktop_SettingsInTabDisabled_ReturnsTrue() {
