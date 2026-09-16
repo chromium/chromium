@@ -2273,4 +2273,128 @@ TEST_F(FrameSinkManagerTest,
   manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
 }
 
+// Verifies that when frame sinks in two unrelated hierarchies report the same
+// crop id simultaneously, each target resolves to the claimant inside its own
+// hierarchy. Without the hierarchy check, the resolved sink would depend on
+// `support_map_` iteration order, allowing one hierarchy to shadow the other.
+TEST_F(FrameSinkManagerTest,
+       FindCapturableFrameSinkRegionCaptureDisambiguatesHierarchies) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdRoot, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdRoot2, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdB, true);
+
+  // Set up two independent hierarchies: Root -> A and Root2 -> B.
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdA);
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdRoot2, kFrameSinkIdB);
+
+  auto sink_root = CreateCompositorFrameSinkSupport(kFrameSinkIdRoot);
+  auto sink_root2 = CreateCompositorFrameSinkSupport(kFrameSinkIdRoot2);
+  auto sink_a = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  auto sink_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+
+  const auto crop_id = RegionCaptureCropId::CreateRandom();
+  RegionCaptureBounds bounds;
+  bounds.Set(crop_id, gfx::Rect(0, 0, 100, 100));
+
+  constexpr gfx::Rect kDamageRect(0, 0, 100, 100);
+  auto set_capture_bounds = [&](CompositorFrameSinkSupport* support) {
+    ParentLocalSurfaceIdAllocator allocator;
+    allocator.GenerateId();
+    auto frame = MakeDefaultCompositorFrame();
+    frame.metadata.capture_bounds = bounds;
+    support->OnSurfaceAggregatedDamage(
+        nullptr, allocator.GetCurrentLocalSurfaceId(), frame, kDamageRect,
+        base::TimeTicks::Now());
+  };
+
+  // Both A (under Root) and B (under Root2) claim the same crop id.
+  set_capture_bounds(sink_a.get());
+  set_capture_bounds(sink_b.get());
+
+  // Each target must resolve to the claimant inside its own hierarchy.
+  EXPECT_EQ(
+      FindCapturableFrameSink(VideoCaptureTarget(kFrameSinkIdRoot, crop_id)),
+      sink_a.get());
+  EXPECT_EQ(
+      FindCapturableFrameSink(VideoCaptureTarget(kFrameSinkIdRoot2, crop_id)),
+      sink_b.get());
+  EXPECT_EQ(FindCapturableFrameSink(VideoCaptureTarget(kFrameSinkIdA, crop_id)),
+            sink_a.get());
+  EXPECT_EQ(FindCapturableFrameSink(VideoCaptureTarget(kFrameSinkIdB, crop_id)),
+            sink_b.get());
+
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdA);
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot2, kFrameSinkIdB);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot2, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+}
+
+// Verifies that region capture searches the full descendant subtree of the
+// target (not just its direct children), and that a crop id reported by an
+// ancestor is never resolved for a descendant target.
+TEST_F(FrameSinkManagerTest,
+       FindCapturableFrameSinkRegionCaptureSearchesDescendantsOnly) {
+  manager_->RegisterFrameSinkId(kFrameSinkIdRoot, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdA, true);
+  manager_->RegisterFrameSinkId(kFrameSinkIdB, true);
+
+  // Set up a deep hierarchy: Root -> A -> B.
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdA);
+  manager_->RegisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+
+  auto sink_root = CreateCompositorFrameSinkSupport(kFrameSinkIdRoot);
+  auto sink_a = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  auto sink_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+
+  const auto crop_id = RegionCaptureCropId::CreateRandom();
+  RegionCaptureBounds bounds;
+  bounds.Set(crop_id, gfx::Rect(0, 0, 100, 100));
+
+  constexpr gfx::Rect kDamageRect(0, 0, 100, 100);
+  auto submit_frame = [&](CompositorFrameSinkSupport* support,
+                          const RegionCaptureBounds& capture_bounds) {
+    ParentLocalSurfaceIdAllocator allocator;
+    allocator.GenerateId();
+    auto frame = MakeDefaultCompositorFrame();
+    frame.metadata.capture_bounds = capture_bounds;
+    support->OnSurfaceAggregatedDamage(
+        nullptr, allocator.GetCurrentLocalSurfaceId(), frame, kDamageRect,
+        base::TimeTicks::Now());
+  };
+
+  // The grandchild B claims the crop id.
+  submit_frame(sink_b.get(), bounds);
+
+  // Targets at or above B in the hierarchy resolve to B.
+  EXPECT_EQ(
+      FindCapturableFrameSink(VideoCaptureTarget(kFrameSinkIdRoot, crop_id)),
+      sink_b.get());
+  EXPECT_EQ(FindCapturableFrameSink(VideoCaptureTarget(kFrameSinkIdA, crop_id)),
+            sink_b.get());
+  EXPECT_EQ(FindCapturableFrameSink(VideoCaptureTarget(kFrameSinkIdB, crop_id)),
+            sink_b.get());
+
+  // Move the claim to the root. Ancestors are not part of a descendant
+  // target's subtree, so targets below the root no longer resolve.
+  submit_frame(sink_b.get(), RegionCaptureBounds());
+  submit_frame(sink_root.get(), bounds);
+
+  EXPECT_EQ(
+      FindCapturableFrameSink(VideoCaptureTarget(kFrameSinkIdRoot, crop_id)),
+      sink_root.get());
+  EXPECT_EQ(FindCapturableFrameSink(VideoCaptureTarget(kFrameSinkIdA, crop_id)),
+            nullptr);
+  EXPECT_EQ(FindCapturableFrameSink(VideoCaptureTarget(kFrameSinkIdB, crop_id)),
+            nullptr);
+
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdA, kFrameSinkIdB);
+  manager_->UnregisterFrameSinkHierarchy(kFrameSinkIdRoot, kFrameSinkIdA);
+  manager_->InvalidateFrameSinkId(kFrameSinkIdRoot, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdA, {});
+  manager_->InvalidateFrameSinkId(kFrameSinkIdB, {});
+}
+
 }  // namespace viz
