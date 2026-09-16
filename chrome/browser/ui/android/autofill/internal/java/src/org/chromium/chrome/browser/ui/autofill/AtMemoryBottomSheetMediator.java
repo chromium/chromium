@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Not
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.TextWithClickableLinkProperties;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.TitleItemProperties;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.AtMemoryPayload;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -188,6 +189,9 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                     HomeProperties.ItemType.ILLUSTRATION_CARD,
                     createIllustrationCardModel(suggestion));
         }
+        if (suggestion.getSuggestionType() == SuggestionType.TITLE) {
+            return new ListItem(HomeProperties.ItemType.TITLE, createTitleModel(suggestion));
+        }
         return new ListItem(
                 HomeProperties.ItemType.SUGGESTION, createSuggestionModel(suggestion, position));
     }
@@ -271,6 +275,12 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         if (hasFocus) {
             mDelegate.requestExpandSheet(/* expandInFullHeight= */ true);
         }
+    }
+
+    private PropertyModel createTitleModel(AutofillSuggestion suggestion) {
+        return new PropertyModel.Builder(TitleItemProperties.ALL_KEYS)
+                .with(TitleItemProperties.TITLE, suggestion.getLabel())
+                .build();
     }
 
     private PropertyModel createIllustrationCardModel(AutofillSuggestion suggestion) {

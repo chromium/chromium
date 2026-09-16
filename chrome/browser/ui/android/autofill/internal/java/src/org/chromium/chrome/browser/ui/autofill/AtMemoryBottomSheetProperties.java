@@ -65,7 +65,8 @@ class AtMemoryBottomSheetProperties {
             ItemType.SUGGESTION_WITH_NO_BACKGROUND,
             ItemType.ILLUSTRATION_CARD,
             ItemType.NOTICE,
-            ItemType.TEXT_WITH_CLICKABLE_LINK
+            ItemType.TEXT_WITH_CLICKABLE_LINK,
+            ItemType.TITLE
         })
         @Retention(RetentionPolicy.SOURCE)
         @interface ItemType {
@@ -83,6 +84,9 @@ class AtMemoryBottomSheetProperties {
 
             /** A section containing text with a clickable link. */
             int TEXT_WITH_CLICKABLE_LINK = 4;
+
+            /** A section containing a title. */
+            int TITLE = 5;
         }
 
         /** Delegate to request search UI actions (e.g. hiding keyboard or clearing focus). */
@@ -188,6 +192,17 @@ class AtMemoryBottomSheetProperties {
         };
 
         private SuggestionItemProperties() {}
+    }
+
+    /** Properties for title item displayed within the home screen. */
+    static class TitleItemProperties {
+        // Title to be displayed in the title item.
+        static final ReadableObjectPropertyKey<@Nullable String> TITLE =
+                new ReadableObjectPropertyKey<>();
+
+        static final PropertyKey[] ALL_KEYS = {TITLE};
+
+        private TitleItemProperties() {}
     }
 
     /** Properties for text items with clickable link displayed within the home screen. */

@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.Fly
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.IllustrationCardItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.ScreenId;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.TitleItemProperties;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.autofill.Acceptability;
 import org.chromium.components.autofill.AtMemoryPayload;
@@ -759,5 +760,21 @@ public class AtMemoryBottomSheetMediatorTest {
                         .get(
                                 AtMemoryBottomSheetProperties.NoticeItemProperties
                                         .IS_LOGGING_ALLOWED));
+    }
+
+    @Test
+    public void testPreviouslyFilledTitle() {
+        AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setSuggestionType(SuggestionType.TITLE)
+                        .setLabel("Previously filled")
+                        .setSubLabel("")
+                        .build();
+
+        mMediator.show(List.of(suggestion));
+
+        assertEquals(1, mModelList.size());
+        assertEquals(HomeProperties.ItemType.TITLE, mModelList.get(0).type);
+        assertEquals("Previously filled", mModelList.get(0).model.get(TitleItemProperties.TITLE));
     }
 }

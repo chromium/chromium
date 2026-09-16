@@ -70,6 +70,11 @@ public class AtMemoryHomeView extends LinearLayout {
                         R.layout.at_memory_bottom_sheet_text_with_clickable_link_item),
                 AtMemoryBottomSheetViewBinder::bindTextWithClickableLinkView);
 
+        adapter.registerType(
+                ItemType.TITLE,
+                new LayoutViewBuilder<>(R.layout.at_memory_bottom_sheet_title_item),
+                AtMemoryBottomSheetViewBinder::bindTitleView);
+
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.addItemDecoration(new AtMemoryDividerItemDecoration(getContext()));
     }
@@ -110,6 +115,7 @@ public class AtMemoryHomeView extends LinearLayout {
                 case ItemType.NOTICE:
                 case ItemType.SUGGESTION_WITH_NO_BACKGROUND:
                 case ItemType.TEXT_WITH_CLICKABLE_LINK:
+                case ItemType.TITLE:
                     return true;
                 case ItemType.SUGGESTION:
                     return false;

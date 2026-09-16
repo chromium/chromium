@@ -192,6 +192,7 @@ android_resources("java_resources") {
     "java/res/layout/at_memory_bottom_sheet_notice_item.xml",
     "java/res/layout/at_memory_bottom_sheet_suggestion_item.xml",
     "java/res/layout/at_memory_bottom_sheet_text_with_clickable_link_item.xml",
+    "java/res/layout/at_memory_bottom_sheet_title_item.xml",
     "java/res/layout/at_memory_flyout_chip.xml",
     "java/res/layout/at_memory_flyout_screen.xml",
     "java/res/layout/at_memory_home_screen.xml",
