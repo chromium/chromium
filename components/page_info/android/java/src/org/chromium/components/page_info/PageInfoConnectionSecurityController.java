@@ -101,6 +101,11 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
                             .getString(R.string.page_info_domain_hidden, mContentPublisher);
             rowParams.clickCallback = null;
             rowParams.iconResId = R.drawable.ic_lock_24dp;
+        } else if (mDelegate.isShowingPaintPreviewPage()
+                && mDelegate.getPaintPreviewPageConnectionMessage() != null) {
+            rowParams.title = mDelegate.getPaintPreviewPageConnectionMessage();
+            rowParams.clickCallback = null;
+            rowParams.iconResId = R.drawable.ic_lock_24dp;
         } else if (mDelegate.getPdfPageType() != 0 && pdfMessage != null) {
             // If its a PDF page type, show the PDF message and don't allow clicking.
             rowParams.title = pdfMessage;
@@ -142,6 +147,10 @@ public class PageInfoConnectionSecurityController implements PageInfoSubpageCont
             mViewParams.details =
                     mView.getContext()
                             .getString(R.string.page_info_domain_hidden, mContentPublisher);
+        } else if (mDelegate.isShowingPaintPreviewPage()
+                && mDelegate.getPaintPreviewPageConnectionMessage() != null) {
+            mViewParams.summary = "";
+            mViewParams.details = mDelegate.getPaintPreviewPageConnectionMessage();
         } else if (mDelegate.getPdfPageType() != 0
                 && mDelegate.getPdfPageConnectionMessage() != null) {
             mViewParams.summary = "";

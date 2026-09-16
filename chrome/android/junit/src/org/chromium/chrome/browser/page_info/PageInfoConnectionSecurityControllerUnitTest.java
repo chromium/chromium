@@ -253,4 +253,57 @@ public class PageInfoConnectionSecurityControllerUnitTest {
                 mContext.getString(R.string.page_info_domain_hidden, "example.com"),
                 details.getText().toString());
     }
+
+    @Test
+    public void testShowSecurityPageButton_paintPreviewPage() {
+        when(mDelegate.isShowingPaintPreviewPage()).thenReturn(true);
+        when(mDelegate.getPaintPreviewPageConnectionMessage())
+                .thenReturn("You're viewing a preview of this page");
+
+        mController.showSecurityPageButton("Connection is secure");
+
+        assertEquals(View.VISIBLE, mRowView.getVisibility());
+        TextView title = mRowView.findViewById(R.id.page_info_row_title);
+        assertNotNull(title);
+        assertEquals("You're viewing a preview of this page", title.getText().toString());
+        verify(mMainController).updateConnectionWrapperVisibility();
+    }
+
+    @Test
+    public void testSetSecurityDescription_paintPreviewPage() {
+        when(mDelegate.isShowingPaintPreviewPage()).thenReturn(true);
+        when(mDelegate.getPaintPreviewPageConnectionMessage())
+                .thenReturn("You're viewing a preview of this page");
+
+        mController.showSecurityInfo();
+        mController.setSecurityDescription(
+                0, 0, "Summary", "Details", false, new byte[0][], false, new byte[0][], null);
+
+        TextView summary = mView.findViewById(R.id.security_description_summary);
+        TextView details = mView.findViewById(R.id.security_description_details);
+        assertNotNull(summary);
+        assertNotNull(details);
+        assertEquals(View.GONE, summary.getVisibility());
+        assertEquals(View.VISIBLE, details.getVisibility());
+        assertEquals("You're viewing a preview of this page", details.getText().toString());
+    }
+
+    @Test
+    public void testCreateViewForSubpage_paintPreviewPage() {
+        when(mDelegate.isShowingPaintPreviewPage()).thenReturn(true);
+        when(mDelegate.getPaintPreviewPageConnectionMessage())
+                .thenReturn("You're viewing a preview of this page");
+
+        mController.setSecurityDescription(
+                0, 0, "Summary", "Details", false, new byte[0][], false, new byte[0][], null);
+        View subpageView = mController.createViewForSubpage(null);
+
+        TextView summary = subpageView.findViewById(R.id.security_description_summary);
+        TextView details = subpageView.findViewById(R.id.security_description_details);
+        assertNotNull(summary);
+        assertNotNull(details);
+        assertEquals(View.GONE, summary.getVisibility());
+        assertEquals(View.VISIBLE, details.getVisibility());
+        assertEquals("You're viewing a preview of this page", details.getText().toString());
+    }
 }
