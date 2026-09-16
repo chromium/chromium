@@ -1097,7 +1097,9 @@ void CacheStorageDispatcherHost::AddReceiver(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (bucket.has_value()) {
-    CHECK_EQ(bucket->storage_key, storage_key, base::NotFatalUntil::M158);
+    // TODO(crbug.com/562197478): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(bucket->storage_key, storage_key);
     if (WasNotifiedOfBucketDataDeletion(bucket.value())) {
       // The list of deleted buckets gets added to each time
       // `CacheStorageManager::DeleteBucketData()` is called, but it's not
