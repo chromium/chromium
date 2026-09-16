@@ -7,10 +7,8 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login",
-  "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/login",
 ]
