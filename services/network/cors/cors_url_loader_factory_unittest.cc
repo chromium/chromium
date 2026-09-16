@@ -190,6 +190,8 @@ class CorsURLLoaderFactoryTest : public testing::Test,
     return cors_url_loader_factory_remote_.is_connected();
   }
 
+  OriginAccessList* origin_access_list() { return &origin_access_list_; }
+
  private:
   mojo::FakeMessageDispatchContext mojo_context_;
   // This is required by NetworkBoundCorsURLLoaderFactoryTest but has to live
@@ -794,5 +796,252 @@ TEST_F(SharedHttpCacheCorsURLLoaderFactoryTest, RedirectNotCached) {
   }
 }
 #endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+
+class IsolatedWorldOriginLockCorsURLLoaderFactoryTest
+    : public CorsURLLoaderFactoryTest {
+ protected:
+  const url::Origin isolated_origin_a_ =
+      url::Origin::Create(GURL("https://isolated-a.example.com"));
+  const url::Origin isolated_origin_b_ =
+      url::Origin::Create(GURL("https://isolated-b.example.com"));
+
+  void SetUp() override {}
+
+  void SetUpFactory(bool ignore_isolated_world_origin,
+                    const std::optional<url::Origin>& lock,
+                    OriginatingProcessId process_id = kProcessId) {
+    auto factory_params = network::mojom::URLLoaderFactoryParams::New();
+    factory_params->ignore_isolated_world_origin = ignore_isolated_world_origin;
+    factory_params->isolated_world_origin_lock = lock;
+    BaseSetup(std::move(factory_params), mojom::NetworkContextParams::New(),
+              process_id);
+  }
+};
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest, MatchingLockAllowed) {
+  SetUpFactory(/*ignore_isolated_world_origin=*/false, isolated_origin_a_);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(test_server()->base_url());
+  request.isolated_world_origin = isolated_origin_a_;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest,
+       MismatchedLockRejected) {
+  SetUpFactory(/*ignore_isolated_world_origin=*/false, isolated_origin_a_);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(test_server()->base_url());
+  request.isolated_world_origin = isolated_origin_b_;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_TRUE(bad_message_observer.got_bad_message());
+  EXPECT_EQ("CorsURLLoaderFactory: isolated_world_origin lock mismatch",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest,
+       MissingLockOnPrivilegedFactoryRejected) {
+  SetUpFactory(/*ignore_isolated_world_origin=*/false, std::nullopt);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(test_server()->base_url());
+  request.isolated_world_origin = isolated_origin_a_;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_TRUE(bad_message_observer.got_bad_message());
+  EXPECT_EQ("CorsURLLoaderFactory: isolated_world_origin lock mismatch",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest,
+       NoIsolatedWorldOriginAllowed) {
+  SetUpFactory(/*ignore_isolated_world_origin=*/false, isolated_origin_a_);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(test_server()->base_url());
+  request.isolated_world_origin = std::nullopt;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest,
+       IgnoredOriginNotRejected) {
+  SetUpFactory(/*ignore_isolated_world_origin=*/true, std::nullopt);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(test_server()->base_url());
+  request.isolated_world_origin = isolated_origin_b_;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest,
+       IgnoredOriginClearedAndUnsafeHeadersBlocked) {
+  origin_access_list()->AddAllowListEntryForOrigin(
+      isolated_origin_a_, "http", std::string(test_server()->base_url().host()),
+      /*port=*/0, mojom::CorsDomainMatchMode::kAllowSubdomains,
+      mojom::CorsPortMatchMode::kAllowAnyPort,
+      mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
+
+  // Normal factory ignores isolated world origin and clears it.
+  SetUpFactory(/*ignore_isolated_world_origin=*/true, std::nullopt);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(test_server()->base_url());
+  request.isolated_world_origin = isolated_origin_a_;
+  request.headers.SetHeader("Sec-Invalid", "value");
+
+  // Since isolated_world_origin is cleared, ShouldAllowUnsafeHeaders falls back
+  // to request_initiator, which does not have allow list privileges, so the
+  // forbidden header causes a bad message.
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_TRUE(bad_message_observer.got_bad_message());
+  EXPECT_EQ("CorsURLLoaderFactory: Forbidden Sec- header from renderer",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest, BrowserProcessAllowed) {
+  SetUpFactory(/*ignore_isolated_world_origin=*/false, isolated_origin_a_,
+               OriginatingProcessId::browser());
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(test_server()->base_url());
+  request.isolated_world_origin = isolated_origin_b_;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest,
+       FeatureDisabledBypassesCheck) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kEnforceIsolatedWorldOriginLock);
+
+  SetUpFactory(/*ignore_isolated_world_origin=*/false, isolated_origin_a_);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(test_server()->base_url());
+  request.isolated_world_origin = isolated_origin_b_;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest,
+       OpaqueInitiatorWithMatchingIsolatedWorldOriginAllowed) {
+  SetUpFactory(/*ignore_isolated_world_origin=*/false, isolated_origin_a_);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  // An opaque initiator (e.g. a content script running in a sandboxed iframe
+  // or data: URL frame) is allowed by VerifyRequestInitiatorLock, and the
+  // isolated_world_origin matches the factory lock.
+  request.request_initiator = url::Origin();
+  request.isolated_world_origin = isolated_origin_a_;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest,
+       OpaqueIsolatedWorldOriginOnDefaultFactoryAllowed) {
+  SetUpFactory(/*ignore_isolated_world_origin=*/true, std::nullopt);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(test_server()->base_url());
+  // If an isolated world has an opaque origin, Blink falls back to the default
+  // factory (ignore_isolated_world_origin = true), which clears
+  // isolated_world_origin without reporting a bad message.
+  request.isolated_world_origin = url::Origin();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest,
+       OpaqueIsolatedWorldOriginOnPrivilegedFactoryRejected) {
+  SetUpFactory(/*ignore_isolated_world_origin=*/false, isolated_origin_a_);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(test_server()->base_url());
+  request.isolated_world_origin = url::Origin();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_TRUE(bad_message_observer.got_bad_message());
+  EXPECT_EQ("CorsURLLoaderFactory: isolated_world_origin lock mismatch",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(IsolatedWorldOriginLockCorsURLLoaderFactoryTest,
+       LockPresentWhenIgnoredOriginIsTrueRejected) {
+  mojo::test::BadMessageObserver bad_message_observer;
+  SetUpFactory(/*ignore_isolated_world_origin=*/true, isolated_origin_a_);
+  EXPECT_TRUE(bad_message_observer.got_bad_message());
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: isolated_world_origin_lock set when "
+      "ignore_isolated_world_origin is true",
+      bad_message_observer.WaitForBadMessage());
+}
 
 }  // namespace network::cors

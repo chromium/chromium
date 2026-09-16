@@ -583,6 +583,7 @@ TEST_F(
 
   ResetFactoryParams factory_params;
   factory_params.ignore_isolated_world_origin = false;
+  factory_params.isolated_world_origin_lock = extension_origin;
   ResetFactory(url::Origin::Create(origin), kRendererProcessId, factory_params);
 
   AddAllowListEntryForOrigin(extension_origin, std::string(url.scheme()),
@@ -1897,6 +1898,7 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_IsolatedWorldOrigin) {
 
   ResetFactoryParams factory_params;
   factory_params.ignore_isolated_world_origin = false;
+  factory_params.isolated_world_origin_lock = isolated_world_origin;
   ResetFactory(main_world_origin, kRendererProcessId, factory_params);
 
   AddAllowListEntryForOrigin(isolated_world_origin, url.GetScheme(),
@@ -1942,6 +1944,7 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_IsolatedWorldOrigin_Redirect) {
 
   ResetFactoryParams factory_params;
   factory_params.ignore_isolated_world_origin = false;
+  factory_params.isolated_world_origin_lock = isolated_world_origin;
   ResetFactory(main_world_origin, kRendererProcessId, factory_params);
 
   AddAllowListEntryForOrigin(isolated_world_origin, url.GetScheme(),
