@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
@@ -145,6 +146,10 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   remote_cocoa::NativeWidgetNSWindowBridge* GetInProcessNSWindowBridge() const {
     return in_process_ns_window_bridge_.get();
   }
+
+  // Request a video capture lock to prevent the compositor from being hidden
+  // while video capture is active.
+  [[nodiscard]] base::ScopedClosureRunner CreateVideoCaptureLock();
 
   TooltipManager* tooltip_manager() { return tooltip_manager_.get(); }
 
@@ -596,6 +601,12 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
 
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindowHost>
       remote_ns_window_host_receiver_{this};
+
+  void UpdateCompositorVisibility();
+  void OnVideoCaptureLockDestroyed();
+
+  // Number of active video capture locks.
+  uint32_t video_capture_count_ = 0;
 
   base::ScopedObservation<View, ViewObserver> root_view_observation_{this};
 

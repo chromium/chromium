@@ -72,6 +72,9 @@ NativeViewHostMac::~NativeViewHostMac() {
 }
 
 NativeWidgetMacNSWindowHost* NativeViewHostMac::GetNSWindowHost() const {
+  if (!host_->GetWidget()) {
+    return nullptr;
+  }
   return NativeWidgetMacNSWindowHost::GetFromNativeWindow(
       host_->GetWidget()->GetNativeWindow());
 }
@@ -105,6 +108,13 @@ void NativeViewHostMac::OnHostableViewDestroying() {
   DCHECK(native_view_hostable_);
   host_->NativeViewDestroyed();
   DCHECK(!native_view_hostable_);
+}
+
+base::ScopedClosureRunner NativeViewHostMac::CreateVideoCaptureLock() {
+  if (auto* window_host = GetNSWindowHost()) {
+    return window_host->CreateVideoCaptureLock();
+  }
+  return base::ScopedClosureRunner();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

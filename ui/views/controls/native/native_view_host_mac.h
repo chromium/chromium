@@ -39,6 +39,7 @@ class NativeViewHostMac : public NativeViewHostWrapper,
   remote_cocoa::mojom::Application* GetRemoteCocoaApplication() const override;
   uint64_t GetNSViewId() const override;
   void OnHostableViewDestroying() override;
+  [[nodiscard]] base::ScopedClosureRunner CreateVideoCaptureLock() override;
 
   // NativeViewHostWrapper:
   void AttachNativeView() override;

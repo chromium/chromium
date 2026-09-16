@@ -12,6 +12,7 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -171,6 +172,82 @@ TEST_F(WebContentsViewMacTest, DragPromisedFileTo_DownloadURL) {
 
   EXPECT_TRUE(result);
   EXPECT_EQ(target_path, actual_path);
+}
+
+class TestViewsHost : public ui::ViewsHostableView::Host {
+ public:
+  ui::Layer* GetUiLayer() const override { return nullptr; }
+  remote_cocoa::mojom::Application* GetRemoteCocoaApplication() const override {
+    return nullptr;
+  }
+  uint64_t GetNSViewId() const override { return 0; }
+  void OnHostableViewDestroying() override {}
+
+  base::ScopedClosureRunner CreateVideoCaptureLock() override {
+    ++active_locks_;
+    return base::ScopedClosureRunner(base::BindOnce(
+        &TestViewsHost::DecrementLocks, weak_factory_.GetWeakPtr()));
+  }
+
+  int active_locks() const { return active_locks_; }
+
+ private:
+  void DecrementLocks() { --active_locks_; }
+
+  int active_locks_ = 0;
+  base::WeakPtrFactory<TestViewsHost> weak_factory_{this};
+};
+
+TEST_F(WebContentsViewMacTest, VideoCaptureLockLifecycleAndReparenting) {
+  TestViewsHost window_a;
+  TestViewsHost window_b;
+  auto* mac_view = static_cast<WebContentsViewMac*>(contents()->GetView());
+
+  auto start_capture = [&] {
+    return contents()->IncrementCapturerCount(
+        gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false,
+        /*is_activity=*/false);
+  };
+
+  // 1. Capturing when unattached to any host does not crash and holds 0 locks.
+  base::ScopedClosureRunner capturer_1 = start_capture();
+  EXPECT_EQ(window_a.active_locks(), 0);
+
+  // 2. Pre-attachment capture: attaching to Window A while captured
+  // automatically acquires the lock on Window A.
+  mac_view->ViewsHostableAttach(&window_a);
+  EXPECT_EQ(window_a.active_locks(), 1);
+
+  // 3. Deduplication: adding a second concurrent capturer to the same
+  // WebContents does not acquire redundant locks on Window A.
+  base::ScopedClosureRunner capturer_2 = start_capture();
+  EXPECT_EQ(window_a.active_locks(), 1);
+
+  // 4. Partial release: releasing one of two capturers preserves the lock.
+  capturer_1.RunAndReset();
+  EXPECT_EQ(window_a.active_locks(), 1);
+
+  // 5. Reparenting / Tab drag: dragging the captured tab from Window A to
+  // Window B transfers the capture lock from Window A to Window B.
+  mac_view->ViewsHostableDetach();
+  EXPECT_EQ(window_a.active_locks(), 0);
+  EXPECT_EQ(window_b.active_locks(), 0);
+
+  mac_view->ViewsHostableAttach(&window_b);
+  EXPECT_EQ(window_a.active_locks(), 0);
+  EXPECT_EQ(window_b.active_locks(), 1);
+
+  // 6. Full release: releasing the final capturer releases Window B's lock.
+  capturer_2.RunAndReset();
+  EXPECT_EQ(window_b.active_locks(), 0);
+
+  // 7. Starting capture while attached to Window B acquires Window B's lock.
+  base::ScopedClosureRunner capturer_3 = start_capture();
+  EXPECT_EQ(window_b.active_locks(), 1);
+
+  // 8. Detaching while captured releases Window B's lock.
+  mac_view->ViewsHostableDetach();
+  EXPECT_EQ(window_b.active_locks(), 0);
 }
 
 }  // namespace

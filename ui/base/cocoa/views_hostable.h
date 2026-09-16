@@ -6,6 +6,7 @@
 #define UI_BASE_COCOA_VIEWS_HOSTABLE_H_
 
 #include "base/component_export.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -43,6 +44,11 @@ class ViewsHostableView {
 
     // Called when the hostable view will be destroyed.
     virtual void OnHostableViewDestroying() = 0;
+
+    // Request a video capture lock to keep the host window's compositor visible
+    // while video capture is active. Returns an empty runner if not supported.
+    [[nodiscard]] virtual base::ScopedClosureRunner
+    CreateVideoCaptureLock() = 0;
   };
 
   // Called to add the content::WebContentsView's NSView as a subview of the

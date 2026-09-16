@@ -190,7 +190,19 @@ gfx::Rect WebContentsViewMac::GetContainerBounds() const {
   return gfx::ScreenRectFromNSRect(bounds);
 }
 
-void WebContentsViewMac::OnCapturerCountChanged() {}
+void WebContentsViewMac::UpdateVideoCaptureLock() {
+  if (web_contents_->IsBeingCaptured() && views_host_) {
+    if (!video_capture_lock_) {
+      video_capture_lock_ = views_host_->CreateVideoCaptureLock();
+    }
+  } else {
+    video_capture_lock_.RunAndReset();
+  }
+}
+
+void WebContentsViewMac::OnCapturerCountChanged() {
+  UpdateVideoCaptureLock();
+}
 
 void WebContentsViewMac::FullscreenStateChanged(bool is_fullscreen) {}
 
@@ -753,6 +765,7 @@ void WebContentsViewMac::DragPromisedFileTo(
 void WebContentsViewMac::ViewsHostableAttach(
     ViewsHostableView::Host* views_host) {
   views_host_ = views_host;
+  UpdateVideoCaptureLock();
   // Create an NSView in the target process, if one exists.
   auto* remote_cocoa_application = views_host_->GetRemoteCocoaApplication();
   if (remote_cocoa_application) {
@@ -815,6 +828,7 @@ void WebContentsViewMac::ViewsHostableDetach() {
   }
   in_process_ns_view_bridge_->SetVisible(false);
   in_process_ns_view_bridge_->ResetParentNSView();
+  video_capture_lock_.RunAndReset();
   views_host_ = nullptr;
 
   for (auto* rwhv_mac : GetChildViews()) {

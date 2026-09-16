@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
@@ -230,6 +231,11 @@ class CONTENT_EXPORT WebContentsViewMac
 
   // Interface to the views::View host of this view.
   raw_ptr<ViewsHostableView::Host> views_host_ = nullptr;
+
+  void UpdateVideoCaptureLock();
+
+  // Video capture lock on the host window's compositor.
+  base::ScopedClosureRunner video_capture_lock_;
 
   // The accessibility element specified via ViewsHostableSetParentAccessible.
   gfx::NativeViewAccessible views_host_accessibility_element_;

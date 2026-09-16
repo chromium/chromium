@@ -918,6 +918,112 @@ TEST_P(NativeWidgetMacCompositorVisibilityTest,
   view->WaitForPaintCount(3);
 }
 
+// Tests that a video capture lock keeps the compositor visible and unsuspended
+// while the window is minimized, both when acquired before and while minimized,
+// and that the lock is reference counted.
+TEST_P(NativeWidgetMacCompositorVisibilityTest, VideoCaptureLock) {
+  const bool notify_enabled = NotifyCompositorOfVisibility();
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget->Init(std::move(init_params));
+
+  NativeWidgetMacNSWindowHost* host =
+      NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+          widget->GetNativeWindow());
+  ASSERT_NE(nullptr, host);
+
+  widget->SetBounds(gfx::Rect(100, 100, 300, 300));
+  {
+    views::test::PropertyWaiter visibility_waiter(
+        base::BindRepeating(&Widget::IsVisible, base::Unretained(widget.get())),
+        true);
+    widget->Show();
+    EXPECT_TRUE(visibility_waiter.Wait());
+  }
+
+  ASSERT_NE(nullptr, widget->GetCompositor());
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+  EXPECT_FALSE(widget->GetCompositor()->IsLocked());
+
+  // Acquire a lock while the window is still visible. Note that this test
+  // deliberately performs a single minimize and never restores: a
+  // restore-then-minimize sequence races with the AppKit deminiaturize
+  // animation, which causes the subsequent miniaturize request to be dropped.
+  base::ScopedClosureRunner lock1 = host->CreateVideoCaptureLock();
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+  EXPECT_FALSE(widget->GetCompositor()->IsLocked());
+
+  // Minimizing while the lock is held keeps the compositor visible and
+  // unsuspended, even when the window visibility notification feature is
+  // enabled.
+  widget->Minimize();
+  WaitForMinimized(widget.get());
+  EXPECT_TRUE(widget->IsMinimized());
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+  EXPECT_FALSE(widget->GetCompositor()->IsLocked());
+
+  // Releasing the last lock while minimized suspends and hides the compositor.
+  lock1.RunAndReset();
+  EXPECT_EQ(widget->GetCompositor()->IsVisible(), !notify_enabled);
+  EXPECT_TRUE(widget->GetCompositor()->IsLocked());
+
+  // Acquiring a lock while already minimized unsuspends the compositor and
+  // makes it visible.
+  base::ScopedClosureRunner lock2 = host->CreateVideoCaptureLock();
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+  EXPECT_FALSE(widget->GetCompositor()->IsLocked());
+
+  // Locks are reference counted: a second lock, then releasing only one of
+  // them, keeps the compositor visible and unsuspended.
+  base::ScopedClosureRunner lock3 = host->CreateVideoCaptureLock();
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+  EXPECT_FALSE(widget->GetCompositor()->IsLocked());
+  lock2.RunAndReset();
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+  EXPECT_FALSE(widget->GetCompositor()->IsLocked());
+
+  // Releasing the final lock returns the compositor to its suspended state.
+  lock3.RunAndReset();
+  EXPECT_EQ(widget->GetCompositor()->IsVisible(), !notify_enabled);
+  EXPECT_TRUE(widget->GetCompositor()->IsLocked());
+}
+
+// Tests that destroying the Widget while a video capture lock is still held
+// does not crash, and that releasing the stale lock afterwards is a safe no-op.
+TEST_P(NativeWidgetMacCompositorVisibilityTest, WidgetDestroyedWhileLockHeld) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget->Init(std::move(init_params));
+
+  NativeWidgetMacNSWindowHost* host =
+      NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+          widget->GetNativeWindow());
+  ASSERT_NE(nullptr, host);
+
+  widget->SetBounds(gfx::Rect(100, 100, 300, 300));
+  {
+    views::test::PropertyWaiter visibility_waiter(
+        base::BindRepeating(&Widget::IsVisible, base::Unretained(widget.get())),
+        true);
+    widget->Show();
+    EXPECT_TRUE(visibility_waiter.Wait());
+  }
+
+  // Hold a lock across the destruction of the widget and its window host.
+  base::ScopedClosureRunner lock = host->CreateVideoCaptureLock();
+  EXPECT_TRUE(lock);
+
+  widget->CloseNow();
+  widget.reset();
+
+  // The lock now refers to a destroyed NativeWidgetMacNSWindowHost. Running it
+  // must be a safe no-op thanks to the weak pointer bound into the closure.
+  lock.RunAndReset();
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          NativeWidgetMacCompositorVisibilityTest,
                          ::testing::Bool());
