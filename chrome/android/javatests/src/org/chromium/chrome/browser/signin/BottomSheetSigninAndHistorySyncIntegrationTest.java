@@ -64,13 +64,14 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.transit.RootSpec;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -94,8 +95,8 @@ import org.chromium.chrome.browser.ui.signin.account_picker.PostSigninOperationR
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -105,6 +106,7 @@ import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
@@ -118,14 +120,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** Integration tests for the sign-in and history sync opt-in flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "This test relies on native initialization")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_STARTUP_PROMOS)
 @Restriction(DeviceFormFactor.PHONE)
 public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    /**
+     * SigninManagerImpl captures AccountManagerFacadeProvider.getInstance() once, when the
+     * profile's SigninManager is created, and observes that instance for the lifetime of the
+     * browser process. A batched class outlives the individual tests, so every test has to install
+     * the same fake facade. Otherwise accounts added by the second and later tests are never seeded
+     * into native, and sign-in fails with kAccountInfoEmpty while the account picker fails to
+     * resolve profile data for the account it was asked to select.
+     */
+    private static final FakeAccountManagerFacade sFakeAccountManagerFacade =
+            new FakeAccountManagerFacade(/* serializeToPrefs= */ false);
+
     @Rule(order = 0)
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    public final SigninTestRule mSigninTestRule = new SigninTestRule(sFakeAccountManagerFacade);
 
     /*
      * The tested SigninAndHistorySyncActivity will be on top of a blank ChromeTabbedActivity.
@@ -136,8 +149,8 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
      *     on top of another activity.
      */
     @Rule(order = 1)
-    public FreshCtaTransitTestRule mBaseActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mBaseActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule(order = 2)
     public final BaseActivityTestRule<SigninAndHistorySyncActivity> mActivityTestRule =
@@ -202,10 +215,50 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @After
     public void tearDown() {
+        // Tear the UI down before touching sign-in state so that the coordinator and the bottom
+        // sheet do not react to the sign-out events triggered below.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, true);
+                    if (mCoordinator != null) {
+                        mCoordinator.destroy();
+                        mCoordinator = null;
+                    }
+                    if (mBaseActivityTestRule.getActivity() != null) {
+                        var modalDialogManager =
+                                mBaseActivityTestRule.getActivity().getModalDialogManager();
+                        if (modalDialogManager != null) {
+                            modalDialogManager.dismissAllDialogs(
+                                    org.chromium.ui.modaldialog.DialogDismissalCause.UNKNOWN);
+                        }
+                    }
                 });
+        if (mActivity != null) {
+            ApplicationTestUtils.finishActivity(mActivity);
+            mActivity = null;
+        }
+        if (mSigninTestRule.getPrimaryAccount() != null) {
+            // Selected sync types are stored per account, so they must be restored while the
+            // account is still primary. Otherwise tests which opt out of bookmarks and reading
+            // list leak that choice into later tests signing into the same account.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
+                        syncService.setSelectedType(UserSelectableType.BOOKMARKS, true);
+                        syncService.setSelectedType(UserSelectableType.READING_LIST, true);
+                    });
+            // Managed and minor accounts disallow the regular sign-out path, which would otherwise
+            // leave a primary account behind and abort the next test's sign-in.
+            mSigninTestRule.forceSignOut();
+        }
+        ThreadUtils.runOnUiThreadBlocking(() -> mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, true));
+        // The facade is shared by the whole class, so the accounts a test adds have to be dropped
+        // here. Removing them also notifies SigninManagerImpl, which reseeds native with the empty
+        // account list and leaves the next test with a clean identity state.
+        mSigninTestRule.setAddAccountFlowResult(null);
+        ThreadUtils.runOnUiThreadBlocking(sFakeAccountManagerFacade::removeAllAccounts);
+        HistorySyncHelper.setInstanceForTesting(null);
+        DeviceLockActivityLauncherImpl.setInstanceForTesting(null);
     }
 
     @Test
@@ -261,6 +314,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    @RequiresRestart("Minor mode capability resolution latches per process")
     public void testWithAadcMinorAccount_requiredHistoryOptIn_legacy() {
         mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
 
@@ -276,6 +330,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    @RequiresRestart("Minor mode capability resolution latches per process")
     public void testWithAadcMinorAccount_requiredHistoryOptIn() {
         mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
 
@@ -604,6 +659,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    @RequiresRestart("Minor mode capability resolution latches per process")
     public void testWithAadcMinorAccount_signIn_optOutHistorySync_legacy() {
         mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
 
@@ -628,6 +684,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    @RequiresRestart("Minor mode capability resolution latches per process")
     public void testWithAadcMinorAccount_signIn_optOutHistorySync() {
         mSigninTestRule.addAccount(TestAccounts.AADC_MINOR_ACCOUNT);
 
@@ -924,6 +981,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    @RequiresRestart("Simulates activity recreation during account addition")
     public void testWithExistingAccount_signInWithAddedAccount_activityKilled_legacy() {
         HistogramWatcher addAccountStateWatcher =
                 HistogramWatcher.newBuilder()
@@ -964,6 +1022,9 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @DisableIf.Build(
             sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
             message = "crbug.com/428281174")
+    @RequiresRestart(
+            "Recreates base activity which is not yet supported in Public Transit batching"
+                    + " (crbug.com/406324209)")
     public void testWithExistingAccount_signInWithAddedAccount_activityKilled() {
         HistogramWatcher addAccountStateWatcher =
                 HistogramWatcher.newBuilder()
@@ -1457,7 +1518,14 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
         clickContinueButtonToTryAgainGeneralError();
 
-        verify(mDelegate, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+        // The retry is substantially slower than the initial attempt: AccountPickerBottomSheet-
+        // Mediator#signIn() re-runs the asynchronous SigninManager#isAccountManaged() check, and
+        // by this point the account info fetch has already failed on the bot
+        // ("Failed to get UserInfo"), so the hosted domain has to be refetched. Then
+        // signInAfterCheckingManagement() sees the primary account from the first attempt and does
+        // a full signOut(SIGNIN_RETRIGGERED) before signing in again. Measured at ~3.4s for the
+        // management check alone, which overruns DEFAULT_MAX_TIME_TO_POLL.
+        verify(mDelegate, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL_LONG))
                 .onFlowComplete(
                         eq(
                                 new Result(
