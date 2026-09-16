@@ -587,6 +587,7 @@ const STYLE_VALUE_AUTO = 'auto';
 const STYLE_VALUE_SCROLL = 'scroll';
 const STYLE_VALUE_CLIP = 'clip';
 const STYLE_VALUE_HIDDEN = 'hidden';
+const STYLE_VALUE_NONE = 'none';
 
 
 // Type alias for accessing webkit-specific fullscreen document properties that
@@ -3441,6 +3442,64 @@ function populateFragmentsIfNeeded(
 }
 
 /**
+ * Checks whether an element establishes a containing block for fixed-position
+ * descendants (and by extension, absolute-position descendants).
+ *
+ * Per CSS Transforms, CSS Filter Effects, and CSS Containment specifications,
+ * elements with properties such as transform, translate, rotate, scale,
+ * perspective, filter, backdrop-filter, or contain: paint/layout/strict/content
+ * create a containing block for fixed descendants.
+ *
+ * @param style The computed style of the element.
+ * @return True if the element forms a containing block for fixed elements.
+ */
+function formsContainingBlockForFixed(style?: CSSStyleDeclaration): boolean {
+  if (!style) {
+    return false;
+  }
+  if (style.transform && style.transform !== STYLE_VALUE_NONE) {
+    return true;
+  }
+  if (style.translate && style.translate !== STYLE_VALUE_NONE) {
+    return true;
+  }
+  if (style.rotate && style.rotate !== STYLE_VALUE_NONE) {
+    return true;
+  }
+  if (style.scale && style.scale !== STYLE_VALUE_NONE) {
+    return true;
+  }
+  if (style.perspective && style.perspective !== STYLE_VALUE_NONE) {
+    return true;
+  }
+  if (style.filter && style.filter !== STYLE_VALUE_NONE) {
+    return true;
+  }
+  const backdropFilter = style.backdropFilter ||
+      (style as {webkitBackdropFilter?: string}).webkitBackdropFilter;
+  if (backdropFilter && backdropFilter !== STYLE_VALUE_NONE) {
+    return true;
+  }
+  const contain = style.contain;
+  if (contain && /\b(paint|layout|strict|content)\b/.test(contain)) {
+    return true;
+  }
+  const willChange = style.willChange;
+  if (willChange && willChange !== STYLE_VALUE_AUTO) {
+    const properties =
+        willChange.split(',').map(p => p.trim().replace(/^-webkit-/, ''));
+    if (properties.includes('transform') ||
+        properties.includes('perspective') || properties.includes('filter') ||
+        properties.includes('backdrop-filter') ||
+        properties.includes('translate') || properties.includes('rotate') ||
+        properties.includes('scale') || properties.includes('contain')) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Calculates and adds geometry information to a node's content attributes.
  * This includes the element's bounding box and visible bounding box, adjusted
  * for any clipping from parent elements.
@@ -3479,8 +3538,9 @@ function addNodeGeometry(
 
   if (position === ATTR_POSITION_FIXED) {
     // Fixed positioned elements are relative to the viewport, bypassing parent
-    // clips.
-    clipToUse = elementDoc ? getViewportRect(elementDoc) : null;
+    // clips, unless an ancestor established a containing block for fixed
+    // elements.
+    clipToUse = context.fixedClip;
   } else if (position === ATTR_POSITION_ABSOLUTE) {
     clipToUse = context.absoluteClip;
   } else {
@@ -3540,33 +3600,57 @@ function addNodeGeometry(
   // Determine the new clip context to pass down to children.
   let newNormalClip = context.normalClip;
   let newAbsoluteClip = context.absoluteClip;
+  let newFixedClip = context.fixedClip;
   let newHasOverflowClip = context.hasOverflowClip;
 
   const overflowX = style?.overflowX || '';
   const overflowY = style?.overflowY || '';
+  const isFixedContainingBlock = formsContainingBlockForFixed(style);
+  const isAbsoluteContainingBlock =
+      (position && position !== ATTR_POSITION_STATIC) || isFixedContainingBlock;
 
   if (isClippedStyle(overflowX) || isClippedStyle(overflowY)) {
     newHasOverflowClip = true;
     const visibleRectForClip = visibleRect;
 
     // If the element actively clips its children, its own visible bounds become
-    // the new absolute boundary for any descendant.
+    // the new boundary for normal flow descendants.
     newNormalClip = visibleRectForClip;
 
     // Absolute descendants are only clipped if this element forms a containing
-    // block (i.e., one that is not statically positioned).
-    if (position && position !== ATTR_POSITION_STATIC) {
+    // block.
+    if (isAbsoluteContainingBlock) {
       newAbsoluteClip = visibleRectForClip;
     }
-  } else if (position && position !== ATTR_POSITION_STATIC) {
-    // Since this positioned element forms a containing block but doesn't clip,
-    // reset the absolute clip to match the current normal flow clip.
-    newAbsoluteClip = context.normalClip;
+
+    // Fixed descendants are only clipped if this element forms a containing
+    // block for fixed-position elements.
+    if (isFixedContainingBlock) {
+      newFixedClip = visibleRectForClip;
+    }
+  } else {
+    if (position === ATTR_POSITION_ABSOLUTE ||
+        position === ATTR_POSITION_FIXED) {
+      newNormalClip = clipToUse;
+    }
+    if (isAbsoluteContainingBlock) {
+      // Since this element forms an absolute containing block but doesn't clip,
+      // reset the absolute clip to match the clip applied to this containing
+      // block.
+      newAbsoluteClip = clipToUse;
+    }
+    if (isFixedContainingBlock) {
+      // Since this element forms a fixed containing block but doesn't clip,
+      // reset the fixed clip to match the clip applied to this containing
+      // block.
+      newFixedClip = clipToUse;
+    }
   }
 
   return {
     normalClip: newNormalClip,
     absoluteClip: newAbsoluteClip,
+    fixedClip: newFixedClip,
     hasOverflowClip: newHasOverflowClip,
   };
 }
@@ -3703,14 +3787,19 @@ function shouldAcceptNode(node: Node, styleCache?: StyleCache): number {
 }
 
 /**
- * Tracks inherited clipping rectangles separately for normal flow elements
- * and absolute positioned elements.
+ * Tracks inherited clipping rectangles separately for normal flow elements,
+ * absolute positioned elements, and fixed positioned elements.
  */
 interface ClippingContext {
   /** Clipping rectangle applied to static and relative positioned elements. */
   normalClip: Rect|null;
   /** Clipping rectangle applied to absolute positioned elements. */
   absoluteClip: Rect|null;
+  /**
+   * Clipping rectangle applied to fixed positioned elements when an ancestor
+   * forms a containing block for fixed elements.
+   */
+  fixedClip: Rect|null;
   /** Whether an ancestor element has an overflow clipping style. */
   hasOverflowClip?: boolean;
 }
@@ -4354,6 +4443,7 @@ export function extractAnnotatedPageContent(
         root, rootNode.contentAttributes, {
           normalClip: getViewportRect(document),
           absoluteClip: getViewportRect(document),
+          fixedClip: null,
         },
         actionableMode, includeSensitivePaymentsForRedaction,
         extractAutofillOtpRedactions, extractPasswordScreenshotRedactions,

@@ -183,6 +183,22 @@ void AppendAnnotatedText(const optimization_guide::proto::ContentNode& node,
   }
 }
 
+void FindNodesWithCssPosition(
+    const optimization_guide::proto::ContentNode& node,
+    optimization_guide::proto::CssPosition target_position,
+    std::vector<const optimization_guide::proto::ContentNode*>*
+        matching_nodes) {
+  if (node.has_content_attributes() &&
+      node.content_attributes().has_geometry() &&
+      node.content_attributes().geometry().has_css_position() &&
+      node.content_attributes().geometry().css_position() == target_position) {
+    matching_nodes->push_back(&node);
+  }
+  for (const auto& child : node.children_nodes()) {
+    FindNodesWithCssPosition(child, target_position, matching_nodes);
+  }
+}
+
 }  // namespace
 
 // A fake snapshot generator delegate that can be controlled to simulate
@@ -8765,6 +8781,516 @@ TEST_P(PageContextWrapperTest,
 
   EXPECT_TRUE(found_modeless);
   EXPECT_TRUE(found_modal);
+}
+
+// Test that fixed-position elements inside an open ShadowRoot are extracted
+// with CSS_POSITION_FIXED and valid geometry.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_ShadowDomFixed) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage("ShadowDomFixed", RawHtml(R"HTML(
+        <div id="host"></div>
+        <script>
+          const host = document.getElementById("host");
+          const shadow = host.attachShadow({mode: "open"});
+          const fixedDiv = document.createElement("div");
+          fixedDiv.id = "shadow-fixed";
+          fixedDiv.style.cssText =
+              "position: fixed; top: 10px; left: 10px; " +
+              "width: 100px; height: 50px;";
+          fixedDiv.textContent = "Shadow Fixed";
+          shadow.appendChild(fixedDiv);
+        </script>
+      )HTML"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  std::vector<const optimization_guide::proto::ContentNode*> fixed_nodes;
+  FindNodesWithCssPosition(
+      root_node, optimization_guide::proto::CSS_POSITION_FIXED, &fixed_nodes);
+
+  ASSERT_EQ(fixed_nodes.size(), 1u);
+  ASSERT_TRUE(fixed_nodes[0]->has_content_attributes());
+  ASSERT_TRUE(fixed_nodes[0]->content_attributes().has_geometry());
+  EXPECT_EQ(fixed_nodes[0]->content_attributes().geometry().css_position(),
+            optimization_guide::proto::CSS_POSITION_FIXED);
+  EXPECT_TRUE(VerifyGeometry(*fixed_nodes[0]));
+}
+
+// Test that fixed position elements retain their viewport-relative geometry
+// and CSS_POSITION_FIXED after the page is scrolled.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_ScrollFixedBoundingBox) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage("ScrollFixed", RawHtml(R"HTML(
+        <style>
+          body { margin: 0; height: 3000px; }
+        </style>
+        <div id="fixed-header"
+            style="position: fixed; top: 0; left: 0;
+                   width: 100px; height: 50px;">Header</div>
+        <div id="scrolled-content"
+            style="position: absolute; top: 100px; left: 0;
+                   width: 100px; height: 50px;">Content</div>
+      )HTML"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Scroll down the page by 200px before extracting page context.
+  CallJavascript("window.scrollTo(0, 200);");
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForJSCompletionTimeout, ^{
+        return [CallJavascript("Math.round(window.scrollY);") isEqual:@200];
+      }));
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  std::vector<const optimization_guide::proto::ContentNode*> fixed_nodes;
+  FindNodesWithCssPosition(
+      root_node, optimization_guide::proto::CSS_POSITION_FIXED, &fixed_nodes);
+
+  ASSERT_EQ(fixed_nodes.size(), 1u);
+  const auto* header = fixed_nodes[0];
+  ASSERT_TRUE(header->has_content_attributes());
+  ASSERT_TRUE(header->content_attributes().has_geometry());
+  const auto& geo = header->content_attributes().geometry();
+  EXPECT_EQ(geo.css_position(), optimization_guide::proto::CSS_POSITION_FIXED);
+  EXPECT_TRUE(VerifyGeometry(*header));
+
+  // The fixed header must remain anchored at the top of the viewport (y == 0).
+  EXPECT_EQ(geo.visible_bounding_box().y(), 0);
+  EXPECT_EQ(geo.visible_bounding_box().height(), 50);
+  EXPECT_EQ(geo.outer_bounding_box().y(), 0);
+  EXPECT_EQ(geo.outer_bounding_box().height(), 50);
+}
+
+// Test that an ancestor with a CSS transform acts as a containing block for
+// fixed-position descendants.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_ContainingBlockTransformFixed) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage("TransformContainingBlock", RawHtml(R"HTML(
+        <style>body { margin: 0; }</style>
+        <div id="transform-container"
+            style="transform: translate(0, 0); overflow: hidden;
+                   width: 200px; height: 100px;">
+          <div id="fixed-child"
+              style="position: fixed; top: 0; left: 0;
+                     width: 500px; height: 500px;">Fixed Child</div>
+        </div>
+      )HTML"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  std::vector<const optimization_guide::proto::ContentNode*> fixed_nodes;
+  FindNodesWithCssPosition(
+      root_node, optimization_guide::proto::CSS_POSITION_FIXED, &fixed_nodes);
+
+  ASSERT_EQ(fixed_nodes.size(), 1u);
+  const auto* fixed_child = fixed_nodes[0];
+  ASSERT_TRUE(fixed_child->has_content_attributes());
+  ASSERT_TRUE(fixed_child->content_attributes().has_geometry());
+  const auto& geo = fixed_child->content_attributes().geometry();
+  EXPECT_EQ(geo.css_position(), optimization_guide::proto::CSS_POSITION_FIXED);
+  EXPECT_EQ(geo.visible_bounding_box().width(), 200);
+  EXPECT_EQ(geo.visible_bounding_box().height(), 100);
+  EXPECT_EQ(geo.outer_bounding_box().width(), 500);
+  EXPECT_EQ(geo.outer_bounding_box().height(), 500);
+}
+
+// Test that an ancestor with a CSS transform acts as a containing block for
+// absolute-position descendants.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_ContainingBlockTransformAbsolute) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("TransformAbsoluteContainingBlock", RawHtml(R"HTML(
+        <style>body { margin: 0; }</style>
+        <div id="transform-container"
+            style="transform: translate(0, 0); overflow: hidden;
+                   width: 200px; height: 100px;">
+          <p id="absolute-child"
+              style="position: absolute; top: 0; left: 0; margin: 0;
+                     width: 500px; height: 500px;">Absolute Child</p>
+        </div>
+      )HTML"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  std::vector<const optimization_guide::proto::ContentNode*> absolute_nodes;
+  FindNodesWithCssPosition(root_node,
+                           optimization_guide::proto::CSS_POSITION_ABSOLUTE,
+                           &absolute_nodes);
+
+  ASSERT_EQ(absolute_nodes.size(), 1u);
+  const auto* absolute_child = absolute_nodes[0];
+  ASSERT_TRUE(absolute_child->has_content_attributes());
+  ASSERT_TRUE(absolute_child->content_attributes().has_geometry());
+  const auto& geo = absolute_child->content_attributes().geometry();
+  EXPECT_EQ(geo.css_position(),
+            optimization_guide::proto::CSS_POSITION_ABSOLUTE);
+  EXPECT_EQ(geo.visible_bounding_box().width(), 200);
+  EXPECT_EQ(geo.visible_bounding_box().height(), 100);
+  EXPECT_EQ(geo.outer_bounding_box().width(), 500);
+  EXPECT_EQ(geo.outer_bounding_box().height(), 500);
+}
+
+// Test that out-of-flow containing blocks without overflow clipping properly
+// escape ancestor overflow clips so their descendants are not re-clamped.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_ContainingBlockEscapesAncestorClip) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage("EscapedAncestorClip", RawHtml(R"HTML(
+        <style>body { margin: 0; }</style>
+        <div id="ancestor-clip"
+            style="overflow: hidden; width: 100px; height: 100px;">
+          <div id="fixed-container"
+              style="position: fixed; top: 0; left: 0;
+                     width: 300px; height: 300px;">
+            <p id="child"
+                style="position: absolute; top: 0; left: 0; margin: 0;
+                       width: 250px; height: 250px;">Child</p>
+          </div>
+        </div>
+      )HTML"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  std::vector<const optimization_guide::proto::ContentNode*> absolute_nodes;
+  FindNodesWithCssPosition(root_node,
+                           optimization_guide::proto::CSS_POSITION_ABSOLUTE,
+                           &absolute_nodes);
+
+  ASSERT_EQ(absolute_nodes.size(), 1u);
+  const auto* child = absolute_nodes[0];
+  ASSERT_TRUE(child->has_content_attributes());
+  ASSERT_TRUE(child->content_attributes().has_geometry());
+  const auto& geo = child->content_attributes().geometry();
+  EXPECT_EQ(geo.css_position(),
+            optimization_guide::proto::CSS_POSITION_ABSOLUTE);
+  EXPECT_EQ(geo.visible_bounding_box().width(), 250);
+  EXPECT_EQ(geo.visible_bounding_box().height(), 250);
+  EXPECT_EQ(geo.outer_bounding_box().width(), 250);
+  EXPECT_EQ(geo.outer_bounding_box().height(), 250);
+}
+
+// Test that individual transform CSS properties (translate, rotate, scale) act
+// as containing blocks for fixed-position descendants.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_ContainingBlockIndividualTransforms) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("IndividualTransformsContainingBlock", RawHtml(R"HTML(
+        <style>body { margin: 0; }</style>
+        <div id="translate-container"
+            style="translate: 0px 0px; overflow: hidden;
+                   width: 100px; height: 50px;">
+          <div id="fixed-child-1"
+              style="position: fixed; top: 0; left: 0;
+                     width: 150px; height: 150px;">Child 1</div>
+        </div>
+      )HTML"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  std::vector<const optimization_guide::proto::ContentNode*> fixed_nodes;
+  FindNodesWithCssPosition(
+      root_node, optimization_guide::proto::CSS_POSITION_FIXED, &fixed_nodes);
+
+  ASSERT_EQ(fixed_nodes.size(), 1u);
+  const auto* fixed_child = fixed_nodes[0];
+  ASSERT_TRUE(fixed_child->has_content_attributes());
+  ASSERT_TRUE(fixed_child->content_attributes().has_geometry());
+  const auto& geo = fixed_child->content_attributes().geometry();
+  EXPECT_EQ(geo.css_position(), optimization_guide::proto::CSS_POSITION_FIXED);
+  EXPECT_EQ(geo.visible_bounding_box().width(), 100);
+  EXPECT_EQ(geo.visible_bounding_box().height(), 50);
+  EXPECT_EQ(geo.outer_bounding_box().width(), 150);
+  EXPECT_EQ(geo.outer_bounding_box().height(), 150);
+}
+
+// Test that will-change creates a containing block for fixed elements only
+// when matching containing-block properties (e.g. transform or vendor-prefixed
+// -webkit-transform) and not unrelated properties with overlapping substrings
+// (e.g. text-transform).
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_ContainingBlockWillChange) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage("WillChangeContainingBlock", RawHtml(R"HTML(
+        <style>body { margin: 0; }</style>
+        <div id="will-change-transform"
+            style="will-change: opacity, transform; overflow: hidden;
+                   width: 100px; height: 50px;">
+          <div id="fixed-child-1"
+              style="position: fixed; top: 0; left: 0;
+                     width: 150px; height: 150px;">Child 1</div>
+        </div>
+        <div id="will-change-text-transform"
+            style="will-change: text-transform; overflow: hidden;
+                   width: 100px; height: 50px;">
+          <div id="fixed-child-2"
+              style="position: fixed; top: 0; left: 0;
+                     width: 150px; height: 150px;">Child 2</div>
+        </div>
+        <div id="will-change-webkit-transform"
+            style="will-change: -webkit-transform; overflow: hidden;
+                   width: 100px; height: 50px;">
+          <div id="fixed-child-3"
+              style="position: fixed; top: 0; left: 0;
+                     width: 150px; height: 150px;">Child 3</div>
+        </div>
+        <div id="will-change-contain"
+            style="will-change: contain; overflow: hidden;
+                   width: 100px; height: 50px;">
+          <div id="fixed-child-4"
+              style="position: fixed; top: 0; left: 0;
+                     width: 150px; height: 150px;">Child 4</div>
+        </div>
+      )HTML"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  std::vector<const optimization_guide::proto::ContentNode*> fixed_nodes;
+  FindNodesWithCssPosition(
+      root_node, optimization_guide::proto::CSS_POSITION_FIXED, &fixed_nodes);
+
+  ASSERT_EQ(fixed_nodes.size(), 4u);
+
+  // fixed-child-1 should be clipped by will-change: transform container
+  // (100x50).
+  const auto* fixed_child_1 = fixed_nodes[0];
+  ASSERT_TRUE(fixed_child_1->has_content_attributes());
+  ASSERT_TRUE(fixed_child_1->content_attributes().has_geometry());
+  const auto& geo_1 = fixed_child_1->content_attributes().geometry();
+  EXPECT_EQ(geo_1.css_position(),
+            optimization_guide::proto::CSS_POSITION_FIXED);
+  EXPECT_EQ(geo_1.visible_bounding_box().width(), 100);
+  EXPECT_EQ(geo_1.visible_bounding_box().height(), 50);
+  EXPECT_EQ(geo_1.outer_bounding_box().width(), 150);
+  EXPECT_EQ(geo_1.outer_bounding_box().height(), 150);
+
+  // fixed-child-2 should NOT be clipped by will-change: text-transform
+  // container (150x150).
+  const auto* fixed_child_2 = fixed_nodes[1];
+  ASSERT_TRUE(fixed_child_2->has_content_attributes());
+  ASSERT_TRUE(fixed_child_2->content_attributes().has_geometry());
+  const auto& geo_2 = fixed_child_2->content_attributes().geometry();
+  EXPECT_EQ(geo_2.css_position(),
+            optimization_guide::proto::CSS_POSITION_FIXED);
+  EXPECT_EQ(geo_2.visible_bounding_box().width(), 150);
+  EXPECT_EQ(geo_2.visible_bounding_box().height(), 150);
+  EXPECT_EQ(geo_2.outer_bounding_box().width(), 150);
+  EXPECT_EQ(geo_2.outer_bounding_box().height(), 150);
+
+  // fixed-child-3 should be clipped by will-change: -webkit-transform container
+  // (100x50).
+  const auto* fixed_child_3 = fixed_nodes[2];
+  ASSERT_TRUE(fixed_child_3->has_content_attributes());
+  ASSERT_TRUE(fixed_child_3->content_attributes().has_geometry());
+  const auto& geo_3 = fixed_child_3->content_attributes().geometry();
+  EXPECT_EQ(geo_3.css_position(),
+            optimization_guide::proto::CSS_POSITION_FIXED);
+  EXPECT_EQ(geo_3.visible_bounding_box().width(), 100);
+  EXPECT_EQ(geo_3.visible_bounding_box().height(), 50);
+  EXPECT_EQ(geo_3.outer_bounding_box().width(), 150);
+  EXPECT_EQ(geo_3.outer_bounding_box().height(), 150);
+
+  // fixed-child-4 should be clipped by will-change: contain container (100x50).
+  const auto* fixed_child_4 = fixed_nodes[3];
+  ASSERT_TRUE(fixed_child_4->has_content_attributes());
+  ASSERT_TRUE(fixed_child_4->content_attributes().has_geometry());
+  const auto& geo_4 = fixed_child_4->content_attributes().geometry();
+  EXPECT_EQ(geo_4.css_position(),
+            optimization_guide::proto::CSS_POSITION_FIXED);
+  EXPECT_EQ(geo_4.visible_bounding_box().width(), 100);
+  EXPECT_EQ(geo_4.visible_bounding_box().height(), 50);
+  EXPECT_EQ(geo_4.outer_bounding_box().width(), 150);
+  EXPECT_EQ(geo_4.outer_bounding_box().height(), 150);
+}
+
+// Test that dynamically mutating an element's CSS position to fixed right
+// before extraction updates its geometry and CSS_POSITION_FIXED.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_DynamicPositionMutation) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage("DynamicPositionMutation", RawHtml(R"HTML(
+        <div id="banner"
+             style="position: static; width: 100px; height: 50px;">Banner</div>
+      )HTML"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Mutate element to position: fixed before running extraction.
+  CallJavascript("document.getElementById('banner').style.position = 'fixed';");
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  std::vector<const optimization_guide::proto::ContentNode*> fixed_nodes;
+  FindNodesWithCssPosition(
+      root_node, optimization_guide::proto::CSS_POSITION_FIXED, &fixed_nodes);
+
+  ASSERT_EQ(fixed_nodes.size(), 1u);
+  ASSERT_TRUE(fixed_nodes[0]->has_content_attributes());
+  ASSERT_TRUE(fixed_nodes[0]->content_attributes().has_geometry());
+  EXPECT_EQ(fixed_nodes[0]->content_attributes().geometry().css_position(),
+            optimization_guide::proto::CSS_POSITION_FIXED);
+  EXPECT_TRUE(VerifyGeometry(*fixed_nodes[0]));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
