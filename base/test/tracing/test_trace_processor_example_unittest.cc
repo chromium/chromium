@@ -15,8 +15,8 @@ namespace base::test {
 
 class TestTraceProcessorExample : public ::testing::Test {
  private:
-  base::test::TracingEnvironment tracing_environment_;
   base::test::TaskEnvironment task_environment_;
+  base::test::TracingEnvironment tracing_environment_;
 };
 
 TEST_F(TestTraceProcessorExample, Basic) {

@@ -12,13 +12,33 @@
 #include "base/tracing/perfetto_task_runner.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
-#include "third_party/perfetto/include/perfetto/ext/base/thread_task_runner.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_info.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace base::tracing {
+
+namespace {
+
+PerfettoPlatform* g_platform_instance = nullptr;
+
+}  // namespace
+
+// static
+PerfettoPlatform& PerfettoPlatform::MaybeCreateInstance(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    Options options) {
+  static base::NoDestructor<PerfettoPlatform> platform(std::move(task_runner),
+                                                       std::move(options));
+  return *platform;
+}
+
+// static
+PerfettoPlatform& PerfettoPlatform::Get() {
+  CHECK_NE(g_platform_instance, nullptr);
+  return *g_platform_instance;
+}
 
 PerfettoPlatform::PerfettoPlatform(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -31,9 +51,21 @@ PerfettoPlatform::PerfettoPlatform(
       task_runner_(std::move(task_runner)),
       thread_local_object_([](void* object) {
         delete static_cast<ThreadLocalObject*>(object);
-      }) {}
+      }) {
+  CHECK_EQ(g_platform_instance, nullptr);
+  g_platform_instance = this;
+}
 
 PerfettoPlatform::~PerfettoPlatform() = default;
+
+void PerfettoPlatform::SetupForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  ResetTaskRunner(std::move(task_runner));
+}
+
+scoped_refptr<base::SequencedTaskRunner> PerfettoPlatform::task_runner() const {
+  return task_runner_;
+}
 
 PerfettoPlatform::ThreadLocalObject*
 PerfettoPlatform::GetOrCreateThreadLocalObject() {
@@ -47,7 +79,6 @@ PerfettoPlatform::GetOrCreateThreadLocalObject() {
 
 std::unique_ptr<perfetto::base::TaskRunner> PerfettoPlatform::CreateTaskRunner(
     const CreateTaskRunnerArgs&) {
-  // TODO(b/242965112): Add support for the builtin task runner
   DCHECK(!perfetto_task_runner_);
   auto perfetto_task_runner =
       std::make_unique<PerfettoTaskRunner>(task_runner_, defer_delayed_tasks_);

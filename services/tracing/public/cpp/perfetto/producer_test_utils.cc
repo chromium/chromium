@@ -22,8 +22,7 @@
 namespace tracing {
 
 DataSourceTester::DataSourceTester(
-    tracing::PerfettoTracedProcess::DataSourceBase* data_source)
-{
+    tracing::PerfettoTracedProcess::DataSourceBase* data_source) {
   features_.InitAndDisableFeature(features::kEnablePerfettoSystemTracing);
 }
 

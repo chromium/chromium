@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/task_environment.h"
 #include "base/test/tracing/trace_test_utils.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_buffer.h"
@@ -34,6 +35,7 @@ class TraceEventAnalyzerTest : public testing::Test {
   void BeginTracing();
   void EndTracing();
 
+  base::test::TaskEnvironment task_environment_;
   base::test::TracingEnvironment tracing_environment_;
   base::trace_event::TraceResultBuffer::SimpleOutput output_;
   base::trace_event::TraceResultBuffer buffer_;
@@ -59,7 +61,7 @@ void TraceEventAnalyzerTest::BeginTracing() {
   output_.json_output.clear();
   buffer_.Start();
   base::trace_event::TraceLog::GetInstance()->SetEnabled(
-      base::trace_event::TraceConfig("*", ""));
+      base::trace_event::TraceConfig("cat*,noise", ""));
 }
 
 void TraceEventAnalyzerTest::EndTracing() {

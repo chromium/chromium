@@ -5,6 +5,8 @@
 #ifndef BASE_TEST_TRACING_TRACE_TEST_UTILS_H_
 #define BASE_TEST_TRACING_TRACE_TEST_UTILS_H_
 
+#include "base/task/sequenced_task_runner.h"
+
 namespace base::test {
 
 // A scoped class that sets up and tears down tracing support for unit tests.
@@ -14,12 +16,10 @@ class TracingEnvironment {
  public:
   // Construct a tracing environment using the default Perfetto tracing
   // platform.
-  TracingEnvironment();
+  explicit TracingEnvironment(
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
   ~TracingEnvironment();
 };
-
-void InitializeTracing();
-void SetupTracing();
 
 }  // namespace base::test
 

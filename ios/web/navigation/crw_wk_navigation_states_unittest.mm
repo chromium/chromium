@@ -291,8 +291,8 @@ TEST_F(CRWWKNavigationStatesTest, PendingNavigations) {
 }
 
 TEST_F(CRWWKNavigationStatesTest, TracingTransitions) {
-  base::test::TracingEnvironment tracing_environment;
   base::test::TaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment;
   base::test::TestTraceProcessor test_trace_processor;
 
   test_trace_processor.StartTrace("navigation");
@@ -329,8 +329,8 @@ TEST_F(CRWWKNavigationStatesTest, TracingTransitions) {
 }
 
 TEST_F(CRWWKNavigationStatesTest, TracingTransitionsFailed) {
-  base::test::TracingEnvironment tracing_environment;
   base::test::TaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment;
   base::test::TestTraceProcessor test_trace_processor;
 
   test_trace_processor.StartTrace("navigation");
@@ -362,8 +362,8 @@ TEST_F(CRWWKNavigationStatesTest, TracingTransitionsFailed) {
 }
 
 TEST_F(CRWWKNavigationStatesTest, TracingTransitionsProvisionalFailed) {
-  base::test::TracingEnvironment tracing_environment;
   base::test::TaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment;
   base::test::TestTraceProcessor test_trace_processor;
 
   test_trace_processor.StartTrace("navigation");
@@ -396,8 +396,8 @@ TEST_F(CRWWKNavigationStatesTest, TracingTransitionsProvisionalFailed) {
 }
 
 TEST_F(CRWWKNavigationStatesTest, TracingTransitionsRemoved) {
-  base::test::TracingEnvironment tracing_environment;
   base::test::TaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment;
   base::test::TestTraceProcessor test_trace_processor;
 
   test_trace_processor.StartTrace("navigation");
@@ -429,8 +429,8 @@ TEST_F(CRWWKNavigationStatesTest, TracingTransitionsRemoved) {
 }
 
 TEST_F(CRWWKNavigationStatesTest, TracingTransitionsRemovedConsecutive) {
-  base::test::TracingEnvironment tracing_environment;
   base::test::TaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment;
   base::test::TestTraceProcessor test_trace_processor;
 
   test_trace_processor.StartTrace("navigation");

@@ -991,9 +991,8 @@ class SystemTracingEndToEndBrowserTest : public ContentBrowserTest {
   // Waits for the current process to connect to the tracing service as a
   // producer.
   bool WaitForCurrentProcessConnected() {
-    std::string current_process_name = tracing::PerfettoTracedProcess::Get()
-                                           .perfetto_platform_for_testing()
-                                           ->GetCurrentProcessName();
+    std::string current_process_name =
+        base::tracing::PerfettoPlatform::Get().GetCurrentProcessName();
     std::unique_ptr<perfetto::TracingSession> session =
         perfetto::Tracing::NewTrace(perfetto::kSystemBackend);
     for (size_t i = 0; i < 100; i++) {

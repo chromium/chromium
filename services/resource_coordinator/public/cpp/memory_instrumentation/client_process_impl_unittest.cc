@@ -41,8 +41,6 @@ class ClientProcessImplTest : public testing::Test {
     // ClientProcessImpl's constructor touches TracingObserverProto, whose
     // Perfetto data source registration requires Perfetto tracing to be
     // initialized; |tracing_environment_| stands that up before this body runs.
-    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunner(
-        task_environment_.GetMainThreadTaskRunner());
     TracingObserverProto::GetInstance()->ResetForTesting();
 
     base::trace_event::MemoryDumpManager::GetInstance()
@@ -87,7 +85,7 @@ class ClientProcessImplTest : public testing::Test {
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::test::TracingEnvironment tracing_environment_;
   mojo::PendingReceiver<mojom::Coordinator> coordinator_receiver_;
   std::unique_ptr<ClientProcessImpl> client_process_;

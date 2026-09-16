@@ -115,8 +115,8 @@ class UIViewControllerWithDisplayTracingTest
     return [[view_controller_ valueForKey:@"lastDroppedFrames"] intValue];
   }
 
-  base::test::TracingEnvironment tracing_environment_;
   base::test::TaskEnvironment task_environment_;
+  base::test::TracingEnvironment tracing_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestUIViewControllerWithDisplayTracing* view_controller_;
 };

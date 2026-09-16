@@ -193,12 +193,12 @@ class MemoryDumpManagerTest : public testing::Test {
   }
 
   void TearDown() override {
+    tracing_environment_.reset();
     task_environment_.reset();
 
     // Tear down the MemoryDumpManager while single-threaded to mirror logic in
     // SetUp().
     mdm_.reset();
-    tracing_environment_.reset();
   }
 
  protected:

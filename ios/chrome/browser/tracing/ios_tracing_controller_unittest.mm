@@ -21,6 +21,7 @@
 #import "base/trace_event/trace_log.h"
 #import "base/tracing/perfetto_platform.h"
 #import "components/tracing/common/tracing_switches.h"
+#import "ios/chrome/browser/tracing/test_utils.h"
 #import "services/tracing/public/cpp/background_tracing/trace_report_database.h"
 #import "services/tracing/public/cpp/background_tracing/tracing_scenario.h"
 #import "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
@@ -53,14 +54,11 @@ class IOSTracingControllerTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    startup_config_.emplace();
-    IOSTracingController::MaybeCreateInstanceForTesting();
-    IOSTracingController::GetInstance().InitializeForTesting();
+    tracing_controller_ = std::make_unique<IOSTracingControllerForTesting>();
   }
 
   void TearDown() override {
-    IOSTracingController::GetInstance().ResetForTesting();
-    startup_config_.reset();
+    tracing_controller_.reset();
     PlatformTest::TearDown();
   }
 
@@ -70,8 +68,8 @@ class IOSTracingControllerTest : public PlatformTest {
                                        scenario_start_time);
   }
 
-  std::optional<tracing::TraceStartupConfig> startup_config_;
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<IOSTracingControllerForTesting> tracing_controller_;
 };
 
 // Tests that the manager successfully creates the standard developer
@@ -135,13 +133,10 @@ TEST_F(IOSTracingControllerTest, StartupTraceRecording) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
       switches::kTraceStartupFormat, "proto");
 
-  // Reset and create the config to pick up the new command line switches.
-  startup_config_.emplace(*scoped_command_line.GetProcessCommandLine());
-
-  // Reset and re-initialize to restart startup tracing.
-  IOSTracingController::GetInstance().ResetForTesting();
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  IOSTracingController::GetInstance().InitializeForTesting();
+  // Reset and recreate the controller with the new command line switches.
+  tracing_controller_.reset();
+  tracing_controller_ = std::make_unique<IOSTracingControllerForTesting>(
+      *scoped_command_line.GetProcessCommandLine());
 
   // Wait for the background tracer to start blocking and actually begin
   // tracing.

@@ -89,7 +89,9 @@ PerfettoService::PerfettoService(
                           base::Unretained(this)));
 }
 
-PerfettoService::~PerfettoService() = default;
+PerfettoService::~PerfettoService() {
+  CustomEventRecorder::GetInstance()->SetActiveProcessesCallback({});
+}
 
 perfetto::TracingService* PerfettoService::GetService() const {
   return service_.get();

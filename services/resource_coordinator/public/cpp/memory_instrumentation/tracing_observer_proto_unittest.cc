@@ -45,8 +45,6 @@ class TracingObserverProtoTest : public testing::Test {
         false);
     memory_instrumentation::TracingObserverProto::GetInstance()
         ->ResetForTesting();
-    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunner(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
   void TearDown() override {
@@ -91,8 +89,8 @@ class TracingObserverProtoTest : public testing::Test {
   }
 
  protected:
-  base::test::TracingEnvironment tracing_environment_;
   base::test::TaskEnvironment task_environment_;
+  base::test::TracingEnvironment tracing_environment_;
 };
 
 const base::ProcessId kTestPid = 1;

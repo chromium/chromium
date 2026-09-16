@@ -7,6 +7,7 @@
 #include "base/process/process_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 // Define static storage for trace event categories (see
 // PERFETTO_DEFINE_CATEGORIES).
@@ -91,8 +92,9 @@ bool IsPerfettoInitializedForTesting() {
   return g_perfetto_initialized_for_testing;
 }
 
-void InitializeInProcessPerfettoBackend() {
+void InitializeInProcessPerfettoBackend(perfetto::Platform* platform) {
   perfetto::TracingInitArgs init_args;
+  init_args.platform = platform;
   init_args.backends = perfetto::BackendType::kInProcessBackend;
   init_args.shmem_batch_commits_duration_ms = 1000;
   init_args.shmem_size_hint_kb = 4 * 1024;

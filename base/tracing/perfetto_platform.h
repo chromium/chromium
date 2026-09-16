@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_local_storage.h"
 #include "third_party/perfetto/include/perfetto/base/thread_utils.h"
@@ -40,8 +41,14 @@ class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
     static Options Default() { return {}; }
   };
 
-  explicit PerfettoPlatform(scoped_refptr<base::SequencedTaskRunner>,
-                            Options options = Options::Default());
+  // Creates the process-wide instance of the PerfettoPlatform.
+  static PerfettoPlatform& MaybeCreateInstance(
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr,
+      Options options = Options::Default());
+
+  // Returns the process-wide instance of the PerfettoPlatform.
+  static PerfettoPlatform& Get();
+
   ~PerfettoPlatform() override;
 
   // perfetto::Platform implementation:
@@ -55,9 +62,19 @@ class BASE_EXPORT PerfettoPlatform : public perfetto::Platform {
   // thread IDs.
   perfetto::base::PlatformThreadId GetCurrentThreadId() override;
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner() const;
+
   void ResetTaskRunner(scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  void SetupForTesting(scoped_refptr<base::SequencedTaskRunner> task_runner);
+
  private:
+  friend class base::NoDestructor<PerfettoPlatform>;
+
+  explicit PerfettoPlatform(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      Options options = Options::Default());
+
   const std::string process_name_prefix_;
   const bool defer_delayed_tasks_;
   const base::ProcessId real_process_id_;

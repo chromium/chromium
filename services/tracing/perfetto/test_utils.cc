@@ -8,7 +8,15 @@
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event_impl.h"
+#include "base/tracing/perfetto_platform.h"
+#include "services/tracing/public/cpp/perfetto/custom_event_recorder.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
+#include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/client_identity.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/commit_data_request.h"
@@ -286,14 +294,37 @@ void MockConsumer::CheckForAllDataSourcesStopped() {
 }
 
 TracedProcessForTesting::TracedProcessForTesting(
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  PerfettoTracedProcess::MaybeCreateInstanceForTesting().SetupForTesting(
-      task_runner);
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : PerfettoTracedProcess(task_runner) {
+  DCHECK(!perfetto::Tracing::IsInitialized());
+  base::tracing::PerfettoPlatform::Get().SetupForTesting(task_runner_);
+  base::trace_event::SetPerfettoInitializedForTesting();
+
+  SetupClientLibrary(/*enable_consumer=*/true, ShouldSetupSystemTracing());
+  CustomEventRecorder::GetInstance()->DetachFromSequence();
+
+  TrackNameRecorder::GetInstance()->StartRecording();
 }
 
 TracedProcessForTesting::~TracedProcessForTesting() {
   base::RunLoop().RunUntilIdle();
-  PerfettoTracedProcess::Get().ResetForTesting();
+  TrackNameRecorder::GetInstance()->StopRecording();
+  CustomEventRecorder::GetInstance()->DetachFromSequence();
+  base::WaitableEvent on_reset_done;
+  auto reset_task = base::BindOnce(
+      [](decltype(tracing_backend_) backend,
+         base::WaitableEvent* on_reset_done) {
+        backend.reset();
+        perfetto::Tracing::ResetForTesting();
+        on_reset_done->Signal();
+      },
+      std::move(tracing_backend_), &on_reset_done);
+  if (task_runner_->RunsTasksInCurrentSequence()) {
+    std::move(reset_task).Run();
+  } else {
+    task_runner_->PostTask(FROM_HERE, std::move(reset_task));
+    on_reset_done.Wait();
+  }
 }
 
 }  // namespace tracing

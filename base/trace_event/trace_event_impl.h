@@ -20,11 +20,16 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_arguments.h"
 
+namespace perfetto {
+class Platform;
+}  // namespace perfetto
+
 namespace base::trace_event {
 
 void BASE_EXPORT SetPerfettoInitializedForTesting();
 bool BASE_EXPORT IsPerfettoInitializedForTesting();
-void BASE_EXPORT InitializeInProcessPerfettoBackend();
+void BASE_EXPORT
+InitializeInProcessPerfettoBackend(perfetto::Platform* platform = nullptr);
 
 using ArgumentNameFilterPredicate =
     base::RepeatingCallback<bool(const char* arg_name)>;

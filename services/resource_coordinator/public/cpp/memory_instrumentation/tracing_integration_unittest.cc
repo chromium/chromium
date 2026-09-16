@@ -140,13 +140,10 @@ class MockCoordinator : public mojom::Coordinator {
 class MemoryTracingIntegrationTest : public testing::Test {
  public:
   void SetUp() override {
-    task_environment_ =
-        std::make_unique<base::test::SingleThreadTaskEnvironment>();
+    task_environment_ = std::make_unique<base::test::TaskEnvironment>();
     coordinator_ = std::make_unique<MockCoordinator>(this);
 
     tracing_environment_ = std::make_unique<base::test::TracingEnvironment>();
-    tracing::PerfettoTracedProcess::DataSourceBase::ResetTaskRunner(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
     TracingObserverProto::GetInstance()->ResetForTesting();
   }
 
@@ -249,7 +246,7 @@ class MemoryTracingIntegrationTest : public testing::Test {
   raw_ptr<MemoryDumpManager> mdm_;
 
  private:
-  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::unique_ptr<MockCoordinator> coordinator_;
   std::unique_ptr<base::test::TracingEnvironment> tracing_environment_;
   std::unique_ptr<ClientProcessImpl> client_process_;

@@ -5,23 +5,19 @@
 #include "base/test/tracing/trace_test_utils.h"
 
 #include "base/check.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/trace_log.h"
 #include "base/trace_event/trace_session_observer.h"
+#include "base/tracing/perfetto_platform.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace base::test {
 
-TracingEnvironment::TracingEnvironment() {
-  InitializeTracing();
-}
-
-TracingEnvironment::~TracingEnvironment() {
-  trace_event::TraceLog::ResetForTesting();
-  perfetto::Tracing::ResetForTesting();
-}
-
-void InitializeTracing() {
+TracingEnvironment::TracingEnvironment(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   // The tracing service shouldn't have initialized Perfetto in this process,
   // because it's not safe to consume trace data from arbitrary processes
   // through TraceLog as the JSON conversion here isn't sandboxed like with the
@@ -32,13 +28,21 @@ void InitializeTracing() {
   if (perfetto::Tracing::IsInitialized()) {
     return;
   }
+  if (!task_runner) {
+    task_runner = base::ThreadPool::CreateSequencedTaskRunner({});
+  }
+  CHECK(task_runner);
+  base::tracing::PerfettoPlatform::MaybeCreateInstance();
+  base::tracing::PerfettoPlatform::Get().SetupForTesting(task_runner);
   base::trace_event::TraceSessionObserverList::Initialize();
   base::trace_event::SetPerfettoInitializedForTesting();
-  base::trace_event::InitializeInProcessPerfettoBackend();
+
+  base::trace_event::InitializeInProcessPerfettoBackend(
+      &base::tracing::PerfettoPlatform::Get());
 }
 
-void SetupTracing() {
-  base::trace_event::InitializeInProcessPerfettoBackend();
+TracingEnvironment::~TracingEnvironment() {
+  trace_event::TraceLog::ResetForTesting();
   perfetto::Tracing::ResetForTesting();
 }
 

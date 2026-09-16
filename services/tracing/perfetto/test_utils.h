@@ -29,6 +29,8 @@ class RunLoop;
 
 namespace tracing {
 
+class PerfettoTracedProcess;
+
 const char kPerfettoTestString[] = "d00df00d";
 const size_t kLargeMessageSize = 1 * 1024 * 1024;
 
@@ -185,11 +187,11 @@ class MockConsumer : public MockConsumerBase {
   perfetto::TraceConfig trace_config_;
 };
 
-class TracedProcessForTesting {
+class TracedProcessForTesting : public PerfettoTracedProcess {
  public:
   explicit TracedProcessForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
-  ~TracedProcessForTesting();
+  ~TracedProcessForTesting() override;
 
  private:
   TraceStartupConfig startup_config_;

@@ -16,6 +16,7 @@
 #import "components/variations/active_field_trials.h"
 #import "components/variations/synthetic_trial_registry.h"
 #import "ios/chrome/browser/tracing/ios_tracing_controller.h"
+#import "ios/chrome/browser/tracing/test_utils.h"
 #import "services/tracing/public/cpp/background_tracing/background_tracing_rule.h"
 #import "services/tracing/public/cpp/background_tracing/tracing_scenario.h"
 #import "services/tracing/public/cpp/startup_tracing_controller.h"
@@ -30,21 +31,18 @@ class IOSChromeBackgroundTracingMetricsProviderTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    startup_config_.emplace();
-    IOSTracingController::MaybeCreateInstanceForTesting();
-    IOSTracingController::GetInstance().InitializeForTesting();
-
+    tracing_controller_ = std::make_unique<IOSTracingControllerForTesting>();
     base::ThreadPoolInstance::Get()->FlushForTesting();
   }
 
   void TearDown() override {
-    IOSTracingController::GetInstance().ResetForTesting();
+    tracing_controller_.reset();
     PlatformTest::TearDown();
   }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::optional<tracing::TraceStartupConfig> startup_config_;
+  std::unique_ptr<IOSTracingControllerForTesting> tracing_controller_;
 };
 
 TEST_F(IOSChromeBackgroundTracingMetricsProviderTest, HasIndependentMetrics) {

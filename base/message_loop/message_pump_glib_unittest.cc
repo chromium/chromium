@@ -573,13 +573,28 @@ class NestedEventAnalyzer {
                                     trace_analyzer::Query::String("Nested"),
                                 &events);
   }
+};
 
+class MessagePumpGLibWithTracing : public testing::Test {
+ public:
+  MessagePumpGLibWithTracing() = default;
+
+  MessagePumpGLibWithTracing(const MessagePumpGLibWithTracing&) = delete;
+  MessagePumpGLibWithTracing& operator=(const MessagePumpGLibWithTracing&) =
+      delete;
+
+  EventInjector* injector() { return &injector_; }
+
+ private:
+  test::TaskEnvironment task_environment_{
+      test::TaskEnvironment::MainThreadType::UI};
   base::test::TracingEnvironment tracing_environment_;
+  EventInjector injector_;
 };
 
 }  // namespace
 
-TEST_F(MessagePumpGLibTest, TestNativeNestedLoopWithoutDoWork) {
+TEST_F(MessagePumpGLibWithTracing, TestNativeNestedLoopWithoutDoWork) {
   // Tests that nesting is triggered correctly if a message loop is run
   // from a native event (gtk event) outside of a work item (not in a posted
   // task).

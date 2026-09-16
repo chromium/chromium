@@ -33,6 +33,8 @@ source_set("unit_tests") {
   sources = [
     "ios_chrome_background_tracing_metrics_provider_unittest.mm",
     "ios_tracing_controller_unittest.mm",
+    "test_utils.h",
+    "test_utils.mm",
   ]
   deps = [
     ":tracing",
