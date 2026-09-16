@@ -1340,10 +1340,13 @@ public class PdfCoordinator
             PdfUtils.recordPdfLoadResultDetail(PdfLoadResult.ABORT);
         }
         if (!mFragmentManager.isDestroyed() && mChromePdfViewerFragment.getDelegate() == this) {
-            mFragmentManager
-                    .beginTransaction()
-                    .remove(mChromePdfViewerFragment)
-                    .commitAllowingStateLoss();
+            FragmentTransaction transaction =
+                    mFragmentManager.beginTransaction().remove(mChromePdfViewerFragment);
+            if (PdfUtils.isReuseFragmentEnabled()) {
+                transaction.commitNowAllowingStateLoss();
+            } else {
+                transaction.commitAllowingStateLoss();
+            }
         }
         mChromePdfViewerFragment = null;
     }
