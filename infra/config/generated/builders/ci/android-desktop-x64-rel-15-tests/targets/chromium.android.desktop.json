@@ -11,6 +11,7 @@
           "--recover-devices"
         ],
         "description": "Run with android_35_google_apis_tablet_x64_tablet_landscape",
+        "enable_rts_filtering": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
