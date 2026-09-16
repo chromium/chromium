@@ -1610,6 +1610,9 @@
       <message name="IDS_ACCESSIBILITY_NTP_VIOLET_COLOR_THEME" is_accessibility_with_no_ui="true" desc="Name of the color theme shown on the Chrome Colors bottom sheet.">
         Violet theme
       </message>
+      <message name="IDS_ACCESSIBILITY_UPLOAD_IMAGE" is_accessibility_with_no_ui="true" desc="Accessibility string for the uploaded image option on the new tab page.">
+        User uploaded image
+      </message>
 
       <!-- Time Last Accessed strings -->
       <message name="IDS_TIME_LAST_ACCESSED_TODAY" desc="A subtitle explaining that a given component was last accessed today.">

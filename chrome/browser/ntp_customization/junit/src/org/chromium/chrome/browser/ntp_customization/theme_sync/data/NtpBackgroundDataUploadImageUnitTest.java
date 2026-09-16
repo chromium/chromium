@@ -28,10 +28,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 
 /** Tests for {@link NtpBackgroundDataUploadImage}. */
@@ -123,6 +125,9 @@ public class NtpBackgroundDataUploadImageUnitTest {
         assertEquals(
                 landscapeMatrix.toShortString(),
                 restored.getBackgroundImageInfo().getLandscapeMatrix().toShortString());
+        assertEquals(
+                ContextUtils.getApplicationContext().getString(R.string.accessibility_upload_image),
+                restored.getContentDescription());
     }
 
     @Test
@@ -188,5 +193,20 @@ public class NtpBackgroundDataUploadImageUnitTest {
         verify(mCallback).onResult(mBitmap);
         // Also verify that testData now has the bitmap cached.
         assertEquals(mBitmap, testData.getImageBitmapForTesting());
+    }
+
+    @Test
+    public void testContentDescription() {
+        BackgroundImageInfo info = new BackgroundImageInfo(new Matrix(), new Matrix(), null, null);
+        NtpBackgroundDataUploadImage data =
+                new NtpBackgroundDataUploadImage(
+                        PlatformType.ANDROID,
+                        info,
+                        /* bitmap= */ null,
+                        /* primaryColor= */ null,
+                        FILE_ID_HASH);
+        assertEquals(
+                ContextUtils.getApplicationContext().getString(R.string.accessibility_upload_image),
+                data.getContentDescription());
     }
 }

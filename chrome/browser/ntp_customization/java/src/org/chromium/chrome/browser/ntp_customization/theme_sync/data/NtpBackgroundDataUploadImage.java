@@ -13,9 +13,11 @@ import androidx.annotation.ColorInt;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 
 import java.util.Objects;
@@ -37,6 +39,9 @@ public class NtpBackgroundDataUploadImage extends NtpBackgroundDataImageBase {
             @Nullable @ColorInt Integer primaryColor,
             @Nullable String fileIdHash) {
         super(platformType, backgroundImageInfo, bitmap, primaryColor, fileIdHash);
+        setContentDescription(
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.accessibility_upload_image));
     }
 
     /** Returns the subdirectory name for saving the image file. */
