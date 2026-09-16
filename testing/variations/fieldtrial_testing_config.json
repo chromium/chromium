@@ -9820,16 +9820,13 @@
     "GlicCookieSyncOnTokenChange": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "GlicCookieSyncEarlyNoStartup",
                         "GlicCookieSyncOnTokenChange"
                     ]
                 }
