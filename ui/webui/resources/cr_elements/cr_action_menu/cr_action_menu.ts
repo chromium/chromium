@@ -11,7 +11,6 @@ import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {isMac, isWindows} from '//resources/js/platform.js';
 import {getDeepActiveElement} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './cr_action_menu.css.js';
 import {getHtml} from './cr_action_menu.html.js';
@@ -23,6 +22,15 @@ import {getHtml} from './cr_action_menu.html.js';
  */
 function hasFocusoutOutside(e: FocusEvent, element: Element|null): boolean {
   return !element || !element.contains(e.relatedTarget as Node);
+}
+
+/**
+ * @return Whether the Unbounded Element API is available. The API is only
+ *     installed in contexts and on platforms that can host an external OS
+ *     surface, so it must be feature detected before use.
+ */
+function isUnboundedSupported(): boolean {
+  return 'showUnboundedElement' in HTMLElement.prototype;
 }
 
 export interface ShowAtConfig {
@@ -220,10 +228,7 @@ export class CrActionMenuElement extends CrLitElement {
       // the action menu to render into an external OS surface outside the host
       // window/WebContents. Position calculations use screen coordinates, and
       // the menu does not automatically close on host window resize.
-      useUnbounded: {
-        type: Boolean,
-        reflect: true,
-      },
+      useUnbounded_: {type: Boolean},
     };
   }
   accessor accessibilityLabel: string|undefined;
@@ -232,7 +237,33 @@ export class CrActionMenuElement extends CrLitElement {
   accessor open: boolean = false;
   accessor roleDescription: string|undefined;
   accessor nonModal: boolean = false;
-  accessor useUnbounded: boolean = false;
+  protected accessor useUnbounded_: boolean = false;
+
+  /**
+   * Enables unbounded mode, which renders the menu into an external OS
+   * surface, allowing it to extend outside the host window. Unbounded mode is
+   * only enabled if the Unbounded Element API is supported in this
+   * environment, and cannot be disabled once enabled.
+   *
+   * Note: This awaits the pending rendering update so that the `unbounded`
+   * attribute is applied to the inner <dialog> before it resolves.
+   * showUnboundedElement() rejects if that attribute is not already present,
+   * so this must be awaited before the menu is first opened.
+   *
+   * @return Whether unbounded mode is enabled.
+   */
+  async setUnbounded(): Promise<boolean> {
+    if (!isUnboundedSupported()) {
+      console.warn(
+          'CrActionMenu: Unbounded Element API is not supported in this ' +
+          'environment.');
+      return false;
+    }
+
+    this.useUnbounded_ = true;
+    await this.updateComplete;
+    return true;
+  }
 
   private boundClose_: (() => void)|null = null;
   private resizeObserver_: ResizeObserver|null = null;
@@ -244,19 +275,6 @@ export class CrActionMenuElement extends CrLitElement {
     super.disconnectedCallback();
 
     this.removeListeners_();
-  }
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    if (changedProperties.has('useUnbounded') && this.useUnbounded) {
-      if (!('showUnboundedElement' in HTMLElement.prototype)) {
-        console.warn(
-            'CrActionMenu: useUnbounded property is not supported in this ' +
-            'environment.');
-        this.useUnbounded = false;
-      }
-    }
   }
 
   override firstUpdated() {
@@ -386,7 +404,7 @@ export class CrActionMenuElement extends CrLitElement {
     // preventScroll is only applied when useUnbounded is true to prevent
     // scrolling the host document while preserving full keyboard
     // accessibility and focus outline indicators.
-    el.focus({preventScroll: this.useUnbounded});
+    el.focus({preventScroll: this.useUnbounded_});
   }
 
   private onMouseover_(e: Event) {
@@ -417,7 +435,7 @@ export class CrActionMenuElement extends CrLitElement {
     }
     this.open = false;
 
-    if (this.useUnbounded && !unboundedAlreadyDismissed) {
+    if (this.useUnbounded_ && !unboundedAlreadyDismissed) {
       this.hideUnboundedDialog_();
     }
 
@@ -510,8 +528,7 @@ export class CrActionMenuElement extends CrLitElement {
     this.nonModal ? this.$.dialog.show() : this.$.dialog.showModal();
     this.open = true;
 
-    if (this.useUnbounded) {
-      this.$.dialog.toggleAttribute('unbounded', true);
+    if (this.useUnbounded_) {
       this.positionDialog_(config);
       this.showUnboundedDialog_();
     } else {
@@ -561,7 +578,7 @@ export class CrActionMenuElement extends CrLitElement {
     this.lastConfig_ = config;
     const c = Object.assign(getDefaultShowConfig(), config);
 
-    if (this.useUnbounded) {
+    if (this.useUnbounded_) {
       // In unbounded mode, the menu can render outside the host window.
       // Compute boundary coordinates relative to the physical screen origin so
       // the dialog is clamped to the visible monitor rather than the host
@@ -599,7 +616,7 @@ export class CrActionMenuElement extends CrLitElement {
     const offsetWidth = this.$.dialog.offsetWidth;
     const menuLeft = getStartPointWithAnchor(
         left, right, offsetWidth, c.anchorAlignmentX!, c.minX!, c.maxX!,
-        this.useUnbounded);
+        this.useUnbounded_);
 
     if (rtl) {
       const menuRight =
@@ -611,7 +628,7 @@ export class CrActionMenuElement extends CrLitElement {
 
     const menuTop = getStartPointWithAnchor(
         top, bottom, this.$.dialog.offsetHeight, c.anchorAlignmentY!, c.minY!,
-        c.maxY!, this.useUnbounded);
+        c.maxY!, this.useUnbounded_);
     this.$.dialog.style.top = menuTop + 'px';
   }
 
@@ -632,7 +649,7 @@ export class CrActionMenuElement extends CrLitElement {
    * window gets light dismissed.
    */
   protected onDialogBeforetoggle_(e: Event) {
-    if (!this.useUnbounded) {
+    if (!this.useUnbounded_) {
       return;
     }
     const toggleEvent = e as Event & {newState?: string};

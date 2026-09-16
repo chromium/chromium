@@ -768,16 +768,17 @@ suite('CrActionMenu', function() {
     let menu: CrActionMenuElement;
     let dots: HTMLElement;
 
-    setup(function() {
+    setup(async function() {
       document.body.innerHTML = getTrustedStaticHtml`
         <button id="dots">...</button>
-        <cr-action-menu use-unbounded>
+        <cr-action-menu>
           <button class="dropdown-item">Item 1</button>
           <button class="dropdown-item">Item 2</button>
         </cr-action-menu>
       `;
       menu = document.querySelector('cr-action-menu')!;
       dots = document.querySelector('#dots')!;
+      await menu.setUnbounded();
     });
 
     test(
@@ -796,20 +797,19 @@ suite('CrActionMenu', function() {
           assertEquals('-30px', menu.getDialog().style.left);
         });
 
-    test('opens without throwing when useUnbounded is true', function() {
+    test('opens without throwing in unbounded mode', function() {
       menu.showAt(dots, {
         anchorAlignmentX: AnchorAlignment.AFTER_START,
         anchorAlignmentY: AnchorAlignment.AFTER_END,
       });
 
       assertTrue(menu.getDialog().open);
-      assertTrue(menu.useUnbounded);
+      assertTrue(menu.getDialog().hasAttribute('unbounded'));
       menu.close();
     });
 
     test(
-        'activates and deactivates unbounded dialog when useUnbounded is true',
-        () => {
+        'activates and deactivates unbounded dialog in unbounded mode', () => {
           let showEventFired = false;
           let hideEventFired = false;
           const dialog = menu.getDialog();
@@ -825,16 +825,29 @@ suite('CrActionMenu', function() {
           menu.showAt(dots);
           assertTrue(menu.open);
           assertTrue(dialog.matches(':unbounded'));
+          assertTrue(dialog.hasAttribute('unbounded'));
           assertTrue(showEventFired);
 
           menu.close();
           assertFalse(menu.open);
           assertFalse(dialog.matches(':unbounded'));
+          assertTrue(dialog.hasAttribute('unbounded'));
           assertTrue(hideEventFired);
         });
 
     test(
-        'logs warning and resets useUnbounded to false if API is unsupported',
+        'setUnbounded returns true and enables unbounded mode when supported',
+        async () => {
+          const newMenu = document.createElement('cr-action-menu');
+          document.body.appendChild(newMenu);
+          const success = await newMenu.setUnbounded();
+          assertTrue(success);
+          assertTrue(newMenu.getDialog().hasAttribute('unbounded'));
+          newMenu.remove();
+        });
+
+    test(
+        'setUnbounded returns false and logs warning if API is unsupported',
         async () => {
           const original =
               (HTMLElement.prototype as unknown as
@@ -852,10 +865,10 @@ suite('CrActionMenu', function() {
           try {
             const newMenu = document.createElement('cr-action-menu');
             document.body.appendChild(newMenu);
-            newMenu.useUnbounded = true;
-            await microtasksFinished();
+            const success = await newMenu.setUnbounded();
 
-            assertFalse(newMenu.useUnbounded);
+            assertFalse(success);
+            assertFalse(newMenu.getDialog().hasAttribute('unbounded'));
             assertEquals(1, warnCalls.length);
             assertTrue(warnCalls[0]!.includes('not supported'));
             newMenu.remove();
@@ -940,8 +953,8 @@ suite('CrActionMenu', function() {
     });
 
     test(
-        'preserves requested anchor alignment without clamping when ' +
-            'useUnbounded is true',
+        'preserves requested anchor alignment without clamping in ' +
+            'unbounded mode',
         () => {
           menu.showAtPosition({
             top: 200,
@@ -1019,8 +1032,7 @@ suite('CrActionMenu', function() {
         });
 
     test(
-        'focuses items on mouseover with preventScroll when ' +
-            'useUnbounded is true',
+        'focuses items on mouseover with preventScroll in unbounded mode',
         () => {
           menu.showAt(dots);
           const firstItem = menu.querySelector<HTMLElement>('.dropdown-item')!;
@@ -1038,8 +1050,8 @@ suite('CrActionMenu', function() {
         });
 
     test(
-        'focuses items on arrow key navigation with preventScroll when ' +
-            'useUnbounded is true',
+        'focuses items on arrow key navigation with preventScroll in ' +
+            'unbounded mode',
         () => {
           menu.showAt(dots);
           const firstItem = menu.querySelector<HTMLElement>('.dropdown-item')!;
@@ -1055,7 +1067,7 @@ suite('CrActionMenu', function() {
           menu.close();
         });
 
-    test('focuses wrapper with preventScroll when useUnbounded is true', () => {
+    test('focuses wrapper with preventScroll in unbounded mode', () => {
       let preventScrollValue: boolean|undefined;
       const originalFocus = menu.$.wrapper.focus.bind(menu.$.wrapper);
       menu.$.wrapper.focus = (options?: FocusOptions) => {
@@ -1068,23 +1080,28 @@ suite('CrActionMenu', function() {
       menu.close();
     });
 
-    test(
-        'does not set preventScroll on focus when useUnbounded is false',
-        () => {
-          menu.useUnbounded = false;
-          menu.showAt(dots);
-          const firstItem = menu.querySelector<HTMLElement>('.dropdown-item')!;
-          let preventScrollValue: boolean|undefined;
-          const originalFocus = firstItem.focus.bind(firstItem);
-          firstItem.focus = (options?: FocusOptions) => {
-            preventScrollValue = options?.preventScroll;
-            originalFocus(options);
-          };
+    test('does not set preventScroll on focus in bounded mode', () => {
+      // A menu that never had setUnbounded() called on it stays bounded.
+      const boundedMenu = document.createElement('cr-action-menu');
+      const item = document.createElement('button');
+      item.classList.add('dropdown-item');
+      boundedMenu.appendChild(item);
+      document.body.appendChild(boundedMenu);
+      assertFalse(boundedMenu.getDialog().hasAttribute('unbounded'));
 
-          firstItem.dispatchEvent(
-              new MouseEvent('mouseover', {bubbles: true, composed: true}));
-          assertEquals(false, preventScrollValue);
-          menu.close();
-        });
+      boundedMenu.showAt(dots);
+      let preventScrollValue: boolean|undefined;
+      const originalFocus = item.focus.bind(item);
+      item.focus = (options?: FocusOptions) => {
+        preventScrollValue = options?.preventScroll;
+        originalFocus(options);
+      };
+
+      item.dispatchEvent(
+          new MouseEvent('mouseover', {bubbles: true, composed: true}));
+      assertEquals(false, preventScrollValue);
+      boundedMenu.close();
+      boundedMenu.remove();
+    });
   });
 });
