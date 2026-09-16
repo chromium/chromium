@@ -419,6 +419,21 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
+    public void restoreInitialInput_restoresUserTextAndPreviewMatchUrl() {
+        mInput.setInitialInput("user text", JUnitTestGURLs.BLUE_1);
+        mInput.setUserText("other text");
+        mInput.setPreviewMatchUrl(JUnitTestGURLs.RED_1);
+
+        assertEquals("other text", mInput.getUserText());
+        assertEquals(JUnitTestGURLs.RED_1, mInput.getPreviewMatchUrl());
+
+        mInput.restoreInitialInput();
+
+        assertEquals("user text", mInput.getUserText());
+        assertEquals(JUnitTestGURLs.BLUE_1, mInput.getPreviewMatchUrl());
+    }
+
+    @Test
     public void setUserText_transitionsFromStandbyToEnabled() {
         mInput.setInitialUserText("initial");
         mInput.setUserText("initial");
@@ -513,6 +528,7 @@ public class AutocompleteInputUnitTest {
         String pageTitle = "pageTitle";
         String userText = "initialUserText";
         String initialUserText = "initialUserText";
+        GURL initialPreviewMatchUrl = JUnitTestGURLs.BLUE_1;
         boolean hasAttachments = true;
         int autocompleteState = AutocompleteState.STANDBY;
         int selectionStart = 1;
@@ -529,7 +545,7 @@ public class AutocompleteInputUnitTest {
         input1.setPageClassification(pageClassification);
         input1.setPageTitle(pageTitle);
         input1.setUserText(userText);
-        input1.setInitialUserText(initialUserText);
+        input1.setInitialInput(initialUserText, initialPreviewMatchUrl);
         input1.setHasAttachments(hasAttachments);
         input1.setAutocompleteState(autocompleteState);
         input1.setSelection(new TextSelection(selectionStart, selectionEnd));
@@ -549,6 +565,7 @@ public class AutocompleteInputUnitTest {
         assertEquals(pageTitle, input2.getPageTitle());
         assertEquals(userText, input2.getUserText());
         assertEquals(initialUserText, input2.getInitialUserText());
+        assertEquals(initialPreviewMatchUrl, input2.getInitialPreviewMatchUrl());
         assertEquals(input1.allowExactKeywordMatch(), input2.allowExactKeywordMatch());
         assertEquals(autocompleteState, input2.getAutocompleteState());
         assertEquals(selectionStart, input2.getSelection().from);

@@ -265,6 +265,7 @@ public class FuseboxSessionStateUnitTest {
         session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
 
         assertEquals(SAMPLE_PAGE_URL, session.getAutocompleteInput().getPreviewMatchUrl());
+        assertEquals(SAMPLE_PAGE_URL, session.getAutocompleteInput().getInitialPreviewMatchUrl());
     }
 
     @Test

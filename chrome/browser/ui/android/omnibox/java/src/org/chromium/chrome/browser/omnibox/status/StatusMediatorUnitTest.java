@@ -389,6 +389,17 @@ public final class StatusMediatorUnitTest {
     }
 
     @Test
+    public void previewUrlCleared_displayStateDrafting_showsSearchEngineLogo() {
+        setDisplayState(DisplayState.DRAFTING);
+        mAutocompleteInput.setPreviewMatchUrl(JUnitTestGURLs.BLUE_1);
+        mMediator.onFaviconFetched(JUnitTestGURLs.BLUE_1, mMockFaviconDrawable);
+
+        mAutocompleteInput.setPreviewMatchUrl(null);
+
+        assertEquals(R.drawable.ic_logo_googleg_20dp, getModelIconID());
+    }
+
+    @Test
     public void searchEngineLogo_maybeUpdateStatusIconForSearchEngineIconChanges() {
         mMediator.beginInput(mFuseboxSessionState);
         mMediator.updateSecurityIcon(/* securityIcon= */ 0, /* tintList= */ 0, /* desc= */ 0);

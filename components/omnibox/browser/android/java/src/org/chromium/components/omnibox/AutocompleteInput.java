@@ -194,6 +194,7 @@ public class AutocompleteInput implements UserData {
     private /* ModelMode */ int mModelMode;
 
     private String mInitialUserText = "";
+    private @Nullable GURL mInitialPreviewMatchUrl;
     private final SettableNonNullObservableSupplier<String> mUserText =
             ObservableSuppliers.createNonNull("");
     private @Nullable String mPreviewText;
@@ -255,6 +256,7 @@ public class AutocompleteInput implements UserData {
         mPreviewText = other.mPreviewText;
         mAllowUserTextAutocompletion.set(other.mAllowUserTextAutocompletion.get());
         mInitialUserText = other.mInitialUserText;
+        mInitialPreviewMatchUrl = other.mInitialPreviewMatchUrl;
         mRequestTypeSupplier.set(other.mRequestTypeSupplier.get());
         mSiteSearchData.set(other.mSiteSearchData.get());
         mPreviewMatchUrlSupplier.set(other.mPreviewMatchUrlSupplier.get());
@@ -469,18 +471,34 @@ public class AutocompleteInput implements UserData {
     }
 
     /**
-     * Set the Initial Input - the default value to fall back to if the input is reset.
-     *
-     * <p>This is the default "revert-to" value.
+     * Sets the user text and preview match URL to be restored via {@link #restoreInitialInput()}.
      */
-    public AutocompleteInput setInitialUserText(String userText) {
+    public AutocompleteInput setInitialInput(String userText, @Nullable GURL previewMatchUrl) {
         mInitialUserText = userText;
+        mInitialPreviewMatchUrl = previewMatchUrl;
         return this;
     }
 
-    /** Returns the Initial Input - the default value to fall back to if the input is reset. */
+    /** Restores the user text and preview match URL to their initial values. */
+    public AutocompleteInput restoreInitialInput() {
+        setUserText(mInitialUserText);
+        setPreviewMatchUrl(mInitialPreviewMatchUrl);
+        return this;
+    }
+
+    /** Sets the user text to be restored via {@link #restoreInitialInput()}. */
+    public AutocompleteInput setInitialUserText(String userText) {
+        return setInitialInput(userText, null);
+    }
+
+    /** Returns the user text to be restored via {@link #restoreInitialInput()}. */
     public String getInitialUserText() {
         return mInitialUserText;
+    }
+
+    /** Returns the preview match URL to be restored via {@link #restoreInitialInput()}. */
+    public @Nullable GURL getInitialPreviewMatchUrl() {
+        return mInitialPreviewMatchUrl;
     }
 
     /** Returns whether exact keyword match is allowed with current input. */
@@ -683,6 +701,7 @@ public class AutocompleteInput implements UserData {
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         mSiteSearchData.set(null);
         mPreviewMatchUrlSupplier.set(null);
+        mInitialPreviewMatchUrl = null;
         mUrlFocusTime = 0;
         mSuggestionsListScrolled = false;
         mAutocompleteStateSupplier.set(AutocompleteState.ENABLED);

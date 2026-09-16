@@ -940,7 +940,7 @@ class LocationBarMediator
                     .setRequestType(AutocompleteRequestType.SEARCH)
                     .setAutocompleteState(AutocompleteState.STANDBY)
                     .setDisplayState(DisplayState.DRAFTING)
-                    .setUserText(mCurrentInput.getInitialUserText())
+                    .restoreInitialInput()
                     .setSelection(TextSelection.SELECT_ALL);
             pushUrlBarDataFromCurrentInput();
             mUrlCoordinator.setKeyboardVisibility(false, false);
@@ -1249,7 +1249,7 @@ class LocationBarMediator
                 // Return to conventional search in standby with the original URL.
                 mCurrentInput
                         .setRequestType(AutocompleteRequestType.SEARCH)
-                        .setUserText(mCurrentInput.getInitialUserText())
+                        .restoreInitialInput()
                         .setAutocompleteState(AutocompleteState.STANDBY)
                         .setDisplayState(DisplayState.DRAFTING);
                 pushUrlBarDataFromCurrentInput();

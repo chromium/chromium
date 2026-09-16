@@ -4657,7 +4657,10 @@ public class LocationBarMediatorUnitTest {
         assertTrue(mSessionState.isSessionActive());
 
         mSessionState.getAutocompleteInput().setUserText("query");
-        mSessionState.getAutocompleteInput().setInitialUserText("example.com");
+        mSessionState
+                .getAutocompleteInput()
+                .setInitialInput("example.com", JUnitTestGURLs.EXAMPLE_URL);
+        mSessionState.getAutocompleteInput().setPreviewMatchUrl(JUnitTestGURLs.BLUE_1);
 
         assertTrue(mMediator.handleEscPress());
         assertAutocompleteState(AutocompleteState.STANDBY);
@@ -4667,6 +4670,9 @@ public class LocationBarMediatorUnitTest {
         assertAutocompleteState(AutocompleteState.STANDBY);
         assertEquals(DisplayState.DRAFTING, mSessionState.getAutocompleteInput().getDisplayState());
         assertEquals("example.com", mSessionState.getAutocompleteInput().getUserText());
+        assertEquals(
+                JUnitTestGURLs.EXAMPLE_URL,
+                mSessionState.getAutocompleteInput().getPreviewMatchUrl());
         assertTrue(mMediator.handleEscPress());
         assertFalse(mSessionState.isSessionActive());
         assertAutocompleteState(AutocompleteState.DISABLED);

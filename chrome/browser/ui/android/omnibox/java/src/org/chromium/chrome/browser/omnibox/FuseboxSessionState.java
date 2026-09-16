@@ -165,10 +165,10 @@ public class FuseboxSessionState implements UserData {
                 initialUserText = UrlUtilities.stripTrailingSlash(initialUserText);
             }
             mAutocompleteInput.setPreviewMatchUrl(pageUrl);
-            mAutocompleteInput.setInitialUserText(initialUserText);
+            mAutocompleteInput.setInitialInput(initialUserText, pageUrl);
         } else {
             mAutocompleteInput.setPreviewMatchUrl(null);
-            mAutocompleteInput.setInitialUserText("");
+            mAutocompleteInput.setInitialInput("", null);
         }
 
         // Apply the initial default value unless user text is already set.
