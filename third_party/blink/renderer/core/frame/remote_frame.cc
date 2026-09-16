@@ -54,7 +54,6 @@
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/page/plugin_script_forbidden_scope.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
@@ -326,8 +325,6 @@ bool RemoteFrame::NavigationShouldReplaceCurrentHistoryEntry(
 }
 
 bool RemoteFrame::DetachImpl(FrameDetachType type) {
-  PluginScriptForbiddenScope forbid_plugin_destructor_scripting;
-
   if (!DetachChildren())
     return false;
 
