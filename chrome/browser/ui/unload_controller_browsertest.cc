@@ -4,16 +4,12 @@
 
 #include "chrome/browser/ui/unload_controller.h"
 
-#include <memory>
-
 #include "ash/constants/web_app_id_constants.h"
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -32,7 +28,6 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -41,7 +36,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
@@ -203,57 +197,4 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerWithOnTaskTest,
   EXPECT_TRUE(unload_controller->CanCloseContents(active_web_contents));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-using UnloadControllerBrowserTest = InProcessBrowserTest;
-
-// Regression test for https://crbug.com/532111140. A close request can arrive
-// asynchronously (e.g. a delayed ClosePage IPC from the renderer, or a close
-// triggered while a tab group is being destroyed) after the WebContents has
-// already been detached from the browser's tab strip. There is no tab left for
-// the browser to close in that case, so the close must be denied instead of
-// being forwarded to the tab strip.
-IN_PROC_BROWSER_TEST_F(UnloadControllerBrowserTest,
-                       CannotCloseContentsDetachedFromTabStrip) {
-  TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
-  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), /*index=*/1,
-                   /*foreground=*/true);
-  ASSERT_EQ(2, tab_strip_model->count());
-
-  content::WebContents* const contents = tab_strip_model->GetWebContentsAt(1);
-  UnloadController* const unload_controller = UnloadController::From(browser());
-  ASSERT_TRUE(unload_controller->CanCloseContents(contents));
-
-  const std::unique_ptr<content::WebContents> detached_contents =
-      tab_strip_model->DetachWebContentsAtForInsertion(1);
-  ASSERT_EQ(contents, detached_contents.get());
-  ASSERT_EQ(TabStripModel::kNoTab,
-            tab_strip_model->GetIndexOfWebContents(contents));
-
-  EXPECT_FALSE(unload_controller->CanCloseContents(contents));
-}
-
-// As above, but the tab is still alive and simply belongs to a different
-// window by the time the close request arrives. The original browser does not
-// own it anymore and must not try to close it.
-IN_PROC_BROWSER_TEST_F(UnloadControllerBrowserTest,
-                       CannotCloseContentsMovedToAnotherWindow) {
-  TabStripModel* const tab_strip_model = browser()->GetTabStripModel();
-  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), /*index=*/1,
-                   /*foreground=*/true);
-  ASSERT_EQ(2, tab_strip_model->count());
-
-  content::WebContents* const contents = tab_strip_model->GetWebContentsAt(1);
-  UnloadController* const unload_controller = UnloadController::From(browser());
-  ASSERT_TRUE(unload_controller->CanCloseContents(contents));
-
-  chrome::MoveTabsToNewWindow(browser(), {1});
-  ASSERT_EQ(1, tab_strip_model->count());
-
-  const tabs::TabInterface* const tab =
-      tabs::TabInterface::MaybeGetFromContents(contents);
-  ASSERT_TRUE(tab);
-  ASSERT_NE(browser(), tab->GetBrowserWindowInterface());
-
-  EXPECT_FALSE(unload_controller->CanCloseContents(contents));
-}
+#endif

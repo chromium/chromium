@@ -89,9 +89,7 @@ class UnloadController : public WebContentsCollection::Observer,
   // Returns true if |contents| can be cleanly closed. When |browser_| is being
   // closed, this function will return false to indicate |contents| should not
   // be cleanly closed, since the fast shutdown path will just kill its
-  // renderer. This also returns false if |contents| is no longer in
-  // |browser_|'s tab strip - it may have been detached, destroyed, or moved to
-  // another window - since there is no tab left for |browser_| to close.
+  // renderer.
   bool CanCloseContents(content::WebContents* contents);
 
   // Returns true if we need to run unload events for the |contents|.

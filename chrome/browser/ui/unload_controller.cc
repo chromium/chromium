@@ -237,21 +237,9 @@ bool UnloadController::CanCloseContents(content::WebContents* contents) {
     ClearUnloadState(contents, true);
   }
 
-  // `contents` may no longer be in `browser_`'s tab strip by the time an
-  // asynchronous close request arrives (e.g. a delayed ClosePage IPC from the
-  // renderer, or a close triggered while a tab group is being destroyed), and
-  // ClearUnloadState() above may itself have detached and destroyed it. There
-  // is no tab left for `browser_` to close, so deny the close.
-  //
-  // Take care not to dereference `contents` here, as it may already be freed;
-  // GetIndexOfWebContents() only compares pointers.
-  const int index =
-      browser_->tab_strip_model()->GetIndexOfWebContents(contents);
-  if (index == TabStripModel::kNoTab) {
-    return false;
-  }
-
-  if (!web_app::IsTabClosable(browser_->tab_strip_model(), index)) {
+  if (!web_app::IsTabClosable(
+          browser_->tab_strip_model(),
+          browser_->tab_strip_model()->GetIndexOfWebContents(contents))) {
     return false;
   }
 
