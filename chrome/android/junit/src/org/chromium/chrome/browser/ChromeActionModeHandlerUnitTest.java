@@ -18,6 +18,7 @@ import android.graphics.Rect;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -35,6 +36,7 @@ import org.robolectric.fakes.RoboMenu;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -98,6 +100,7 @@ public class ChromeActionModeHandlerUnitTest {
     private TestChromeActionModeCallback mActionModeCallback;
 
     @Before
+    @SuppressWarnings("DirectInvocationOnMock")
     public void setUp() {
         DataProtectionBridge.setInstanceForTesting(mDataProtectionBridgeJniMock);
         Mockito.when(mDataProtectionBridgeJniMock.isSearchWithAllowed(any())).thenReturn(true);
@@ -110,6 +113,13 @@ public class ChromeActionModeHandlerUnitTest {
         Mockito.when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         Mockito.when(mWindowAndroid.getActivity()).thenReturn(mWeakActivityRef);
         Mockito.when(mWeakActivityRef.get()).thenReturn(mActivity);
+        Mockito.doAnswer(
+                        invocation ->
+                                (float)
+                                        (mControlsState.getTopControlsHeight()
+                                                + mControlsState.getTopControlOffset()))
+                .when(mControlsState)
+                .getTopVisibleContentOffset();
     }
 
     @After
@@ -278,6 +288,8 @@ public class ChromeActionModeHandlerUnitTest {
     public void testAvoidOverlapWithTopControls() {
         final int topControlsHeight = 150;
         final int height = 80;
+        final int viewHeight = 2000;
+        View mockView = createMockView(viewHeight);
         Mockito.when(mControlsState.getTopControlsHeight()).thenReturn(topControlsHeight);
 
         // Set up for the case where top controls are hidden.
@@ -288,36 +300,179 @@ public class ChromeActionModeHandlerUnitTest {
         // action mode, the content rect is left untouched.
         int top = topControlsHeight * 3;
         Rect outRect = new Rect(20, top, 500, top + height);
-        mActionModeCallback.onGetContentRect(mActionMode, null, outRect);
+        mActionModeCallback.onGetContentRect(mActionMode, mockView, outRect);
         Assert.assertEquals(top, outRect.top);
         Assert.assertEquals(height, outRect.height());
 
-        // Not enough space for action mode to fit in. The content rect is left untouched.
+        // Top controls are hidden, so content rect is left untouched.
         top = topControlsHeight;
         outRect = new Rect(20, top, 500, top + height);
-        mActionModeCallback.onGetContentRect(mActionMode, null, outRect);
+        mActionModeCallback.onGetContentRect(mActionMode, mockView, outRect);
         Assert.assertEquals(top, outRect.top);
         Assert.assertEquals(height, outRect.height());
 
         // Set up for the case where top controls are visible.
         Mockito.when(mControlsState.getTopControlHiddenRatio()).thenReturn(0.f);
+        Mockito.when(mControlsState.getTopControlOffset()).thenReturn(0);
 
         // We have enough space for action mode to fit in. The content rect is left untouched.
         top = topControlsHeight * 3;
         outRect = new Rect(20, top, 500, top + height);
-        mActionModeCallback.onGetContentRect(mActionMode, null, outRect);
+        mActionModeCallback.onGetContentRect(mActionMode, mockView, outRect);
         Assert.assertEquals(top, outRect.top);
         Assert.assertEquals(height, outRect.height());
 
-        // Not enough space for action mode to fit in. Verify that |onGetContentRect| bloated
-        // the content rect (top got taller) so action mode won't fit between the top controls
-        // and the selected text, therefore will be positioned below the text. This helps action
-        // mode avoid overlapping top controls.
+        // Not enough space for action mode to fit in above text. Verify that |onGetContentRect|
+        // sets top to 0 so the framework places the action mode below the text.
         top = topControlsHeight;
         outRect = new Rect(20, top, 500, top + height);
-        mActionModeCallback.onGetContentRect(mActionMode, null, outRect);
-        Assert.assertEquals(top - topControlsHeight, outRect.top);
-        Assert.assertEquals(topControlsHeight + height, outRect.height());
+        mActionModeCallback.onGetContentRect(mActionMode, mockView, outRect);
+        Assert.assertEquals(0, outRect.top);
+        Assert.assertEquals(top + height, outRect.bottom);
+    }
+
+    @Test
+    public void testAvoidOverlapWithTopControls_LargeSelection() {
+        final int topControlsHeight = 150;
+        final int viewHeight = 2000;
+        Mockito.when(mControlsState.getTopControlsHeight()).thenReturn(topControlsHeight);
+        Mockito.when(mControlsState.getTopControlHiddenRatio()).thenReturn(0.f);
+        Mockito.when(mControlsState.getTopControlOffset()).thenReturn(0);
+
+        View mockView = createMockView(viewHeight);
+
+        // Large selection extending beyond the viewport.
+        int top = topControlsHeight;
+        int bottom = 10000;
+        Rect outRect = new Rect(20, top, 500, bottom);
+        mActionModeCallback.onGetContentRect(mActionMode, mockView, outRect);
+        Assert.assertEquals(0, outRect.top);
+        Assert.assertEquals(topControlsHeight, outRect.bottom);
+    }
+
+    @Test
+    public void testAvoidOverlapWithTopControls_SelectionUnderTopControls() {
+        final int topControlsHeight = 150;
+        final int viewHeight = 2000;
+        Mockito.when(mControlsState.getTopControlsHeight()).thenReturn(topControlsHeight);
+        Mockito.when(mControlsState.getTopControlHiddenRatio()).thenReturn(0.f);
+        Mockito.when(mControlsState.getTopControlOffset()).thenReturn(0);
+
+        View mockView = createMockView(viewHeight);
+
+        // Selection is partially scrolled under top controls.
+        int top = -50;
+        int bottom = 100;
+        Rect outRect = new Rect(20, top, 500, bottom);
+        mActionModeCallback.onGetContentRect(mActionMode, mockView, outRect);
+        Assert.assertEquals(0, outRect.top);
+        Assert.assertEquals(topControlsHeight, outRect.bottom);
+    }
+
+    @Test
+    public void testAvoidOverlapWithBottomControls() {
+        final int topControlsHeight = 150;
+        final int bottomControlsHeight = 100;
+        final int viewHeight = 2000;
+        Mockito.when(mControlsState.getTopControlsHeight()).thenReturn(topControlsHeight);
+        Mockito.when(mControlsState.getTopControlHiddenRatio()).thenReturn(0.f);
+        Mockito.when(mControlsState.getTopControlOffset()).thenReturn(0);
+        Mockito.when(mControlsState.getBottomControlsHeight()).thenReturn(bottomControlsHeight);
+        Mockito.when(mControlsState.getBottomControlHiddenRatio()).thenReturn(0.f);
+        Mockito.when(mControlsState.getBottomControlOffset()).thenReturn(0);
+
+        View mockView = createMockView(viewHeight);
+
+        // Selection near bottom where placing below would overlap bottom controls.
+        int top = 1800;
+        int bottom = 1950;
+        Rect outRect = new Rect(20, top, 500, bottom);
+        mActionModeCallback.onGetContentRect(mActionMode, mockView, outRect);
+        Assert.assertEquals(top, outRect.top);
+        Assert.assertEquals(viewHeight - bottomControlsHeight, outRect.bottom);
+    }
+
+    @Test
+    public void testAvoidOverlapWithBottomControls_TopControlsHidden() {
+        final int topControlsHeight = 150;
+        final int bottomControlsHeight = 100;
+        final int viewHeight = 2000;
+        Mockito.when(mControlsState.getTopControlsHeight()).thenReturn(topControlsHeight);
+        Mockito.when(mControlsState.getTopControlHiddenRatio()).thenReturn(1.f);
+        Mockito.when(mControlsState.getTopControlOffset()).thenReturn(-topControlsHeight);
+        Mockito.when(mControlsState.getBottomControlsHeight()).thenReturn(bottomControlsHeight);
+        Mockito.when(mControlsState.getBottomControlHiddenRatio()).thenReturn(0.f);
+        Mockito.when(mControlsState.getBottomControlOffset()).thenReturn(0);
+
+        View mockView = createMockView(viewHeight);
+
+        // Selection near the top of the viewport when top controls are hidden.
+        // Content rect must NOT be collapsed or have top forced to 0.
+        int top = 50;
+        int bottom = 120;
+        Rect outRect = new Rect(20, top, 500, bottom);
+        mActionModeCallback.onGetContentRect(mActionMode, mockView, outRect);
+        Assert.assertEquals(top, outRect.top);
+        Assert.assertEquals(bottom, outRect.bottom);
+    }
+
+    @Test
+    public void testAvoidOverlapWithBottomControls_LargeSelectionWithTopControlsHidden() {
+        final int topControlsHeight = 150;
+        final int bottomControlsHeight = 100;
+        final int viewHeight = 2000;
+        Mockito.when(mControlsState.getTopControlsHeight()).thenReturn(topControlsHeight);
+        Mockito.when(mControlsState.getTopControlHiddenRatio()).thenReturn(1.f);
+        Mockito.when(mControlsState.getTopControlOffset()).thenReturn(-topControlsHeight);
+        Mockito.when(mControlsState.getBottomControlsHeight()).thenReturn(bottomControlsHeight);
+        Mockito.when(mControlsState.getBottomControlHiddenRatio()).thenReturn(0.f);
+        Mockito.when(mControlsState.getBottomControlOffset()).thenReturn(0);
+
+        View mockView = createMockView(viewHeight);
+
+        // Large selection spanning towards the bottom controls when top controls are hidden.
+        // Top must NOT be collapsed to 0; bottom should be clamped to avoid extending into bottom
+        // controls.
+        int top = 50;
+        int bottom = 1950;
+        Rect outRect = new Rect(20, top, 500, bottom);
+        mActionModeCallback.onGetContentRect(mActionMode, mockView, outRect);
+        Assert.assertEquals(top, outRect.top);
+        Assert.assertEquals(viewHeight - bottomControlsHeight, outRect.bottom);
+    }
+
+    @Test
+    public void testAvoidOverlapWithControls_PartialTopControlsScroll() {
+        final int topControlsHeight = 150;
+        final int viewHeight = 2000;
+        Mockito.when(mControlsState.getTopControlsHeight()).thenReturn(topControlsHeight);
+        // 50% scrolled: hiddenRatio = 0.5f, offset = -75, visibleTopControlsHeight = 75.
+        Mockito.when(mControlsState.getTopControlHiddenRatio()).thenReturn(0.5f);
+        Mockito.when(mControlsState.getTopControlOffset()).thenReturn(-75);
+
+        View mockView = createMockView(viewHeight);
+
+        // Selection has plenty of room below the partially scrolled top controls (75px).
+        int top = 300;
+        int height = 50;
+        Rect outRect = new Rect(20, top, 500, top + height);
+        mActionModeCallback.onGetContentRect(mActionMode, mockView, outRect);
+        Assert.assertEquals(top, outRect.top);
+        Assert.assertEquals(top + height, outRect.bottom);
+
+        // Selection too close to the partially scrolled top controls (75px).
+        top = 80;
+        outRect = new Rect(20, top, 500, top + height);
+        mActionModeCallback.onGetContentRect(mActionMode, mockView, outRect);
+        Assert.assertEquals(0, outRect.top);
+        Assert.assertEquals(top + height, outRect.bottom);
+    }
+
+    private View createMockView(int height) {
+        View mockView = Mockito.mock(View.class);
+        Mockito.when(mockView.getHeight()).thenReturn(height);
+        Mockito.when(mockView.getContext()).thenReturn(ContextUtils.getApplicationContext());
+        return mockView;
     }
 
     private ResolveInfo createResolveInfo(String packageName) {
