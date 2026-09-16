@@ -57,6 +57,8 @@
 #include "third_party/litert/src/litert/cc/litert_ranked_tensor_type.h"
 #include "third_party/litert/src/litert/cc/litert_tensor_buffer.h"
 #include "third_party/litert/src/litert/cc/options/litert_gpu_options.h"
+#include "third_party/litert/src/litert/core/buffer_error_reporter.h"
+#include "third_party/litert/src/tflite/tools/verifier.h"
 
 #if BUILDFLAG(BUILD_LITERT_WITH_XNNPACK)
 #include "third_party/litert/src/tflite/delegates/xnnpack/xnnpack_delegate.h"
@@ -183,6 +185,17 @@ class GraphImplLiteRt::ComputeResources {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kWebNNTfliteDumpModel)) {
       DumpModelToFile(self->model_content_);
+    }
+
+    ::litert::BufferErrorReporter error_reporter;
+    if (!::tflite::Verify(self->model_content_.data(),
+                          self->model_content_.size(), &error_reporter)) {
+      return base::unexpected(mojom::Error::New(
+          mojom::Error::Code::kUnknownError,
+          error_reporter.NumErrors() == 0
+              ? "Failed to verify TFLite FlatBuffer model."
+              : base::StrCat({"Failed to verify TFLite FlatBuffer model: ",
+                              error_reporter.message()})));
     }
 
     ASSIGN_OR_RETURN(::litert::Options compilation_options,
