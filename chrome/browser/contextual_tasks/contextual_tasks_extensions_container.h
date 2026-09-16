@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -32,16 +33,27 @@ namespace contextual_tasks {
 class ContextualTasksExtensionsContainer : public ExtensionsContainer,
                                            public ExtensionsContainerViews {
  public:
+  // Returns the anchor that the extensions menu and extension popups should be
+  // attached to, or a null anchor if no suitable anchor currently exists.
+  //
+  // This is resolved on demand rather than cached because the anchor may be a
+  // `ui::TrackedElement` owned by the side panel WebUI document, which is
+  // destroyed whenever that document goes away (side panel close, navigation,
+  // renderer crash or browser window teardown).
+  using AnchorProvider = base::RepeatingCallback<views::BubbleAnchor()>;
+
   ContextualTasksExtensionsContainer(BrowserWindowInterface* browser,
-                                     content::WebContents* web_contents);
+                                     content::WebContents* web_contents,
+                                     AnchorProvider anchor_provider);
   ContextualTasksExtensionsContainer(
       const ContextualTasksExtensionsContainer&) = delete;
   ContextualTasksExtensionsContainer& operator=(
       const ContextualTasksExtensionsContainer&) = delete;
   virtual ~ContextualTasksExtensionsContainer();
 
-  // Shows the extensions menu anchored to `anchor`.
-  void ShowExtensionsMenu(views::BubbleAnchor anchor);
+  // Shows the extensions menu, anchored to the anchor returned by the
+  // container's `AnchorProvider`. Does nothing if there is no valid anchor.
+  void ShowExtensionsMenu();
 
   // Returns whether the extensions menu is currently showing.
   bool IsExtensionsMenuShowing() const;
@@ -82,9 +94,13 @@ class ContextualTasksExtensionsContainer : public ExtensionsContainer,
   views::BubbleBorder::Arrow GetPopupArrow() const override;
 
  private:
+  // Runs `anchor_provider_`, returning a null anchor if no provider was
+  // supplied. The result must never be stored: see `AnchorProvider`.
+  views::BubbleAnchor GetAnchor() const;
+
   const raw_ptr<BrowserWindowInterface> browser_;
   base::WeakPtr<content::WebContents> web_contents_;
-  views::BubbleAnchor anchor_;
+  const AnchorProvider anchor_provider_;
   raw_ptr<ToolbarActionViewModel> popup_owner_ = nullptr;
   std::unique_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;
 };

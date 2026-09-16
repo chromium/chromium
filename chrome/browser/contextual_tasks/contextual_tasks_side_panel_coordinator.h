@@ -331,8 +331,17 @@ class ContextualTasksSidePanelCoordinator
   WebUIBubbleReopenSuppressor page_info_bubble_suppressor_;
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns an anchor for the side panel toolbar's super G button, or a null
+  // anchor if that element is not currently available. The underlying
+  // `ui::TrackedElement` is owned by the side panel WebUI document and dies
+  // with it, so callers must re-resolve the anchor on every use instead of
+  // caching it.
+  views::BubbleAnchor GetSuperGButtonAnchor();
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
-  void OnSeeExtensionsClicked(views::BubbleAnchor anchor);
+  void OnSeeExtensionsClicked();
   std::unique_ptr<ContextualTasksExtensionsContainer> extensions_container_;
 #endif
 

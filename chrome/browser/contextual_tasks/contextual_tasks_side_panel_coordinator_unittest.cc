@@ -305,8 +305,8 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
-  void TriggerOnSeeExtensionsClicked(views::BubbleAnchor anchor) {
-    coordinator_->OnSeeExtensionsClicked(anchor);
+  void TriggerOnSeeExtensionsClicked() {
+    coordinator_->OnSeeExtensionsClicked();
   }
 
   ContextualTasksExtensionsContainer* GetExtensionsContainer() {
@@ -1328,7 +1328,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
        OnSeeExtensionsClicked_NoActiveContents) {
-  TriggerOnSeeExtensionsClicked(views::BubbleAnchor());
+  TriggerOnSeeExtensionsClicked();
   EXPECT_EQ(GetExtensionsContainer(), nullptr);
 }
 #endif
