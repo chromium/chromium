@@ -14,7 +14,8 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_components/composebox/composebox_lens_search.js';
-import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabs, hasOnlyAutoAddedTabAttachments, mapMojoSourceToOrigin, mapUploadErrorToProcessFilesError, ProcessFilesError} from '//resources/cr_components/composebox/common.js';
+
+import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabAttachments, hasOnlyAutoAddedTabs, mapMojoSourceToOrigin, mapUploadErrorToProcessFilesError, ProcessFilesError} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -27,6 +28,7 @@ import type {ContextualEntrypointButtonElement} from '//resources/cr_components/
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {RenderType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -198,6 +200,15 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     this.focusInput();
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('result')) {
+      this.toggleAttribute('has-grid', this.hasGridSuggestionsGroup_());
+    }
+  }
+
   override deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean):
       ComposeboxFile|null {
     const file = super.deleteFile(uuidToDelete, fromUserAction);
@@ -242,6 +253,9 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
 
 
   override shouldShowDivider(): boolean {
+    if (!this.shouldHideDropdown() && this.hasGridSuggestionsGroup_()) {
+      return true;
+    }
     if (this.searchboxLayoutMode === 'TallBottomContext' &&
         !this.showFileCarousel) {
       return false;
@@ -341,6 +355,14 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       delayUpload: false,
       origin: mapMojoSourceToOrigin(tabAttachment.source),
     } as TabUpload);
+  }
+
+  private hasGridSuggestionsGroup_(): boolean {
+    return this.richImageSuggestionsEnabled &&
+        (this.result?.matches.some(
+             match => this.result?.suggestionGroupsMap[match.suggestionGroupId]
+                          ?.renderType === RenderType.kGrid) ??
+         false);
   }
 }
 
