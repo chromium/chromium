@@ -96,6 +96,10 @@
 #include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/page_content_annotations/content/page_context_fetcher.h"
+#endif
+
 namespace glic {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -688,6 +692,12 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
 #if BUILDFLAG(ENABLE_PDF)
   if (features::kGlicScrollToPDF.Get()) {
     state->host_capabilities.push_back(mojom::HostCapability::kScrollToPdf);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          page_content_annotations::kGlicEmbeddedPdfBytesExtraction)) {
+    state->host_capabilities.push_back(
+        mojom::HostCapability::kEmbeddedPdfBytesExtraction);
   }
 #endif
   state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);

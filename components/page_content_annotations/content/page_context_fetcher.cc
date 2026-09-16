@@ -1188,6 +1188,9 @@ BASE_FEATURE(kGlicScreenshotPasswordRedaction,
 BASE_FEATURE(kGlicScreenshotSensitivePaymentRedaction,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicEmbeddedPdfBytesExtraction,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kMaxScreenshotWidthParam{
     &kGlicTabScreenshotExperiment, "max_screenshot_width", 0};
 

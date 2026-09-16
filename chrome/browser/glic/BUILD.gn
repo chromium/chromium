@@ -568,6 +568,7 @@ source_set("impl") {
     "//components/webui/chrome_urls",
     "//extensions/buildflags",
     "//net",
+    "//pdf:buildflags",
     "//third_party/blink/public/common",
     "//third_party/metrics_proto",
     "//ui/base",
@@ -713,7 +714,10 @@ source_set("impl") {
     deps += [ "//ui/ozone" ]
   }
   if (enable_pdf) {
-    deps += [ "//components/pdf/browser" ]
+    deps += [
+      "//components/page_content_annotations/content",
+      "//components/pdf/browser",
+    ]
   }
   if (enable_printing) {
     deps += [ "//chrome/browser/printing" ]
@@ -814,12 +818,14 @@ source_set("unit_tests") {
     "//chrome/test/base:chrome_test_scoped_utils",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/page_content_annotations/content",
     "//components/prefs",
     "//components/services/storage:test_support",
     "//components/services/storage/public/mojom",
     "//components/skills:features",
     "//components/skills/public",
     "//components/tabs:test_support",
+    "//pdf:buildflags",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base/clipboard:clipboard_test_support",
@@ -959,12 +965,14 @@ source_set("browser_tests") {
     "//components/enterprise/connectors/core",
     "//components/favicon/content",
     "//components/optimization_guide/content/browser:test_support",
+    "//components/page_content_annotations/content",
     "//components/prefs",
     "//components/skills:features",
     "//components/skills/public",
     "//components/sync_device_info:test_support",
     "//components/ukm:test_support",
     "//content/test:test_support",
+    "//pdf:buildflags",
     "//third_party/blink/public/common:headers",
     "//ui/gfx/geometry",
   ]

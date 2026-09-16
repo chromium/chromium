@@ -14,17 +14,23 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skills_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
+#include "pdf/buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace glic {
 
 namespace {
+
+using testing::Contains;
+using testing::Not;
 
 class GuestUtilTest : public testing::Test {};
 
@@ -163,6 +169,41 @@ TEST_F(GuestUtilMultiInstanceTest,
     }
   }
   EXPECT_FALSE(found_capability);
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_EmbeddedPdfBytesExtractionDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      page_content_annotations::kGlicEmbeddedPdfBytesExtraction);
+
+  TestingProfile* profile = CreateTestingProfile();
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+  EXPECT_THAT(
+      state->host_capabilities,
+      Not(Contains(mojom::HostCapability::kEmbeddedPdfBytesExtraction)));
+}
+
+TEST_F(GuestUtilMultiInstanceTest,
+       PopulateGlobalClientInitialState_EmbeddedPdfBytesExtractionEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      page_content_annotations::kGlicEmbeddedPdfBytesExtraction);
+
+  TestingProfile* profile = CreateTestingProfile();
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), profile);
+
+#if BUILDFLAG(ENABLE_PDF)
+  EXPECT_THAT(state->host_capabilities,
+              Contains(mojom::HostCapability::kEmbeddedPdfBytesExtraction));
+#else
+  EXPECT_THAT(
+      state->host_capabilities,
+      Not(Contains(mojom::HostCapability::kEmbeddedPdfBytesExtraction)));
+#endif
 }
 
 TEST(GuestUtilTest, IsOriginAllowedGlicApiWildcardMatching) {

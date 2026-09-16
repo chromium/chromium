@@ -85,6 +85,7 @@
 #include "components/optimization_guide/content/browser/page_content_test_utils.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -114,6 +115,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/net_errors.h"
+#include "pdf/buildflags.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -216,6 +218,7 @@ struct TestParams {
   bool enable_no_web_ui_loader = false;
   bool no_webview = false;
   bool skills_v2 = false;
+  bool enable_embedded_pdf_bytes_extraction = false;
 };
 
 class WithTestParams : public testing::WithParamInterface<TestParams> {
@@ -256,6 +259,9 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     }
     if (info.param.skills_v2) {
       result.push_back("SkillsV2");
+    }
+    if (info.param.enable_embedded_pdf_bytes_extraction) {
+      result.push_back("EnableEmbeddedPdfBytesExtraction");
     }
     if (result.empty()) {
       return "Default";
@@ -3117,6 +3123,14 @@ class GlicGetHostCapabilityApiTest : public GlicApiBrowserTest,
       disabled_features.push_back(features::kSkillsWebViewV2Enabled);
     }
 
+    if (GetParam().enable_embedded_pdf_bytes_extraction) {
+      enabled_features.push_back(
+          {page_content_annotations::kGlicEmbeddedPdfBytesExtraction, {}});
+    } else {
+      disabled_features.push_back(
+          page_content_annotations::kGlicEmbeddedPdfBytesExtraction);
+    }
+
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             disabled_features);
   }
@@ -3131,12 +3145,16 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
   NavigateTab(*tab0, GetTestUrl("page.html"));
 
   base::ListValue expected_capabilities;
-  if (GetParam().enable_scroll_to_pdf) {
 #if BUILDFLAG(ENABLE_PDF)
+  if (GetParam().enable_scroll_to_pdf) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kScrollToPdf));
-#endif
   }
+  if (GetParam().enable_embedded_pdf_bytes_extraction) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kEmbeddedPdfBytesExtraction));
+  }
+#endif
   if (GetParam().trust_first_onboarding_arm2) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm2));
@@ -5023,7 +5041,8 @@ INSTANTIATE_TEST_SUITE_P(
                     TestParams{.trust_first_onboarding_arm2 = true},
                     TestParams{.trust_first_onboarding_arm2 = true,
                                .auto_open_pdf = true},
-                    TestParams{.skills_v2 = true}),
+                    TestParams{.skills_v2 = true},
+                    TestParams{.enable_embedded_pdf_bytes_extraction = true}),
     &WithTestParams::PrintTestVariant);
 
 INSTANTIATE_TEST_SUITE_P(,

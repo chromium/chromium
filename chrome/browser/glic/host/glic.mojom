@@ -419,8 +419,10 @@ struct TabContextOptions {
   // @glic_optional
   uint32 max_meta_tags;
 
-  // If true, and the focused tab contains a PDF as the top level document,
-  // returns PdfDocumentData.
+  // If true, returns PdfDocumentData when:
+  // - the focused tab contains a PDF as the top level document or,
+  // - the focused tab contains an embedded PDF and the host has embedded PDF
+  // bytes extraction capability.
   // @glic_optional
   bool pdf_data;
 
@@ -2409,6 +2411,9 @@ enum HostCapability {
   kChromeTools = 16,
   // Indicates that skills V2 are supported.
   kSkillsV2 = 17,
+  // Indicates that the host supports bytes extraction of embedded PDF rendered
+  // in the Chrome PDF viewer.
+  kEmbeddedPdfBytesExtraction = 18,
 };
 
 // @generate glic_api

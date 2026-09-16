@@ -145,6 +145,10 @@ BASE_DECLARE_FEATURE(kGlicScreenshotPasswordRedaction);
 // Controls whether sensitive payment fields are redacted from screenshots.
 BASE_DECLARE_FEATURE(kGlicScreenshotSensitivePaymentRedaction);
 
+// Controls whether embedded PDF bytes are extracted. Supports only PDFs
+// rendered in the Chrome PDF viewer.
+BASE_DECLARE_FEATURE(kGlicEmbeddedPdfBytesExtraction);
+
 extern const base::FeatureParam<int> kMaxScreenshotWidthParam;
 
 extern const base::FeatureParam<int> kMaxScreenshotHeightParam;
