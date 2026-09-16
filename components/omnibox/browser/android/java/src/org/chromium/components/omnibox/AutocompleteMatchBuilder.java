@@ -7,8 +7,7 @@ package org.chromium.components.omnibox;
 import androidx.collection.ArraySet;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
-import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
-import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo.IconType;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.url.GURL;
@@ -30,9 +29,9 @@ public class AutocompleteMatchBuilder {
     private @OmniboxSuggestionKind int mSuggestionKind;
     private int mIconType;
     private String mDisplayText;
-    private List<MatchClassification> mDisplayTextClassifications;
+    private List<AutocompleteMatch.MatchClassification> mDisplayTextClassifications;
     private String mDescription;
-    private List<MatchClassification> mDescriptionClassifications;
+    private List<AutocompleteMatch.MatchClassification> mDescriptionClassifications;
     private byte[] mSerializedAnswerTemplate;
     private String mFillIntoEdit;
     private GURL mUrl;
@@ -113,8 +112,10 @@ public class AutocompleteMatchBuilder {
         mDocumentType = DocumentType.NONE;
         mIsExtensionMatch = false;
 
-        mDisplayTextClassifications.add(new MatchClassification(0, MatchClassificationStyle.NONE));
-        mDescriptionClassifications.add(new MatchClassification(0, MatchClassificationStyle.NONE));
+        mDisplayTextClassifications.add(
+                new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
+        mDescriptionClassifications.add(
+                new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
     }
 
     /**
@@ -266,7 +267,7 @@ public class AutocompleteMatchBuilder {
      * @param iconType The icon type to apply to newly built suggestion.
      * @return Omnibox suggestion builder.
      */
-    public AutocompleteMatchBuilder setIconType(IconType iconType) {
+    public AutocompleteMatchBuilder setIconType(SuggestTemplateInfo.IconType iconType) {
         mIconType = iconType.getNumber();
         return this;
     }
