@@ -30,8 +30,8 @@ std::unique_ptr<ResourceMonitor> ResourceMonitor::CreateForProcess(
   content::BrowserChildProcessHostIterator iter(content::PROCESS_TYPE_UTILITY);
   while (!iter.Done()) {
     if (iter.GetData().name == u16name) {
-      process_host =
-          content::BrowserChildProcessHost::FromID(iter.GetData().id);
+      process_host = content::BrowserChildProcessHost::FromID(
+          iter.GetData().GetChildProcessId());
       break;
     }
     ++iter;

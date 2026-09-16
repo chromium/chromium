@@ -148,7 +148,7 @@ class ChildProcessTuningDelegateImpl
     }
     if (battery_saver_mode_enabled_) {
       content::BrowserChildProcessHost* host =
-          content::BrowserChildProcessHost::FromID(data.id);
+          content::BrowserChildProcessHost::FromID(data.GetChildProcessId());
       if (!host) {
         return;
       }

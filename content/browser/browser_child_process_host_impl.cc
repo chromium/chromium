@@ -137,12 +137,18 @@ std::unique_ptr<BrowserChildProcessHost> BrowserChildProcessHost::Create(
 }
 
 BrowserChildProcessHost* BrowserChildProcessHost::FromID(int child_process_id) {
+  return FromID(ChildProcessId::FromUnsafeValue(child_process_id));
+}
+
+BrowserChildProcessHost* BrowserChildProcessHost::FromID(
+    ChildProcessId child_process_id) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   BrowserChildProcessHostImpl::BrowserChildProcessList* process_list =
       g_child_process_list.Pointer();
   for (BrowserChildProcessHostImpl* host : *process_list) {
-    if (host->GetData().id == child_process_id)
+    if (host->GetData().GetChildProcessId() == child_process_id) {
       return host;
+    }
   }
   return nullptr;
 }
