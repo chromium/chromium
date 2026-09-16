@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 
+#include <cstdint>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
@@ -42,14 +43,13 @@ namespace test {
 
 namespace {
 
-const ui::TouchpadDevice kSampleTouchpadInternal(1,
-                                                 ui::INPUT_DEVICE_INTERNAL,
-                                                 "kSampleTouchpadInternal",
-                                                 "",
-                                                 base::FilePath(),
-                                                 0x1111,
-                                                 0x4444,
-                                                 0);
+// Properties of the fake internal touchpad reported by
+// SetFakeTouchpadDevice().
+constexpr int kSampleTouchpadId = 1;
+constexpr char kSampleTouchpadName[] = "kSampleTouchpadInternal";
+constexpr uint16_t kSampleTouchpadVendorId = 0x1111;
+constexpr uint16_t kSampleTouchpadProductId = 0x4444;
+constexpr uint16_t kSampleTouchpadVersion = 0;
 
 void WaitFor(OobeScreenId screen_id) {
   OobeScreenWaiter(screen_id).Wait();
@@ -263,8 +263,12 @@ bool IsScanningRequestedOnErrorScreen() {
 
 // Set Fake Touchpad device.
 void SetFakeTouchpadDevice() {
+  const ui::TouchpadDevice touchpad(
+      kSampleTouchpadId, ui::INPUT_DEVICE_INTERNAL, kSampleTouchpadName, "",
+      base::FilePath(), kSampleTouchpadVendorId, kSampleTouchpadProductId,
+      kSampleTouchpadVersion);
   Shell::Get()->input_device_settings_controller()->OnTouchpadListUpdated(
-      {kSampleTouchpadInternal}, {});
+      {touchpad}, {});
 }
 
 LanguageReloadObserver::LanguageReloadObserver(WelcomeScreen* welcome_screen)
