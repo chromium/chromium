@@ -551,10 +551,7 @@ class AutofillField : public FormFieldData {
   //
   // A union type is an AutofillType that holds multiple FieldType.
   // See AutofillType for details.
-  //
-  // TODO(crbug.com/436013479): Remove the hack that represents country codes.
-  AutofillType MakeAutofillType(FieldType primary_field_type,
-                                bool is_country_code = false) const;
+  AutofillType MakeAutofillType(FieldType primary_field_type) const;
 
   // Combines the server, heuristic and HTML type based predictions. Doesn't
   // take server overwrites or rationalization into consideration.

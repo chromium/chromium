@@ -209,30 +209,6 @@ TEST(AutofillTypeTest, SurprisingMappings_UpdateDocumentationIfThisTestFails) {
   }
 }
 
-// Tests that `is_country_code()` is true only if GetTypes() contains
-// ADDRESS_HOME_COUNTRY.
-TEST(AutofillTypeTest, CountryCode) {
-  EXPECT_TRUE(AutofillType(ADDRESS_HOME_COUNTRY, true).is_country_code());
-  EXPECT_FALSE(AutofillType(ADDRESS_HOME_COUNTRY, false).is_country_code());
-
-  EXPECT_TRUE(
-      AutofillType({PASSPORT_ISSUING_COUNTRY, ADDRESS_HOME_COUNTRY}, true)
-          .is_country_code());
-  EXPECT_FALSE(
-      AutofillType({PASSPORT_ISSUING_COUNTRY, ADDRESS_HOME_COUNTRY}, false)
-          .is_country_code());
-
-  EXPECT_FALSE(
-      AutofillType(FieldTypeSet{ADDRESS_HOME_ZIP}, true).is_country_code());
-  EXPECT_FALSE(
-      AutofillType(FieldTypeSet{ADDRESS_HOME_ZIP}, false).is_country_code());
-
-  EXPECT_FALSE(AutofillType({UNKNOWN_TYPE, ADDRESS_HOME_COUNTRY}, true)
-                   .is_country_code());
-  EXPECT_FALSE(AutofillType({UNKNOWN_TYPE, ADDRESS_HOME_COUNTRY}, false)
-                   .is_country_code());
-}
-
 // Tests that GetAddressType() returns exactly the address types.
 TEST(AutofillTypeTest, GetAddressType) {
   auto get_type = [](FieldType type) {

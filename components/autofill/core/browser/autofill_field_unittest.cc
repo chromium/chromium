@@ -262,44 +262,37 @@ TEST_F(AutofillFieldTest, UnionTypesFromHtmlAndServerTypes) {
     return field.Type();
   };
 
-  auto is_type = [](FieldTypeSet types, bool is_country_code = false) {
-    return AllOf(Property(&AutofillType::GetTypes, types),
-                 Property(&AutofillType::is_country_code, is_country_code));
+  auto is_type = [](FieldTypeSet types) {
+    return Property(&AutofillType::GetTypes, types);
   };
 
   using enum HtmlFieldType;
 
   EXPECT_THAT(f(kUnrecognized, ADDRESS_HOME_ZIP), is_type({ADDRESS_HOME_ZIP}));
 
-  EXPECT_THAT(f(kCountryName), is_type({ADDRESS_HOME_COUNTRY}, false));
-  EXPECT_THAT(f(kCountryCode), is_type({ADDRESS_HOME_COUNTRY}, true));
+  EXPECT_THAT(f(kCountryName), is_type({ADDRESS_HOME_COUNTRY}));
+  EXPECT_THAT(f(kCountryCode), is_type({ADDRESS_HOME_COUNTRY}));
 
   // `PASSPORT_NUMBER` is added to the union type.
   EXPECT_THAT(f(kCountryName, PASSPORT_NUMBER),
-              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, false));
+              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}));
   EXPECT_THAT(f(kCountryCode, PASSPORT_NUMBER),
-              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, true));
+              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}));
 
   // `ADDRESS_HOME_ZIP` is not added to the union type because it is not an
   // Autofill AI type.
   EXPECT_THAT(f(kCountryName, ADDRESS_HOME_ZIP),
-              is_type({ADDRESS_HOME_COUNTRY}, false));
-  EXPECT_THAT(f(kCountryCode, ADDRESS_HOME_ZIP),
-              is_type({ADDRESS_HOME_COUNTRY}, true));
+              is_type({ADDRESS_HOME_COUNTRY}));
 
   // `PASSPORT_NUMBER` is added to the union type.
   // `ADDRESS_HOME_ZIP` is ignored because it is not an Autofill AI type.
   EXPECT_THAT(f(kCountryName, PASSPORT_NUMBER, ADDRESS_HOME_ZIP),
-              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, false));
-  EXPECT_THAT(f(kCountryCode, PASSPORT_NUMBER, ADDRESS_HOME_ZIP),
-              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, true));
+              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}));
 
   // `PASSPORT_NUMBER` is added to the union type.
   // `ADDRESS_HOME_ZIP` is ignored because it is not an Autofill AI type.
   EXPECT_THAT(f(kCountryName, ADDRESS_HOME_ZIP, PASSPORT_NUMBER),
-              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, false));
-  EXPECT_THAT(f(kCountryCode, ADDRESS_HOME_ZIP, PASSPORT_NUMBER),
-              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, true));
+              is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}));
 }
 
 // Tests that `AutofillField::UpdateFieldData()` correctly updates information

@@ -120,22 +120,14 @@ bool AutofillType::TestConstraints(const FieldTypeSet& s) {
          Intersection(s, kPasswordManagerFieldTypes).size() <= 1;
 }
 
-AutofillType::AutofillType(FieldTypeSet field_types, bool is_country_code)
-    : types_(Normalize(field_types)),
-      is_country_code_(is_country_code &&
-                       types_.contains(ADDRESS_HOME_COUNTRY)) {
+AutofillType::AutofillType(FieldTypeSet field_types)
+    : types_(Normalize(field_types)) {
   DCHECK(TestConstraints(field_types)) << FieldTypeSetToString(field_types);
   DCHECK(TestConstraints(GetTypes())) << FieldTypeSetToString(GetTypes());
 }
 
-AutofillType::AutofillType(FieldTypeSet field_types)
-    : AutofillType(field_types, false) {}
-
-AutofillType::AutofillType(FieldType field_type, bool is_country_code)
-    : AutofillType(FieldTypeSet{field_type}, is_country_code) {}
-
 AutofillType::AutofillType(FieldType field_type)
-    : AutofillType(field_type, false) {}
+    : AutofillType(FieldTypeSet{field_type}) {}
 
 FieldTypeSet AutofillType::GetTypes() const {
   return types_;

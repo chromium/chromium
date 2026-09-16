@@ -24,21 +24,12 @@ namespace autofill {
 // FieldType (e.g., it must not hold ADDRESS_HOME_LINE1 and ADDRESS_HOME_LINE2
 // at once), which can be retrieved using GetAddressType().
 //
-// TODO(crbug.com/436013479): Remove the hack that represents country codes.
 // TODO(crbug.com/432645177): Move ServerPredictions to AutofillField?
 class AutofillType {
  public:
+  // Constructs new instance from given type(s) for which
   // `TestConstraints(field_types)` must be true.
-  //
-  // `is_country_code` is a hack to work around the fact that FieldType does not
-  // distinguish between country names and country codes. If `is_country_code`
-  // is true and `field_types.contains(ADDRESS_HOME_COUNTRY)`, it indicates
-  // that the ADDRESS_HOME_COUNTRY is a country code, not a country name.
-  //
-  // TODO(crbug.com/436013479): Remove `is_country_code`.
-  explicit AutofillType(FieldTypeSet field_types, bool is_country_code);
   explicit AutofillType(FieldTypeSet field_types);
-  explicit AutofillType(FieldType field_type, bool is_country_code);
   explicit AutofillType(FieldType field_type);
   AutofillType(const AutofillType& autofill_type) = default;
   AutofillType& operator=(const AutofillType& autofill_type) = default;
@@ -55,11 +46,6 @@ class AutofillType {
 
   // Returns the FieldTypes held by this AutofillType.
   FieldTypeSet GetTypes() const;
-
-  // Indicates that the `ADDRESS_HOME_COUNTRY` in GetTypes() represents country
-  // code. If GetTypes() does not contain `ADDRESS_HOME_COUNTRY`, it is false.
-  // TODO(crbug.com/436013479): Remove this hack.
-  bool is_country_code() const { return is_country_code_; }
 
   // Returns the FieldTypeGroups of the types in GetTypes().
   //
@@ -125,7 +111,6 @@ class AutofillType {
 
  private:
   FieldTypeSet types_;
-  bool is_country_code_ = false;
 };
 
 }  // namespace autofill
