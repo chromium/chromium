@@ -1135,13 +1135,20 @@ TEST_F(AtMemoryQueryServiceTest, Query_SetsIsObfuscated) {
                 Field(&MemorySearchResult::is_obfuscated, true))));
 }
 
-// Tests that Autofill results are presented before remote results for
-// non-dynamic types, and Autofill results are sorted by ranking score
-// descending.
+// Tests that local Autofill results are presented before remote results, and
+// within each group results are sorted by confidence score descending.
 TEST_F(AtMemoryQueryServiceTest,
-       Query_Ranking_AutofillPrioritizedForNonDynamicTypes) {
+       Query_Ranking_AutofillPrioritizedAndSortedByConfidence) {
   AtMemoryQueryResponse response = CreateQueryResponseWithSchemafulKey(
-      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL, "Remote Name");
+      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL, "Remote Name B",
+      /*relevance_score=*/0.6);
+  AtMemorySearchResult* remote_result_a = response.add_results();
+  remote_result_a->set_relevance_score(0.95);
+  Attribute* primary_a = remote_result_a->mutable_primary_attribute();
+  primary_a->set_schemaful_key(
+      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+  primary_a->set_value("Remote Name A");
+
   response.mutable_autofill_fetch_plan()
       ->add_fetch_specifications()
       ->set_data_type(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
@@ -1170,80 +1177,8 @@ TEST_F(AtMemoryQueryServiceTest,
   EXPECT_THAT(result.entries,
               ElementsAre(Field(&MemorySearchResult::value, u"Local Name A"),
                           Field(&MemorySearchResult::value, u"Local Name B"),
-                          Field(&MemorySearchResult::value, u"Remote Name")));
-}
-
-// Tests that remote results are presented before Autofill results when all
-// results are dynamic transaction types.
-TEST_F(AtMemoryQueryServiceTest,
-       Query_Ranking_RemotePrioritizedForDynamicTransactionTypes) {
-  AtMemoryQueryResponse response = CreateQueryResponseWithSchemafulKey(
-      personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER,
-      "Remote 1Z12345");
-  response.mutable_autofill_fetch_plan()
-      ->add_fetch_specifications()
-      ->set_data_type(
-          personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER);
-
-  StubFetchContextResponse(std::move(response));
-
-  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
-  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
-
-  MemorySearchResult local_shipment(MemoryDataType::kShipmentTrackingNumber,
-                                    u"Tracking", u"Local 1Z67890",
-                                    /*confidence_score=*/0.8);
-  fake_data_provider->SetResults({local_shipment});
-
-  std::unique_ptr<AtMemoryQueryService> service =
-      CreateQueryService(std::move(data_provider));
-
-  TestFuture<MemorySearchResults> future;
-  service->Query(u"tracking number", GURL("https://example.com"), u"Page Title",
-                 future.GetRepeatingCallback());
-
-  ASSERT_TRUE(future.Wait());
-  const MemorySearchResults& result = future.Get();
-  EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  EXPECT_THAT(result.entries,
-              ElementsAre(Field(&MemorySearchResult::value, u"Remote 1Z12345"),
-                          Field(&MemorySearchResult::value, u"Local 1Z67890")));
-}
-
-// Tests that Autofill results are prioritized when mixed types contain at
-// least one non-dynamic transaction type.
-TEST_F(AtMemoryQueryServiceTest,
-       Query_Ranking_MixedTypesNotAllDynamic_AutofillPrioritized) {
-  AtMemoryQueryResponse response = CreateQueryResponseWithSchemafulKey(
-      personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER,
-      "Remote 1Z12345");
-  response.mutable_autofill_fetch_plan()
-      ->add_fetch_specifications()
-      ->set_data_type(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
-
-  StubFetchContextResponse(std::move(response));
-
-  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
-  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
-
-  MemorySearchResult local_address(MemoryDataType::kAddressFull, u"Address",
-                                   u"123 Main St", /*confidence_score=*/0.7);
-  fake_data_provider->SetResults({local_address});
-
-  std::unique_ptr<AtMemoryQueryService> service =
-      CreateQueryService(std::move(data_provider));
-
-  TestFuture<MemorySearchResults> future;
-  service->Query(u"where is my package", GURL("https://example.com"),
-                 u"Page Title", future.GetRepeatingCallback());
-
-  ASSERT_TRUE(future.Wait());
-  const MemorySearchResults& result = future.Get();
-  EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  EXPECT_THAT(
-      result.entries,
-      ElementsAre(Field(&MemorySearchResult::value, u"123 Main St"),
-                  Field(&MemorySearchResult::value, u"Remote 1Z12345")));
+                          Field(&MemorySearchResult::value, u"Remote Name A"),
+                          Field(&MemorySearchResult::value, u"Remote Name B")));
 }
 
 struct QueryClassificationTestCase {

@@ -130,10 +130,6 @@ std::u16string FormatMemoryDataTypeLabelValue(
 // Returns the primary attribute type for a given entity type.
 AttributeType GetPrimaryAttributeType(EntityType entity_type);
 
-// Returns true if `data_type` represents a dynamic transaction type (e.g.
-// Shipment or Order).
-bool IsDynamicTransactionType(MemoryDataType data_type);
-
 // Returns a suggestion for managing the given `type`. Returns std::nullopt
 // if the type does not support management.
 std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type);

@@ -1755,24 +1755,4 @@ Suggestion::Icon GetSuggestionIcon(MemoryDataType type, bool is_autofill_only) {
   }
 }
 
-bool IsDynamicTransactionType(MemoryDataType data_type) {
-  switch (GetMemoryDataTypeCategory(data_type)) {
-    case MemoryDataTypeCategory::kOrder:
-    case MemoryDataTypeCategory::kShipment:
-      return true;
-    case MemoryDataTypeCategory::kContactInfo:
-    case MemoryDataTypeCategory::kCreditCard:
-    case MemoryDataTypeCategory::kIban:
-    case MemoryDataTypeCategory::kPassport:
-    case MemoryDataTypeCategory::kDriversLicense:
-    case MemoryDataTypeCategory::kNationalIdCard:
-    case MemoryDataTypeCategory::kVehicle:
-    case MemoryDataTypeCategory::kFlightReservation:
-    case MemoryDataTypeCategory::kKnownTravelerNumber:
-    case MemoryDataTypeCategory::kRedressNumber:
-    case MemoryDataTypeCategory::kUnknown:
-      return false;
-  }
-}
-
 }  // namespace autofill
