@@ -8,8 +8,10 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 
@@ -98,7 +100,7 @@ class PermissionSettingsInfo {
   // This object does not take ownership of |website_settings_info|.
   PermissionSettingsInfo(
       const WebsiteSettingsInfo* website_settings_info,
-      const std::vector<std::string>& allowlisted_primary_schemes,
+      base::span<const std::string_view> allowlisted_primary_schemes,
       OriginRestriction origin_restriction,
       std::unique_ptr<Delegate> delegate);
 

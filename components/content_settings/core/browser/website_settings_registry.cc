@@ -56,7 +56,7 @@ const WebsiteSettingsInfo* WebsiteSettingsRegistry::GetByName(
 
 const WebsiteSettingsInfo* WebsiteSettingsRegistry::Register(
     ContentSettingsType type,
-    const std::string& name,
+    std::string_view name,
     base::Value initial_default_value,
     WebsiteSettingsInfo::SyncStatus sync_status,
     WebsiteSettingsInfo::LossyStatus lossy_status,

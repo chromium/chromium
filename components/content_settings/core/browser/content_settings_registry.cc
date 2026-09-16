@@ -874,10 +874,9 @@ void ContentSettingsRegistry::Register(
   auto delegate = std::make_unique<ContentSettingsInfo::Delegate>();
   auto* delegate_ptr = delegate.get();
   auto* permission_setting_info = permission_settings_registry_->Register(
-      type, std::string(name), initial_default_value, sync_status,
-      std::vector<std::string>(allowlisted_primary_schemes.begin(),
-                               allowlisted_primary_schemes.end()),
-      scoping_type, platforms, origin_restriction, std::move(delegate));
+      type, name, initial_default_value, sync_status,
+      allowlisted_primary_schemes, scoping_type, platforms, origin_restriction,
+      std::move(delegate));
 
   // PermissionSettingsRegistry::Register() will return nullptr if content
   // setting type is not used on the current platform and doesn't need to be

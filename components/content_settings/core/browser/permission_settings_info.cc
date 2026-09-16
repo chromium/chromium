@@ -13,11 +13,12 @@ namespace content_settings {
 
 PermissionSettingsInfo::PermissionSettingsInfo(
     const WebsiteSettingsInfo* website_settings_info,
-    const std::vector<std::string>& allowlisted_primary_schemes,
+    base::span<const std::string_view> allowlisted_primary_schemes,
     OriginRestriction origin_restriction,
     std::unique_ptr<Delegate> delegate)
     : website_settings_info_(website_settings_info),
-      allowlisted_primary_schemes_(allowlisted_primary_schemes),
+      allowlisted_primary_schemes_(allowlisted_primary_schemes.begin(),
+                                   allowlisted_primary_schemes.end()),
       origin_restriction_(origin_restriction),
       delegate_(std::move(delegate)) {
   CHECK(delegate_);

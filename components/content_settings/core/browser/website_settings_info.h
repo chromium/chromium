@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -91,7 +92,7 @@ class WebsiteSettingsInfo {
   };
 
   WebsiteSettingsInfo(ContentSettingsType type,
-                      const std::string& name,
+                      std::string_view name,
                       base::Value initial_default_value,
                       SyncStatus sync_status,
                       LossyStatus lossy_status,

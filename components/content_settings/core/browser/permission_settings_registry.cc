@@ -5,7 +5,10 @@
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -87,10 +90,10 @@ void PermissionSettingsRegistry::Init() {
 
 const PermissionSettingsInfo* PermissionSettingsRegistry::Register(
     ContentSettingsType type,
-    const std::string& name,
+    std::string_view name,
     PermissionSetting initial_default_value,
     WebsiteSettingsInfo::SyncStatus sync_status,
-    const std::vector<std::string>& allowlisted_primary_schemes,
+    base::span<const std::string_view> allowlisted_primary_schemes,
     WebsiteSettingsInfo::ScopingType scoping_type,
     WebsiteSettingsRegistry::Platforms platforms,
     PermissionSettingsInfo::OriginRestriction origin_restriction,

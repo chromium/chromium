@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/lazy_instance.h"
 #include "base/values.h"
@@ -70,7 +71,7 @@ class WebsiteSettingsRegistry {
   // |platforms| doesn't match the current platform).
   const WebsiteSettingsInfo* Register(
       ContentSettingsType type,
-      const std::string& name,
+      std::string_view name,
       base::Value initial_default_value,
       WebsiteSettingsInfo::SyncStatus sync_status,
       WebsiteSettingsInfo::LossyStatus lossy_status,

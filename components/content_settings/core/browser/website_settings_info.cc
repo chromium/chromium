@@ -20,8 +20,8 @@ const char kPartitionedPrefPrefix[] =
     "profile.content_settings.partitioned_exceptions.";
 const char kDefaultPrefPrefix[] = "profile.default_content_setting_values.";
 
-std::string GetPreferenceName(const std::string& name, const char* prefix) {
-  std::string pref_name = name;
+std::string GetPreferenceName(std::string_view name, const char* prefix) {
+  std::string pref_name(name);
   base::ReplaceChars(pref_name, "-", "_", &pref_name);
   return std::string(prefix).append(pref_name);
 }
@@ -31,7 +31,7 @@ std::string GetPreferenceName(const std::string& name, const char* prefix) {
 namespace content_settings {
 
 WebsiteSettingsInfo::WebsiteSettingsInfo(ContentSettingsType type,
-                                         const std::string& name,
+                                         std::string_view name,
                                          base::Value initial_default_value,
                                          SyncStatus sync_status,
                                          LossyStatus lossy_status,
