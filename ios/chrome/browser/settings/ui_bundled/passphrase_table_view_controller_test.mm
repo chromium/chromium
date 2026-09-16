@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
@@ -73,10 +72,8 @@ void PassphraseTableViewControllerTest::SetUp() {
   DefaultValue<syncer::SyncCycleSnapshot>::Set(default_sync_cycle_snapshot_);
 
   TestProfileIOS::Builder builder;
-  builder.AddTestingFactory(
-      AuthenticationServiceFactory::GetInstance(),
-      AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
-          std::make_unique<FakeAuthenticationServiceDelegate>()));
+  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
+                            AuthenticationServiceFactory::GetDefaultFactory());
   builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                             base::BindRepeating(&CreateNiceMockSyncService));
   RegisterTestingFactories(builder);
