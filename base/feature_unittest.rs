@@ -7,7 +7,7 @@ chromium::import! {
     "//base/test:scoped_feature_list";
 }
 
-use feature::{base_feature, base_feature_param, FeatureState};
+use feature::{base_feature, base_feature_param, FeatureState, TimeDelta};
 use rust_gtest_interop::prelude::*;
 use scoped_feature_list::ScopedFeatureList;
 
@@ -17,6 +17,15 @@ base_feature!(FeatureOffByDefault, FeatureState::Disabled);
 base_feature!(FeatureWithParams, FeatureState::Disabled);
 base_feature_param!(BoolParam, bool, &FeatureWithParams, "BoolParam", true);
 base_feature_param!(IntParam, i32, &FeatureWithParams, "IntParam", 42);
+base_feature_param!(DoubleParam, f64, &FeatureWithParams, "DoubleParam", 1.25);
+base_feature_param!(StringParam, &'static str, &FeatureWithParams, "StringParam", "default_val");
+base_feature_param!(
+    TimeDeltaParam,
+    TimeDelta,
+    &FeatureWithParams,
+    "TimeDeltaParam",
+    TimeDelta::from_millis(500)
+);
 
 #[gtest(RustFeatureTest, DefaultStates)]
 fn test_default_states() {
@@ -28,6 +37,9 @@ fn test_default_states() {
 fn test_feature_param_defaults() {
     expect_true!(BoolParam.get());
     expect_eq!(IntParam.get(), 42);
+    expect_eq!(DoubleParam.get(), 1.25);
+    expect_eq!(StringParam.get(), "default_val");
+    expect_eq!(TimeDeltaParam.get(), TimeDelta::from_millis(500));
 }
 
 #[gtest(RustFeatureTest, FeatureParamOverrides)]
@@ -35,12 +47,33 @@ fn test_feature_param_overrides() {
     let mut scoped_feature_list = ScopedFeatureList::new();
     scoped_feature_list.init_and_enable_feature_with_parameters(
         &FeatureWithParams,
-        &[("BoolParam", "false"), ("IntParam", "1234")],
+        &[
+            ("BoolParam", "false"),
+            ("IntParam", "1234"),
+            ("DoubleParam", "8.75"),
+            ("StringParam", "custom_val"),
+            ("TimeDeltaParam", "2s"),
+        ],
     );
 
     expect_true!(FeatureWithParams.is_enabled());
     expect_false!(BoolParam.get());
     expect_eq!(IntParam.get(), 1234);
+    expect_eq!(DoubleParam.get(), 8.75);
+    expect_eq!(StringParam.get(), "custom_val");
+    expect_eq!(TimeDeltaParam.get(), TimeDelta::from_secs(2));
+}
+
+#[gtest(RustFeatureTest, FeatureParamInvalidValuesFallback)]
+fn test_feature_param_invalid_values_fallback() {
+    let mut scoped_feature_list = ScopedFeatureList::new();
+    scoped_feature_list.init_and_enable_feature_with_parameters(
+        &FeatureWithParams,
+        &[("DoubleParam", "not_a_double"), ("TimeDeltaParam", "not_a_duration")],
+    );
+
+    expect_eq!(DoubleParam.get(), 1.25);
+    expect_eq!(TimeDeltaParam.get(), TimeDelta::from_millis(500));
 }
 
 #[gtest(RustFeatureTest, InitFromCommandLine)]
