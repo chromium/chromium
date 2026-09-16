@@ -849,17 +849,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ("oom", *reason);
 }
 
-// This test deliberately exhausts memory, which is too slow/flaky under MSan
-// and on debug ChromeOS builds.
-// TODO(crbug.com/402535088): Re-enable on these configurations.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
-#define MAYBE_CrashReportMemoryExhaust DISABLED_CrashReportMemoryExhaust
-#else
-#define MAYBE_CrashReportMemoryExhaust CrashReportMemoryExhaust
-#endif
+// This timeouts on all platforms. We need to find a way to simulate OOM instead
+// of actually exhausting memory which puts too much stress on the bots.
+// TODO(crbug.com/407473725): Re-enable when done.
 IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
-                       MAYBE_CrashReportMemoryExhaust) {
+                       DISABLED_CrashReportMemoryExhaust) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -905,15 +899,11 @@ IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
   EXPECT_EQ("oom", *reason);
 }
 
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
-#define MAYBE_CrashReportWorkerMemoryExhaust \
-  DISABLED_CrashReportWorkerMemoryExhaust
-#else
-#define MAYBE_CrashReportWorkerMemoryExhaust CrashReportWorkerMemoryExhaust
-#endif
+// This timeouts on all platforms. We need to find a way to simulate OOM instead
+// of actually exhausting memory which puts too much stress on the bots.
+// TODO(crbug.com/407473725): Re-enable when done.
 IN_PROC_BROWSER_TEST_P(CrashReportingBrowserTest,
-                       MAYBE_CrashReportWorkerMemoryExhaust) {
+                       DISABLED_CrashReportWorkerMemoryExhaust) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
