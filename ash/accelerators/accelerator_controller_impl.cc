@@ -900,7 +900,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kToggleMirrorMode:
       return true;
     case AcceleratorAction::kToggleMouseKeys:
-      return ::features::IsAccessibilityMouseKeysEnabled();
+      return true;
     case AcceleratorAction::kToggleOverview:
       return accelerators::CanToggleOverview();
     case AcceleratorAction::kToggleSnapGroup:
@@ -1501,9 +1501,7 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ToggleMirrorMode();
       break;
     case AcceleratorAction::kToggleMouseKeys:
-      if (::features::IsAccessibilityMouseKeysEnabled()) {
-        accelerators::ToggleMouseKeys();
-      }
+      accelerators::ToggleMouseKeys();
       break;
     case AcceleratorAction::kToggleMultitaskMenu:
       accelerators::ToggleMultitaskMenu();

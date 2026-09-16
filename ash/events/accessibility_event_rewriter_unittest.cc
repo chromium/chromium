@@ -1118,18 +1118,12 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
 class MouseKeysAccessibilityEventRewriterTest
     : public AccessibilityEventRewriterTestBase {
  public:
-  MouseKeysAccessibilityEventRewriterTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityMouseKeys);
-  }
+  MouseKeysAccessibilityEventRewriterTest() = default;
 
   void SetUp() override {
     AccessibilityEventRewriterTestBase::SetUp();
     GetAccessibilityController()->mouse_keys().SetEnabled(true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MouseKeysAccessibilityEventRewriterTest, CapturesCorrectInput) {

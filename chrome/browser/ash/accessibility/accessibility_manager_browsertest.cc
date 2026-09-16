@@ -496,9 +496,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOnDeviceSpeechRecognition,
-         ::features::kAccessibilityMouseKeys},
-        {});
+        {features::kOnDeviceSpeechRecognition}, {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -1868,10 +1866,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
  protected:
   AccessibilityManagerLoginTest()
       : disable_animations_(
-            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kAccessibilityMouseKeys}, {});
-  }
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
 
   AccessibilityManagerLoginTest(const AccessibilityManagerLoginTest&) = delete;
   AccessibilityManagerLoginTest& operator=(
@@ -1933,7 +1928,6 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
 
  private:
   gfx::ScopedAnimationDurationScaleMode disable_animations_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerLoginTest, BrailleOnLoginScreen) {

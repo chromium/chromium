@@ -11,8 +11,6 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/mouse_keys/mouse_keys_bubble_view.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
@@ -28,8 +26,6 @@ class MouseKeysBubbleControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityMouseKeys);
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->mouse_keys().SetEnabled(true);
   }
@@ -59,9 +55,6 @@ class MouseKeysBubbleControllerTest : public AshTestBase {
     }
     return GetController()->widget_->IsVisible();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MouseKeysBubbleControllerTest, LabelText) {

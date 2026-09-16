@@ -8390,11 +8390,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityManifestV3GoogleTtsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(::features::kAccessibilityManifestV3GoogleTts)},
 
-    {"enable-accessibility-mousekeys",
-     flag_descriptions::kAccessibilityMouseKeysName,
-     flag_descriptions::kAccessibilityMouseKeysDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityMouseKeys)},
-
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"enable-unsafe-webgpu", flag_descriptions::kUnsafeWebGPUName,

@@ -8,9 +8,8 @@ import type {SettingsMouseKeysSubpageElement} from 'chrome://os-settings/lazy_lo
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -42,26 +41,8 @@ suite('<settings-mouse-keys-subpage>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('Mouse keys feature disabled.', async () => {
-    await initPage();
-
-    loadTimeData.overrideValues({
-      isAccessibilityMouseKeysEnabled: false,
-    });
-
-    // Toggle shouldn't be available if flag is disabled.
-    const enableMouseKeysToggle =
-        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-            '#enableMouseKeys');
-    assertNull(enableMouseKeysToggle);
-  });
-
   test('Mouse keys: Dominant Hand', async () => {
     await initPage();
-
-    loadTimeData.overrideValues({
-      isAccessibilityMouseKeysEnabled: true,
-    });
 
     // If the flag is enabled, check that the UI works.
     assertFalse(
@@ -128,10 +109,6 @@ suite('<settings-mouse-keys-subpage>', () => {
 
   test('Primary key toggle hides/shows primary keyboard preview', async () => {
     await initPage();
-
-    loadTimeData.overrideValues({
-      isAccessibilityMouseKeysEnabled: true,
-    });
 
     const primaryKeysKeyboardPreview =
         page.shadowRoot!.querySelector<HTMLElement>(`#primaryKeysPreview`);

@@ -520,9 +520,7 @@ ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
   }
 
   // TODO(259372916): Switch to using the tray icon visibility.
-  if (::features::IsAccessibilityMouseKeysEnabled()) {
-    captured = Shell::Get()->mouse_keys_controller()->RewriteEvent(event);
-  }
+  captured = Shell::Get()->mouse_keys_controller()->RewriteEvent(event);
 
   if (!captured &&
       Shell::Get()->accessibility_controller()->IsSwitchAccessRunning()) {

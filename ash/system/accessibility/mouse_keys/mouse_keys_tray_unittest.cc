@@ -11,8 +11,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -47,8 +45,6 @@ class MouseKeysTrayTest : public AshTestBase {
   ~MouseKeysTrayTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityMouseKeys);
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->mouse_keys().SetEnabled(true);
 
@@ -58,9 +54,6 @@ class MouseKeysTrayTest : public AshTestBase {
 
   // Gets the current tray image view.
   views::ImageView* GetImageView() { return GetTray()->image_view(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the icon disappears when mouse keys is disabled and re-appears

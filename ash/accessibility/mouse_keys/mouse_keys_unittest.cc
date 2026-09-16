@@ -16,9 +16,7 @@
 #include "ash/system/accessibility/mouse_keys/mouse_keys_bubble_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/event.h"
@@ -75,8 +73,6 @@ class MouseKeysTest : public AshTestBase {
   ~MouseKeysTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityMouseKeys);
     AshTestBase::SetUp();
     event_capturer_.set_capture_mouse_enter_exit(false);
     GetContext()->GetHost()->GetEventSource()->AddEventRewriter(&rewriter_);
@@ -326,7 +322,6 @@ class MouseKeysTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestEventCapturer event_capturer_;
   EventRewriterWrapper rewriter_;
 };

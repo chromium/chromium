@@ -213,10 +213,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT bool
 IsExperimentalAccessibilityDictationContextCheckingEnabled();
 
-// Control mouse with keyboard.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMouseKeys);
-AX_BASE_EXPORT bool IsAccessibilityMouseKeysEnabled();
-
 // Controls whether the shake cursor to locate feature is available.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityShakeToLocate);
 AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();

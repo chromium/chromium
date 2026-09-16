@@ -80,42 +80,40 @@
       label="$i18n{autoclickRevertToLeftClick}">
   </settings-toggle-button>
 </div>
-<template is="dom-if" if="[[isAccessibilityMouseKeysEnabled_]]">
-  <div class="settings-box no-padding">
-    <div id="mouseKeysSettingsRow"
-        class="flex layout horizontal center link-wrapper"
-        on-click="onMouseKeysRowClicked_">
-      <iron-icon icon="os-settings:mouse-keys"
-          class="mouse-keys-icon">
-      </iron-icon>
-      <div id="details" aria-hidden="true">
-        <div class="flex settings-box-text">
-          <div id="mouseKeysTitleText">
-            $i18n{mouseKeysLabel}
-          </div>
-          <div id="mouseKeysSublabel" class="cr-secondary-text sub-label">
-            <span class="sub-label-text">$i18n{mouseKeysDescription}</span>
-          </div>
+<div class="settings-box no-padding">
+  <div id="mouseKeysSettingsRow"
+      class="flex layout horizontal center link-wrapper"
+      on-click="onMouseKeysRowClicked_">
+    <iron-icon icon="os-settings:mouse-keys"
+        class="mouse-keys-icon">
+    </iron-icon>
+    <div id="details" aria-hidden="true">
+      <div class="flex settings-box-text">
+        <div id="mouseKeysTitleText">
+          $i18n{mouseKeysLabel}
+        </div>
+        <div id="mouseKeysSublabel" class="cr-secondary-text sub-label">
+          <span class="sub-label-text">$i18n{mouseKeysDescription}</span>
         </div>
       </div>
-      <cr-icon-button id="mouseKeysRowArrowIcon"
-          class="subpage-arrow"
-          aria-labelledby="mouseKeysTitleText"
-          aria-describedby="mouseKeysSublabel"
-          aria-roledescription="$i18n{subpageArrowRoleDescription}"
-          on-click="onMouseKeysRowClicked_">
-      </cr-icon-button>
     </div>
-    <div class="separator"></div>
-    <cr-toggle id="mouseKeysToggle"
-        class="margin-matches-padding"
-        aria-label="$i18n{mouseKeysLabel}"
+    <cr-icon-button id="mouseKeysRowArrowIcon"
+        class="subpage-arrow"
+        aria-labelledby="mouseKeysTitleText"
         aria-describedby="mouseKeysSublabel"
-        checked="[[prefs.settings.a11y.mouse_keys.enabled.value]]"
-        on-change="onMouseKeysToggleClicked_">
-    </cr-toggle>
+        aria-roledescription="$i18n{subpageArrowRoleDescription}"
+        on-click="onMouseKeysRowClicked_">
+    </cr-icon-button>
   </div>
-</template>
+  <div class="separator"></div>
+  <cr-toggle id="mouseKeysToggle"
+      class="margin-matches-padding"
+      aria-label="$i18n{mouseKeysLabel}"
+      aria-describedby="mouseKeysSublabel"
+      checked="[[prefs.settings.a11y.mouse_keys.enabled.value]]"
+      on-change="onMouseKeysToggleClicked_">
+  </cr-toggle>
+</div>
 <template is="dom-if" if="[[showFaceGazeRow_]]" restamp>
   <cr-link-row
       id="faceGazePageRow"

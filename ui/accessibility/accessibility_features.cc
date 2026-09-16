@@ -244,11 +244,6 @@ bool IsExperimentalAccessibilityDictationContextCheckingEnabled() {
       ::features::kExperimentalAccessibilityDictationContextChecking);
 }
 
-BASE_FEATURE(kAccessibilityMouseKeys, base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsAccessibilityMouseKeysEnabled() {
-  return base::FeatureList::IsEnabled(::features::kAccessibilityMouseKeys);
-}
-
 BASE_FEATURE(kAccessibilityInvertedMouseCursor,
              base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityInvertedMouseCursorEnabled() {

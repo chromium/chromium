@@ -863,9 +863,7 @@ Shell::~Shell() {
   RemoveAccessibilityEventHandler(mouse_cursor_filter_.get());
   RemovePreTargetHandler(shortcut_input_handler_.get());
   RemovePreTargetHandler(modality_filter_.get());
-  if (::features::IsAccessibilityMouseKeysEnabled()) {
-    RemovePreTargetHandler(mouse_keys_controller_.get());
-  }
+  RemovePreTargetHandler(mouse_keys_controller_.get());
   RemovePreTargetHandler(tooltip_controller_.get());
 
   // Resets the implementation of clipboard history utility functions.
@@ -1685,10 +1683,8 @@ void Shell::Init(
 
   autoclick_controller_ = std::make_unique<AutoclickController>();
 
-  if (::features::IsAccessibilityMouseKeysEnabled()) {
-    mouse_keys_controller_ = std::make_unique<MouseKeysController>();
-    AddPreTargetHandler(mouse_keys_controller_.get());
-  }
+  mouse_keys_controller_ = std::make_unique<MouseKeysController>();
+  AddPreTargetHandler(mouse_keys_controller_.get());
 
   color_enhancement_controller_ =
       std::make_unique<ColorEnhancementController>();

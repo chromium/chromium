@@ -97,12 +97,6 @@ class OSSettingsCrostiniTest : public OSSettingsMochaTest {
   crostini::FakeCrostiniFeatures fake_crostini_features_;
 };
 
-class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kAccessibilityMouseKeys};
-};
-
 class OSSettingsMochaTestGraduationEnabled : public OSSettingsMochaTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kGraduation};
@@ -825,13 +819,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageCursorAndTouchpadPage) {
   RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMouseKeysEnabled,
-                       OsA11yPageCursorAndTouchpadPage) {
-  RunSettingsTest("os_a11y_page/cursor_and_touchpad_page_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMouseKeysEnabled,
-                       OsA11yPageMouseKeysSubpage) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsA11yPageMouseKeysSubpage) {
   RunSettingsTest("os_a11y_page/mouse_keys_subpage_test.js");
 }
 

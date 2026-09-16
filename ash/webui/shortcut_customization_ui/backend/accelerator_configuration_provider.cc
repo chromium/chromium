@@ -453,7 +453,7 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
     case kToggleDoNotDisturb:
       return !features::IsDoNotDisturbShortcutEnabled();
     case kToggleMouseKeys:
-      return !::features::IsAccessibilityMouseKeysEnabled();
+      return false;
     case kToggleGeminiApp:
       // The Gemini app shortcut is permanently enabled.
       return false;

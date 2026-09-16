@@ -15,7 +15,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/tray_container.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/image_view.h"
@@ -86,8 +85,7 @@ void MouseKeysTray::UpdateStatus() {
     return;
   }
 
-  bool is_mouse_keys_enabled = ::features::IsAccessibilityMouseKeysEnabled() &&
-                               mouse_keys_controller->enabled();
+  bool is_mouse_keys_enabled = mouse_keys_controller->enabled();
 
   SetVisiblePreferred(is_mouse_keys_enabled);
 

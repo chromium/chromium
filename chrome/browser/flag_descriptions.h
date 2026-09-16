@@ -2255,10 +2255,6 @@ inline constexpr char kAccessibilityShakeToLocateDescription[] =
     "This option enables the experimental Accessibility feature to make the "
     "mouse cursor more visible when a shake is detected.";
 
-inline constexpr char kAccessibilityMouseKeysName[] = "Mouse Keys";
-inline constexpr char kAccessibilityMouseKeysDescription[] =
-    "This option enables you to control the mouse with the keyboard.";
-
 inline constexpr char kApplyClientsideModelPredictionsForPasswordTypesName[] =
     "Apply clientside model predictions for password forms.";
 inline constexpr char

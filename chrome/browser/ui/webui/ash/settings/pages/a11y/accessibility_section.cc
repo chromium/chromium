@@ -607,10 +607,6 @@ int GetDisplayAndMangificationLinkDescriptionResourceId() {
   return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_NEW_DESCRIPTION;
 }
 
-bool IsAccessibilityMouseKeysEnabled() {
-  return ::features::IsAccessibilityMouseKeysEnabled();
-}
-
 }  // namespace
 
 AccessibilitySection::AccessibilitySection(
@@ -1580,9 +1576,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddString("faceGazeLearnMoreUrl",
                          ash::external_urls::kFaceGazeLearnMoreURL);
 
-  html_source->AddBoolean("isAccessibilityMouseKeysEnabled",
-                          IsAccessibilityMouseKeysEnabled());
-
   html_source->AddBoolean(
       "isAccessibilityInvertedMouseCursorEnabled",
       ::features::IsAccessibilityInvertedMouseCursorEnabled());
@@ -2045,9 +2038,7 @@ void AccessibilitySection::UpdateSearchTags() {
   updater.AddSearchTags(GetA11yBounceKeysSearchConcepts());
   updater.AddSearchTags(GetA11ySlowKeysSearchConcepts());
 
-  if (IsAccessibilityMouseKeysEnabled()) {
-    updater.AddSearchTags(GetA11yMouseKeysSearchConcepts());
-  }
+  updater.AddSearchTags(GetA11yMouseKeysSearchConcepts());
 
   updater.AddSearchTags(GetA11yDisableTouchpadSearchConcepts());
 

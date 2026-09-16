@@ -3234,11 +3234,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-accessibility-mousekeys",
-    "owners": [ "zork@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 142
-  },
-  {
     "name": "enable-accessibility-on-screen-mode",
     "owners": [
       "lucasradaelli@google.com",
