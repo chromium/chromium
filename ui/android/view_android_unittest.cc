@@ -4,7 +4,11 @@
 
 #include "ui/android/view_android.h"
 
+#include <utility>
+
 #include "base/android/jni_android.h"
+#include "base/functional/callback.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/event_forwarder.h"
@@ -119,6 +123,24 @@ class ViewAndroidBoundsTest : public testing::Test {
         EXPECT_FALSE(handler->TouchEventHandled());
     }
     Reset();
+  }
+
+  void AddThreeStackedChildren() {
+    view1_.SetLayoutForTesting(50, 50, 400, 600);
+    view2_.SetLayoutForTesting(50, 50, 400, 600);
+    view3_.SetLayoutForTesting(50, 50, 400, 600);
+    root_.AddChild(&view1_);
+    root_.AddChild(&view2_);
+    root_.AddChild(&view3_);
+  }
+
+  void RemoveAllChildren(ViewAndroid* view) {
+    view->RemoveAllChildren(/*attached_to_window=*/false);
+  }
+
+  // Teardown path that notifies each child, and so can re-enter.
+  void RemoveAllChildrenAttached(ViewAndroid* view) {
+    view->RemoveAllChildren(/*attached_to_window=*/true);
   }
 
   TestViewAndroid root_;
@@ -266,6 +288,140 @@ TEST_F(ViewAndroidBoundsTest, OnSizeChanged) {
   view1_.AddChild(&viewm_);
   EXPECT_FALSE(handlerm_.OnSizeCalled());
   EXPECT_FALSE(handler3_.OnSizeCalled());
+}
+
+// Event handler that runs an arbitrary callback during dispatch, for reentrancy
+// tests.
+class ReentrantActionHandler : public EventHandlerAndroid {
+ public:
+  ReentrantActionHandler() = default;
+  explicit ReentrantActionHandler(base::RepeatingClosure action)
+      : action_(std::move(action)) {}
+
+  bool OnTouchEvent(const MotionEventAndroid& event) override {
+    ++count_;
+    if (action_) {
+      action_.Run();
+    }
+    return false;
+  }
+
+  void OnPhysicalBackingSizeChanged(
+      std::optional<base::TimeDelta> deadline_override) override {
+    ++count_;
+    if (action_) {
+      action_.Run();
+    }
+  }
+
+  void set_action(base::RepeatingClosure action) {
+    action_ = std::move(action);
+  }
+  int count() const { return count_; }
+
+ private:
+  base::RepeatingClosure action_;
+  int count_ = 0;
+};
+
+// Exercises StepIteratorsOver across both iteration directions:
+// - Reverse (HitTest): current element erases its next sibling, and the head
+//   element erases itself.
+// - Forward (OnPhysicalBackingSizeChanged): current element erases its next
+//   sibling (cursor sits on it and must be bumped), and the tail erases itself.
+TEST_F(ViewAndroidBoundsTest, ChildRemovalReentrancy) {
+  AddThreeStackedChildren();
+
+  // Reverse pass: view3_ erases view2_ (next); view1_ erases itself (head).
+  ReentrantActionHandler h3(
+      base::BindLambdaForTesting([&]() { view2_.RemoveFromParent(); }));
+  ReentrantActionHandler h2;
+  ReentrantActionHandler h1(
+      base::BindLambdaForTesting([&]() { view1_.RemoveFromParent(); }));
+  view3_.set_event_handler(&h3);
+  view2_.set_event_handler(&h2);
+  view1_.set_event_handler(&h1);
+
+  GenerateTouchEventAt(100.f, 100.f);
+  EXPECT_EQ(1, h3.count());
+  EXPECT_EQ(0, h2.count());
+  EXPECT_EQ(1, h1.count());
+
+  // Reset tree to [view1_, view2_, view3_] for the forward pass: view1_ erases
+  // view2_ (next); view3_ erases itself (tail).
+  RemoveAllChildren(&root_);
+  root_.AddChild(&view1_);
+  root_.AddChild(&view2_);
+  root_.AddChild(&view3_);
+  h1.set_action(
+      base::BindLambdaForTesting([&]() { view2_.RemoveFromParent(); }));
+  h3.set_action(
+      base::BindLambdaForTesting([&]() { view3_.RemoveFromParent(); }));
+
+  root_.OnPhysicalBackingSizeChanged(gfx::Size(100, 100), std::nullopt);
+  EXPECT_EQ(2, h1.count());
+  EXPECT_EQ(0, h2.count());
+  EXPECT_EQ(2, h3.count());
+}
+
+// Reordering mid-traversal via splice: StepIteratorsOver keeps the cursor from
+// following the moved node. Promoting a view moves it into already-visited
+// territory (skipped); demoting moves it ahead of the cursor (still visited).
+TEST_F(ViewAndroidBoundsTest, HitTestReorderReentrancy) {
+  AddThreeStackedChildren();
+  handler1_.SetHandleEvent(false);
+  handler2_.SetHandleEvent(false);
+
+  ReentrantActionHandler h3(base::BindLambdaForTesting([&]() {
+    root_.MoveToFront(&view1_);  // Moved behind reverse cursor -> skipped.
+    root_.MoveToBack(&view2_);   // Moved ahead of reverse cursor -> visited.
+  }));
+  view3_.set_event_handler(&h3);
+
+  GenerateTouchEventAt(100.f, 100.f);
+
+  EXPECT_EQ(1, h3.count());
+  EXPECT_TRUE(handler2_.TouchEventCalled());
+  EXPECT_FALSE(handler1_.TouchEventCalled());
+}
+
+// RemoveAllChildren() clears `parent_` on each child it detaches. If the child
+// reparents itself from its OnDetachedFromWindow() notification, that clear
+// must not run afterwards and strand the child with a null parent.
+TEST_F(ViewAndroidBoundsTest, RemoveAllChildrenKeepsReparentedChild) {
+  class ReparentingObserver : public ViewAndroidObserver {
+   public:
+    ReparentingObserver(ViewAndroid* child, ViewAndroid* new_parent)
+        : child_(child), new_parent_(new_parent) {}
+
+    void OnDetachedFromWindow() override {
+      if (reparented_) {
+        return;
+      }
+      reparented_ = true;
+      new_parent_->AddChild(child_);
+    }
+
+   private:
+    raw_ptr<ViewAndroid> child_;
+    raw_ptr<ViewAndroid> new_parent_;
+    bool reparented_ = false;
+  };
+
+  TestViewAndroid new_parent(ViewAndroid::LayoutType::kNormal);
+  root_.AddChild(&view1_);
+  root_.AddChild(&view2_);
+
+  ReparentingObserver observer(&view2_, &new_parent);
+  view2_.AddObserver(&observer);
+
+  RemoveAllChildrenAttached(&root_);
+
+  EXPECT_EQ(&new_parent, view2_.parent());
+  EXPECT_EQ(1u, new_parent.GetChildrenCountForTesting());
+  EXPECT_EQ(0u, root_.GetChildrenCountForTesting());
+
+  view2_.RemoveObserver(&observer);
 }
 
 TEST(ViewAndroidTest, ChecksMultipleEventForwarders) {

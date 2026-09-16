@@ -119,6 +119,9 @@ ViewAndroid::ViewAndroid(LayoutType layout_type)
 ViewAndroid::ViewAndroid() : ViewAndroid(LayoutType::kNormal) {}
 
 ViewAndroid::~ViewAndroid() {
+  while (!active_iters_.empty()) {
+    active_iters_.head()->value()->ViewDestroyed();
+  }
   RemoveAllChildren(GetWindowAndroid() != nullptr);
   observer_list_.Notify(&ViewAndroidObserver::OnViewAndroidDestroyed);
   observer_list_.Clear();
@@ -203,7 +206,7 @@ bool ViewAndroid::SubtreeHasEventForwarder(ViewAndroid* view) {
   if (view->has_event_forwarder())
     return true;
 
-  for (ViewAndroid* child : view->children_) {
+  for (ScopedChildrenIter it(view); ViewAndroid* child = it.GetNext();) {
     if (SubtreeHasEventForwarder(child))
       return true;
   }
@@ -216,8 +219,10 @@ void ViewAndroid::MoveToFront(ViewAndroid* child) {
   CHECK(it != children_.end());
 
   // Top element is placed at the end of the list.
-  if (*it != children_.back())
+  if (*it != children_.back()) {
+    StepIteratorsOver(it);
     children_.splice(children_.end(), children_, it);
+  }
 }
 
 void ViewAndroid::MoveToBack(ViewAndroid* child) {
@@ -226,8 +231,10 @@ void ViewAndroid::MoveToBack(ViewAndroid* child) {
   CHECK(it != children_.end());
 
   // Bottom element is placed at the beginning of the list.
-  if (*it != children_.front())
+  if (*it != children_.front()) {
+    StepIteratorsOver(it);
     children_.splice(children_.begin(), children_, it);
+  }
 }
 
 void ViewAndroid::RemoveFromParent() {
@@ -301,13 +308,21 @@ gfx::PointF ViewAndroid::GetLocationOnScreen(float x, float y) {
 }
 
 void ViewAndroid::RemoveAllChildren(bool attached_to_window) {
-  auto it = children_.begin();
-  while (it != children_.end()) {
-    if (attached_to_window)
-      (*it)->OnDetachedFromWindow();
-    (*it)->parent_ = nullptr;
-    // erase returns a new iterator for the element following the ereased one.
-    it = children_.erase(it);
+  while (!children_.empty()) {
+    ViewAndroid* child = children_.front();
+    if (attached_to_window) {
+      child->OnDetachedFromWindow();
+    }
+    // If the callback already unlinked or reparented child, leave parent_
+    // alone.
+    if (child->parent_ == this) {
+      child->parent_ = nullptr;
+      auto it = std::ranges::find(children_, child);
+      if (it != children_.end()) {
+        StepIteratorsOver(it);
+        children_.erase(it);
+      }
+    }
   }
 }
 
@@ -320,6 +335,8 @@ void ViewAndroid::RemoveChild(ViewAndroid* child) {
   std::list<raw_ptr<ViewAndroid, CtnExperimental>>::iterator it =
       std::ranges::find(children_, child);
   CHECK(it != children_.end());
+
+  StepIteratorsOver(it);
   children_.erase(it);
   child->parent_ = nullptr;
 }
@@ -398,14 +415,14 @@ std::unique_ptr<viz::CopyOutputRequest> ViewAndroid::MaybeRequestCopyOfView(
 
 void ViewAndroid::OnAttachedToWindow() {
   observer_list_.Notify(&ViewAndroidObserver::OnAttachedToWindow);
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     child->OnAttachedToWindow();
   }
 }
 
 void ViewAndroid::OnDetachedFromWindow() {
   observer_list_.Notify(&ViewAndroidObserver::OnDetachedFromWindow);
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     child->OnDetachedFromWindow();
   }
 }
@@ -534,7 +551,7 @@ int ViewAndroid::GetViewportInsetBottom() {
 void ViewAndroid::OnBrowserControlsHeightChanged() {
   if (event_handler_)
     event_handler_->OnBrowserControlsHeightChanged();
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     if (child->match_parent())
       child->OnBrowserControlsHeightChanged();
   }
@@ -577,7 +594,7 @@ void ViewAndroid::OnSizeChangedInternal(const gfx::Size& size_device_px) {
   bounds_dips_.set_size(gfx::Size(std::ceil(size_device_px.width() / scale),
                                   std::ceil(size_device_px.height() / scale)));
 
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     if (child->match_parent())
       child->OnSizeChangedInternal(size_device_px);
   }
@@ -586,7 +603,7 @@ void ViewAndroid::OnSizeChangedInternal(const gfx::Size& size_device_px) {
 void ViewAndroid::DispatchOnSizeChanged() {
   if (event_handler_)
     event_handler_->OnSizeChanged();
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     if (child->match_parent())
       child->DispatchOnSizeChanged();
   }
@@ -601,7 +618,7 @@ void ViewAndroid::OnPhysicalBackingSizeChanged(
   if (event_handler_)
     event_handler_->OnPhysicalBackingSizeChanged(deadline_override);
 
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     child->OnPhysicalBackingSizeChanged(size, deadline_override);
   }
 }
@@ -613,7 +630,7 @@ void ViewAndroid::OnControlsResizeViewChanged(bool controls_resize_view) {
   if (event_handler_)
     event_handler_->OnControlsResizeViewChanged();
 
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     child->OnControlsResizeViewChanged(controls_resize_view);
   }
 }
@@ -623,7 +640,7 @@ void ViewAndroid::DispatchWindowPositionChange() {
     event_handler_->OnWindowPositionChanged();
   }
 
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     child->DispatchWindowPositionChange();
   }
 }
@@ -701,7 +718,7 @@ bool ViewAndroid::OnGenericMotionEvent(const MotionEventAndroid& event) {
   if (event_handler_ && event_handler_->OnGenericMotionEvent(event))
     return true;
 
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     if (child->OnGenericMotionEvent(event))
       return true;
   }
@@ -712,7 +729,7 @@ bool ViewAndroid::OnKeyUp(const KeyEventAndroid& event) {
   if (event_handler_ && event_handler_->OnKeyUp(event))
     return true;
 
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     if (child->OnKeyUp(event))
       return true;
   }
@@ -723,7 +740,7 @@ bool ViewAndroid::DispatchKeyEvent(const KeyEventAndroid& event) {
   if (event_handler_ && event_handler_->DispatchKeyEvent(event))
     return true;
 
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     if (child->DispatchKeyEvent(event))
       return true;
   }
@@ -734,7 +751,7 @@ bool ViewAndroid::ScrollBy(float delta_x, float delta_y) {
   if (event_handler_ && event_handler_->ScrollBy(delta_x, delta_y))
     return true;
 
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     if (child->ScrollBy(delta_x, delta_y))
       return true;
   }
@@ -745,7 +762,7 @@ bool ViewAndroid::ScrollTo(float x, float y) {
   if (event_handler_ && event_handler_->ScrollTo(x, y))
     return true;
 
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     if (child->ScrollTo(x, y))
       return true;
   }
@@ -757,7 +774,7 @@ void ViewAndroid::NotifyVirtualKeyboardOverlayRect(
   if (event_handler_)
     event_handler_->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
 
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     child->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
   }
 }
@@ -766,7 +783,7 @@ void ViewAndroid::ShowInterestInElement(int nodeID) {
   if (event_handler_) {
     event_handler_->ShowInterestInElement(nodeID);
   }
-  for (ViewAndroid* child : children_) {
+  for (ScopedChildrenIter it(this); ViewAndroid* child = it.GetNext();) {
     child->ShowInterestInElement(nodeID);
   }
 }
@@ -796,7 +813,9 @@ bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
     gfx::Point int_point = gfx::ToFlooredPoint(offset_point);
 
     // Match from back to front for hit testing.
-    for (ViewAndroid* child : base::Reversed(children_)) {
+    for (ScopedChildrenIter it(this,
+                               ScopedChildrenIter::IterationType::kReverse);
+         ViewAndroid* child = it.GetNext();) {
       bool matched = child->match_parent();
       if (!matched)
         matched = child->bounds_dips_.Contains(int_point);
@@ -843,6 +862,53 @@ void ViewAndroid::ReportScrollJankStats(uint32_t total_frames,
   }
   Java_ViewAndroidDelegate_reportScrollJankStats(env, delegate, total_frames,
                                                  janky_frames);
+}
+
+ViewAndroid::ScopedChildrenIter::ScopedChildrenIter(ViewAndroid* view,
+                                                    IterationType type)
+    : view_(view),
+      type_(type),
+      it_(type == IterationType::kForward ? view->children_.begin()
+                                          : view->children_.end()) {
+  CHECK(view_);
+  view_->active_iters_.Append(this);
+}
+
+ViewAndroid::ScopedChildrenIter::~ScopedChildrenIter() {
+  if (view_) {
+    RemoveFromList();
+  }
+}
+
+ViewAndroid* ViewAndroid::ScopedChildrenIter::GetNext() {
+  if (!view_) {
+    return nullptr;
+  }
+
+  // Forward leaves `it_` past the element just returned, so erasing that
+  // element cannot invalidate it. Reverse leaves `it_` on the element just
+  // returned, and relies on StepIteratorsOver() to move it off before an
+  // erase or splice.
+  if (type_ == IterationType::kForward) {
+    return it_ == view_->children_.end() ? nullptr : *it_++;
+  }
+
+  return it_ == view_->children_.begin() ? nullptr : *--it_;
+}
+
+void ViewAndroid::ScopedChildrenIter::ViewDestroyed() {
+  view_ = nullptr;
+  RemoveFromList();
+}
+
+void ViewAndroid::StepIteratorsOver(
+    std::list<raw_ptr<ViewAndroid, CtnExperimental>>::iterator child_it) {
+  for (auto* node = active_iters_.head(); node != active_iters_.end();
+       node = node->next()) {
+    if (node->value()->it_ == child_it) {
+      ++node->value()->it_;
+    }
+  }
 }
 
 }  // namespace ui
