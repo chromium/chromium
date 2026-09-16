@@ -24,9 +24,6 @@ BASE_FEATURE(kOfflinePagesInDownloadHomeOpenInCctFeature,
              "OfflinePagesInDownloadHomeOpenInCct",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOfflinePagesNetworkStateLikelyUnknown,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 const char kPrefetchingOfflinePagesExperimentsOption[] = "exp";
 
 bool ShouldUseTestingSnapshotDelay() {
@@ -43,8 +40,5 @@ bool IsOnTheFlyMhtmlHashComputationEnabled() {
   return false;
 }
 
-bool IsOfflinePagesNetworkStateLikelyUnknown() {
-  return base::FeatureList::IsEnabled(kOfflinePagesNetworkStateLikelyUnknown);
-}
 
 }  // namespace offline_pages

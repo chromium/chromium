@@ -28,7 +28,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "components/offline_pages/core/offline_clock.h"
-#include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/request_header/offline_page_header.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -299,13 +298,9 @@ OfflinePageRequestHandler::GetNetworkState() const {
   if (offline_header_.reason == OfflinePageHeader::Reason::NET_ERROR)
     return OfflinePageRequestHandler::NetworkState::FLAKY_NETWORK;
 
-  bool is_offline = net::NetworkChangeNotifier::IsOffline();
-  if (offline_pages::IsOfflinePagesNetworkStateLikelyUnknown()) {
-    is_offline = false;
-  }
-
-  if (is_offline)
+  if (net::NetworkChangeNotifier::IsOffline()) {
     return OfflinePageRequestHandler::NetworkState::DISCONNECTED_NETWORK;
+  }
 
   // If RELOAD is present in the offline header, load the live page.
   if (offline_header_.reason == OfflinePageHeader::Reason::RELOAD)

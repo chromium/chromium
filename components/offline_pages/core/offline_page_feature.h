@@ -13,7 +13,6 @@ namespace offline_pages {
 BASE_DECLARE_FEATURE(kBackgroundLoaderForDownloadsFeature);
 BASE_DECLARE_FEATURE(kOfflinePagesInDownloadHomeOpenInCctFeature);
 BASE_DECLARE_FEATURE(kOnTheFlyMhtmlHashComputationFeature);
-BASE_DECLARE_FEATURE(kOfflinePagesNetworkStateLikelyUnknown);
 
 // The parameter name used to find the experiment tag for prefetching offline
 // pages.
@@ -37,10 +36,6 @@ std::string GetPrefetchingOfflinePagesExperimentTag();
 // calculating their content digests in one step.
 bool IsOnTheFlyMhtmlHashComputationEnabled();
 
-// Returns true if the network state returned by Android device APIs can't be
-// trusted. See https://crbug.com/1120144. In such cases, we want to disable
-// offline pages to avoid showing them even when the device is online.
-bool IsOfflinePagesNetworkStateLikelyUnknown();
 
 }  // namespace offline_pages
 
