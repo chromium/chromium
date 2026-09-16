@@ -11,7 +11,6 @@
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 
 namespace arc {
@@ -92,8 +91,7 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
       base::FeatureList::IsEnabled(arc::kExtendIntentAnrTimeout);
   flags->extend_service_anr_timeout =
       base::FeatureList::IsEnabled(arc::kExtendServiceAnrTimeout);
-  flags->notification_width_increase =
-      chromeos::features::IsNotificationWidthIncreaseEnabled();
+  flags->notification_width_increase = true;
   flags->enable_friendlier_error_dialog =
       base::FeatureList::IsEnabled(arc::kEnableFriendlierErrorDialog);
 

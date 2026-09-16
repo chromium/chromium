@@ -12,7 +12,6 @@
 #include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -43,16 +42,15 @@ enum ButtonType {
 class OngoingProcessViewPixelTest
     : public AshTestBase,
       public testing::WithParamInterface<
-          std::
-              tuple<const char16_t*, const char16_t*, ButtonType, bool, bool>> {
+          std::tuple<const char16_t*,
+                     const char16_t*,
+                     ButtonType,
+                     /*is_system_blur_enabled=*/bool>> {
  public:
   const std::u16string GetTitle() const { return std::get<0>(GetParam()); }
   const std::u16string GetMessage() const { return std::get<1>(GetParam()); }
   ButtonType GetButtonType() const { return std::get<2>(GetParam()); }
-  bool IsNotificationWidthIncreaseEnabled() const {
-    return std::get<3>(GetParam());
-  }
-  bool IsSystemBlurEnabled() const { return std::get<4>(GetParam()); }
+  bool IsSystemBlurEnabled() const { return std::get<3>(GetParam()); }
 
   std::string GenerateScreenshotName(const std::string& title) override {
     std::string test_name = title;
@@ -74,9 +72,6 @@ class OngoingProcessViewPixelTest
         break;
     }
 
-    test_name += IsNotificationWidthIncreaseEnabled() ? "_WidthIncreased"
-                                                      : "_NormalWidth";
-
     return test_name;
   }
 
@@ -92,18 +87,7 @@ class OngoingProcessViewPixelTest
   }
 
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kOngoingProcesses};
-
-    if (IsNotificationWidthIncreaseEnabled()) {
-      enabled_features.push_back(
-          chromeos::features::kNotificationWidthIncrease);
-    }
-
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kOngoingProcesses, true},
-         {chromeos::features::kNotificationWidthIncrease,
-          IsNotificationWidthIncreaseEnabled() ? true : false}});
+    scoped_feature_list_.InitAndEnableFeature(features::kOngoingProcesses);
 
     AshTestBase::SetUp();
 
@@ -124,7 +108,6 @@ INSTANTIATE_TEST_SUITE_P(
         /*GetButtonType()=*/
         testing::ValuesIn({ButtonType::kNone, ButtonType::kIconButton,
                            ButtonType::kPillButton}),
-        /*IsNotificationWidthIncreaseEnabled()=*/testing::Bool(),
         /*IsSystemBlurEnabled()=*/testing::Bool()));
 
 TEST_P(OngoingProcessViewPixelTest, MultilineLabels) {
@@ -151,7 +134,7 @@ TEST_P(OngoingProcessViewPixelTest, MultilineLabels) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("OngoingProcessView"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 2,
       test_api()->GetNotificationCenterView()));
 }
 

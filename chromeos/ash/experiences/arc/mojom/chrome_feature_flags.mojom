@@ -43,7 +43,7 @@ struct FeatureFlags {
   [MinVersion=9] bool ignore_hover_event_anr;
   // chrome://flags#arc-extend-input-anr-timeout
   [MinVersion=10] bool extend_input_anr_timeout;
-  // `chromeos::features::IsNotificationWidthIncreaseEnabled()`
+  // Notification width increase is permanently enabled on ChromeOS.
   [MinVersion=11] bool notification_width_increase;
   // chrome://flags#arc-friendlier-error-dialog
   [MinVersion=12] bool enable_friendlier_error_dialog;

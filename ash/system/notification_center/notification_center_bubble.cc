@@ -15,7 +15,6 @@
 #include "ash/system/notification_center/views/notification_center_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -33,10 +32,8 @@ NotificationCenterBubble::NotificationCenterBubble(
       /*tray=*/notification_center_tray_, /*anchor_to_shelf_corner=*/true);
 
   // Create and customize bubble view.
-  if (chromeos::features::IsNotificationWidthIncreaseEnabled()) {
-    init_params.preferred_width =
-        GetNotificationInMessageCenterWidth() + (2 * kMessageCenterPadding);
-  }
+  init_params.preferred_width =
+      kNotificationInMessageCenterWidth + (2 * kMessageCenterPadding);
 
   init_params.set_can_activate_on_click_or_tap = true;
   init_params.corner_radius = kNotificationCenterBubbleCornerRadius;

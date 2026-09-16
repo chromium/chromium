@@ -11,10 +11,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif
-
 // TODO(estade): many of these constants could be internalized.
 namespace message_center {
 
@@ -139,9 +135,7 @@ constexpr int kNotificationResizeAnimationDurationMs = 200;
 // Returns the width of the notification.
 inline int GetNotificationWidth() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return chromeos::features::IsNotificationWidthIncreaseEnabled()
-             ? kChromeOSNotificationWidth
-             : kNotificationWidth;
+  return kChromeOSNotificationWidth;
 #else
   return kNotificationWidth;
 #endif

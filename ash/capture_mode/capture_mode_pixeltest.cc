@@ -14,8 +14,6 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
@@ -52,15 +50,11 @@ std::string GetDisplayTypeName(DisplayType type) {
   }
 }
 
-std::string GetScreenshotName(const std::string& test_name, bool new_width) {
-  return test_name + (new_width ? "_new_width" : "_old_width");
-}
-
 }  // namespace
 
 class DisplayParameterizedCaptureModePixelTest
     : public AshTestBase,
-      public testing::WithParamInterface<std::tuple<DisplayType, bool>> {
+      public testing::WithParamInterface<DisplayType> {
  public:
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -69,10 +63,6 @@ class DisplayParameterizedCaptureModePixelTest
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        chromeos::features::kNotificationWidthIncrease,
-        IsNotificationWidthIncreaseEnabled());
-
     AshTestBase::SetUp();
     test_api_ = std::make_unique<NotificationCenterTestApi>();
 
@@ -106,25 +96,20 @@ class DisplayParameterizedCaptureModePixelTest
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
-  DisplayType GetDisplayType() const { return std::get<0>(GetParam()); }
-
-  bool IsNotificationWidthIncreaseEnabled() { return std::get<1>(GetParam()); }
+  DisplayType GetDisplayType() const { return GetParam(); }
 
  private:
   std::unique_ptr<aura::Window> window1_;
   std::unique_ptr<aura::Window> window2_;
 
   std::unique_ptr<NotificationCenterTestApi> test_api_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    DisplaySize,
-    DisplayParameterizedCaptureModePixelTest,
-    testing::Combine(testing::ValuesIn({DisplayType::kNormal,
-                                        DisplayType::kUltraWidth,
-                                        DisplayType::kUltraHeight}),
-                     /*IsNotificationWidthIncreaseEnabled()=*/testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(DisplaySize,
+                         DisplayParameterizedCaptureModePixelTest,
+                         testing::ValuesIn({DisplayType::kNormal,
+                                            DisplayType::kUltraWidth,
+                                            DisplayType::kUltraHeight}));
 
 TEST_P(DisplayParameterizedCaptureModePixelTest,
        ScreenCaptureNotificationPopup) {
@@ -141,10 +126,9 @@ TEST_P(DisplayParameterizedCaptureModePixelTest,
 
   // Get the notification view.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenshotName(base::StrCat({"screen_capture_popup_notification_",
-                                      GetDisplayTypeName(GetDisplayType())}),
-                        IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/4,
+      base::StrCat({"screen_capture_popup_notification_",
+                    GetDisplayTypeName(GetDisplayType())}),
+      /*revision_number=*/6,
       test_api()->GetPopupViewForId(kScreenCaptureNotificationId)));
 }
 
@@ -174,19 +158,17 @@ TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
       test_api()->GetPopupViewForId(notification_id);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenshotName(base::StrCat({"video_capture_notification_popup_",
-                                      GetDisplayTypeName(GetDisplayType())}),
-                        IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/7, notification_popup_view));
+      base::StrCat({"video_capture_notification_popup_",
+                    GetDisplayTypeName(GetDisplayType())}),
+      /*revision_number=*/9, notification_popup_view));
 
   test_api()->ToggleBubble();
   auto* notification_view =
       test_api()->GetNotificationViewForId(notification_id);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GetScreenshotName(base::StrCat({"video_capture_notification_view_",
-                                      GetDisplayTypeName(GetDisplayType())}),
-                        IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/7, notification_view));
+      base::StrCat({"video_capture_notification_view_",
+                    GetDisplayTypeName(GetDisplayType())}),
+      /*revision_number=*/9, notification_view));
 }
 
 }  // namespace ash

@@ -11,7 +11,6 @@
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/fake_chrome_feature_flags_instance.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -120,20 +119,9 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest,
   EXPECT_FALSE(instance()->flags_called_value()->extend_service_anr_timeout);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest,
-       NotifyNotificationWidthIncrease_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(
-      chromeos::features::kNotificationWidthIncrease);
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyNotificationWidthIncrease) {
   Connect();
   EXPECT_TRUE(instance()->flags_called_value()->notification_width_increase);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest,
-       NotifyNotificationWidthIncrease_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(
-      chromeos::features::kNotificationWidthIncrease);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->notification_width_increase);
 }
 
 }  // namespace

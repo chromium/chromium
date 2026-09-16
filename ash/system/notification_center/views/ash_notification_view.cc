@@ -1215,7 +1215,7 @@ void AshNotificationView::CreateOrUpdateTitleView(
                                 : kTitleRowMinimumWidthWithIcon;
   if (shown_in_popup_) {
     max_available_width -= message_center::GetNotificationWidth() -
-                           GetNotificationInMessageCenterWidth();
+                           kNotificationInMessageCenterWidth;
   }
   title_row_->SetMaxAvailableWidth(max_available_width);
 
@@ -1639,7 +1639,7 @@ void AshNotificationView::UpdateMessageLabelInExpandedState(
 int AshNotificationView::GetExpandedMessageLabelWidth() {
   int notification_width = shown_in_popup_
                                ? message_center::GetNotificationWidth()
-                               : GetNotificationInMessageCenterWidth();
+                               : kNotificationInMessageCenterWidth;
 
   return notification_width - kNotificationViewPadding.width() -
          kNotificationAppIconViewSize - kMainRightViewChildPadding.width() -

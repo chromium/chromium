@@ -52,7 +52,7 @@ MessageViewContainer::MessageViewContainer(
 
 int MessageViewContainer::CalculateHeight() const {
   return message_view_ ? message_view_->GetHeightForWidth(
-                             GetNotificationInMessageCenterWidth())
+                             kNotificationInMessageCenterWidth)
                        : 0;
 }
 
@@ -125,12 +125,12 @@ gfx::Size MessageViewContainer::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   if (list_view_ && list_view_->IsAnimatingExpandOrCollapseContainer(this)) {
     // Width should never change, only height.
-    return gfx::Size(GetNotificationInMessageCenterWidth(),
+    return gfx::Size(kNotificationInMessageCenterWidth,
                      gfx::Tween::IntValueBetween(
                          list_view_->GetCurrentAnimationValue(),
                          start_bounds_.height(), target_bounds_.height()));
   }
-  return gfx::Size(GetNotificationInMessageCenterWidth(), CalculateHeight());
+  return gfx::Size(kNotificationInMessageCenterWidth, CalculateHeight());
 }
 
 void MessageViewContainer::ChildPreferredSizeChanged(views::View* child) {

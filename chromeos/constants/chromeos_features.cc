@@ -63,10 +63,6 @@ BASE_FEATURE(kMagicBoostRevampForQuickAnswers,
 BASE_FEATURE(kFeatureManagementMahi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 
-// Changes the ChromeOS notification width size from 360px to 400px for pop-up
-// notifications and 344px to 400px for notifications in the message center.
-BASE_FEATURE(kNotificationWidthIncrease, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls enabling / disabling the orca feature.
 BASE_FEATURE(kOrca, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -208,10 +204,6 @@ bool IsMahiEnabled() {
 
 bool IsPlatformKeysChangesWave1Enabled() {
   return base::FeatureList::IsEnabled(kPlatformKeysChangesWave1);
-}
-
-bool IsNotificationWidthIncreaseEnabled() {
-  return base::FeatureList::IsEnabled(kNotificationWidthIncrease);
 }
 
 bool IsOrcaEnabled() {
