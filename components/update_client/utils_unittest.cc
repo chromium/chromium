@@ -4,6 +4,8 @@
 
 #include "components/update_client/utils.h"
 
+#include <stdint.h>
+
 #include <string>
 #include <utility>
 #include <vector>

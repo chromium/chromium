@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UPDATER_BROWSER_UPDATER_CLIENT_UTIL_H_
 #define CHROME_BROWSER_UPDATER_BROWSER_UPDATER_CLIENT_UTIL_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "build/build_config.h"
 #include "build/buildflag.h"

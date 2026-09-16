@@ -4,7 +4,8 @@
 
 #include "components/component_updater/installer_policies/iwa_key_distribution_component_installer_policy.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <string_view>

@@ -4,7 +4,8 @@
 
 #include "chrome/updater/util/util.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

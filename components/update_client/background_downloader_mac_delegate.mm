@@ -5,8 +5,7 @@
 #import "components/update_client/background_downloader_mac_delegate.h"
 
 #import <Foundation/Foundation.h>
-
-#include <cstdint>
+#include <stdint.h>
 
 #include "base/apple/foundation_util.h"
 #include "base/containers/span.h"

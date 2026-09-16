@@ -4,9 +4,10 @@
 
 #include "chrome/updater/event_history.h"
 
+#include <stdint.h>
+
 #include <atomic>
 #include <cstddef>
-#include <cstdint>
 #include <optional>
 #include <string>
 

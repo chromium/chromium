@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_SSL_ERROR_ASSISTANT_COMPONENT_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_SSL_ERROR_ASSISTANT_COMPONENT_INSTALLER_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>

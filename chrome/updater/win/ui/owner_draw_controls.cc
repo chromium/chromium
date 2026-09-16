@@ -9,7 +9,6 @@
 #include <commctrl.h>
 
 #include <algorithm>
-#include <cstdint>
 #include <limits>
 #include <string>
 #include <vector>

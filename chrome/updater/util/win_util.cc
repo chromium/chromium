@@ -12,13 +12,13 @@
 #include <regstr.h>
 #include <shellapi.h>
 #include <shlobj.h>
+#include <stdint.h>
 #include <sysinfoapi.h>
 #include <winhttp.h>
 #include <wrl/client.h>
 #include <wtsapi32.h>
 
 #include <algorithm>
-#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <optional>

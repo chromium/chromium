@@ -4,10 +4,11 @@
 
 #include "chrome/updater/win/ui/ui_util.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <array>
 #include <cmath>
-#include <cstdint>
 #include <cstdlib>
 #include <optional>
 #include <utility>

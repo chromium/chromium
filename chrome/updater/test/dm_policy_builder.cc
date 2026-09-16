@@ -4,7 +4,8 @@
 
 #include "chrome/updater/test/dm_policy_builder.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

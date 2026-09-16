@@ -4,7 +4,8 @@
 
 #include "components/component_updater/component_installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <iterator>
 #include <memory>
 #include <optional>

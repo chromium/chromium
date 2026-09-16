@@ -4,7 +4,8 @@
 
 #include "components/update_client/op_install.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

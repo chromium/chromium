@@ -24,8 +24,9 @@
 // behaviors when a launched process returns nonzero. (Other errors might
 // change if this helper needs more features for some reason.)
 
+#include <stdint.h>
+
 #include <cerrno>
-#include <cstdint>
 #include <iostream>
 #include <string>
 

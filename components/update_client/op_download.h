@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_OP_DOWNLOAD_H_
 #define COMPONENTS_UPDATE_CLIENT_OP_DOWNLOAD_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 

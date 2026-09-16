@@ -4,8 +4,9 @@
 
 #include "chrome/enterprise_companion/crash_client.h"
 
+#include <stdint.h>
+
 #include <cstddef>
-#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/component_updater/screen_ai_component_installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>

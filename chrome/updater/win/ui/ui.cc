@@ -8,7 +8,6 @@
 
 #include <uxtheme.h>
 
-#include <cstdint>
 #include <utility>
 
 #include "base/check_op.h"

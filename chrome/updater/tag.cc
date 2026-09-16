@@ -4,9 +4,10 @@
 
 #include "chrome/updater/tag.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <array>
-#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>

@@ -4,8 +4,9 @@
 
 #include "chrome/updater/net/chunk_queue.h"
 
+#include <stdint.h>
+
 #include <cstddef>
-#include <cstdint>
 #include <optional>
 
 #include "base/compiler_specific.h"

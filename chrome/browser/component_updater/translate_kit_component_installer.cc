@@ -4,8 +4,9 @@
 
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

@@ -5,7 +5,8 @@
 #ifndef CHROME_UPDATER_UPDATE_SERVICE_IMPL_IMPL_H_
 #define CHROME_UPDATER_UPDATE_SERVICE_IMPL_IMPL_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <map>
 #include <optional>
 #include <string>

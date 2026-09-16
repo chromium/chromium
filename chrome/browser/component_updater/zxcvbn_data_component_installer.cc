@@ -4,10 +4,11 @@
 
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <array>
 #include <bit>
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>

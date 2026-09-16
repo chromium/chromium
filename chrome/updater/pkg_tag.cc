@@ -4,10 +4,11 @@
 
 #include "chrome/updater/pkg_tag.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <array>
 #include <cstddef>
-#include <cstdint>
 #include <optional>
 #include <ostream>
 #include <ranges>

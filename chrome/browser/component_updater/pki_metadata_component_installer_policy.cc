@@ -4,7 +4,8 @@
 
 #include "chrome/browser/component_updater/pki_metadata_component_installer_policy.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 

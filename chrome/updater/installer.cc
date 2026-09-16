@@ -4,7 +4,8 @@
 
 #include "chrome/updater/installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <utility>

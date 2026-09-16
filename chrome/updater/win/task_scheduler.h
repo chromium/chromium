@@ -5,7 +5,8 @@
 #ifndef CHROME_UPDATER_WIN_TASK_SCHEDULER_H_
 #define CHROME_UPDATER_WIN_TASK_SCHEDULER_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <ostream>
 #include <string>

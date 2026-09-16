@@ -10,7 +10,6 @@
 #include <msxml2.h>
 // clang-format on
 
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>

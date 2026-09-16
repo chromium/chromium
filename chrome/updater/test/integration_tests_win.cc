@@ -6,6 +6,7 @@
 
 #include <regstr.h>
 #include <shlobj.h>
+#include <stdint.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
 

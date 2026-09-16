@@ -4,7 +4,8 @@
 
 #include "chrome/updater/test/unit_test_util.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <sstream>

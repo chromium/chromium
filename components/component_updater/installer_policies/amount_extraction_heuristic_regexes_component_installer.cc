@@ -4,8 +4,9 @@
 
 #include "components/component_updater/installer_policies/amount_extraction_heuristic_regexes_component_installer.h"
 
+#include <stdint.h>
+
 #include <array>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

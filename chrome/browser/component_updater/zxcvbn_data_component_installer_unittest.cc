@@ -4,6 +4,8 @@
 
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 
+#include <stdint.h>
+
 #include <optional>
 #include <string_view>
 

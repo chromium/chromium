@@ -4,8 +4,9 @@
 
 #include "chrome/browser/component_updater/ai_embeddings_component_installer.h"
 
+#include <stdint.h>
+
 #include <array>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

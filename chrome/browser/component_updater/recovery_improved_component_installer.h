@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_RECOVERY_IMPROVED_COMPONENT_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_RECOVERY_IMPROVED_COMPONENT_INSTALLER_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>

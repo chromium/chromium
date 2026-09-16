@@ -4,7 +4,8 @@
 
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

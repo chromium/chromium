@@ -4,6 +4,8 @@
 
 #include "components/update_client/delta_patch_operation.h"
 
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <utility>

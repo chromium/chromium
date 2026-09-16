@@ -4,7 +4,8 @@
 
 #include "components/component_updater/installer_policies/actor_safety_lists_component_installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

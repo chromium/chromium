@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_MAC_SETUP_KS_TICKETS_H_
 
 #import <Foundation/Foundation.h>
+#include <stdint.h>
 
 extern NSString* _Nonnull const kCRUTicketBrandKey;
 extern NSString* _Nonnull const kCRUTicketTagKey;

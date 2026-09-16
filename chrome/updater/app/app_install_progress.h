@@ -5,7 +5,8 @@
 #ifndef CHROME_UPDATER_APP_APP_INSTALL_PROGRESS_H_
 #define CHROME_UPDATER_APP_APP_INSTALL_PROGRESS_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <vector>

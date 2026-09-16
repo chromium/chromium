@@ -4,6 +4,8 @@
 
 #include "components/update_client/crx_downloader.h"
 
+#include <stdint.h>
+
 #include <utility>
 
 #include "base/byte_size.h"

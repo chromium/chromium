@@ -4,7 +4,8 @@
 
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

@@ -4,6 +4,8 @@
 
 #include "components/component_updater/installer_policies/prediction_model_component_installer.h"
 
+#include <stdint.h>
+
 #include <array>
 #include <memory>
 #include <utility>

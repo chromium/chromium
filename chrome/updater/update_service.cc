@@ -4,7 +4,8 @@
 
 #include "chrome/updater/update_service.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <ostream>
 
 #include "base/version.h"

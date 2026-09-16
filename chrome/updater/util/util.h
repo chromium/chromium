@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_UTIL_UTIL_H_
 #define CHROME_UPDATER_UTIL_UTIL_H_
 
+#include <stdint.h>
+
 #include <cmath>
 #include <concepts>
 #include <limits>

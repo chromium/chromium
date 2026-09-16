@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_CRX_UPDATE_ITEM_H_
 #define COMPONENTS_UPDATE_CLIENT_CRX_UPDATE_ITEM_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <optional>

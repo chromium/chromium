@@ -4,8 +4,9 @@
 
 #include "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>

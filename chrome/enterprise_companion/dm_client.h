@@ -5,6 +5,8 @@
 #ifndef CHROME_ENTERPRISE_COMPANION_DM_CLIENT_H_
 #define CHROME_ENTERPRISE_COMPANION_DM_CLIENT_H_
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/functional/callback_forward.h"

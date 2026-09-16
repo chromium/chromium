@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_CHROME_ORIGIN_TRIALS_COMPONENT_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_CHROME_ORIGIN_TRIALS_COMPONENT_INSTALLER_H_
 
-#include <stdint.h>
-
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "base/version.h"

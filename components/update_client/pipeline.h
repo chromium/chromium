@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_PIPELINE_H_
 #define COMPONENTS_UPDATE_CLIENT_PIPELINE_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 
 #include "base/functional/callback_forward.h"

@@ -4,8 +4,9 @@
 
 #include "chrome/updater/update_service_impl_impl.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>

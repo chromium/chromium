@@ -4,6 +4,8 @@
 
 #include "components/update_client/background_downloader_mac.h"
 
+#include <stdint.h>
+
 #include <cstring>
 #include <memory>
 #include <string>

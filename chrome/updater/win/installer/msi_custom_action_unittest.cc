@@ -4,7 +4,6 @@
 
 #include "chrome/updater/win/installer/msi_custom_action.h"
 
-#include <cstdint>
 #include <string>
 #include <vector>
 

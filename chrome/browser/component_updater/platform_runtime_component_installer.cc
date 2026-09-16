@@ -4,7 +4,8 @@
 
 #include "chrome/browser/component_updater/platform_runtime_component_installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <iterator>
 #include <memory>
 #include <string>

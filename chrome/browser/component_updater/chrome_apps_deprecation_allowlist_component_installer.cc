@@ -4,8 +4,9 @@
 
 #include "chrome/browser/component_updater/chrome_apps_deprecation_allowlist_component_installer.h"
 
+#include <stdint.h>
+
 #include <array>
-#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>

@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_OP_INSTALL_H_
 #define COMPONENTS_UPDATE_CLIENT_OP_INSTALL_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>

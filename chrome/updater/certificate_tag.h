@@ -14,7 +14,8 @@
 #ifndef CHROME_UPDATER_CERTIFICATE_TAG_H_
 #define CHROME_UPDATER_CERTIFICATE_TAG_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <vector>

@@ -5,7 +5,8 @@
 #ifndef CHROME_UPDATER_UTIL_PROGRESS_SAMPLER_H_
 #define CHROME_UPDATER_UTIL_PROGRESS_SAMPLER_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <queue>
 

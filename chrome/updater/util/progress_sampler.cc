@@ -4,6 +4,8 @@
 
 #include "chrome/updater/util/progress_sampler.h"
 
+#include <stdint.h>
+
 #include <optional>
 #include <queue>
 #include <utility>

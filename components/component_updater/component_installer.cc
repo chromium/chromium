@@ -5,7 +5,6 @@
 #include "components/component_updater/component_installer.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <utility>

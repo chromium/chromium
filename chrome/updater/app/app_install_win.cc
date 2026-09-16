@@ -10,6 +10,7 @@
 #include <olectl.h>
 #include <shldisp.h>
 #include <shlobj.h>
+#include <stdint.h>
 #include <winhttp.h>
 #include <wrl/client.h>
 

@@ -4,8 +4,6 @@
 
 #include "components/update_client/ping_manager.h"
 
-#include <stdint.h>
-
 #include <initializer_list>
 #include <limits>
 #include <memory>

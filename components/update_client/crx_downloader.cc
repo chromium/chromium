@@ -4,7 +4,8 @@
 
 #include "components/update_client/crx_downloader.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <iterator>
 #include <string>
 #include <utility>

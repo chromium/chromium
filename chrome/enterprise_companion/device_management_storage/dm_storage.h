@@ -5,7 +5,8 @@
 #ifndef CHROME_ENTERPRISE_COMPANION_DEVICE_MANAGEMENT_STORAGE_DM_STORAGE_H_
 #define CHROME_ENTERPRISE_COMPANION_DEVICE_MANAGEMENT_STORAGE_DM_STORAGE_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

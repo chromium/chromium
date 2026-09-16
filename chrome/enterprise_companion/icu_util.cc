@@ -4,12 +4,13 @@
 
 #include "chrome/enterprise_companion/icu_util.h"
 
+#include <stdint.h>
+
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 
 #if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
 #include <array>
-#include <cstdint>
 #include <optional>
 
 #include "base/containers/heap_array.h"

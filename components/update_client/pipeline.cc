@@ -4,7 +4,8 @@
 
 #include "components/update_client/pipeline.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <queue>
 #include <string>

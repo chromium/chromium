@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_TEST_CONFIGURATOR_H_
 #define COMPONENTS_UPDATE_CLIENT_TEST_CONFIGURATOR_H_
 
+#include <stdint.h>
+
 #include <array>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

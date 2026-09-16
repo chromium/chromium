@@ -5,8 +5,8 @@
 #import "components/update_client/background_downloader_mac.h"
 
 #import <Foundation/Foundation.h>
+#include <stdint.h>
 
-#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>

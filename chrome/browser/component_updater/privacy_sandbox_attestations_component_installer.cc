@@ -4,7 +4,8 @@
 
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

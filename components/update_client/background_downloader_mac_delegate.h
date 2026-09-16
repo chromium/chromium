@@ -6,8 +6,7 @@
 #define COMPONENTS_UPDATE_CLIENT_BACKGROUND_DOWNLOADER_MAC_DELEGATE_H_
 
 #import <Foundation/Foundation.h>
-
-#include <cstdint>
+#include <stdint.h>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"

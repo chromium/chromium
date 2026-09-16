@@ -4,7 +4,8 @@
 
 #include "components/component_updater/installer_policies/first_party_sets_component_installer_policy.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

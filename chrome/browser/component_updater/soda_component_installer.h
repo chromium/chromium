@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_SODA_COMPONENT_INSTALLER_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_SODA_COMPONENT_INSTALLER_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "base/gtest_prod_util.h"

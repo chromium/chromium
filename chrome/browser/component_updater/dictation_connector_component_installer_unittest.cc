@@ -4,6 +4,8 @@
 
 #include "chrome/browser/component_updater/dictation_connector_component_installer.h"
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/files/file_path.h"

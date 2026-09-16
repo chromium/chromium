@@ -5,7 +5,8 @@
 #ifndef CHROME_UPDATER_EXTERNAL_CONSTANTS_H_
 #define CHROME_UPDATER_EXTERNAL_CONSTANTS_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <vector>
 

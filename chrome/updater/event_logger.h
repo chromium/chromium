@@ -5,7 +5,6 @@
 #ifndef CHROME_UPDATER_EVENT_LOGGER_H_
 #define CHROME_UPDATER_EVENT_LOGGER_H_
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

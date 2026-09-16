@@ -5,8 +5,8 @@
 #include <mach-o/getsect.h>
 #include <mach-o/ldsyms.h>
 #include <mach-o/loader.h>
+#include <stdint.h>
 
-#include <cstdint>
 #include <memory>
 #include <string>
 

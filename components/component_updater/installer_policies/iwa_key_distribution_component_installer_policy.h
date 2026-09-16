@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_IWA_KEY_DISTRIBUTION_COMPONENT_INSTALLER_POLICY_H_
 #define COMPONENTS_COMPONENT_UPDATER_INSTALLER_POLICIES_IWA_KEY_DISTRIBUTION_COMPONENT_INSTALLER_POLICY_H_
 
+#include <stdint.h>
+
 #include <array>
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>

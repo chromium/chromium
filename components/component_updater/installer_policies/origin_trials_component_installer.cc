@@ -4,7 +4,8 @@
 
 #include "components/component_updater/installer_policies/origin_trials_component_installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 #include <utility>
 #include <vector>

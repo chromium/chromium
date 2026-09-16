@@ -4,7 +4,8 @@
 
 #include "chrome/browser/component_updater/real_time_url_checks_allowlist_component_installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

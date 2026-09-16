@@ -5,7 +5,8 @@
 #ifndef CHROME_UPDATER_EXTERNAL_CONSTANTS_OVERRIDE_H_
 #define CHROME_UPDATER_EXTERNAL_CONSTANTS_OVERRIDE_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

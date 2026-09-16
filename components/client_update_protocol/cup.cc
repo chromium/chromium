@@ -4,8 +4,9 @@
 
 #include "components/client_update_protocol/cup.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <iterator>
 #include <optional>
 #include <string>

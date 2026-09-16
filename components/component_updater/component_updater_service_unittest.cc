@@ -5,7 +5,6 @@
 #include "components/component_updater/component_updater_service.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

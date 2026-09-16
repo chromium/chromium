@@ -4,7 +4,8 @@
 
 #include "chrome/browser/component_updater/file_type_policies_component_installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

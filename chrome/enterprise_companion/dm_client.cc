@@ -4,8 +4,9 @@
 
 #include "chrome/enterprise_companion/dm_client.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <ostream>
 #include <queue>

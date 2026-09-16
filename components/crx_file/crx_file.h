@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_CRX_FILE_CRX_FILE_H_
 #define COMPONENTS_CRX_FILE_CRX_FILE_H_
 
+#include <stdint.h>
+
+#include <array>
+
 namespace crx_file {
 
 // The magic string embedded in the header.

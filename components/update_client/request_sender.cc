@@ -4,6 +4,8 @@
 
 #include "components/update_client/request_sender.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <array>
 #include <optional>

@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_CLIENT_UPDATE_PROTOCOL_CUP_H_
 #define COMPONENTS_CLIENT_UPDATE_PROTOCOL_CUP_H_
 
+#include <stdint.h>
+
 #include <array>
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>

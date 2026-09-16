@@ -4,6 +4,8 @@
 
 #include "chrome/enterprise_companion/dm_client.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

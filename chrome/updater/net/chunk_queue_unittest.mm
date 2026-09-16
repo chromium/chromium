@@ -5,10 +5,10 @@
 #include "chrome/updater/net/chunk_queue.h"
 
 #import <Foundation/Foundation.h>
+#include <stdint.h>
 
 #include <algorithm>
 #include <cstddef>
-#include <cstdint>
 #include <string>
 
 #include "base/functional/bind.h"

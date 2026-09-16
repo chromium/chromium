@@ -4,7 +4,8 @@
 
 #include "chrome/updater/external_constants_override.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

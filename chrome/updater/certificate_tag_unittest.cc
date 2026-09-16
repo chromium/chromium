@@ -4,8 +4,9 @@
 
 #include "chrome/updater/certificate_tag.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <cstring>
 #include <functional>
 #include <memory>

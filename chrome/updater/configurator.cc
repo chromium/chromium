@@ -4,8 +4,9 @@
 
 #include "chrome/updater/configurator.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

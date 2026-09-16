@@ -4,8 +4,9 @@
 
 #include "components/update_client/protocol_parser_json.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>

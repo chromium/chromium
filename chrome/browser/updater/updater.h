@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UPDATER_UPDATER_H_
 #define CHROME_BROWSER_UPDATER_UPDATER_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 
 #include "base/functional/callback_forward.h"

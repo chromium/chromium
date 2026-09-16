@@ -4,8 +4,9 @@
 
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
 
+#include <stdint.h>
+
 #include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

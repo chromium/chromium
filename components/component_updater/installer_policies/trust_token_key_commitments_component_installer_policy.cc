@@ -4,7 +4,8 @@
 
 #include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

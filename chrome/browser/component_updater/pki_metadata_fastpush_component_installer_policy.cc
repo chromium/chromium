@@ -4,6 +4,8 @@
 
 #include "chrome/browser/component_updater/pki_metadata_fastpush_component_installer_policy.h"
 
+#include <stdint.h>
+
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

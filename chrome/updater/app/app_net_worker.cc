@@ -5,9 +5,9 @@
 #include "chrome/updater/app/app_net_worker.h"
 
 #include <grp.h>
+#include <stdint.h>
 #include <unistd.h>
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

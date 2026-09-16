@@ -4,7 +4,8 @@
 
 #include "chrome/updater/app/app_server.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

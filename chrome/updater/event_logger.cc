@@ -4,7 +4,8 @@
 
 #include "chrome/updater/event_logger.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

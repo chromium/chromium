@@ -4,6 +4,8 @@
 
 #include "components/component_updater/component_updater_service.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <map>
 #include <memory>

@@ -4,6 +4,8 @@
 
 #include "components/update_client/unpacker.h"
 
+#include <stdint.h>
+
 #include <iterator>
 #include <utility>
 #include <vector>

@@ -4,6 +4,8 @@
 
 #include "components/crx_file/crx_verifier.h"
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 

@@ -4,6 +4,8 @@
 
 #include "components/update_client/component.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <memory>
 #include <optional>

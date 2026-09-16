@@ -4,7 +4,8 @@
 
 #include "components/crx_file/crx_creator.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 

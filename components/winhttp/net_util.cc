@@ -4,7 +4,8 @@
 
 #include "components/winhttp/net_util.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <ostream>
 #include <string>
 

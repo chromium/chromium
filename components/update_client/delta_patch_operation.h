@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_DELTA_PATCH_OPERATION_H_
 #define COMPONENTS_UPDATE_CLIENT_DELTA_PATCH_OPERATION_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "base/files/file.h"

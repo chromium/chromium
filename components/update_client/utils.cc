@@ -5,6 +5,7 @@
 #include "components/update_client/utils.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <algorithm>
 #include <array>

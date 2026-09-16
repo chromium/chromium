@@ -4,7 +4,8 @@
 
 #include "chrome/updater/crash_reporter.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <map>
 #include <optional>
 #include <string>

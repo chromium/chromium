@@ -10,7 +10,6 @@
 // clang-format on
 #include <wrl/client.h>
 
-#include <cstdint>
 #include <string>
 
 #include "base/check_op.h"

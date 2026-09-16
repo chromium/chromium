@@ -4,6 +4,8 @@
 
 #include "components/component_updater/installer_policies/private_verification_tokens_installer_policy.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

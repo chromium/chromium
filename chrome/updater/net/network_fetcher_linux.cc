@@ -5,9 +5,9 @@
 #include <curl/curl.h>
 #include <curl/system.h>
 #include <dlfcn.h>
+#include <stdint.h>
 
 #include <array>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

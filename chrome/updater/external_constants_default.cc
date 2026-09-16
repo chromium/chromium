@@ -4,7 +4,8 @@
 
 #include "chrome/updater/external_constants_default.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string_view>
 #include <vector>

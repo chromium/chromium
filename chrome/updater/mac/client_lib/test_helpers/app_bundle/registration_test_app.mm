@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 #include <dispatch/dispatch.h>
+#include <stdint.h>
 
-#include <cstdint>
 #include <iostream>
 
 #include "base/command_line.h"

@@ -4,7 +4,8 @@
 
 #include "components/update_client/op_download.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 #include <utility>
 #include <vector>

@@ -5,7 +5,8 @@
 #ifndef CHROME_UPDATER_INSTALLER_H_
 #define CHROME_UPDATER_INSTALLER_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_OP_SPACE_CHECK_H_
 #define COMPONENTS_UPDATE_CLIENT_OP_SPACE_CHECK_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"

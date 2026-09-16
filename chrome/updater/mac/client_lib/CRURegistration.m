@@ -13,6 +13,7 @@
 
 #import <Foundation/Foundation.h>
 #import <dispatch/dispatch.h>
+#include <stdint.h>
 #include <unistd.h>
 
 #import "CRURegistration-Private.h"

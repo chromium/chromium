@@ -4,7 +4,8 @@
 
 #include "chrome/updater/win/test/test_initializer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <utility>
 

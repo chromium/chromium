@@ -4,7 +4,6 @@
 
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 
-#include <cstdint>
 #include <utility>
 #include <vector>
 

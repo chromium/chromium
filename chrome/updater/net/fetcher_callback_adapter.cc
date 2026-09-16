@@ -4,7 +4,8 @@
 
 #include "chrome/updater/net/fetcher_callback_adapter.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

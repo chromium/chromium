@@ -11,7 +11,6 @@
 #include <wrl/implements.h>
 
 #include <algorithm>
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <tuple>

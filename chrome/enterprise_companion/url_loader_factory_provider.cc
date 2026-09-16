@@ -4,6 +4,8 @@
 
 #include "chrome/enterprise_companion/url_loader_factory_provider.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <utility>
 

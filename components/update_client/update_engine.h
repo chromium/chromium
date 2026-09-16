@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_UPDATE_ENGINE_H_
 #define COMPONENTS_UPDATE_CLIENT_UPDATE_ENGINE_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <optional>

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
