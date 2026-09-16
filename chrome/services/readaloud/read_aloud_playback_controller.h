@@ -104,6 +104,7 @@ class ReadAloudPlaybackController
   // Evaluates whether all prerequisites for audio playback are satisfied.
   bool IsReadyToPlay() const;
   bool IsTextSet() const;
+  bool IsAudioInitialized() const;
 
   // Evaluates playback readiness. If all requirements are met, starts playback
   // pipeline, clears play_on_ready_, and returns true.

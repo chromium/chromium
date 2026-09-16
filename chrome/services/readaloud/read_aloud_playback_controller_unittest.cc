@@ -236,6 +236,22 @@ class ReadAloudPlaybackControllerTest : public testing::Test {
         mojo::PlatformHandle(foreign_socket.Take()));
   }
 
+  void InitializeAudioForTesting() {
+    mojo::PendingRemote<media::mojom::AudioOutputStream> stream;
+    stream_receiver_ = stream.InitWithNewPipeAndPassReceiver();
+    const media::AudioParameters params(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        media::ChannelLayoutConfig::Mono(), /*sample_rate=*/48000,
+        /*frames_per_buffer=*/480);
+    local_socket_ = std::make_unique<base::CancelableSyncSocket>();
+    media::mojom::ReadWriteAudioDataPipePtr data_pipe =
+        CreateValidDataPipe(params, local_socket_.get());
+    ASSERT_TRUE(data_pipe);
+    controller_remote_->InitializeAudio(std::move(stream), std::move(data_pipe),
+                                        params);
+    controller_remote_.FlushForTesting();
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -245,6 +261,8 @@ class ReadAloudPlaybackControllerTest : public testing::Test {
       controller_remote_;
   std::unique_ptr<MockReadAloudPlaybackControllerClient> mock_client_;
   std::unique_ptr<ReadAloudPlaybackController> controller_impl_;
+  mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver_;
+  std::unique_ptr<base::CancelableSyncSocket> local_socket_;
 };
 
 TEST_F(ReadAloudPlaybackControllerTest, CreateControllerSuccessfulBinding) {
@@ -940,6 +958,7 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentEmptySegmentsValidateSeque
 
 TEST_F(ReadAloudPlaybackControllerTest, PlayCalledBeforeSetTextContentDefersUntilTextSet) {
   CreateSession();
+  InitializeAudioForTesting();
 
   // Call Play() BEFORE SetTextContent() has been called.
   // play_on_ready_ should be set to true, deferring playback.
@@ -991,6 +1010,30 @@ TEST_F(ReadAloudPlaybackControllerTest, PauseClearsPlayOnReady) {
 
   EXPECT_TRUE(controller_remote_.is_connected());
   EXPECT_EQ(mock_client_->last_state(), read_aloud::mojom::PlaybackState::kPaused);
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, PlayCalledBeforeInitializeAudioDefersUntilAudioInitialized) {
+  CreateSession();
+
+  // Load text content first.
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Text loaded before audio initialization.";
+  segments.push_back(std::move(seg));
+  controller_remote_->SetTextContent(std::move(segments));
+  controller_remote_.FlushForTesting();
+
+  // Call Play() BEFORE InitializeAudio(). IsAudioInitialized() is false.
+  controller_remote_->Play();
+  controller_remote_.FlushForTesting();
+
+  EXPECT_TRUE(controller_remote_.is_connected());
+
+  // Now initialize audio via InitializeAudioForTesting().
+  InitializeAudioForTesting();
+
+  EXPECT_TRUE(controller_remote_.is_connected());
 }
 
 }  // namespace readaloud

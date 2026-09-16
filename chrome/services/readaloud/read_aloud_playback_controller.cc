@@ -146,6 +146,8 @@ void ReadAloudPlaybackController::InitializeAudio(
 
   audio_resources_ = std::move(resources);
   decoder_sequencer_.SetAudioQueue(audio_resources_->audio_segment_queue.get());
+
+  MaybePlayOnReady();
 }
 
 void ReadAloudPlaybackController::SetTextContent(
@@ -214,12 +216,17 @@ void ReadAloudPlaybackController::Play() {
 
 bool ReadAloudPlaybackController::IsReadyToPlay() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return IsTextSet();
+  return IsTextSet() && IsAudioInitialized();
 }
 
 bool ReadAloudPlaybackController::IsTextSet() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !segments_.empty();
+}
+
+bool ReadAloudPlaybackController::IsAudioInitialized() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return audio_resources_ && audio_resources_->audio_output_stream.is_bound();
 }
 
 bool ReadAloudPlaybackController::PlayIfReady() {
