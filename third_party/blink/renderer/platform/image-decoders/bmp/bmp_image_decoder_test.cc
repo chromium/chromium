@@ -63,6 +63,31 @@ Vector<uint8_t> MakeBmpWithTruncatedIccProfile() {
   return data;
 }
 
+Vector<uint8_t> MakeRle4Bmp(int32_t width, base::span<const uint8_t> rle_data) {
+  constexpr uint32_t kPixelDataOffset = 62;
+  Vector<uint8_t> data(kPixelDataOffset + rle_data.size());
+  auto writer = base::SpanWriter(base::span(data));
+  CHECK(writer.WriteU8LittleEndian('B'));
+  CHECK(writer.WriteU8LittleEndian('M'));
+  CHECK(writer.WriteU32LittleEndian(static_cast<uint32_t>(data.size())));
+  CHECK(writer.Skip(4u));
+  CHECK(writer.WriteU32LittleEndian(kPixelDataOffset));
+  CHECK(writer.WriteU32LittleEndian(40));
+  CHECK(writer.WriteI32LittleEndian(width));
+  CHECK(writer.WriteI32LittleEndian(1));
+  CHECK(writer.WriteU16LittleEndian(1));
+  CHECK(writer.WriteU16LittleEndian(4));
+  CHECK(writer.WriteU32LittleEndian(2));
+  CHECK(writer.WriteU32LittleEndian(static_cast<uint32_t>(rle_data.size())));
+  CHECK(writer.Skip(8u));
+  CHECK(writer.WriteU32LittleEndian(2));
+  CHECK(writer.Skip(4u));
+  CHECK(writer.WriteU32LittleEndian(0x00000000));
+  CHECK(writer.WriteU32LittleEndian(0x00FF0000));
+  CHECK(writer.Write(rle_data));
+  return data;
+}
+
 }  // anonymous namespace
 
 TEST(BMPImageDecoderTest, isSizeAvailable) {
@@ -222,6 +247,22 @@ TEST(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
   EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
   EXPECT_FALSE(decoder->Failed());
+}
+
+TEST(BMPImageDecoderTest, Rle4EncodedRunClipsAtRowBoundary) {
+  static constexpr uint8_t kRleData[] = {
+      2, 0x10,  // Two-pixel run overflows the one-pixel row.
+      0, 1};
+  Vector<uint8_t> bmp_data = MakeRle4Bmp(1, kRleData);
+  scoped_refptr<SharedBuffer> data = SharedBuffer::Create(base::span(bmp_data));
+  std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
+  decoder->SetData(data.get(), true);
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(SK_ColorRED, frame->Bitmap().getColor(0, 0));
 }
 
 TEST(BMPImageDecoderTest, RejectsTruncatedIccProfileBeforeAllocation) {
@@ -410,12 +451,12 @@ INSTANTIATE_TEST_SUITE_P(
         BMPSuiteEntry{"bad", "badheadersize"},
         BMPSuiteEntry{"bad", "badpalettesize"},
         BMPSuiteEntry{"bad", "badplanes"},
-        BMPSuiteEntry{"bad", "badrle"},
-        BMPSuiteEntry{"bad", "badrle4"},
-        BMPSuiteEntry{"bad", "badrle4bis"},
-        BMPSuiteEntry{"bad", "badrle4ter"},
-        BMPSuiteEntry{"bad", "badrlebis"},
-        BMPSuiteEntry{"bad", "badrleter"},
+        BMPSuiteEntry{"bad", "badrle", "rev1"},
+        BMPSuiteEntry{"bad", "badrle4", "rev1"},
+        BMPSuiteEntry{"bad", "badrle4bis", "rev1"},
+        BMPSuiteEntry{"bad", "badrle4ter", "rev1"},
+        BMPSuiteEntry{"bad", "badrlebis", "rev1"},
+        BMPSuiteEntry{"bad", "badrleter", "rev1"},
         BMPSuiteEntry{"bad", "badwidth"},
         BMPSuiteEntry{"bad", "pal8badindex"},
         BMPSuiteEntry{"bad", "reallybig"},

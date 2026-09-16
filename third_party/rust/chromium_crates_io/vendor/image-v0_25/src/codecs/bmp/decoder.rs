@@ -1951,30 +1951,43 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
                                     pixel_iter.for_each(|p| p.fill(0));
 
                                     for _ in 1..y_delta {
-                                        let row =
-                                            row_iter.next().ok_or(DecoderError::CorruptRleData)?;
-                                        row.fill(0);
+                                        if let Some(row) = row_iter.next() {
+                                            row.fill(0);
+                                        } else if self.spec_strictness == BmpSpec::Strict {
+                                            return Err(DecoderError::CorruptRleData.into());
+                                        } else {
+                                            return Ok(());
+                                        }
                                     }
 
                                     current_row += y_delta as u32;
-
-                                    pixel_iter = row_iter
-                                        .next()
-                                        .ok_or(DecoderError::CorruptRleData)?
-                                        .chunks_exact_mut(num_channels);
+                                    if let Some(next_row) = row_iter.next() {
+                                        pixel_iter = next_row.chunks_exact_mut(num_channels);
+                                    } else if self.spec_strictness == BmpSpec::Strict {
+                                        return Err(DecoderError::CorruptRleData.into());
+                                    } else {
+                                        return Ok(());
+                                    }
 
                                     for _ in 0..x {
-                                        pixel_iter
-                                            .next()
-                                            .ok_or(DecoderError::CorruptRleData)?
-                                            .fill(0);
+                                        if let Some(pixel) = pixel_iter.next() {
+                                            pixel.fill(0);
+                                        } else if self.spec_strictness == BmpSpec::Strict {
+                                            return Err(DecoderError::CorruptRleData.into());
+                                        } else {
+                                            break;
+                                        }
                                     }
                                 }
 
                                 for _ in 0..x_delta {
-                                    let pixel =
-                                        pixel_iter.next().ok_or(DecoderError::CorruptRleData)?;
-                                    pixel.fill(0);
+                                    if let Some(pixel) = pixel_iter.next() {
+                                        pixel.fill(0);
+                                    } else if self.spec_strictness == BmpSpec::Strict {
+                                        return Err(DecoderError::CorruptRleData.into());
+                                    } else {
+                                        break;
+                                    }
                                 }
                                 x += x_delta as u32;
                             }
@@ -1986,12 +1999,14 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
                                         let mut length = count;
                                         length += length & 1;
                                         rle_reader.read_exact(&mut rle_indices_buffer[..length])?;
-                                        if !set_8bit_pixel_run(
+                                        // Silently truncate if run overflows the row.
+                                        let success = set_8bit_pixel_run(
                                             &mut pixel_iter,
                                             p.unwrap(),
                                             rle_indices_buffer[..length].iter(),
                                             count,
-                                        ) {
+                                        );
+                                        if self.spec_strictness == BmpSpec::Strict && !success {
                                             return Err(DecoderError::CorruptRleData.into());
                                         }
                                     }
@@ -1999,12 +2014,14 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
                                         let mut length = count.div_ceil(2);
                                         length += length & 1;
                                         rle_reader.read_exact(&mut rle_indices_buffer[..length])?;
-                                        if !set_4bit_pixel_run(
+                                        // Silently truncate if run overflows the row.
+                                        let success = set_4bit_pixel_run(
                                             &mut pixel_iter,
                                             p.unwrap(),
                                             rle_indices_buffer[..length].iter(),
                                             count,
-                                        ) {
+                                        );
+                                        if self.spec_strictness == BmpSpec::Strict && !success {
                                             return Err(DecoderError::CorruptRleData.into());
                                         }
                                     }
@@ -2047,12 +2064,15 @@ impl<R: BufRead + Seek> BmpDecoder<R> {
                             }
                             ImageType::RLE4 => {
                                 let palette_index = rle_reader.read_byte()?;
-                                if !set_4bit_pixel_run(
+                                // Silently truncate if run overflows the row
+                                // (matches RLE8 encoded run behavior).
+                                let success = set_4bit_pixel_run(
                                     &mut pixel_iter,
                                     p.unwrap(),
                                     repeat(&palette_index),
                                     n_pixels,
-                                ) {
+                                );
+                                if self.spec_strictness == BmpSpec::Strict && !success {
                                     return Err(DecoderError::CorruptRleData.into());
                                 }
                             }
