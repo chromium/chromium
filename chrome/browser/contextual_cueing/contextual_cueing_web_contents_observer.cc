@@ -40,7 +40,6 @@ void ContextualCueingWebContentsObserver::DidFinishNavigation(
   if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
-  should_evaluate_cues_on_load_ = false;
   if (!navigation_handle->HasCommitted()) {
     return;
   }
