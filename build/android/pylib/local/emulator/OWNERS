@@ -1,3 +1,5 @@
 bpastene@chromium.org
 hypan@google.com
 jbudorick@chromium.org
+
+per-file fuchsia_*=file://build/fuchsia/OWNERS
