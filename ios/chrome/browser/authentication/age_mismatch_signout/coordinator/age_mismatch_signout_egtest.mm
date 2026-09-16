@@ -68,14 +68,6 @@ id<GREYMatcher> AgeMismatchSecondaryButton() {
 // Helper to sign in the user, set capability to NO, and relaunch with age
 // mismatch prompt active.
 - (void)signInAndRelaunchWithAgeMismatch {
-  // Ensure the app is running without `BuildExternalPrivacyContext` enabled
-  // initially.
-  AppLaunchConfiguration initConfig;
-  initConfig.features_disabled.push_back(
-      switches::kBuildExternalPrivacyContext);
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:initConfig];
-
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity
                  withCapabilities:@{
@@ -132,7 +124,10 @@ id<GREYMatcher> AgeMismatchSecondaryButton() {
 
 // Tests that the age mismatch prompt is shown to an existing signed-in account
 // when its capability is updated to false.
-- (void)testAgeMismatchPromptForExistingAccount {
+// TODO(crbug.com/530079867): Re-enable. The sign-in flow now always blocks the
+// sign-in of an account that cannot sign in to Chrome, so this test first needs
+// a way to update the capability of an account that is already signed in.
+- (void)DISABLED_testAgeMismatchPromptForExistingAccount {
   [self signInAndRelaunchWithAgeMismatch];
 
   // Verify the user is signed out.

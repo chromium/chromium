@@ -12,12 +12,10 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -36,7 +34,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
@@ -158,12 +155,6 @@ bool IsEmptyNTP(const web::WebState* web_state) {
       self.sceneState.browserProviderInterface.mainBrowserProvider.browser;
 
   ProfileIOS* profile = browser->GetProfile();
-
-  if (!base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext)) {
-    // Capabilities prefetching is no longer necessary; all capabilities fetches
-    // are deferred until External Privacy Contexts are built.
-    RunSystemCapabilitiesPrefetch(signin::GetIdentitiesOnDevice(profile));
-  }
 
   if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
     return;

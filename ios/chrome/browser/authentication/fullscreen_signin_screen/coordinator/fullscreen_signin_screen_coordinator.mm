@@ -5,10 +5,8 @@
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/ui/fullscreen_signin_screen_consumer.h"
@@ -168,21 +166,17 @@
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ self.viewController ]
                                            animated:animated];
-  if (base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext)) {
-    GetApplicationContext()
-        ->GetSystemIdentityManager()
-        ->RegisterExternalPrivacyContextProvider(self);
-    [self.browser->GetSceneState() addObserver:self];
-  }
+  GetApplicationContext()
+      ->GetSystemIdentityManager()
+      ->RegisterExternalPrivacyContextProvider(self);
+  [self.browser->GetSceneState() addObserver:self];
 }
 
 - (void)stop {
-  if (base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext)) {
-    GetApplicationContext()
-        ->GetSystemIdentityManager()
-        ->UnregisterExternalPrivacyContextProvider(self);
-    [self.browser->GetSceneState() removeObserver:self];
-  }
+  GetApplicationContext()
+      ->GetSystemIdentityManager()
+      ->UnregisterExternalPrivacyContextProvider(self);
+  [self.browser->GetSceneState() removeObserver:self];
   [self stopAddAccountCoordinator];
   [self stopIdentityChooserCoordinator];
   self.delegate = nil;
@@ -464,8 +458,7 @@
 #pragma mark - Private
 
 - (void)notifyProviderReadyIfUIAvailable {
-  if (base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext) &&
-      [self isUIAvailableToShowIOSPrompt]) {
+  if ([self isUIAvailableToShowIOSPrompt]) {
     GetApplicationContext()
         ->GetSystemIdentityManager()
         ->ExternalPrivacyContextProviderReady(self);

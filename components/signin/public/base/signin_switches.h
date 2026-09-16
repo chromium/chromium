@@ -91,9 +91,12 @@ BASE_DECLARE_FEATURE(kBoundSessionCredentialsKillSwitch);
 
 #if BUILDFLAG(IS_IOS)
 // Feature flag to build the External Privacy Context, which is used to provide
-// the capability service with device signals.
+// the capability service with device signals. The feature is fully launched and
+// is no longer checked: it is only kept as the owner of the
+// `AgeMismatchLearnMoreUrl` param below.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kBuildExternalPrivacyContext);
+// URL of the help page opened from the age mismatch sign-out prompt.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<std::string>
     kBuildExternalPrivacyContextAgeMismatchLearnMoreUrl;

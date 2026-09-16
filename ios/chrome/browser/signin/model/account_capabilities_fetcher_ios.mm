@@ -8,7 +8,6 @@
 #import <optional>
 
 #import "base/containers/to_vector.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -74,32 +73,21 @@ void AccountCapabilitiesFetcherIOS::StartImpl() {
       base::ToVector(AccountCapabilities::GetSupportedAccountCapabilityNames(),
                      [](std::string_view sv) { return std::string(sv); });
 
-  if (base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext)) {
-    auto partial_callback =
-        base::BindRepeating(&AccountCapabilitiesFromCapabilitiesMap)
-            .Then(base::BindRepeating(
-                &AccountCapabilitiesFetcherIOS::UpdateFetchedCapabilities,
-                weak_ptr_factory_.GetWeakPtr()));
+  auto partial_callback =
+      base::BindRepeating(&AccountCapabilitiesFromCapabilitiesMap)
+          .Then(base::BindRepeating(
+              &AccountCapabilitiesFetcherIOS::UpdateFetchedCapabilities,
+              weak_ptr_factory_.GetWeakPtr()));
 
-    auto completion_callback = base::BindOnce(
-        &AccountCapabilitiesFetcherIOS::CompleteFetchAndMaybeDestroySelf,
-        weak_ptr_factory_.GetWeakPtr());
+  auto completion_callback = base::BindOnce(
+      &AccountCapabilitiesFetcherIOS::CompleteFetchAndMaybeDestroySelf,
+      weak_ptr_factory_.GetWeakPtr());
 
-    GetApplicationContext()
-        ->GetSystemIdentityManager()
-        ->FetchCapabilitiesWithPartial(identity, capability_names,
-                                       std::move(completion_callback),
-                                       std::move(partial_callback));
-  } else {
-    auto callback =
-        base::BindOnce(&AccountCapabilitiesFromCapabilitiesMap)
-            .Then(base::BindOnce(&AccountCapabilitiesFetcherIOS::
-                                     UpdateAndCompleteFetchAndMaybeDestroySelf,
-                                 weak_ptr_factory_.GetWeakPtr()));
-
-    GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
-        identity, capability_names, std::move(callback));
-  }
+  GetApplicationContext()
+      ->GetSystemIdentityManager()
+      ->FetchCapabilitiesWithPartial(identity, capability_names,
+                                     std::move(completion_callback),
+                                     std::move(partial_callback));
 }
 
 }  // namespace ios

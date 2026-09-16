@@ -8,7 +8,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
@@ -31,8 +30,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
@@ -115,11 +112,6 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     dispatcher_ = nil;
 
     PlatformTest::TearDown();
-  }
-
-  FakeSystemIdentityManager* fake_system_identity_manager() {
-    return FakeSystemIdentityManager::FromSystemIdentityManager(
-        GetApplicationContext()->GetSystemIdentityManager());
   }
 
  protected:
@@ -427,42 +419,6 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
   histogram_tester_.ExpectTotalCount("IOS.BackgroundTimeBeforeColdStart", 0);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   histogram_tester_.ExpectTotalCount("IOS.BackgroundTimeBeforeColdStart", 1);
-}
-
-TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      switches::kBuildExternalPrivacyContext);
-
-  // Set up fake identity with account capabilities.
-  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
-  fake_system_identity_manager()->AddIdentity(identity);
-
-  AccountCapabilitiesTestMutator* mutator =
-      fake_system_identity_manager()->GetPendingCapabilitiesMutator(identity);
-  mutator->SetAllSupportedCapabilities(true);
-
-  // Set up expected app state that prefetches capabilities.
-  [startup_information_ setIsColdStart:YES];
-
-  InsertNewWebState(0, GURL(kURL));
-  InsertNewWebState(1, GURL(kChromeUINewTabURL));
-  WebStateList* web_state_list = GetWebStateList();
-  web_state_list->ActivateWebStateAt(0);
-  favicon::WebFaviconDriver::CreateForWebState(
-      web_state_list->GetActiveWebState(),
-      /*favicon_service=*/nullptr);
-
-  ASSERT_FALSE(fake_system_identity_manager()
-                   ->GetVisibleCapabilities(identity)
-                   .AreAnyCapabilitiesKnown());
-
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(fake_system_identity_manager()
-                  ->GetVisibleCapabilities(identity)
-                  .AreAnyCapabilitiesKnown());
 }
 
 // Tests that the tab group in grid view is opened if Chrome is activated in the

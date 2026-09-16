@@ -4,10 +4,8 @@
 
 #include "components/signin/public/identity_manager/account_capabilities.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -146,8 +144,6 @@ TEST_F(AccountCapabilitiesTest, CanSignInToChrome) {
 }
 
 TEST_F(AccountCapabilitiesTest, MustFetchAppleAgeRangeInChrome) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kBuildExternalPrivacyContext};
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.must_fetch_apple_age_range_in_chrome(),
             signin::Tribool::kUnknown);
@@ -163,8 +159,6 @@ TEST_F(AccountCapabilitiesTest, MustFetchAppleAgeRangeInChrome) {
 }
 
 TEST_F(AccountCapabilitiesTest, MustSkipAppleAgeRangeInChrome) {
-  base::test::ScopedFeatureList feature_list{
-      switches::kBuildExternalPrivacyContext};
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.must_skip_apple_age_range_in_chrome(),
             signin::Tribool::kUnknown);

@@ -2106,10 +2106,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
       addAgent:[[IncognitoReauthSceneAgent alloc]
                    initWithReauthModule:[[ReauthenticationModule alloc] init]]];
 
-  if (base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext)) {
-    [_sceneState addAgent:[[SigninAccountCapabilitiesSceneAgent alloc]
-                              initWithSceneUIProvider:self]];
-  }
+  [_sceneState addAgent:[[SigninAccountCapabilitiesSceneAgent alloc]
+                            initWithSceneUIProvider:self]];
 
   [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
   [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];

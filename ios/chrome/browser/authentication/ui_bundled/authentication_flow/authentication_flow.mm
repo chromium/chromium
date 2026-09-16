@@ -22,7 +22,6 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/gaia_id_hash.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/account_pref_utils.h"
 #import "components/sync/service/sync_service.h"
@@ -611,23 +610,18 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 }
 
 - (void)fetchCanSignInToChromeCapabilityStep {
-  if (base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext)) {
-    [_performer fetchCanSignInToChromeCapability:_identityToSignIn
-                                         profile:[self profile]];
-  } else {
-    [self continueFlow];
-  }
+  [_performer fetchCanSignInToChromeCapability:_identityToSignIn
+                                       profile:[self profile]];
 }
 
 - (void)showAgeMismatchDialogIfNeededStep {
-  if (base::FeatureList::IsEnabled(switches::kBuildExternalPrivacyContext) &&
-      !_canSignInToChrome) {
-    [_performer showAgeMismatchDialogForIdentity:_identityToSignIn
-                                  viewController:_presentingViewController
-                                         browser:_browser];
-  } else {
+  if (_canSignInToChrome) {
     [self continueFlow];
+    return;
   }
+  [_performer showAgeMismatchDialogForIdentity:_identityToSignIn
+                                viewController:_presentingViewController
+                                       browser:_browser];
 }
 
 // Fetches ManagedAccountsSigninRestriction policy, if needed.

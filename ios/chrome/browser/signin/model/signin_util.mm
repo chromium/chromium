@@ -6,20 +6,17 @@
 
 #import "base/check.h"
 #import "base/check_is_test.h"
-#import "base/containers/to_vector.h"
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
-#import "components/signin/public/identity_manager/account_capabilities.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
 #import "google_apis/gaia/gaia_id.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -28,7 +25,6 @@
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util_internal.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
@@ -196,22 +192,6 @@ bool GetPreRestoreHistorySyncEnabled(PrefService* profile_pref) {
   }
   std::optional<bool> history_sync_enabled = dict.FindBool(kHistorySyncEnabled);
   return history_sync_enabled.value_or(false);
-}
-
-base::span<const std::string_view> GetAccountCapabilityNamesForPrefetch() {
-  return AccountCapabilities::GetSupportedAccountCapabilityNames();
-}
-
-void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities) {
-  for (id<SystemIdentity> identity : identities) {
-    GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
-        identity,
-        base::ToVector(GetAccountCapabilityNamesForPrefetch(),
-                       [](std::string_view sv) { return std::string(sv); }),
-        base::BindOnce(^(std::map<std::string, SystemIdentityCapabilityResult>){
-            // Ignore the result.
-        }));
-  }
 }
 
 void ResetDeviceRestoreDataForTesting() {
