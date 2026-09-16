@@ -68,9 +68,8 @@ net::structured_headers::Item PolicyValueToItem(
       std::optional<std::string_view> token =
           DocumentPolicyEnumValueToToken(feature, value.IntValue());
       CHECK(token);
-      return net::structured_headers::Item{
-          std::string(*token),
-          net::structured_headers::Item::ItemType::kTokenType};
+      return net::structured_headers::Item(net::structured_headers::Item::token,
+                                           *token);
     }
     default:
       NOTREACHED();

@@ -148,9 +148,10 @@ namespace {
 // structured headers as described in
 // https://www.rfc-editor.org/rfc/rfc8941.html.
 const AtomicString SerializeStringHeader(const std::string& str) {
-  std::string output =
-      net::structured_headers::SerializeItem(net::structured_headers::Item(str))
-          .value_or(std::string());
+  std::string output = net::structured_headers::SerializeItem(
+                           net::structured_headers::Item(
+                               net::structured_headers::Item::string, str))
+                           .value_or(std::string());
 
   return AtomicString(output.c_str());
 }
