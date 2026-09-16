@@ -61,6 +61,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   - In test code, the use of `try`-with-resources is recommended but not required.
 - **View Inflation**: Prefer using `AsyncViewInflation` where possible to keep the Main Thread free and reduce startup latency.
 - **Imports**: Use `import` statements whenever possible instead of using fully qualified class names within the code.
+- **Avoid Ambiguous `var`**: Avoid using `var` when the type is not obvious from immediately surrounding code.
 - **Javadoc & Method Contracts**:
   - Keep Javadoc comments updated to reflect code changes. Javadoc must accurately capture what the method does and its proper contract (parameters, return values, side effects, and expectations).
   - When updating classes, always read the top-level class comment to catch any critical context, invariants, or restrictions (what is / what is not allowed).
