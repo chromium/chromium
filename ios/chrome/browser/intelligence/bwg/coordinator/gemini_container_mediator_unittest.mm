@@ -17,6 +17,7 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -58,6 +59,7 @@
 
 @interface GeminiContainerMediator (Testing)
 - (void)cancelPageContextGeneration;
+- (void)setActuationActive:(BOOL)actuationActive;
 @end
 
 // Fake PageContextWrapper for testing page context generation.
@@ -82,6 +84,8 @@
 @property(nonatomic, assign, getter=isZeroState) BOOL zeroState;
 @property(nonatomic, assign) NSInteger zeroStateChangeCount;
 @property(nonatomic, assign) BOOL dismissKeyboardCalled;
+@property(nonatomic, assign) BOOL worklogCompact;
+@property(nonatomic, assign, getter=isActuationActive) BOOL actuationActive;
 @end
 
 @implementation FakeGeminiContainerConsumer
@@ -92,6 +96,14 @@
 
 - (void)dismissKeyboard {
   _dismissKeyboardCalled = YES;
+}
+
+- (void)setWorklogCompact:(BOOL)compact {
+  _worklogCompact = compact;
+}
+
+- (void)setActuationActive:(BOOL)active {
+  _actuationActive = active;
 }
 @end
 
@@ -178,6 +190,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
         initWithEntryPoint:gemini::EntryPoint::Promo];
 
     mediator_ = [[GeminiContainerMediator alloc] initWithBrowser:browser_.get()
+                                                    actorService:nullptr
                                                     eventHandler:&delegate_];
     mediator_.containerHandler = mock_container_handler_;
     mediator_.geminiHandler = mock_gemini_handler_;
@@ -440,6 +453,7 @@ TEST_F(GeminiContainerMediatorTest,
 TEST_F(GeminiContainerMediatorTest, TestNullDelegate) {
   GeminiContainerMediator* null_delegate_mediator =
       [[GeminiContainerMediator alloc] initWithBrowser:browser_.get()
+                                          actorService:nullptr
                                           eventHandler:nullptr];
 
   // Verify that calling delegate methods does not crash when delegate is null.
@@ -697,6 +711,25 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_FALSE(dismissed);
 }
 
+// Tests that container detent change updates consumer's worklog compact state.
+TEST_F(GeminiContainerMediatorTest, TestDidChangeDetentUpdatesWorklogCompact) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMinimized];
+  EXPECT_TRUE(consumer.worklogCompact);
+
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMedium];
+  EXPECT_FALSE(consumer.worklogCompact);
+}
+
 // Tests that didSelectSuggestion calls UpdatePromptAction with the entry point
 // from startupState, the suggestion's query, and shouldAutoSubmit set to YES.
 TEST_F(GeminiContainerMediatorTest,
@@ -844,6 +877,51 @@ TEST_F(GeminiContainerMediatorTest,
   tab_helper->PageLoaded(web_state, web::PageLoadCompletionStatus::SUCCESS);
 
   EXPECT_FALSE(fake_wrapper.populateCalled);
+}
+
+// Tests the actuation lifecycle: activating actuation, updating height, and
+// deactivating actuation back to the expanded response.
+TEST_F(GeminiContainerMediatorTest, TestActuationLifecycle) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+
+  // Actuation begins: sheet minimizes with grabber shown.
+  OCMExpect([mock_container_handler_
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized]);
+  OCMExpect([mock_container_handler_ setAssistantContainerGrabberHidden:NO
+                                                               animated:YES]);
+  [mediator_ setActuationActive:YES];
+  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+  EXPECT_TRUE(consumer.isActuationActive);
+
+  // Worklog reports height: minimized detent height updates.
+  OCMExpect(
+      [mock_container_handler_ setAssistantContainerMinimizedDetentHeight:120]);
+  OCMExpect([mock_container_handler_
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized]);
+  [mediator_ containerDidChangeActuationHeight:120];
+  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+
+  // Actuation ends: detent height resets and expands to response.
+  [mediator_
+      didUpdateProcessingStatus:ios::provider::GeminiClientMode::kResponding
+                      sessionID:nil
+                 conversationID:nil];
+  OCMExpect(
+      [mock_container_handler_ setAssistantContainerMinimizedDetentHeight:
+                                   kAssistantContainerMinimizedDetentHeight]);
+  OCMExpect([mock_container_handler_
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium]);
+  OCMExpect([mock_container_handler_ setAssistantContainerGrabberHidden:NO
+                                                               animated:YES]);
+  [mediator_ setActuationActive:NO];
+  EXPECT_OCMOCK_VERIFY(mock_container_handler_);
+  EXPECT_FALSE(consumer.isActuationActive);
 }
 
 }  // namespace

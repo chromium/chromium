@@ -475,6 +475,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
 
   gemini_container_mediator_ =
       [[GeminiContainerMediator alloc] initWithBrowser:browser_
+                                          actorService:nullptr
                                           eventHandler:this];
   shared_tabs_delegate_bridge_ =
       [[GeminiSharedTabsDelegateBridge alloc] initWithBrowserAgent:this];

@@ -16,6 +16,12 @@
 // Instructs the container to dismiss any active keyboard.
 - (void)dismissKeyboard;
 
+// Sets whether the actuation worklog should be displayed in compact mode.
+- (void)setWorklogCompact:(BOOL)compact;
+
+// Notifies consumer whether actuation is currently active.
+- (void)setActuationActive:(BOOL)active;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_GEMINI_CONTAINER_CONSUMER_H_

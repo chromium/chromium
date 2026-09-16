@@ -8,10 +8,14 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
-#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_consumer.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_mutator.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_mutator.h"
+
+namespace actor {
+class ActorService;
+}  // namespace actor
 
 namespace gemini {
 enum class EntryPoint;
@@ -19,7 +23,6 @@ enum class EntryPoint;
 
 class Browser;
 class GeminiContainerMediatorEventHandler;
-class WebStateList;
 @class GeminiConfiguration;
 @class GeminiGatewayManager;
 @class GeminiPageContext;
@@ -32,6 +35,7 @@ class WebStateList;
 
 // Mediator for the Gemini container.
 @interface GeminiContainerMediator : NSObject <AssistantContainerDelegate,
+                                               GeminiContainerMutator,
                                                GeminiViewStateDelegate,
                                                GeminiZeroStateMutator>
 
@@ -66,6 +70,7 @@ class WebStateList;
 // TODO(crbug.com/537719170): Mediator should be the target directly.
 // Initializes the mediator with the given dependencies.
 - (instancetype)initWithBrowser:(Browser*)browser
+                   actorService:(actor::ActorService*)actorService
                    eventHandler:
                        (GeminiContainerMediatorEventHandler*)eventHandler
     NS_DESIGNATED_INITIALIZER;
@@ -118,6 +123,10 @@ class WebStateList;
 
 // Fetches zero-state suggestions for the active web state.
 - (void)fetchZeroStateSuggestions:(GeminiStartupState*)startupState;
+
+// Handles initial setup for UI state, page context generation, and connecting
+// observed services (e.g. actor service) when the container session starts.
+- (void)connect;
 
 // Disconnects raw pointers owned by the mediator and dismisses handlers.
 // Handles all the cleanup that needs to happen before mediator dealloc.

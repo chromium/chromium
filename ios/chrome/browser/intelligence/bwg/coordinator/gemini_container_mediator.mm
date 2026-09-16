@@ -12,6 +12,9 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_ui_state_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -49,7 +52,8 @@ using ios::provider::GeminiDormantReason;
 using ios::provider::GeminiViewMode;
 using ios::provider::GeminiViewState;
 
-@interface GeminiContainerMediator () <GeminiContainerUIStateManagerDelegate>
+@interface GeminiContainerMediator () <ActorTaskUpdatesObserver,
+                                       GeminiContainerUIStateManagerDelegate>
 @end
 
 @implementation GeminiContainerMediator {
@@ -57,6 +61,8 @@ using ios::provider::GeminiViewState;
   raw_ptr<WebStateList> _webStateList;
   // Profile for the browser.
   raw_ptr<ProfileIOS> _profile;
+  // Service tracking actor tasks and updates.
+  raw_ptr<actor::ActorService> _actorService;
   // Track if we have triggered feature engagement for Gemini Live IPH or New
   // Badge.
   BOOL _hasTriggeredGeminiLiveIPH;
@@ -66,6 +72,7 @@ using ios::provider::GeminiViewState;
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
+                   actorService:(actor::ActorService*)actorService
                    eventHandler:
                        (GeminiContainerMediatorEventHandler*)eventHandler {
   self = [super init];
@@ -75,6 +82,7 @@ using ios::provider::GeminiViewState;
       _webStateList = browser->GetWebStateList();
       _profile = browser->GetProfile();
     }
+    _actorService = actorService;
     _gatewayManager = [[GeminiGatewayManager alloc] initWithBrowser:browser
                                                   viewStateDelegate:self];
     _stateManager = [[GeminiContainerUIStateManager alloc] init];
@@ -147,7 +155,7 @@ using ios::provider::GeminiViewState;
 }
 
 - (void)fetchZeroStateSuggestions:(GeminiStartupState*)startupState {
-  if (!self.zeroStateConsumer) {
+  if (!self.zeroStateConsumer || !startupState) {
     return;
   }
 
@@ -178,6 +186,9 @@ using ios::provider::GeminiViewState;
 }
 
 - (void)connect {
+  if (_actorService) {
+    _actorService->AddTaskUpdatesObserver(self);
+  }
   [self setupInitialUIState];
   [self requestActivePageContextGeneration];
 }
@@ -208,6 +219,11 @@ using ios::provider::GeminiViewState;
 - (void)disconnect {
   [self onFloatyDismiss];
 
+  if (_actorService) {
+    _actorService->RemoveTaskUpdatesObserver(self);
+    _actorService = nullptr;
+  }
+
   self.zeroStateConsumer = nil;
   _startupState = nil;
   _eventHandler = nullptr;
@@ -223,10 +239,34 @@ using ios::provider::GeminiViewState;
   _stateManager.delegate = nil;
 }
 
+#pragma mark - ActorTaskUpdatesObserver
+
+- (void)didRegisterAsObserverForTaskID:(actor::ActorTaskId)taskID
+                             taskTitle:(NSString*)taskTitle
+                            taskUpdate:(NSString*)taskUpdate
+                          currentState:(actor::ActorTaskState)state
+                             webStates:(NSArray<NSNumber*>*)webStatesIDs {
+  [self setActuationActive:!actor::IsTerminalState(state)];
+}
+
+- (void)actorTaskWithID:(actor::ActorTaskId)taskID
+         didChangeState:(actor::ActorTaskState)newState
+              fromState:(actor::ActorTaskState)oldState {
+  [self setActuationActive:!actor::IsTerminalState(newState)];
+}
+
+- (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
+                    finalState:(actor::ActorTaskState)finalState {
+  [self setActuationActive:NO];
+}
+
 #pragma mark - AssistantContainerDelegate
 
 - (void)assistantContainerDidUpdateDetentHeights:
     (AssistantContainerViewController*)container {
+  if (_stateManager.currentUIState.actuating) {
+    return;
+  }
   NSInteger collapsedHeight = [container heightForDetent:kMinimized];
   NSInteger extendedHeight = [container heightForDetent:kMedium];
 
@@ -238,13 +278,20 @@ using ios::provider::GeminiViewState;
 - (void)assistantContainer:(AssistantContainerViewController*)container
            didChangeDetent:(AssistantContainerDetent)newDetent {
   [_stateManager updateDetent:newDetent];
-  if ([_stateManager shouldBeDismissed]) {
+  BOOL minimized = (newDetent == kMinimized);
+  if (_stateManager.currentUIState.actuating) {
+    [self.containerHandler setAssistantContainerGrabberHidden:NO animated:YES];
+  } else if ([_stateManager shouldBeDismissed]) {
     [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
   }
+  [self.consumer setWorklogCompact:minimized];
 }
 
 - (void)assistantContainerDidRequestDismissal:
     (AssistantContainerViewController*)container {
+  if (_stateManager.currentUIState.actuating) {
+    return;
+  }
   [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
 }
 
@@ -332,6 +379,17 @@ using ios::provider::GeminiViewState;
   }
 
   [_stateManager handleResponseCancellationWithReason:reason];
+}
+
+- (void)setActuationActive:(BOOL)actuationActive {
+  if (_stateManager.currentUIState.actuating == actuationActive) {
+    return;
+  }
+  if (!actuationActive) {
+    [self.containerHandler setAssistantContainerMinimizedDetentHeight:
+                               kAssistantContainerMinimizedDetentHeight];
+  }
+  [_stateManager handleActuationStateChanged:actuationActive];
 }
 
 #pragma mark - GeminiZeroStateMutator
@@ -442,6 +500,31 @@ using ios::provider::GeminiViewState;
       setAssistantContainerGrabberHidden:!containerUIState.hasGrabber
                                 animated:YES];
   [self.consumer updateZeroStateVisibility:containerUIState.zeroStateVisible];
+  [self.consumer setWorklogCompact:(containerUIState.detent == kMinimized)];
+  [self.consumer setActuationActive:containerUIState.actuating];
+}
+
+#pragma mark - GeminiContainerMutator
+
+- (void)containerKeyboardDidShowWithDuration:(NSTimeInterval)duration
+                                       curve:(UIViewAnimationCurve)curve {
+  [self.containerHandler
+      animateAssistantContainerToDetent:AssistantContainerDetent::kLarge
+                               duration:duration
+                                  curve:curve];
+}
+
+- (void)containerDidChangeActuationHeight:(CGFloat)height {
+  if (!_stateManager.currentUIState.actuating) {
+    return;
+  }
+  [self.containerHandler
+      setAssistantContainerMinimizedDetentHeight:ceil(height)];
+  if (_stateManager.currentUIState.detent ==
+      AssistantContainerDetent::kMinimized) {
+    [self.containerHandler
+        animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
+  }
 }
 
 #pragma mark - Private

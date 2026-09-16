@@ -25,9 +25,15 @@ struct GeminiContainerUIState {
   // Returns a minimized state with or without a grabber.
   static GeminiContainerUIState Minimized(BOOL has_grabber);
 
+  // Returns an actuating state that takes over the UI until completed.
+  static GeminiContainerUIState Actuating();
+
+  bool operator==(const GeminiContainerUIState& other) const = default;
+
   AssistantContainerDetent detent;
   BOOL hasGrabber;
   BOOL zeroStateVisible;
+  BOOL actuating;
 };
 
 // Delegate protocol for handling UI state changes from the state manager.
@@ -44,8 +50,14 @@ struct GeminiContainerUIState {
 // Delegate to receive UI state update notifications.
 @property(nonatomic, weak) id<GeminiContainerUIStateManagerDelegate> delegate;
 
+// Current UI state of the container.
+@property(nonatomic, readonly) GeminiContainerUIState currentUIState;
+
 // Resets and applies the initial container UI state.
 - (void)setupInitialUIState;
+
+// Handles actuation state transitions.
+- (void)handleActuationStateChanged:(BOOL)actuating;
 
 // Updates the view mode and notifies the delegate if UI state changes.
 - (void)transitionToMode:(ios::provider::GeminiViewMode)mode;

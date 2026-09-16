@@ -67,17 +67,20 @@ TEST_F(GeminiContainerUIStateManagerTest, TestUIStateFactoryMethods) {
   EXPECT_EQ(AssistantContainerDetent::kMedium, default_zero_state.detent);
   EXPECT_TRUE(default_zero_state.hasGrabber);
   EXPECT_TRUE(default_zero_state.zeroStateVisible);
+  EXPECT_FALSE(default_zero_state.actuating);
 
   GeminiContainerUIState custom_zero_state =
       GeminiContainerUIState::ZeroState(AssistantContainerDetent::kLarge);
   EXPECT_EQ(AssistantContainerDetent::kLarge, custom_zero_state.detent);
   EXPECT_TRUE(custom_zero_state.hasGrabber);
   EXPECT_TRUE(custom_zero_state.zeroStateVisible);
+  EXPECT_FALSE(custom_zero_state.actuating);
 
   GeminiContainerUIState expanded = GeminiContainerUIState::ExpandedResponse();
   EXPECT_EQ(AssistantContainerDetent::kMedium, expanded.detent);
   EXPECT_TRUE(expanded.hasGrabber);
   EXPECT_FALSE(expanded.zeroStateVisible);
+  EXPECT_FALSE(expanded.actuating);
 
   GeminiContainerUIState minimized_without_grabber =
       GeminiContainerUIState::Minimized(/*has_grabber=*/NO);
@@ -85,6 +88,7 @@ TEST_F(GeminiContainerUIStateManagerTest, TestUIStateFactoryMethods) {
             minimized_without_grabber.detent);
   EXPECT_FALSE(minimized_without_grabber.hasGrabber);
   EXPECT_FALSE(minimized_without_grabber.zeroStateVisible);
+  EXPECT_FALSE(minimized_without_grabber.actuating);
 
   GeminiContainerUIState minimized_with_grabber =
       GeminiContainerUIState::Minimized(/*has_grabber=*/YES);
@@ -92,6 +96,13 @@ TEST_F(GeminiContainerUIStateManagerTest, TestUIStateFactoryMethods) {
             minimized_with_grabber.detent);
   EXPECT_TRUE(minimized_with_grabber.hasGrabber);
   EXPECT_FALSE(minimized_with_grabber.zeroStateVisible);
+  EXPECT_FALSE(minimized_with_grabber.actuating);
+
+  GeminiContainerUIState actuating = GeminiContainerUIState::Actuating();
+  EXPECT_EQ(AssistantContainerDetent::kMinimized, actuating.detent);
+  EXPECT_TRUE(actuating.hasGrabber);
+  EXPECT_FALSE(actuating.zeroStateVisible);
+  EXPECT_TRUE(actuating.actuating);
 }
 
 // Tests that initial state properties are correctly set upon initialization.
@@ -103,6 +114,7 @@ TEST_F(GeminiContainerUIStateManagerTest, TestInitialProperties) {
             state_manager_.currentUIState.detent);
   EXPECT_FALSE(state_manager_.currentUIState.hasGrabber);
   EXPECT_FALSE(state_manager_.currentUIState.zeroStateVisible);
+  EXPECT_FALSE(state_manager_.currentUIState.actuating);
   EXPECT_FALSE(state_manager_.hasConversation);
 }
 
@@ -531,4 +543,65 @@ TEST_F(GeminiContainerUIStateManagerTest, TestShouldBeDismissedNonFloatyMode) {
   [state_manager_ transitionToMode:ios::provider::GeminiViewMode::kLive];
   [state_manager_ updateDetent:AssistantContainerDetent::kMinimized];
   EXPECT_FALSE([state_manager_ shouldBeDismissed]);
+}
+
+// Tests that actuation defers response expansion until it ends.
+TEST_F(GeminiContainerUIStateManagerTest, TestActuationDefersExpansion) {
+  [state_manager_ setupInitialUIState];
+  [delegate_ reset];
+
+  [state_manager_ handleActuationStateChanged:YES];
+  EXPECT_EQ(1, delegate_.changeCount);
+  EXPECT_TRUE(state_manager_.currentUIState.actuating);
+  EXPECT_EQ(AssistantContainerDetent::kMinimized, delegate_.lastUIState.detent);
+  EXPECT_TRUE(delegate_.lastUIState.actuating);
+
+  // Transitioning processing status while actuating should not notify delegate.
+  [delegate_ reset];
+  [state_manager_
+      transitionToProcessingStatus:ios::provider::GeminiClientMode::kThinking];
+  EXPECT_EQ(0, delegate_.changeCount);
+  EXPECT_TRUE(state_manager_.currentUIState.actuating);
+
+  [state_manager_ transitionToProcessingStatus:ios::provider::GeminiClientMode::
+                                                   kResponding];
+  EXPECT_EQ(0, delegate_.changeCount);
+  EXPECT_TRUE(state_manager_.currentUIState.actuating);
+
+  // Deactivating actuation should restore to expanded response.
+  [state_manager_ handleActuationStateChanged:NO];
+  EXPECT_EQ(1, delegate_.changeCount);
+  EXPECT_FALSE(state_manager_.currentUIState.actuating);
+  EXPECT_EQ(AssistantContainerDetent::kMedium, delegate_.lastUIState.detent);
+  EXPECT_FALSE(delegate_.lastUIState.actuating);
+}
+
+// Tests that shouldBeDismissed returns NO while actuating at minimized detent.
+TEST_F(GeminiContainerUIStateManagerTest, TestShouldBeDismissedWhileActuating) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kChromeNextIa);
+
+  [state_manager_ setupInitialUIState];
+  [state_manager_ updateDetent:AssistantContainerDetent::kMinimized];
+  EXPECT_TRUE([state_manager_ shouldBeDismissed]);
+
+  [state_manager_ handleActuationStateChanged:YES];
+  EXPECT_FALSE([state_manager_ shouldBeDismissed]);
+}
+
+// Tests that responding status arriving within the allowed interval after
+// actuation completes auto-expands the container, even if total thinking time
+// exceeded the interval during actuation.
+TEST_F(GeminiContainerUIStateManagerTest, TestRespondingAfterActuationExpands) {
+  [state_manager_ setupInitialUIState];
+  [state_manager_
+      transitionToProcessingStatus:ios::provider::GeminiClientMode::kThinking];
+  [state_manager_ handleActuationStateChanged:YES];
+  task_environment_.FastForwardBy(
+      base::Seconds(GetGeminiResponseReadyInterval() + 5));
+  [state_manager_ handleActuationStateChanged:NO];
+  [state_manager_ transitionToProcessingStatus:ios::provider::GeminiClientMode::
+                                                   kResponding];
+
+  EXPECT_EQ(AssistantContainerDetent::kMedium, delegate_.lastUIState.detent);
 }

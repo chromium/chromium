@@ -4,22 +4,42 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
 
-#import "ios/chrome/browser/assistant/ui/assistant_container_presentation_context.h"
-#import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+
+namespace {
+// Standard insets applied around the worklog inside the container.
+constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
+    NSDirectionalEdgeInsets{intelligence::actor::kSpacingLarge, 0,
+                            intelligence::actor::kSpacingLarge, 0};
+}  // namespace
+
+@interface GeminiContainerViewController () <
+    ActuationWorklogViewControllerDelegate>
+@end
 
 @implementation GeminiContainerViewController {
   // The child view controller wrapping the actual Gemini UI provided by the
   // provider.
   UIViewController* _geminiViewController;
+  // The child view controller displaying compact actuation status.
+  ActuationWorklogViewController* _worklogViewController;
+  // Wrapper view holding the Gemini UI and zero-state suggestions. This allows
+  // to hide all of gemini UI without forcing a collapse with the default
+  // handling of `hidden` by the stack view.
+  UIView* _geminiContentView;
 }
 
-- (instancetype)initWithGeminiViewController:
-    (UIViewController*)geminiViewController {
+- (instancetype)
+    initWithGeminiViewController:(UIViewController*)geminiViewController
+           worklogViewController:
+               (ActuationWorklogViewController*)worklogViewController {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _geminiViewController = geminiViewController;
+    _worklogViewController = worklogViewController;
   }
   return self;
 }
@@ -37,19 +57,24 @@
   // is hidden.
   self.view.keyboardLayoutGuide.usesBottomSafeArea = NO;
 
+  _geminiContentView = [[UIView alloc] init];
+  _geminiContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_geminiContentView];
+
+  AddSameConstraintsToSides(
+      _geminiContentView, self.view,
+      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+  [NSLayoutConstraint activateConstraints:@[
+    [_geminiContentView.bottomAnchor
+        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor]
+  ]];
+
   UIStackView* containerStack = [[UIStackView alloc] init];
   containerStack.translatesAutoresizingMaskIntoConstraints = NO;
   containerStack.axis = UILayoutConstraintAxisVertical;
   containerStack.alignment = UIStackViewAlignmentFill;
-  [self.view addSubview:containerStack];
-
-  AddSameConstraintsToSides(
-      containerStack, self.view,
-      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
-  [NSLayoutConstraint activateConstraints:@[
-    [containerStack.bottomAnchor
-        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor]
-  ]];
+  [_geminiContentView addSubview:containerStack];
+  AddSameConstraints(containerStack, _geminiContentView);
 
   if (self.zeroStateViewController) {
     [self addZeroStateToContainer:containerStack];
@@ -58,6 +83,19 @@
   if (_geminiViewController) {
     [self addGeminiToContainer:containerStack];
   }
+
+  if (_worklogViewController) {
+    [self addWorklogSubviews];
+  }
+}
+
+#pragma mark - ActuationWorklogViewControllerDelegate
+
+- (void)worklogViewController:(ActuationWorklogViewController*)viewController
+              didChangeHeight:(CGFloat)height {
+  CGFloat totalDetentHeight =
+      height + kWorklogContainerInsets.top + kWorklogContainerInsets.bottom;
+  [self.mutator containerDidChangeActuationHeight:totalDetentHeight];
 }
 
 #pragma mark - GeminiContainerConsumer
@@ -68,6 +106,15 @@
 
 - (void)dismissKeyboard {
   [self.view endEditing:YES];
+}
+
+- (void)setWorklogCompact:(BOOL)compact {
+  [_worklogViewController setCompact:compact];
+}
+
+- (void)setActuationActive:(BOOL)active {
+  _geminiContentView.hidden = active;
+  _worklogViewController.view.hidden = !active;
 }
 
 #pragma mark - Private
@@ -106,6 +153,25 @@
   [_geminiViewController didMoveToParentViewController:self];
 }
 
+// Adds the actuation worklog to the view hierarchy.
+- (void)addWorklogSubviews {
+  _worklogViewController.delegate = self;
+  [self addChildViewController:_worklogViewController];
+  _worklogViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  _worklogViewController.view.hidden = YES;
+  [self.view addSubview:_worklogViewController.view];
+  AddSameConstraintsToSidesWithInsets(
+      _worklogViewController.view, self.view,
+      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing,
+      kWorklogContainerInsets);
+  [NSLayoutConstraint activateConstraints:@[
+    [_worklogViewController.view.bottomAnchor
+        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
+                       constant:-kWorklogContainerInsets.bottom]
+  ]];
+  [_worklogViewController didMoveToParentViewController:self];
+}
+
 // Called right before the keyboard is shown.
 - (void)keyboardWillShow:(NSNotification*)notification {
   // Only proceed if the keyboard appeared because the view inside this
@@ -119,9 +185,7 @@
       [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
   UIViewAnimationCurve curve = static_cast<UIViewAnimationCurve>(
       [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]);
-  [self.delegate geminiContainerViewController:self
-                   didShowKeyboardWithDuration:duration
-                                         curve:curve];
+  [self.mutator containerKeyboardDidShowWithDuration:duration curve:curve];
 }
 
 @end

@@ -4,22 +4,23 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
 
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_mutator.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
-@interface FakeGeminiContainerViewControllerDelegate
-    : NSObject <GeminiContainerViewControllerDelegate>
+@interface FakeGeminiContainerMutator : NSObject <GeminiContainerMutator>
 @property(nonatomic, assign) BOOL keyboardDidShowCalled;
 @end
 
-@implementation FakeGeminiContainerViewControllerDelegate
-- (void)geminiContainerViewController:
-            (GeminiContainerViewController*)viewController
-          didShowKeyboardWithDuration:(NSTimeInterval)duration
-                                curve:(UIViewAnimationCurve)curve {
+@implementation FakeGeminiContainerMutator
+- (void)containerKeyboardDidShowWithDuration:(NSTimeInterval)duration
+                                       curve:(UIViewAnimationCurve)curve {
   self.keyboardDidShowCalled = YES;
+}
+
+- (void)containerDidChangeActuationHeight:(CGFloat)height {
 }
 @end
 
@@ -32,9 +33,10 @@ class GeminiContainerViewControllerTest : public PlatformTest {
     [child_view_controller_.view addSubview:internal_text_field_];
 
     container_view_controller_ = [[GeminiContainerViewController alloc]
-        initWithGeminiViewController:child_view_controller_];
-    delegate_ = [[FakeGeminiContainerViewControllerDelegate alloc] init];
-    container_view_controller_.delegate = delegate_;
+        initWithGeminiViewController:child_view_controller_
+               worklogViewController:nil];
+    mutator_ = [[FakeGeminiContainerMutator alloc] init];
+    container_view_controller_.mutator = mutator_;
 
     [scoped_key_window_.Get() addSubview:container_view_controller_.view];
 
@@ -64,7 +66,7 @@ class GeminiContainerViewControllerTest : public PlatformTest {
   UITextField* internal_text_field_;
   UITextField* external_text_field_;
   GeminiContainerViewController* container_view_controller_;
-  FakeGeminiContainerViewControllerDelegate* delegate_;
+  FakeGeminiContainerMutator* mutator_;
 };
 
 // Tests that when an external view is first responder, keyboard notifications
@@ -76,7 +78,7 @@ TEST_F(GeminiContainerViewControllerTest,
 
   PostKeyboardWillShowNotification();
 
-  EXPECT_FALSE(delegate_.keyboardDidShowCalled);
+  EXPECT_FALSE(mutator_.keyboardDidShowCalled);
 }
 
 // Tests that when a view inside GeminiContainerViewController is first
@@ -88,7 +90,7 @@ TEST_F(GeminiContainerViewControllerTest,
 
   PostKeyboardWillShowNotification();
 
-  EXPECT_TRUE(delegate_.keyboardDidShowCalled);
+  EXPECT_TRUE(mutator_.keyboardDidShowCalled);
 }
 
 // Tests that dismissKeyboard ends editing on the view.
