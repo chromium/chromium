@@ -87,6 +87,8 @@
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ttc/entrypoint_controller.h"
+#include "chrome/browser/ttc/ttc_keyed_service.h"
 #include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
@@ -4812,6 +4814,33 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 bwi))
             .SetActionId(kActionWalletReminderNotice)
             .SetImage(ui::ImageModel::FromVectorIcon(kWalletIcon))
+            .Build());
+  }
+
+  if (ttc::TtcKeyedService* service =
+          ttc::TtcKeyedService::Get(bwi->GetProfile());
+      service && service->IsEnabled()) {
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            base::BindRepeating(
+                [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  if (ttc::EntrypointController* controller =
+                          ttc::EntrypointController::From(bwi)) {
+                    controller->EntrypointHandler(
+                        ttc::EntrypointType::kToolbarButton);
+                  }
+                },
+                bwi),
+            kActionTtcToolbar, IDS_TTC_ENTRYPOINT_LABEL,
+            IDS_TTC_ENTRYPOINT_LABEL,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            vector_icons::kAudioSparkIcon,
+#else
+            features::IsRoundedIconsEnabled() ? vector_icons::kMicFilledIcon
+                                              : vector_icons::kMicOldIcon,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            /*is_pinnable=*/true)
             .Build());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -13,6 +13,7 @@
 class Profile;
 
 namespace content {
+class BrowserContext;
 class WebContents;
 }  // namespace content
 
@@ -31,6 +32,8 @@ class TtcCoreBrowserTestBase : public PlatformBrowserTest {
   ~TtcCoreBrowserTestBase() override;
 
   // PlatformBrowserTest:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override;
   void SetUpOnMainThread() override;
 
   Profile* profile();

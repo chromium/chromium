@@ -23,6 +23,8 @@ ui::ElementIdentifier GetElementIdentifierForAction(actions::ActionId id) {
       return kPinnedToolbarActionSendTabToSelfElementId;
     case kActionSidePanelShowContextualTasks:
       return kPinnedToolbarActionShowSidePanelContextualTasksElementId;
+    case kActionTtcToolbar:
+      return kPinnedToolbarActionTtcElementId;
     default:
       return ui::ElementIdentifier();
   }

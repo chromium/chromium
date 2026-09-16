@@ -15707,6 +15707,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
+      <!-- TTC -->
+      <message name="IDS_TTC_ENTRYPOINT_LABEL" desc="The text label of the TTC menu item" translateable="false">
+        TTC
+      </message>
+
       <!-- Web and message center notifications -->
       <message name="IDS_NOTIFICATION_BUTTON_SETTINGS" desc="Short button label to go to the notification settings panel">
         Settings

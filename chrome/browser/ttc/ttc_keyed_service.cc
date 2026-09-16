@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ttc/ttc_keyed_service.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "chrome/browser/ttc/app/public/make_conversation.h"
 #include "chrome/browser/ttc/conversation.h"
 #include "chrome/browser/ttc/session_controller_impl.h"
@@ -29,13 +31,37 @@ void TtcKeyedService::Shutdown() {
   EndSession();
 }
 
+bool TtcKeyedService::IsEnabled() const {
+  // TODO(b/555805204): Integrate Enterprise policy. For now return true as
+  // the KeyedService exists.
+  return true;
+}
+
+TtcState TtcKeyedService::GetState() const {
+  if (!IsEnabled()) {
+    return TtcState::kDisabled;
+  }
+  return is_session_active() ? TtcState::kSessionActive
+                             : TtcState::kSessionInactive;
+}
+
 void TtcKeyedService::StartSession() {
   CHECK(!session_controller_);
   session_controller_ = std::make_unique<SessionControllerImpl>(*this);
+  state_changed_callbacks_.Notify(GetState());
 }
 
 void TtcKeyedService::EndSession() {
+  if (!is_session_active()) {
+    return;
+  }
   session_controller_.reset();
+  state_changed_callbacks_.Notify(GetState());
+}
+
+base::CallbackListSubscription TtcKeyedService::RegisterStateChangedCallback(
+    base::RepeatingCallback<void(TtcState)> callback) {
+  return state_changed_callbacks_.Add(std::move(callback));
 }
 
 std::unique_ptr<Conversation> TtcKeyedService::MakeConversation(

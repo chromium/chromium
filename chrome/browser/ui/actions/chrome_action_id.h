@@ -553,6 +553,7 @@
   E(kActionWebAuthnAmbientSignin) \
   E(kActionAutofillPayment) \
   E(kActionWalletReminderNotice) \
+  E(kActionTtcToolbar) \
 
 #define SUBMENU_ACTION_IDS                                                     \
   E(kActionAppMenuRoot)                                                        \

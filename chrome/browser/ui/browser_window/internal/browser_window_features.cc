@@ -42,6 +42,8 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ttc/entrypoint_controller.h"
+#include "chrome/browser/ttc/ttc_keyed_service.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller_views.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
@@ -1094,6 +1096,13 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
                                                                       browser);
     }
 
+    if (ttc::TtcKeyedService* ttc_service =
+            ttc::TtcKeyedService::Get(profile)) {
+      ttc_entrypoint_controller_ =
+          GetUserDataFactory().CreateInstance<ttc::EntrypointController>(
+              *browser, *browser, *ttc_service);
+    }
+
     if (base::FeatureList::IsEnabled(
             feature_engagement::kIPHVerticalTabstripTutorialFeature)) {
       vertical_tab_iph_controller_ =
@@ -1140,6 +1149,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   // TYPE_NORMAL members.
   send_tab_to_self_iph_controller_.reset();
   vertical_tab_iph_controller_.reset();
+  ttc_entrypoint_controller_.reset();
   split_view_iph_controller_.reset();
   split_tab_highlight_controller_.reset();
   sharing_window_controller_.reset();

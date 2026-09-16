@@ -261,6 +261,7 @@ class TabStripUIControllerImpl;
 
 namespace ttc {
 class AiOverlayDialogController;
+class EntrypointController;
 }  // namespace ttc
 
 namespace web_app {
@@ -488,6 +489,7 @@ class BrowserWindowFeatures {
       tabs_from_other_devices_side_panel_coordinator_;
   std::unique_ptr<ToastService> toast_service_;
   std::unique_ptr<TranslateBubbleController> translate_bubble_controller_;
+  std::unique_ptr<ttc::EntrypointController> ttc_entrypoint_controller_;
   std::unique_ptr<UpgradeNotificationController>
       upgrade_notification_controller_;
   std::unique_ptr<BrowserUserEducationInterface> user_education_;

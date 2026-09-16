@@ -44,15 +44,15 @@ TEST_F(TtcKeyedServiceUnitTest, EndSessionDoesNotCrash) {
 }
 
 TEST_F(TtcKeyedServiceUnitTest, StartSession) {
-  ASSERT_EQ(service_->session_controller(), nullptr);
+  EXPECT_FALSE(service_->is_session_active());
   service_->StartSession();
-  SessionController* controller = service_->session_controller();
-  ASSERT_NE(controller, nullptr);
+  EXPECT_TRUE(service_->is_session_active());
 }
 
 TEST_F(TtcKeyedServiceUnitTest, StartSessionFailsIfAlreadyStarted) {
   service_->StartSession();
   EXPECT_DEATH_IF_SUPPORTED(service_->StartSession(), "");
+  EXPECT_TRUE(service_->is_session_active());
 }
 
 TEST_F(TtcKeyedServiceUnitTest, EndSessionRemovesController) {

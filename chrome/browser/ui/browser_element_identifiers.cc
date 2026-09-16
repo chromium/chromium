@@ -127,6 +127,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kPinnedToolbarActionShowSidePanelContextualTasksElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPinnedToolbarActionTtcElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPriceInsightsChipElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingBookmarkViewElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kPriceTrackingChipElementId);

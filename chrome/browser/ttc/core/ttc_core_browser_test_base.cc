@@ -28,19 +28,24 @@ TtcCoreBrowserTestBase::TtcCoreBrowserTestBase() {
 
 TtcCoreBrowserTestBase::~TtcCoreBrowserTestBase() = default;
 
-void TtcCoreBrowserTestBase::SetUpOnMainThread() {
-  PlatformBrowserTest::SetUpOnMainThread();
-  embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(embedded_test_server()->Start());
+void TtcCoreBrowserTestBase::SetUpBrowserContextKeyedServices(
+    content::BrowserContext* context) {
+  PlatformBrowserTest::SetUpBrowserContextKeyedServices(context);
 
   // Replace the service with one whose sessions use a MockConversation.
   TtcKeyedServiceFactory::GetInstance()->SetTestingFactory(
-      profile(), base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
+      context, base::BindRepeating([](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
         return std::make_unique<TtcKeyedService>(
             Profile::FromBrowserContext(context),
             base::BindRepeating(&TtcCoreBrowserTestBase::MakeMockConversation));
       }));
+}
+
+void TtcCoreBrowserTestBase::SetUpOnMainThread() {
+  PlatformBrowserTest::SetUpOnMainThread();
+  embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
 }
 
 Profile* TtcCoreBrowserTestBase::profile() {

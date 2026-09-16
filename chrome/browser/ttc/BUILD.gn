@@ -2,23 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("features") {
+  public = [ "features.h" ]
+  sources = [ "features.cc" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("ttc") {
   public = [
     "conversation.h",
-    "features.h",
+    "entrypoint_controller.h",
     "session_controller.h",
     "session_view.h",
     "tool_controller.h",
     "tool_definition.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service_factory.h",
+    "ttc_state.h",
   ]
   public_deps = [
+    ":features",
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ttc/core",
+    "//chrome/browser/ui/browser_window",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//url",
@@ -27,7 +36,7 @@ source_set("ttc") {
 
 source_set("impl") {
   sources = [
-    "features.cc",
+    "entrypoint_controller.cc",
     "session_controller_impl.cc",
     "session_controller_impl.h",
     "session_view.cc",
@@ -41,19 +50,24 @@ source_set("impl") {
     ":ttc",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ttc/app",
     "//chrome/browser/ttc/app/public",
     "//chrome/browser/ttc/core",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
     "//components/keyed_service/core",
     "//components/tabs:public",
     "//content/public/browser",
+    "//ui/actions:actions_headers",
+    "//url",
   ]
   if (is_android) {
     deps += [ "//chrome/browser/ui/android/tab_model" ]
   } else {
     deps += [
-      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//url",
+      "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/toolbar",
     ]
   }
 }
@@ -83,6 +97,7 @@ if (!is_android) {
       "ttc_keyed_service_browsertest.cc",
     ]
     deps = [
+      ":impl",
       ":ttc",
       "//base",
       "//base/test:test_support",
@@ -96,6 +111,34 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gtest",
       "//third_party/blink/public/common",
+    ]
+  }
+
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "entrypoint_controller_interactive_test.cc",
+      "ttc_interactive_browser_test_base.cc",
+      "ttc_interactive_browser_test_base.h",
+    ]
+    deps = [
+      ":impl",
+      ":ttc",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/interaction",
+      "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/test:test_support",
+      "//chrome/test/interaction",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base/interaction",
     ]
   }
 }
