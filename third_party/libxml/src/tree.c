@@ -77,7 +77,7 @@ xmlGetPropNodeInternal(const xmlNode *node, const xmlChar *name,
 static xmlChar* xmlGetPropNodeValueInternal(const xmlAttr *prop);
 
 static void
-xmlBufGetChildContent(xmlBufPtr buf, const xmlNode *tree);
+xmlBufGetChildContent(xmlBufPtr buf, const xmlNode *tree, int normalize);
 
 static void
 xmlUnlinkNodeInternal(xmlNodePtr cur);
@@ -5123,7 +5123,7 @@ xmlNodeBufGetContent(xmlBuffer *buffer, const xmlNode *cur)
 }
 
 static void
-xmlBufGetEntityRefContent(xmlBufPtr buf, const xmlNode *ref) {
+xmlBufGetEntityRefContent(xmlBufPtr buf, const xmlNode *ref, int normalize) {
     xmlEntityPtr ent;
 
     if (ref->children != NULL) {
@@ -5149,23 +5149,26 @@ xmlBufGetEntityRefContent(xmlBufPtr buf, const xmlNode *ref) {
         return;
 
     ent->flags |= XML_ENT_EXPANDING;
-    xmlBufGetChildContent(buf, (xmlNodePtr) ent);
+    xmlBufGetChildContent(buf, (xmlNodePtr) ent, normalize);
     ent->flags &= ~XML_ENT_EXPANDING;
 }
 
 static void
-xmlBufGetChildContent(xmlBufPtr buf, const xmlNode *tree) {
+xmlBufGetChildContent(xmlBufPtr buf, const xmlNode *tree, int normalize) {
     const xmlNode *cur = tree->children;
 
     while (cur != NULL) {
         switch (cur->type) {
             case XML_TEXT_NODE:
             case XML_CDATA_SECTION_NODE:
-                xmlBufCat(buf, cur->content);
+                if (normalize)
+                    xmlBufCat(buf, xmlAttrNormalize(cur->content));
+                else
+                    xmlBufCat(buf, cur->content);
                 break;
 
             case XML_ENTITY_REF_NODE:
-                xmlBufGetEntityRefContent(buf, cur);
+                xmlBufGetEntityRefContent(buf, cur, normalize);
                 break;
 
             default:
@@ -5208,9 +5211,11 @@ xmlBufGetNodeContent(xmlBuf *buf, const xmlNode *cur)
         case XML_HTML_DOCUMENT_NODE:
         case XML_DOCUMENT_FRAG_NODE:
         case XML_ELEMENT_NODE:
-        case XML_ATTRIBUTE_NODE:
         case XML_ENTITY_DECL:
-            xmlBufGetChildContent(buf, cur);
+            xmlBufGetChildContent(buf, cur, 0);
+            break;
+        case XML_ATTRIBUTE_NODE:
+            xmlBufGetChildContent(buf, cur, 1);
             break;
 
         case XML_CDATA_SECTION_NODE:
@@ -5221,7 +5226,7 @@ xmlBufGetNodeContent(xmlBuf *buf, const xmlNode *cur)
             break;
 
         case XML_ENTITY_REF_NODE:
-            xmlBufGetEntityRefContent(buf, cur);
+            xmlBufGetEntityRefContent(buf, cur, 0);
             break;
 
         case XML_NAMESPACE_DECL:

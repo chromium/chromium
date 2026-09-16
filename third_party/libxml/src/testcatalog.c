@@ -80,6 +80,62 @@ testRepeatedNextCatalog(void) {
 }
 
 /*
+ * Test a nextCatalog entry which lacks the mandatory 'catalog' attribute
+ * See https://gitlab.gnome.org/GNOME/libxml2/-/issues/1143
+ */
+static int
+testNextCatalogMissingAttr(void) {
+    int ret = 0;
+    int i = 0;
+    const char *cat = "test/catalogs/next-catalog-missing-attr.xml";
+    const char *sysId = "http://www.oasis-open.org/docbook/xml/4.1.2/dbpoolx.mod";
+    const char *expect = "/usr/share/xml/docbook/xml/4.1.2/dbpoolx.mod";
+    xmlChar *resolved = NULL;
+    xmlDocPtr doc = NULL;
+    xmlNodePtr node = NULL;
+
+    xmlInitParser();
+
+    xmlLoadCatalog(cat);
+    /*
+     * The malformed nextCatalog must be ignored, the valid one must still
+     * be followed. This also forces the complete recursive load.
+     */
+    resolved = xmlCatalogResolveSystem(BAD_CAST sysId);
+    if ((resolved == NULL) || (strcmp((char *) resolved, expect) != 0)) {
+        fprintf(stderr, "CATALOG-FAILURE: %s resolved to %s, expected %s\n",
+                sysId, resolved == NULL ? "NULL" : (char *) resolved, expect);
+        ret = 1;
+    }
+    if (resolved != NULL)
+        xmlFree(resolved);
+
+    /**
+     * Ensure that only the valid nextCatalog was recorded
+     */
+    doc = xmlCatalogDumpDoc();
+    xmlCatalogCleanup();
+
+    if (doc == NULL) {
+        fprintf(stderr, "CATALOG-FAILURE: Failed to dump the catalog\n");
+        return 1;
+    }
+
+    /* Just the root "catalog" node with a single nextCatalog */
+    node = xmlDocGetRootElement(doc);
+    node = node->children;
+    for (i=0; node != NULL; node=node->next, i++) {}
+    if (i != 1) {
+        fprintf(stderr, "CATALOG-FAILURE: Found %d nextCatalog entries and should be 1\n", i);
+        ret = 1;
+    }
+
+    xmlFreeDoc(doc);
+
+    return ret;
+}
+
+/*
  * Test repeated call to xmlCatalogResolveURI
  * See https://gitlab.gnome.org/GNOME/libxml2/-/work_items/1125
  */
@@ -135,6 +191,7 @@ main(void) {
 
     err |= testRecursiveDelegateUri();
     err |= testRepeatedNextCatalog();
+    err |= testNextCatalogMissingAttr();
     err |= testRepeatedResolveURI();
 
     return err;

@@ -279,7 +279,7 @@ testSwitchDtdExtSubset(void *vctxt, const xmlChar *name ATTRIBUTE_UNUSED,
                        const xmlChar *systemId ATTRIBUTE_UNUSED) {
     xmlParserCtxtPtr ctxt = vctxt;
 
-    ctxt->myDoc->extSubset = ctxt->_private;
+    ctxt->myDoc->extSubset = xmlCtxtGetPrivate(ctxt);
 }
 
 static int
@@ -291,6 +291,7 @@ testSwitchDtd(void) {
         "<doc>&test;</doc>\n";
     xmlParserInputBufferPtr input;
     xmlParserCtxtPtr ctxt;
+    xmlSAXHandler sax;
     xmlDtdPtr dtd;
     xmlDocPtr doc;
     xmlEntityPtr ent;
@@ -302,8 +303,10 @@ testSwitchDtd(void) {
     dtd = xmlIOParseDTD(NULL, input, XML_CHAR_ENCODING_NONE);
 
     ctxt = xmlNewParserCtxt();
-    ctxt->_private = dtd;
-    ctxt->sax->externalSubset = testSwitchDtdExtSubset;
+    xmlCtxtSetPrivate(ctxt, dtd);
+    xmlSAXVersion(&sax, 2);
+    sax.externalSubset = testSwitchDtdExtSubset;
+    xmlCtxtSetSaxHandler(ctxt, &sax);
     doc = xmlCtxtReadMemory(ctxt, docContent, sizeof(docContent) - 1, NULL,
                             NULL, XML_PARSE_NOENT | XML_PARSE_DTDLOAD);
     xmlFreeParserCtxt(ctxt);

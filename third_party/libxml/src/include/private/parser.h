@@ -179,4 +179,12 @@ xmlSaturatedAddSizeT(unsigned long *dst, size_t val) {
         *dst += val;
 }
 
+/**
+ * xmlAttrNormalize helper functions
+ * https://www.w3.org/TR/REC-xml/#AVNormalize
+ */
+
+XML_HIDDEN xmlChar * xmlAttrNormalize(xmlChar *src);
+XML_HIDDEN xmlChar * xmlAttrNormalizeSpace(const xmlChar *src, xmlChar *dst);
+
 #endif /* XML_PARSER_H_PRIVATE__ */

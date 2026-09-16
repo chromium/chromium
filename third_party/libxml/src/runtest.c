@@ -5435,6 +5435,48 @@ done:
     return ret;
 }
 
+static int
+xmlEntityValueNormTest(const char *filename ATTRIBUTE_UNUSED,
+                       const char *result ATTRIBUTE_UNUSED,
+                       const char *err ATTRIBUTE_UNUSED,
+                       int options ATTRIBUTE_UNUSED) {
+    int ret = 0;
+    xmlAttrPtr prop = NULL;
+    const char *str = "<!DOCTYPE doc [\n"
+        "<!ENTITY d  '&#xD;'>\n"
+        "<!ENTITY a  '&#xA;'>\n"
+        "<!ENTITY da '&#xD;&#xA;'>\n"
+        "<!ENTITY b  '&#10;'>\n"
+        "]>\n"
+        "<doc a1='&d;' a2='&a;' a3='&da;'\n"
+        "a4='&d;&d;A&a;&#x20;&a;B&da;'\n"
+        "a5='&#xd;&#xd;A&#xa;&#xa;B&#xd;&#xa;'\n"
+        "a6='&b;'\n"
+        "a7='\n\n&b;xyz'/>";
+    xmlDoc *doc1 = xmlReadDoc(BAD_CAST str, NULL, NULL, 0);
+    xmlDoc *doc2 = xmlReadDoc(BAD_CAST str, NULL, NULL, XML_PARSE_NOENT);
+
+    prop = doc1->children->next->properties;
+    while (prop != NULL) {
+        xmlChar *content1 = xmlGetProp(doc1->children->next, BAD_CAST prop->name);
+        xmlChar *content2 = xmlGetProp(doc2->children->next, BAD_CAST prop->name);
+
+        if (!xmlStrEqual(content1, content2)) {
+            ret = 1;
+            fprintf(stderr, "entity resolution differs %s\n", prop->name);
+        }
+
+        xmlFree(content1);
+        xmlFree(content2);
+
+        prop = prop->next;
+    }
+
+    xmlFreeDoc(doc1);
+    xmlFreeDoc(doc2);
+
+    return ret;
+}
 
 /************************************************************************
  *									*
@@ -5684,6 +5726,7 @@ testDesc testDescriptions[] = {
       xmlTextReaderReadOuterXmlTest, NULL, NULL, NULL, NULL, 0 },
 #endif
     { "xmlCopyEntity children test" , xmlCopyEntityTest, NULL, NULL, NULL, NULL, 0 },
+    { "xml Entity values normalization" , xmlEntityValueNormTest, NULL, NULL, NULL, NULL, 0 },
 
     {NULL, NULL, NULL, NULL, NULL, NULL, 0}
 };

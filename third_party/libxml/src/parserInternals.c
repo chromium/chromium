@@ -3199,17 +3199,10 @@ xmlCtxtGetSaxHandler(xmlParserCtxt *ctxt) {
  */
 int
 xmlCtxtSetSaxHandler(xmlParserCtxt *ctxt, const xmlSAXHandler *sax) {
-    xmlSAXHandler *copy;
-
-    if ((ctxt == NULL) || (sax == NULL))
+    if ((ctxt == NULL) || (ctxt->sax == NULL) || (sax == NULL))
         return(-1);
 
-    copy = xmlMalloc(sizeof(*copy));
-    if (copy == NULL)
-        return(-1);
-
-    memcpy(copy, sax, sizeof(*copy));
-    ctxt->sax = copy;
+    *ctxt->sax = *sax;
 
     return(0);
 }

@@ -465,7 +465,8 @@ xmlParserEntityCheck(xmlParserCtxtPtr ctxt, unsigned long extra)
      * entity sizes to make the size checks reliable. If "sizeentcopy"
      * overflows, we have to abort.
      */
-    if ((*expandedSize > XML_PARSER_ALLOWED_EXPANSION) &&
+    if ((ctxt->maxAmpl > 0) &&
+        (*expandedSize > XML_PARSER_ALLOWED_EXPANSION) &&
         ((*expandedSize >= ULONG_MAX) ||
          (*expandedSize / ctxt->maxAmpl > consumed))) {
         xmlFatalErrMsg(ctxt, XML_ERR_RESOURCE_LIMIT,
@@ -983,7 +984,7 @@ struct _xmlDefAttrs {
  * @returns a pointer to the normalized value (dst) or NULL if no conversion
  *         is needed.
  */
-static xmlChar *
+xmlChar *
 xmlAttrNormalizeSpace(const xmlChar *src, xmlChar *dst)
 {
     if ((src == NULL) || (dst == NULL))
@@ -1003,6 +1004,42 @@ xmlAttrNormalizeSpace(const xmlChar *src, xmlChar *dst)
     if (dst == src)
        return(NULL);
     return(dst);
+}
+
+/**
+ * TODO: This function should also remove leading and trailing
+ *       whitespaces, and also group whitespaces together, but right
+ *       now the parse doesn't do that with XML_PARSE_NOENT, so this
+ *       replacement is consistent with the parser normalization
+ *
+ *       Maybe merge with xmlAttrNormalizeSpace, or do something
+ *       similar
+ *
+ * Normalize attritube entity values
+ * Replaces any space character with 0x20
+ * https://www.w3.org/TR/REC-xml/#AVNormalize
+ */
+xmlChar *
+xmlAttrNormalize(xmlChar *src)
+{
+    xmlChar *out = NULL;
+    xmlChar *dst = NULL;
+
+    if (src == NULL)
+        return(NULL);
+
+    out = src;
+    dst = out;
+    while (*src != 0) {
+        if (*src < 0x20) {
+            src++;
+            *dst++ = 0x20;
+        } else {
+            *dst++ = *src++;
+        }
+    }
+    *dst = 0;
+    return(out);
 }
 
 /**
@@ -13306,6 +13343,8 @@ void
 xmlCtxtSetMaxAmplification(xmlParserCtxt *ctxt, unsigned maxAmpl)
 {
     if (ctxt == NULL)
+        return;
+    if (maxAmpl == 0)
         return;
     ctxt->maxAmpl = maxAmpl;
 }

@@ -214,6 +214,7 @@ FILES_TO_REMOVE = [
     'src/xinclude.c',
     'src/xlink.c',
     'src/xml2-config.in',
+    'src/xml2-config-meson',
     'src/xmlcatalog.c',
     'src/xmllint.c',
     'src/xmlmodule.c',

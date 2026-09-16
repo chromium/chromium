@@ -1316,7 +1316,7 @@ htmlCheckAutoClose(const xmlChar * newtag, const xmlChar * oldtag)
 
     key.oldTag = (const char *) oldtag;
     key.newTag = (const char *) newtag;
-    res = bsearch(&key, htmlStartClose,
+    res = (void*)bsearch(&key, htmlStartClose,
             sizeof(htmlStartClose) / sizeof(htmlStartCloseEntry),
             sizeof(htmlStartCloseEntry), htmlCompareStartClose);
     return(res != NULL);
