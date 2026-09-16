@@ -88,10 +88,17 @@ void JNI_ExtensionUtilBridge_OnOmniboxExtensionInputEntered(
     const std::string& url_str,
     bool open_in_new_tab,
     bool open_in_new_window) {
+  CHECK(web_contents);
+
   GURL url(url_str);
-  std::string extension_id(url.host());
   std::string input_text;
   net::GetValueForKeyInQuery(url, "q", &input_text);
+  // When an extension keyword is entered with empty remaining input (e.g.
+  // user typed keyword + space and pressed Enter), the template URL leaves
+  // "{searchTerms}" unreplaced. Clear it so empty input is passed.
+  if (input_text == "{searchTerms}") {
+    input_text.clear();
+  }
 
   WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB;
   if (open_in_new_window) {
@@ -101,7 +108,7 @@ void JNI_ExtensionUtilBridge_OnOmniboxExtensionInputEntered(
   }
 
   extensions::ExtensionOmniboxEventRouter::OnInputEntered(
-      web_contents, extension_id, input_text, disposition);
+      web_contents, std::string(url.host()), input_text, disposition);
 }
 
 DEFINE_JNI(ExtensionUtilBridge)

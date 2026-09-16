@@ -111,6 +111,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
   }
 
   int starter_pack_id = static_cast<int>(StarterPackId(template_url_service));
+  const TemplateURL* turl = GetTemplateURL(template_url_service);
+  bool is_extension_match =
+      turl && turl->type() == TemplateURL::OMNIBOX_API_EXTENSION;
 
   java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
       Java_AutocompleteMatch_build(
@@ -129,7 +132,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           matching_tab_group_uuid
               ? std::make_optional(matching_tab_group_uuid->AsLowercaseString())
               : std::nullopt,
-          associated_keyword, j_suggest_template, document_type));
+          associated_keyword, j_suggest_template, document_type,
+          is_extension_match));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
 }

@@ -30,7 +30,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -49,8 +48,6 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
-import org.chromium.chrome.browser.ui.extensions.ExtensionUiBackend;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -86,7 +83,6 @@ public class LocationBarNavigatorUnitTest {
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private ResourceRequestBody.Natives mResourceRequestBodyJni;
     @Mock private AutocompleteLoadCallback mAutocompleteLoadCallback;
-    @Mock private ExtensionUiBackend mExtensionUiBackend;
     @Mock private LoadUrlParams mLoadUrlParams;
     @Mock private LoadUrlResult mLoadUrlResult;
 
@@ -167,24 +163,19 @@ public class LocationBarNavigatorUnitTest {
 
     @Test
     public void testLoadUrl_chromeExtensionScheme() {
-        ExtensionUi.setBackendForTesting(mExtensionUiBackend);
-        ResettersForTesting.register(() -> ExtensionUi.setBackendForTesting(null));
-
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
 
-        String url = UrlConstants.CHROME_EXTENSION_SCHEME + "://id/?q=test";
+        String url = UrlConstants.CHROME_EXTENSION_SCHEME + "://id/popup.html";
         mNavigator.loadUrl(
                 new OmniboxLoadUrlParams.Builder(url, PageTransition.TYPED)
-                        .setOpenInNewTab(/* openInNewTab= */ true)
+                        .setOpenInNewTab(/* openInNewTab= */ false)
                         .build());
 
-        verify(mExtensionUiBackend)
-                .onOmniboxExtensionInputEntered(
-                        mWebContents, url, /* openInNewTab= */ true, /* openInNewWindow= */ false);
-        verify(mTab, never()).loadUrl(any());
-        verify(mTabModelSelector, never()).openNewTab(any(), anyInt(), any(), anyBoolean());
-        verify(mMultiInstanceOrchestrator, never())
-                .openUrlInOtherWindow(any(), any(), anyInt(), anyBoolean(), anyBoolean());
+        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals(url, mLoadUrlParamsCaptor.getValue().getUrl());
+        assertEquals(
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                mLoadUrlParamsCaptor.getValue().getTransitionType());
     }
 
     private void testLoadUrl_base() {

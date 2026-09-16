@@ -16,7 +16,6 @@ import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
@@ -28,8 +27,6 @@ import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -85,10 +82,6 @@ class LocationBarNavigator {
                 return false;
             }
 
-            if (handleExtensionUrl(currentTab, omniboxLoadUrlParams)) {
-                return false;
-            }
-
             String url = omniboxLoadUrlParams.url;
             if (currentTab != null) {
                 url = handleNtpNavigationAndGetUrl(currentTab, omniboxLoadUrlParams);
@@ -105,22 +98,6 @@ class LocationBarNavigator {
                     /* isFromSearchWidget= */ false, url, omniboxLoadUrlParams.transitionType);
             return true;
         }
-    }
-
-    private boolean handleExtensionUrl(
-            @Nullable Tab currentTab, OmniboxLoadUrlParams omniboxLoadUrlParams) {
-        String url = omniboxLoadUrlParams.url;
-        if (url != null && url.startsWith(UrlConstants.CHROME_EXTENSION_SCHEME + "://")) {
-            if (currentTab != null && currentTab.getWebContents() != null) {
-                ExtensionUi.onOmniboxExtensionInputEntered(
-                        currentTab.getWebContents(),
-                        url,
-                        omniboxLoadUrlParams.openInNewTab,
-                        omniboxLoadUrlParams.openInNewWindow);
-            }
-            return true;
-        }
-        return false;
     }
 
     private String handleNtpNavigationAndGetUrl(

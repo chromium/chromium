@@ -106,6 +106,7 @@ public class AutocompleteMatch {
     private final boolean mIsRefineable;
     private @Nullable SuggestTemplateInfo mSuggestTemplate;
     private final @DocumentType int mDocumentType;
+    private final boolean mIsExtensionMatch;
 
     public AutocompleteMatch(
             int nativeType,
@@ -140,7 +141,8 @@ public class AutocompleteMatch {
             @Nullable String tabGroupUuid,
             @Nullable String associatedKeyword,
             byte @Nullable [] serializedSuggestTemplate,
-            @DocumentType int documentType) {
+            @DocumentType int documentType,
+            boolean isExtensionMatch) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
         }
@@ -201,6 +203,7 @@ public class AutocompleteMatch {
         }
 
         mDocumentType = documentType;
+        mIsExtensionMatch = isExtensionMatch;
         updatePostContentType(postContentType);
     }
 
@@ -249,7 +252,8 @@ public class AutocompleteMatch {
             @JniType("std::optional<std::string>") @Nullable String localTabGroupId,
             @JniType("std::u16string") String associatedKeyword,
             byte[] serializedSuggestTemplate,
-            @JniType("AutocompleteMatch::DocumentType") @DocumentType int documentType) {
+            @JniType("AutocompleteMatch::DocumentType") @DocumentType int documentType,
+            boolean isExtensionMatch) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -297,7 +301,8 @@ public class AutocompleteMatch {
                         localTabGroupId,
                         TextUtils.isEmpty(associatedKeyword) ? null : associatedKeyword,
                         serializedSuggestTemplate,
-                        documentType);
+                        documentType,
+                        isExtensionMatch);
         match.updateNativeObjectRef(nativeObject);
         match.setDescription(
                 description, descriptionClassificationOffsets, descriptionClassificationStyles);
@@ -314,6 +319,11 @@ public class AutocompleteMatch {
     /** Returns a reference to Native AutocompleteMatch object. */
     public long getNativeObjectRef() {
         return mNativeMatch;
+    }
+
+    /** Returns whether this match represents an extension omnibox match. */
+    public boolean isExtensionMatch() {
+        return mIsExtensionMatch;
     }
 
     /**
@@ -579,7 +589,8 @@ public class AutocompleteMatch {
                 && suggestTemplateIsEqual
                 && ObjectsCompat.equals(mTabGroupUuid, suggestion.mTabGroupUuid)
                 && ObjectsCompat.equals(mAssociatedKeyword, suggestion.mAssociatedKeyword)
-                && ObjectsCompat.equals(mTakeoverAction, suggestion.mTakeoverAction);
+                && ObjectsCompat.equals(mTakeoverAction, suggestion.mTakeoverAction)
+                && mIsExtensionMatch == suggestion.mIsExtensionMatch;
     }
 
     /**
@@ -740,7 +751,8 @@ public class AutocompleteMatch {
                 /* tabGroupUuid= */ null,
                 /* associatedKeyword= */ null,
                 /* serializedSuggestTemplate= */ null,
-                DocumentType.NONE);
+                DocumentType.NONE,
+                /* isExtensionMatch= */ false);
     }
 
     @Override
@@ -767,7 +779,8 @@ public class AutocompleteMatch {
                         "mDisplayTextClassifications=" + mDisplayTextClassifications,
                         "mDescriptionClassifications=" + mDescriptionClassifications,
                         "mAnswerTemplate=" + mAnswerTemplate,
-                        "mSuggestTemplate=" + mSuggestTemplate);
+                        "mSuggestTemplate=" + mSuggestTemplate,
+                        "mIsExtensionMatch=" + mIsExtensionMatch);
         return pieces.toString();
     }
 

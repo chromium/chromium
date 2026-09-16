@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
@@ -1732,6 +1733,20 @@ class AutocompleteMediator
             int transition) {
         try (TraceEvent e =
                 TraceEvent.scoped("AutocompleteMediator.finishLoadUrlForOmniboxMatch")) {
+            if (suggestion.isExtensionMatch()) {
+                Tab tab = mDataProvider.getTab();
+                WebContents webContents = tab != null ? tab.getWebContents() : null;
+                if (webContents != null) {
+                    ExtensionUi.onOmniboxExtensionInputEntered(
+                            webContents, url.getSpec(), openInNewTab, openInNewWindow);
+                }
+                // Dismiss the suggestions list and clear focus immediately. This is an extension
+                // match, so an event is fired to the extension rather than having any kind of
+                // page navigation.
+                finishInteraction();
+                return;
+            }
+
             // Kick off an action to clear focus and dismiss the suggestions list.
             // This normally happens when the target site loads and focus is moved to the
             // webcontents. On Android T we occasionally observe focus events to be lost, resulting

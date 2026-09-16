@@ -2435,6 +2435,7 @@ source_set("browser_tests") {
     "mutation_observers_apitest.cc",
     "navigation_extension_enabler_browsertest.cc",
     "offscreen_document_browsertest.cc",
+    "omnibox_navigation_browsertest.cc",
     "options_page_apitest.cc",
     "pack_extension_browsertest.cc",
     "permissions/permissions_manager_browsertest.cc",
@@ -2622,6 +2623,7 @@ source_set("browser_tests") {
       "//chrome/browser/extensions/extension_keybinding_interactive_apitest.cc",
     ]
     deps += [
+      "//chrome/browser/ui/android/tab_model",
       "//chrome/test:test_support_jni_headers",
       "//components/feed:feature_list",
       "//components/messages/android:test_support",

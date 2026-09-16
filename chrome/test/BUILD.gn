@@ -121,6 +121,7 @@ if (is_android) {
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/app/tab_activity_glue/PopupCreatorImpl.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/app/tabwindow/TabWindowManagerNativeTestSupport.java",
+      "android/javatests/src/org/chromium/chrome/test/util/OmniboxTestUtils.java",
       "android/test_support/src/org/chromium/chrome/test_support/FamilyInfoFeedbackSourceTestBridge.java",
     ]
   }
