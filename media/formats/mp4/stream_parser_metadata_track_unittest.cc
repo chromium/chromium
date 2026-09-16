@@ -24,10 +24,9 @@ constexpr StreamParser::TrackId kRenderTrackId = 2;
 class StreamParserMetadataTrackTest : public testing::Test {
  public:
   StreamParserMetadataTrackTest()
-      : metadata_track_(
-            kMetadataTrackId,
-            StreamParserMetadataTrack::IT35PrefixType::kSmpteSt2094App5,
-            {kRenderTrackId}) {
+      : metadata_track_(kMetadataTrackId,
+                        MetadataTrack::IT35PrefixType::kSmpteSt2094App5,
+                        {kRenderTrackId}) {
     feature_list_.InitWithFeatures({features::kHdrAgtm}, {});
   }
 

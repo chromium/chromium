@@ -405,8 +405,8 @@ struct MEDIA_EXPORT MetadataIT35SampleEntry : Box {
 
   uint16_t data_reference_index = 0;
 
-  StreamParserMetadataTrack::IT35PrefixType it35_prefix_type =
-      StreamParserMetadataTrack::IT35PrefixType::kUnknown;
+  MetadataTrack::IT35PrefixType it35_prefix_type =
+      MetadataTrack::IT35PrefixType::kUnknown;
 };
 
 struct MEDIA_EXPORT ElementaryStreamDescriptor : Box {

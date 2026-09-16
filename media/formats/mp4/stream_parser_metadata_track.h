@@ -9,11 +9,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "media/base/interval_map.h"
 #include "media/base/media_export.h"
+#include "media/base/metadata_track.h"
 #include "media/base/stream_parser.h"
 #include "media/base/stream_parser_buffer.h"
-#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
@@ -23,14 +22,9 @@ namespace media {
 // decoder.
 class MEDIA_EXPORT StreamParserMetadataTrack {
  public:
-  enum class IT35PrefixType {
-    kUnknown,
-    kSmpteSt2094App5,
-  };
-
   StreamParserMetadataTrack(
       StreamParser::TrackId metadata_track_id,
-      IT35PrefixType prefix_type,
+      MetadataTrack::IT35PrefixType prefix_type,
       base::span<const StreamParser::TrackId> render_track_ids);
   ~StreamParserMetadataTrack();
 
@@ -52,7 +46,7 @@ class MEDIA_EXPORT StreamParserMetadataTrack {
 
  private:
   struct RenderTrack {
-    RenderTrack();
+    explicit RenderTrack(MetadataTrack::IT35PrefixType prefix_type);
     RenderTrack(const RenderTrack&) = delete;
     RenderTrack& operator=(const RenderTrack&) = delete;
     RenderTrack(RenderTrack&&);
@@ -60,17 +54,11 @@ class MEDIA_EXPORT StreamParserMetadataTrack {
     ~RenderTrack();
 
     StreamParser::BufferQueue held_buffers;
+    MetadataTrack metadata_track;
   };
   base::flat_map<StreamParser::TrackId, RenderTrack> render_tracks_;
 
   const StreamParser::TrackId metadata_track_id_;
-  const IT35PrefixType it35_prefix_type_;
-
-  // IntervalMap creates a default interval. In order to distinguish between
-  // empty metadata and no metadata, use an optional vector as the data type.
-  // This caches all of the metadata for the entire movie fragment (which may
-  // need to be revisited for efficiency).
-  IntervalMap<base::TimeDelta, std::optional<gfx::HDRMetadata>> metadata_;
 };
 
 }  // namespace media

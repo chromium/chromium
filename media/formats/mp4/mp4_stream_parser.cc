@@ -119,9 +119,9 @@ std::unique_ptr<StreamParserMetadataTrack> MakeMetadataTrack(
   }
 
   switch (it35_sample_entry.it35_prefix_type) {
-    case StreamParserMetadataTrack::IT35PrefixType::kUnknown:
+    case MetadataTrack::IT35PrefixType::kUnknown:
       return nullptr;
-    case StreamParserMetadataTrack::IT35PrefixType::kSmpteSt2094App5:
+    case MetadataTrack::IT35PrefixType::kSmpteSt2094App5:
       break;
   }
 

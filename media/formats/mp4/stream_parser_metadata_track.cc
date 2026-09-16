@@ -14,17 +14,19 @@ namespace media {
 
 StreamParserMetadataTrack::StreamParserMetadataTrack(
     StreamParser::TrackId metadata_track_id,
-    IT35PrefixType prefix_type,
+    MetadataTrack::IT35PrefixType prefix_type,
     base::span<const StreamParser::TrackId> render_track_ids)
-    : metadata_track_id_(metadata_track_id), it35_prefix_type_(prefix_type) {
+    : metadata_track_id_(metadata_track_id) {
   for (const auto& render_track_id : render_track_ids) {
-    render_tracks_.emplace(render_track_id, RenderTrack());
+    render_tracks_.emplace(render_track_id, RenderTrack(prefix_type));
   }
 }
 
 StreamParserMetadataTrack::~StreamParserMetadataTrack() = default;
 
-StreamParserMetadataTrack::RenderTrack::RenderTrack() = default;
+StreamParserMetadataTrack::RenderTrack::RenderTrack(
+    MetadataTrack::IT35PrefixType prefix_type)
+    : metadata_track(prefix_type) {}
 StreamParserMetadataTrack::RenderTrack::RenderTrack(RenderTrack&&) = default;
 StreamParserMetadataTrack::RenderTrack&
 StreamParserMetadataTrack::RenderTrack::operator=(RenderTrack&&) = default;
@@ -37,21 +39,13 @@ void StreamParserMetadataTrack::AttachMetadataOrHoldBuffers(
     const auto& buffer_track_id = buffers_it->first;
     auto& buffer_queue = buffers_it->second;
 
-    // If this is the metadata track, move its buffers to `metadata_`.
+    // If this is the metadata track, insert its buffers into all
+    // `MetadataTrack` instances.
     if (buffer_track_id == metadata_track_id_) {
       for (const auto& buf : buffer_queue) {
-        // Parse the metadata in the sample.
-        gfx::HDRMetadata buf_metadata;
-        switch (it35_prefix_type_) {
-          case IT35PrefixType::kSmpteSt2094App5: {
-            buf_metadata.SetSerializedAgtm(base::span(*buf));
-            break;
-          }
-          case IT35PrefixType::kUnknown:
-            break;
+        for (auto& [track_id, render_track] : render_tracks_) {
+          render_track.metadata_track.InsertMetadataBuffer(*buf);
         }
-        metadata_.SetInterval(buf->timestamp(),
-                              buf->timestamp() + buf->duration(), buf_metadata);
       }
       buffer_queue.clear();
       buffers_it = buffers->erase(buffers_it);
@@ -81,17 +75,15 @@ void StreamParserMetadataTrack::AttachMetadataOrHoldBuffers(
          ++first_unprocessed_buffer) {
       auto& buf = *first_unprocessed_buffer;
 
-      // Note that IntervalMap::Find always returns a value.
-      const auto& metadata = metadata_.find(buf->timestamp()).value();
-      if (metadata.has_value()) {
-        buf->WritableSideData().hdr_metadata.MergeMetadataFrom(*metadata);
-      } else {
+      bool metadata_attached =
+          render_track.metadata_track.TryAttachMetadata(*buf);
+      if (!metadata_attached) {
         if (flush_all_buffers) {
-          // If all buffers have been received, then continue check all buffers
-          // for metadata.
+          // If all buffers have been received, then continue to check remaining
+          // buffers.
           continue;
         } else {
-          // Otherwise, stop now.
+          // Otherwise, stop now and wait for more metadata.
           break;
         }
       }
@@ -109,15 +101,17 @@ void StreamParserMetadataTrack::AttachMetadataOrHoldBuffers(
   }
 
   if (flush_all_buffers) {
-    metadata_.clear();
+    for (auto& [track_id, render_track] : render_tracks_) {
+      render_track.metadata_track.Reset();
+    }
   }
 }
 
 void StreamParserMetadataTrack::Reset() {
   for (auto& [track_id, render_track] : render_tracks_) {
     render_track.held_buffers.clear();
+    render_track.metadata_track.Reset();
   }
-  metadata_.clear();
 }
 
 }  // namespace media
