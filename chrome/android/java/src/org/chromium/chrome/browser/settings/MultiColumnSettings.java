@@ -1217,13 +1217,13 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             }
 
             // The index needs a profile, and a context that only an attached fragment can supply.
-            Profile profile = mProfileSupplier.get();
-            if (!(page instanceof Fragment fragment) || profile == null) {
+            if (!(page instanceof Fragment fragment)) {
                 return mainMenuKey;
             }
             Context context = fragment.getContext();
-            if (context == null) {
-                return mainMenuKey;
+            Profile profile = mProfileSupplier.get();
+            if (profile == null || context == null) {
+                return fallbackMainMenuKey(page, fragment);
             }
 
             String fragmentClassName = fragment.getClass().getName();
@@ -1237,7 +1237,18 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             if (path != null && !path.isEmpty()) {
                 return path.get(0).key;
             }
-            return mainMenuKey;
+            return fallbackMainMenuKey(page, fragment);
+        }
+
+        private @Nullable String fallbackMainMenuKey(
+                EmbeddableSettingsPage page, Fragment fragment) {
+            // Returns the main menu row for a page whose breadcrumb path could not be resolved.
+            // This happens with pages that are attached at runtime (e.g., a website row in
+            // "All sites" is absent from the search index). Declare the row these fragments
+            // belong under in SettingsFragmentRegistry instead. Otherwise fall back to the
+            // page's own identity (which could be null).
+            String anchor = SettingsFragmentRegistry.getMainMenuAnchor(fragment.getClass());
+            return anchor != null ? anchor : page.getMainMenuKey();
         }
     }
 

@@ -115,6 +115,20 @@ public class SettingsFragmentRegistry {
     static final ArrayMap<Class<? extends Fragment>, Consumer<Bundle>> sDefaultArgsProviders =
             new ArrayMap<>();
 
+    /**
+     * Used for highlighting fragments that aren't mapped to getMainMenuKey() (some subpages).
+     *
+     * <p>Deliberately distinct from EmbeddableSettingsPage.getMainMenuKey(), which declares that a
+     * fragment is a given main menu row. That is an identity and must stay globally unique, because
+     * the settings search index keys its entries by preference key.
+     *
+     * <p>Only needed for pages that are absent from the search index, i.e. those attached at
+     * runtime rather than declared with in a preference XML.
+     */
+    @VisibleForTesting
+    static final ArrayMap<Class<? extends Fragment>, String> sFragmentToMainMenuAnchorMap =
+            new ArrayMap<>();
+
     static {
         // Root path mappings pointing to the top-level main settings fragment.
         registerMapping("", MainSettings.class);
@@ -201,6 +215,16 @@ public class SettingsFragmentRegistry {
         registerMapping("/locationPermission", LocationPermissionSubpageSettings.class);
         registerMapping("/chosenObject", ChosenObjectSettings.class);
 
+        // These pages are attached at runtime, e.g. by tapping a row in "All sites", instead of
+        // being declared with android:fragment in a preference XML. They therefore have no entry
+        // in the settings search index and no breadcrumb path to derive a main menu row from, so
+        // the row they belong under is declared explicitly.
+        registerMainMenuAnchor(SingleWebsiteSettings.class, SiteSettings.MAIN_MENU_KEY);
+        registerMainMenuAnchor(GroupedWebsitesSettings.class, SiteSettings.MAIN_MENU_KEY);
+        registerMainMenuAnchor(StorageAccessSubpageSettings.class, SiteSettings.MAIN_MENU_KEY);
+        registerMainMenuAnchor(LocationPermissionSubpageSettings.class, SiteSettings.MAIN_MENU_KEY);
+        registerMainMenuAnchor(ChosenObjectSettings.class, SiteSettings.MAIN_MENU_KEY);
+
         // Languages, Downloads, Tabs, Homepage
         //
         // Only the top-level languages page is URL routed. The subpages (language picker, always
@@ -272,6 +296,15 @@ public class SettingsFragmentRegistry {
             String canonicalPath = path.startsWith("/") ? path.substring(1) : path;
             sFragmentToPathMap.put(detailFragmentClass, canonicalPath);
         }
+    }
+
+    private static void registerMainMenuAnchor(
+            Class<? extends Fragment> fragmentClass, String mainMenuKey) {
+        sFragmentToMainMenuAnchorMap.put(fragmentClass, mainMenuKey);
+    }
+
+    public static @Nullable String getMainMenuAnchor(Class<? extends Fragment> fragmentClass) {
+        return sFragmentToMainMenuAnchorMap.get(fragmentClass);
     }
 
     private static void registerParameterMapping(

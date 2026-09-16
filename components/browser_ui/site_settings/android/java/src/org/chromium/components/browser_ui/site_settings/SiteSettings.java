@@ -43,6 +43,8 @@ public class SiteSettings extends BaseSiteSettingsFragment
         implements EmbeddableSettingsPage,
                 Preference.OnPreferenceClickListener,
                 CustomDividerFragment {
+    public static final String MAIN_MENU_KEY = "content_settings";
+
     // The keys for each category shown on the Site Settings page
     // are defined in the SiteSettingsCategory. The only exception is the permission autorevocation
     // switch at the bottom of the page and its top divider.
@@ -260,7 +262,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
 
     @Override
     public @Nullable String getMainMenuKey() {
-        return "content_settings";
+        return MAIN_MENU_KEY;
     }
 
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =

@@ -39,8 +39,12 @@ import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFr
 import org.chromium.chrome.browser.safe_browsing.settings.StandardProtectionSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
+import org.chromium.components.browser_ui.site_settings.ChosenObjectSettings;
 import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
+import org.chromium.components.browser_ui.site_settings.LocationPermissionSubpageSettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettings;
+import org.chromium.components.browser_ui.site_settings.StorageAccessSubpageSettings;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
@@ -390,5 +394,32 @@ public class SettingsFragmentRegistryTest {
                 TracingSettings.class,
                 SettingsFragmentRegistry.getFragmentClassForUrl(
                         "chrome://settings/developer/tracing"));
+    }
+
+    @Test
+    public void testMainMenuAnchors() {
+        // Site settings subpages are attached at runtime and are absent from the search index, so
+        // they declare the row they live under explicitly.
+        assertEquals(
+                SiteSettings.MAIN_MENU_KEY,
+                SettingsFragmentRegistry.getMainMenuAnchor(SingleWebsiteSettings.class));
+        assertEquals(
+                SiteSettings.MAIN_MENU_KEY,
+                SettingsFragmentRegistry.getMainMenuAnchor(GroupedWebsitesSettings.class));
+        assertEquals(
+                SiteSettings.MAIN_MENU_KEY,
+                SettingsFragmentRegistry.getMainMenuAnchor(StorageAccessSubpageSettings.class));
+        assertEquals(
+                SiteSettings.MAIN_MENU_KEY,
+                SettingsFragmentRegistry.getMainMenuAnchor(
+                        LocationPermissionSubpageSettings.class));
+        assertEquals(
+                SiteSettings.MAIN_MENU_KEY,
+                SettingsFragmentRegistry.getMainMenuAnchor(ChosenObjectSettings.class));
+
+        // Pages reachable from a preference XML resolve their row from the breadcrumb path and do
+        // not need an anchor.
+        assertNull(SettingsFragmentRegistry.getMainMenuAnchor(SiteSettings.class));
+        assertNull(SettingsFragmentRegistry.getMainMenuAnchor(PrivacySettings.class));
     }
 }
