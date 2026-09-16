@@ -77,6 +77,29 @@ base::FilePath GetStartMenuShortcutPath() {
   return start_menu_dir.Append(GetShortcutName());
 }
 
+// Returns whether the shortcut at `shortcut_path` already resolves to the
+// launch properties in `expected`.
+bool ShortcutMatches(const base::FilePath& shortcut_path,
+                     const base::win::ShortcutProperties& expected) {
+  base::win::ShortcutProperties existing;
+  if (!base::win::ResolveShortcutProperties(
+          shortcut_path,
+          base::win::ShortcutProperties::PROPERTIES_TARGET |
+              base::win::ShortcutProperties::PROPERTIES_ARGUMENTS |
+              base::win::ShortcutProperties::PROPERTIES_ICON |
+              base::win::ShortcutProperties::PROPERTIES_APP_ID,
+          &existing)) {
+    return false;
+  }
+  return base::FilePath::CompareEqualIgnoreCase(existing.target.value(),
+                                                expected.target.value()) &&
+         existing.arguments == expected.arguments &&
+         existing.app_id == expected.app_id &&
+         base::FilePath::CompareEqualIgnoreCase(existing.icon.value(),
+                                                expected.icon.value()) &&
+         existing.icon_index == expected.icon_index;
+}
+
 }  // namespace
 
 std::wstring GetDisplayName() {
@@ -133,11 +156,6 @@ bool OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut() {
   if (shortcut_path.empty()) {
     return false;
   }
-  // TODO(crbug.com/562073179): Also rewrite the shortcut when its properties
-  // are stale, via base::win::ResolveShortcutProperties.
-  if (base::PathExists(shortcut_path)) {
-    return true;
-  }
 
   base::FilePath chrome_proxy_path = GetChromeProxyPath();
   if (chrome_proxy_path.empty()) {
@@ -152,6 +170,13 @@ bool OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut() {
   shortcut_properties.set_icon(GetChromeExePath(),
                                icon_resources::kOmniboxEverywhereIndex);
   shortcut_properties.set_description(GetDisplayName());
+
+  // A shortcut left by an older install may point at a stale target or AUMID,
+  // which breaks taskbar pinning, so rewrite anything that does not match.
+  if (base::PathExists(shortcut_path) &&
+      ShortcutMatches(shortcut_path, shortcut_properties)) {
+    return true;
+  }
 
   return base::win::CreateOrUpdateShortcutLink(
       shortcut_path, shortcut_properties,

@@ -37,8 +37,8 @@ class OmniboxEverywhereShortcutHelperWin {
   OmniboxEverywhereShortcutHelperWin& operator=(
       const OmniboxEverywhereShortcutHelperWin&) = delete;
 
-  // Creates the Start Menu shortcut if absent, and returns whether a usable
-  // one exists. Must run on a COM STA thread supporting blocking I/O.
+  // Creates the Start Menu shortcut if absent or stale, and returns whether a
+  // usable one exists. Must run on a COM STA thread supporting blocking I/O.
   bool CreateStartMenuShortcut();
 };
 
