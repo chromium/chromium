@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/ash/lobster",
   "+chrome/browser/ash/login/session",
   "+chrome/browser/bookmarks",
-  "+chrome/browser/history",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/thumbnail_loader",
   "+chrome/browser/ui/browser_window",
@@ -49,6 +48,12 @@ specific_include_rules = {
   # TemplateURLServiceFactory::GetForProfile() unconditionally.
   ".*unittest\\.cc": [
     "+chrome/browser/search_engines",
+  ],
+
+  # Only the tests still create the HistoryService via chrome/browser/history's
+  # factory; production uses ash::HistoryServiceProvider.
+  ".*(unittest|uitest)\\.cc": [
+    "+chrome/browser/history",
   ],
 
   "quick_insert_client_impl_unittest\\.cc": [
