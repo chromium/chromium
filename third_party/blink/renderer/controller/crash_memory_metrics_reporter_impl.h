@@ -7,6 +7,8 @@
 
 #include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -41,19 +43,22 @@ class CONTROLLER_EXPORT CrashMemoryMetricsReporterImpl
   // failures and base::TerminateBecauseOutOfMemory(), too.
   static void OnOOMCallback();
 
+  void ResetForTesting();
+
  protected:
   CrashMemoryMetricsReporterImpl();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(OomInterventionImplTest, CalculateProcessFootprint);
 
-  void WriteIntoSharedMemory();
+  void WriteIntoSharedMemory() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 #if BUILDFLAG(IS_ANDROID)
   void SampleMemoryState(TimerBase*);
 #endif
 
-  OomInterventionMetrics last_reported_metrics_;
-  base::WritableSharedMemoryMapping shared_metrics_mapping_;
+  base::Lock lock_;
+  OomInterventionMetrics last_reported_metrics_ GUARDED_BY(lock_);
+  base::WritableSharedMemoryMapping shared_metrics_mapping_ GUARDED_BY(lock_);
   mojo::Receiver<mojom::blink::CrashMemoryMetricsReporter> receiver_{this};
 #if BUILDFLAG(IS_ANDROID)
   TaskRunnerTimer<CrashMemoryMetricsReporterImpl> timer_;

@@ -300,11 +300,11 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
 void BlinkInitializer::RegisterMemoryWatchers(Platform* platform) {
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
       Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted());
-#if BUILDFLAG(IS_ANDROID)
   // Initialize CrashMemoryMetricsReporterImpl in order to assure that memory
   // allocation does not happen in OnOOMCallback.
   CrashMemoryMetricsReporterImpl::Instance();
 
+#if BUILDFLAG(IS_ANDROID)
   // Initialize UserLevelMemoryPressureSignalGenerator so it starts monitoring.
   if (platform->IsUserLevelMemoryPressureSignalEnabled()) {
     UserLevelMemoryPressureSignalGenerator::Initialize(main_thread_task_runner);
