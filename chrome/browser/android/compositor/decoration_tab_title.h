@@ -53,27 +53,27 @@ class DecorationTabTitle : public DecorationIconTitle {
               bool is_rtl,
               bool show_bubble);
   void SetShowBubble(bool show_bubble);
-  const gfx::Size& size() { return size_; }
 
  private:
-  int spinner_resource_id_;
-  int spinner_incognito_resource_id_;
-  bool show_bubble_;
-  int bubble_inner_dimension_;
-  int bubble_outer_dimension_;
-  int bubble_offset_;
-  int bubble_inner_tint_;
-  int bubble_outer_tint_;
   scoped_refptr<cc::slim::SolidColorLayer> tab_bubble_outer_circle_layer_;
   scoped_refptr<cc::slim::SolidColorLayer> tab_bubble_inner_circle_layer_;
+
   scoped_refptr<cc::slim::SolidColorLayer> CreateTabBubbleCircle(int size,
                                                                  int tint);
   void CreateTabBubble();
   void CreateAndShowTabBubble(gfx::PointF position);
   void HideTabBubble();
 
-  gfx::Size size_;
+  int spinner_resource_id_;
+  int spinner_incognito_resource_id_;
+  int bubble_inner_dimension_;
+  int bubble_outer_dimension_;
+  int bubble_offset_;
+  int bubble_inner_tint_;
+  int bubble_outer_tint_;
+
   float spinner_rotation_ = 0;
+  bool show_bubble_;
   bool is_loading_ = false;
 };
 

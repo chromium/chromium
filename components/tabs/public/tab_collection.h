@@ -109,18 +109,18 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
       size_t index;
     };
 
-    // Points to the currently accessed tab during iteration.
-    raw_ptr<tabs::TabInterface> cur_;
-
-    // Points to the root tab collection that the iterator is traversing.
-    raw_ptr<const tabs::TabCollection> root_;
-
     // A stack used to maintain the traversal state for inorder traversal
     // of tabs within the TabCollection hierarchy. Each Frame on the stack
     // is a TabCollection in the current path of traversal, along
     // with the index of the next child to be visited. This is implemented as a
     // vector to take advantage of reserving memory for performance reasons.
     std::vector<Frame> stack_;
+
+    // Points to the currently accessed tab during iteration.
+    raw_ptr<tabs::TabInterface> cur_;
+
+    // Points to the root tab collection that the iterator is traversing.
+    raw_ptr<const tabs::TabCollection> root_;
   };
 
   using iterator = TabIterator;
@@ -149,7 +149,7 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   // - GROUP:     A container to grouped tabs.
   // - SPLIT:     A container for split tabs.
   // LINT.IfChange(TYPE)
-  enum class Type {
+  enum class Type : uint8_t {
     MIN,
     TABSTRIP = MIN,
     PINNED,
@@ -332,14 +332,14 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
     return base::PassKey<TabCollection>();
   }
 
-  // Total number of tabs in the collection.
-  size_t recursive_tab_count_ = 0;
-
  private:
-  raw_ptr<TabCollection> parent_ = nullptr;
   Type type_;
   TypeEnumSet supported_child_collections_;
   bool supports_tabs_;
+  bool notify_immediately_ = true;
+
+  // Total number of tabs in the collection.
+  size_t recursive_tab_count_ = 0;
 
   // Mutable to allow adding/removing `TabCollectionObserver`'s through a const
   // TabCollection inorder to avoid updates to the collection.
@@ -348,10 +348,10 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   // batched notifications to allow for delayed propagation.
   std::vector<base::OnceClosure> pending_notifications_;
 
-  bool notify_immediately_ = true;
-
   // Underlying implementation for the storage of children.
   std::unique_ptr<TabCollectionStorage> impl_;
+
+  raw_ptr<TabCollection> parent_ = nullptr;
 
   friend class TabCollectionStorage;
 };

@@ -40,12 +40,12 @@ DecorationTabTitle::DecorationTabTitle(ui::ResourceManager* resource_manager,
                           is_rtl),
       spinner_resource_id_(spinner_resource_id),
       spinner_incognito_resource_id_(spinner_incognito_resource_id),
-      show_bubble_(show_bubble),
       bubble_inner_dimension_(bubble_inner_dimension),
       bubble_outer_dimension_(bubble_outer_dimension),
       bubble_offset_(bubble_offset),
       bubble_inner_tint_(bubble_inner_tint),
-      bubble_outer_tint_(bubble_outer_tint) {}
+      bubble_outer_tint_(bubble_outer_tint),
+      show_bubble_(show_bubble) {}
 
 DecorationTabTitle::~DecorationTabTitle() = default;
 

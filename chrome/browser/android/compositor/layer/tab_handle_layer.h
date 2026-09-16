@@ -119,9 +119,9 @@ class TabHandleLayer : public Layer {
 
   scoped_refptr<cc::slim::NinePatchLayer> keyboard_focus_ring_;
 
+  std::unique_ptr<gfx::Transform> transform_;
   float opacity_;
   float alert_indicator_overlay_rotation_ = 0.f;
-  std::unique_ptr<gfx::Transform> transform_;
   bool foreground_ = false;
   bool is_pinned_ = false;
 };

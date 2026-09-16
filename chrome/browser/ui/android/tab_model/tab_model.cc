@@ -41,15 +41,19 @@ TabModel::TabModel(Profile* profile,
                    std::optional<chrome::android::CustomTabProfileType>
                        custom_tab_profile_type,
                    TabModelType tab_model_type)
-    : profile_(profile),
-      activity_type_(activity_type),
-      custom_tab_profile_type_(custom_tab_profile_type),
-      tab_model_type_(tab_model_type),
-      live_tab_context_(new AndroidLiveTabContext(this)),
+    : live_tab_context_(new AndroidLiveTabContext(this)),
       synced_window_delegate_(new browser_sync::SyncedWindowDelegateAndroid(
           this,
           activity_type == ActivityType::kTabbed)),
-      session_id_(SessionID::InvalidValue()) {}
+      profile_(profile),
+      session_id_(SessionID::InvalidValue()),
+      activity_type_(activity_type),
+      tab_model_type_(tab_model_type) {
+  if (custom_tab_profile_type) {
+    custom_tab_profile_type_value_ = *custom_tab_profile_type;
+    has_custom_tab_profile_type_ = true;
+  }
+}
 
 TabModel::~TabModel() = default;
 
@@ -147,10 +151,10 @@ void TabModel::SetSessionId(SessionID session_id) {
 }
 
 bool TabModel::IsEmptyRegularModelForEphemeralOrIncognitoCct() const {
-  return !IsOffTheRecord() && custom_tab_profile_type_.has_value() &&
-         (custom_tab_profile_type_.value() ==
+  return !IsOffTheRecord() && has_custom_tab_profile_type_ &&
+         (custom_tab_profile_type_value_ ==
               chrome::android::CustomTabProfileType::kEphemeral ||
-          custom_tab_profile_type_.value() ==
+          custom_tab_profile_type_value_ ==
               chrome::android::CustomTabProfileType::kIncognito);
 }
 

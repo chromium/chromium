@@ -29,10 +29,10 @@ DecorationIconTitle::DecorationIconTitle(ui::ResourceManager* resource_manager,
                       is_incognito,
                       is_rtl),
       layer_icon_(cc::slim::UIResourceLayer::Create()),
+      transform_(new gfx::Transform()),
       icon_resource_id_(icon_resource_id),
       icon_start_padding_(icon_start_padding),
-      icon_end_padding_(icon_end_padding),
-      transform_(new gfx::Transform()) {
+      icon_end_padding_(icon_end_padding) {
   layer_->AddChild(layer_icon_);
 }
 

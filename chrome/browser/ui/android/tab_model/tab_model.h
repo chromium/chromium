@@ -58,7 +58,7 @@ class TabModel : public TabListInterface {
   // LINT.ThenChange(//chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java:INVALID_TAB_INDEX)
 
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tabmodel
-  enum class TabModelType {
+  enum class TabModelType : uint8_t {
     // A standard tab model that contains tabs from a profile.
     kStandard,
     // An empty tab model that contains no tabs.
@@ -330,9 +330,12 @@ class TabModel : public TabListInterface {
       base::PassKey<tabs_api::AndroidTabStripModelAdapter>) = 0;
 
   chrome::android::ActivityType activity_type() const { return activity_type_; }
-  const std::optional<chrome::android::CustomTabProfileType>&
-  custom_tab_profile_type() const {
-    return custom_tab_profile_type_;
+  std::optional<chrome::android::CustomTabProfileType> custom_tab_profile_type()
+      const {
+    if (has_custom_tab_profile_type_) {
+      return custom_tab_profile_type_value_;
+    }
+    return std::nullopt;
   }
   TabModelType GetTabModelType() const { return tab_model_type_; }
   bool IsEmptyRegularModelForEphemeralOrIncognitoCct() const;
@@ -359,12 +362,6 @@ class TabModel : public TabListInterface {
   void SetSessionId(SessionID sessionId);
 
  private:
-  raw_ptr<Profile, DanglingUntriaged> profile_;
-
-  chrome::android::ActivityType activity_type_;
-  std::optional<chrome::android::CustomTabProfileType> custom_tab_profile_type_;
-  TabModelType tab_model_type_;
-
   // The LiveTabContext associated with TabModel.
   // Used to restore closed tabs through the TabRestoreService.
   std::unique_ptr<AndroidLiveTabContext> live_tab_context_;
@@ -373,10 +370,18 @@ class TabModel : public TabListInterface {
   std::unique_ptr<browser_sync::SyncedWindowDelegateAndroid>
       synced_window_delegate_;
 
+  raw_ptr<Profile, DanglingUntriaged> profile_;
+
   // Unique identifier of this TabModel for session restore. This id is only
   // unique within the current session, and is not guaranteed to be unique
   // across sessions.
   SessionID session_id_;
+
+  chrome::android::ActivityType activity_type_;
+  TabModelType tab_model_type_;
+  chrome::android::CustomTabProfileType custom_tab_profile_type_value_ =
+      chrome::android::CustomTabProfileType::kRegular;
+  bool has_custom_tab_profile_type_ = false;
 
   // Records metrics about which percentage of syncable tabs are actually
   // synced.
