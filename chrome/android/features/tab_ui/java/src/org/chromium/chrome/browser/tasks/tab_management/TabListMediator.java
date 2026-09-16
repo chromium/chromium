@@ -1120,7 +1120,7 @@ public class TabListMediator implements TabListNotificationHandler {
                 if (modelTabId != tab.getId()) {
                     // If the tab is in the same tab group, we can just update the model's TAB_ID
                     // rather than resetting the list.
-                    if (mTabListLayoutDelegate.areTabsInSameGroup(modelTabId, tab)) {
+                    if (mTabListLayoutDelegate.areTabsInSameGroup(model, tab)) {
                         continue;
                     }
                     return false;

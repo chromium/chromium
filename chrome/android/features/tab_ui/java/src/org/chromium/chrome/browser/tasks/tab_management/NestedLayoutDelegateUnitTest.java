@@ -861,7 +861,8 @@ public class NestedLayoutDelegateUnitTest {
 
     @Test
     public void testAreTabsInSameGroup_ReturnsFalse() {
-        assertFalse(mDelegate.areTabsInSameGroup(TAB1_ID, mTab2));
+        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
+        assertFalse(mDelegate.areTabsInSameGroup(model, mTab2));
     }
 
     @Test

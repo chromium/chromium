@@ -593,7 +593,8 @@ public class FlatLayoutDelegateUnitTest {
 
     @Test
     public void testDidRemoveTabGroup_NoOp() {
-        mDelegate.didRemoveTabGroup(1, null, TabGroupObserver.DidRemoveTabGroupReason.MERGE);
+        mDelegate.didRemoveTabGroup(
+                1, TAB_GROUP_ID, TabGroupObserver.DidRemoveTabGroupReason.MERGE);
 
         // Flat layout does not display tab group headers, so no updates should occur.
         verifyNoInteractions(mMediator);
@@ -632,7 +633,8 @@ public class FlatLayoutDelegateUnitTest {
 
     @Test
     public void testAreTabsInSameGroup_ReturnsFalse() {
-        assertFalse(mDelegate.areTabsInSameGroup(TAB1_ID, mTab2));
+        PropertyModel model = new PropertyModel(TabProperties.ALL_KEYS_TAB_GRID);
+        assertFalse(mDelegate.areTabsInSameGroup(model, mTab2));
     }
 
     @Test

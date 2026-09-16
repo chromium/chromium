@@ -336,22 +336,6 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    public void didRemoveTabGroup(
-            int oldRootId,
-            @Nullable Token oldTabGroupId,
-            @DidRemoveTabGroupReason int removalReason) {
-        if (oldTabGroupId == null) {
-            return;
-        }
-        // When a group is destroyed (due to tab closures, ungrouping, etc.), the corresponding
-        // Group Header card needs to be removed as well.
-        int index = mModelList.indexFromTabGroupId(oldTabGroupId);
-        if (index != TabModel.INVALID_TAB_INDEX) {
-            mModelList.removeAt(index);
-        }
-    }
-
-    @Override
     void setupGroupPropertiesForChildTab(Tab tab, PropertyModel model) {
         Token tabGroupId = tab.getTabGroupId();
         if (tabGroupId != null) {

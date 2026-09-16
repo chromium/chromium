@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridAccessibilityHelper;
@@ -455,6 +456,16 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
         mModelList.moveItem(curPosition, newPosition);
     }
 
+    @Override
+    public void didRemoveTabGroup(
+            int oldRootId, @Nullable Token tabGroupId, @DidRemoveTabGroupReason int removalReason) {
+        if (!supportsTabGroups() || tabGroupId == null) return;
+        int index = mModelList.indexFromTabGroupId(tabGroupId);
+        if (index != TabModel.INVALID_TAB_INDEX) {
+            mModelList.removeAt(index);
+        }
+    }
+
     /**
      * Configures layout-specific group properties on a child tab card model (e.g. group spine
      * styling in NESTED layouts). Defaults to a no-op in layouts that do not style child tab rows.
@@ -493,16 +504,16 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
     void onTabSelectionToggled(PropertyModel model, int tabId, boolean wasSelected) {}
 
     /**
-     * Returns whether an existing card representing {@code previousTabId} and {@code newTab} are in
-     * the same tab group represented by this card, allowing the card's tab ID to be updated in
-     * place rather than resetting the list. Flat and nested layouts do not share cards across group
-     * tabs and default to false.
+     * Returns whether an existing card model and {@code newTab} are in the same tab group
+     * represented by this card, allowing the card's tab ID to be updated in place rather than
+     * resetting the list. Flat and nested layouts do not share cards across group tabs and default
+     * to false.
      *
-     * @param previousTabId The ID of the tab currently represented by the model.
+     * @param model The {@link PropertyModel} of the card in the list.
      * @param newTab The incoming {@link Tab} to be displayed at this position.
-     * @return Whether the two tabs belong to the same group card in this layout.
+     * @return Whether the card model and incoming tab belong to the same group card in this layout.
      */
-    boolean areTabsInSameGroup(int previousTabId, Tab newTab) {
+    boolean areTabsInSameGroup(PropertyModel model, Tab newTab) {
         return false;
     }
 

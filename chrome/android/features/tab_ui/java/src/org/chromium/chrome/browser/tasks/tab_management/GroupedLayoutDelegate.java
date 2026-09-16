@@ -550,7 +550,8 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
-    boolean areTabsInSameGroup(int previousTabId, Tab newTab) {
+    boolean areTabsInSameGroup(PropertyModel model, Tab newTab) {
+        int previousTabId = TabProperties.getTabId(model);
         Tab previousTab = mMediator.getCurrentTabModelChecked().getTabById(previousTabId);
         return previousTab != null
                 && previousTab.getTabGroupId() != null
