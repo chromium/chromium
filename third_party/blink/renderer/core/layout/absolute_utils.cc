@@ -73,9 +73,8 @@ InsetBias GetAlignmentInsetBias(
     *out_has_default_alignment_overflow = true;
   }
 
-  switch (alignment.GetPosition()) {
+  switch (alignment.GetUsedPosition()) {
     case ItemPosition::kStart:
-    case ItemPosition::kFlexStart:
     case ItemPosition::kFlowStart:
     case ItemPosition::kBaseline:
     case ItemPosition::kStretch:
@@ -85,7 +84,6 @@ InsetBias GetAlignmentInsetBias(
     case ItemPosition::kCenter:
       return InsetBias::kEqual;
     case ItemPosition::kEnd:
-    case ItemPosition::kFlexEnd:
     case ItemPosition::kFlowEnd:
     case ItemPosition::kLastBaseline:
       return is_justify_axis ? bias.InlineEnd() : bias.BlockEnd();
@@ -101,6 +99,8 @@ InsetBias GetAlignmentInsetBias(
       DCHECK(is_justify_axis);
       return container_writing_direction.IsRtl() ? bias.InlineStart()
                                                  : bias.InlineEnd();
+    case ItemPosition::kFlexStart:
+    case ItemPosition::kFlexEnd:
     case ItemPosition::kLegacy:
     case ItemPosition::kAuto:
       NOTREACHED();

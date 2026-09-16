@@ -85,7 +85,7 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
       return AxisEdge::kStart;
   }
 
-  switch (const auto item_position = alignment.GetPosition()) {
+  switch (const auto item_position = alignment.GetUsedPosition()) {
     case ItemPosition::kSelfStart:
     case ItemPosition::kSelfEnd: {
       // In order to determine the correct "self" axis-edge without a
@@ -111,11 +111,9 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
     case ItemPosition::kAnchorCenter:
     case ItemPosition::kCenter:
       return AxisEdge::kCenter;
-    case ItemPosition::kFlexStart:
     case ItemPosition::kFlowStart:
     case ItemPosition::kStart:
       return AxisEdge::kStart;
-    case ItemPosition::kFlexEnd:
     case ItemPosition::kFlowEnd:
     case ItemPosition::kEnd:
       return AxisEdge::kEnd;
@@ -142,6 +140,8 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
                                      : AutoSizeBehavior::kStretchImplicit;
       }
       return AxisEdge::kStart;
+    case ItemPosition::kFlexStart:
+    case ItemPosition::kFlexEnd:
     case ItemPosition::kLegacy:
     case ItemPosition::kAuto:
       NOTREACHED();

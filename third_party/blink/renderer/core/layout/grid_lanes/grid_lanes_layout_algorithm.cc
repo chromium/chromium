@@ -480,10 +480,9 @@ LayoutUnit AlignContentOffset(
       break;
   }
 
-  switch (content_alignment.GetPosition()) {
+  switch (content_alignment.GetUsedPosition()) {
     case ContentPosition::kLeft:
     case ContentPosition::kStart:
-    case ContentPosition::kFlexStart:
     case ContentPosition::kFlowStart:
     case ContentPosition::kNormal:
       adjusted_offset = LayoutUnit();
@@ -493,7 +492,6 @@ LayoutUnit AlignContentOffset(
       break;
     case ContentPosition::kRight:
     case ContentPosition::kEnd:
-    case ContentPosition::kFlexEnd:
     case ContentPosition::kFlowEnd:
       adjusted_offset = free_space;
       break;
@@ -501,6 +499,9 @@ LayoutUnit AlignContentOffset(
     case ContentPosition::kLastBaseline:
       adjusted_offset = baseline_offset;
       break;
+    case ContentPosition::kFlexStart:
+    case ContentPosition::kFlexEnd:
+      NOTREACHED();
   }
   return is_fill_reverse ? adjusted_offset - free_space : adjusted_offset;
 }

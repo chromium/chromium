@@ -18,7 +18,7 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
                                               bool behave_like_table_cell,
                                               UseCounter* use_counter) {
   const StyleContentAlignmentData& alignment = style.AlignContent();
-  ContentPosition position = alignment.GetPosition();
+  ContentPosition position = alignment.GetUsedPosition();
   OverflowAlignment overflow = alignment.Overflow();
   // https://drafts.csswg.org/css-align/#distribution-block
   // If a <content-distribution> is specified its fallback alignment is used
@@ -28,7 +28,7 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
       break;
     case ContentDistributionType::kSpaceBetween:
     case ContentDistributionType::kStretch:
-      position = ContentPosition::kFlexStart;
+      position = ContentPosition::kFlowStart;
       break;
     case ContentDistributionType::kSpaceAround:
     case ContentDistributionType::kSpaceEvenly:
@@ -44,7 +44,6 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
   if (use_counter) {
     if (!behave_like_table_cell) {
       if (position != ContentPosition::kBaseline &&
-          position != ContentPosition::kFlexStart &&
           position != ContentPosition::kFlowStart &&
           position != ContentPosition::kNormal &&
           position != ContentPosition::kStart) {
@@ -71,7 +70,6 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
                      : BlockContentAlignment::kUnsafeCenter;
 
     case ContentPosition::kEnd:
-    case ContentPosition::kFlexEnd:
     case ContentPosition::kFlowEnd:
       return is_safe ? BlockContentAlignment::kSafeEnd
                      : BlockContentAlignment::kUnsafeEnd;
@@ -101,7 +99,6 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
       }
       break;
 
-    case ContentPosition::kFlexStart:
     case ContentPosition::kFlowStart:
     case ContentPosition::kStart:
       return BlockContentAlignment::kStart;
@@ -112,6 +109,8 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
     case ContentPosition::kLastBaseline:
     case ContentPosition::kLeft:
     case ContentPosition::kRight:
+    case ContentPosition::kFlexStart:
+    case ContentPosition::kFlexEnd:
       NOTREACHED();
   }
   return BlockContentAlignment::kStart;
@@ -240,11 +239,10 @@ LogicalStaticPosition::InlineEdge InlineStaticPositionEdge(
   const ItemPosition align_self =
       oof_node.Style()
           .ResolvedJustifySelf(normal_value_behavior, justify_items_style)
-          .GetPosition();
+          .GetUsedPosition();
 
   switch (align_self) {
     case ItemPosition::kEnd:
-    case ItemPosition::kFlexEnd:
     case ItemPosition::kFlowEnd:
     case ItemPosition::kLastBaseline:
     case ItemPosition::kRight: {
@@ -255,7 +253,6 @@ LogicalStaticPosition::InlineEdge InlineStaticPositionEdge(
     case ItemPosition::kCenter:
       return LogicalStaticPosition::kInlineCenter;
     case ItemPosition::kBaseline:
-    case ItemPosition::kFlexStart:
     case ItemPosition::kFlowStart:
     case ItemPosition::kLeft:
     case ItemPosition::kStart:
@@ -277,6 +274,8 @@ LogicalStaticPosition::InlineEdge InlineStaticPositionEdge(
     case ItemPosition::kAuto:
     case ItemPosition::kLegacy:
     case ItemPosition::kNormal:
+    case ItemPosition::kFlexStart:
+    case ItemPosition::kFlexEnd:
       NOTREACHED();
   }
 }
@@ -291,11 +290,10 @@ LogicalStaticPosition::BlockEdge BlockStaticPositionEdge(
   const ItemPosition align_self =
       oof_node.Style()
           .ResolvedAlignSelf(normal_value_behavior, align_items_style)
-          .GetPosition();
+          .GetUsedPosition();
 
   switch (align_self) {
     case ItemPosition::kEnd:
-    case ItemPosition::kFlexEnd:
     case ItemPosition::kFlowEnd:
     case ItemPosition::kLastBaseline:
       return LogicalStaticPosition::kBlockEnd;
@@ -303,7 +301,6 @@ LogicalStaticPosition::BlockEdge BlockStaticPositionEdge(
     case ItemPosition::kCenter:
       return LogicalStaticPosition::kBlockCenter;
     case ItemPosition::kBaseline:
-    case ItemPosition::kFlexStart:
     case ItemPosition::kFlowStart:
     case ItemPosition::kStart:
     case ItemPosition::kStretch:
@@ -322,6 +319,8 @@ LogicalStaticPosition::BlockEdge BlockStaticPositionEdge(
     case ItemPosition::kRight:
     case ItemPosition::kLegacy:
     case ItemPosition::kNormal:
+    case ItemPosition::kFlexStart:
+    case ItemPosition::kFlexEnd:
       NOTREACHED();
   }
 }

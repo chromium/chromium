@@ -255,7 +255,7 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
 
   const StyleSelfAlignmentData alignment_data = child_style.ResolvedJustifySelf(
       {ItemPosition::kNormal, OverflowAlignment::kDefault}, &style);
-  ItemPosition justify_self = alignment_data.GetPosition();
+  ItemPosition justify_self = alignment_data.GetUsedPosition();
   OverflowAlignment safe = OverflowAlignment::kSafe;
   if (justify_self != ItemPosition::kNormal) {
     safe = alignment_data.Overflow();
@@ -285,18 +285,19 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
       return FreeSpace() / 2;
     case ItemPosition::kRight:
       return is_rtl ? LayoutUnit() : FreeSpace();
-    case ItemPosition::kFlexStart:
     case ItemPosition::kFlowStart:
     case ItemPosition::kStart:
       return LayoutUnit();
     case ItemPosition::kEnd:
-    case ItemPosition::kFlexEnd:
     case ItemPosition::kFlowEnd:
       return FreeSpace();
     case ItemPosition::kSelfStart:
       return self_start_end_converter().InlineStart();
     case ItemPosition::kSelfEnd:
       return self_start_end_converter().InlineEnd();
+    case ItemPosition::kFlexStart:
+    case ItemPosition::kFlexEnd:
+      NOTREACHED();
     default:
       return LayoutUnit();
   }
