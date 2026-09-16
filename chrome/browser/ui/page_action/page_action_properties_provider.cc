@@ -336,7 +336,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .histogram_name = "FakePageActionForDebug",
             .type = PageActionIconType::kFakePageActionForDebug,
             .priority =
-                page_actions::PageActionPriorityCategory::kUserInteraction,
+                page_actions::PageActionPriorityCategory::kPrivacySecurity,
         },
     },
     {
@@ -365,6 +365,20 @@ constexpr bool CheckIgnoreFlagUsage() {
 static_assert(
     CheckIgnoreFlagUsage(),
     "ignore_should_hide_page_actions should only be used by kActionAiMode");
+
+constexpr bool CheckNoUserInteractionDefaultPriority() {
+  for (const auto& [action_id, properties] : kPageActionProperties) {
+    if (properties.priority ==
+        page_actions::PageActionPriorityCategory::kUserInteraction) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static_assert(
+    CheckNoUserInteractionDefaultPriority(),
+    "kUserInteraction priority should not be the default for any page action");
 
 }  // namespace
 
