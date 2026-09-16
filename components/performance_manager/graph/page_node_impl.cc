@@ -480,16 +480,11 @@ FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
 
 FrameNodeImpl* PageNodeImpl::primary_main_frame_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (main_frame_nodes_.empty()) {
-    return nullptr;
-  }
-
   for (FrameNodeImpl* frame : main_frame_nodes()) {
     if (frame->IsActive() && !frame->parent_or_outer_document()) {
       return frame;
     }
   }
-
   return nullptr;
 }
 

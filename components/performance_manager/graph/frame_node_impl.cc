@@ -60,6 +60,7 @@ FrameNodeImpl::FrameNodeImpl(
     FrameNodeImpl* outer_document_for_inner_frame_root,
     int render_frame_id,
     const blink::LocalFrameToken& frame_token,
+    content::FrameTreeNodeId frame_tree_node_id,
     const perfetto::Track& tracing_track,
     content::BrowsingInstanceId browsing_instance_id,
     content::SiteInstanceGroupId site_instance_group_id,
@@ -71,6 +72,7 @@ FrameNodeImpl::FrameNodeImpl(
       process_node_(process_node),
       render_frame_id_(render_frame_id),
       frame_token_(frame_token),
+      frame_tree_node_id_(frame_tree_node_id),
       browsing_instance_id_(browsing_instance_id),
       site_instance_group_id_(site_instance_group_id),
       render_frame_host_proxy_(content::GlobalRenderFrameHostId(
@@ -92,6 +94,7 @@ FrameNodeImpl::FrameNodeImpl(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(process_node);
   DCHECK(page_node);
+  CHECK(!frame_tree_node_id_.is_null());
   // A <fencedframe>, MPArch <webview> has no parent node.
   CHECK(!outer_document_for_inner_frame_root_ || !parent_frame_node_);
 }
@@ -122,6 +125,15 @@ void FrameNodeImpl::SetNetworkAlmostIdle() {
 void FrameNodeImpl::SetLifecycleState(mojom::LifecycleState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lifecycle_state_.SetAndMaybeNotify(this, state);
+}
+
+void FrameNodeImpl::SetFrameTreeNodeId(
+    content::FrameTreeNodeId frame_tree_node_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!frame_tree_node_id.is_null());
+  CHECK(frame_tree_node_id_ == frame_tree_node_id ||
+        !parent_or_outer_document());
+  frame_tree_node_id_ = frame_tree_node_id;
 }
 
 void FrameNodeImpl::SetIsActive(bool is_active) {
@@ -197,6 +209,11 @@ void FrameNodeImpl::OnFreezingOriginTrialOptOut() {
 const blink::LocalFrameToken& FrameNodeImpl::GetFrameToken() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return frame_token_;
+}
+
+content::FrameTreeNodeId FrameNodeImpl::GetFrameTreeNodeId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return frame_tree_node_id_;
 }
 
 content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
@@ -471,20 +488,6 @@ void FrameNodeImpl::UpdateCurrentFrame(FrameNodeImpl* previous_frame_node,
   for (auto& observer : graph->GetObservers<FrameNodeObserver>()) {
     observer.OnCurrentFrameChanged(previous_frame_node, current_frame_node);
   }
-
-  // TODO(crbug.com/40182881): We maintain an invariant that of all sibling
-  // frame nodes in the same FrameTreeNode, at most one may be current. We used
-  // to save the RenderFrameHost's `frame_tree_node_id` at FrameNode creation
-  // time to check this invariant, but prerendering RenderFrameHost's can be
-  // moved to a new FrameTreeNode when they're activated so the
-  // `frame_tree_node_id` can go out of date. Because of this,
-  // RenderFrameHost::GetFrameTreeNodeId() is being deprecated. (See the
-  // discussion at crbug.com/1179502 and in the comment thread at
-  // https://chromium-review.googlesource.com/c/chromium/src/+/2966195/comments/58550eac_5795f790
-  // for more details.) We need to find another way to check this invariant
-  // here. (altimin suggests simply relying on RFH::GetLifecycleState to
-  // correctly track "active" frame nodes instead of using "current", and not
-  // checking this invariant.)
 }
 
 void FrameNodeImpl::SetHadUserActivation() {

@@ -23,6 +23,7 @@
 #include "components/performance_manager/public/process_priority_policy_settings.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "content/public/browser/browsing_instance_id.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/process_type.h"
@@ -67,9 +68,10 @@ class PerformanceManagerImpl : public PerformanceManager {
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,
       FrameNodeImpl* parent_frame_node,
-      FrameNodeImpl* outer_document_for_fenced_frame,
+      FrameNodeImpl* outer_document_for_inner_frame_root,
       int render_frame_id,
       const blink::LocalFrameToken& frame_token,
+      content::FrameTreeNodeId frame_tree_node_id,
       const perfetto::Track& tracing_track,
       content::BrowsingInstanceId browsing_instance_id,
       content::SiteInstanceGroupId site_instance_group_id,

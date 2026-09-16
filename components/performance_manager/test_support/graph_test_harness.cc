@@ -24,6 +24,11 @@ BrowserChildProcessHostId NextTestBrowserChildProcessHostId() {
   return id_generator.GenerateNextId();
 }
 
+content::FrameTreeNodeId NextTestFrameTreeNodeId() {
+  static content::FrameTreeNodeId::Generator id_generator;
+  return id_generator.GenerateNextId();
+}
+
 TestGraphImpl::TestGraphImpl() = default;
 TestGraphImpl::~TestGraphImpl() = default;
 
@@ -31,11 +36,32 @@ TestNodeWrapper<FrameNodeImpl> TestGraphImpl::CreateFrameNodeAutoId(
     ProcessNodeImpl* process_node,
     PageNodeImpl* page_node,
     FrameNodeImpl* parent_frame_node,
-    content::BrowsingInstanceId browsing_instance_id) {
+    content::BrowsingInstanceId browsing_instance_id,
+    content::FrameTreeNodeId frame_tree_node_id) {
+  if (frame_tree_node_id.is_null()) {
+    frame_tree_node_id = NextTestFrameTreeNodeId();
+  }
   return TestNodeWrapper<FrameNodeImpl>::Create(
       this, process_node, page_node, parent_frame_node,
-      /*outer_document_for_fenced_frame=*/nullptr, NextTestFrameRoutingId(),
-      blink::LocalFrameToken(), browsing_instance_id);
+      /*outer_document_for_inner_frame_root=*/nullptr, NextTestFrameRoutingId(),
+      blink::LocalFrameToken(), frame_tree_node_id, browsing_instance_id);
+}
+
+TestNodeWrapper<FrameNodeImpl> TestGraphImpl::CreateSpeculativeFrameNodeAutoId(
+    ProcessNodeImpl* process_node,
+    PageNodeImpl* page_node,
+    FrameNodeImpl* parent_frame_node,
+    content::BrowsingInstanceId browsing_instance_id,
+    content::FrameTreeNodeId frame_tree_node_id) {
+  if (frame_tree_node_id.is_null()) {
+    frame_tree_node_id = NextTestFrameTreeNodeId();
+  }
+  return TestNodeWrapper<FrameNodeImpl>::Create(
+      this, process_node, page_node, parent_frame_node,
+      /*outer_document_for_inner_frame_root=*/nullptr, NextTestFrameRoutingId(),
+      blink::LocalFrameToken(), frame_tree_node_id, browsing_instance_id,
+      content::SiteInstanceGroupId(0), /*is_current=*/false,
+      /*is_active=*/false);
 }
 
 TestNodeWrapper<ProcessNodeImpl> TestGraphImpl::CreateBrowserProcessNode() {

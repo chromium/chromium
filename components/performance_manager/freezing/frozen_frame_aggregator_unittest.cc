@@ -76,8 +76,9 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
     return TestNodeWrapper<FrameNodeImpl>::Create(
         graph(), process_node_.get(), page_node_.get(), parent_frame_node,
         /*outer_document_for_fenced_frame=*/nullptr, NextTestFrameRoutingId(),
-        blink::LocalFrameToken(), content::BrowsingInstanceId(),
-        content::SiteInstanceGroupId(), is_current);
+        blink::LocalFrameToken(), NextTestFrameTreeNodeId(),
+        content::BrowsingInstanceId(), content::SiteInstanceGroupId(),
+        is_current);
   }
 
   raw_ptr<FrozenFrameAggregator> ffa_;

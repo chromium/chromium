@@ -64,6 +64,15 @@ bool GraphOperations::HasFrame(const PageNode* page, const FrameNode* frame) {
 }
 
 // static
+const FrameNode* GraphOperations::GetActiveFrameForFrameTreeNodeId(
+    const PageNode* page,
+    content::FrameTreeNodeId frame_tree_node_id) {
+  CHECK(page);
+  return GraphImplOperations::GetActiveFrameForFrameTreeNodeId(
+      PageNodeImpl::FromNode(page), frame_tree_node_id);
+}
+
+// static
 bool GraphOperations::VisitAllWorkerClients(const WorkerNode* worker,
                                             FrameNodeVisitor frame_visitor,
                                             WorkerNodeVisitor worker_visitor) {

@@ -20,6 +20,7 @@
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "components/performance_manager/public/viewport_intersection.h"
 #include "content/public/browser/browsing_instance_id.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/site_instance.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/origin.h"
@@ -129,6 +130,18 @@ class FrameNode : public TypedNode<FrameNode> {
   // Gets the unique token associated with this frame. This is a constant over
   // the lifetime of the frame and unique across all frames for all time.
   virtual const blink::LocalFrameToken& GetFrameToken() const = 0;
+
+  // Gets the FrameTreeNode ID associated with this frame. This corresponds to
+  // content::RenderFrameHost::GetFrameTreeNodeId().
+  //
+  // Multiple FrameNodes in the same PageNode can share the same
+  // FrameTreeNodeId when an in-flight speculative navigation creates a new
+  // FrameNode that has not yet committed and swapped with the currently active
+  // FrameNode.
+  //
+  // This value is immutable over the lifetime of a subframe, but main frames
+  // may update to a new FrameTreeNodeId upon prerender activation.
+  virtual content::FrameTreeNodeId GetFrameTreeNodeId() const = 0;
 
   // Gets the ID of the browsing instance to which this frame belongs. This is a
   // constant over the lifetime of the frame.

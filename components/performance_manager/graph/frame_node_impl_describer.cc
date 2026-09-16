@@ -83,6 +83,7 @@ base::DictValue FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("is_holding_blocking_indexeddb_lock",
           impl->is_holding_blocking_indexeddb_lock_.value());
   ret.Set("is_current", impl->IsCurrent());
+  ret.Set("frame_tree_node_id", impl->GetFrameTreeNodeId().value());
   ret.Set("priority", PriorityAndReasonToValue(impl->GetPriorityAndReason()));
   ret.Set("is_audible", impl->is_audible_.value());
   ret.Set("is_capturing_media_stream",

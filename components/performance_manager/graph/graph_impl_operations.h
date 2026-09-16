@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "content/public/browser/frame_tree_node_id.h"
 
 namespace performance_manager {
 
@@ -62,6 +63,14 @@ struct GraphImplOperations {
   // Returns true if the given |frame| is in the frame tree associated with the
   // given |page|.
   static bool HasFrame(const PageNodeImpl* page, FrameNodeImpl* frame);
+
+  // Returns the active FrameNode associated with `frame_tree_node_id` in
+  // `page`'s frame trees, or nullptr if no such active frame exists.
+  //
+  // `frame_tree_node_id` must not be null.
+  static FrameNodeImpl* GetActiveFrameForFrameTreeNodeId(
+      const PageNodeImpl* page,
+      content::FrameTreeNodeId frame_tree_node_id);
 
   // Recursively visits all frames and workers that are clients of the given
   // `worker`. Each client will only be visited once. If the visitor returns

@@ -22,6 +22,7 @@
 #include "components/performance_manager/public/mojom/v8_contexts.mojom.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -245,8 +246,8 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
   int frame_routing_id = GetNextUniqueId();
   auto frame_token = blink::LocalFrameToken();
   auto frame = CreateNode<FrameNodeImpl>(
-      process, page, parent, /*outer_document_for_fenced_frame=*/nullptr,
-      frame_routing_id, frame_token,
+      process, page, parent, /*outer_document_for_inner_frame_root=*/nullptr,
+      frame_routing_id, frame_token, NextTestFrameTreeNodeId(),
       content::BrowsingInstanceId(browsing_instance_id));
   if (url) {
     // "about:blank" uses the parent's origin. url::Origin::Resolve() does the

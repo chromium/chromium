@@ -181,6 +181,25 @@ bool GraphImplOperations::HasFrame(const PageNodeImpl* page,
 }
 
 // static
+FrameNodeImpl* GraphImplOperations::GetActiveFrameForFrameTreeNodeId(
+    const PageNodeImpl* page,
+    content::FrameTreeNodeId frame_tree_node_id) {
+  CHECK(page);
+  CHECK(!frame_tree_node_id.is_null());
+  FrameNodeImpl* result = nullptr;
+  VisitFrameTreePreOrder(
+      page, [&result, frame_tree_node_id](FrameNodeImpl* frame_node) {
+        if (frame_node->GetFrameTreeNodeId() == frame_tree_node_id &&
+            frame_node->IsActive()) {
+          result = frame_node;
+          return false;
+        }
+        return true;
+      });
+  return result;
+}
+
+// static
 bool GraphImplOperations::VisitAllWorkerClients(
     const WorkerNodeImpl* worker,
     FrameNodeImplVisitor frame_visitor,

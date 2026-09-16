@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
+#include "content/public/browser/frame_tree_node_id.h"
 
 namespace performance_manager {
 
@@ -50,6 +51,21 @@ struct GraphOperations {
   // Returns true if the given |frame| is in the frame tree associated with the
   // given |page|.
   static bool HasFrame(const PageNode* page, const FrameNode* frame);
+
+  // Returns the active FrameNode associated with `frame_tree_node_id` in
+  // `page`'s frame trees, or nullptr if no such active frame exists (e.g., if
+  // the frame tree position is unoccupied, or if the frame with this ID is
+  // non-active such as a speculative frame, in BackForwardCache, or
+  // prerendering).
+  //
+  // This is typically used by speculative frames to find the active frame they
+  // are navigating to replace (e.g., to inherit visibility or visual critical
+  // path priority).
+  //
+  // `frame_tree_node_id` must not be null.
+  static const FrameNode* GetActiveFrameForFrameTreeNodeId(
+      const PageNode* page,
+      content::FrameTreeNodeId frame_tree_node_id);
 
   // Recursively visits all frames and workers that are clients of the given
   // `worker`. Each client will only be visited once. If the visitor returns

@@ -66,6 +66,7 @@ class FrameNodeImpl
                 FrameNodeImpl* outer_document_for_inner_frame_root,
                 int render_frame_id,
                 const blink::LocalFrameToken& frame_token,
+                content::FrameTreeNodeId frame_tree_node_id,
                 const perfetto::Track& tracing_track,
                 content::BrowsingInstanceId browsing_instance_id,
                 content::SiteInstanceGroupId site_instance_group_id,
@@ -98,6 +99,7 @@ class FrameNodeImpl
 
   // Partial FrameNode implementation:
   const blink::LocalFrameToken& GetFrameToken() const override;
+  content::FrameTreeNodeId GetFrameTreeNodeId() const override;
   content::BrowsingInstanceId GetBrowsingInstanceId() const override;
   content::SiteInstanceGroupId GetSiteInstanceGroupId() const override;
   resource_attribution::FrameContext GetResourceContext() const override;
@@ -154,6 +156,9 @@ class FrameNodeImpl
   static void UpdateCurrentFrame(FrameNodeImpl* previous_frame_node,
                                  FrameNodeImpl* current_frame_node,
                                  GraphImpl* graph);
+  // Updates the FrameTreeNodeId. This is only expected to change when a main
+  // frame updates to a new FrameTreeNodeId upon prerender activation.
+  void SetFrameTreeNodeId(content::FrameTreeNodeId frame_tree_node_id);
   void SetIsActive(bool is_active);
   void SetHadUserActivation();
   void SetIsHoldingWebLock(bool is_holding_weblock);
@@ -332,6 +337,8 @@ class FrameNodeImpl
   // This is the unique token for this frame instance as per e.g.
   // RenderFrameHost::GetFrameToken().
   const blink::LocalFrameToken frame_token_;
+
+  content::FrameTreeNodeId frame_tree_node_id_;
 
   // The unique ID of the BrowsingInstance this frame belongs to. Frames in the
   // same BrowsingInstance are allowed to script each other at least

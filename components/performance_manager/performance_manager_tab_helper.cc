@@ -16,6 +16,7 @@
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
+#include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
@@ -238,10 +239,12 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
       process_node, page_node_.get(), parent_frame_node,
       outer_document_for_inner_frame_root, render_frame_host->GetRoutingID(),
       blink::LocalFrameToken(render_frame_host->GetFrameToken()),
+      render_frame_host->GetFrameTreeNodeId(),
       render_frame_host->GetTracingTrack(),
       site_instance->GetBrowsingInstanceId(),
-      site_instance->GetSiteInstanceGroupId(), render_frame_host->IsActive(),
-      render_frame_host->IsActive());
+      site_instance->GetSiteInstanceGroupId(),
+      /*is_current=*/render_frame_host->IsActive(),
+      /*is_active=*/render_frame_host->IsActive());
   FrameNodeImpl* frame = frame_node.get();
   frames_[render_frame_host] = std::move(frame_node);
   PerformanceManagerImpl::GetGraphImpl()->AddNewNode(frame);
@@ -302,12 +305,28 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
     return;
   }
 
+  // `old_host` and its subframes have already been marked with a pending
+  // lifecycle state update in content/ (so `old_host->IsActive()` is false),
+  // even though `RenderFrameHostStateChanged` won't fire until UnloadOldFrame.
+  if (old_frame) {
+    CHECK(!old_host->IsActive());
+    GraphImplOperations::VisitFrameAndChildrenPreOrder(
+        old_frame, [](FrameNodeImpl* frame_node) {
+          frame_node->SetIsActive(false);
+          return true;
+        });
+  }
+
   // Ensure the new frame's active state is in sync. This is necessary because
   // early-commit of speculative frames goes directly from kSpeculative to
   // kActive, skipping the RenderFrameHostStateChanged notification entirely
   // due to a check in content/ that avoids exposing kSpeculative states to
   // embedders.
   if (new_frame) {
+    // Ensure the new frame's FrameTreeNodeId is up to date in case this was a
+    // prerendered page that updated to a new FrameTreeNodeId upon
+    // activation.
+    new_frame->SetFrameTreeNodeId(new_host->GetFrameTreeNodeId());
     new_frame->SetIsActive(new_host->IsActive());
   }
 
@@ -323,6 +342,10 @@ void PerformanceManagerTabHelper::RenderFrameHostStateChanged(
   if (!frame_node) {
     return;
   }
+  // Ensure the frame's FrameTreeNodeId is up to date in case this was a
+  // prerendered page that transferred to the primary FrameTreeNode on
+  // activation.
+  frame_node->SetFrameTreeNodeId(render_frame_host->GetFrameTreeNodeId());
   frame_node->SetIsActive(render_frame_host->IsActive());
 }
 

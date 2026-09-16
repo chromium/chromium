@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/functional/function_ref.h"
+#include "base/test/gtest_util.h"
+#include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,6 +149,86 @@ TEST_F(GraphOperationsTest, VisitFrameTree) {
 TEST_F(GraphOperationsTest, HasFrame) {
   EXPECT_TRUE(GraphOperations::HasFrame(page1_.get(), childframe1a_.get()));
   EXPECT_FALSE(GraphOperations::HasFrame(page1_.get(), childframe2a_.get()));
+}
+
+TEST_F(GraphOperationsTest, GetActiveFrameForFrameTreeNodeId) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+
+  const content::FrameTreeNodeId kMainFtnId =
+      content::FrameTreeNodeId::FromUnsafeValue(10);
+  const content::FrameTreeNodeId kChildFtnId =
+      content::FrameTreeNodeId::FromUnsafeValue(20);
+  const content::FrameTreeNodeId kNonExistentFtnId =
+      content::FrameTreeNodeId::FromUnsafeValue(99);
+
+  // Create an active main frame.
+  auto main_frame = CreateFrameNodeAutoId(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      content::BrowsingInstanceId(), kMainFtnId);
+
+  // Create an inactive (speculative) main frame with the same FrameTreeNodeId.
+  auto speculative_main_frame = CreateSpeculativeFrameNodeAutoId(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      content::BrowsingInstanceId(), kMainFtnId);
+
+  // Create an active child frame.
+  auto child_frame =
+      CreateFrameNodeAutoId(process.get(), page.get(), main_frame.get(),
+                            content::BrowsingInstanceId(), kChildFtnId);
+
+  // Create an inactive (speculative) child frame with the same FrameTreeNodeId.
+  auto speculative_child_frame = CreateSpeculativeFrameNodeAutoId(
+      process.get(), page.get(), main_frame.get(),
+      content::BrowsingInstanceId(), kChildFtnId);
+
+  // Verify GetFrameTreeNodeId on each frame.
+  EXPECT_EQ(main_frame->GetFrameTreeNodeId(), kMainFtnId);
+  EXPECT_EQ(speculative_main_frame->GetFrameTreeNodeId(), kMainFtnId);
+  EXPECT_EQ(child_frame->GetFrameTreeNodeId(), kChildFtnId);
+  EXPECT_EQ(speculative_child_frame->GetFrameTreeNodeId(), kChildFtnId);
+
+  // Lookup active frames on the page (public API).
+  EXPECT_EQ(
+      GraphOperations::GetActiveFrameForFrameTreeNodeId(page.get(), kMainFtnId),
+      main_frame.get());
+  EXPECT_EQ(GraphOperations::GetActiveFrameForFrameTreeNodeId(page.get(),
+                                                              kChildFtnId),
+            child_frame.get());
+  EXPECT_EQ(GraphOperations::GetActiveFrameForFrameTreeNodeId(
+                page.get(), kNonExistentFtnId),
+            nullptr);
+
+  // Lookup active frames on the page (internal API).
+  EXPECT_EQ(GraphImplOperations::GetActiveFrameForFrameTreeNodeId(page.get(),
+                                                                  kMainFtnId),
+            main_frame.get());
+  EXPECT_EQ(GraphImplOperations::GetActiveFrameForFrameTreeNodeId(page.get(),
+                                                                  kChildFtnId),
+            child_frame.get());
+  EXPECT_EQ(GraphImplOperations::GetActiveFrameForFrameTreeNodeId(
+                page.get(), kNonExistentFtnId),
+            nullptr);
+
+  // Once the old frame is deactivated and the speculative frame becomes active,
+  // the lookup returns the new active frame.
+  main_frame->SetIsActive(false);
+  speculative_main_frame->SetIsActive(true);
+  EXPECT_EQ(
+      GraphOperations::GetActiveFrameForFrameTreeNodeId(page.get(), kMainFtnId),
+      speculative_main_frame.get());
+  EXPECT_EQ(GraphImplOperations::GetActiveFrameForFrameTreeNodeId(page.get(),
+                                                                  kMainFtnId),
+            speculative_main_frame.get());
+
+  child_frame->SetIsActive(false);
+  speculative_child_frame->SetIsActive(true);
+  EXPECT_EQ(GraphOperations::GetActiveFrameForFrameTreeNodeId(page.get(),
+                                                              kChildFtnId),
+            speculative_child_frame.get());
+  EXPECT_EQ(GraphImplOperations::GetActiveFrameForFrameTreeNodeId(page.get(),
+                                                                  kChildFtnId),
+            speculative_child_frame.get());
 }
 
 }  // namespace performance_manager
