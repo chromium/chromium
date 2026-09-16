@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "ttc_coordinator.h",
+    "ttc_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ai_prototyping/ttc/ui",
+    "//ios/chrome/browser/ai_prototyping/ui",
+    "//ios/chrome/browser/ai_prototyping/utils",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
+}

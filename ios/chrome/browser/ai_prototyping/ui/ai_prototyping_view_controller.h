@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 
 @protocol AIPrototypingMutator;
+@protocol AIPrototypingViewControllerProtocol;
 
 // View controller that displays a debug UI menu for AI prototyping.
 // This wraps multiple pages, each representing an AI feature.
@@ -18,6 +19,16 @@
 
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<AIPrototypingMutator> mutator;
+
+// Initializes the menu with the TalkToChrome view controller.
+- (instancetype)initWithTTCViewController:
+    (UIViewController<AIPrototypingViewControllerProtocol>*)ttcViewController
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

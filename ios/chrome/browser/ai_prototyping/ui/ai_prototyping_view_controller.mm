@@ -33,12 +33,13 @@
 
 @implementation AIPrototypingViewController
 
-- (instancetype)init {
-  self = [super init];
+- (instancetype)initWithTTCViewController:
+    (UIViewController<AIPrototypingViewControllerProtocol>*)ttcViewController {
+  self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _actorViewController = [[AIPrototypingActorViewController alloc]
         initForFeature:AIPrototypingFeature::kActorTools];
-    _menuPages = [NSArray
+    NSMutableArray* pages = [NSMutableArray
         arrayWithObjects:
             [[AIPrototypingFreeformViewController alloc]
                 initForFeature:AIPrototypingFeature::kFreeform],
@@ -51,9 +52,15 @@
             [[AIPrototypingAPCViewController alloc]
                 initForFeature:AIPrototypingFeature::kAPC],
             _actorViewController, nil];
+    if (ttcViewController) {
+      [pages addObject:ttcViewController];
+    }
+    _menuPages = [pages copy];
   }
   return self;
 }
+
+#pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -129,8 +136,14 @@
                     pageViewController:(UIPageViewController*)pageViewController
     viewControllerBeforeViewController:
         (UIViewController<AIPrototypingViewControllerProtocol>*)viewController {
+  if ([_menuPages count] <= 1) {
+    return nil;
+  }
   NSUInteger currentIndex = [_menuPages indexOfObject:viewController];
-  if (currentIndex > 0) {
+  if (currentIndex == 0) {
+    return [_menuPages lastObject];
+  }
+  if (currentIndex != NSNotFound) {
     return [_menuPages objectAtIndex:(currentIndex - 1)];
   }
   return nil;
@@ -140,8 +153,14 @@
                    pageViewController:(UIPageViewController*)pageViewController
     viewControllerAfterViewController:
         (UIViewController<AIPrototypingViewControllerProtocol>*)viewController {
+  if ([_menuPages count] <= 1) {
+    return nil;
+  }
   NSUInteger currentIndex = [_menuPages indexOfObject:viewController];
-  if (currentIndex < ([_menuPages count] - 1)) {
+  if (currentIndex == ([_menuPages count] - 1)) {
+    return [_menuPages firstObject];
+  }
+  if (currentIndex != NSNotFound) {
     return [_menuPages objectAtIndex:(currentIndex + 1)];
   }
   return nil;
