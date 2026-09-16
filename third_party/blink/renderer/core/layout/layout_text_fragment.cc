@@ -30,6 +30,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -155,11 +157,16 @@ void LayoutTextFragment::TransformAndSecureOriginalText() {
   }
 }
 
-UChar LayoutTextFragment::PreviousCharacter() const {
+UChar32 LayoutTextFragment::PreviousCharacter() const {
   NOT_DESTROYED();
   if (Start()) {
     String original = CompleteText();
     if (original && Start() <= original.length()) {
+      if (RuntimeEnabledFeatures::
+              CapitalizeAfterSupplementaryCharacterFixEnabled()) {
+        wtf_size_t offset = Start();
+        return original.CodePointAtAndPrevious(0, offset);
+      }
       return original[Start() - 1];
     }
   }

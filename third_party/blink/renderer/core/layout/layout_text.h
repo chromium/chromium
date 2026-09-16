@@ -273,7 +273,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     SetNeedsCollectInlines();
   }
 
-  virtual UChar PreviousCharacter() const;
+  virtual UChar32 PreviousCharacter() const;
 
   // Returns the OffsetMapping object when the current text is laid out with
   // LayoutNG.

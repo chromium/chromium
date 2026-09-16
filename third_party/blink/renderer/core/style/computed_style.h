@@ -1268,7 +1268,7 @@ class ComputedStyle final : public ComputedStyleBase {
   // text-transform utility functions.
   [[nodiscard]] CORE_EXPORT String
   ApplyTextTransform(const String&,
-                     UChar previous_character = ' ',
+                     UChar32 previous_character = ' ',
                      TextOffsetMap* offset_map = nullptr) const;
 
   // Line-height utility functions.

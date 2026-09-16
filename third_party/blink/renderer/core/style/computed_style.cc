@@ -2004,7 +2004,7 @@ String ApplyMathAutoTransform(const String& text, TextOffsetMap* offset_map) {
 }  // namespace
 
 String ComputedStyle::ApplyTextTransform(const String& text,
-                                         UChar previous_character,
+                                         UChar32 previous_character,
                                          TextOffsetMap* offset_map) const {
   ETextTransform transform = TextTransform();
 
@@ -2022,7 +2022,13 @@ String ComputedStyle::ApplyTextTransform(const String& text,
     if (RuntimeEnabledFeatures::ICUCapitalizationEnabled()) {
       const LayoutLocale* locale = GetFontDescription().Locale();
       CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
-      result = case_map.ToTitle(result, offset_map, previous_character);
+      if (RuntimeEnabledFeatures::
+              CapitalizeAfterSupplementaryCharacterFixEnabled()) {
+        result = case_map.ToTitle(result, offset_map, previous_character);
+      } else {
+        result = case_map.ToTitle(result, offset_map,
+                                  static_cast<UChar>(previous_character));
+      }
     } else {
       result = Capitalize(result, previous_character);
     }

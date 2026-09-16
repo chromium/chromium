@@ -51,6 +51,9 @@ class WTF_EXPORT CaseMap {
   String ToTitle(const String& source,
                  TextOffsetMap* offset_map = nullptr,
                  UChar previous_character = 0) const;
+  String ToTitle(const String& source,
+                 TextOffsetMap* offset_map,
+                 UChar32 previous_character) const;
 
   // Fast code path for simple cases, only for root locale.
   // TODO(crbug.com/627682): This should move to private, once

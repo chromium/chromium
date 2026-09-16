@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 
 #include <unicode/casemap.h>
+#include <unicode/uchar.h>
+#include <unicode/utf.h>
 
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
@@ -61,6 +63,19 @@ icu::Edits DecreaseFirstEditLength(const icu::Edits& edits) {
   }
   DCHECK(U_SUCCESS(error));
   return new_edits;
+}
+
+bool ShouldUseLetterSentinel(UChar32 previous_character) {
+  if (U_IS_BMP(previous_character)) {
+    return u_isalpha(previous_character);
+  }
+
+  // For supplementary characters, choose the sentinel based on the
+  // word-break property, which determines whether a word boundary occurs
+  // between the preceding code point and a following letter. An ALetter
+  // does not create such a boundary.
+  return u_getIntPropertyValue(previous_character, UCHAR_WORD_BREAK) ==
+         U_WB_ALETTER;
 }
 
 scoped_refptr<StringImpl> CaseConvert(CaseMapType type,
@@ -436,6 +451,15 @@ String CaseMap::ToTitle(const String& source,
                        previous_character);
   }
   return String();
+}
+
+String CaseMap::ToTitle(const String& source,
+                        TextOffsetMap* offset_map,
+                        UChar32 previous_character) const {
+  return ToTitle(source, offset_map,
+                 ShouldUseLetterSentinel(previous_character)
+                     ? u'A'
+                     : blink::uchar::kSpace);
 }
 
 }  // namespace blink

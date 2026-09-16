@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 using testing::ElementsAreArray;
 
@@ -464,6 +465,25 @@ TEST(CaseMapTest, ToTitleWithPreviousCharacter) {
   String input6 = "ja";
   String result6 = nl_case_map.ToTitle(input6, nullptr, u'i');
   EXPECT_EQ(result6, "ja");
+
+  // U+10300 is a supplementary ALetter.
+  constexpr UChar32 kOldItalicLetterA = 0x10300;
+  String input7 = "bc def";
+  String result7 = en_case_map.ToTitle(input7, nullptr, kOldItalicLetterA);
+  EXPECT_EQ(result7, "bc Def");
+
+  // U+20000 is alphabetic but not an ALetter.
+  constexpr UChar32 kCjkUnifiedIdeograph = 0x20000;
+  String input8 = "bc def";
+  String result8 = en_case_map.ToTitle(input8, nullptr, kCjkUnifiedIdeograph);
+  EXPECT_EQ(result8, "Bc Def");
+
+  // U+4E00 is a BMP alphabetic ideograph.
+  constexpr UChar32 kBmpCjkUnifiedIdeograph = 0x4E00;
+  String input9 = "bc def";
+  String result9 =
+      en_case_map.ToTitle(input9, nullptr, kBmpCjkUnifiedIdeograph);
+  EXPECT_EQ(result9, "bc Def");
 }
 
 }  // namespace blink

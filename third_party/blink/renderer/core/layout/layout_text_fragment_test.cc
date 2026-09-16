@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -53,6 +55,26 @@ TEST_F(LayoutTextFragmentTest, Basics) {
   EXPECT_EQ(2, GetRemainingText()->CaretMaxOffset());
   EXPECT_EQ(2u, GetRemainingText()->ResolvedTextLength());
   EXPECT_TRUE(GetRemainingText()->ContainsCaretOffset(0));
+}
+
+TEST_F(LayoutTextFragmentTest,
+       TransformedTextWithCapitalizationAfterSupplementaryCharacter) {
+  for (bool fix_enabled : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "fix_enabled=" << fix_enabled);
+    ScopedCapitalizeAfterSupplementaryCharacterFixForTest scoped_fix(
+        fix_enabled);
+    for (bool use_icu : {false, true}) {
+      SCOPED_TRACE(testing::Message() << "use_icu=" << use_icu);
+      ScopedICUCapitalizationForTest scoped_icu(use_icu);
+      // U+1D400 MATHEMATICAL BOLD CAPITAL A is a supplementary letter.
+      SetBodyInnerHTML(
+          "<div id='target' style='text-transform: capitalize'>"
+          "&#x1D400;bc def</div>");
+
+      EXPECT_EQ(String(fix_enabled ? "bc Def" : "Bc Def"),
+                GetRemainingText()->TransformedText());
+    }
+  }
 }
 
 TEST_F(LayoutTextFragmentTest, CaretMinMaxOffset) {

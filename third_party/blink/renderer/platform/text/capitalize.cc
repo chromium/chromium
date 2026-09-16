@@ -4,16 +4,25 @@
 
 #include "third_party/blink/renderer/platform/text/capitalize.h"
 
+#include <unicode/utf16.h>
+
+#include <limits>
+
 #include "base/compiler_specific.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
-String Capitalize(const String& string, UChar previous_character) {
+namespace {
+
+String CapitalizeWithPreviousCodeUnit(const String& string,
+                                      UChar previous_character) {
   if (string.IsNull())
     return string;
 
@@ -57,6 +66,72 @@ String Capitalize(const String& string, UChar previous_character) {
   }
 
   return result.ToString();
+}
+
+String CapitalizeWithPreviousCodePoint(const String& string,
+                                       UChar32 previous_character) {
+  if (string.IsNull()) {
+    return string;
+  }
+
+  unsigned length = string.length();
+  if (previous_character == uchar::kNoBreakSpace) {
+    previous_character = uchar::kSpace;
+  }
+  const int32_t previous_character_length = U16_LENGTH(previous_character);
+  CHECK_LE(length,
+           std::numeric_limits<unsigned>::max() - previous_character_length);
+  StringBuilder string_with_previous;
+  string_with_previous.Reserve16BitCapacity(length + previous_character_length);
+  string_with_previous.Append(previous_character);
+  for (unsigned i = 0; i < length; i++) {
+    // Replace &nbsp with a real space since ICU no longer treats &nbsp as a
+    // word separator.
+    const UChar character = string[i];
+    string_with_previous.Append(
+        character == uchar::kNoBreakSpace ? uchar::kSpace : character);
+  }
+
+  TextBreakIterator* boundary = WordBreakIterator(string_with_previous);
+  if (!boundary) {
+    return string;
+  }
+
+  StringBuilder result;
+  result.ReserveCapacity(length);
+
+  int32_t end_of_word;
+  int32_t start_of_word = boundary->first();
+  for (end_of_word = boundary->next(); end_of_word != kTextBreakDone;
+       start_of_word = end_of_word, end_of_word = boundary->next()) {
+    if (end_of_word <= previous_character_length) {
+      continue;
+    }
+
+    wtf_size_t input_cursor = 0;
+    if (start_of_word >= previous_character_length) {
+      input_cursor = start_of_word - previous_character_length;
+      const UChar first_character = string[input_cursor++];
+      result.Append(first_character == uchar::kNoBreakSpace
+                        ? uchar::kNoBreakSpace
+                        : unicode::ToTitleCase(first_character));
+    }
+    result.Append(string, input_cursor,
+                  end_of_word - previous_character_length - input_cursor);
+  }
+
+  return result.ToString();
+}
+
+}  // namespace
+
+String Capitalize(const String& string, UChar32 previous_character) {
+  if (!RuntimeEnabledFeatures::
+          CapitalizeAfterSupplementaryCharacterFixEnabled()) {
+    return CapitalizeWithPreviousCodeUnit(
+        string, static_cast<UChar>(previous_character));
+  }
+  return CapitalizeWithPreviousCodePoint(string, previous_character);
 }
 
 }  // namespace blink

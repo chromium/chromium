@@ -1113,6 +1113,13 @@
       name: "CapabilityElementIconOnlyMode",
     },
     {
+      // Considers the full previous code point (not one UTF-16 code unit) for
+      // text-transform: capitalize word boundaries. Kill switch for
+      // crbug.com/501115609.
+      name: "CapitalizeAfterSupplementaryCharacterFix",
+      status: "stable",
+    },
+    {
       name: "CaptureController",
       status: {"Android": "", "default": "stable"},
     },

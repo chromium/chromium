@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -1700,6 +1701,26 @@ TEST_F(LayoutTextTest, TransformedTextWithCapitalizationAfterInlineAbsolute) {
   String transformed = layout_text->TransformedText();
 
   EXPECT_EQ(String("ome"), transformed);
+}
+
+TEST_F(LayoutTextTest,
+       TransformedTextWithCapitalizationAfterSupplementaryCharacter) {
+  for (bool fix_enabled : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "fix_enabled=" << fix_enabled);
+    ScopedCapitalizeAfterSupplementaryCharacterFixForTest scoped_fix(
+        fix_enabled);
+    for (bool use_icu : {false, true}) {
+      SCOPED_TRACE(testing::Message() << "use_icu=" << use_icu);
+      ScopedICUCapitalizationForTest scoped_icu(use_icu);
+      // U+1D400 MATHEMATICAL BOLD CAPITAL A is a supplementary letter.
+      SetBodyInnerHTML(
+          "<p style='text-transform: capitalize'>"
+          "&#x1D400;<span id='target'>bc def</span></p>");
+
+      EXPECT_EQ(String(fix_enabled ? "bc Def" : "Bc Def"),
+                GetLayoutTextById("target")->TransformedText());
+    }
+  }
 }
 
 TEST_F(LayoutTextTest, OriginalTextNullWhenTransformedTextIsNonNull) {
