@@ -85,7 +85,7 @@ class RemoteModelExecutionSessionImpl
   ConnectionState connection_state() const { return connection_state_; }
 
  private:
-  void SetConnectionState(ConnectionState state);
+  void NotifyObservers();
   void HandleDisconnection(
       std::optional<OptimizationGuideModelExecutionError> error);
   void ResetIdleTimer();
@@ -105,7 +105,7 @@ class RemoteModelExecutionSessionImpl
   const raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   ConnectionState connection_state_ = ConnectionState::kDisconnected;
-  base::ObserverList<Observer> observers_;
+  base::ReentrantObserverList<Observer> observers_;
 
   base::RetainingOneShotTimer idle_timer_;
   std::string access_token_;

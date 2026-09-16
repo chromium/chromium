@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/remote_model_execution_session_impl.h"
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -157,17 +158,23 @@ class FakeStreamingWebSocketClient
 
 class TestObserver : public RemoteModelExecutionSession::Observer {
  public:
+  using StateChangeCallback = base::RepeatingCallback<void(
+      RemoteModelExecutionSession::ConnectionState state)>;
+
+  TestObserver() = default;
+  explicit TestObserver(StateChangeCallback on_state_changed)
+      : on_state_changed(std::move(on_state_changed)) {}
+
   void OnConnectionStateChanged(
       RemoteModelExecutionSession::ConnectionState state) override {
     states.push_back(state);
-    if (target_state.has_value() && state == *target_state && on_target_state) {
-      on_target_state.Run();
+    if (on_state_changed) {
+      on_state_changed.Run(state);
     }
   }
 
   std::vector<RemoteModelExecutionSession::ConnectionState> states;
-  std::optional<RemoteModelExecutionSession::ConnectionState> target_state;
-  base::RepeatingClosure on_target_state;
+  StateChangeCallback on_state_changed;
 };
 
 }  // namespace
@@ -196,6 +203,23 @@ class RemoteModelExecutionSessionImplTest : public testing::Test {
         identity_test_env_.identity_manager(), std::move(fake_client),
         /*logger=*/nullptr);
     return session_.get();
+  }
+
+  // Creates a session observer that destroys the session upon receiving the
+  // `target_state` notification.
+  TestObserver CreateDestroyOnStateObserver(
+      RemoteModelExecutionSession::ConnectionState target_state) {
+    return TestObserver(base::BindRepeating(
+        [](std::unique_ptr<RemoteModelExecutionSessionImpl>& session,
+           raw_ptr<FakeStreamingWebSocketClient>& fake_client,
+           RemoteModelExecutionSession::ConnectionState target,
+           RemoteModelExecutionSession::ConnectionState current) {
+          if (current == target) {
+            fake_client = nullptr;
+            session.reset();
+          }
+        },
+        std::ref(session_), std::ref(fake_client_), target_state));
   }
 
  protected:
@@ -568,6 +592,151 @@ TEST_F(RemoteModelExecutionSessionImplTest,
   EXPECT_TRUE(fake_client_->connect_called);
   EXPECT_THAT(fake_client_->GetHeader("Authorization"),
               testing::Eq(std::nullopt));
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest,
+       SendFromObserverOnConnectedPreservesOrder) {
+  auto* session = CreateSession(ModelBasedCapabilityKey::kScamDetection);
+
+  // Send request 1 while disconnected; it will be queued in pending_requests_.
+  session->Send(BuildTestMessage("request 1"));
+
+  // Observer that sends request 2 when notified of kConnected.
+  TestObserver observer(base::BindRepeating(
+      [](RemoteModelExecutionSession* session,
+         RemoteModelExecutionSession::ConnectionState state) {
+        if (state == RemoteModelExecutionSession::ConnectionState::kConnected) {
+          session->Send(BuildTestMessage("request 2"));
+        }
+      },
+      session));
+  session->AddObserver(&observer);
+
+  fake_client_->SimulateConnected();
+
+  ASSERT_EQ(fake_client_->sent_requests.size(), 2u);
+
+  proto::ExecuteRequest received_request_1;
+  ASSERT_TRUE(
+      received_request_1.ParseFromArray(fake_client_->sent_requests[0].data(),
+                                        fake_client_->sent_requests[0].size()));
+  ASSERT_OK_AND_ASSIGN(
+      TestMessage parsed_msg_1,
+      ParsedAnyMetadata<TestMessage>(received_request_1.request_metadata()));
+  EXPECT_EQ(parsed_msg_1.test(), "request 1");
+
+  proto::ExecuteRequest received_request_2;
+  ASSERT_TRUE(
+      received_request_2.ParseFromArray(fake_client_->sent_requests[1].data(),
+                                        fake_client_->sent_requests[1].size()));
+  ASSERT_OK_AND_ASSIGN(
+      TestMessage parsed_msg_2,
+      ParsedAnyMetadata<TestMessage>(received_request_2.request_metadata()));
+  EXPECT_EQ(parsed_msg_2.test(), "request 2");
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest,
+       ReentrantStateChangeFromObserverSkipsStaleNotifications) {
+  using ConnectionState = RemoteModelExecutionSession::ConnectionState;
+
+  auto* session = CreateSession(ModelBasedCapabilityKey::kScamDetection);
+
+  // Reconnects the session as soon as it is notified of the disconnection,
+  // which synchronously transitions the session back to kConnecting while the
+  // kDisconnected notification is still being dispatched.
+  TestObserver reconnecting_observer(base::BindRepeating(
+      [](RemoteModelExecutionSession* session, ConnectionState state) {
+        if (state == ConnectionState::kDisconnected) {
+          session->Send(BuildTestMessage("reconnect"));
+        }
+      },
+      session));
+  TestObserver observer;
+  session->AddObserver(&reconnecting_observer);
+  session->AddObserver(&observer);
+
+  session->Send(BuildTestMessage("query"));
+  fake_client_->SimulateConnected();
+  fake_client_->SimulateDropChannel(/*was_clean=*/false);
+
+  EXPECT_THAT(reconnecting_observer.states,
+              testing::ElementsAre(
+                  ConnectionState::kConnecting, ConnectionState::kConnected,
+                  ConnectionState::kDisconnected,
+                  // From the reentrant `Send()` on disconnected.
+                  ConnectionState::kConnecting));
+  // The second observer is notified of kConnecting by the reentrant
+  // notification, and never receives the superseded kDisconnected state nor a
+  // duplicate kConnecting from the outer notification loop.
+  EXPECT_THAT(observer.states,
+              testing::ElementsAre(ConnectionState::kConnecting,
+                                   ConnectionState::kConnected,
+                                   ConnectionState::kConnecting));
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest,
+       DestroySessionInObserverOnConnectingDoesNotCrash) {
+  auto* session = CreateSession(ModelBasedCapabilityKey::kScamDetection);
+
+  TestObserver observer = CreateDestroyOnStateObserver(
+      RemoteModelExecutionSession::ConnectionState::kConnecting);
+  session->AddObserver(&observer);
+
+  session->Send(BuildTestMessage("query"));
+
+  EXPECT_EQ(session_, nullptr);
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest,
+       DestroySessionInObserverOnConnectedDoesNotCrash) {
+  auto* session = CreateSession(ModelBasedCapabilityKey::kScamDetection);
+
+  TestObserver observer = CreateDestroyOnStateObserver(
+      RemoteModelExecutionSession::ConnectionState::kConnected);
+  session->AddObserver(&observer);
+
+  session->Send(BuildTestMessage("query"));
+  fake_client_->SimulateConnected();
+
+  EXPECT_EQ(session_, nullptr);
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest,
+       DestroySessionInObserverOnDisconnectedDoesNotCrash) {
+  auto* session = CreateSession(ModelBasedCapabilityKey::kScamDetection);
+
+  TestObserver observer = CreateDestroyOnStateObserver(
+      RemoteModelExecutionSession::ConnectionState::kDisconnected);
+  session->AddObserver(&observer);
+
+  session->Send(BuildTestMessage("query"));
+  fake_client_->SimulateConnected();
+
+  fake_client_->SimulateDropChannel(/*was_clean=*/false);
+
+  EXPECT_EQ(session_, nullptr);
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest,
+       DestroySessionInObserverOnSendPendingRequestsFailureDoesNotCrash) {
+  auto* session = CreateSession(ModelBasedCapabilityKey::kScamDetection);
+
+  TestObserver observer = CreateDestroyOnStateObserver(
+      RemoteModelExecutionSession::ConnectionState::kDisconnected);
+  session->AddObserver(&observer);
+
+  session->Send(BuildTestMessage("request 1"));
+  session->Send(BuildTestMessage("request 2"));
+
+  fake_client_->on_send = base::BindRepeating(
+      [](FakeStreamingWebSocketClient* client) {
+        client->delegate_for_testing()->OnError("Write failed");
+      },
+      base::Unretained(fake_client_.get()));
+
+  fake_client_->SimulateConnected();
+
+  EXPECT_EQ(session_, nullptr);
 }
 
 TEST(RemoteModelExecutionCommonTest, GetModelExecutionServiceWebSocketURL) {

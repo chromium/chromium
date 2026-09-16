@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -145,7 +146,13 @@ void RemoteModelExecutionSessionImpl::StartConnection() {
     return;
   }
 
-  SetConnectionState(ConnectionState::kConnecting);
+  connection_state_ = ConnectionState::kConnecting;
+  base::WeakPtr<RemoteModelExecutionSessionImpl> weak_ptr =
+      weak_ptr_factory_.GetWeakPtr();
+  NotifyObservers();
+  if (!weak_ptr) {
+    return;
+  }
 
   if (IsAccessTokenRequiredForFeature(feature_) && access_token_.empty()) {
     HandleTokenRequestFlow(
@@ -183,10 +190,12 @@ void RemoteModelExecutionSessionImpl::OnAccessTokenReceived(
 
 void RemoteModelExecutionSessionImpl::SendPendingRequests() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::WeakPtr<RemoteModelExecutionSessionImpl> weak_ptr =
+      weak_ptr_factory_.GetWeakPtr();
   std::vector<std::vector<uint8_t>> pending_requests =
       std::exchange(pending_requests_, {});
   for (std::vector<uint8_t>& request : pending_requests) {
-    if (connection_state_ != ConnectionState::kConnected) {
+    if (!weak_ptr || connection_state_ != ConnectionState::kConnected) {
       break;
     }
     client_->Send(std::move(request));
@@ -195,9 +204,17 @@ void RemoteModelExecutionSessionImpl::SendPendingRequests() {
 
 void RemoteModelExecutionSessionImpl::OnConnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  SetConnectionState(ConnectionState::kConnected);
+  CHECK_EQ(connection_state_, ConnectionState::kConnecting);
+  connection_state_ = ConnectionState::kConnected;
   ResetIdleTimer();
+  base::WeakPtr<RemoteModelExecutionSessionImpl> weak_ptr =
+      weak_ptr_factory_.GetWeakPtr();
   SendPendingRequests();
+  // `SendPendingRequests` can trigger disconnection and session destruction.
+  if (!weak_ptr || connection_state_ != ConnectionState::kConnected) {
+    return;
+  }
+  NotifyObservers();
 }
 
 void RemoteModelExecutionSessionImpl::OnMessage(std::vector<uint8_t> message) {
@@ -309,30 +326,39 @@ RemoteModelExecutionSessionImpl::GetAdditionalHeaders() {
   return additional_headers;
 }
 
-void RemoteModelExecutionSessionImpl::SetConnectionState(
-    ConnectionState state) {
+void RemoteModelExecutionSessionImpl::NotifyObservers() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (state == ConnectionState::kDisconnected) {
-    pending_requests_.clear();
-    access_token_.clear();
-  }
-  if (connection_state_ == state) {
-    return;
-  }
-  connection_state_ = state;
+  const ConnectionState state = connection_state_;
+  base::WeakPtr<RemoteModelExecutionSessionImpl> weak_ptr =
+      weak_ptr_factory_.GetWeakPtr();
   for (Observer& observer : observers_) {
-    observer.OnConnectionStateChanged(connection_state_);
+    observer.OnConnectionStateChanged(state);
+    // An observer may synchronously destroy the session, or trigger another
+    // state transition (e.g. by causing a synchronous write error on a
+    // connected session with `Send()`). In the latter case the reentrant
+    // `NotifyObservers()` call has already notified every observer of the newer
+    // state, so stop here rather than delivering duplicate or stale
+    // notifications to the remaining observers.
+    if (!weak_ptr || connection_state_ != state) {
+      return;
+    }
   }
 }
 
 void RemoteModelExecutionSessionImpl::HandleDisconnection(
     std::optional<OptimizationGuideModelExecutionError> error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (connection_state_ == ConnectionState::kDisconnected) {
+    return;
+  }
   idle_timer_.Stop();
-  SetConnectionState(ConnectionState::kDisconnected);
+  pending_requests_.clear();
+  access_token_.clear();
+  connection_state_ = ConnectionState::kDisconnected;
   if (error) {
     DispatchError(*error);
   }
+  NotifyObservers();
 }
 
 void RemoteModelExecutionSessionImpl::ResetIdleTimer() {
