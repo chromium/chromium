@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
@@ -33,6 +34,8 @@ public class NtpSyncedThemeBridgeUnitTest {
     public static final long NATIVE_NTP_SYNCED_THEME_BRIDGE = 1L;
     public static final GURL BACKGROUND_URL = JUnitTestGURLs.URL_1;
     public static final String COLLECTION_ID = "test_collection";
+    public static final @NtpThemeColorId int THEME_COLOR_ID = NtpThemeColorId.NTP_COLORS_GREEN;
+    public static final int PRIMARY_COLOR = 0xFF123456;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private NtpSyncedThemeBridge.Natives mNatives;
     @Mock private Profile mProfile;
@@ -103,11 +106,35 @@ public class NtpSyncedThemeBridgeUnitTest {
         bridge.onCustomBackgroundImageUpdated();
         verify(observer).onThemeCollectionSynced(info);
 
-        bridge.onChromeColorSynced(5);
-        verify(observer).onChromeColorSynced(5);
+        bridge.onChromeColorSynced(THEME_COLOR_ID);
+        verify(observer).onChromeColorSynced(THEME_COLOR_ID);
 
         bridge.onDefaultThemeSynced();
         verify(observer).onDefaultThemeSynced();
+    }
+
+    @Test
+    public void testOutboundSyncMethods() {
+        mNtpSyncedThemeBridge.setChromeColor(THEME_COLOR_ID);
+        verify(mNatives).setChromeColor(NATIVE_NTP_SYNCED_THEME_BRIDGE, THEME_COLOR_ID);
+
+        mNtpSyncedThemeBridge.resetCustomBackgroundInfo();
+        verify(mNatives).resetCustomBackgroundInfo(NATIVE_NTP_SYNCED_THEME_BRIDGE);
+
+        mNtpSyncedThemeBridge.selectLocalBackgroundImage();
+        verify(mNatives).selectLocalBackgroundImage(NATIVE_NTP_SYNCED_THEME_BRIDGE);
+
+        mNtpSyncedThemeBridge.updateCustomBackgroundPrefsWithColor(BACKGROUND_URL, PRIMARY_COLOR);
+        verify(mNatives)
+                .updateCustomBackgroundPrefsWithColor(
+                        NATIVE_NTP_SYNCED_THEME_BRIDGE, BACKGROUND_URL, PRIMARY_COLOR);
+
+        // Test with null primaryColor defaults to 0.
+        mNtpSyncedThemeBridge.updateCustomBackgroundPrefsWithColor(
+                BACKGROUND_URL, /* primaryColor= */ null);
+        verify(mNatives)
+                .updateCustomBackgroundPrefsWithColor(
+                        NATIVE_NTP_SYNCED_THEME_BRIDGE, BACKGROUND_URL, 0);
     }
 
     @Test

@@ -154,7 +154,7 @@ public class NtpThemeMediatorUnitTest {
 
         mMediator.handleChromeDefaultSectionClick(mView);
         verify(mNtpCustomizationConfigManager).onBackgroundDataChanged(eq(mContext), eq(null));
-        verify(mNtpThemeCollectionManager).resetCustomBackgroundInfo();
+        verify(mNtpThemeCollectionManager).cancelPendingSelection();
         histogramWatcher.assertExpected();
     }
 
@@ -268,7 +268,7 @@ public class NtpThemeMediatorUnitTest {
 
         mMediator.onUploadImageResult(null);
         histogramWatcher.assertExpected();
-        verify(mNtpThemeCollectionManager, never()).selectLocalBackgroundImage();
+        verify(mNtpThemeCollectionManager, never()).cancelPendingSelection();
     }
 
     @Test
@@ -281,7 +281,7 @@ public class NtpThemeMediatorUnitTest {
 
         mMediator.onUploadImageResult(mUri);
         histogramWatcher.assertExpected();
-        verify(mNtpThemeCollectionManager).selectLocalBackgroundImage();
+        verify(mNtpThemeCollectionManager).cancelPendingSelection();
     }
 
     private void createMediator(boolean shouldShowAlone) {
@@ -315,7 +315,7 @@ public class NtpThemeMediatorUnitTest {
         verify(mThemePropertyModel)
                 .set(eq(IS_SECTION_SELECTED), eq(new Pair<>(THEME_COLLECTION, false)));
 
-        verify(mNtpThemeCollectionManager).setChromeColor(2);
+        verify(mNtpThemeCollectionManager).cancelPendingSelection();
     }
 
     @Test
@@ -333,7 +333,7 @@ public class NtpThemeMediatorUnitTest {
         verify(mThemePropertyModel)
                 .set(eq(IS_SECTION_SELECTED), eq(new Pair<>(THEME_COLLECTION, false)));
 
-        verify(mNtpThemeCollectionManager).resetCustomBackgroundInfo();
+        verify(mNtpThemeCollectionManager).cancelPendingSelection();
     }
 
     @Test

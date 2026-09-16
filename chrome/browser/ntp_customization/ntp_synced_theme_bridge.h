@@ -45,6 +45,23 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   // Exposes whether the underlying service is processing a sync update.
   bool IsProcessingSyncUpdate(JNIEnv* env);
 
+  // Sets the Chrome color ID on NtpAndroidCustomBackgroundService.
+  void SetChromeColor(JNIEnv* env, int color_id);
+
+  // Resets the custom background on NtpAndroidCustomBackgroundService.
+  void ResetCustomBackgroundInfo(JNIEnv* env);
+
+  // Marks custom background as local to device on
+  // NtpAndroidCustomBackgroundService.
+  void SelectLocalBackgroundImage(JNIEnv* env);
+
+  // Updates the theme collection background's primary color and notifies the
+  // sync bridge.
+  void UpdateCustomBackgroundPrefsWithColor(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& j_url,
+      int32_t primary_color);
+
   // Called when a Chrome color is synced from Chrome Sync.
   virtual void OnChromeColorSynced(int color_id);
 

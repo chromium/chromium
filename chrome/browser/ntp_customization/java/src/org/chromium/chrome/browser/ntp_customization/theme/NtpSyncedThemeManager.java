@@ -18,18 +18,23 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUploadImage;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 
-/** Manages the lifecycle of NtpSyncedThemeBridge. */
+/** Manages the lifecycle of NtpSyncedThemeBridge and observes committed theme changes. */
 @NullMarked
-public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
+public class NtpSyncedThemeManager
+        implements NtpSyncedThemeBridge.Observer, NtpCustomizationConfigManager.ThemeSyncObserver {
     private final Context mContext;
     private final Profile mProfile;
     private final NtpCustomizationConfigManager mNtpCustomizationConfigManager;
@@ -68,10 +73,12 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
         mNtpCustomizationConfigManager = ntpCustomizationConfigManager;
         mImageFetcher = NtpCustomizationUtils.createImageFetcher(profile);
         mNtpSyncedThemeBridge = new NtpSyncedThemeBridge(mProfile, this);
+        mNtpCustomizationConfigManager.addThemeSyncObserver(this);
     }
 
     /** Cleans up the C++ side of {@link NtpSyncedThemeBridge}. */
     public void destroy() {
+        mNtpCustomizationConfigManager.removeThemeSyncObserver(this);
         if (mNtpSyncedThemeBridge != null) {
             mNtpSyncedThemeBridge.destroy();
             mNtpSyncedThemeBridge = null;
@@ -155,6 +162,54 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
     public void onDefaultThemeSynced() {
         mLatestSyncedBackgroundUrl = null;
         mNtpCustomizationConfigManager.onSyncedDefaultThemeReset(mContext);
+    }
+
+    @Override
+    public void onThemeCommitted(@Nullable NtpBackgroundDataBase data) {
+        if (mNtpSyncedThemeBridge == null) {
+            return;
+        }
+
+        // 2. Default Chrome Theme
+        if (data == null || data.getBackgroundType() == NtpBackgroundType.DEFAULT) {
+            mNtpSyncedThemeBridge.resetCustomBackgroundInfo();
+            return;
+        }
+
+        // 3. Chrome Color Theme
+        if (data instanceof NtpBackgroundDataColor colorData) {
+            int colorId = colorData.getThemeColorId();
+            if (colorId <= NtpThemeColorId.DEFAULT || colorId >= NtpThemeColorId.NUM_ENTRIES) {
+                // A color id outside the valid range means "no Chrome color", so commit a reset
+                // instead. Mirrors NtpCustomizationConfigManager#onBackgroundDataChanged, which
+                // routes NtpThemeColorId.DEFAULT to onBackgroundReset().
+                mNtpSyncedThemeBridge.resetCustomBackgroundInfo();
+                return;
+            }
+            mNtpSyncedThemeBridge.setChromeColor(colorId);
+            return;
+        }
+
+        // 3b. Custom Hex Color Theme
+        // TODO(crbug.com/488439751): Support syncing custom hex colors across devices.
+        if (data instanceof NtpBackgroundDataCustomizedColor
+                || data.getBackgroundType() == NtpBackgroundType.COLOR_FROM_HEX) {
+            return;
+        }
+
+        // 4. Local Uploaded Image
+        if (data instanceof NtpBackgroundDataUploadImage) {
+            mNtpSyncedThemeBridge.selectLocalBackgroundImage();
+            return;
+        }
+
+        // 5. Theme Collection Image (From Picker or Local History)
+        if (data instanceof NtpBackgroundDataThemeCollection collectionData) {
+            mNtpSyncedThemeBridge.updateCustomBackgroundPrefsWithColor(
+                    collectionData.getCustomBackgroundInfo().backgroundUrl,
+                    collectionData.getPrimaryColor());
+            return;
+        }
     }
 
     /**

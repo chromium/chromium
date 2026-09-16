@@ -25,7 +25,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -182,12 +181,6 @@ public class NtpThemeCollectionBridgeUnitTest {
     }
 
     @Test
-    public void testSelectLocalBackgroundImage() {
-        mNtpThemeCollectionBridge.selectLocalBackgroundImage();
-        verify(mNatives).selectLocalBackgroundImage(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
-    }
-
-    @Test
     public void onCustomBackgroundImageUpdated() {
         CustomBackgroundInfo info =
                 new CustomBackgroundInfo(
@@ -222,19 +215,6 @@ public class NtpThemeCollectionBridgeUnitTest {
     public void testFetchNextThemeCollectionImage() {
         mNtpThemeCollectionBridge.fetchNextThemeCollectionImage();
         verify(mNatives).fetchNextThemeCollectionImage(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
-    }
-
-    @Test
-    public void testSetChromeColor() {
-        @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_BLUE;
-        mNtpThemeCollectionBridge.setChromeColor(colorId);
-        verify(mNatives).setChromeColor(NATIVE_NTP_THEME_COLLECTION_BRIDGE, colorId);
-    }
-
-    @Test
-    public void testResetCustomBackgroundInfo() {
-        mNtpThemeCollectionBridge.resetCustomBackgroundInfo();
-        verify(mNatives).resetCustomBackgroundInfo(NATIVE_NTP_THEME_COLLECTION_BRIDGE);
     }
 
     @Test

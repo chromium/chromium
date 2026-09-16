@@ -92,6 +92,40 @@ bool NtpSyncedThemeBridge::IsProcessingSyncUpdate(JNIEnv* env) {
   return ntp_custom_background_service_->IsProcessingSyncUpdate();
 }
 
+void NtpSyncedThemeBridge::SetChromeColor(JNIEnv* env, int color_id) {
+  if (!ntp_custom_background_service_) {
+    return;
+  }
+  ntp_custom_background_service_->SetChromeColor(color_id);
+}
+
+void NtpSyncedThemeBridge::ResetCustomBackgroundInfo(JNIEnv* env) {
+  if (!ntp_custom_background_service_) {
+    return;
+  }
+  ntp_custom_background_service_->ResetCustomBackgroundInfo();
+}
+
+void NtpSyncedThemeBridge::SelectLocalBackgroundImage(JNIEnv* env) {
+  if (!ntp_custom_background_service_) {
+    return;
+  }
+  ntp_custom_background_service_->SelectLocalBackgroundImage(base::FilePath());
+}
+
+void NtpSyncedThemeBridge::UpdateCustomBackgroundPrefsWithColor(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_url,
+    int32_t primary_color) {
+  if (!ntp_custom_background_service_) {
+    return;
+  }
+
+  ntp_custom_background_service_->UpdateCustomBackgroundPrefsWithColor(
+      url::GURLAndroid::ToNativeGURL(env, j_url),
+      static_cast<SkColor>(primary_color));
+}
+
 void NtpSyncedThemeBridge::OnChromeColorSynced(int color_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NtpSyncedThemeBridge_onChromeColorSynced(env, j_java_obj_, color_id);

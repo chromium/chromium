@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -64,6 +65,48 @@ public class NtpSyncedThemeBridge {
         if (mNativeNtpSyncedThemeBridge == 0) return;
 
         NtpSyncedThemeBridgeJni.get().fetchNextThemeCollectionImage(mNativeNtpSyncedThemeBridge);
+    }
+
+    /**
+     * Sets the New Tab Page theme to a specific Chrome color and notifies the sync bridge.
+     *
+     * @param colorId The ID of the Chrome color.
+     */
+    public void setChromeColor(int colorId) {
+        if (mNativeNtpSyncedThemeBridge == 0) return;
+
+        NtpSyncedThemeBridgeJni.get().setChromeColor(mNativeNtpSyncedThemeBridge, colorId);
+    }
+
+    /** Resets the New Tab Page theme to default and notifies the sync bridge. */
+    public void resetCustomBackgroundInfo() {
+        if (mNativeNtpSyncedThemeBridge == 0) return;
+
+        NtpSyncedThemeBridgeJni.get().resetCustomBackgroundInfo(mNativeNtpSyncedThemeBridge);
+    }
+
+    /** Sets the user-uploaded background image and marks it local to the device. */
+    public void selectLocalBackgroundImage() {
+        if (mNativeNtpSyncedThemeBridge == 0) return;
+
+        NtpSyncedThemeBridgeJni.get().selectLocalBackgroundImage(mNativeNtpSyncedThemeBridge);
+    }
+
+    /**
+     * Updates the theme collection background with the primary theme color and notifies the sync
+     * bridge.
+     *
+     * @param backgroundUrl The URL of the background image.
+     * @param primaryColor The primary color extracted from the theme collection image.
+     */
+    public void updateCustomBackgroundPrefsWithColor(
+            GURL backgroundUrl, @Nullable @ColorInt Integer primaryColor) {
+        if (mNativeNtpSyncedThemeBridge == 0) return;
+
+        int color = primaryColor != null ? primaryColor : 0;
+        NtpSyncedThemeBridgeJni.get()
+                .updateCustomBackgroundPrefsWithColor(
+                        mNativeNtpSyncedThemeBridge, backgroundUrl, color);
     }
 
     /** Exposes whether the C++ service is actively processing a sync update. */
@@ -143,5 +186,14 @@ public class NtpSyncedThemeBridge {
         @Nullable CustomBackgroundInfo getCustomBackgroundInfo(long nativeNtpSyncedThemeBridge);
 
         boolean isProcessingSyncUpdate(long nativeNtpSyncedThemeBridge);
+
+        void setChromeColor(long nativeNtpSyncedThemeBridge, int colorId);
+
+        void resetCustomBackgroundInfo(long nativeNtpSyncedThemeBridge);
+
+        void selectLocalBackgroundImage(long nativeNtpSyncedThemeBridge);
+
+        void updateCustomBackgroundPrefsWithColor(
+                long nativeNtpSyncedThemeBridge, GURL backgroundUrl, int primaryColor);
     }
 }

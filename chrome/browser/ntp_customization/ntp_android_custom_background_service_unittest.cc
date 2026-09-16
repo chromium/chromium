@@ -636,6 +636,25 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
+       SetCustomBackgroundInfo_DoesNotImmediatelyNotifySyncBridge) {
+  auto service = CreateServiceWithThemeSyncEnabled();
+
+  service->SetCustomBackgroundInfo(GURL(kTestValidUrl), GURL(), "", "", GURL(),
+                                   kTestCollectionId);
+
+  std::optional<CustomBackground> bg = service->GetCustomBackground();
+  ASSERT_TRUE(bg.has_value());
+  EXPECT_EQ(bg->custom_background_url, GURL(kTestValidUrl));
+  EXPECT_EQ(bg->collection_id, kTestCollectionId);
+
+  // Sync bridge should not be notified yet because color extraction is
+  // deferred.
+  std::map<std::string, sync_pb::ThemeAndroidSpecifics> specifics_map =
+      ReadAllSyncData();
+  EXPECT_TRUE(specifics_map.empty());
+}
+
+TEST_F(NtpAndroidCustomBackgroundServiceTest,
        UpdateCustomBackgroundPrefsWithColor_UpdatesPrefAndSyncBridge) {
   auto service = CreateServiceWithThemeSyncEnabled();
 
@@ -665,6 +684,29 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   EXPECT_EQ(kTestColor, specifics.user_color_theme().color());
   EXPECT_EQ(sync_pb::UserColorTheme::TONAL_SPOT,
             specifics.user_color_theme().browser_color_variant());
+}
+
+TEST_F(
+    NtpAndroidCustomBackgroundServiceTest,
+    UpdateCustomBackgroundPrefsWithColor_ZeroColor_DoesNotSyncUserColorTheme) {
+  auto service = CreateServiceWithThemeSyncEnabled();
+
+  service->SetCustomBackgroundInfo(GURL(kTestValidUrl), GURL(), "", "", GURL(),
+                                   kTestCollectionId);
+  service->UpdateCustomBackgroundPrefsWithColor(GURL(kTestValidUrl),
+                                                /*color=*/0);
+
+  const base::DictValue& dict =
+      profile_->GetPrefs()->GetDict(prefs::kNtpAndroidCustomBackgroundDict);
+  EXPECT_EQ(dict.FindInt(kNtpCustomBackgroundMainColor), 0);
+
+  std::map<std::string, sync_pb::ThemeAndroidSpecifics> specifics_map =
+      ReadAllSyncData();
+  ASSERT_EQ(1u, specifics_map.size());
+  const sync_pb::ThemeAndroidSpecifics& specifics =
+      specifics_map[kAndroidThemeStorageKey];
+  EXPECT_TRUE(specifics.has_ntp_background());
+  EXPECT_FALSE(specifics.has_user_color_theme());
 }
 
 TEST_F(NtpAndroidCustomBackgroundServiceTest,

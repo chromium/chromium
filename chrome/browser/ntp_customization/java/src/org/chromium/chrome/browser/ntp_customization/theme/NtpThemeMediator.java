@@ -176,7 +176,7 @@ public class NtpThemeMediator {
             // When a new image is selected, store it and reset any existing crop settings from a
             // previous image.
             NtpCustomizationUtils.getBitmapFromUriAsync(mContext, uri, mOnImageSelectedCallback);
-            mNtpThemeCollectionManager.selectLocalBackgroundImage();
+            mNtpThemeCollectionManager.cancelPendingSelection();
         }
 
         NtpCustomizationMetricsUtils.recordBottomSheetShown(BottomSheetType.UPLOAD_IMAGE);
@@ -197,7 +197,7 @@ public class NtpThemeMediator {
     @VisibleForTesting
     void resetCustomizedTheme() {
         updateTrailingIconVisibilityForSectionType(DEFAULT);
-        mNtpThemeCollectionManager.resetCustomBackgroundInfo();
+        mNtpThemeCollectionManager.cancelPendingSelection();
 
         @NtpBackgroundType
         int currentBackgroundType = mNtpCustomizationConfigManager.getBackgroundType();
@@ -248,8 +248,7 @@ public class NtpThemeMediator {
     }
 
     /**
-     * Updates trailing icon visibility and sets the Chrome color on the theme collection manager
-     * when the user selects a Chrome color.
+     * Updates trailing icon visibility when the user selects a Chrome color.
      *
      * @param colorId The {@link NtpThemeColorId} of the selected Chrome color.
      */
@@ -257,7 +256,7 @@ public class NtpThemeMediator {
     void onChromeColorSelected(@NtpThemeColorId int colorId) {
         updateTrailingIconVisibilityForSectionType(CHROME_COLOR);
         assert colorId > NtpThemeColorId.DEFAULT && colorId < NtpThemeColorId.NUM_ENTRIES;
-        mNtpThemeCollectionManager.setChromeColor(colorId);
+        mNtpThemeCollectionManager.cancelPendingSelection();
     }
 
     /**

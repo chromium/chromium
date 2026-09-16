@@ -1304,6 +1304,42 @@ public class NtpCustomizationConfigManagerUnitTest {
         assertEquals(NtpBackgroundType.DEFAULT, manager.getBackgroundType());
     }
 
+    @Test
+    public void testThemeSyncObserver_localAndSyncCommit() {
+        NtpCustomizationConfigManager manager =
+                ThreadUtils.runOnUiThreadBlocking(NtpCustomizationConfigManager::new);
+        manager.setNtpBackgroundDataManagerForTesting(mNtpBackgroundDataManager);
+        NtpCustomizationConfigManager.ThemeSyncObserver observer =
+                mock(NtpCustomizationConfigManager.ThemeSyncObserver.class);
+        manager.addThemeSyncObserver(observer);
+
+        int colorInfoId = NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
+        NtpThemeColorInfo colorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
+        NtpBackgroundDataColor colorData =
+                new NtpBackgroundDataColor(
+                        PlatformType.ANDROID,
+                        /* isChromeColorDailyRefreshEnabled= */ false,
+                        colorInfo);
+        manager.onBackgroundDataChanged(
+                mContext, colorData, /* shouldNotifyThemeSyncObserver= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(observer).onThemeCommitted(eq(colorData));
+
+        clearInvocations(observer);
+        manager.onBackgroundDataChanged(
+                mContext, /* backgroundData= */ null, /* shouldNotifyThemeSyncObserver= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(observer, never()).onThemeCommitted(any());
+
+        clearInvocations(observer);
+        manager.removeThemeSyncObserver(observer);
+        manager.onBackgroundDataChanged(
+                mContext, colorData, /* shouldNotifyThemeSyncObserver= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(observer, never()).onThemeCommitted(any());
+    }
+
     private NtpCustomizationConfigManager createConfigManagerWithListener() {
         NtpCustomizationConfigManager manager =
                 ThreadUtils.runOnUiThreadBlocking(NtpCustomizationConfigManager::new);

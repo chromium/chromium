@@ -12,7 +12,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
@@ -212,47 +211,6 @@ public class NtpThemeCollectionBridge {
         mOnCustomBackgroundImageUpdatedCallback.onResult(customBackgroundInfo);
     }
 
-    /** Sets the user-selected background image. */
-    public void selectLocalBackgroundImage() {
-        if (mNativeNtpThemeCollectionBridge == 0) return;
-
-        NtpThemeCollectionBridgeJni.get()
-                .selectLocalBackgroundImage(mNativeNtpThemeCollectionBridge);
-    }
-
-    /**
-     * Sets the New Tab Page theme to a specific Chrome color.
-     *
-     * @param colorId The ID of the Chrome color.
-     */
-    public void setChromeColor(@NtpThemeColorId int colorId) {
-        if (mNativeNtpThemeCollectionBridge == 0) return;
-
-        NtpThemeCollectionBridgeJni.get().setChromeColor(mNativeNtpThemeCollectionBridge, colorId);
-    }
-
-    /** Resets the New Tab Page theme to default. */
-    public void resetCustomBackgroundInfo() {
-        if (mNativeNtpThemeCollectionBridge == 0) return;
-
-        NtpThemeCollectionBridgeJni.get()
-                .resetCustomBackgroundInfo(mNativeNtpThemeCollectionBridge);
-    }
-
-    /**
-     * Updates the theme collection background with the primary theme color.
-     *
-     * @param backgroundUrl The URL of the background image.
-     * @param primaryColor The primary color extracted from the theme collection image.
-     */
-    public void updateThemeCollectionBackgroundColor(GURL backgroundUrl, int primaryColor) {
-        if (mNativeNtpThemeCollectionBridge == 0) return;
-
-        NtpThemeCollectionBridgeJni.get()
-                .updateThemeCollectionBackgroundColor(
-                        mNativeNtpThemeCollectionBridge, backgroundUrl, primaryColor);
-    }
-
     /**
      * Factory method called by native code to construct a {@link CustomBackgroundInfo} object.
      *
@@ -304,14 +262,5 @@ public class NtpThemeCollectionBridge {
         void fetchNextThemeCollectionImage(long nativeNtpThemeCollectionBridge);
 
         @Nullable CustomBackgroundInfo getCustomBackgroundInfo(long nativeNtpThemeCollectionBridge);
-
-        void selectLocalBackgroundImage(long nativeNtpThemeCollectionBridge);
-
-        void setChromeColor(long nativeNtpThemeCollectionBridge, @NtpThemeColorId int colorId);
-
-        void resetCustomBackgroundInfo(long nativeNtpThemeCollectionBridge);
-
-        void updateThemeCollectionBackgroundColor(
-                long nativeNtpThemeCollectionBridge, GURL backgroundUrl, int primaryColor);
     }
 }

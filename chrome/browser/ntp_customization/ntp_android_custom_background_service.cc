@@ -169,11 +169,10 @@ void NtpAndroidCustomBackgroundService::SetCustomBackgroundInfo(
   NtpCustomBackgroundServiceBase::SetCustomBackgroundInfo(
       background_url, thumbnail_url, attribution_line_1, attribution_line_2,
       action_url, collection_id);
-  // TODO(crbug.com/488439751): For daily refresh setup, NotifySyncBridge pushes
-  // stale background data from PrefService because the first daily image fetch
-  // is asynchronous. Defer sync notification until the new daily image and its
-  // primary color are fetched and updated.
-  NotifySyncBridge();
+  // Note: We do not notify the sync bridge here. Outbound sync is deferred
+  // until the image bitmap and its primary color are calculated on the Java
+  // side, which then updates the color and notifies the sync bridge via
+  // UpdateCustomBackgroundPrefsWithColor.
 }
 
 void NtpAndroidCustomBackgroundService::ResetCustomBackgroundInfo() {
@@ -312,7 +311,8 @@ void NtpAndroidCustomBackgroundService::OnThemeChangedFromSync(
 }
 
 void NtpAndroidCustomBackgroundService::SetChromeColor(int color_id) {
-  CHECK_GT(color_id, 0);
+  CHECK_GT(color_id, 0) << "Invalid ids must be routed to "
+                           "ResetCustomBackgroundInfo() by the caller.";
 
   processing_sync_update_ = false;
   active_custom_background_ = std::nullopt;
@@ -357,11 +357,17 @@ void NtpAndroidCustomBackgroundService::NotifySyncBridge() {
 
       if (std::optional<int> main_color =
               pref->GetDict().FindInt(kNtpCustomBackgroundMainColor)) {
-        sync_pb::UserColorTheme* user_color_theme =
-            specifics.mutable_user_color_theme();
-        user_color_theme->set_color(static_cast<uint32_t>(*main_color));
-        user_color_theme->set_browser_color_variant(
-            sync_pb::UserColorTheme::TONAL_SPOT);
+        // TODO(crbug.com/488439751): 0 is the sentinel written by
+        // NtpSyncedThemeBridge when primary_color is null (e.g. for wallpapers
+        // synced from other platforms where main_color is unpopulated). Remove
+        // this guard once primary color is preserved across all theme sources.
+        if (*main_color != 0) {
+          sync_pb::UserColorTheme* user_color_theme =
+              specifics.mutable_user_color_theme();
+          user_color_theme->set_color(static_cast<uint32_t>(*main_color));
+          user_color_theme->set_browser_color_variant(
+              sync_pb::UserColorTheme::TONAL_SPOT);
+        }
       }
     }
   }
