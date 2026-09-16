@@ -663,6 +663,20 @@ TEST(CSSMathExpressionNode, TestFunctionsWithNumberReturn) {
   }
 }
 
+TEST(CSSMathExpressionNode, TestPreserveNegatedZero) {
+  const StringView input = "sign(0% - 0px)";
+  CSSParserTokenStream stream(input);
+  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
+  const CSSMathExpressionNode* css_node =
+      CSSMathExpressionNode::ParseMathFunction(
+          CSSValueID::kCalc, stream, *context, local_context,
+          Flags({Flag::AllowPercent}), kCSSAnchorQueryTypesNone);
+  EXPECT_EQ(css_node->CustomCSSText(), input);
+}
+
 TEST(CSSMathExpressionNode, TestColorChannelExpressionWithSubstitution) {
   const struct TestCase {
     const String input;

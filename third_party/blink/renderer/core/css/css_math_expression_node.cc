@@ -887,8 +887,8 @@ CSSMathExpressionNodeWithOperator MaybeReplaceNodeWithCombined(
       value *= multiplicative_factor;
       multiplicative_factor = 1.0;
     } else {
-      new_op =
-          value < 0.0f ? CSSMathOperator::kSubtract : CSSMathOperator::kAdd;
+      new_op = std::signbit(value) ? CSSMathOperator::kSubtract
+                                   : CSSMathOperator::kAdd;
       value = std::abs(value);
     }
     CSSMathExpressionNode* new_node =
