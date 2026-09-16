@@ -427,20 +427,19 @@ TEST_F(AnchorElementInteractionTest, ShorterThanEagerMouseHover) {
   EXPECT_EQ(hosts_[0]->calls_.size(), 0u);
 }
 
-class AnchorElementInteractionRendererSideHeuristicsTest
+class AnchorElementInteractionDisabledEagerHoverTest
     : public AnchorElementInteractionTest {
  public:
-  AnchorElementInteractionRendererSideHeuristicsTest() {
-    feature_list_.InitWithFeatures(
-        {features::kSpeculationRulesRendererSideHeuristics},
-        {features::kPreloadingEagerHoverHeuristics});
+  AnchorElementInteractionDisabledEagerHoverTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kPreloadingEagerHoverHeuristics);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(AnchorElementInteractionRendererSideHeuristicsTest,
+TEST_F(AnchorElementInteractionDisabledEagerHoverTest,
        ModerateHoverStillNotifiesBrowser) {
   String source("https://example.com/p1");
   SimRequest main_resource(source, "text/html");
@@ -812,9 +811,7 @@ class AnchorElementInteractionViewportHeuristicsTest
          {features::kPreloadingEagerViewportHeuristics,
           {{"viewport_present_time", "100ms"}}},
          {features::kPreloadingEligibilityCheckOnRenderer, {}}},
-        // These tests cover the browser-notification path, which is bypassed
-        // when the renderer selects and enacts candidates itself.
-        {features::kSpeculationRulesRendererSideHeuristics});
+        {});
     config_scope_ =
         std::make_unique<ModerateViewportHeuristicConfigTestingScope>();
   }
@@ -1174,20 +1171,7 @@ TEST_F(AnchorElementInteractionViewportHeuristicsTest,
 // With renderer-side heuristics the renderer enacts the matching candidate
 // itself, but the browser must still be told the heuristic fired so it can
 // record the preloading prediction for it.
-class AnchorElementInteractionViewportHeuristicsRendererSideTest
-    : public AnchorElementInteractionViewportHeuristicsTest {
- public:
-  AnchorElementInteractionViewportHeuristicsRendererSideTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kSpeculationRulesRendererSideHeuristics);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(AnchorElementInteractionViewportHeuristicsRendererSideTest,
-       BrowserIsStillNotified) {
+TEST_F(AnchorElementInteractionViewportHeuristicsTest, BrowserIsStillNotified) {
   String body = R"HTML(
     <body style="margin: 0px">
       <div style="height: 100px"></div>

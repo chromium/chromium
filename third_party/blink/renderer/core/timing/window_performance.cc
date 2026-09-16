@@ -1699,17 +1699,10 @@ SpeculationData* WindowPerformance::getSpeculations() {
   HeapVector<Member<SpeculationNavigationData>> navigations;
   if (DocumentSpeculationRules* spec_rules =
           DocumentSpeculationRules::FromIfExists(*document)) {
-    // With renderer-side heuristics, the renderer knows exactly which
-    // candidates were activated (immediate ones plus those enacted by the
-    // pointerdown/hover/viewport heuristics), so report that enacted set
-    // instead of every proposed candidate. Otherwise (browser-driven
-    // heuristics) the renderer can't tell which were enacted, so fall back to
-    // the proposed set.
-    const auto& candidates =
-        base::FeatureList::IsEnabled(
-            features::kSpeculationRulesRendererSideHeuristics)
-            ? spec_rules->activated_candidates()
-            : spec_rules->sent_candidates();
+    // The renderer knows exactly which candidates were activated (immediate
+    // ones plus those enacted by the pointerdown/hover/viewport heuristics),
+    // so report that enacted set instead of every proposed candidate.
+    const auto& candidates = spec_rules->activated_candidates();
     for (const SpeculationCandidate* candidate : candidates) {
       std::optional<Vector<String>> tags;
       // When no tag is specified, the candidate has tags=[""]

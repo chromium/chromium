@@ -33,7 +33,7 @@ interface SpeculationHost {
   // Called when LCP is predicted.
   OnLCPPredicted();
 
-  // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics).
+  // Renderer-driven enactment.
   //
   // The renderer's link-selection `heuristic` selected `candidate` for
   // enactment and asks the browser to execute it now. Unlike

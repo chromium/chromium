@@ -32,10 +32,10 @@ interface AnchorElementInteractionHost {
     // the renderer calls OnPointerDown to pass the URL to the browser process.
     // In the browser process, the URL gets preloaded.
     //
-    // When SpeculationRulesRendererSideHeuristics is enabled the renderer picks
-    // and enacts matching speculation candidates itself, and reports that via
-    // `renderer_enacted` so that the browser doesn't preload (or record a
-    // preloading prediction for) the same interaction twice.
+    // The renderer picks and enacts matching speculation candidates itself,
+    // and reports that via `renderer_enacted` so that the browser doesn't
+    // preload (or record a preloading prediction for) the same interaction
+    // twice.
     OnPointerDown(url.mojom.Url target, bool renderer_enacted);
 
     // After the user hovers over qualified anchor elements for a short time,

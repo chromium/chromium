@@ -90,7 +90,7 @@ class CONTENT_EXPORT PreloadingDecider
   // used under LCPTimingPredictorPrerender2.
   void OnLCPPredicted();
 
-  // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics).
+  // Renderer-driven enactment.
   //
   // Executes a single candidate that the renderer's link-selection
   // `heuristic` has already selected. The browser uses the heuristic to merge
@@ -210,10 +210,10 @@ class CONTENT_EXPORT PreloadingDecider
   FRIEND_TEST_ALL_PREFIXES(PreloadingDeciderTest,
                            SpeculationRulesTagsMergingForNVSMatchWithNullTags);
 
-  // Handles a link-selection heuristic whose candidate enactment has moved to
-  // the renderer (kSpeculationRulesRendererSideHeuristics). The renderer only
-  // enacts when a speculation candidate matches, so this records the preloading
-  // prediction, and optionally preconnects, for the cases it leaves untouched.
+  // Handles a link-selection heuristic whose candidate enactment the renderer
+  // owns. The renderer only enacts when a speculation candidate matches, so
+  // this records the preloading prediction, and optionally preconnects, for
+  // the cases it leaves untouched.
   void HandleRendererOwnedHeuristic(
       const GURL& url,
       const PreloadingPredictor& enacting_predictor,

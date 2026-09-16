@@ -4,10 +4,8 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -182,10 +180,6 @@ TEST_F(DocumentSpeculationRulesTest, NoVarySearchDedupesSentCandidates) {
 }
 
 TEST_F(DocumentSpeculationRulesTest, PointerDownHeuristicEnactsCandidate) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSpeculationRulesRendererSideHeuristics);
-
   Document& document = GetDocument();
   DocumentSpeculationRules& document_speculation_rules =
       DocumentSpeculationRules::From(document);
@@ -220,10 +214,6 @@ TEST_F(DocumentSpeculationRulesTest, PointerDownHeuristicEnactsCandidate) {
 
 TEST_F(DocumentSpeculationRulesTest,
        HoverHeuristicEnactsOnlyTriggeredEagerness) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSpeculationRulesRendererSideHeuristics);
-
   Document& document = GetDocument();
   DocumentSpeculationRules& document_speculation_rules =
       DocumentSpeculationRules::From(document);
@@ -258,37 +248,7 @@ TEST_F(DocumentSpeculationRulesTest,
 }
 
 TEST_F(DocumentSpeculationRulesTest,
-       PointerDownHeuristicNoOpWhenFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kSpeculationRulesRendererSideHeuristics);
-
-  Document& document = GetDocument();
-  DocumentSpeculationRules& document_speculation_rules =
-      DocumentSpeculationRules::From(document);
-
-  const KURL url("https://example.com/prefetched.html");
-  auto* source = SpeculationRuleSet::Source::FromInlineScript(
-      R"({"prefetch": [{"urls": ["/prefetched.html"],
-                       "eagerness": "conservative"}]})",
-      document, static_cast<DOMNodeId>(1));
-  auto* rule_set =
-      SpeculationRuleSet::Parse(source, document.GetExecutionContext());
-  document_speculation_rules.AddRuleSet(rule_set);
-  ProcessAllRuleSets(document_speculation_rules);
-
-  EXPECT_FALSE(document_speculation_rules.OnPointerDownHeuristic(url));
-  document_speculation_rules.FlushMojoMessageForTesting();
-
-  EXPECT_TRUE(mock_host().last_enacted_candidates().empty());
-}
-
-TEST_F(DocumentSpeculationRulesTest,
        PointerDownHeuristicEnactsNoVarySearchMatch) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSpeculationRulesRendererSideHeuristics);
-
   Document& document = GetDocument();
   DocumentSpeculationRules& document_speculation_rules =
       DocumentSpeculationRules::From(document);
@@ -322,10 +282,6 @@ TEST_F(DocumentSpeculationRulesTest,
 
 TEST_F(DocumentSpeculationRulesTest,
        PointerDownHeuristicSkipsNonMatchingQuery) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSpeculationRulesRendererSideHeuristics);
-
   Document& document = GetDocument();
   DocumentSpeculationRules& document_speculation_rules =
       DocumentSpeculationRules::From(document);

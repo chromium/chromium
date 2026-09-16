@@ -696,10 +696,6 @@ mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {
 }
 
 bool DocumentSpeculationRules::OnPointerDownHeuristic(const KURL& url) {
-  if (!base::FeatureList::IsEnabled(
-          features::kSpeculationRulesRendererSideHeuristics)) {
-    return false;
-  }
   // Mirrors PreloadingDecider::BehaviorConfig::pointer_down_eagerness_.
   Vector<mojom::blink::SpeculationEagerness> eagernesses = {
       mojom::blink::SpeculationEagerness::kConservative,
@@ -714,10 +710,6 @@ bool DocumentSpeculationRules::OnPointerDownHeuristic(const KURL& url) {
 bool DocumentSpeculationRules::OnHoverHeuristic(
     const KURL& url,
     mojom::blink::SpeculationEagerness triggered_eagerness) {
-  if (!base::FeatureList::IsEnabled(
-          features::kSpeculationRulesRendererSideHeuristics)) {
-    return false;
-  }
   // A hover that reaches the `triggered_eagerness` dwell threshold enacts only
   // candidates registered at exactly that eagerness, matching
   // PreloadingDecider::OnPointerHover (which excludes all other eagerness
@@ -730,10 +722,6 @@ bool DocumentSpeculationRules::OnHoverHeuristic(
 bool DocumentSpeculationRules::OnViewportHeuristic(
     const KURL& url,
     mojom::blink::SpeculationEagerness triggered_eagerness) {
-  if (!base::FeatureList::IsEnabled(
-          features::kSpeculationRulesRendererSideHeuristics)) {
-    return false;
-  }
   // The moderate/eager viewport heuristics each enact candidates at exactly
   // their eagerness (matching PreloadingDecider's kModerateViewportHeuristic /
   // kEagerViewportHeuristic predictors).
@@ -748,10 +736,6 @@ bool DocumentSpeculationRules::EnactMatchingCandidates(
     const KURL& url,
     const Vector<mojom::blink::SpeculationEagerness>& eagernesses,
     mojom::blink::SpeculationHeuristic heuristic) {
-  // Every caller gates on this feature. Sending EnactCandidate without it makes
-  // the browser reject the message as a bad message, which kills the renderer.
-  CHECK(base::FeatureList::IsEnabled(
-      features::kSpeculationRulesRendererSideHeuristics));
   // `immediate` candidates are enacted when candidates are updated, not via
   // these interaction heuristics, so callers never pass `immediate` here.
   CHECK(!eagernesses.Contains(mojom::blink::SpeculationEagerness::kImmediate));
@@ -951,8 +935,6 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
 
   // Accumulate candidates for the SpeculationMeasurement API.
   // Candidates are never removed.
-  const bool renderer_side_heuristics = base::FeatureList::IsEnabled(
-      features::kSpeculationRulesRendererSideHeuristics);
   for (SpeculationCandidate* candidate : candidates) {
     bool already_tracked =
         std::ranges::any_of(sent_candidates_, [&](const auto& existing) {
@@ -968,12 +950,9 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     // Immediate-eagerness candidates are activated by the browser as soon as
     // they are sent, so the renderer records them as activated immediately.
     // Non-immediate candidates become activated later, when a renderer-side
-    // heuristic enacts them (see EnactMatchingCandidates). Only the renderer
-    // knows the activated set, so `activated_candidates_` is only tracked (and
-    // only read by getSpeculations()) when renderer-side heuristics are on.
-    if (renderer_side_heuristics &&
-        candidate->eagerness() ==
-            mojom::blink::SpeculationEagerness::kImmediate) {
+    // heuristic enacts them (see EnactMatchingCandidates).
+    if (candidate->eagerness() ==
+        mojom::blink::SpeculationEagerness::kImmediate) {
       MarkCandidateActivated(candidate);
     }
   }

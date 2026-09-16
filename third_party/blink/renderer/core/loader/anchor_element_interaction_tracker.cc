@@ -425,15 +425,10 @@ void AnchorElementInteractionTracker::OnPointerEvent(
     if (!pointer_event.IsLinkClickButton()) {
       return;
     }
-    // With renderer-side heuristics on, the renderer owns speculation candidate
-    // selection and enactment.
+    // The renderer owns speculation candidate selection and enactment.
     bool renderer_enacted = false;
-    if (base::FeatureList::IsEnabled(
-            features::kSpeculationRulesRendererSideHeuristics)) {
-      if (auto* rules =
-              DocumentSpeculationRules::FromIfExists(*GetDocument())) {
-        renderer_enacted = rules->OnPointerDownHeuristic(url);
-      }
+    if (auto* rules = DocumentSpeculationRules::FromIfExists(*GetDocument())) {
+      renderer_enacted = rules->OnPointerDownHeuristic(url);
     }
     // Notify the browser regardless: it still owns the generic pointerdown side
     // effects (HTTP disk cache and service worker prewarm) that don't depend on
@@ -536,13 +531,9 @@ void AnchorElementInteractionTracker::HoverTimerFired(TimerBase*) {
   if (!interaction_host_.is_bound()) {
     return;
   }
-  const bool renderer_side_heuristics = base::FeatureList::IsEnabled(
-      features::kSpeculationRulesRendererSideHeuristics);
   DocumentSpeculationRules* speculation_rules = nullptr;
-  if (renderer_side_heuristics) {
-    if (Document* document = GetDocument()) {
-      speculation_rules = DocumentSpeculationRules::FromIfExists(*document);
-    }
+  if (Document* document = GetDocument()) {
+    speculation_rules = DocumentSpeculationRules::FromIfExists(*document);
   }
   const base::TimeTicks now = clock_->NowTicks();
   auto next_fire_time = base::TimeTicks::Max();
@@ -567,7 +558,7 @@ void AnchorElementInteractionTracker::HoverTimerFired(TimerBase*) {
       }
 
       bool renderer_enacted = false;
-      if (renderer_side_heuristics && speculation_rules) {
+      if (speculation_rules) {
         renderer_enacted = speculation_rules->OnHoverHeuristic(
             hover_event_candidate.key.first, hover_event_candidate.key.second);
       }
@@ -801,14 +792,11 @@ void AnchorElementInteractionTracker::ModerateViewportHeuristicTimerFired(
   }
 
   const KURL& url = largest_anchor_element_in_viewport_->Url();
-  // With renderer-driven enactment (SpeculationRulesRendererSideHeuristics) the
-  // matching moderate candidate is enacted via DocumentSpeculationRules rather
-  // than the browser's PreloadingDecider, and only when configured to enact
-  // (mirrors PreloadingDecider::OnModerateViewportHeuristicTriggered).
+  // The matching moderate candidate is enacted via DocumentSpeculationRules,
+  // and only when configured to enact (mirrors
+  // PreloadingDecider::OnModerateViewportHeuristicTriggered).
   bool renderer_enacted = false;
-  if (base::FeatureList::IsEnabled(
-          features::kSpeculationRulesRendererSideHeuristics) &&
-      features::kPreloadingModerateViewportHeuristicsEnactCandidates.Get()) {
+  if (features::kPreloadingModerateViewportHeuristicsEnactCandidates.Get()) {
     if (auto* rules = DocumentSpeculationRules::FromIfExists(*GetDocument())) {
       renderer_enacted = rules->OnViewportHeuristic(
           url, mojom::blink::SpeculationEagerness::kModerate);
@@ -847,15 +835,10 @@ void AnchorElementInteractionTracker::EagerViewportHeuristicTimerFired(
   }
 
   if (!fired_candidates.empty() && IsPreloadingEligible()) {
-    // With renderer-driven enactment (SpeculationRulesRendererSideHeuristics)
-    // the candidates are enacted via DocumentSpeculationRules rather than the
-    // browser's PreloadingDecider.
+    // The candidates are enacted via DocumentSpeculationRules.
     DocumentSpeculationRules* rules = nullptr;
-    if (base::FeatureList::IsEnabled(
-            features::kSpeculationRulesRendererSideHeuristics)) {
-      if (Document* document = GetDocument()) {
-        rules = DocumentSpeculationRules::FromIfExists(*document);
-      }
+    if (Document* document = GetDocument()) {
+      rules = DocumentSpeculationRules::FromIfExists(*document);
     }
 
     Vector<mojom::blink::AnchorElementInteractionTargetPtr> targets;

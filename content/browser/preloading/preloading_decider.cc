@@ -274,23 +274,15 @@ void PreloadingDecider::OnPointerDown(const GURL& url, bool renderer_enacted) {
   if (observer_for_testing_) {
     observer_for_testing_->OnPointerDown(url);
   }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesRendererSideHeuristics)) {
-    // The renderer owns candidate enactment (and its preconnect fallback, in
-    // EnactRendererSelectedCandidate); enacting here too would double-enact
-    // this pointerdown.
-    if (renderer_enacted) {
-      return;
-    }
-    HandleRendererOwnedHeuristic(url,
-                                 preloading_predictor::kUrlPointerDownOnAnchor,
-                                 /*fallback_to_preconnect=*/true);
+  // The renderer owns candidate enactment (and its preconnect fallback, in
+  // EnactRendererSelectedCandidate); enacting here too would double-enact
+  // this pointerdown.
+  if (renderer_enacted) {
     return;
   }
-  MaybeEnactCandidate(url, preloading_predictor::kUrlPointerDownOnAnchor,
-                      PreloadingConfidence{100},
-                      /*fallback_to_preconnect=*/true,
-                      /*eagerness_to_exclude=*/{});
+  HandleRendererOwnedHeuristic(url,
+                               preloading_predictor::kUrlPointerDownOnAnchor,
+                               /*fallback_to_preconnect=*/true);
 }
 
 void PreloadingDecider::OnPreloadingHeuristicsModelDone(const GURL& url,
@@ -351,28 +343,17 @@ void PreloadingDecider::OnPointerHover(
       /*max_score=*/500,
       /*buckets=*/100);
 
-  // Preconnecting on hover events should not be done if the link is not safe
-  // to prefetch or prerender.
-  constexpr bool fallback_to_preconnect = false;
-  EagernessSet eagerness_to_exclude = HoverEagernessToExclude(target_eagerness);
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesRendererSideHeuristics)) {
-    // The renderer owns candidate enactment. The browser still receives hover
-    // notifications for metrics and for the generic warmups performed by
-    // AnchorElementInteractionHostImpl.
-    if (renderer_enacted) {
-      return;
-    }
-    HandleRendererOwnedHeuristic(url,
-                                 preloading_predictor::kUrlPointerHoverOnAnchor,
-                                 fallback_to_preconnect);
+  // The renderer owns candidate enactment. The browser still receives hover
+  // notifications for the metrics above and for the generic warmups performed
+  // by AnchorElementInteractionHostImpl.
+  if (renderer_enacted) {
     return;
   }
-
-  MaybeEnactCandidate(url, preloading_predictor::kUrlPointerHoverOnAnchor,
-                      PreloadingConfidence{100}, fallback_to_preconnect,
-                      eagerness_to_exclude);
+  // Preconnecting on hover events should not be done if the link is not safe
+  // to prefetch or prerender.
+  HandleRendererOwnedHeuristic(url,
+                               preloading_predictor::kUrlPointerHoverOnAnchor,
+                               /*fallback_to_preconnect=*/false);
 }
 
 void PreloadingDecider::OnModerateViewportHeuristicTriggered(
@@ -388,21 +369,12 @@ void PreloadingDecider::OnModerateViewportHeuristicTriggered(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesRendererSideHeuristics)) {
-    if (renderer_enacted) {
-      return;
-    }
-    HandleRendererOwnedHeuristic(
-        url, preloading_predictor::kModerateViewportHeuristic,
-        /*fallback_to_preconnect=*/false);
+  if (renderer_enacted) {
     return;
   }
-
-  MaybeEnactCandidate(url, preloading_predictor::kModerateViewportHeuristic,
-                      PreloadingConfidence{100},
-                      /*fallback_to_preconnect=*/false,
-                      /*eagerness_to_exclude=*/{});
+  HandleRendererOwnedHeuristic(url,
+                               preloading_predictor::kModerateViewportHeuristic,
+                               /*fallback_to_preconnect=*/false);
 }
 
 void PreloadingDecider::OnEagerViewportHeuristicTriggered(
@@ -410,20 +382,12 @@ void PreloadingDecider::OnEagerViewportHeuristicTriggered(
     bool renderer_enacted) {
   CHECK(base::FeatureList::IsEnabled(
       blink::features::kPreloadingEagerViewportHeuristics));
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesRendererSideHeuristics)) {
-    if (renderer_enacted) {
-      return;
-    }
-    HandleRendererOwnedHeuristic(url,
-                                 preloading_predictor::kEagerViewportHeuristic,
-                                 /*fallback_to_preconnect=*/false);
+  if (renderer_enacted) {
     return;
   }
-  MaybeEnactCandidate(url, preloading_predictor::kEagerViewportHeuristic,
-                      PreloadingConfidence{100},
-                      /*fallback_to_preconnect=*/false,
-                      /*eagerness_to_exclude=*/{});
+  HandleRendererOwnedHeuristic(url,
+                               preloading_predictor::kEagerViewportHeuristic,
+                               /*fallback_to_preconnect=*/false);
 }
 
 void PreloadingDecider::MaybeEnactCandidate(
@@ -682,11 +646,6 @@ void PreloadingDecider::OnLCPPredicted() {
 void PreloadingDecider::EnactRendererSelectedCandidate(
     blink::mojom::SpeculationCandidatePtr candidate,
     blink::mojom::SpeculationHeuristic heuristic) {
-  // SpeculationHostImpl::EnactCandidate rejects the message when the feature is
-  // disabled, so reaching here never happens.
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kSpeculationRulesRendererSideHeuristics));
-
   const PreloadingPredictor enacting_predictor =
       PredictorForRendererHeuristic(heuristic);
   const PreloadingConfidence confidence{100};
@@ -1044,8 +1003,6 @@ void PreloadingDecider::HandleRendererOwnedHeuristic(
     const GURL& url,
     const PreloadingPredictor& enacting_predictor,
     bool fallback_to_preconnect) {
-  CHECK(base::FeatureList::IsEnabled(
-      blink::features::kSpeculationRulesRendererSideHeuristics));
   // Only reached when the renderer reported that it did not enact a candidate
   // for this interaction. These signals don't depend on speculation rules, so
   // the browser still owns them; this mirrors the tail of MaybeEnactCandidate

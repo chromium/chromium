@@ -89,16 +89,15 @@ class CORE_EXPORT DocumentSpeculationRules final
   // superset-free view of what was prefetched/prerendered, rather than merely
   // proposed. Contains immediate-eagerness candidates (enacted as soon as they
   // are sent) plus non-immediate candidates enacted by the renderer-side
-  // link-selection heuristics (pointerdown/hover/viewport). Populated only
-  // when SpeculationRulesRendererSideHeuristics is enabled; used by
+  // link-selection heuristics (pointerdown/hover/viewport). Used by
   // performance.getSpeculations() to report the enacted navigation set.
   const HeapVector<Member<SpeculationCandidate>>& activated_candidates() const {
     return activated_candidates_;
   }
 
-  // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics). Each
-  // returns whether a candidate was enacted, which the caller reports to the
-  // browser so that it doesn't handle the same interaction as well.
+  // Renderer-driven enactment. Each returns whether a candidate was enacted,
+  // which the caller reports to the browser so that it doesn't handle the same
+  // interaction as well.
   [[nodiscard]] bool OnPointerDownHeuristic(const KURL& url);
   [[nodiscard]] bool OnHoverHeuristic(
       const KURL& url,
