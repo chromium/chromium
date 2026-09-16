@@ -18,6 +18,7 @@
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -67,9 +68,9 @@ class OomInterventionTabHelper
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // CrashDumpManager::Observer:
+  // crash_reporter::CrashMetricsReporter::Observer:
   void OnCrashDumpProcessed(
-      int rph_id,
+      content::ChildProcessId rph_id,
       const crash_reporter::CrashMetricsReporter::ReportedCrashTypeSet&
           reported_counts) override;
 

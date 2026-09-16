@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/common/child_process_id.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
@@ -115,7 +116,7 @@ class ContentStabilityMetricsProvider
 #if BUILDFLAG(IS_ANDROID)
   // crash_reporter::CrashMetricsReporter::Observer:
   void OnCrashDumpProcessed(
-      int rph_id,
+      content::ChildProcessId rph_id,
       const crash_reporter::CrashMetricsReporter::ReportedCrashTypeSet&
           reported_counts) override;
 

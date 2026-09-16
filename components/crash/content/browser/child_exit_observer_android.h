@@ -23,6 +23,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/user_level_memory_pressure_metrics.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/process_type.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 
@@ -52,7 +53,7 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
       return crash_signo != kInvalidSigno || threw_exception_during_init;
     }
 
-    int process_host_id = content::ChildProcessHost::kInvalidUniqueID;
+    content::ChildProcessId process_host_id;
     // |pid| may not be valid if termination happens before the process has
     // finished launching.
     base::ProcessHandle pid = base::kNullProcessHandle;
@@ -182,12 +183,15 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
   std::vector<std::unique_ptr<Client>> registered_clients_;
 
   // process_host_id to process id. Only accessed on the UI thread.
-  std::map<int, base::ProcessHandle> process_host_id_to_pid_;
+  std::map<content::ChildProcessId, base::ProcessHandle>
+      process_host_id_to_pid_;
 
   // Key is process_host_id. Only used for BrowserChildProcessHost. Only
   // accessed on the UI thread.
-  std::map<int, base::ProcessHandle> browser_child_process_id_to_pid_;
-  std::map<int, TerminationInfo> browser_child_process_info_;
+  std::map<content::ChildProcessId, base::ProcessHandle>
+      browser_child_process_id_to_pid_;
+  std::map<content::ChildProcessId, TerminationInfo>
+      browser_child_process_info_;
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>

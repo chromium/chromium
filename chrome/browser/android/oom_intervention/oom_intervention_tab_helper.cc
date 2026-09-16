@@ -188,14 +188,14 @@ void OomInterventionTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
 }
 
 void OomInterventionTabHelper::OnCrashDumpProcessed(
-    int rph_id,
+    content::ChildProcessId rph_id,
     const crash_reporter::CrashMetricsReporter::ReportedCrashTypeSet&
         reported_counts) {
   if (rph_id != web_contents()
                     ->GetPrimaryPage()
                     .GetMainDocument()
                     .GetProcess()
-                    ->GetDeprecatedID()) {
+                    ->GetID()) {
     return;
   }
   if (!reported_counts.count(

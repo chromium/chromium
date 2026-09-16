@@ -370,7 +370,7 @@ void CrashMetricsReporter::ChildProcessExited(
 }
 
 void CrashMetricsReporter::NotifyObservers(
-    int rph_id,
+    content::ChildProcessId rph_id,
     const CrashMetricsReporter::ReportedCrashTypeSet& reported_counts) {
   async_observers_->Notify(
       FROM_HERE, &CrashMetricsReporter::Observer::OnCrashDumpProcessed, rph_id,

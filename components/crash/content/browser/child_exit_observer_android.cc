@@ -74,8 +74,7 @@ void ChildExitObserver::OnRenderProcessLaunched(
     content::RenderProcessHost* host) {
   // The child process pid isn't available when process is gone, keep a mapping
   // between process_host_id and pid, so we can find it later.
-  process_host_id_to_pid_[host->GetDeprecatedID()] =
-      host->GetProcess().Handle();
+  process_host_id_to_pid_[host->GetID()] = host->GetProcess().Handle();
   if (!render_process_host_observation_.IsObservingSource(host)) {
     render_process_host_observation_.AddObservation(host);
   }
@@ -108,20 +107,21 @@ void ChildExitObserver::BrowserChildProcessLaunchedAndConnected(
     const content::ChildProcessData& data,
     const base::Process& process) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  browser_child_process_id_to_pid_[data.id] = process.Handle();
+  browser_child_process_id_to_pid_[data.GetChildProcessId()] = process.Handle();
 }
 
 void ChildExitObserver::BrowserChildProcessHostDisconnected(
     const content::ChildProcessData& data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TerminationInfo info;
-  auto it = browser_child_process_info_.find(data.id);
+  auto it = browser_child_process_info_.find(data.GetChildProcessId());
   if (it != browser_child_process_info_.end()) {
     info = it->second;
     browser_child_process_info_.erase(it);
   } else {
-    info.process_host_id = data.id;
-    const auto pid_it = browser_child_process_id_to_pid_.find(data.id);
+    info.process_host_id = data.GetChildProcessId();
+    const auto pid_it =
+        browser_child_process_id_to_pid_.find(data.GetChildProcessId());
     if (pid_it != browser_child_process_id_to_pid_.end()) {
       info.pid = pid_it->second;
     }
@@ -129,7 +129,7 @@ void ChildExitObserver::BrowserChildProcessHostDisconnected(
     info.app_state = base::android::ApplicationStatusListener::GetState();
     info.normal_termination = true;
   }
-  browser_child_process_id_to_pid_.erase(data.id);
+  browser_child_process_id_to_pid_.erase(data.GetChildProcessId());
   OnChildExit(&info);
 }
 
@@ -137,10 +137,11 @@ void ChildExitObserver::BrowserChildProcessKilled(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& content_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!browser_child_process_info_.contains(data.id));
+  DCHECK(!browser_child_process_info_.contains(data.GetChildProcessId()));
   TerminationInfo info;
-  info.process_host_id = data.id;
-  const auto it = browser_child_process_id_to_pid_.find(data.id);
+  info.process_host_id = data.GetChildProcessId();
+  const auto it =
+      browser_child_process_id_to_pid_.find(data.GetChildProcessId());
   if (it != browser_child_process_id_to_pid_.end()) {
     info.pid = it->second;
   }
@@ -148,7 +149,7 @@ void ChildExitObserver::BrowserChildProcessKilled(
   info.app_state = base::android::ApplicationStatusListener::GetState();
   info.normal_termination = content_info.clean_exit;
   PopulateTerminationInfo(content_info, &info);
-  browser_child_process_info_.emplace(data.id, info);
+  browser_child_process_info_.emplace(data.GetChildProcessId(), info);
   // Subsequent BrowserChildProcessHostDisconnected will call OnChildExit.
 }
 
@@ -169,7 +170,7 @@ void ChildExitObserver::ProcessRenderProcessHostLifetimeEndEvent(
     const content::ChildProcessTerminationInfo* content_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TerminationInfo info;
-  info.process_host_id = rph->GetDeprecatedID();
+  info.process_host_id = rph->GetID();
   info.pid = rph->GetProcess().Handle();
   info.process_type = content::PROCESS_TYPE_RENDERER;
   info.app_state = base::android::APPLICATION_STATE_UNKNOWN;
@@ -197,7 +198,7 @@ void ChildExitObserver::ProcessRenderProcessHostLifetimeEndEvent(
     info.renderer_shutdown_requested = rph->ShutdownRequested();
   }
 
-  const auto& iter = process_host_id_to_pid_.find(rph->GetDeprecatedID());
+  const auto& iter = process_host_id_to_pid_.find(rph->GetID());
   if (iter == process_host_id_to_pid_.end()) {
     return;
   }

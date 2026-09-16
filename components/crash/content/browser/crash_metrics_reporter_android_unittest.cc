@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "content/public/common/child_process_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crash_reporter {
@@ -25,7 +26,7 @@ class CrashMetricsReporterObserver : public CrashMetricsReporter::Observer {
   ~CrashMetricsReporterObserver() = default;
 
   // CrashMetricsReporter::Observer:
-  void OnCrashDumpProcessed(int rph_id,
+  void OnCrashDumpProcessed(content::ChildProcessId rph_id,
                             const CrashMetricsReporter::ReportedCrashTypeSet&
                                 reported_counts) override {
     recorded_crash_types_ = reported_counts;
@@ -91,7 +92,7 @@ class CrashMetricsReporterTest : public testing::Test {
 
 TEST_F(CrashMetricsReporterTest, UtilityProcessOOM) {
   ChildExitObserver::TerminationInfo termination_info;
-  termination_info.process_host_id = 1;
+  termination_info.process_host_id = content::ChildProcessId(1);
   termination_info.pid = base::kNullProcessHandle;
   termination_info.process_type = content::PROCESS_TYPE_UTILITY;
   termination_info.app_state =
@@ -109,7 +110,7 @@ TEST_F(CrashMetricsReporterTest, UtilityProcessOOM) {
 
 TEST_F(CrashMetricsReporterTest, NormalTerminationIsNotOOMUtilityProcess) {
   ChildExitObserver::TerminationInfo termination_info;
-  termination_info.process_host_id = 1;
+  termination_info.process_host_id = content::ChildProcessId(1);
   termination_info.pid = base::kNullProcessHandle;
   termination_info.process_type = content::PROCESS_TYPE_UTILITY;
   termination_info.app_state =
@@ -124,7 +125,7 @@ TEST_F(CrashMetricsReporterTest, NormalTerminationIsNotOOMUtilityProcess) {
 
 TEST_F(CrashMetricsReporterTest, UtilityProcessAll) {
   ChildExitObserver::TerminationInfo termination_info;
-  termination_info.process_host_id = 1;
+  termination_info.process_host_id = content::ChildProcessId(1);
   termination_info.pid = base::kNullProcessHandle;
   termination_info.process_type = content::PROCESS_TYPE_UTILITY;
   termination_info.app_state =
@@ -149,7 +150,7 @@ TEST_F(CrashMetricsReporterTest, UtilityProcessAll) {
 
 TEST_F(CrashMetricsReporterTest, NormalTerminationIsNotOOM) {
   ChildExitObserver::TerminationInfo termination_info;
-  termination_info.process_host_id = 1;
+  termination_info.process_host_id = content::ChildProcessId(1);
   termination_info.pid = base::kNullProcessHandle;
   termination_info.process_type = content::PROCESS_TYPE_RENDERER;
   termination_info.app_state =
@@ -167,7 +168,7 @@ TEST_F(CrashMetricsReporterTest, NormalTerminationIsNotOOM) {
 
 TEST_F(CrashMetricsReporterTest, RendererForegroundCrash) {
   ChildExitObserver::TerminationInfo termination_info;
-  termination_info.process_host_id = 1;
+  termination_info.process_host_id = content::ChildProcessId(1);
   termination_info.pid = base::kNullProcessHandle;
   termination_info.process_type = content::PROCESS_TYPE_RENDERER;
   termination_info.app_state =

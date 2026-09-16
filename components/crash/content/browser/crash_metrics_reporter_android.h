@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/observer_list_threadsafe.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
+#include "content/public/common/child_process_id.h"
 
 namespace crash_reporter {
 
@@ -85,7 +86,7 @@ class CrashMetricsReporter {
     // |reported_counts| is a set of recorded metrics about child process
     // crashes. It could be empty if no metrics were recorded.
     virtual void OnCrashDumpProcessed(
-        int rph_id,
+        content::ChildProcessId rph_id,
         const ReportedCrashTypeSet& reported_counts) = 0;
   };
 
@@ -105,7 +106,8 @@ class CrashMetricsReporter {
   CrashMetricsReporter();
   ~CrashMetricsReporter();
 
-  void NotifyObservers(int rph_id, const ReportedCrashTypeSet& reported_counts);
+  void NotifyObservers(content::ChildProcessId rph_id,
+                       const ReportedCrashTypeSet& reported_counts);
 
   scoped_refptr<base::ObserverListThreadSafe<CrashMetricsReporter::Observer>>
       async_observers_;

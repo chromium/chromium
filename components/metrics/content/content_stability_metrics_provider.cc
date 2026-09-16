@@ -213,7 +213,7 @@ void ContentStabilityMetricsProvider::BrowserChildProcessLaunchFailed(
 
 #if BUILDFLAG(IS_ANDROID)
 void ContentStabilityMetricsProvider::OnCrashDumpProcessed(
-    int rph_id,
+    content::ChildProcessId rph_id,
     const crash_reporter::CrashMetricsReporter::ReportedCrashTypeSet&
         reported_counts) {
   if (reported_counts.count(crash_reporter::CrashMetricsReporter::
