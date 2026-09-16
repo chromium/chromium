@@ -23,7 +23,6 @@
 #include "media/base/channel_layout.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
-#include "media/base/hdr_metadata_track.h"
 #include "media/base/media_client.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_tracks.h"
@@ -39,6 +38,7 @@
 #include "media/formats/mp4/box_reader.h"
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/formats/mp4/rcheck.h"
+#include "media/formats/mp4/stream_parser_metadata_track.h"
 #include "media/formats/mpeg/adts_constants.h"
 
 namespace media::mp4 {
@@ -108,9 +108,9 @@ base::HeapArray<uint8_t> PrepareAACBuffer(
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-// Create a HdrMetadataTrack for attaching metadata to track samples. Returns
-// nullptr on failure.
-std::unique_ptr<HdrMetadataTrack> MakeMetadataTrack(
+// Create a StreamParserMetadataTrack for attaching metadata to track samples.
+// Returns nullptr on failure.
+std::unique_ptr<StreamParserMetadataTrack> MakeMetadataTrack(
     StreamParser::TrackId metadata_track_id,
     const MetadataIT35SampleEntry& it35_sample_entry,
     const TrackReference& track_references) {
@@ -119,9 +119,9 @@ std::unique_ptr<HdrMetadataTrack> MakeMetadataTrack(
   }
 
   switch (it35_sample_entry.it35_prefix_type) {
-    case HdrMetadataTrack::IT35PrefixType::kUnknown:
+    case StreamParserMetadataTrack::IT35PrefixType::kUnknown:
       return nullptr;
-    case HdrMetadataTrack::IT35PrefixType::kSmpteSt2094App5:
+    case StreamParserMetadataTrack::IT35PrefixType::kSmpteSt2094App5:
       break;
   }
 
@@ -143,7 +143,7 @@ std::unique_ptr<HdrMetadataTrack> MakeMetadataTrack(
     return nullptr;
   }
 
-  return std::make_unique<HdrMetadataTrack>(
+  return std::make_unique<StreamParserMetadataTrack>(
       metadata_track_id, it35_sample_entry.it35_prefix_type, render_track_ids);
 }
 
@@ -872,7 +872,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         return false;
       }
 
-      std::unique_ptr<HdrMetadataTrack> metadata_track;
+      std::unique_ptr<StreamParserMetadataTrack> metadata_track;
       if (desc_idx < samp_descr.metadata_t35_entries.size()) {
         metadata_track = MakeMetadataTrack(
             track->header.track_id, samp_descr.metadata_t35_entries[desc_idx],

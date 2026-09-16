@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/hdr_metadata_track.h"
+#include "media/formats/mp4/stream_parser_metadata_track.h"
 
 #include <iterator>
 #include <vector>
@@ -12,7 +12,7 @@
 
 namespace media {
 
-HdrMetadataTrack::HdrMetadataTrack(
+StreamParserMetadataTrack::StreamParserMetadataTrack(
     StreamParser::TrackId metadata_track_id,
     IT35PrefixType prefix_type,
     base::span<const StreamParser::TrackId> render_track_ids)
@@ -22,15 +22,15 @@ HdrMetadataTrack::HdrMetadataTrack(
   }
 }
 
-HdrMetadataTrack::~HdrMetadataTrack() = default;
+StreamParserMetadataTrack::~StreamParserMetadataTrack() = default;
 
-HdrMetadataTrack::RenderTrack::RenderTrack() = default;
-HdrMetadataTrack::RenderTrack::RenderTrack(RenderTrack&&) = default;
-HdrMetadataTrack::RenderTrack& HdrMetadataTrack::RenderTrack::operator=(
-    RenderTrack&&) = default;
-HdrMetadataTrack::RenderTrack::~RenderTrack() = default;
+StreamParserMetadataTrack::RenderTrack::RenderTrack() = default;
+StreamParserMetadataTrack::RenderTrack::RenderTrack(RenderTrack&&) = default;
+StreamParserMetadataTrack::RenderTrack&
+StreamParserMetadataTrack::RenderTrack::operator=(RenderTrack&&) = default;
+StreamParserMetadataTrack::RenderTrack::~RenderTrack() = default;
 
-void HdrMetadataTrack::AttachMetadataOrHoldBuffers(
+void StreamParserMetadataTrack::AttachMetadataOrHoldBuffers(
     StreamParser::BufferQueueMap* buffers,
     bool flush_all_buffers) {
   for (auto buffers_it = buffers->begin(); buffers_it != buffers->end();) {
@@ -113,7 +113,7 @@ void HdrMetadataTrack::AttachMetadataOrHoldBuffers(
   }
 }
 
-void HdrMetadataTrack::Reset() {
+void StreamParserMetadataTrack::Reset() {
   for (auto& [track_id, render_track] : render_tracks_) {
     render_track.held_buffers.clear();
   }

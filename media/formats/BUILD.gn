@@ -68,6 +68,8 @@ source_set("formats") {
     "mp4/rcheck.h",
     "mp4/sample_to_group_iterator.cc",
     "mp4/sample_to_group_iterator.h",
+    "mp4/stream_parser_metadata_track.cc",
+    "mp4/stream_parser_metadata_track.h",
     "mp4/track_run_iterator.cc",
     "mp4/track_run_iterator.h",
     "mp4/writable_box_definitions.cc",
@@ -356,6 +358,7 @@ source_set("unit_tests") {
       "mp4/h26x_annex_b_to_bitstream_converter_unittest.cc",
       "mp4/mp4_stream_parser_unittest.cc",
       "mp4/sample_to_group_iterator_unittest.cc",
+      "mp4/stream_parser_metadata_track_unittest.cc",
       "mp4/track_run_iterator_unittest.cc",
       "mpeg/adts_stream_parser_unittest.cc",
     ]

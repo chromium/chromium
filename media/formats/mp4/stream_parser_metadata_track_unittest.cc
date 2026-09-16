@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/hdr_metadata_track.h"
+#include "media/formats/mp4/stream_parser_metadata_track.h"
 
 #include <vector>
 
@@ -21,21 +21,22 @@ constexpr StreamParser::TrackId kMetadataTrackId = 1;
 constexpr StreamParser::TrackId kRenderTrackId = 2;
 }  // namespace
 
-class HdrMetadataTrackTest : public testing::Test {
+class StreamParserMetadataTrackTest : public testing::Test {
  public:
-  HdrMetadataTrackTest()
-      : metadata_track_(kMetadataTrackId,
-                        HdrMetadataTrack::IT35PrefixType::kSmpteSt2094App5,
-                        {kRenderTrackId}) {
+  StreamParserMetadataTrackTest()
+      : metadata_track_(
+            kMetadataTrackId,
+            StreamParserMetadataTrack::IT35PrefixType::kSmpteSt2094App5,
+            {kRenderTrackId}) {
     feature_list_.InitWithFeatures({features::kHdrAgtm}, {});
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  HdrMetadataTrack metadata_track_;
+  StreamParserMetadataTrack metadata_track_;
 };
 
-TEST_F(HdrMetadataTrackTest, AttachMetadata) {
+TEST_F(StreamParserMetadataTrackTest, AttachMetadata) {
   StreamParser::BufferQueueMap buffers;
 
   // Create a metadata buffer.
@@ -71,7 +72,7 @@ TEST_F(HdrMetadataTrackTest, AttachMetadata) {
             400.f);
 }
 
-TEST_F(HdrMetadataTrackTest, HoldBuffers) {
+TEST_F(StreamParserMetadataTrackTest, HoldBuffers) {
   StreamParser::BufferQueueMap buffers;
 
   // Create a render buffer at a timestamp for which we don't have metadata.
@@ -109,7 +110,7 @@ TEST_F(HdrMetadataTrackTest, HoldBuffers) {
             200.f);
 }
 
-TEST_F(HdrMetadataTrackTest, AllSamplesReceived) {
+TEST_F(StreamParserMetadataTrackTest, AllSamplesReceived) {
   StreamParser::BufferQueueMap buffers;
 
   // Create a render buffer at a timestamp for which we don't have metadata.
@@ -129,7 +130,7 @@ TEST_F(HdrMetadataTrackTest, AllSamplesReceived) {
   EXPECT_FALSE(buffers[kRenderTrackId][0]->side_data());
 }
 
-TEST_F(HdrMetadataTrackTest, OrderVerification) {
+TEST_F(StreamParserMetadataTrackTest, OrderVerification) {
   // Create Buffer 1 (PTS=2, DTS=1).
   uint8_t data1[] = {0x01};
   auto buffer1 = StreamParserBuffer::CopyFrom(

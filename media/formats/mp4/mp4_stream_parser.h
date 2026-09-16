@@ -26,7 +26,7 @@
 #endif
 
 namespace media {
-class HdrMetadataTrack;
+class StreamParserMetadataTrack;
 }
 
 namespace media::mp4 {
@@ -162,7 +162,8 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
 
   // Used to prevent reused track IDs.
   base::flat_map<uint32_t, DemuxerStream::Type> track_ids_;
-  base::flat_map<uint32_t, std::unique_ptr<HdrMetadataTrack>> metadata_tracks_;
+  base::flat_map<uint32_t, std::unique_ptr<StreamParserMetadataTrack>>
+      metadata_tracks_;
 
   // The object types allowed for audio tracks. For FLAC indication, use
   // |has_flac_|. If this is a nullopt, then strict object type assertion will
