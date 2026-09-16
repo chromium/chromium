@@ -3246,8 +3246,32 @@ public class FuseboxMediatorUnitTest {
                 mContext.getString(R.string.acc_send_button_send_to_ai),
                 mModel.get(FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION));
         assertEquals(
-                IconResourceIdsProtoIntDef.IconResourceIds.PLACE_WHITE,
+                IconResourceIdsProtoIntDef.IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE,
                 mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID));
         assertTrue(mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON));
+    }
+
+    @Test
+    public void testOnInputStateChange_activeTool_unspecifiedIconFallback() {
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        ToolConfig config =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setIcon(
+                                Icon.newBuilder()
+                                        .setIconIdValue(
+                                                FuseboxMediator.UNSPECIFIED_ICON_RESOURCE_ID))
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .withToolConfigs(new byte[][] {config.toByteArray()})
+                        .build();
+
+        mInputStateSupplier.set(state);
+
+        assertEquals(
+                IconResourceIdsProtoIntDef.IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE,
+                mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID));
     }
 }
