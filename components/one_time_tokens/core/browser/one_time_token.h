@@ -24,10 +24,12 @@ class OneTimeToken {
   // `kMaxOtpLength`).
   static bool IsPotentialOtp(std::u16string_view value);
 
-  OneTimeToken(OneTimeTokenType type,
-               const std::string& value,
-               base::TimeTicks on_device_arrival_time,
-               std::optional<std::string> sender_address = std::nullopt);
+  OneTimeToken(
+      OneTimeTokenType type,
+      const std::string& value,
+      base::TimeTicks on_device_arrival_time,
+      std::optional<std::string> sender_address = std::nullopt,
+      std::optional<base::Time> email_received_timestamp = std::nullopt);
   OneTimeToken(const OneTimeToken&);
   OneTimeToken& operator=(const OneTimeToken&);
   OneTimeToken(OneTimeToken&&);
@@ -42,6 +44,10 @@ class OneTimeToken {
   [[nodiscard]] const std::optional<std::string>& sender_address() const {
     return sender_address_;
   }
+  [[nodiscard]] const std::optional<base::Time>& email_received_timestamp()
+      const {
+    return email_received_timestamp_;
+  }
 
  private:
   OneTimeTokenType type_;
@@ -51,6 +57,12 @@ class OneTimeToken {
   // The sender of the OTP email. This is only relevant for Gmail OTPs
   // and is `std::nullopt` otherwise.
   std::optional<std::string> sender_address_;
+
+  // The timestamp when the OTP email was received on the server. This is only
+  // relevant for Gmail OTPs and is `std::nullopt` otherwise. Since this is
+  // server time, only use it for comparisons with other
+  // `email_received_timestamp_` values, not to compute time elapsed on device.
+  std::optional<base::Time> email_received_timestamp_;
 };
 
 }  // namespace one_time_tokens

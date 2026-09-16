@@ -553,17 +553,19 @@ TEST_F(GmailOtpRetrieverTest,
       0);
 }
 
-TEST_F(GmailOtpRetrieverTest, RetrieveOtp_MultipleTokens_SortedByArrivalTime) {
+TEST_F(GmailOtpRetrieverTest,
+       RetrieveOtp_MultipleTokens_SortedByEmailReceivedTimestamp) {
   const std::string kOldGmailOtp = "222222";
   const std::string kRecentGmailOtp = "333333";
 
-  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeTicks now_ticks = base::TimeTicks::Now();
+  base::Time now_time = base::Time::Now();
 
   std::vector<OneTimeToken> cached_tokens = {
-      {OneTimeTokenType::kGmail, kOldGmailOtp, now - base::Minutes(2),
-       "sender@example.com"},
-      {OneTimeTokenType::kGmail, kRecentGmailOtp, now - base::Minutes(1),
-       "sender@example.com"}};
+      {OneTimeTokenType::kGmail, kOldGmailOtp, now_ticks, "sender@example.com",
+       now_time - base::Minutes(2)},
+      {OneTimeTokenType::kGmail, kRecentGmailOtp, now_ticks,
+       "sender@example.com", now_time - base::Minutes(1)}};
 
   otp_service().SetCachedTokens(cached_tokens);
 
@@ -857,11 +859,12 @@ TEST_F(
     RetrieveOtp_CachedMatch_WithPendingBackendRequests_PrefersNewerReceivedToken) {
   const std::string kCachedOtp = "111111";
   const std::string kReceivedOtp = "222222";
-  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeTicks now_ticks = base::TimeTicks::Now();
+  base::Time now_time = base::Time::Now();
 
   otp_service().SetCachedTokens(
-      {{OneTimeTokenType::kGmail, kCachedOtp, now - base::Seconds(10),
-        "sender@example.com"}});
+      {{OneTimeTokenType::kGmail, kCachedOtp, now_ticks - base::Seconds(10),
+        "sender@example.com", now_time - base::Seconds(10)}});
   otp_service().SetHasPendingRequests(true);
 
   base::test::TestFuture<
@@ -880,8 +883,8 @@ TEST_F(
   otp_service().SetHasPendingRequests(false);
   otp_service().NotifySubscribers(
       OneTimeTokenSource::kGmail,
-      OneTimeToken(OneTimeTokenType::kGmail, kReceivedOtp, now,
-                   "sender@example.com"));
+      OneTimeToken(OneTimeTokenType::kGmail, kReceivedOtp, now_ticks,
+                   "sender@example.com", now_time));
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->otp, kReceivedOtp);
@@ -990,7 +993,8 @@ TEST_F(GmailOtpRetrieverTest,
        RetrieveOtp_MultipleReceivedTokens_PrefersNewestReceivedToken) {
   const std::string kOlderOtp = "111111";
   const std::string kNewerOtp = "222222";
-  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeTicks now_ticks = base::TimeTicks::Now();
+  base::Time now_time = base::Time::Now();
 
   otp_service().SetCachedTokens({});
   otp_service().SetHasPendingRequests(true);
@@ -1003,24 +1007,65 @@ TEST_F(GmailOtpRetrieverTest,
       url::Origin::Create(GURL("https://example.com")),
       /*is_login_flow=*/false, future.GetCallback());
 
-  // Notify with first (older) matching token while still having pending
+  // Notify with first (older email) matching token while still having pending
   // requests.
   otp_service().NotifySubscribers(
       OneTimeTokenSource::kGmail,
-      OneTimeToken(OneTimeTokenType::kGmail, kOlderOtp, now - base::Seconds(5),
-                   "sender@example.com"));
+      OneTimeToken(OneTimeTokenType::kGmail, kOlderOtp, now_ticks,
+                   "sender@example.com", now_time - base::Seconds(5)));
 
   EXPECT_FALSE(future.IsReady());
 
-  // Notify with second (newer) matching token and mark pending requests done.
+  // Notify with second (newer email) matching token and mark pending requests
+  // done.
   otp_service().SetHasPendingRequests(false);
   otp_service().NotifySubscribers(
       OneTimeTokenSource::kGmail,
-      OneTimeToken(OneTimeTokenType::kGmail, kNewerOtp, now,
-                   "sender@example.com"));
+      OneTimeToken(OneTimeTokenType::kGmail, kNewerOtp, now_ticks,
+                   "sender@example.com", now_time));
 
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->otp, kNewerOtp);
+  EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
+}
+
+TEST_F(
+    GmailOtpRetrieverTest,
+    RetrieveOtp_MultipleReceivedTokens_PrefersNewerEmailEvenIfArrivalTicksOlder) {
+  const std::string kOlderEmailOtp = "111111";
+  const std::string kNewerEmailOtp = "222222";
+  base::TimeTicks now_ticks = base::TimeTicks::Now();
+  base::Time now_time = base::Time::Now();
+
+  otp_service().SetCachedTokens({});
+  otp_service().SetHasPendingRequests(true);
+
+  base::test::TestFuture<
+      base::expected<GmailOtpRetriever::Result, OneTimeTokenRetrievalError>>
+      future;
+  auto retriever = GmailOtpRetriever::CreateAndStart(
+      otp_service(), domain_relation_checker(),
+      url::Origin::Create(GURL("https://example.com")),
+      /*is_login_flow=*/false, future.GetCallback());
+
+  // Token with newer email timestamp arrived first (with older arrival ticks).
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      OneTimeToken(OneTimeTokenType::kGmail, kNewerEmailOtp,
+                   now_ticks - base::Seconds(10), "sender@example.com",
+                   now_time));
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Token with older email timestamp arrived second (with newer arrival ticks).
+  otp_service().SetHasPendingRequests(false);
+  otp_service().NotifySubscribers(
+      OneTimeTokenSource::kGmail,
+      OneTimeToken(OneTimeTokenType::kGmail, kOlderEmailOtp, now_ticks,
+                   "sender@example.com", now_time - base::Seconds(30)));
+
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->otp, kNewerEmailOtp);
   EXPECT_EQ(future.Get()->source, GmailOtpRetriever::Source::kReceived);
 }
 

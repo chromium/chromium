@@ -43,6 +43,7 @@ class EmailOneTimeTokenFetcher {
       signin::IdentityManager& identity_manager,
       std::string encrypted_message_reference,
       base::TimeTicks notification_received_timeticks,
+      base::Time email_received_timestamp,
       OneTimeTokenLogSink* log_sink = nullptr);
   ~EmailOneTimeTokenFetcher();
 
@@ -50,7 +51,7 @@ class EmailOneTimeTokenFetcher {
   void Start(ServerResponseCallback callback);
 
  private:
-  // Finalizes the fetch by invoking the callback with the |result| and
+  // Finalizes the fetch by invoking the callback with the `result` and
   // notifying the backend that this fetcher can be destroyed.
   // IMPORTANT: This method must be called last, as the object will be deleted
   // during the callback execution.
@@ -102,12 +103,10 @@ class EmailOneTimeTokenFetcher {
   std::string encrypted_message_reference_;
 
   // The timestamp when the GCM push notification was received on-device.
-  // Using this timestamp ensures that candidate OTP tokens deterministically
-  // reflect notification arrival order even if concurrent network requests
-  // finish out of order.
-  // TODO(b/543374607): Consider using email_received_timestamp as the source of
-  // truth instead.
   base::TimeTicks notification_received_timeticks_;
+
+  // The timestamp when the email was received on the server.
+  base::Time email_received_timestamp_;
 
   // Owned by `OneTimeTokenServiceImpl`.
   raw_ptr<OneTimeTokenLogSink> log_sink_ = nullptr;

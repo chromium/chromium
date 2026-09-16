@@ -81,6 +81,11 @@ class GmailOtpBackendImplTest : public testing::Test {
 // Tests a successful retrieval of an OTP from Gmail.
 TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
   base::HistogramTester histogram_tester;
+  const std::string kOtp = "123456";
+  const std::string kSenderAddress = "noreply@example.com";
+  const base::Time kEmailReceivedTimestamp = base::Time::Now();
+  const base::TimeTicks kNotificationReceivedTicks = base::TimeTicks::Now();
+
   base::test::TestFuture<
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
@@ -89,13 +94,19 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
 
   backend_.OnIncomingOneTimeTokenBackendNotification(
       OneTimeTokenBackendNotification(
-          EncryptedMessageReference("encrypted_reference")));
+          EncryptedMessageReference("encrypted_reference"),
+          /*otp_created_timestamp=*/base::Time::Now(),
+          /*email_received_timestamp=*/kEmailReceivedTimestamp,
+          /*email_delivered_timestamp=*/base::Time(),
+          /*notification_sent_timestamp=*/base::Time::Now(),
+          /*notification_received_timestamp=*/base::Time::Now(),
+          /*notification_received_timeticks=*/kNotificationReceivedTicks));
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now() + base::Hours(1));
 
   FetchEmailOneTimeTokenResponse response;
-  response.mutable_one_time_password()->set_one_time_password("123456");
-  response.set_sender_address("noreply@example.com");
+  response.mutable_one_time_password()->set_one_time_password(kOtp);
+  response.set_sender_address(kSenderAddress);
 
   task_environment_.FastForwardBy(base::Milliseconds(500));
 
@@ -110,8 +121,10 @@ TEST_F(GmailOtpBackendImplTest, SubscribeAndGetToken) {
 
   const OneTimeToken& token = result.value();
   EXPECT_EQ(token.type(), OneTimeTokenType::kGmail);
-  EXPECT_EQ(token.value(), "123456");
-  EXPECT_FALSE(token.on_device_arrival_time().is_null());
+  EXPECT_EQ(token.value(), kOtp);
+  EXPECT_EQ(token.sender_address(), kSenderAddress);
+  EXPECT_EQ(token.on_device_arrival_time(), kNotificationReceivedTicks);
+  EXPECT_EQ(token.email_received_timestamp(), kEmailReceivedTimestamp);
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.OneTimeTokens.Backend.Gmail.Success", true, 1);

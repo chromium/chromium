@@ -71,7 +71,8 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
     return std::make_unique<EmailOneTimeTokenFetcher>(
         test_url_loader_factory_->GetSafeWeakWrapper(),
         *identity_test_env_->identity_manager(), kEncryptedMessageReference,
-        base::TimeTicks::Now(), &log_sink_);
+        /*notification_received_timeticks=*/base::TimeTicks::Now(),
+        base::Time::Now(), &log_sink_);
   }
 
   void WaitForAccessTokenRequestAndRespondWithSuccess() {
@@ -168,14 +169,14 @@ TEST_F(EmailOneTimeTokenFetcherTest, Success) {
       base::Milliseconds(123), 1);
 }
 
-TEST_F(EmailOneTimeTokenFetcherTest,
-       SuccessPreservesNotificationReceivedTime) {
+TEST_F(EmailOneTimeTokenFetcherTest, SuccessPreservesTimestamps) {
   base::TimeTicks notification_time =
       base::TimeTicks::Now() - base::Seconds(42);
+  base::Time email_received_time = base::Time::Now() - base::Seconds(50);
   auto fetcher = std::make_unique<EmailOneTimeTokenFetcher>(
       test_url_loader_factory_->GetSafeWeakWrapper(),
       *identity_test_env_->identity_manager(), kEncryptedMessageReference,
-      notification_time, &log_sink_);
+      notification_time, email_received_time, &log_sink_);
   base::test::TestFuture<
       base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
       future;
@@ -192,6 +193,7 @@ TEST_F(EmailOneTimeTokenFetcherTest,
       future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->on_device_arrival_time(), notification_time);
+  EXPECT_EQ(result->email_received_timestamp(), email_received_time);
 }
 
 // Tests that an error is returned when user authentication fails.

@@ -211,12 +211,11 @@ void GmailOtpBackendImpl::RetrieveGmailOtp(
   CHECK(inserted);
 
   LOG_OTT(log_sink_) << "Starting EmailOneTimeTokenFetcher for notification.";
-  // TODO(b/543374607): Consider using email_received_timestamp as the source of
-  // truth instead.
   it->second = std::make_unique<EmailOneTimeTokenFetcher>(
       url_loader_factory_, *identity_manager_,
       notification.encrypted_message_reference.value(),
-      notification.notification_received_timeticks, log_sink_);
+      notification.notification_received_timeticks,
+      notification.email_received_timestamp, log_sink_);
 
   it->second->Start(base::BindOnce(
       &GmailOtpBackendImpl::OnResponseFromGmailOtpBackend,

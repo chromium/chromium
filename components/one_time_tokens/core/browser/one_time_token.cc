@@ -20,13 +20,19 @@ bool OneTimeToken::IsPotentialOtp(std::u16string_view value) {
 OneTimeToken::OneTimeToken(OneTimeTokenType type,
                            const std::string& value,
                            base::TimeTicks on_device_arrival_time,
-                           std::optional<std::string> sender_address)
+                           std::optional<std::string> sender_address,
+                           std::optional<base::Time> email_received_timestamp)
     : type_(type),
       value_(value),
       on_device_arrival_time_(on_device_arrival_time),
-      sender_address_(std::move(sender_address)) {
+      sender_address_(std::move(sender_address)),
+      email_received_timestamp_(email_received_timestamp) {
   // The sender address should be populated iff the OTP is an email OTP.
   CHECK(sender_address_.has_value() == (type_ == OneTimeTokenType::kGmail));
+  // The email received timestamp should only be populated if the OTP is an
+  // email OTP.
+  CHECK(!email_received_timestamp_.has_value() ||
+        (type_ == OneTimeTokenType::kGmail));
 }
 
 OneTimeToken::OneTimeToken(const OneTimeToken&) = default;

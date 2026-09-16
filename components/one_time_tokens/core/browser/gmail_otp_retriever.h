@@ -99,7 +99,7 @@ class GmailOtpRetriever {
   struct Candidate {
     std::string otp;
     Source source;
-    base::TimeTicks arrival_time;
+    base::Time email_received_timestamp;
   };
 
   GmailOtpRetriever(OneTimeTokenService& service,

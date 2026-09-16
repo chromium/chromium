@@ -156,9 +156,10 @@ void GmailOtpRetriever::Start() {
     return;
   }
 
-  std::ranges::sort(cached_tokens, [](const auto& lhs, const auto& rhs) {
-    return lhs.on_device_arrival_time() > rhs.on_device_arrival_time();
-  });
+  std::ranges::sort(
+      cached_tokens, [](const OneTimeToken& lhs, const OneTimeToken& rhs) {
+        return lhs.email_received_timestamp() > rhs.email_received_timestamp();
+      });
 
   CheckCachedTokenMatch(std::move(cached_tokens), /*index=*/0);
 }
@@ -285,12 +286,13 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
   if (allowed) {
     const OneTimeToken& matched_token = cached_tokens.at(index);
     if (!best_candidate_.has_value() ||
-        matched_token.on_device_arrival_time() >=
-            best_candidate_->arrival_time) {
+        matched_token.email_received_timestamp().value_or(base::Time()) >=
+            best_candidate_->email_received_timestamp) {
       best_candidate_ = Candidate{
           .otp = matched_token.value(),
           .source = Source::kCache,
-          .arrival_time = matched_token.on_device_arrival_time(),
+          .email_received_timestamp =
+              matched_token.email_received_timestamp().value_or(base::Time()),
       };
     }
     MaybeCompleteOrWaitForPendingRequests();
@@ -300,14 +302,15 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
   RecordSenderDomainMatchRejectionReason(match_type, is_login_flow_,
                                          /*is_cached=*/true);
 
-  // Since `cached_tokens` is sorted descending by arrival time in Start(),
-  // only check the next cached token if we don't already have a candidate
-  // with an arrival time >= the remaining cached tokens.
+  // Since `cached_tokens` is sorted descending by email received timestamp in
+  // `Start()`, only check the next cached token if we don't already have a
+  // candidate with an email received timestamp >= the remaining cached tokens.
   if (index + 1 < cached_tokens.size()) {
-    base::TimeTicks next_arrival_time =
-        cached_tokens.at(index + 1).on_device_arrival_time();
+    std::optional<base::Time> next_email_received_timestamp =
+        cached_tokens.at(index + 1).email_received_timestamp();
     if (!best_candidate_.has_value() ||
-        next_arrival_time > best_candidate_->arrival_time) {
+        next_email_received_timestamp.value_or(base::Time()) >
+            best_candidate_->email_received_timestamp) {
       CheckCachedTokenMatch(std::move(cached_tokens), index + 1);
     }
   }
@@ -361,11 +364,13 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
       << ", is_login_flow=" << is_login_flow_;
   if (allowed) {
     if (!best_candidate_.has_value() ||
-        token.on_device_arrival_time() >= best_candidate_->arrival_time) {
+        token.email_received_timestamp().value_or(base::Time()) >=
+            best_candidate_->email_received_timestamp) {
       best_candidate_ = Candidate{
           .otp = token.value(),
           .source = Source::kReceived,
-          .arrival_time = token.on_device_arrival_time(),
+          .email_received_timestamp =
+              token.email_received_timestamp().value_or(base::Time()),
       };
     }
   } else {
