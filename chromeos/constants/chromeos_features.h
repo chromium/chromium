@@ -17,8 +17,6 @@ namespace chromeos::features {
 // being rolled out via Finch, add a comment in the .cc file.
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-BASE_DECLARE_FEATURE(kBatteryBadgeIcon);
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kBluetoothWifiQSPodRefresh);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kCachedLocationProvider);
@@ -76,8 +74,6 @@ BASE_DECLARE_FEATURE(kWebAppManifestProtocolHandlerSupport);
 
 // Keep alphabetized.
 
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsBatteryBadgeIconEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsBluetoothWifiQSPodRefreshEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsCachedLocationProviderEnabled();

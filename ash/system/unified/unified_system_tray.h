@@ -229,7 +229,7 @@ class ASH_EXPORT UnifiedSystemTray
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayTest;
   friend class PowerTrayViewTest;
-  friend class StatusAreaBatteryPixelTest;
+  friend class StatusAreaPowerTrayPixelTest;
   friend class UnifiedSystemTrayAccessibilityTest;
   friend class PrivacyScreenToastControllerTest;
 

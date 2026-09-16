@@ -12,10 +12,6 @@
 
 namespace chromeos::features {
 
-// Enables smaller battery badge icons to improve legibility of the battery
-// percentage.
-BASE_FEATURE(kBatteryBadgeIcon, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables better quick settings UI for bluetooth and wifi error states.
 BASE_FEATURE(kBluetoothWifiQSPodRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -130,11 +126,6 @@ BASE_FEATURE(kFileSystemProviderCloudFileSystem,
 // Enables a content cache in CloudFileSystem for FileSystemProvider extensions.
 BASE_FEATURE(kFileSystemProviderContentCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-
-bool IsBatteryBadgeIconEnabled() {
-  return base::FeatureList::IsEnabled(kBatteryBadgeIcon);
-}
 
 bool IsBluetoothWifiQSPodRefreshEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothWifiQSPodRefresh);
