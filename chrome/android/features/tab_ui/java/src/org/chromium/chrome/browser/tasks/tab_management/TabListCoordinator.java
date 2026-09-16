@@ -148,7 +148,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     private @Nullable TabListEmptyCoordinator mTabListEmptyCoordinator;
     private boolean mIsEmptyViewInitialized;
     private @Nullable Runnable mAwaitingLayoutRunnable;
-    private int mAwaitingTabId = Tab.INVALID_TAB_ID;
+    private @Nullable PropertyModel mAwaitingModel;
     private @TabActionState int mTabActionState;
 
     /**
@@ -564,9 +564,9 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         // where the runnable will not be serviced downstream, dropping the runnable altogether is
         // safe.
         if (mAwaitingLayoutRunnable != null) {
-            Log.d(TAG, "Dropping AwaitingLayoutRunnable for %d", mAwaitingTabId);
+            Log.d(TAG, "Dropping existing AwaitingLayoutRunnable for new tab %d", tabId);
             mAwaitingLayoutRunnable = null;
-            mAwaitingTabId = Tab.INVALID_TAB_ID;
+            mAwaitingModel = null;
         }
         int index = getIndexForTabIdWithRelatedTabs(tabId);
         if (index == TabModel.INVALID_TAB_INDEX) {
@@ -574,7 +574,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             return;
         }
         mAwaitingLayoutRunnable = r;
-        mAwaitingTabId = mModelList.get(index).model.get(TabProperties.TAB_ID);
+        mAwaitingModel = mModelList.get(index).model;
         mRecyclerView.runOnNextLayout(this::checkAwaitingLayout);
     }
 
@@ -833,6 +833,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             mTabSwitcherDragHandler.destroy();
         }
         mTabListFaviconProvider.destroy();
+        mAwaitingLayoutRunnable = null;
+        mAwaitingModel = null;
     }
 
     /**
@@ -949,14 +951,15 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
 
     private void checkAwaitingLayout() {
         if (mAwaitingLayoutRunnable != null) {
+            int index = mModelList.indexFromModel(mAwaitingModel);
+            if (index == TabModel.INVALID_TAB_INDEX) return;
             SimpleRecyclerViewAdapter.ViewHolder holder =
                     (SimpleRecyclerViewAdapter.ViewHolder)
-                            mRecyclerView.findViewHolderForAdapterPosition(
-                                    mModelList.indexFromTabId(mAwaitingTabId));
+                            mRecyclerView.findViewHolderForAdapterPosition(index);
             if (holder == null) return;
-            assert assumeNonNull(holder.model).get(TabProperties.TAB_ID) == mAwaitingTabId;
+            assert assumeNonNull(holder.model) == mAwaitingModel;
             Runnable r = mAwaitingLayoutRunnable;
-            mAwaitingTabId = Tab.INVALID_TAB_ID;
+            mAwaitingModel = null;
             mAwaitingLayoutRunnable = null;
             r.run();
         }

@@ -168,7 +168,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
         if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX) {
             deselectSelectedCard();
             mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
-            mSelectedTabId = Tab.INVALID_TAB_ID;
+            mSelectedModel = null;
         }
         if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX) {
             mModel.updateHoveredCardForHover(mHoveredTabIndex, false);
@@ -277,7 +277,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
             mSelectedTabIndex = viewHolder.getBindingAdapterPosition();
             if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX
                     && mSelectedTabIndex < mModel.size()) {
-                mSelectedTabId = TabProperties.getTabId(mModel.get(mSelectedTabIndex).model);
+                mSelectedModel = mModel.get(mSelectedTabIndex).model;
             }
             mModel.updateSelectedCardForSelection(mSelectedTabIndex, true);
             onDragStateChanged();
@@ -384,7 +384,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
             }
             mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
             mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
-            mSelectedTabId = Tab.INVALID_TAB_ID;
+            mSelectedModel = null;
             mUnGroupTabIndex = TabModel.INVALID_TAB_INDEX;
             if (mUngroupBarStatusHandler != null) {
                 mUngroupBarStatusHandler.updateUngroupBarStatus(

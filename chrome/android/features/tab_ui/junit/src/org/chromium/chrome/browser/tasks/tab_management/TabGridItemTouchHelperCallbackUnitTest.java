@@ -338,6 +338,44 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     }
 
     @Test
+    public void onReleaseTabGroupCard_MovedDuringDrag() {
+        // Add a TAB_GROUP card at index 2 (POSITION3).
+        PropertyModel groupCardModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
+                        .with(TabProperties.TAB_ID, TAB3_ID)
+                        .with(TabProperties.TAB_GROUP_HEADER_ID, Token.createRandom())
+                        .with(CARD_ANIMATION_STATUS, AnimationStatus.CARD_RESTORE)
+                        .with(CARD_ALPHA, 1f)
+                        .with(CARD_TYPE, ModelType.TAB_GROUP)
+                        .build();
+        mModel.add(new ListItem(ModelType.TAB_GROUP, groupCardModel));
+        View groupCardItemView = prepareItemView(0, 10, 4, 14);
+        ViewHolder groupCardViewHolder =
+                prepareMockViewHolder(groupCardModel, groupCardItemView, GROUP_CARD_POSITION);
+
+        // Start dragging group card at position 4.
+        mItemTouchHelperCallback.onSelectedChanged(
+                groupCardViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        assertThat(
+                groupCardModel.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_IN));
+        assertThat(groupCardModel.get(CARD_ALPHA), equalTo(0.8f));
+
+        // Simulate group card being moved to index 0 during drag.
+        mModel.move(GROUP_CARD_POSITION, POSITION1);
+
+        // Release drag.
+        mItemTouchHelperCallback.onSelectedChanged(
+                groupCardViewHolder, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        // Group card (now at index 0) should be unzoomed/deselected via model lookup.
+        assertThat(
+                mModel.get(POSITION1).model.get(CardProperties.CARD_ANIMATION_STATUS),
+                equalTo(AnimationStatus.SELECTED_CARD_ZOOM_OUT));
+        assertThat(mModel.get(POSITION1).model.get(CARD_ALPHA), equalTo(1f));
+    }
+
+    @Test
     public void onReleaseTab_NoMergeCollaboration() {
         // Dragged object is a collaboration.
         when(mTabGroupColorViewProvider.hasCollaborationId()).thenReturn(true);

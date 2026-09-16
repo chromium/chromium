@@ -13,9 +13,11 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.RunnableTimer;
 
 import java.util.function.Supplier;
@@ -156,13 +158,17 @@ public class TabGridItemLongPressOrchestrator {
         if (listItem == null || listItem.model == null) {
             return;
         }
-        @TabId int tabId = listItem.model.get(TabProperties.TAB_ID);
+        PropertyModel cardModel = listItem.model;
+        @TabId int tabId = TabProperties.getTabId(cardModel);
+        if (tabId == Tab.INVALID_TAB_ID) {
+            return;
+        }
 
         mTimer.cancelTimer();
         mTimer.startTimer(
                 mTimerDuration,
                 () -> {
-                    int cardIdx = mModel.indexFromTabId(tabId);
+                    int cardIdx = mModel.indexFromModel(cardModel);
                     if (cardIdx == TabModel.INVALID_TAB_INDEX) {
                         return;
                     }

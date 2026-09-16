@@ -55,11 +55,11 @@ public abstract class TabListItemTouchHelperCallback extends ItemTouchHelper2.Si
     protected boolean mIsMouseInputSource;
 
     protected int mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
-    protected int mSelectedTabId = Tab.INVALID_TAB_ID;
     protected int mCurrentActionState = ItemTouchHelper.ACTION_STATE_IDLE;
 
     // Orchestrates long-press vs drag timings for touch events to trigger context menus.
     protected @Nullable TabGridItemLongPressOrchestrator mTabGridItemLongPressOrchestrator;
+    protected @Nullable PropertyModel mSelectedModel;
 
     /**
      * Constructs a new base touch helper callback.
@@ -377,11 +377,11 @@ public abstract class TabListItemTouchHelperCallback extends ItemTouchHelper2.Si
 
     /**
      * Resolves the current index of the selected card to deselect in the model. If the tab has
-     * moved (e.g. pinned/unpinned/reordered), resolves by tab ID if possible.
+     * moved (e.g. pinned/unpinned/reordered), resolves by model identity if possible.
      */
     protected int getSelectedCardIndexForDeselect() {
-        if (mSelectedTabId != Tab.INVALID_TAB_ID) {
-            int index = mModel.indexFromTabId(mSelectedTabId);
+        if (mSelectedModel != null) {
+            int index = mModel.indexFromModel(mSelectedModel);
             if (index != TabModel.INVALID_TAB_INDEX) {
                 return index;
             }
@@ -395,10 +395,10 @@ public abstract class TabListItemTouchHelperCallback extends ItemTouchHelper2.Si
         ResettersForTesting.register(() -> mSelectedTabIndex = oldValue);
     }
 
-    void setSelectedTabIdForTesting(int tabId) {
-        var oldValue = mSelectedTabId;
-        mSelectedTabId = tabId;
-        ResettersForTesting.register(() -> mSelectedTabId = oldValue);
+    void setSelectedModelForTesting(@Nullable PropertyModel model) {
+        var oldValue = mSelectedModel;
+        mSelectedModel = model;
+        ResettersForTesting.register(() -> mSelectedModel = oldValue);
     }
 
     void setCurrentActionStateForTesting(int actionState) {
