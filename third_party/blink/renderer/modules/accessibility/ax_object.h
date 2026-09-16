@@ -1385,7 +1385,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool NeedsToUpdateChildren() const;
   void SetNeedsToUpdateChildren(bool update = true);
   virtual void ClearChildren();
-  void DetachFromParent();
+  // The caller must handle any needed parent notification (e.g.
+  // ChildrenChanged()), or update the parent's children itself. Objects with
+  // ShouldDestroyWhenDetachingFromParent() may be destroyed here.
+  void DetachFromParentNoNotify();
   virtual void SelectedOptions(AXObjectVector&) const {}
 
   // Properties of the object's owning document or page.

@@ -578,7 +578,7 @@ void AXObject::Detach() {
     // Shutting down a11y, just clear the children.
     children_.clear();
   } else {
-    // Clear children and call DetachFromParent() on them so that
+    // Clear children and call DetachFromParentNoNotify() on them so that
     // no children are left with dangling pointers to their parent.
     ClearChildren();
   }
@@ -7071,7 +7071,7 @@ bool AXObject::ShouldDestroyWhenDetachingFromParent() const {
   return false;
 }
 
-void AXObject::DetachFromParent() {
+void AXObject::DetachFromParentNoNotify() {
   if (IsDetached()) {
     return;
   }
@@ -7079,8 +7079,13 @@ void AXObject::DetachFromParent() {
   CHECK(!AXObjectCache().IsFrozen())
       << "Do not detach parent while tree is frozen: " << this;
   if (ShouldDestroyWhenDetachingFromParent()) {
-    if (GetNode()) {
-      AXObjectCache().RemoveSubtree(GetNode());
+    if (Node* node = GetNode()) {
+      // Check if a node is connected, as removing a disconnected subtree
+      // caused crashes (crrev.com/c/4614327)
+      if (node->isConnected()) {
+        AXObjectCache().RemoveSubtree(node, /*remove_root=*/true,
+                                      /*notify_parent=*/false);
+      }
     } else {
       // This is rare, but technically a pseudo-element descendant can have a
       // subtree, and they do not have nodes.
@@ -7148,7 +7153,7 @@ void AXObject::ClearChildren() {
     // Another case where the parent is not the same is when the child has been
     // reparented using aria-owns.
     if (child->ParentObjectIfPresent() == this) {
-      child->DetachFromParent();
+      child->DetachFromParentNoNotify();
     }
   }
 
@@ -7172,7 +7177,7 @@ void AXObject::ClearChildren() {
     AXObject* ax_child_from_node = AXObjectCache().Get(child_node);
     if (ax_child_from_node &&
         ax_child_from_node->ParentObjectIfPresent() == this) {
-      ax_child_from_node->DetachFromParent();
+      ax_child_from_node->DetachFromParentNoNotify();
     }
   }
 

@@ -819,7 +819,7 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
     AXObject* original_parent = added_child->ParentObjectIfPresent();
     if (original_parent != owner) {
       if (original_parent) {
-        added_child->DetachFromParent();
+        added_child->DetachFromParentNoNotify();
       }
       added_child->SetParent(const_cast<AXObject*>(owner));
       if (original_parent) {
@@ -1102,7 +1102,7 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
       AXObject* original_parent = ax_unparented->ParentObjectIfPresent();
 
       // Recompute the real parent .
-      ax_unparented->DetachFromParent();
+      ax_unparented->DetachFromParentNoNotify();
       MaybeRestoreParentOfOwnedChild(unparented_child_id);
 
       // Mark everything dirty so that the serializer sees all changes.
@@ -1441,7 +1441,7 @@ void AXRelationCache::RemoveAXID(AXID obj_id) {
     if (!object_cache_->IsDisposing()) {
       for (const auto& child_axid : child_axids) {
         if (AXObject* owned_child = ObjectFromAXID(child_axid)) {
-          owned_child->DetachFromParent();
+          owned_child->DetachFromParentNoNotify();
           CHECK(object_cache_->lifecycle().StateAllowsReparentingAXObjects())
               << "Removing owned child at a bad time, which leads to "
                  "parentless objects at a bad time: "
@@ -1501,7 +1501,7 @@ void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
       }
     }
     if (AXObject* owned_child = ObjectFromAXID(obj_id)) {
-      owned_child->DetachFromParent();
+      owned_child->DetachFromParentNoNotify();
     }
   }
 }
