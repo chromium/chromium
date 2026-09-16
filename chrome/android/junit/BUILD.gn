@@ -1593,7 +1593,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/webapps/WebApkIntentDataProviderFactoryTest.java",
       "src/org/chromium/chrome/browser/webapps/WebApkServiceClientTest.java",
       "src/org/chromium/chrome/browser/webapps/WebApkShareTargetUtilTest.java",
-      "src/org/chromium/chrome/browser/webapps/WebApkSyncServiceTest.java",
       "src/org/chromium/chrome/browser/webapps/WebApkUninstallTrackerTest.java",
       "src/org/chromium/chrome/browser/webapps/WebApkUpdateManagerUnitTest.java",
       "src/org/chromium/chrome/browser/webapps/WebappActivityTest.java",

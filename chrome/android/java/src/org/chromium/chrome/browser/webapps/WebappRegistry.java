@@ -28,7 +28,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.TwaValidator;
-import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
@@ -38,7 +37,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.components.sync.protocol.WebApkSpecifics;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -377,57 +375,6 @@ public class WebappRegistry {
         return origins.toArray(originsArray);
     }
 
-    /*
-     * Returns an array of serialized |WebApkSpecifics| protos in byte[] format.
-     */
-    @CalledByNative
-    public static byte[][] getWebApkSpecifics() {
-        List<WebApkSpecifics> webApkSpecifics =
-                WebappRegistry.getInstance()
-                        .getWebApkSpecificsImpl(/* setWebappInfoForTesting= */ null);
-        List<byte[]> specificsBytes = new ArrayList<byte[]>();
-        for (WebApkSpecifics specifics : webApkSpecifics) {
-            specificsBytes.add(specifics.toByteArray());
-        }
-
-        byte[][] specificsBytesArray = new byte[specificsBytes.size()][];
-        return specificsBytes.toArray(specificsBytesArray);
-    }
-
-    /*
-     * Callback interface used for testing getWebApkSpecificsImpl().
-     */
-    public interface GetWebApkSpecificsImplSetWebappInfoForTesting {
-        void run(String scope);
-    }
-
-    /*
-     * Returns a List of |WebApkSpecifics| protos.
-     */
-    public List<WebApkSpecifics> getWebApkSpecificsImpl(
-            @Nullable GetWebApkSpecificsImplSetWebappInfoForTesting setWebappInfoForTesting) {
-        List<WebApkSpecifics> webApkSpecificsList = new ArrayList<>();
-        for (WebappDataStorage storage : mStorages.values()) {
-            String scope = getWebApkScopeFromStorage(storage);
-            if (scope.isEmpty()) {
-                continue;
-            }
-
-            if (setWebappInfoForTesting != null) {
-                setWebappInfoForTesting.run(scope);
-            }
-
-            WebappInfo webApkInfo = WebApkDataProvider.getPartialWebappInfo(scope);
-            WebApkSpecifics webApkSpecifics =
-                    WebApkSyncService.getWebApkSpecifics(webApkInfo, storage);
-            if (webApkSpecifics == null) {
-                continue;
-            }
-            webApkSpecificsList.add(webApkSpecifics);
-        }
-        return webApkSpecificsList;
-    }
-
     /** Returns all origins that have a WebAPK or TWA installed. */
     public Set<String> getOriginsWithInstalledApp() {
         Set<String> origins = new HashSet<>();
@@ -643,8 +590,6 @@ public class WebappRegistry {
             it.remove();
             deleted = true;
         }
-
-        WebApkSyncService.removeOldWebAPKsFromSync(currentTime);
 
         mPreferences
                 .edit()

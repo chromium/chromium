@@ -123,8 +123,6 @@ public class WebApkInstaller {
                                 storage.updateSource(source);
                                 storage.updateTimeOfLastCheckForUpdatedWebManifest();
                                 storage.updateLocalRegistrationTimestamp();
-                                WebApkSyncService.onWebApkUsed(
-                                        intentDataProvider, storage, /* isInstall= */ true);
                                 WebApkInstaller.this.notify(result);
                             };
                     WebappRegistry.getInstance()

@@ -43,7 +43,6 @@ import java.util.Collections;
 public class WebApkUninstallTrackerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private WebApkSyncService.Natives mMockWebApkSyncServiceJni;
     @Mock private AppBannerManager.Natives mMockAppBannerManagerJni;
     @Mock private WebApkUkmRecorder.Natives mMockWebApkUkmRecorderJni;
     @Mock private LibraryLoader mMockLibraryLoader;
@@ -61,7 +60,6 @@ public class WebApkUninstallTrackerTest {
 
     @Before
     public void setUp() {
-        WebApkSyncServiceJni.setInstanceForTesting(mMockWebApkSyncServiceJni);
         AppBannerManagerJni.setInstanceForTesting(mMockAppBannerManagerJni);
         WebApkUkmRecorderJni.setInstanceForTesting(mMockWebApkUkmRecorderJni);
 
@@ -72,7 +70,6 @@ public class WebApkUninstallTrackerTest {
 
     @After
     public void tearDown() {
-        WebApkSyncServiceJni.setInstanceForTesting(null);
         AppBannerManagerJni.setInstanceForTesting(null);
         WebApkUkmRecorderJni.setInstanceForTesting(null);
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
@@ -100,7 +97,7 @@ public class WebApkUninstallTrackerTest {
     }
 
     @Test
-    public void testUninstallTriggersSyncAndRecheck() throws Exception {
+    public void testUninstallTriggersRecheck() throws Exception {
         // Register WebAPK in WebappRegistry.
         WebappDataStorage storage = registerWebappAndGetStorage(WEBAPK_PACKAGE);
 
@@ -132,9 +129,6 @@ public class WebApkUninstallTrackerTest {
 
         // Call tracker.
         WebApkUninstallTracker.deferRecordWebApkUninstalled(WEBAPK_PACKAGE);
-
-        // Verify sync is called.
-        verify(mMockWebApkSyncServiceJni).onWebApkUninstalled(MANIFEST_ID);
 
         // Verify AppBannerManager JNI recheck is called.
         verify(mAppBannerManager).recheckInstallability();

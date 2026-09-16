@@ -44,7 +44,6 @@ public class WebApkUninstallTracker {
             if (webappDataStorage != null) {
                 String manifestId = webappDataStorage.getWebApkManifestId();
                 if (!TextUtils.isEmpty(manifestId)) {
-                    WebApkSyncService.onWebApkUninstalled(manifestId);
                     notifyAppBannerManagersOfUninstall(webappDataStorage.getScope());
                 }
 

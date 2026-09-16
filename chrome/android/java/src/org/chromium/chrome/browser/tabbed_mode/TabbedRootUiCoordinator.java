@@ -275,7 +275,6 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarC
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.user_education.UserEducationUtils;
 import org.chromium.chrome.browser.user_education.UserEducationUtils.OptionalPromoType;
-import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -2926,7 +2925,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // single PromoDialogCoordinator.
             boolean isShowingPromo =
                     LocaleManager.getInstance().hasShownSearchEnginePromoThisSession();
-            isShowingPromo |= maybeForceShowPromoAtStartup(profile);
+            isShowingPromo |= maybeForceShowPromoAtStartup();
 
             if (!isShowingPromo
                     && !intentWithEffect
@@ -2939,16 +2938,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START, true);
             }
 
-            if (FirstRunStatus.isFirstRunTriggered()) {
-                notifyPromosOfFirstRunTriggered();
-            }
-
             return isShowingPromo;
         }
     }
 
     /** Runs any promos set by feature flag to force show at every startup. */
-    private boolean maybeForceShowPromoAtStartup(Profile profile) {
+    private boolean maybeForceShowPromoAtStartup() {
         // Any promo that has a force-show feature flag should be added to this list (and of course
         // any promo that you want to trigger at every startup (temporarily for debugging and/or
         // development).
@@ -2962,30 +2957,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mForcedSigninController.showFullscreenSigninPromptIfForced()) {
             return true;
         }
-        if (PwaRestorePromoUtils.maybeForceShowPromo(profile, mWindowAndroid)) {
-            return true;
-        }
 
         return false;
     }
 
-    /** Notifies promos of the First Run Experience having triggered during this launch. */
-    private void notifyPromosOfFirstRunTriggered() {
-        PwaRestorePromoUtils.notifyFirstRunPromoTriggered();
-    }
-
     private boolean maybeShowPromo(Profile profile) {
         // NOTE: Only one promo can be shown in one run to avoid nagging users too much.
-
-        // The PWA Restore promotion runs when we've detected that a user has switched to a new
-        // device but is leaving behind web apps on the old device. It promotes the idea that the
-        // user can restore their web apps from their old device (if they have any), and as such it
-        // is most effective when shown shortly after the first-run experience. It is therefore
-        // at the front of the list of promotions.
-        if (PwaRestorePromoUtils.launchPromoIfNeeded(profile, mWindowAndroid)) {
-            UserEducationUtils.recordOptionalPromoType(OptionalPromoType.PWA_RESTORE_PROMO);
-            return true;
-        }
 
         if (mBottomBarHostManager != null && mBottomBarHostManager.maybeShowPromoDialog(profile)) {
             return true;

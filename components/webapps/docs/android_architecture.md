@@ -114,9 +114,6 @@ This section covers details specific to WebAPKs.
   and scheduling background update tasks.
 - **`WebApkUpdateTask`**: A background task executed by the
   `BackgroundTaskScheduler` to perform updates when the WebAPK is not running.
-- **`WebApkSyncService`**: A utility class that communicates with native code
-  via JNI to sync WebAPK data (like usage and uninstallation) with the user's
-  account.
 - **`WebApkUninstallTracker`**: Tracks uninstalls of WebAPKs and defers
   reporting metrics until native is loaded.
 
@@ -150,11 +147,6 @@ classDiagram
     class WebApkUpdateTask {
         #onStartTaskWithNative(...)
     }
-    class WebApkSyncService {
-        <<static>>
-        +onWebApkUsed(...)
-        +onWebApkUninstalled(...)
-    }
     class WebappDataStorage {
         +incrementLaunchCount()
         +getLastUsedTimeMs()
@@ -175,7 +167,6 @@ classDiagram
     BaseCustomTabActivity *-- WebApkActivityCoordinator : created if WebAPK
     
     WebApkActivityCoordinator --> WebappDataStorage : reads/writes
-    WebApkActivityCoordinator --> WebApkSyncService : calls
     WebApkActivityCoordinator --> WebApkUpdateManager : calls
     WebApkActivityCoordinator --> InstalledWebappRegistrar : calls
     WebApkActivityCoordinator --> PermissionUpdater : calls
@@ -184,8 +175,6 @@ classDiagram
     WebApkUpdateManager ..> WebApkUpdateTask : schedules via BackgroundTaskScheduler
     
     WebApkUpdateTask --> WebApkUpdateManager : calls (updateWhileNotRunning)
-    
-    WebApkSyncService --> WebappDataStorage : reads
 ```
 
 ### Call Flows
@@ -196,11 +185,9 @@ When a WebAPK is launched, `WebApkActivityCoordinator` executes the following
 steps during deferred startup:
 
 1. **Update Usage in Storage**: Increments launch count in `WebappDataStorage`.
-2. **Sync Usage**: Calls `WebApkSyncService.onWebApkUsed` to notify sync that
-   the app was used.
-3. **Check for Updates**: Calls `WebApkUpdateManager.updateIfNeeded` to check if
+2. **Check for Updates**: Calls `WebApkUpdateManager.updateIfNeeded` to check if
    the manifest has changed.
-4. **Register Permissions (Android T+)**: Calls
+3. **Register Permissions (Android T+)**: Calls
    `InstalledWebappRegistrar.registerClient` and
    `PermissionUpdater.onWebApkLaunch` to ensure permissions are delegated
    correctly.
@@ -259,8 +246,7 @@ sequenceDiagram
    loading native libraries.
 3. **Processing**: When Chrome is next launched and native libraries are loaded,
    `WebApkUninstallTracker.runDeferredTasks` is called.
-4. **Metrics and Sync**: It records histograms and UKM metrics, and calls
-   `WebApkSyncService.onWebApkUninstalled` to notify sync.
+4. **Metrics**: It records histograms and UKM metrics.
 
 ### Interface Points between WebAPK and Clank
 
@@ -303,8 +289,6 @@ AIDL interface.
 
 WebAPK features in Java often rely on C++ components via JNI:
 
-- **Sync**: `WebApkSyncService` calls native code to sync usage and
-  uninstallation.
 - **Update**: `WebApkUpdateManager` calls native code to serialize update
   requests to a file, and to perform the update from that file.
 - **Permissions**: `InstalledWebappBridge` facilitates permission decisions

@@ -108,7 +108,7 @@ storage, and utility classes without requiring a device.
     - [`chrome/android/junit/src/org/chromium/chrome/browser/browserservices/`](../../../chrome/android/junit/src/org/chromium/chrome/browser/browserservices/)
       (including `permissiondelegation/` and `ui/`)
   - **Features**: `InstalledWebappRegistrar`, `InstalledWebappDataRegister`,
-    `WebappDataStorage`, and `WebApkSyncService`.
+    and `WebappDataStorage`.
 
 **How to Run**:
 `out/Default/bin/run_chrome_junit_tests -f "org.chromium.chrome.browser.webapps.*"`

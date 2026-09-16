@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.text.TextUtils;
 
 import org.junit.Before;
@@ -28,24 +27,15 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.TwaValidator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
-import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
-import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
-import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browsing_data.UrlFilters;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.webapps.WebappRegistry.GetWebApkSpecificsImplSetWebappInfoForTesting;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.components.sync.protocol.WebApkSpecifics;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -89,21 +79,6 @@ public class WebappRegistryTest {
         }
     }
 
-    private static class TestWebApkSyncServiceJni implements WebApkSyncService.Natives {
-        @Override
-        public void onWebApkUsed(byte[] webApkSpecifics, boolean isInstall) {}
-
-        @Override
-        public void onWebApkUninstalled(String manifestId) {}
-
-        @Override
-        public void removeOldWebAPKsFromSync(long currentTimeMsSinceUnixEpoch) {}
-
-        @Override
-        public void fetchRestorableApps(
-                Profile profile, WebApkSyncService.PwaRestorableListCallback callback) {}
-    }
-
     @Before
     public void setUp() {
         WebappRegistry.refreshSharedPrefsForTesting();
@@ -113,8 +88,6 @@ public class WebappRegistryTest {
         mSharedPreferences.edit().putLong(KEY_LAST_CLEANUP, INITIAL_TIME).commit();
 
         mCallbackCalled = false;
-
-        WebApkSyncServiceJni.setInstanceForTesting(new TestWebApkSyncServiceJni());
     }
 
     private void registerWebapp(BrowserServicesIntentDataProvider intentDataProvider)
@@ -946,139 +919,6 @@ public class WebappRegistryTest {
 
         WebappRegistry.getInstance().clearForTesting();
         assertNull(WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
-    }
-
-    @Test
-    @Feature({"WebApk"})
-    public void testGetWebApkSyncDatas() throws Exception {
-        final String testStartUrl1 = START_URL;
-        final String testManifestId1 = testStartUrl1 + "/id";
-        final String testPackageName1 = "org.chromium.webapk";
-        final String testName1 = "My App";
-        final String testShortName1 = "app";
-        final long testToolbarColor1 = Color.WHITE;
-        final String testScope1 = testStartUrl1;
-
-        final String testStartUrl2 = START_URL + "/2";
-        final String testManifestId2 = testStartUrl2 + "/id";
-        final String testPackageName2 = "org.chromium.webapk2";
-        final String testName2 = null;
-        final String testShortName2 = "app2";
-        final long testToolbarColor2 = Color.BLACK;
-        final String testScope2 = testStartUrl2;
-
-        final String testStartUrl3 = START_URL + "/3";
-        final String testManifestId3 = null;
-        final String testPackageName3 = "org.chromium.webapk3";
-        final String testName3 = "My App3";
-        final String testShortName3 = "";
-        final long testToolbarColor3 = ColorUtils.INVALID_COLOR;
-        final String testScope3 = testStartUrl3;
-
-        final String testStartUrl4 = START_URL + "/4";
-        final String testManifestId4 = testStartUrl4 + "/id";
-        final String testPackageName4 = "org.chromium.webapk4";
-        final String testName4 = "My App4";
-        final String testShortName4 = "app4";
-        final long testToolbarColor4 = ColorUtils.INVALID_COLOR;
-        final String testScope4 = null;
-
-        WebappRegistry webApkRegistry = WebappRegistry.getInstance();
-        Map<String, BrowserServicesIntentDataProvider> expectedIntentDataProviders =
-                new HashMap<>();
-
-        BrowserServicesIntentDataProvider intentDataProvider1 =
-                new WebApkIntentDataProviderBuilder(testPackageName1, testStartUrl1)
-                        .setWebApkManifestId(testManifestId1)
-                        .setName(testName1)
-                        .setShortName(testShortName1)
-                        .setToolbarColor(testToolbarColor1)
-                        .setScope(testScope1)
-                        .build();
-        expectedIntentDataProviders.put(testScope1, intentDataProvider1);
-
-        BrowserServicesIntentDataProvider intentDataProvider2 =
-                new WebApkIntentDataProviderBuilder(testPackageName2, testStartUrl2)
-                        .setWebApkManifestId(testManifestId2)
-                        .setName(testName2)
-                        .setShortName(testShortName2)
-                        .setToolbarColor(testToolbarColor2)
-                        .setScope(testScope2)
-                        .build();
-        expectedIntentDataProviders.put(testScope2, intentDataProvider2);
-
-        // This one will not be returned because it has no manifest id.
-        BrowserServicesIntentDataProvider intentDataProvider3 =
-                new WebApkIntentDataProviderBuilder(testPackageName3, testStartUrl3)
-                        .setWebApkManifestId(testManifestId3)
-                        .setName(testName3)
-                        .setShortName(testShortName3)
-                        .setToolbarColor(testToolbarColor3)
-                        .setScope(testScope3)
-                        .build();
-        expectedIntentDataProviders.put(testScope3, intentDataProvider3);
-
-        // This one will not be returned because it has no scope.
-        BrowserServicesIntentDataProvider intentDataProvider4 =
-                new WebApkIntentDataProviderBuilder(testPackageName4, testStartUrl4)
-                        .setWebApkManifestId(testManifestId4)
-                        .setName(testName4)
-                        .setShortName(testShortName4)
-                        .setToolbarColor(testToolbarColor4)
-                        .setScope(testScope4)
-                        .build();
-
-        GetWebApkSpecificsImplSetWebappInfoForTesting setWebappInfoForTesting =
-                (scope) -> {
-                    WebApkDataProvider.setWebappInfoForTesting(
-                            WebappInfo.create(expectedIntentDataProviders.get(scope)));
-                };
-
-        assertEquals(0, webApkRegistry.getWebApkSpecificsImpl(setWebappInfoForTesting).size());
-
-        registerWebapp(intentDataProvider1);
-        registerWebapp(intentDataProvider2);
-        registerWebapp(intentDataProvider3);
-        registerWebapp(intentDataProvider4);
-
-        List<WebApkSpecifics> webApkSpecificsList =
-                webApkRegistry.getWebApkSpecificsImpl(setWebappInfoForTesting);
-        assertEquals(2, webApkSpecificsList.size());
-
-        Set<String> visitedScopes = new HashSet<>();
-        for (WebApkSpecifics webApkSpecifics : webApkSpecificsList) {
-            BrowserServicesIntentDataProvider intentDataProvider =
-                    expectedIntentDataProviders.get(webApkSpecifics.getScope());
-            WebApkExtras webApkExtras = intentDataProvider.getWebApkExtras();
-            WebappExtras webappExtras = intentDataProvider.getWebappExtras();
-            ColorProvider colorProvider = intentDataProvider.getColorProvider();
-
-            assertEquals(webApkExtras.manifestId, webApkSpecifics.getManifestId());
-            assertEquals(webApkExtras.manifestStartUrl, webApkSpecifics.getStartUrl());
-
-            if (webappExtras.name != null && !webappExtras.name.equals("")) {
-                assertTrue(webApkSpecifics.hasName());
-                assertEquals(webappExtras.name, webApkSpecifics.getName());
-            } else if (webappExtras.shortName != null) {
-                assertTrue(webApkSpecifics.hasName());
-                assertEquals(webappExtras.shortName, webApkSpecifics.getName());
-            } else {
-                assertFalse(webApkSpecifics.hasName());
-            }
-
-            if (colorProvider.hasCustomToolbarColor()) {
-                assertTrue(webApkSpecifics.hasThemeColor());
-                assertEquals(colorProvider.getToolbarColor(), webApkSpecifics.getThemeColor());
-            } else {
-                assertFalse(webApkSpecifics.hasThemeColor());
-            }
-
-            assertEquals(webappExtras.scopeUrl, webApkSpecifics.getScope());
-
-            visitedScopes.add(webApkSpecifics.getScope());
-        }
-
-        assertEquals(2, visitedScopes.size());
     }
 
     private Set<String> addWebappsToRegistry(String... webapps) {

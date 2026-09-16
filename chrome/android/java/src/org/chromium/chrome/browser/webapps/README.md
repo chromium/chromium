@@ -27,7 +27,6 @@ BaseCustomTabActivity
   WebappActivity ──► Hosts WebappActivityCoordinator & WebApkActivityCoordinator
          │
          ├──► Warms up storage via WebappDataStorage & WebappRegistry
-         ├──► Triggers usage sync via WebApkSyncService (JNI)
          ├──► Dispatches permission delegation via InstalledWebappRegistrar
          └──► Checks for manifest updates via WebApkUpdateManager
 ```
@@ -38,9 +37,9 @@ BaseCustomTabActivity
   experience.
 - **Deferred Startup Coordinator:** On launch, `BaseCustomTabActivity` delegates
   to `WebappActivityCoordinator` and `WebApkActivityCoordinator` to run
-  non-blocking startup tasks: initializing storage (`WebappRegistry`), notifying
-  Chrome Sync via JNI (`WebApkSyncService`), delegating permissions on Android
-  13+ (`PermissionUpdater`), and initiating manifest update checks.
+  non-blocking startup tasks: initializing storage (`WebappRegistry`), delegating
+  permissions on Android 13+ (`PermissionUpdater`), and initiating manifest
+  update checks.
 
 ### 2. Manifest Update Pipeline
 
