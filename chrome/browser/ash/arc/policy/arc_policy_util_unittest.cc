@@ -29,10 +29,11 @@ constexpr int kKioskBucket = 8;
 constexpr char kInstallTypeHistogram[] = "Arc.Policy.InstallTypesOnDevice";
 constexpr char kArcPolicyKeyHistogram[] = "Arc.Policy.Keys";
 
-std::map<std::string, std::string> kTestMap = {
-    {"testPackage", "FORCE_INSTALLED"}, {"testPackage2", "BLOCKED"},
-    {"testPackage3", "BLOCKED"},        {"testPackage4", "AVAILABLE"},
-    {"testPackage5", "AVAILABLE"},      {"testPackage6", "REQUIRED"}};
+std::map<std::string, std::string> GetTestMap() {
+  return {{"testPackage", "FORCE_INSTALLED"}, {"testPackage2", "BLOCKED"},
+          {"testPackage3", "BLOCKED"},        {"testPackage4", "AVAILABLE"},
+          {"testPackage5", "AVAILABLE"},      {"testPackage6", "REQUIRED"}};
+}
 
 std::string CreatePolicyJson(const base::DictValue& arc_policy) {
   return base::WriteJson(arc_policy).value_or("");
@@ -79,7 +80,7 @@ class ArcPolicyUtilTest : public testing::Test {
 
 TEST_F(ArcPolicyUtilTest, GetRequestedPackagesFromArcPolicy) {
   std::set<std::string> expected = {"testPackage", "testPackage6"};
-  std::string policy = CreatePolicyWithAppInstalls(kTestMap);
+  std::string policy = CreatePolicyWithAppInstalls(GetTestMap());
 
   std::set<std::string> result =
       arc::policy_util::GetRequestedPackagesFromArcPolicy(policy);
@@ -234,7 +235,7 @@ TEST_F(ArcPolicyUtilTest, RecordPolicyMetricsWithOneAppOfEachType) {
 }
 
 TEST_F(ArcPolicyUtilTest, RecordPolicyMetricsWithComplexPolicy) {
-  std::string policy = CreatePolicyWithAppInstalls(kTestMap);
+  std::string policy = CreatePolicyWithAppInstalls(GetTestMap());
 
   arc::policy_util::RecordPolicyMetrics(policy);
 
