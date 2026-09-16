@@ -5,24 +5,21 @@
 ; --- The contents of common.sb implicitly included here. ---
 
 ; Following rules allow the WebNN Compiler process to read and write to the
-; temporary directory where CoreML writes compiled model files. If a
-; process-isolated temporary directory is defined, it will be used instead
-; of the system-assigned user temporary directory.
+; temporary directory where CoreML writes compiled model files.
 (allow mach-lookup
   (global-name "com.apple.system.opendirectoryd.membership"))
 
-(define temp-dir
-  (if (param-defined? sandbox-child-user-temp-dir)
-      (param sandbox-child-user-temp-dir)
-      (param darwin-user-temp-dir)))
+; Needed by NSFileManager's URLForDirectory with NSItemReplacementDirectory.
+(allow file-read* file-write-create file-write-data file-write-owner
+      (subpath (string-append (param darwin-user-temp-dir) "/TemporaryItems/")))
 
-(allow file-read* file-write*
-  (subpath temp-dir)
-)
+; Needed by MLModel's compileModelAtURL family of functions.
+(allow file-read* file-write-create file-write-unlink
+      (subpath (param darwin-user-temp-dir)))
 
 ; The browser process copies the compiled model created by the compiler
 ; process to the webnn_gpu_protected subdirectory which prevents the
 ; compiler process from accessing the compiled model after it has been copied.
 (deny file-read* file-write*
-  (subpath (string-append temp-dir "/webnn_gpu_protected"))
+  (subpath (string-append (param darwin-user-temp-dir) "/webnn_gpu_protected"))
 )
