@@ -10,6 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
+#include "cc/test/scoped_browser_controls_linear_animation.h"
 #include "cc/trees/browser_controls_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -149,7 +151,11 @@ class MockAnchorElementMetricsHost
   mojo::Receiver<mojom::blink::AnchorElementMetricsHost> receiver_{this};
 };
 
-class AnchorElementMetricsSenderTest : public SimTest {
+// TODO(crbug.com/489060623): Fix unit tests when running with snap animation
+// and remove ScopedBrowserControlsLinearAnimation.
+class AnchorElementMetricsSenderTest
+    : private cc::test::ScopedBrowserControlsLinearAnimation,
+      public SimTest {
  public:
   static constexpr int kViewportWidth = 400;
   static constexpr int kViewportHeight = 600;

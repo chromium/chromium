@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 
 #include "build/build_config.h"
+#include "cc/test/scoped_browser_controls_linear_animation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -77,8 +78,13 @@ const int64_t kShowHideMaxDurationMs = 200;
 // but browser controls state is propagated into blink::BrowserControls through
 // LayerTreeHost::ApplyCompositorChanges. Additional tests relating to cc state
 // can be found under LayerTreeHostImplBrowserControlsTest.
-class BrowserControlsTest : public testing::Test,
-                            public ScopedMockOverlayScrollbars {
+//
+// TODO(crbug.com/489060623): Fix unit tests when running with snap animation
+// and remove ScopedBrowserControlsLinearAnimation.
+class BrowserControlsTest
+    : public testing::Test,
+      private cc::test::ScopedBrowserControlsLinearAnimation,
+      public ScopedMockOverlayScrollbars {
  public:
   BrowserControlsTest() : base_url_("http://www.test.com/") {
     RegisterMockedHttpURLLoad("large-div.html");
@@ -222,9 +228,11 @@ class BrowserControlsTest : public testing::Test,
   base::TimeDelta accumulated_animation_delay_;
 };
 
-class BrowserControlsSimTest : public SimTest {
+class BrowserControlsSimTest
+    : private cc::test::ScopedBrowserControlsLinearAnimation,
+      public SimTest {
  public:
-  BrowserControlsSimTest() {}
+  BrowserControlsSimTest() = default;
 
   void SetUp() override {
     SimTest::SetUp();

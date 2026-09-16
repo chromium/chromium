@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
+#include "cc/test/scoped_browser_controls_linear_animation.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
@@ -52,7 +55,10 @@ namespace blink {
 
 namespace {
 
+// TODO(crbug.com/489060623): Fix unit tests when running with snap animation
+// and remove ScopedBrowserControlsLinearAnimation.
 class RootScrollerTest : public testing::Test,
+                         private cc::test::ScopedBrowserControlsLinearAnimation,
                          private ScopedImplicitRootScrollerForTest {
  public:
   RootScrollerTest()

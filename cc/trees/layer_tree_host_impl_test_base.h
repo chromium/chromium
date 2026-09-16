@@ -22,6 +22,7 @@
 #include "cc/test/fake_rendering_stats_instrumentation.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/property_tree_test_utils.h"
+#include "cc/test/scoped_browser_controls_linear_animation.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/frame_data.h"
 #include "cc/trees/layer_tree_host_impl.h"
@@ -402,8 +403,11 @@ class LayerTreeHostImplTestBase : public testing::Test,
   int first_scroll_observed = 0;
 };
 
+// TODO(crbug.com/489060623): Fix unit tests when running with snap animation
+// and remove ScopedBrowserControlsLinearAnimation.
 class LayerTreeHostImplTest
-    : public LayerTreeHostImplTestBase,
+    : private test::ScopedBrowserControlsLinearAnimation,
+      public LayerTreeHostImplTestBase,
       public testing::WithParamInterface<LayerTreeImplTestMode> {
  public:
   LayerTreeHostImplTest();

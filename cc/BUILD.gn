@@ -667,6 +667,7 @@ cc_test_static_library("test_support") {
     "test/resource_provider_test_utils.h",
     "test/scheduler_test_common.cc",
     "test/scheduler_test_common.h",
+    "test/scoped_browser_controls_linear_animation.h",
     "test/skia_common.cc",
     "test/skia_common.h",
     "test/solid_color_content_layer_client.cc",
