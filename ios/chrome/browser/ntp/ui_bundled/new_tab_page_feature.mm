@@ -113,8 +113,7 @@ bool IsNTPHeaderTransformsForAnimationsEnabled() {
 }
 
 bool IsNTPRedesignEnabled() {
-  return base::FeatureList::IsEnabled(kNewTabPageRedesign) &&
-         ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
+  return base::FeatureList::IsEnabled(kNewTabPageRedesign);
 }
 
 NTPUICleanupVariation GetNewTabPageUICleanupVariation() {

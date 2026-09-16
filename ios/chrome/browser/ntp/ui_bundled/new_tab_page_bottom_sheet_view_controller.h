@@ -38,6 +38,13 @@
 
 @end
 
+// Snapping states for the bottom sheet.
+enum class BottomSheetSnappingState {
+  kCollapsed,
+  kResting,
+  kExpanded,
+};
+
 // View controller managing the bottom sheet card, gestures, and subviews for
 // the NTP Redesign.
 @interface NewTabPageBottomSheetViewController
@@ -84,6 +91,12 @@
 
 // Returns YES if the bottom sheet is scrolled to the top.
 - (BOOL)isScrolledToTop;
+
+// Collapses the bottom sheet back to its resting position.
+- (void)collapseToRestingAnimated:(BOOL)animated;
+
+// Updates the layout mode and constraints for the current trait collection.
+- (void)updateLayoutModeForCurrentTraitCollection;
 
 @end
 

@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
+#import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
@@ -22,7 +24,9 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +48,8 @@ const CGFloat kMinDragHandleHeight = 24.0;
 - (CGFloat)topContentHeight;
 - (CGFloat)centeredFakeOmniboxTop;
 - (BOOL)isCompactHeight;
+- (void)backdropTapped:(UITapGestureRecognizer*)recognizer;
+- (void)updateMagicStackHierarchy;
 @end
 
 class NewTabPageRedesignViewControllerTest : public PlatformTest {
@@ -51,6 +57,8 @@ class NewTabPageRedesignViewControllerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     view_controller_ = [[NewTabPageRedesignViewController alloc] init];
+    view_controller_.traitOverrides.horizontalSizeClass =
+        UIUserInterfaceSizeClassCompact;
   }
 
  protected:
@@ -130,9 +138,6 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestLoadView) {
 // Tests that didUpdateTopOffset updates fakeLocationBar.alpha and calls
 // NTPContentDelegate.
 TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffset) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kNewTabPageRedesign);
 
@@ -168,9 +173,6 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffset) {
 // Tests that didUpdateTopOffset moves top content downward when topOffset >
 // restingOffset.
 TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffsetCollapsed) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kNewTabPageRedesign);
 
@@ -208,9 +210,6 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestDidUpdateTopOffsetCollapsed) {
 // Tests that expandedOffsetForBottomSheetViewController calculates correct
 // offsets.
 TEST_F(NewTabPageRedesignViewControllerTest, TestExpandedOffsetForBottomSheet) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kNewTabPageRedesign);
 
@@ -223,18 +222,20 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestExpandedOffsetForBottomSheet) {
       [view_controller_ expandedOffsetForBottomSheetViewController:sheet];
   EXPECT_GT(offsetTop, 0.0);
 
-  // Bottom Omnibox (non-tabstrip): safeAreaTop
+  // Bottom Omnibox: safeAreaTop if !CanShowTabStrip, else safeAreaTop +
+  // kToolbarHeight.
   [view_controller_ setOmniboxInBottomPosition:YES];
   CGFloat offsetBottom =
       [view_controller_ expandedOffsetForBottomSheetViewController:sheet];
-  EXPECT_EQ(offsetBottom, view_controller_.view.safeAreaInsets.top);
+  CGFloat expectedBottomOffset =
+      CanShowTabStrip(view_controller_)
+          ? view_controller_.view.safeAreaInsets.top + kToolbarHeight
+          : view_controller_.view.safeAreaInsets.top;
+  EXPECT_EQ(offsetBottom, expectedBottomOffset);
 }
 
 // Tests that setOmniboxInBottomPosition updates state.
 TEST_F(NewTabPageRedesignViewControllerTest, TestSetOmniboxInBottomPosition) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kNewTabPageRedesign);
 
@@ -327,7 +328,7 @@ TEST_F(NewTabPageRedesignViewControllerTest,
 // Logo and Doodle when kConsistentLogoDoodleHeight is enabled.
 TEST_F(NewTabPageRedesignViewControllerTest, TestConsistentLogoDoodleHeight) {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
+    GTEST_SKIP() << "Consistent logo doodle height is not supported on tablet.";
   }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kConsistentLogoDoodleHeight);
@@ -647,4 +648,147 @@ TEST_F(NewTabPageRedesignViewControllerTest, TestScrollToTop) {
 
   [view_controller_ scrollToTopAnimated:YES];
   EXPECT_TRUE([view_controller_ isScrolledToTop]);
+}
+
+// Tests that topContentHeight includes magic stack height and spacing on iPad
+// regular.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestIPadRegularTopContentHeightIncludesMagicStack) {
+  [view_controller_ loadViewIfNeeded];
+
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+
+  CGFloat initial_height = [view_controller_ topContentHeight];
+
+  MagicStackCollectionViewController* magic_stack =
+      [[MagicStackCollectionViewController alloc] init];
+  [view_controller_ setMagicStackViewController:magic_stack];
+
+  CGFloat height_with_magic_stack = [view_controller_ topContentHeight];
+  CGFloat expected_magic_stack_delta =
+      content_suggestions::ReducedModuleSpacing(
+          view_controller_.traitCollection) +
+      kMagicStackHeight;
+
+  EXPECT_FLOAT_EQ(height_with_magic_stack,
+                  initial_height + expected_magic_stack_delta);
+}
+
+// Tests that tapping the backdrop collapses the sheet to resting state.
+TEST_F(NewTabPageRedesignViewControllerTest, TestBackdropTappedCollapsesSheet) {
+  [view_controller_ loadViewIfNeeded];
+
+  NewTabPageBottomSheetViewController* sheet =
+      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+  ASSERT_TRUE(sheet != nil);
+  id mock_sheet = OCMPartialMock(sheet);
+  OCMExpect([mock_sheet collapseToRestingAnimated:YES]);
+
+  id mock_recognizer = OCMClassMock([UITapGestureRecognizer class]);
+  OCMStub([mock_recognizer state]).andReturn(UIGestureRecognizerStateEnded);
+
+  [view_controller_ backdropTapped:mock_recognizer];
+
+  EXPECT_OCMOCK_VERIFY(mock_sheet);
+}
+
+// Tests that Magic Stack view controller hierarchy updates correctly between
+// iPad regular and compact/iPhone layouts.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestMagicStackHierarchyReparenting) {
+  [view_controller_ loadViewIfNeeded];
+
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+
+  MagicStackCollectionViewController* magic_stack =
+      [[MagicStackCollectionViewController alloc] init];
+  [view_controller_ setMagicStackViewController:magic_stack];
+
+  // In iPad regular, Magic Stack should be a direct child of redesign VC.
+  EXPECT_EQ(view_controller_, magic_stack.parentViewController);
+  UIView* magic_stack_container =
+      [view_controller_ valueForKey:@"_magicStackContainerView"];
+  ASSERT_TRUE(magic_stack_container != nil);
+  EXPECT_EQ(magic_stack_container, magic_stack.view.superview);
+  EXPECT_FALSE(magic_stack_container.hidden);
+
+  NewTabPageBottomSheetViewController* sheet =
+      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+  ASSERT_TRUE(sheet != nil);
+  EXPECT_EQ(nil, sheet.magicStackViewController);
+
+  // Transition to compact layout.
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassCompact;
+  [view_controller_ updateMagicStackHierarchy];
+
+  // Magic Stack should no longer be a child of redesign VC, container hidden,
+  // and sheet should hold the reference.
+  EXPECT_NE(view_controller_, magic_stack.parentViewController);
+  EXPECT_TRUE(magic_stack_container.hidden);
+  EXPECT_EQ(magic_stack, sheet.magicStackViewController);
+
+  // Transition back to iPad regular layout.
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+  [view_controller_ updateMagicStackHierarchy];
+
+  EXPECT_EQ(view_controller_, magic_stack.parentViewController);
+  EXPECT_FALSE(magic_stack_container.hidden);
+  EXPECT_EQ(nil, sheet.magicStackViewController);
+}
+
+// Tests that on iPad regular, didUpdateTopOffset synchronizes tablet omnibox
+// scroll progress with feed expansion progress and updates backdrop blur.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestIPadRegularDidUpdateTopOffsetSynchronizesTabletOmnibox) {
+  view_controller_.view.frame = CGRectMake(0, 0, 1024, 768);
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  id mock_content_delegate =
+      OCMProtocolMock(@protocol(NewTabPageContentDelegate));
+  view_controller_.NTPContentDelegate = mock_content_delegate;
+
+  NewTabPageBottomSheetViewController* sheet =
+      [view_controller_ valueForKey:@"_bottomSheetViewController"];
+  ASSERT_TRUE(sheet != nil);
+
+  CGFloat expandedOffset = [sheet expandedOffset];
+  CGFloat restingOffset = [sheet restingOffset];
+  ASSERT_GT(restingOffset, expandedOffset);
+  CGFloat midOffset = (expandedOffset + restingOffset) / 2.0;
+
+  // At midOffset, progress is 0.5, so expansionProgress = 1.0 - 0.5 = 0.5.
+  OCMExpect([mock_content_delegate didUpdateNTPTabOmniboxScrollProgress:0.5]);
+
+  [view_controller_ bottomSheetViewController:sheet
+                           didUpdateTopOffset:midOffset];
+
+  UIVisualEffectView* backdrop_blur =
+      [view_controller_ valueForKey:@"_backdropBlurView"];
+  ASSERT_TRUE(backdrop_blur != nil);
+  EXPECT_FLOAT_EQ(0.5, backdrop_blur.alpha);
+  EXPECT_TRUE(backdrop_blur.userInteractionEnabled);
+  EXPECT_OCMOCK_VERIFY(mock_content_delegate);
+
+  // When resting (expansionProgress = 0.0), progress is 0.0.
+  OCMExpect([mock_content_delegate didUpdateNTPTabOmniboxScrollProgress:0.0]);
+  [view_controller_ bottomSheetViewController:sheet
+                           didUpdateTopOffset:restingOffset];
+  EXPECT_FLOAT_EQ(0.0, backdrop_blur.alpha);
+  EXPECT_FALSE(backdrop_blur.userInteractionEnabled);
+  EXPECT_OCMOCK_VERIFY(mock_content_delegate);
+
+  // When fully expanded (expansionProgress = 1.0), progress is 1.0.
+  OCMExpect([mock_content_delegate didUpdateNTPTabOmniboxScrollProgress:1.0]);
+  [view_controller_ bottomSheetViewController:sheet
+                           didUpdateTopOffset:expandedOffset];
+  EXPECT_FLOAT_EQ(1.0, backdrop_blur.alpha);
+  EXPECT_TRUE(backdrop_blur.userInteractionEnabled);
+  EXPECT_OCMOCK_VERIFY(mock_content_delegate);
 }

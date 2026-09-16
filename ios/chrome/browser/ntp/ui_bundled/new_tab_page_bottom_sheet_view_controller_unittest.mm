@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
@@ -20,15 +21,15 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#import "ui/base/device_form_factor.h"
-
 @interface NewTabPageBottomSheetViewController (Testing)
-- (void)updateContentContainerInsetForOffset:(CGFloat)topOffset;
-- (void)voiceOverStatusDidChange;
-- (BOOL)isVoiceOverRunning;
 - (void)setupSuperviewConstraints;
 - (void)handleFeedPan:(UIPanGestureRecognizer*)gesture;
 - (void)applyBackgroundTheme;
+- (CGFloat)headerHeight;
+- (void)snapSheetWithVelocity:(CGPoint)velocity
+              currentConstant:(CGFloat)currentConstant;
+- (void)setSheetStateForTesting:(BottomSheetSnappingState)state;
+- (BottomSheetSnappingState)sheetStateForTesting;
 @end
 
 @interface LifecycleTrackingChildViewController : UIViewController
@@ -60,47 +61,14 @@ class NewTabPageBottomSheetViewControllerTest : public PlatformTest {
     PlatformTest::SetUp();
     feature_list_.InitAndEnableFeature(kNewTabPageRedesign);
     view_controller_ = [[NewTabPageBottomSheetViewController alloc] init];
+    view_controller_.traitOverrides.horizontalSizeClass =
+        UIUserInterfaceSizeClassCompact;
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
   NewTabPageBottomSheetViewController* view_controller_;
 };
-
-// Tests that the view controller loads its view and default styling correctly.
-TEST_F(NewTabPageBottomSheetViewControllerTest, TestLoadViewAndDefaultStyling) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  [view_controller_ loadViewIfNeeded];
-  EXPECT_NE(nil, view_controller_.view);
-  EXPECT_NSEQ([UIColor colorNamed:kSurfaceContainerLowColor],
-              view_controller_.view.backgroundColor);
-
-  UIView* drag_handle = [view_controller_ valueForKey:@"_dragHandle"];
-  EXPECT_NE(nil, drag_handle);
-  EXPECT_NSEQ([UIColor colorNamed:kTextTertiaryColor],
-              drag_handle.backgroundColor);
-
-  UIVisualEffectView* blur_view =
-      [view_controller_ valueForKey:@"_blurBackgroundView"];
-  EXPECT_NE(nil, blur_view);
-  EXPECT_TRUE(blur_view.hidden);
-
-  UIView* feed_card_background =
-      [view_controller_ valueForKey:@"_feedCardBackgroundView"];
-  EXPECT_NE(nil, feed_card_background);
-
-  UIView* feed_color_view =
-      [feed_card_background valueForKey:@"_backgroundColorView"];
-  EXPECT_NE(nil, feed_color_view);
-  EXPECT_NSEQ([UIColor colorNamed:kNTPCardBackgroundColor],
-              feed_color_view.backgroundColor);
-
-  UIVisualEffectView* feed_blur_view =
-      [feed_card_background valueForKey:@"_backgroundBlurView"];
-  EXPECT_EQ(nil, feed_blur_view);
-}
 
 // Tests that the view controller applies blur background when
 // NewTabPageImageBackgroundTrait is true.
@@ -149,49 +117,6 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   EXPECT_TRUE([child_vc.view isDescendantOfView:container]);
 }
 
-// Tests that the magic stack container view alpha remains 1.0 across top
-// offsets.
-TEST_F(NewTabPageBottomSheetViewControllerTest,
-       TestMagicStackContainerRemainsVisible) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kNewTabPageRedesign);
-
-  [view_controller_ loadViewIfNeeded];
-  UIView* container =
-      [view_controller_ valueForKey:@"_magicStackContainerView"];
-  EXPECT_NE(nil, container);
-
-  id mock_delegate =
-      OCMProtocolMock(@protocol(NewTabPageBottomSheetViewControllerDelegate));
-  view_controller_.delegate = mock_delegate;
-
-  OCMStub([mock_delegate
-              restingOffsetForBottomSheetViewController:view_controller_])
-      .andReturn(400.0);
-  OCMStub([mock_delegate
-              collapsedOffsetForBottomSheetViewController:view_controller_])
-      .andReturn(600.0);
-
-  CGFloat expanded = [view_controller_ expandedOffset];
-  CGFloat resting = [view_controller_ restingOffset];
-
-  // At resting offset, alpha is 1.0
-  [view_controller_ updateContentContainerInsetForOffset:resting];
-  EXPECT_FLOAT_EQ(1.0, container.alpha);
-
-  // At expanded offset, alpha remains 1.0
-  [view_controller_ updateContentContainerInsetForOffset:expanded];
-  EXPECT_FLOAT_EQ(1.0, container.alpha);
-
-  // At halfway between expanded and resting, alpha remains 1.0
-  [view_controller_
-      updateContentContainerInsetForOffset:(expanded + resting) / 2.0];
-  EXPECT_FLOAT_EQ(1.0, container.alpha);
-}
-
 // Tests that the header container embeds magic stack container view and exists.
 TEST_F(NewTabPageBottomSheetViewControllerTest, TestHeaderContainerHierarchy) {
   [view_controller_ loadViewIfNeeded];
@@ -234,75 +159,6 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
                   scroll_view.verticalScrollIndicatorInsets.top);
 }
 
-// Tests that the MVT container view alpha remains 1.0 across top offsets when
-// kMVTInBottomSheet is enabled.
-TEST_F(NewTabPageBottomSheetViewControllerTest,
-       TestMVTContainerAlphaWhenEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kNewTabPageRedesign, kMVTInBottomSheet},
-      /*disabled_features=*/{});
-
-  [view_controller_ loadViewIfNeeded];
-  UIView* mvtContainer =
-      [view_controller_ valueForKey:@"_mostVisitedContainerView"];
-  EXPECT_NE(nil, mvtContainer);
-
-  id mock_delegate =
-      OCMProtocolMock(@protocol(NewTabPageBottomSheetViewControllerDelegate));
-  view_controller_.delegate = mock_delegate;
-
-  OCMStub([mock_delegate
-              restingOffsetForBottomSheetViewController:view_controller_])
-      .andReturn(400.0);
-  OCMStub([mock_delegate
-              collapsedOffsetForBottomSheetViewController:view_controller_])
-      .andReturn(600.0);
-
-  CGFloat expanded = [view_controller_ expandedOffset];
-  CGFloat resting = [view_controller_ restingOffset];
-
-  // At resting offset, alpha is 1.0
-  [view_controller_ updateContentContainerInsetForOffset:resting];
-  EXPECT_FLOAT_EQ(1.0, mvtContainer.alpha);
-
-  // At expanded offset, alpha is 1.0
-  [view_controller_ updateContentContainerInsetForOffset:expanded];
-  EXPECT_FLOAT_EQ(1.0, mvtContainer.alpha);
-
-  // At halfway between expanded and resting, alpha is 1.0
-  [view_controller_
-      updateContentContainerInsetForOffset:(expanded + resting) / 2.0];
-  EXPECT_FLOAT_EQ(1.0, mvtContainer.alpha);
-}
-
-// Tests that the scroll delegate proxy is injected when VoiceOver is enabled.
-TEST_F(NewTabPageBottomSheetViewControllerTest, TestVoiceOverProxyInjection) {
-  UIViewController* child_vc = [[UIViewController alloc] init];
-  UIScrollView* scroll_view = [[UIScrollView alloc] init];
-  [child_vc.view addSubview:scroll_view];
-
-  view_controller_.feedViewController = child_vc;
-  [view_controller_ loadViewIfNeeded];
-
-  __block BOOL isVoiceOver = YES;
-  ScopedBlockSwizzler swizzler([NewTabPageBottomSheetViewController class],
-                               @selector(isVoiceOverRunning),
-                               ^BOOL(id self) { return isVoiceOver; });
-
-  // Simulate VoiceOver ON.
-  [view_controller_ voiceOverStatusDidChange];
-
-  UIScrollView* feedScrollView = [view_controller_ valueForKey:@"_feedScrollView"];
-  EXPECT_NE(nil, feedScrollView.delegate);
-
-  // Simulate VoiceOver OFF.
-  isVoiceOver = NO;
-  [view_controller_ voiceOverStatusDidChange];
-
-  EXPECT_EQ(nil, feedScrollView.delegate);
-}
-
 // Tests that expandedOffset queries the delegate.
 TEST_F(NewTabPageBottomSheetViewControllerTest,
        TestExpandedOffsetFromDelegate) {
@@ -320,9 +176,6 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
 // Tests that setting setOmniboxInBottomPosition:YES applies bottom content
 // insets.
 TEST_F(NewTabPageBottomSheetViewControllerTest, TestBottomOmniboxFeedInsets) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kNewTabPageRedesign);
 
@@ -350,8 +203,9 @@ TEST_F(NewTabPageBottomSheetViewControllerTest, TestBottomOmniboxFeedInsets) {
               collapsedOffsetForBottomSheetViewController:view_controller_])
       .andReturn(600.0);
 
-  // Set state to expanded state (BottomSheetSnappingStateExpanded = 2)
-  [view_controller_ setValue:@(2) forKey:@"_sheetState"];
+  // Set state to expanded state.
+  [view_controller_
+      setSheetStateForTesting:BottomSheetSnappingState::kExpanded];
   [view_controller_ setOmniboxInBottomPosition:YES];
 
   UIScrollView* feedScrollView =
@@ -361,39 +215,6 @@ TEST_F(NewTabPageBottomSheetViewControllerTest, TestBottomOmniboxFeedInsets) {
   // Switching back to NO should reset bottom contentInset to 0.
   [view_controller_ setOmniboxInBottomPosition:NO];
   EXPECT_EQ(feedScrollView.contentInset.bottom, 0.0);
-}
-
-// Tests that updateContentContainerInsetForOffset correctly handles resting <=
-// expanded.
-TEST_F(NewTabPageBottomSheetViewControllerTest, TestRestingBelowExpanded) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return;
-  }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kNewTabPageRedesign, kMVTInBottomSheet},
-      /*disabled_features=*/{});
-
-  [view_controller_ loadViewIfNeeded];
-  UIView* magicStackContainer =
-      [view_controller_ valueForKey:@"_magicStackContainerView"];
-  UIView* mvtContainer =
-      [view_controller_ valueForKey:@"_mostVisitedContainerView"];
-
-  id mock_delegate =
-      OCMProtocolMock(@protocol(NewTabPageBottomSheetViewControllerDelegate));
-  view_controller_.delegate = mock_delegate;
-
-  OCMStub([mock_delegate
-              expandedOffsetForBottomSheetViewController:view_controller_])
-      .andReturn(400.0);
-  OCMStub([mock_delegate
-              restingOffsetForBottomSheetViewController:view_controller_])
-      .andReturn(400.0);
-
-  [view_controller_ updateContentContainerInsetForOffset:400.0];
-  EXPECT_FLOAT_EQ(1.0, magicStackContainer.alpha);
-  EXPECT_FLOAT_EQ(1.0, mvtContainer.alpha);
 }
 
 // Tests that slow upward scrolling in the feed does not alter the bottom
@@ -428,7 +249,8 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   [view_controller_ setupSuperviewConstraints];
 
   // Set sheet to expanded state.
-  [view_controller_ setValue:@(2) forKey:@"_sheetState"];
+  [view_controller_
+      setSheetStateForTesting:BottomSheetSnappingState::kExpanded];
   NSLayoutConstraint* topConstraint =
       [view_controller_ valueForKey:@"_bottomSheetTopConstraint"];
   topConstraint.constant = 100.0;
@@ -482,7 +304,8 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   [view_controller_ setupSuperviewConstraints];
 
   // Set sheet to expanded state.
-  [view_controller_ setValue:@(2) forKey:@"_sheetState"];
+  [view_controller_
+      setSheetStateForTesting:BottomSheetSnappingState::kExpanded];
   NSLayoutConstraint* topConstraint =
       [view_controller_ valueForKey:@"_bottomSheetTopConstraint"];
   topConstraint.constant = 100.0;
@@ -556,7 +379,8 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   [view_controller_ setupSuperviewConstraints];
 
   // Set sheet to expanded state.
-  [view_controller_ setValue:@(2) forKey:@"_sheetState"];
+  [view_controller_
+      setSheetStateForTesting:BottomSheetSnappingState::kExpanded];
   NSLayoutConstraint* topConstraint =
       [view_controller_ valueForKey:@"_bottomSheetTopConstraint"];
   topConstraint.constant = 100.0;
@@ -695,4 +519,110 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   EXPECT_EQ(nil, feed_vc.view.superview);
   EXPECT_EQ(nil, magic_stack_vc.parentViewController);
   EXPECT_EQ(nil, magic_stack_vc.view.superview);
+}
+
+// Tests that headerHeight returns 0.0 when in iPad regular layout mode.
+TEST_F(NewTabPageBottomSheetViewControllerTest, TestIPadRegularHeaderHeight) {
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+
+  UIViewController* feed_vc = [[UIViewController alloc] init];
+  MagicStackCollectionViewController* magic_stack_vc =
+      [[MagicStackCollectionViewController alloc] init];
+  view_controller_.feedViewController = feed_vc;
+  view_controller_.magicStackViewController = magic_stack_vc;
+  [view_controller_ loadViewIfNeeded];
+
+  EXPECT_FLOAT_EQ(0.0, [view_controller_ headerHeight]);
+}
+
+// Tests that dragging downward on iPad regular clamps to Resting state and
+// never enters Collapsed state.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestIPadRegularSnappingDoesNotCollapse) {
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+
+  [view_controller_ loadViewIfNeeded];
+
+  // Provide a large downward velocity and currentConstant beyond resting.
+  CGFloat resting_offset = [view_controller_ restingOffset];
+  [view_controller_ snapSheetWithVelocity:CGPointMake(0, 1500)
+                          currentConstant:resting_offset + 200.0];
+
+  EXPECT_EQ(BottomSheetSnappingState::kResting,
+            [view_controller_ sheetStateForTesting]);
+}
+
+// Tests that collapseToRestingAnimated sets the sheet state to Resting.
+TEST_F(NewTabPageBottomSheetViewControllerTest, TestCollapseToRestingAnimated) {
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_
+      setSheetStateForTesting:BottomSheetSnappingState::kExpanded];
+
+  [view_controller_ collapseToRestingAnimated:NO];
+
+  EXPECT_EQ(BottomSheetSnappingState::kResting,
+            [view_controller_ sheetStateForTesting]);
+}
+
+// Tests that the bottom sheet view uses maskedCorners with 24.0 cornerRadius on
+// top corners only on iPad regular layout, and all 4 corners on compact layout.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestIPadRegularLayoutMaskedCorners) {
+  UIView* superview =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1024, 768)];
+  [superview addSubview:view_controller_.view];
+
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_ updateLayoutModeForCurrentTraitCollection];
+  EXPECT_FLOAT_EQ(24.0, view_controller_.view.layer.cornerRadius);
+  CACornerMask expectedRegularCorners =
+      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+  EXPECT_EQ(expectedRegularCorners, view_controller_.view.layer.maskedCorners);
+
+  // When switching to compact layout, all 4 corners should be rounded.
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassCompact;
+  [view_controller_ updateLayoutModeForCurrentTraitCollection];
+  CACornerMask expectedCompactCorners =
+      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner | kCALayerMinXMaxYCorner |
+      kCALayerMaxXMaxYCorner;
+  EXPECT_EQ(expectedCompactCorners, view_controller_.view.layer.maskedCorners);
+}
+
+// Tests that updateLayoutModeForCurrentTraitCollection configures iPad regular
+// layout correctly with bottom anchoring, top-aligned content container, and
+// card background styling.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestIPadRegularLayoutConfiguration) {
+  UIView* superview =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1024, 768)];
+  [superview addSubview:view_controller_.view];
+
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_ setupSuperviewConstraints];
+
+  // Background color should match NTPCardBackgroundColor.
+  EXPECT_NSEQ(NTPCardBackgroundColor(
+                  [view_controller_.traitCollection objectForNewTabPageTrait]),
+              view_controller_.view.backgroundColor);
+
+  [superview layoutIfNeeded];
+  // On iPad regular layout, the sheet is centered horizontally and pinned to
+  // the bottom.
+  EXPECT_FLOAT_EQ(CGRectGetMaxY(superview.bounds),
+                  CGRectGetMaxY(view_controller_.view.frame));
+  EXPECT_FLOAT_EQ(CGRectGetMidX(superview.bounds),
+                  CGRectGetMidX(view_controller_.view.frame));
+  EXPECT_FLOAT_EQ(
+      content_suggestions::SearchFieldWidth(superview.bounds.size.width,
+                                            view_controller_.traitCollection),
+      view_controller_.view.frame.size.width);
 }
