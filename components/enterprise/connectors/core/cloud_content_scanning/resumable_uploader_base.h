@@ -267,6 +267,16 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   base::WeakPtrFactory<ResumableUploadRequestBase> weak_factory_{this};
 };
 
+using ResumableUploadRequest = ResumableUploadRequestBase;
+
 }  // namespace enterprise_connectors
+
+namespace safe_browsing {
+
+// Compatibility alias for callers during migration.
+using ResumableUploadRequest =
+    ::enterprise_connectors::ResumableUploadRequestBase;
+
+}  // namespace safe_browsing
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_BASE_H_

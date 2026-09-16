@@ -12,7 +12,7 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/multipart_uploader.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader_base.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "net/http/http_status_code.h"
