@@ -366,10 +366,11 @@ TEST_F(SiteTokenURLLoaderFactoryTest, RejectsUnauthorizedProcess) {
   EXPECT_FALSE(result.response_head);
 }
 
-TEST_F(SiteTokenURLLoaderFactoryTest, RejectsDisallowedDomain) {
+TEST_F(SiteTokenURLLoaderFactoryTest, ReturnsEmptyBodyForDomainWithNoToken) {
   NavigateAndCommit(GURL("https://disallowed.com"));
 
-  EXPECT_CALL(*mock_service_, GetTokenForDomain(_)).Times(0);
+  EXPECT_CALL(*mock_service_, GetTokenForDomain("disallowed.com"))
+      .WillOnce(Return(""));
 
   network::ResourceRequest request;
   request.method = net::HttpRequestHeaders::kGetMethod;
@@ -379,9 +380,11 @@ TEST_F(SiteTokenURLLoaderFactoryTest, RejectsDisallowedDomain) {
 
   LoadResult result = IssueRequest(request);
 
-  EXPECT_EQ(result.error_code, net::ERR_ACCESS_DENIED);
-  EXPECT_TRUE(result.response_body.empty());
-  EXPECT_FALSE(result.response_head);
+  EXPECT_EQ(result.error_code, net::OK);
+  ASSERT_TRUE(result.response_head);
+  ASSERT_TRUE(result.response_head->headers);
+  EXPECT_EQ(result.response_head->headers->response_code(), net::HTTP_OK);
+  EXPECT_EQ(result.response_body, "");
 }
 
 TEST_F(SiteTokenURLLoaderFactoryTest, ReturnsEmptyBodyWhenServiceNull) {
@@ -405,13 +408,11 @@ TEST_F(SiteTokenURLLoaderFactoryTest, ReturnsEmptyBodyWhenServiceNull) {
   EXPECT_EQ(result.response_body, "");
 }
 
-TEST_F(SiteTokenURLLoaderFactoryTest,
-       RejectsUnallowlistedDomainWhenServiceNull) {
-  mock_service_ = nullptr;
-  SiteTokenProviderServiceFactory::GetInstance()->SetTestingFactory(
-      profile(), BrowserContextKeyedServiceFactory::TestingFactory());
-
+TEST_F(SiteTokenURLLoaderFactoryTest, ServesTokenForDomainAbsentFromAllowlist) {
   NavigateAndCommit(GURL("https://disallowed.com"));
+
+  EXPECT_CALL(*mock_service_, GetTokenForDomain("disallowed.com"))
+      .WillOnce(Return("token_for_disallowed"));
 
   network::ResourceRequest request;
   request.method = net::HttpRequestHeaders::kGetMethod;
@@ -421,9 +422,11 @@ TEST_F(SiteTokenURLLoaderFactoryTest,
 
   LoadResult result = IssueRequest(request);
 
-  EXPECT_EQ(result.error_code, net::ERR_ACCESS_DENIED);
-  EXPECT_TRUE(result.response_body.empty());
-  EXPECT_FALSE(result.response_head);
+  EXPECT_EQ(result.error_code, net::OK);
+  ASSERT_TRUE(result.response_head);
+  ASSERT_TRUE(result.response_head->headers);
+  EXPECT_EQ(result.response_head->headers->response_code(), net::HTTP_OK);
+  EXPECT_EQ(result.response_body, "token_for_disallowed");
 }
 
 TEST_F(SiteTokenURLLoaderFactoryTest, EnforcesPayloadSizeBoundaries) {

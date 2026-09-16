@@ -16,9 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/site_token_provider/site_token_provider_service_factory.h"
 #include "chrome/common/url_constants.h"
-#include "components/site_token_provider/features.h"
 #include "components/site_token_provider/site_token_constants.h"
-#include "components/site_token_provider/site_token_provider.h"
 #include "components/site_token_provider/site_token_provider_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -143,14 +141,6 @@ base::expected<std::string, net::Error> GetToken(int render_process_id,
   const std::string& host = initiator.host();
   SiteTokenProviderService* service =
       SiteTokenProviderServiceFactory::GetForProfile(profile);
-
-  bool is_allowed =
-      service ? service->IsDomainAllowlisted(host)
-              : IsDomainInAllowlist(host, features::kSiteTokenAllowlist.Get());
-
-  if (!is_allowed) {
-    return base::unexpected(net::ERR_ACCESS_DENIED);
-  }
 
   // If the service is not created (e.g. Incognito / Off-The-Record profile),
   // return an empty token to avoid exposing Incognito state to web content.
