@@ -163,6 +163,11 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.region_capture_rect;
   }
 
+  static const base::flat_map<base::Token, gfx::Rect>& region_capture_bounds(
+      const media::VideoFrameMetadata& input) {
+    return input.region_capture_bounds;
+  }
+
   static const std::optional<base::UnguessableToken>& tracking_token(
       const media::VideoFrameMetadata& input) {
     return input.tracking_token;

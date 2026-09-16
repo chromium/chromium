@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "media/base/capture_version.h"
@@ -34,9 +36,12 @@ struct EffectInfo {
 // MergeMetadataFrom() method.
 struct MEDIA_EXPORT VideoFrameMetadata {
   VideoFrameMetadata();
-  ~VideoFrameMetadata() = default;
+  ~VideoFrameMetadata();
 
   VideoFrameMetadata(const VideoFrameMetadata& other);
+  VideoFrameMetadata(VideoFrameMetadata&& other);
+  VideoFrameMetadata& operator=(const VideoFrameMetadata& other);
+  VideoFrameMetadata& operator=(VideoFrameMetadata&& other);
 
   // Merges internal values from |metadata_source|.
   void MergeMetadataFrom(const VideoFrameMetadata& metadata_source);
@@ -80,6 +85,10 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // is in a different coordinate space. For more info, see
   // https://crbug.com/1327560.
   std::optional<gfx::Rect> region_capture_rect;
+
+  // In multi-track or full-frame capture mode, contains the bounding rectangles
+  // in pixel coordinates for all active RegionCaptureCropIds (CropTargets).
+  base::flat_map<base::Token, gfx::Rect> region_capture_bounds;
 
   // Represents the version of the capture according to which this frame
   // was produced. For an explanation of how that versioning works, see

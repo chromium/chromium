@@ -364,19 +364,6 @@ mojom_component("base") {
     {
       types = [
         {
-          mojom = "mojo_base.mojom.Token"
-          cpp = "::base::Token"
-        },
-      ]
-      traits_headers = [ "//mojo/public/cpp/base/token_mojom_traits.h" ]
-      traits_public_deps = [
-        "//base",
-        "//mojo/public/cpp/base:shared_typemap_traits",
-      ]
-    },
-    {
-      types = [
-        {
           mojom = "mojo_base.mojom.UnguessableToken"
           cpp = "::base::UnguessableToken"
         },
@@ -616,6 +603,23 @@ mojom_component("base") {
         "//mojo/public/cpp/base:typemap_traits",
       ]
     },
+
+    # Split from `common_typemaps` because `blink_cpp_typemaps` must include
+    # `base_hash_traits.h` so `base::Token` can be used as a key in
+    # `blink::HashMap`, whereas non-Blink targets cannot include Blink headers.
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.Token"
+          cpp = "::base::Token"
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/token_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
   ]
 
   if (is_android) {
@@ -705,6 +709,25 @@ mojom_component("base") {
       ]
       traits_headers = [
         "//third_party/blink/renderer/platform/mojo/string16_mojom_traits.h",
+      ]
+    },
+
+    # Includes `base_hash_traits.h` so `base::Token` can be used as a key in
+    # `blink::HashMap` in Blink Mojo bindings.
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.Token"
+          cpp = "::base::Token"
+        },
+      ]
+      traits_headers = [
+        "//mojo/public/cpp/base/token_mojom_traits.h",
+        "//third_party/blink/renderer/platform/wtf/base_hash_traits.h",
+      ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
       ]
     },
   ]

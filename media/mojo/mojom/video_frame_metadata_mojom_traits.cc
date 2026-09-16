@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "media/base/capture_version.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "mojo/public/cpp/base/token_mojom_traits.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 
 namespace {
@@ -119,6 +120,9 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   READ_AND_ASSIGN_OPT(gfx::Size, source_size, SourceSize);
   READ_AND_ASSIGN_OPT(gfx::Rect, capture_update_rect, CaptureUpdateRect);
   READ_AND_ASSIGN_OPT(gfx::Rect, region_capture_rect, RegionCaptureRect);
+  if (!input.ReadRegionCaptureBounds(&output->region_capture_bounds)) {
+    return false;
+  }
 
   READ_AND_ASSIGN_OPT(base::TimeTicks, receive_time, ReceiveTime);
   READ_AND_ASSIGN_OPT(base::TimeTicks, capture_begin_time, CaptureBeginTime);

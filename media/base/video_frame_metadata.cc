@@ -5,29 +5,37 @@
 #include "media/base/video_frame_metadata.h"
 
 #include <stdint.h>
+
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
 
 VideoFrameMetadata::VideoFrameMetadata() = default;
+VideoFrameMetadata::~VideoFrameMetadata() = default;
 
 VideoFrameMetadata::VideoFrameMetadata(const VideoFrameMetadata& other) =
+    default;
+VideoFrameMetadata::VideoFrameMetadata(VideoFrameMetadata&& other) = default;
+VideoFrameMetadata& VideoFrameMetadata::operator=(
+    const VideoFrameMetadata& other) = default;
+VideoFrameMetadata& VideoFrameMetadata::operator=(VideoFrameMetadata&& other) =
     default;
 
 void VideoFrameMetadata::MergeMetadataFrom(
     const VideoFrameMetadata& metadata_source) {
-  static const VideoFrameMetadata kDefaultMetadata;
+  static const base::NoDestructor<VideoFrameMetadata> kDefaultMetadata;
 
 #define MERGE_OPTIONAL_FIELD(a, source) \
   if (source.a)                         \
   this->a = source.a
 
-#define MERGE_VALUE_FIELD(a, source)  \
-  if (source.a != kDefaultMetadata.a) \
+#define MERGE_VALUE_FIELD(a, source)   \
+  if (source.a != kDefaultMetadata->a) \
   this->a = source.a
 
   MERGE_OPTIONAL_FIELD(capture_begin_time, metadata_source);
@@ -36,6 +44,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_OPTIONAL_FIELD(capture_update_rect, metadata_source);
   MERGE_OPTIONAL_FIELD(source_size, metadata_source);
   MERGE_OPTIONAL_FIELD(region_capture_rect, metadata_source);
+  MERGE_VALUE_FIELD(region_capture_bounds, metadata_source);
   MERGE_VALUE_FIELD(capture_version, metadata_source);
   MERGE_OPTIONAL_FIELD(copy_required, metadata_source);
   MERGE_VALUE_FIELD(end_of_stream, metadata_source);

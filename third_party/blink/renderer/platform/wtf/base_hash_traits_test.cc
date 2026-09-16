@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/base_hash_traits.h"
 
+#include "base/token.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -53,7 +54,7 @@ TEST(BaseHashTraitsTest, UnguessableTokenHashSet) {
   EXPECT_TRUE(set.Contains(token2));
 }
 
-TEST(BaseHashTraitsTest, HashTraitsValues) {
+TEST(BaseHashTraitsTest, UnguessableTokenHashTraitsValues) {
   // Empty and Deleted values should not crash when hashed.
   EXPECT_EQ(HashTraits<base::UnguessableToken>::GetHash(
                 HashTraits<base::UnguessableToken>::EmptyValue()),
@@ -63,6 +64,56 @@ TEST(BaseHashTraitsTest, HashTraitsValues) {
             0u);
 
   EXPECT_FALSE(HashTraits<base::UnguessableToken>::DeletedValue().is_empty());
+}
+
+TEST(BaseHashTraitsTest, TokenHashMap) {
+  HashMap<base::Token, String> map;
+  base::Token token1 = base::Token::CreateRandom();
+  base::Token token2 = base::Token::CreateRandom();
+
+  EXPECT_TRUE(map.empty());
+  map.insert(token1, "token1");
+  map.insert(token2, "token2");
+  EXPECT_EQ(map.size(), 2u);
+
+  EXPECT_TRUE(map.Contains(token1));
+  EXPECT_TRUE(map.Contains(token2));
+  EXPECT_EQ(map.at(token1), "token1");
+  EXPECT_EQ(map.at(token2), "token2");
+
+  EXPECT_EQ(map.Take(token1), "token1");
+  EXPECT_EQ(map.size(), 1u);
+  EXPECT_FALSE(map.Contains(token1));
+  EXPECT_TRUE(map.Contains(token2));
+}
+
+TEST(BaseHashTraitsTest, TokenHashSet) {
+  HashSet<base::Token> set;
+  base::Token token1 = base::Token::CreateRandom();
+  base::Token token2 = base::Token::CreateRandom();
+
+  set.insert(token1);
+  set.insert(token2);
+  EXPECT_EQ(set.size(), 2u);
+
+  EXPECT_TRUE(set.Contains(token1));
+  EXPECT_TRUE(set.Contains(token2));
+
+  set.erase(token1);
+  EXPECT_FALSE(set.Contains(token1));
+  EXPECT_TRUE(set.Contains(token2));
+}
+
+TEST(BaseHashTraitsTest, TokenHashTraitsValues) {
+  // Empty and Deleted values should not crash when hashed.
+  EXPECT_EQ(
+      HashTraits<base::Token>::GetHash(HashTraits<base::Token>::EmptyValue()),
+      0u);
+  EXPECT_NE(
+      HashTraits<base::Token>::GetHash(HashTraits<base::Token>::DeletedValue()),
+      0u);
+
+  EXPECT_FALSE(HashTraits<base::Token>::DeletedValue().is_zero());
 }
 
 }  // namespace

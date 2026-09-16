@@ -14,6 +14,7 @@ import "media/mojo/mojom/encryption_pattern.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -415,6 +416,7 @@ struct VideoFrameMetadata {
   gfx.mojom.Size? source_size;
 
   gfx.mojom.Rect? region_capture_rect;
+  map<mojo_base.mojom.Token, gfx.mojom.Rect> region_capture_bounds;
   CaptureVersion capture_version;
 
   bool copy_required;
