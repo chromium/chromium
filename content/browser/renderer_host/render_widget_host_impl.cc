@@ -380,6 +380,38 @@ bool ShouldProcessKeyEventForListeners(
   return false;
 }
 
+gfx::Rect ClampPopupBoundsToDisplay(const gfx::Rect& bounds,
+                                    RenderWidgetHostViewBase* view) {
+  // More than twice the width of an 8K display, so it never constrains a
+  // real popup, while keeping the area (2^28) well inside int.
+  constexpr int kMaxPopupWidthOrHeight = 16384;
+  static_assert(kMaxPopupWidthOrHeight <= std::numeric_limits<int>::max() / 4 /
+                                              kMaxPopupWidthOrHeight,
+                "kMaxPopupWidthOrHeight squared must stay well inside int");
+
+  // Ozone headless reports a 1x1 display unless --ozone-override-screen-size
+  // overrides it, which describes no real estate to clamp against. Fall back
+  // to a fixed maximum there, and likewise with no screen or an empty work
+  // area.
+  gfx::Size max_size(kMaxPopupWidthOrHeight, kMaxPopupWidthOrHeight);
+  display::Screen* screen = display::Screen::Get();
+  if (screen && !screen->IsHeadless()) {
+    // The view does not exist yet when the popup is first shown, in which
+    // case fall back to whichever display the requested bounds land on.
+    const display::Display display =
+        view ? screen->GetDisplayNearestView(view->GetNativeView())
+             : screen->GetDisplayMatching(bounds);
+    if (!display.work_area().IsEmpty()) {
+      max_size = display.work_area().size();
+    }
+  }
+
+  gfx::Rect clamped(bounds);
+  clamped.set_width(std::clamp(clamped.width(), 0, max_size.width()));
+  clamped.set_height(std::clamp(clamped.height(), 0, max_size.height()));
+  return clamped;
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2779,7 +2811,8 @@ void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
   if (view_ && !waiting_for_screen_rects_ack_) {
     gfx::Rect constrained_bounds =
         delegate_ ? delegate_->ConstrainPopupBounds(bounds) : bounds;
-    view_->SetBounds(constrained_bounds);
+    view_->SetBounds(
+        ClampPopupBoundsToDisplay(constrained_bounds, view_.get()));
   }
   std::move(callback).Run();
 }
@@ -2960,8 +2993,10 @@ void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_screen_rect,
   // `delegate_` may be null since this message may be received from when
   // the delegate shutdown but this widget is not yet destroyed.
   if (delegate_) {
-    delegate_->ShowCreatedWidget(GetProcess()->GetID(), GetRoutingID(),
-                                 initial_screen_rect, anchor_screen_rect);
+    delegate_->ShowCreatedWidget(
+        GetProcess()->GetID(), GetRoutingID(),
+        ClampPopupBoundsToDisplay(initial_screen_rect, view_.get()),
+        anchor_screen_rect);
   }
   std::move(callback).Run();
 }
