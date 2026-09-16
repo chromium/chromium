@@ -40,6 +40,9 @@ const CGFloat kHorizontalMargin = 16.0;
 const CGFloat kFaviconSize = 24.0;
 const CGFloat kTrashSymbolPointSize = 18.0;
 
+// Insets for the collection view.
+const NSDirectionalEdgeInsets kListSectionInsets = {16, 16.0, 0, 16.0};
+
 // Section identifier for the collection view diffable data source.
 NSString* const kSharedTabsSectionIdentifier = @"kSharedTabsSectionIdentifier";
 
@@ -188,21 +191,36 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
       .active = YES;
 }
 
+// Creates the compositional layout for the shared tabs collection view.
+- (UICollectionViewLayout*)createCollectionViewLayout {
+  return [[UICollectionViewCompositionalLayout alloc]
+      initWithSectionProvider:^NSCollectionLayoutSection*(
+          NSInteger sectionIndex,
+          id<NSCollectionLayoutEnvironment> layoutEnvironment) {
+        UICollectionLayoutListConfiguration* config =
+            [[UICollectionLayoutListConfiguration alloc]
+                initWithAppearance:
+                    UICollectionLayoutListAppearanceInsetGrouped];
+        config.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+        NSCollectionLayoutSection* section = [NSCollectionLayoutSection
+            sectionWithListConfiguration:config
+                       layoutEnvironment:layoutEnvironment];
+        section.contentInsets = kListSectionInsets;
+        return section;
+      }];
+}
+
+// Sets up the collection view and its diffable data source.
 - (void)setUpCollectionView {
-  UICollectionLayoutListConfiguration* config =
-      [[UICollectionLayoutListConfiguration alloc]
-          initWithAppearance:UICollectionLayoutListAppearanceInsetGrouped];
-  config.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-
-  UICollectionViewCompositionalLayout* layout =
-      [UICollectionViewCompositionalLayout layoutWithListConfiguration:config];
-
-  _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
-                                       collectionViewLayout:layout];
+  _collectionView = [[UICollectionView alloc]
+             initWithFrame:CGRectZero
+      collectionViewLayout:[self createCollectionViewLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.delegate = self;
   _collectionView.backgroundColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
+  _collectionView.contentInsetAdjustmentBehavior =
+      UIScrollViewContentInsetAdjustmentNever;
 
   [self.view addSubview:_collectionView];
 
