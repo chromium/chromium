@@ -248,12 +248,9 @@ void DownloadManagerService::OpenDownloadsPage(
     return;
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  if (profile->IsIncognitoProfile()) {
-    profile->GetOTRProfileID().ConvertToJavaOTRProfileID(env);
-  }
   Java_DownloadManagerService_openDownloadsPage(
       env,
-      profile->IsIncognitoProfile()
+      profile->IsPrimaryOTRProfileWithRegularParent()
           ? profile->GetOTRProfileID().ConvertToJavaOTRProfileID(env)
           : nullptr,
       static_cast<int>(download_open_source));
