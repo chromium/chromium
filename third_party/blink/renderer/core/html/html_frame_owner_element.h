@@ -47,7 +47,6 @@ namespace blink {
 class Frame;
 class LayoutEmbeddedContent;
 class LazyLoadFrameObserver;
-class WebPluginContainerImpl;
 class ResourceRequestHead;
 class SecurityOrigin;
 
@@ -90,26 +89,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   void SetColorScheme(mojom::blink::ColorScheme);
   void SetPreferredColorScheme(mojom::blink::PreferredColorScheme);
-
-  class PluginDisposeSuspendScope {
-    STACK_ALLOCATED();
-
-   public:
-    PluginDisposeSuspendScope() { suspend_count_ += 2; }
-    ~PluginDisposeSuspendScope() {
-      suspend_count_ -= 2;
-      if (suspend_count_ == 1)
-        PerformDeferredPluginDispose();
-    }
-
-   private:
-    void PerformDeferredPluginDispose();
-
-    // Low bit indicates if there are plugins to dispose.
-    static int suspend_count_;
-
-    friend class HTMLFrameOwnerElement;
-  };
 
   // Node overrides:
   Node::InsertionNotificationRequest InsertedInto(
@@ -186,8 +165,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
           UpdateBehavior::kStyleAndLayout) const override;
   FocusgroupFlags NativeArrowKeyAxes() const final;
   void FrameOwnerPropertiesChanged() override;
-
-  void DisposePluginSoon(WebPluginContainerImpl*);
 
   // Return the origin which is to be used for permissions policy container
   // policies, as "the origin of the URL in the frame's src attribute" (see

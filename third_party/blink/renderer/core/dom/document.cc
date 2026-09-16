@@ -2638,7 +2638,6 @@ void Document::UpdateStyleAndLayoutTree(LayoutUpgrade& upgrade) {
     return;
   }
 
-  HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   ScriptForbiddenScope forbid_script;
 
   if (HTMLFrameOwnerElement* owner = LocalOwner()) {
@@ -3145,7 +3144,6 @@ void Document::UpdateStyleAndLayout(DocumentUpdateReason reason) {
   if (reason != DocumentUpdateReason::kBeginMainFrame && frame_view)
     frame_view->WillStartForcedLayout(reason, is_potentially_clean);
 
-  HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   ScriptForbiddenScope forbid_script;
 
   DCHECK(!frame_view || !frame_view->IsInPerformLayout())
@@ -3337,15 +3335,9 @@ void Document::Shutdown() {
   // Frame navigation can cause a new Document to be attached. Don't allow that,
   // since that will cause a situation where LocalFrame still has a Document
   // attached after this finishes!  Normally, it shouldn't actually be possible
-  // to trigger navigation here.  However, plugins (see below) can cause lots of
-  // crazy things to happen, since plugin detach involves nested run loops.
+  // to trigger navigation here.  However, plugins can cause lots of crazy
+  // things to happen, since plugin detach involves nested run loops.
   FrameNavigationDisabler navigation_disabler(*GetFrame());
-  // Defer plugin dispose to avoid plugins trying to run script inside
-  // ScriptForbiddenScope, which will crash the renderer after
-  // https://crrev.com/200984
-  // TODO(dcheng): This is a temporary workaround, Document::Shutdown() should
-  // not be running script at all.
-  HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
   // Don't allow script to run in the middle of DetachLayoutTree() because a
   // detaching Document is not in a consistent state.
   ScriptForbiddenScope forbid_script;
@@ -3355,8 +3347,7 @@ void Document::Shutdown() {
   // Do not add code before this without a documented reason. A postcondition of
   // Shutdown() is that |dom_window_| must not have an attached Document.
   // Allowing script execution when the Document is shutting down can make it
-  // easy to accidentally violate this condition, and the ordering of the
-  // scopers above is subtle due to legacy interactions with plugins.
+  // easy to accidentally violate this condition.
 
   if (num_canvases_ > 0)
     UMA_HISTOGRAM_COUNTS_100("Blink.Canvas.NumCanvasesPerPage", num_canvases_);

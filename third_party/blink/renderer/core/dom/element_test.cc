@@ -658,7 +658,7 @@ class ScriptOnDestroyPlugin : public GarbageCollected<ScriptOnDestroyPlugin>,
   bool destroy_called_ = false;
 };
 
-TEST_F(ElementTest, CreateAndAttachShadowRootSuspendsPluginDisposal) {
+TEST_F(ElementTest, CreateAndAttachShadowRootForbidsScriptDuringPluginDispose) {
   Document& document = GetDocument();
   SetBodyContent(R"HTML(
     <div id=target>

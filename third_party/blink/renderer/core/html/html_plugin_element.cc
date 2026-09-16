@@ -161,7 +161,7 @@ void HTMLPlugInElement::SetPersistedPlugin(WebPluginContainerImpl* plugin) {
     return;
   if (persisted_plugin_) {
     persisted_plugin_->Hide();
-    DisposePluginSoon(persisted_plugin_.Release());
+    persisted_plugin_.Release()->Dispose();
   }
   persisted_plugin_ = plugin;
 }
@@ -215,7 +215,6 @@ void HTMLPlugInElement::AttachLayoutTree(AttachContext& context) {
     // If we don't have a layoutObject we have to dispose of any plugins
     // which we persisted over a reattach.
     if (persisted_plugin_) {
-      HTMLFrameOwnerElement::PluginDisposeSuspendScope suspend_plugin_dispose;
       SetPersistedPlugin(nullptr);
     }
     return;
