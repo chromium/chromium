@@ -89,6 +89,7 @@
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
+#include "net/device_bound_sessions/session.h"
 #include "net/filter/source_stream_type.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
