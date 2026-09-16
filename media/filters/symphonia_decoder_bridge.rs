@@ -224,9 +224,9 @@ pub mod ffi {
         status: SymphoniaDecodeStatus,
         /// A descriptive error message if decoding failed.
         error_str: String,
-        /// A `Box` containing the decoded audio data. If the end of the stream
-        /// has been reached, the buffer will be empty.
-        buffer: Box<SymphoniaAudioBuffer>,
+        /// The decoded audio data. If the end of the stream has been reached,
+        /// the buffer will be empty.
+        buffer: SymphoniaAudioBuffer,
     }
 
     // This block declares the Rust functions that are exposed to C++.
@@ -685,7 +685,7 @@ pub fn create_audio_buffer(
 }
 
 /// Type alias for the result of a decoding operation.
-type DecodeResult = Result<Box<ffi::SymphoniaAudioBuffer>, (ffi::SymphoniaDecodeStatus, String)>;
+type DecodeResult = Result<ffi::SymphoniaAudioBuffer, (ffi::SymphoniaDecodeStatus, String)>;
 
 /// Helper function to convert our internal decode result type to the FFI type.
 impl From<DecodeResult> for ffi::SymphoniaDecodeResult {
@@ -696,11 +696,9 @@ impl From<DecodeResult> for ffi::SymphoniaDecodeResult {
                 error_str: String::new(),
                 buffer,
             },
-            Err((status, error_str)) => ffi::SymphoniaDecodeResult {
-                status,
-                error_str,
-                buffer: Box::new(default_audio_buffer()),
-            },
+            Err((status, error_str)) => {
+                ffi::SymphoniaDecodeResult { status, error_str, buffer: default_audio_buffer() }
+            }
         }
     }
 }
@@ -807,10 +805,8 @@ impl SymphoniaDecoder {
             (ffi::SymphoniaDecodeStatus::InvalidDecodedBufferSampleFormat, e.to_string())
         })?;
 
-        Ok(Box::new(
-            create_audio_buffer(buffer, sample_buffer)
-                .map_err(|e| (ffi::SymphoniaDecodeStatus::InsufficentData, e.to_string()))?,
-        ))
+        create_audio_buffer(buffer, sample_buffer)
+            .map_err(|e| (ffi::SymphoniaDecodeStatus::InsufficentData, e.to_string()))
     }
 
     /// FFI-exposed method to decode a single audio packet.

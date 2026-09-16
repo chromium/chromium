@@ -102,7 +102,7 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
 
   // Creates a media::AudioBuffer from the decoded SymphoniaAudioBuffer.
   scoped_refptr<AudioBuffer> ToMediaAudioBuffer(
-      rust::Box<SymphoniaAudioBuffer> symphonia_buffer,
+      SymphoniaAudioBuffer&& symphonia_buffer,
       base::TimeDelta timestamp);
 
   // Handles (re-)initializing the decoder with a (new) config.

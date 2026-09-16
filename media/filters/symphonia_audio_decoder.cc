@@ -207,26 +207,16 @@ DecoderStatus ToDecoderStatus(SymphoniaDecodeResult& result) {
   }
 }
 
-// A templated ExternalMemory implementation that wraps and owns a rust::Box<T>,
-// automatically deriving the span from the box's `data` member (expected to be
-// a contiguous buffer like rust::Vec<uint8_t>).
-template <typename T>
-class BoxedMemory : public AudioBuffer::ExternalMemory {
+// An ExternalMemory implementation that wraps and owns a rust::Vec<uint8_t>.
+class RustVecMemory : public AudioBuffer::ExternalMemory {
  public:
-  explicit BoxedMemory(rust::Box<T> box)
-      : ExternalMemory(box->data), box_(std::move(box)) {}
-  ~BoxedMemory() override = default;
+  explicit RustVecMemory(rust::Vec<uint8_t> vec)
+      : ExternalMemory(vec), vec_(std::move(vec)) {}
+  ~RustVecMemory() override = default;
 
  private:
-  rust::Box<T> box_;
+  rust::Vec<uint8_t> vec_;
 };
-
-// Helper function to automatically deduce the template argument T from
-// rust::Box<T>.
-template <typename T>
-std::unique_ptr<BoxedMemory<T>> WrapBoxedMemory(rust::Box<T> box) {
-  return std::make_unique<BoxedMemory<T>>(std::move(box));
-}
 
 }  // namespace
 
@@ -491,7 +481,7 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
   // If 0 frames were decoded (either due to a non-fatal decode error or an
   // empty frame), forward the buffer metadata to the discard helper for
   // caching.
-  if (result.buffer->data.empty()) {
+  if (result.buffer.data.empty()) {
     const bool processed = discard_helper_->ProcessBuffers(
         AudioDiscardHelper::TimeInfo::FromBuffer(buffer), nullptr);
     DCHECK(!processed);
@@ -527,22 +517,23 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
 }
 
 scoped_refptr<AudioBuffer> SymphoniaAudioDecoder::ToMediaAudioBuffer(
-    rust::Box<SymphoniaAudioBuffer> symphonia_buffer,
+    SymphoniaAudioBuffer&& symphonia_buffer,
     base::TimeDelta timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const SampleFormat sample_format =
-      ToSampleFormat(symphonia_buffer->sample_format);
-  const int channel_count = symphonia_buffer->channel_count;
-  const int sample_rate = symphonia_buffer->sample_rate;
-  const int num_frames = symphonia_buffer->num_frames;
+      ToSampleFormat(symphonia_buffer.sample_format);
+  const int channel_count = symphonia_buffer.channel_count;
+  const int sample_rate = symphonia_buffer.sample_rate;
+  const int num_frames = symphonia_buffer.num_frames;
 
   const bool count_changed = channel_count != config_.channels();
   const auto layout = count_changed
-                          ? ChannelMaskToLayout(symphonia_buffer->channel_mask)
+                          ? ChannelMaskToLayout(symphonia_buffer.channel_mask)
                           : config_.channel_layout();
 
-  auto external_memory = WrapBoxedMemory(std::move(symphonia_buffer));
+  auto external_memory =
+      std::make_unique<RustVecMemory>(std::move(symphonia_buffer.data));
 
   return AudioBuffer::CreateFromExternalMemory(
       sample_format, layout, channel_count, sample_rate, num_frames, timestamp,
