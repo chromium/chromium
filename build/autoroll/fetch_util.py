@@ -220,6 +220,10 @@ def create_to_commit_zip(
         # Avoid committing actual artifacts.
         if filename.endswith(('.aar', '.jar')):
           continue
+        # License texts stay in the cipd package only; README.chromium points
+        # at them there. See https://crbug.com/559659818.
+        if filename.startswith('LICENSE'):
+          continue
         # TODO(mheikal): stop outputting these from gradle since they are not
         # useful.
         if filename in _SKIP_FILES:

@@ -550,7 +550,11 @@ No modifications.
                 return
             }
 
-            dependencyDirectories.add(dependency.committedDirectoryPath)
+            // tools/licenses/licenses.py reads README.chromium and LICENSE from
+            // here. For autorolled projects that is the cipd package, so the
+            // directory only exists on Android checkouts, which licenses.py
+            // tolerates (it skips listed directories that are absent).
+            dependencyDirectories.add(dependency.artifactDirectoryPath)
 
             if (project.file("${dependency.directoryPath}/${dependency.fileName}").exists()) {
                 logger.quiet("${dependency.id} exists, skipping.")
