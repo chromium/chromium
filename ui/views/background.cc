@@ -80,12 +80,7 @@ class RoundedRectBackground : public Background {
 
     const gfx::RoundedCornersF radii = radii_.value_or(
         gfx::RoundedCornersF(std::min(bounds.width(), bounds.height()) / 2.0f));
-    const SkVector sk_radii[4] = {{radii.upper_left(), radii.upper_left()},
-                                  {radii.upper_right(), radii.upper_right()},
-                                  {radii.lower_right(), radii.lower_right()},
-                                  {radii.lower_left(), radii.lower_left()}};
-    const SkPath path = SkPath::RRect(
-        SkRRect::MakeRectRadii(gfx::RectToSkRect(bounds), sk_radii));
+    const SkPath path = SkPath::RRect(gfx::RoundedRectToSkRRect(bounds, radii));
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);

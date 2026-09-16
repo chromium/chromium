@@ -43,18 +43,7 @@ void AddPossiblyRoundRectToPath(
     path->addRect(gfx::RectToSkRect(rectangle));
     return;
   }
-  SkVector radii[4] = {{preferred_corner_radii.upper_left(),
-                        preferred_corner_radii.upper_left()},
-                       {preferred_corner_radii.upper_right(),
-                        preferred_corner_radii.upper_right()},
-                       {preferred_corner_radii.lower_right(),
-                        preferred_corner_radii.lower_right()},
-                       {preferred_corner_radii.lower_left(),
-                        preferred_corner_radii.lower_left()}};
-
-  SkRRect rr;
-  rr.setRectRadii(gfx::RectToSkRect(rectangle), radii);
-  path->addRRect(rr);
+  path->addRRect(gfx::RoundedRectToSkRRect(rectangle, preferred_corner_radii));
 }
 
 int RoundToPercent(double fractional_value) {

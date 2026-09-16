@@ -122,15 +122,7 @@ SkRRect GetRestoredClipRegion(const gfx::RectF& bounds,
                               const gfx::RoundedCornersF& radii) {
   gfx::RectF clipped_bounds = bounds;
   clipped_bounds.Inset(border);
-  SkVector sk_radii[4]{
-      {radii.upper_left(), radii.upper_left()},
-      {radii.upper_right(), radii.upper_right()},
-      {radii.lower_right(), radii.lower_right()},
-      {radii.lower_left(), radii.lower_left()},
-  };
-  SkRRect clip;
-  clip.setRectRadii(gfx::RectFToSkRect(clipped_bounds), sk_radii);
-  return clip;
+  return gfx::RoundedRectFToSkRRect(clipped_bounds, radii);
 }
 
 ui::NavButtonProvider::FrameButtonDisplayType GetFrameButtonDisplayType(

@@ -39,16 +39,13 @@ void HighlightBorder::PaintBorderToCanvas(
   const float dsf = canvas->UndoDeviceScaleFactor();
   const gfx::RectF pixel_bounds = gfx::ConvertRectToPixels(bounds, dsf);
 
-  const SkVector radii[4] = {
-      {corner_radii.upper_left() * dsf,  corner_radii.upper_left() * dsf},
-      {corner_radii.upper_right() * dsf, corner_radii.upper_right() * dsf},
-      {corner_radii.lower_right() * dsf, corner_radii.lower_right() * dsf},
-      {corner_radii.lower_left() * dsf,  corner_radii.lower_left() * dsf}};
+  const gfx::RoundedCornersF scaled_radii =
+      gfx::ScaleRoundedCorners(corner_radii, dsf);
 
   gfx::RectF outer_border_bounds(pixel_bounds);
   outer_border_bounds.Inset(half_thickness);
   const SkPath outer_path = SkPath::RRect(
-      SkRRect::MakeRectRadii(gfx::RectFToSkRect(outer_border_bounds), radii));
+      gfx::RoundedRectFToSkRRect(outer_border_bounds, scaled_radii));
   canvas->DrawPath(outer_path, flags);
 
   gfx::RectF inner_border_bounds(pixel_bounds);
@@ -56,7 +53,7 @@ void HighlightBorder::PaintBorderToCanvas(
   inner_border_bounds.Inset(half_thickness);
   flags.setColor(highlight_color);
   const SkPath inner_path = SkPath::RRect(
-      SkRRect::MakeRectRadii(gfx::RectFToSkRect(inner_border_bounds), radii));
+      gfx::RoundedRectFToSkRRect(inner_border_bounds, scaled_radii));
   canvas->DrawPath(inner_path, flags);
 }
 

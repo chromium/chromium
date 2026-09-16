@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/nine_image_painter.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/view.h"
@@ -97,14 +98,10 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
   }
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(bg_color_);
-  const std::array<SkVector, 4> scaled_radii = {
-      {{radii_.upper_left() * scale, radii_.upper_left() * scale},
-       {radii_.upper_right() * scale, radii_.upper_right() * scale},
-       {radii_.lower_right() * scale, radii_.lower_right() * scale},
-       {radii_.lower_left() * scale, radii_.lower_left() * scale}}};
-
-  const SkPath fill_path = SkPath::RRect(SkRRect::MakeRectRadii(
-      gfx::RectFToSkRect(fill_rect), scaled_radii.data()));
+  const gfx::RoundedCornersF scaled_radii =
+      gfx::ScaleRoundedCorners(radii_, scale);
+  const SkPath fill_path =
+      SkPath::RRect(gfx::RoundedRectFToSkRRect(fill_rect, scaled_radii));
   canvas->DrawPath(fill_path, flags);
 
   if (stroke_color_ != SK_ColorTRANSPARENT) {
@@ -115,14 +112,14 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
     flags.setStrokeWidth(stroke_width);
     flags.setColor(stroke_color_);
 
-    std::array<SkVector, 4> stroke_radii;
-    for (size_t i = 0; i < 4; i++) {
-      stroke_radii[i] =
-          scaled_radii[i] - SkVector{stroke_width / 2, stroke_width / 2};
-    }
+    gfx::RoundedCornersF stroke_corners = scaled_radii;
+    stroke_corners.Set(stroke_corners.upper_left() - stroke_inset,
+                       stroke_corners.upper_right() - stroke_inset,
+                       stroke_corners.lower_right() - stroke_inset,
+                       stroke_corners.lower_left() - stroke_inset);
 
-    const SkPath stroke_path = SkPath::RRect(SkRRect::MakeRectRadii(
-        gfx::RectFToSkRect(stroke_rect), stroke_radii.data()));
+    const SkPath stroke_path =
+        SkPath::RRect(gfx::RoundedRectFToSkRRect(stroke_rect, stroke_corners));
     canvas->DrawPath(stroke_path, flags);
   }
 }
