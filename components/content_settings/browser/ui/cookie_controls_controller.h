@@ -56,8 +56,16 @@ class CookieControlsController final
       delete;
   ~CookieControlsController() override;
 
-  // Called when the web_contents has changed.
+  // Called when the web_contents has changed. Status is computed for the last
+  // committed URL of `web_contents`.
   void Update(content::WebContents* web_contents);
+
+  // Called when the web_contents has changed. Status is computed for
+  // `site_url`, which is also used for any setting changes made via this
+  // controller. Callers that show a specific URL to the user (e.g. Page Info)
+  // should pass that URL so the displayed state and the modified setting
+  // remain consistent even if a navigation is pending.
+  void Update(content::WebContents* web_contents, const GURL& site_url);
 
   // Updates the cookie controls icon.
   void UpdateCookieControlsIcon();
@@ -142,7 +150,7 @@ class CookieControlsController final
       bool block_third_party_cookies) override;
   void OnCookieSettingChanged() override;
 
-  Status GetStatus(content::WebContents* web_contents);
+  Status GetStatus();
 
   CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(
       const GURL url,
@@ -183,6 +191,11 @@ class CookieControlsController final
   // This may be null.
   scoped_refptr<content_settings::CookieSettings> original_cookie_settings_;
   raw_ptr<HostContentSettingsMap> settings_map_;
+
+  // The URL the controller is currently anchored to. Set in `Update()` and
+  // refreshed on primary page changes; used for status queries and setting
+  // modifications so they always agree with what the UI is showing.
+  GURL site_url_;
 
   base::ScopedObservation<content_settings::CookieSettings,
                           content_settings::CookieSettings::Observer>

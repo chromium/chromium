@@ -363,7 +363,7 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
 
     // TODO(crbug.com/40901748): SetCookieInfo is called twice, once from here
     // and once from InitializeUiState. This should be cleaned up.
-    cookie_controller_->Update(web_contents);
+    cookie_controller_->Update(web_contents, site_url_);
 
     auto* pscs = GetPageSpecificContentSettings();
     if (pscs) {

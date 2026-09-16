@@ -139,6 +139,13 @@ void CookieControlsController::OnUiClosing() {
 
 void CookieControlsController::Update(content::WebContents* web_contents) {
   DCHECK(web_contents);
+  Update(web_contents, web_contents->GetLastCommittedURL());
+}
+
+void CookieControlsController::Update(content::WebContents* web_contents,
+                                      const GURL& site_url) {
+  DCHECK(web_contents);
+  site_url_ = site_url;
   if (!tab_observer_ || GetWebContents() != web_contents) {
     tab_observer_ = std::make_unique<TabObserver>(this, web_contents);
     SetStateChangedViaBypass(false);
@@ -147,7 +154,7 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
   if (observers_.empty()) {
     return;
   }
-  auto status = GetStatus(web_contents);
+  auto status = GetStatus();
   const CookieControlsState icon_state =
       GetCookieControlsIconState(status.controls_state);
   for (auto& observer : observers_) {
@@ -157,14 +164,13 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
   }
 }
 
-CookieControlsController::Status CookieControlsController::GetStatus(
-    content::WebContents* web_contents) {
+CookieControlsController::Status CookieControlsController::GetStatus() {
   if (!cookie_settings_->ShouldBlockThirdPartyCookies()) {
     return {CookieControlsState::kHidden,
             CookieControlsEnforcement::kNoEnforcement, base::Time()};
   }
 
-  const GURL& url = web_contents->GetLastCommittedURL();
+  const GURL& url = site_url_;
   if (url.SchemeIs(content::kChromeUIScheme) ||
       url.SchemeIs(kExtensionScheme)) {
     return {CookieControlsState::kHidden,
@@ -241,20 +247,19 @@ bool CookieControlsController::HasOriginSandboxedTopLevelDocument() const {
 
 void CookieControlsController::OnCookieBlockingEnabledForSite(
     bool block_third_party_cookies) {
-  const GURL& url = GetWebContents()->GetLastCommittedURL();
+  const GURL url = site_url_;
   should_reload_ = true;
   if (block_third_party_cookies) {
     base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOn"));
     cookie_settings_->ResetThirdPartyCookieSetting(url);
-    Update(GetWebContents());
+    Update(GetWebContents(), url);
     return;
   }
 
   CHECK(!block_third_party_cookies);
   base::RecordAction(UserMetricsAction("CookieControls.Bubble.TurnOff"));
   cookie_settings_->SetCookieSettingForUserBypass(url);
-  Update(GetWebContents());
-  // Record metadata for the newly created exception.
+  Update(GetWebContents(), url);
   base::DictValue metadata = GetMetadata(settings_map_, url);
   metadata.Set(kActivationsCountKey, GetActivationCount(metadata) + 1);
   ApplyMetadataChanges(settings_map_, url, std::move(metadata));
@@ -279,8 +284,7 @@ int CookieControlsController::GetAllowedThirdPartyCookiesSitesCount() const {
   }
 
   return browsing_data::GetUniqueThirdPartyCookiesHostCount(
-      GetWebContents()->GetLastCommittedURL(),
-      *(pscs->allowed_browsing_data_model()));
+      site_url_, *(pscs->allowed_browsing_data_model()));
 }
 
 int CookieControlsController::GetBlockedThirdPartyCookiesSitesCount() const {
@@ -291,8 +295,7 @@ int CookieControlsController::GetBlockedThirdPartyCookiesSitesCount() const {
   }
 
   return browsing_data::GetUniqueThirdPartyCookiesHostCount(
-      GetWebContents()->GetLastCommittedURL(),
-      *(pscs->blocked_browsing_data_model()));
+      site_url_, *(pscs->blocked_browsing_data_model()));
 }
 
 int CookieControlsController::GetStatefulBounceCount() const {
@@ -309,7 +312,7 @@ void CookieControlsController::UpdateCookieControlsIcon() {
   if (observers_.empty()) {
     return;
   }
-  auto status = GetStatus(GetWebContents());
+  auto status = GetStatus();
   const CookieControlsState icon_state =
       GetCookieControlsIconState(status.controls_state);
   for (auto& observer : observers_) {
@@ -372,7 +375,8 @@ void CookieControlsController::RemoveObserver(CookieControlsObserver* obs) {
 }
 
 void CookieControlsController::RecordActivationMetrics() {
-  const GURL& url = GetWebContents()->GetLastCommittedURL();
+  const GURL& url = site_url_;
+
   auto site_data_access_type =
       GetSiteDataAccessType(GetAllowedThirdPartyCookiesSitesCount(),
                             GetBlockedThirdPartyCookiesSitesCount());
@@ -488,6 +492,8 @@ void CookieControlsController::TabObserver::PrimaryPageChanged(
     reload_count_++;
   }
   last_visited_url_ = current_url;
+  cookie_controls_->site_url_ =
+      content::WebContentsObserver::web_contents()->GetLastCommittedURL();
   cookie_controls_->UpdatePageReloadStatus(reload_count_);
 }
 

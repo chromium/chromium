@@ -756,3 +756,27 @@ TEST_F(CookieControlsUserBypassTest, SandboxedTopLevelFrame) {
   cookie_controls()->Update(web_contents());
   testing::Mock::VerifyAndClearExpectations(mock());
 }
+
+TEST_F(CookieControlsUserBypassTest, DisableForSiteWithPendingNavigation) {
+  // The toggle should always operate on the URL that the surrounding UI was
+  // anchored to, even if a pending navigation has caused the visible URL to
+  // diverge from the last committed URL.
+  const GURL kCommittedUrl("https://committed.test");
+  const GURL kPendingUrl("https://pending.test");
+
+  NavigateAndCommit(kCommittedUrl);
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      kPendingUrl, web_contents());
+  navigation->Start();
+  ASSERT_EQ(kCommittedUrl, web_contents()->GetLastCommittedURL());
+
+  cookie_controls()->Update(web_contents(), kPendingUrl);
+  cookie_controls()->OnCookieBlockingEnabledForSite(
+      /*block_third_party_cookies=*/false);
+  EXPECT_TRUE(cookie_settings()->IsThirdPartyAccessAllowed(kPendingUrl));
+  EXPECT_FALSE(cookie_settings()->IsThirdPartyAccessAllowed(kCommittedUrl));
+
+  cookie_controls()->OnCookieBlockingEnabledForSite(
+      /*block_third_party_cookies=*/true);
+  EXPECT_FALSE(cookie_settings()->IsThirdPartyAccessAllowed(kPendingUrl));
+}
