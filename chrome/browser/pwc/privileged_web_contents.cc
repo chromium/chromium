@@ -137,6 +137,50 @@ PrivilegedWebContents* PrivilegedWebContents::FromWebContents(
   return holder ? holder->privileged_web_contents() : nullptr;
 }
 
+// static
+std::optional<content::PermissionResult>
+PrivilegedWebContents::GetPermissionStatus(
+    content::RenderFrameHost* render_frame_host,
+    ContentSettingsType type) {
+  if (!render_frame_host) {
+    return std::nullopt;
+  }
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  auto* pwc = FromWebContents(web_contents);
+  if (!pwc) {
+    return std::nullopt;
+  }
+  // PWC only grants elevated permissions to its primary main frame.
+  if (!pwc->IsPrimaryMainFrame(render_frame_host)) {
+    return content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::FEATURE_POLICY);
+  }
+  // Must be an allowed capability origin under PwcComponentPolicy.
+  if (!pwc->policy().IsCapabilityOrigin(
+          render_frame_host->GetLastCommittedOrigin())) {
+    return content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::FEATURE_POLICY);
+  }
+  if (!pwc->permission_delegate_) {
+    return content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::FEATURE_POLICY);
+  }
+  auto result =
+      pwc->permission_delegate_->GetPermissionStatus(render_frame_host, type);
+  if (result.has_value()) {
+    return result;
+  }
+  // Unhandled permission types default to DENIED to prevent ambient
+  // HostContentSettingsMap tab permissions from leaking into the PWC.
+  return content::PermissionResult(
+      blink::mojom::PermissionStatus::DENIED,
+      content::PermissionStatusSource::FEATURE_POLICY);
+}
+
 PrivilegedWebContents::PrivilegedWebContents(
     PrivilegedComponent component,
     content::BrowserContext* browser_context,

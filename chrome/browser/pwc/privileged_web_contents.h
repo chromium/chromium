@@ -6,10 +6,14 @@
 #define CHROME_BROWSER_PWC_PRIVILEGED_WEB_CONTENTS_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
+#include "chrome/browser/pwc/pwc_permission_delegate.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -136,6 +140,27 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   }
   EmbedderDelegate* embedder_delegate() const { return embedder_delegate_; }
 
+  // Optional permission delegate for handling and overriding component-specific
+  // permission requests (e.g. microphone, geolocation).
+  void SetPermissionDelegate(std::unique_ptr<PwcPermissionDelegate> delegate) {
+    permission_delegate_ = std::move(delegate);
+  }
+  PwcPermissionDelegate* permission_delegate() const {
+    return permission_delegate_.get();
+  }
+
+  // Returns the permission status override for `type` if `render_frame_host`
+  // belongs to a PrivilegedWebContents. Returns std::nullopt if
+  // `render_frame_host` does not belong to a PrivilegedWebContents or if the
+  // component's permission delegate does not handle `type`.
+  // Before querying the delegate:
+  // - Denies if `render_frame_host` is not the primary main frame.
+  // - Denies if `render_frame_host`'s origin is not an allowed capability
+  //   origin under PwcComponentPolicy.
+  static std::optional<content::PermissionResult> GetPermissionStatus(
+      content::RenderFrameHost* render_frame_host,
+      ContentSettingsType type);
+
   // content::WebContentsDelegate:
   // Privileged content never prerenders: a prerendered page is activated into
   // the primary main frame without running navigation throttles, which would
@@ -199,6 +224,7 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   std::unique_ptr<PwcApiBinder> bridge_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   raw_ptr<EmbedderDelegate> embedder_delegate_ = nullptr;
+  std::unique_ptr<PwcPermissionDelegate> permission_delegate_;
 };
 
 }  // namespace pwc

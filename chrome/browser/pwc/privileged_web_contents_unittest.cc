@@ -5,6 +5,7 @@
 #include "chrome/browser/pwc/privileged_web_contents.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -12,11 +13,15 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
+#include "chrome/browser/pwc/pwc_permission_delegate.h"
+#include "chrome/browser/pwc/test_support/test_pwc_permission_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/render_frame_host.h"
@@ -25,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -32,6 +38,7 @@
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -42,7 +49,8 @@ namespace {
 std::unique_ptr<FixedPwcPolicyDelegate> MakeTestDelegate() {
   return std::make_unique<FixedPwcPolicyDelegate>(
       std::vector<url::Origin>{
-          url::Origin::Create(GURL("https://pwc-test.example.com"))},
+          url::Origin::Create(GURL("https://pwc-test.example.com")),
+          url::Origin::Create(GURL("https://navigation-only.example.com"))},
       std::vector<url::Origin>{
           url::Origin::Create(GURL("https://pwc-test.example.com"))});
 }
@@ -937,6 +945,159 @@ TEST_F(PrivilegedWebContentsTest,
   // 2. Null WebContents is rejected.
   pwc->web_contents()->GetDelegate()->DraggableRegionsChanged(regions, nullptr);
   EXPECT_EQ(delegate.draggable_regions_count_, 0);
+}
+
+TEST_F(PrivilegedWebContentsTest, PermissionDelegateDefaultsToNull) {
+  std::unique_ptr<PrivilegedWebContents> pwc = PrivilegedWebContents::Create(
+      PrivilegedComponent::kTestComponent, profile(), MakeTestDelegate());
+  EXPECT_EQ(pwc->permission_delegate(), nullptr);
+}
+
+class PrivilegedWebContentsPermissionTest : public PrivilegedWebContentsTest {
+ public:
+  void SetUp() override {
+    PrivilegedWebContentsTest::SetUp();
+    pwc_ = PrivilegedWebContents::Create(PrivilegedComponent::kTestComponent,
+                                         profile(), MakeTestDelegate());
+    pwc_->SetPermissionDelegate(std::make_unique<TestPwcPermissionDelegate>());
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        pwc_->web_contents(), GURL("https://pwc-test.example.com"));
+  }
+
+  void TearDown() override {
+    pwc_.reset();
+    PrivilegedWebContentsTest::TearDown();
+  }
+
+  PrivilegedWebContents* pwc() { return pwc_.get(); }
+  TestPwcPermissionDelegate* delegate() {
+    return static_cast<TestPwcPermissionDelegate*>(pwc_->permission_delegate());
+  }
+  content::WebContents* pwc_web_contents() { return pwc_->web_contents(); }
+  content::RenderFrameHost* pwc_main_rfh() {
+    return pwc_->web_contents()->GetPrimaryMainFrame();
+  }
+
+ private:
+  std::unique_ptr<PrivilegedWebContents> pwc_;
+};
+
+TEST_F(PrivilegedWebContentsPermissionTest,
+       SetPermissionDelegateUpdatesDelegate) {
+  EXPECT_NE(pwc()->permission_delegate(), nullptr);
+  pwc()->SetPermissionDelegate(nullptr);
+  EXPECT_EQ(pwc()->permission_delegate(), nullptr);
+  pwc()->SetPermissionDelegate(std::make_unique<TestPwcPermissionDelegate>());
+  EXPECT_NE(pwc()->permission_delegate(), nullptr);
+}
+
+TEST_F(PrivilegedWebContentsPermissionTest,
+       GetPermissionStatus_NullRfhReturnsNullopt) {
+  EXPECT_FALSE(PrivilegedWebContents::GetPermissionStatus(
+                   nullptr, ContentSettingsType::MEDIASTREAM_MIC)
+                   .has_value());
+}
+
+TEST_F(PrivilegedWebContentsPermissionTest,
+       GetPermissionStatus_NonPwcReturnsNullopt) {
+  // web_contents() is the harness WebContents, not a PrivilegedWebContents.
+  EXPECT_FALSE(PrivilegedWebContents::GetPermissionStatus(
+                   main_rfh(), ContentSettingsType::MEDIASTREAM_MIC)
+                   .has_value());
+}
+
+TEST_F(PrivilegedWebContentsPermissionTest,
+       GetPermissionStatus_NoDelegateReturnsDenied) {
+  pwc()->SetPermissionDelegate(nullptr);
+  std::optional<content::PermissionResult> result =
+      PrivilegedWebContents::GetPermissionStatus(
+          pwc_main_rfh(), ContentSettingsType::MEDIASTREAM_MIC);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->status, blink::mojom::PermissionStatus::DENIED);
+  EXPECT_EQ(result->source, content::PermissionStatusSource::FEATURE_POLICY);
+}
+
+TEST_F(PrivilegedWebContentsPermissionTest,
+       GetPermissionStatus_RejectsNonPrimaryMainFrame) {
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(pwc_main_rfh())
+          ->AppendChild("subframe");
+  ASSERT_TRUE(subframe);
+
+  std::optional<content::PermissionResult> result =
+      PrivilegedWebContents::GetPermissionStatus(
+          subframe, ContentSettingsType::MEDIASTREAM_MIC);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->status, blink::mojom::PermissionStatus::DENIED);
+  EXPECT_EQ(result->source, content::PermissionStatusSource::FEATURE_POLICY);
+  EXPECT_EQ(delegate()->call_count(), 0);
+}
+
+TEST_F(PrivilegedWebContentsPermissionTest,
+       GetPermissionStatus_DeniesUntrustedOriginWithoutCallingDelegate) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      pwc_web_contents(), GURL("https://navigation-only.example.com"));
+
+  std::optional<content::PermissionResult> result =
+      PrivilegedWebContents::GetPermissionStatus(
+          pwc_main_rfh(), ContentSettingsType::MEDIASTREAM_MIC);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->status, blink::mojom::PermissionStatus::DENIED);
+  EXPECT_EQ(result->source, content::PermissionStatusSource::FEATURE_POLICY);
+  EXPECT_EQ(delegate()->call_count(), 0);
+}
+
+TEST_F(PrivilegedWebContentsPermissionTest,
+       GetPermissionStatus_ForwardsToDelegateOnCapabilityOrigin) {
+  std::optional<content::PermissionResult> result =
+      PrivilegedWebContents::GetPermissionStatus(
+          pwc_main_rfh(), ContentSettingsType::MEDIASTREAM_MIC);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->status, blink::mojom::PermissionStatus::GRANTED);
+  EXPECT_EQ(result->source, content::PermissionStatusSource::UNSPECIFIED);
+  EXPECT_EQ(delegate()->call_count(), 1);
+  EXPECT_EQ(delegate()->last_rfh(), pwc_main_rfh());
+  EXPECT_EQ(delegate()->last_type(), ContentSettingsType::MEDIASTREAM_MIC);
+}
+
+TEST_F(PrivilegedWebContentsPermissionTest,
+       GetPermissionStatus_ReturnsDeniedWhenDelegateReturnsNullopt) {
+  delegate()->set_result(std::nullopt);
+  std::optional<content::PermissionResult> result =
+      PrivilegedWebContents::GetPermissionStatus(
+          pwc_main_rfh(), ContentSettingsType::GEOLOCATION);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->status, blink::mojom::PermissionStatus::DENIED);
+  EXPECT_EQ(result->source, content::PermissionStatusSource::FEATURE_POLICY);
+  EXPECT_EQ(delegate()->call_count(), 1);
+}
+
+TEST_F(PrivilegedWebContentsPermissionTest,
+       GetPermissionStatus_SequentialCallsAndSourcePreserved) {
+  // First call with custom KILL_SWITCH source.
+  delegate()->set_result(
+      content::PermissionResult(blink::mojom::PermissionStatus::DENIED,
+                                content::PermissionStatusSource::KILL_SWITCH));
+  std::optional<content::PermissionResult> result1 =
+      PrivilegedWebContents::GetPermissionStatus(
+          pwc_main_rfh(), ContentSettingsType::MEDIASTREAM_MIC);
+  ASSERT_TRUE(result1.has_value());
+  EXPECT_EQ(result1->status, blink::mojom::PermissionStatus::DENIED);
+  EXPECT_EQ(result1->source, content::PermissionStatusSource::KILL_SWITCH);
+  EXPECT_EQ(delegate()->call_count(), 1);
+  EXPECT_EQ(delegate()->last_type(), ContentSettingsType::MEDIASTREAM_MIC);
+
+  // Second sequential call with nullopt result (defaults to
+  // DENIED/FEATURE_POLICY).
+  delegate()->set_result(std::nullopt);
+  std::optional<content::PermissionResult> result2 =
+      PrivilegedWebContents::GetPermissionStatus(
+          pwc_main_rfh(), ContentSettingsType::GEOLOCATION);
+  ASSERT_TRUE(result2.has_value());
+  EXPECT_EQ(result2->status, blink::mojom::PermissionStatus::DENIED);
+  EXPECT_EQ(result2->source, content::PermissionStatusSource::FEATURE_POLICY);
+  EXPECT_EQ(delegate()->call_count(), 2);
+  EXPECT_EQ(delegate()->last_type(), ContentSettingsType::GEOLOCATION);
 }
 
 }  // namespace
