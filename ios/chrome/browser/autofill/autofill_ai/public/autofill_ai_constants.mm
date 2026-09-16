@@ -14,3 +14,5 @@ NSString* const kAutofillAISourcesTableViewId =
     @"kAutofillAISourcesTableViewId";
 NSString* const kAutofillAISourcesCancelButtonId =
     @"kAutofillAISourcesCancelButtonId";
+NSString* const kAutofillAISaveEntityLegalDisclosureId =
+    @"kAutofillAISaveEntityLegalDisclosureId";

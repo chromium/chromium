@@ -19,6 +19,11 @@
 namespace {
 constexpr CGFloat kWalletLogoHeight = 26.0;
 constexpr CGFloat kWalletLogoSpacing = 6.0;
+
+// Delimiters marking a tappable link in a string. Must match the tags parsed
+// by `ParseStringWithLinks()` in ios/chrome/common/string_util.h.
+NSString* const kBeginLinkTag = @"BEGIN_LINK";
+NSString* const kEndLinkTag = @"END_LINK";
 }  // namespace
 
 namespace autofill {
@@ -173,13 +178,17 @@ NSString* GetDialogTitleForEditEntity(EntityTypeName entity_type_name) {
   }
 }
 
+NSString* WrapInLinkTags(NSString* text) {
+  return
+      [NSString stringWithFormat:@"%@%@%@", kBeginLinkTag, text, kEndLinkTag];
+}
+
 NSString* GetSaveEntityToWalletFooterText(NSString* user_email) {
   NSString* googleWallet =
       l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
   NSString* linkText =
       l10n_util::GetNSString(IDS_AUTOFILL_MANAGE_YOUR_INFO_LINK);
-  NSString* formattedLink =
-      [NSString stringWithFormat:@"BEGIN_LINK%@END_LINK", linkText];
+  NSString* formattedLink = WrapInLinkTags(linkText);
   return l10n_util::GetNSStringF(GetSaveToWalletSubtitleStringId(),
                                  base::SysNSStringToUTF16(googleWallet),
                                  base::SysNSStringToUTF16(formattedLink),
@@ -190,8 +199,7 @@ NSString* GetSaveEntityToWalletFooterText(NSString* user_email) {
 NSString* GetUpdateEntitySavedInWalletFooterText(NSString* user_email) {
   NSString* googleWallet =
       l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_WALLET_TITLE);
-  NSString* formattedLink =
-      [NSString stringWithFormat:@"BEGIN_LINK%@END_LINK", googleWallet];
+  NSString* formattedLink = WrapInLinkTags(googleWallet);
   return l10n_util::GetNSStringF(
       IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE,
       base::SysNSStringToUTF16(formattedLink),

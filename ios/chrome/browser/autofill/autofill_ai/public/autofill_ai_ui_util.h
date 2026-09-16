@@ -40,6 +40,13 @@ NSString* GetDialogTitleForViewEntity(EntityTypeName entity_type_name);
 // Returns the title for a dialog to edit an entity.
 NSString* GetDialogTitleForEditEntity(EntityTypeName entity_type_name);
 
+// Wraps `text` in the "BEGIN_LINK"/"END_LINK" delimiters that iOS UI
+// components parse to turn a range of text into a tappable link. The
+// delimiters are consumed by `ParseStringWithLinks()`, which pairs each tagged
+// range with the URL at the same index in the owning view's `urls` array. See
+// ios/chrome/common/string_util.h.
+NSString* WrapInLinkTags(NSString* text);
+
 // Returns the footer text for saving an entity to Wallet, formatted with the
 // user's email.
 NSString* GetSaveEntityToWalletFooterText(NSString* user_email);
