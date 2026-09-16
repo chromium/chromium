@@ -7,12 +7,15 @@
 #include "base/check.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
 
 HorizontalTabStripOverflowIndicatorView::
@@ -23,6 +26,11 @@ HorizontalTabStripOverflowIndicatorView::
         side_ == views::OverflowIndicatorAlignment::kRight);
   SetCanProcessEventsWithinSubtree(false);
   SetFlipCanvasOnPaintForRTLUI(true);
+  // The tabstrip overlaps the toolbar below it. Inset the bottom of the
+  // indicator by the toolbar overlap so the shadow gradient does not extend
+  // past the bottom of the tabstrip into the toolbar.
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+      0, 0, GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap), 0)));
 }
 
 HorizontalTabStripOverflowIndicatorView::
