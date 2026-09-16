@@ -7,7 +7,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/demuxer_stream.h"
@@ -353,6 +355,52 @@ TEST_F(StreamProviderTest, DuplicateAcquireDemuxer) {
   // If they were destroyed, this call would trigger a UAF.
   cached_audio->Read(1, base::DoNothing());
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(StreamProviderTest, StopReleasesResourcesAndInvalidatesCallbacks) {
+  InitializeDemuxer();
+  SendRpcAcquireDemuxer();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return stream_provider_initialized_; }));
+  EXPECT_EQ(2u, stream_provider_->GetAllStreams().size());
+
+  stream_provider_->Stop();
+  // Clear unowned pointers in the test fixture since the streams were released.
+  audio_stream_ = nullptr;
+  video_stream_ = nullptr;
+  // Streams should be released immediately.
+  EXPECT_TRUE(stream_provider_->GetAllStreams().empty());
+
+  // Further RPC messages should be ignored.
+  SendRpcAcquireDemuxer();
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_TRUE(stream_provider_->GetAllStreams().empty());
+
+  // Calling Stop() again should be a safe no-op.
+  stream_provider_->Stop();
+}
+
+TEST_F(StreamProviderTest, StopAbortsPendingInitialize) {
+  PipelineStatus status = PIPELINE_OK;
+  stream_provider_->Initialize(
+      nullptr, base::BindOnce([](PipelineStatus* out_status,
+                                 PipelineStatus s) { *out_status = s; },
+                              &status));
+  stream_provider_->Stop();
+  EXPECT_EQ(PIPELINE_ERROR_ABORT, status);
+}
+
+TEST_F(StreamProviderTest, DestructorCallsStopIfNotStopped) {
+  PipelineStatus status = PIPELINE_OK;
+  stream_provider_->Initialize(
+      nullptr, base::BindOnce([](PipelineStatus* out_status,
+                                 PipelineStatus s) { *out_status = s; },
+                              &status));
+  stream_provider_.reset();
+  EXPECT_EQ(PIPELINE_ERROR_ABORT, status);
 }
 
 }  // namespace remoting

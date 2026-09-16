@@ -88,8 +88,10 @@ class End2EndTestRenderer final : public Renderer {
   // Receiver components.
   std::unique_ptr<TestRemotee> media_remotee_;
   raw_ptr<ReceiverController> receiver_controller_;
-  std::unique_ptr<Receiver> receiver_;
+  // `stream_provider_` must be declared before `receiver_` so that `receiver_`
+  // (which holds a raw_ptr to `stream_provider_`) is destroyed first.
   std::unique_ptr<StreamProvider> stream_provider_;
+  std::unique_ptr<Receiver> receiver_;
   raw_ptr<openscreen::cast::RpcMessenger> receiver_rpc_messenger_;
 
   // Handle of |receiver_|

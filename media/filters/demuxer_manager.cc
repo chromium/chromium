@@ -80,10 +80,19 @@ DemuxerManager::DemuxerManager(
 }
 
 DemuxerManager::~DemuxerManager() {
-  // ManifestDemuxer and FrameInjectingDemuxer have multiple outstanding weak
-  // pointers bound to the media thread, and need to be deleted there.
+  if (demuxer_override_) {
+    DemuxerType type = demuxer_override_->GetDemuxerType();
+    if (type == DemuxerType::kStreamProviderDemuxer ||
+        type == DemuxerType::kFrameInjectingDemuxer) {
+      media_task_runner_->DeleteSoon(FROM_HERE, std::move(demuxer_override_));
+    }
+  }
+  // ManifestDemuxer, FrameInjectingDemuxer and StreamProvider have multiple
+  // outstanding weak pointers bound to the media thread, and need to be deleted
+  // there.
   if (GetDemuxerType() == DemuxerType::kManifestDemuxer ||
-      GetDemuxerType() == DemuxerType::kFrameInjectingDemuxer) {
+      GetDemuxerType() == DemuxerType::kFrameInjectingDemuxer ||
+      GetDemuxerType() == DemuxerType::kStreamProviderDemuxer) {
     media_task_runner_->DeleteSoon(FROM_HERE, std::move(demuxer_));
   }
 }

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/single_thread_task_runner.h"
@@ -40,11 +41,20 @@ namespace remoting {
 class ReceiverController;
 
 // The media stream provider for Media Remoting receiver.
+//
+// Threading Model:
+// - Creation: StreamProvider must be created on the renderer main thread.
+// - Execution: All Demuxer and DemuxerStream methods (Initialize, Stop, Read,
+//   Seek, etc.) run on `media_task_runner`.
+// - Destruction: StreamProvider must be destroyed on `media_task_runner`.
 class StreamProvider final : public Demuxer {
  public:
+  // Must be called on the main thread.
   StreamProvider(
       ReceiverController* receiver_controller,
       const scoped_refptr<base::SequencedTaskRunner>& media_task_runner);
+
+  ~StreamProvider() override;
 
   // Demuxer implementation.
   std::vector<raw_ptr<DemuxerStream>> GetAllStreams() override;
@@ -67,10 +77,6 @@ class StreamProvider final : public Demuxer {
                        base::TimeDelta curr_time,
                        TrackChangeCB change_completed_cb) override;
   void SetPlaybackRate(double rate) override {}
-
- protected:
-  // Deletion is only allowed via Destroy().
-  ~StreamProvider() override;
 
  private:
   // An implementation of media::DemuxerStream on Media Remoting receiver.
@@ -223,17 +229,15 @@ class StreamProvider final : public Demuxer {
 
     mojo::Receiver<mojom::RemotingDataStreamReceiver> receiver_{this};
 
-    base::WeakPtr<MediaStream> media_weak_this_;
-    base::WeakPtrFactory<MediaStream> media_weak_factory_{this};
-  };
+    SEQUENCE_CHECKER(main_sequence_checker_);
+    SEQUENCE_CHECKER(media_sequence_checker_);
 
-  friend std::default_delete<StreamProvider>;
-  friend class base::DeleteHelper<StreamProvider>;  // For using DeleteSoon().
+    base::WeakPtr<MediaStream> media_weak_this_;
+    base::WeakPtrFactory<MediaStream> media_stream_weak_factory_{this};
+  };
 
   // For testing.
   friend class StreamProviderTest;
-
-  void Destroy();
 
   // RPC messages handlers.
   void OnReceivedRpc(std::unique_ptr<openscreen::cast::RpcMessage> message);
@@ -257,32 +261,20 @@ class StreamProvider final : public Demuxer {
   bool has_video_{false};
   bool audio_stream_initialized_{false};
   bool video_stream_initialized_{false};
+  bool stopped_{false};
 
   // Set when Initialize() is called, and will run when both video and audio
   // streams are initialized or error occurs.
   PipelineStatusCallback init_done_callback_;
 
+  SEQUENCE_CHECKER(main_sequence_checker_);
+  SEQUENCE_CHECKER(media_sequence_checker_);
+
   base::WeakPtr<StreamProvider> media_weak_this_;
-  base::WeakPtrFactory<StreamProvider> media_weak_factory_{this};
+  base::WeakPtrFactory<StreamProvider> stream_provider_weak_factory_{this};
 };
 
 }  // namespace remoting
 }  // namespace media
-
-namespace std {
-
-// Specialize std::default_delete to call Destroy().
-template <>
-struct default_delete<media::remoting::StreamProvider> {
-  constexpr default_delete() = default;
-
-  template <typename U>
-    requires(std::is_convertible_v<U*, media::remoting::StreamProvider*>)
-  explicit default_delete(const default_delete<U>& d) {}
-
-  void operator()(media::remoting::StreamProvider* ptr) const;
-};
-
-}  // namespace std
 
 #endif  // MEDIA_REMOTING_STREAM_PROVIDER_H_

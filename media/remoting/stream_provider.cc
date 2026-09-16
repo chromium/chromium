@@ -64,8 +64,10 @@ StreamProvider::MediaStream::MediaStream(
       remote_handle_(remote_handle),
       rpc_handle_(rpc_messenger_->GetUniqueHandle()) {
   DCHECK(remote_handle_ != RpcMessenger::kInvalidHandle);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  DETACH_FROM_SEQUENCE(media_sequence_checker_);
 
-  media_weak_this_ = media_weak_factory_.GetWeakPtr();
+  media_weak_this_ = media_stream_weak_factory_.GetWeakPtr();
 
   auto receive_callback = base::BindPostTask(
       media_task_runner_,
@@ -78,23 +80,23 @@ StreamProvider::MediaStream::MediaStream(
 }
 
 StreamProvider::MediaStream::~MediaStream() {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   rpc_messenger_->UnregisterMessageReceiverCallback(rpc_handle_);
 }
 
 void StreamProvider::MediaStream::Destroy() {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
-  // Invalid weak pointers to prevent |this| from receiving RPC calls on the
+  // Invalid weak pointers to prevent `this` from receiving RPC calls on the
   // media thread.
-  media_weak_factory_.InvalidateWeakPtrs();
+  media_stream_weak_factory_.InvalidateWeakPtrs();
 
   // Unbind all mojo pipes and bindings.
   receiver_.reset();
   decoder_buffer_reader_.reset();
 
-  // After invalidating all weak ptrs of |media_weak_factory_|, MediaStream
-  // won't be access anymore, so using |this| here is safe.
+  // After invalidating all weak ptrs of `media_stream_weak_factory_`,
+  // MediaStream won't be access anymore, so using `this` here is safe.
   main_task_runner_->DeleteSoon(FROM_HERE, this);
 }
 
@@ -109,7 +111,7 @@ void StreamProvider::MediaStream::SendRpcMessageOnMainThread(
 
 void StreamProvider::MediaStream::Initialize(
     base::OnceClosure init_done_callback) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   DCHECK(init_done_callback);
 
   if (init_done_callback_) {
@@ -128,7 +130,7 @@ void StreamProvider::MediaStream::Initialize(
 
 void StreamProvider::MediaStream::InitializeDataPipe(
     mojo::ScopedDataPipeConsumerHandle data_pipe) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   decoder_buffer_reader_ =
       std::make_unique<MojoDecoderBufferReader>(std::move(data_pipe));
@@ -137,7 +139,7 @@ void StreamProvider::MediaStream::InitializeDataPipe(
 
 void StreamProvider::MediaStream::ReceiveFrame(uint32_t count,
                                                mojom::DecoderBufferPtr buffer) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   DCHECK(decoder_buffer_reader_);
 
   auto callback = base::BindPostTaskToCurrentDefault(
@@ -147,7 +149,7 @@ void StreamProvider::MediaStream::ReceiveFrame(uint32_t count,
 }
 
 void StreamProvider::MediaStream::FlushUntil(uint32_t count) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   if (count < current_frame_count_)
     return;
@@ -170,7 +172,7 @@ void StreamProvider::MediaStream::FlushUntil(uint32_t count) {
 
 void StreamProvider::MediaStream::OnReceivedRpc(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   DCHECK(message->handle() == rpc_handle_);
 
   switch (message->proc()) {
@@ -187,7 +189,7 @@ void StreamProvider::MediaStream::OnReceivedRpc(
 
 void StreamProvider::MediaStream::OnInitializeCallback(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   const openscreen::cast::DemuxerStreamInitializeCallback callback_message =
       message->demuxerstream_initializecb_rpc();
   if (callback_message.type() != type_) {
@@ -233,7 +235,7 @@ void StreamProvider::MediaStream::OnInitializeCallback(
 }
 
 void StreamProvider::MediaStream::CompleteInitialize() {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   // Initialization finished when received RPC_DS_INITIALIZE_CALLBACK and
   // |decoder_buffer_reader_| is created.
@@ -250,7 +252,7 @@ void StreamProvider::MediaStream::CompleteInitialize() {
 
 void StreamProvider::MediaStream::OnReadUntilCallback(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   if (!read_until_sent_) {
     OnError("Unexpected ReadUntilCallback");
@@ -326,7 +328,7 @@ void StreamProvider::MediaStream::SendReadUntil() {
 
 // Only return one buffer at a time so we ignore the count.
 void StreamProvider::MediaStream::Read(uint32_t /*count*/, ReadCB read_cb) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   DCHECK(read_complete_callback_.is_null());
   DCHECK(read_cb);
 
@@ -347,7 +349,7 @@ void StreamProvider::MediaStream::Read(uint32_t /*count*/, ReadCB read_cb) {
 }
 
 void StreamProvider::MediaStream::CompleteRead(DemuxerStream::Status status) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   switch (status) {
     case DemuxerStream::kConfigChanged:
@@ -378,11 +380,13 @@ void StreamProvider::MediaStream::CompleteRead(DemuxerStream::Status status) {
 }
 
 AudioDecoderConfig StreamProvider::MediaStream::audio_decoder_config() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   DCHECK(type_ == DemuxerStream::AUDIO);
   return audio_decoder_config_;
 }
 
 VideoDecoderConfig StreamProvider::MediaStream::video_decoder_config() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   DCHECK(type_ == DemuxerStream::VIDEO);
   return video_decoder_config_;
 }
@@ -402,7 +406,7 @@ bool StreamProvider::MediaStream::SupportsConfigChanges() {
 void StreamProvider::MediaStream::AppendBuffer(
     uint32_t count,
     scoped_refptr<DecoderBuffer> buffer) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   // Drop flushed frame.
   if (count < current_frame_count_)
@@ -434,8 +438,10 @@ StreamProvider::StreamProvider(
       rpc_messenger_(receiver_controller_->rpc_messenger()) {
   DCHECK(receiver_controller_);
   DCHECK(rpc_messenger_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  DETACH_FROM_SEQUENCE(media_sequence_checker_);
 
-  media_weak_this_ = media_weak_factory_.GetWeakPtr();
+  media_weak_this_ = stream_provider_weak_factory_.GetWeakPtr();
 
   auto callback = base::BindPostTask(
       media_task_runner_,
@@ -449,9 +455,30 @@ StreamProvider::StreamProvider(
 }
 
 StreamProvider::~StreamProvider() {
-  DCHECK(main_task_runner_->BelongsToCurrentThread());
-  rpc_messenger_->UnregisterMessageReceiverCallback(
-      RpcMessenger::kAcquireDemuxerHandle);
+  // Must be destroyed on `media_task_runner_` (or `main_task_runner_` in
+  // single-threaded tests).
+  CHECK(media_task_runner_->RunsTasksInCurrentSequence() &&
+        (!main_task_runner_->BelongsToCurrentThread() ||
+         main_task_runner_ == media_task_runner_));
+
+  if (!stopped_) {
+    Stop();
+  }
+
+  if (rpc_messenger_) {
+    if (main_task_runner_->BelongsToCurrentThread()) {
+      rpc_messenger_->UnregisterMessageReceiverCallback(
+          RpcMessenger::kAcquireDemuxerHandle);
+    } else {
+      // |rpc_messenger_| is owned by |receiver_controller_| which is a
+      // singleton per process, so it's safe to use Unretained() here.
+      main_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&openscreen::cast::RpcMessenger::
+                                        UnregisterMessageReceiverCallback,
+                                    base::Unretained(rpc_messenger_),
+                                    RpcMessenger::kAcquireDemuxerHandle));
+    }
+  }
 }
 
 std::string StreamProvider::GetDisplayName() const {
@@ -464,43 +491,70 @@ DemuxerType StreamProvider::GetDemuxerType() const {
 
 void StreamProvider::Initialize(DemuxerHost* host,
                                 PipelineStatusCallback status_cb) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   init_done_callback_ = std::move(status_cb);
   CompleteInitialize();
 }
 
-void StreamProvider::AbortPendingReads() {}
+void StreamProvider::AbortPendingReads() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+}
 
-void StreamProvider::StartWaitingForSeek(base::TimeDelta seek_time) {}
+void StreamProvider::StartWaitingForSeek(base::TimeDelta seek_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+}
 
-void StreamProvider::CancelPendingSeek(base::TimeDelta seek_time) {}
+void StreamProvider::CancelPendingSeek(base::TimeDelta seek_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+}
 
 void StreamProvider::Seek(base::TimeDelta time,
                           PipelineStatusCallback seek_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   media_task_runner_->PostTask(FROM_HERE,
                                base::BindOnce(std::move(seek_cb), PIPELINE_OK));
 }
 
 bool StreamProvider::IsSeekable() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   return false;
 }
 
-void StreamProvider::Stop() {}
+void StreamProvider::Stop() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  if (stopped_) {
+    return;
+  }
+  stopped_ = true;
+
+  if (init_done_callback_) {
+    std::move(init_done_callback_).Run(PIPELINE_ERROR_ABORT);
+  }
+
+  stream_provider_weak_factory_.InvalidateWeakPtrs();
+
+  audio_stream_.reset();
+  video_stream_.reset();
+}
 
 base::TimeDelta StreamProvider::GetStartTime() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   return base::TimeDelta();
 }
 
 base::Time StreamProvider::GetTimelineOffset() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   return base::Time();
 }
 
 int64_t StreamProvider::GetMemoryUsage() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   return 0;
 }
 
 std::optional<container_names::MediaContainerName>
 StreamProvider::GetContainerForMetrics() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   return std::optional<container_names::MediaContainerName>();
 }
 
@@ -508,30 +562,14 @@ void StreamProvider::OnTracksChanged(DemuxerStream::Type track_type,
                                      std::optional<MediaTrack::Id> track_id,
                                      base::TimeDelta curr_time,
                                      TrackChangeCB change_completed_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   std::move(change_completed_cb).Run(nullptr);
   DVLOG(1) << "Track changes are not supported.";
 }
 
-void StreamProvider::Destroy() {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-
-  if (init_done_callback_)
-    std::move(init_done_callback_).Run(PIPELINE_ERROR_ABORT);
-
-  // Invalid weak pointers to prevent |this| from receiving RPC calls on the
-  // media thread.
-  media_weak_factory_.InvalidateWeakPtrs();
-
-  audio_stream_.reset();
-  video_stream_.reset();
-
-  // After invalidating all weak ptrs of |media_weak_factory_|, StreamProvider
-  // won't be access anymore, so using |this| here is safe.
-  main_task_runner_->DeleteSoon(FROM_HERE, this);
-}
-
 void StreamProvider::OnReceivedRpc(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   switch (message->proc()) {
     case openscreen::cast::RpcMessage::RPC_ACQUIRE_DEMUXER:
       OnAcquireDemuxer(std::move(message));
@@ -543,7 +581,10 @@ void StreamProvider::OnReceivedRpc(
 
 void StreamProvider::OnAcquireDemuxer(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  if (stopped_) {
+    return;
+  }
   DCHECK(message->has_acquire_demuxer_rpc());
 
   if (audio_stream_ || video_stream_) {
@@ -582,7 +623,7 @@ void StreamProvider::OnAcquireDemuxer(
 }
 
 void StreamProvider::OnAudioStreamCreated(MediaStream::UniquePtr stream) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   audio_stream_ = std::move(stream);
   audio_stream_->Initialize(base::BindOnce(
       &StreamProvider::OnAudioStreamInitialized, media_weak_this_));
@@ -590,7 +631,7 @@ void StreamProvider::OnAudioStreamCreated(MediaStream::UniquePtr stream) {
 }
 
 void StreamProvider::OnVideoStreamCreated(MediaStream::UniquePtr stream) {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   video_stream_ = std::move(stream);
   video_stream_->Initialize(base::BindOnce(
       &StreamProvider::OnVideoStreamInitialized, media_weak_this_));
@@ -598,7 +639,7 @@ void StreamProvider::OnVideoStreamCreated(MediaStream::UniquePtr stream) {
 }
 
 void StreamProvider::InitializeDataPipe() {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   if ((has_audio_ && !audio_stream_) || (has_video_ && !video_stream_))
     return;
@@ -611,17 +652,19 @@ void StreamProvider::InitializeDataPipe() {
 }
 
 void StreamProvider::OnAudioStreamInitialized() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   audio_stream_initialized_ = true;
   CompleteInitialize();
 }
 
 void StreamProvider::OnVideoStreamInitialized() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   video_stream_initialized_ = true;
   CompleteInitialize();
 }
 
 void StreamProvider::CompleteInitialize() {
-  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   // Haven't receive RpcAcquireRenderer message
   if (!has_audio_ && !has_video_)
@@ -636,6 +679,7 @@ void StreamProvider::CompleteInitialize() {
 }
 
 std::vector<raw_ptr<DemuxerStream>> StreamProvider::GetAllStreams() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   std::vector<raw_ptr<DemuxerStream>> streams;
   if (audio_stream_) {
     streams.push_back(audio_stream_.get());
@@ -648,12 +692,3 @@ std::vector<raw_ptr<DemuxerStream>> StreamProvider::GetAllStreams() {
 
 }  // namespace remoting
 }  // namespace media
-
-namespace std {
-
-void default_delete<media::remoting::StreamProvider>::operator()(
-    media::remoting::StreamProvider* ptr) const {
-  ptr->Destroy();
-}
-
-}  // namespace std
