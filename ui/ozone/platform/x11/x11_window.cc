@@ -5,16 +5,17 @@
 #include "ui/ozone/platform/x11/x11_window.h"
 
 #include <algorithm>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "base/nix/xdg_util.h"
 #include "net/base/network_interfaces.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -1962,9 +1963,7 @@ void X11Window::CloseXWindow() {
   UnconfineCursor();
   // Unregister from the global security surface list if necessary.
   if (is_security_surface_) {
-    auto& security_surfaces = GetSecuritySurfaces();
-    security_surfaces.erase(std::ranges::find(security_surfaces, xwindow_),
-                            security_surfaces.end());
+    std::erase(GetSecuritySurfaces(), xwindow_);
   }
 
   geometry_cache_.reset();
