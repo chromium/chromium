@@ -9,16 +9,21 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/views_drawing_test_utils.h"
 #include "ui/views/view.h"
@@ -950,6 +955,34 @@ TEST_F(OmniboxEverywhereRegionSelectOverlayTest,
   EXPECT_EQ(future.Get().height(), 200);
   // Blue confirms the crop came from display 2, not the green display 1.
   EXPECT_EQ(future.Get().getColor(0, 0), SK_ColorBLUE);
+}
+
+TEST_F(OmniboxEverywhereRegionSelectOverlayTest, GestureTapCancelResetsDrag) {
+  base::test::TestFuture<const SkBitmap&> future;
+  auto overlay = OmniboxEverywhereRegionSelectOverlay::Create(
+      CreateTestBitmap(100, 100), RegionCaptureSource::AllDisplays(),
+      future.GetCallback(), GetContext());
+  ASSERT_TRUE(overlay);
+
+  views::View* contents_view =
+      overlay->GetActiveWidgetForTesting()->GetContentsView();
+  ASSERT_TRUE(contents_view);
+
+  // Begin gesture scroll.
+  ui::GestureEvent scroll_begin(
+      10, 10, 0, base::TimeTicks::Now(),
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin));
+  contents_view->OnGestureEvent(&scroll_begin);
+
+  // Cancel gesture (e.g. OS palm rejection).
+  ui::GestureEvent tap_cancel(
+      10, 10, 0, base::TimeTicks::Now(),
+      ui::GestureEventDetails(ui::EventType::kGestureTapCancel));
+  contents_view->OnGestureEvent(&tap_cancel);
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get().empty());
+  EXPECT_TRUE(overlay->GetActiveWidgetForTesting()->IsClosed());
 }
 
 }  // namespace omnibox_everywhere
