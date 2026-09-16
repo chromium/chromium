@@ -14,6 +14,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
@@ -262,7 +265,9 @@ class MEDIA_EXPORT AudioBuffer
   // If there's no data in this buffer, it represents end of stream.
   bool end_of_stream() const { return end_of_stream_; }
 
-  // Use `channels()` instead for spanified buffer access.
+  // DEPRECATED: Use `bitstream_data()`, `interleaved_data()` or `planar_data()`
+  // (or `planar_channel()`) based on `sample_format()`.
+  // TODO(crbug.com/373960632): Remove once all callers have been updated.
   //
   // Access to the raw buffer for ffmpeg and Android MediaCodec decoders to
   // write directly to. For planar formats the vector elements correspond to
@@ -273,6 +278,10 @@ class MEDIA_EXPORT AudioBuffer
     return channel_data_;
   }
 
+  // DEPRECATED: Use `bitstream_data()`, `interleaved_data()` or `planar_data()`
+  // (or `planar_channel()`) based on `sample_format()`.
+  // TODO(crbug.com/373960632): Remove once all callers have been updated.
+  //
   // Provides spanified access to the channels buffer for ffmpeg and Android
   // MediaCodec decoders to write directly to.
   // For planar formats, each element in the returned span maps to one channel.
@@ -281,6 +290,43 @@ class MEDIA_EXPORT AudioBuffer
   base::span<const base::raw_span<uint8_t>> channels() const {
     CHECK_EQ(channel_spans_.size(), channel_data_.size());
     return channel_spans_;
+  }
+
+  // Provides spanified access to compressed bitstream data.
+  // Disallowed on planar, interleaved, empty, or end-of-stream buffers.
+  base::span<uint8_t> bitstream_data() const LIFETIME_BOUND {
+    CHECK(!end_of_stream_);
+    CHECK(IsBitstreamFormat());
+    CHECK(data_);
+    CHECK_EQ(channel_spans_.size(), 1u);
+    return channel_spans_[0];
+  }
+
+  // Provides spanified access to interleaved audio data.
+  // Disallowed on planar, bitstream, empty, or end-of-stream buffers.
+  base::span<uint8_t> interleaved_data() const LIFETIME_BOUND {
+    CHECK(!end_of_stream_);
+    CHECK(media::IsInterleaved(sample_format_));
+    CHECK(data_);
+    CHECK_EQ(channel_spans_.size(), 1u);
+    return channel_spans_[0];
+  }
+
+  // Provides spanified access to planar audio channels. Each element in the
+  // returned span corresponds to one channel.
+  // Disallowed on interleaved, bitstream, empty, or end-of-stream buffers.
+  base::span<const base::raw_span<uint8_t>> planar_data() const LIFETIME_BOUND {
+    CHECK(!end_of_stream_);
+    CHECK(media::IsPlanar(sample_format_));
+    CHECK(data_);
+    CHECK_EQ(channel_spans_.size(), static_cast<size_t>(channel_count_));
+    return channel_spans_;
+  }
+
+  // Convenience accessor for a single planar channel.
+  // Disallowed on interleaved, bitstream, empty, or end-of-stream buffers.
+  base::span<uint8_t> planar_channel(size_t channel) const LIFETIME_BOUND {
+    return planar_data()[channel];
   }
 
   // The size of allocated data memory block. For planar formats channels go

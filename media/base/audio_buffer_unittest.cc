@@ -1035,4 +1035,97 @@ TEST(AudioBufferTest, WrapOrCopyToAudioBus_BitstreamDecoupledFrameCount) {
       bus->CopyPartialFramesTo(0, kFrameCount, 0, dest.get()), "");
 }
 
+TEST(AudioBufferTest, PlanarAccessors) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr size_t kChannels = 2;
+  constexpr int kFrames = 100;
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateBuffer(
+      kSampleFormatPlanarF32, kChannelLayout, kChannels, kSampleRate, kFrames);
+
+  base::span<const base::raw_span<uint8_t>> planar_data = buffer->planar_data();
+  EXPECT_EQ(kChannels, planar_data.size());
+
+  for (size_t ch = 0; ch < kChannels; ++ch) {
+    base::span<uint8_t> channel_span = buffer->planar_channel(ch);
+    EXPECT_EQ(planar_data[ch].data(), channel_span.data());
+    EXPECT_EQ(planar_data[ch].size(), channel_span.size());
+    EXPECT_EQ(buffer->channels()[ch].data(), channel_span.data());
+  }
+}
+
+TEST(AudioBufferTest, InterleavedAccessors) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr int kChannels = 2;
+  constexpr int kFrames = 100;
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateBuffer(
+      kSampleFormatF32, kChannelLayout, kChannels, kSampleRate, kFrames);
+
+  base::span<uint8_t> interleaved = buffer->interleaved_data();
+  EXPECT_EQ(buffer->data_size(), interleaved.size());
+  EXPECT_EQ(buffer->channels()[0].data(), interleaved.data());
+}
+
+TEST(AudioBufferTest, BitstreamAccessors) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr int kChannels = 2;
+  constexpr int kFrames = 100;
+  constexpr uint8_t kData[] = {0x01, 0x02, 0x03, 0x04};
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CopyBitstreamFrom(
+      kSampleFormatAc3, kChannelLayout, kChannels, kSampleRate, kFrames, kData,
+      base::Microseconds(1));
+
+  base::span<uint8_t> bitstream = buffer->bitstream_data();
+  EXPECT_EQ(sizeof(kData), bitstream.size());
+  EXPECT_EQ(sizeof(kData), buffer->data_size());
+  EXPECT_EQ(buffer->channels()[0].data(), bitstream.data());
+  EXPECT_EQ(bitstream, base::span(kData));
+}
+
+#if GTEST_HAS_DEATH_TEST
+TEST(AudioBufferDeathTest, IncompatibleAccessors) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr size_t kChannels = 2;
+  constexpr int kFrames = 100;
+  constexpr uint8_t kData[] = {0x01, 0x02, 0x03, 0x04};
+
+  // Planar buffer should disallow interleaved and bitstream accessors, and
+  // planar_channel with out-of-bounds index.
+  scoped_refptr<AudioBuffer> planar = AudioBuffer::CreateBuffer(
+      kSampleFormatPlanarF32, kChannelLayout, kChannels, kSampleRate, kFrames);
+  EXPECT_CHECK_DEATH(planar->interleaved_data());
+  EXPECT_CHECK_DEATH(planar->bitstream_data());
+  EXPECT_CHECK_DEATH(planar->planar_channel(kChannels));
+
+  // Interleaved buffer should disallow planar and bitstream accessors.
+  scoped_refptr<AudioBuffer> interleaved = AudioBuffer::CreateBuffer(
+      kSampleFormatF32, kChannelLayout, kChannels, kSampleRate, kFrames);
+  EXPECT_CHECK_DEATH(interleaved->planar_data());
+  EXPECT_CHECK_DEATH(interleaved->planar_channel(0));
+  EXPECT_CHECK_DEATH(interleaved->bitstream_data());
+
+  // Bitstream buffer should disallow planar and interleaved accessors.
+  scoped_refptr<AudioBuffer> bitstream = AudioBuffer::CopyBitstreamFrom(
+      kSampleFormatAc3, kChannelLayout, kChannels, kSampleRate, kFrames, kData,
+      base::Microseconds(1));
+  EXPECT_CHECK_DEATH(bitstream->interleaved_data());
+  EXPECT_CHECK_DEATH(bitstream->planar_data());
+  EXPECT_CHECK_DEATH(bitstream->planar_channel(0));
+
+  // End-of-stream buffer should disallow all data accessors.
+  scoped_refptr<AudioBuffer> eos = AudioBuffer::CreateEOSBuffer();
+  EXPECT_CHECK_DEATH(eos->interleaved_data());
+  EXPECT_CHECK_DEATH(eos->planar_data());
+  EXPECT_CHECK_DEATH(eos->planar_channel(0));
+  EXPECT_CHECK_DEATH(eos->bitstream_data());
+
+  // Empty buffer should disallow all data accessors.
+  scoped_refptr<AudioBuffer> empty = AudioBuffer::CreateEmptyBuffer(
+      kChannelLayout, kChannels, kSampleRate, kFrames, base::TimeDelta());
+  EXPECT_CHECK_DEATH(empty->interleaved_data());
+  EXPECT_CHECK_DEATH(empty->planar_data());
+  EXPECT_CHECK_DEATH(empty->planar_channel(0));
+  EXPECT_CHECK_DEATH(empty->bitstream_data());
+}
+#endif  // GTEST_HAS_DEATH_TEST
+
 }  // namespace media
