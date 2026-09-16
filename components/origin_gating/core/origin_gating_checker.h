@@ -78,8 +78,11 @@ class OriginGatingChecker {
         base::OnceCallback<void(NoVerdictResult)> callback) = 0;
   };
 
-  // The delegate must outlive this OriginGatingChecker instance.
-  OriginGatingChecker(Delegate& delegate, OriginGatingConfiguration config);
+  // TODO(http://b/545563794): Make this constructor take a
+  // `base::PassKey<OriginGatingService>` once
+  // DevToolsNavigationGatingRuleManager is migrated to a KeyedService.
+  OriginGatingChecker(base::WeakPtr<Delegate> delegate,
+                      OriginGatingConfiguration config);
   ~OriginGatingChecker();
 
   OriginGatingChecker(const OriginGatingChecker&) = delete;
@@ -204,7 +207,7 @@ class OriginGatingChecker {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  const raw_ref<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const base::WeakPtr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
   OriginGatingConfiguration config_ GUARDED_BY_CONTEXT(sequence_checker_);
   OriginGatingCache cache_ GUARDED_BY_CONTEXT(sequence_checker_);
   ActorContainerConfigSlot actor_container_config_slot_

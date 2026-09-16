@@ -774,7 +774,7 @@ void ActorKeyedService::PerformActions(
   if (task_metadata.agent_container_config().has_value()) {
     JournalDetailsBuilder builder;
     if (!task->GetExecutionEngine()
-             .origin_gating_checker()
+             .GetOriginGatingChecker()
              .actor_container_config_slot()
              .has_value()) {
       origin_gating::ActorContainerConfig config = ConvertAgentContainerConfig(
@@ -782,7 +782,7 @@ void ActorKeyedService::PerformActions(
       builder.Add("status", "assigned")
           .Add("active config", config.ToDebugValue());
       task->GetExecutionEngine()
-          .origin_gating_checker()
+          .GetOriginGatingChecker()
           .actor_container_config_slot()
           .Assign(std::move(config));
     } else {

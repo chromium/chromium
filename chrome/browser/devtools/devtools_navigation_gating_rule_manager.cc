@@ -52,23 +52,22 @@ DevToolsNavigationGatingRuleManager::CreateForTesting(
 }
 
 DevToolsNavigationGatingRuleManager::DevToolsNavigationGatingRuleManager(
-    std::string_view rules_json)
-    : origin_gating_checker_(
-          *this,
-          origin_gating::OriginGatingConfiguration(
-              {
-                  {origin_gating::CustomPredicate(
-                       base::BindRepeating(
-                           &DevToolsNavigationGatingRuleManager::EvaluateRules,
-                           // Safe because `origin_gating_checker_` is owned by
-                           // `this`, so the callback is guaranteed to be
-                           // destroyed before `this` is.
-                           base::Unretained(this)),
-                       DevToolsCustomPredicate::
-                           kDevToolsNavigationGatingRuleset),
-                   origin_gating::GateableEventSet::All()},
-              },
-              /*use_site_keyed_cache=*/false)) {
+    std::string_view rules_json) {
+  origin_gating_checker_.emplace(
+      weak_ptr_factory_.GetWeakPtr(),
+      origin_gating::OriginGatingConfiguration(
+          {
+              {origin_gating::CustomPredicate(
+                   base::BindRepeating(
+                       &DevToolsNavigationGatingRuleManager::EvaluateRules,
+                       // Safe because `origin_gating_checker_` is owned by
+                       // `this`, so the callback is guaranteed to be
+                       // destroyed before `this` is.
+                       base::Unretained(this)),
+                   DevToolsCustomPredicate::kDevToolsNavigationGatingRuleset),
+               origin_gating::GateableEventSet::All()},
+          },
+          /*use_site_keyed_cache=*/false));
   if (rules_json.empty()) {
     return;
   }
@@ -130,7 +129,8 @@ DevToolsNavigationGatingRuleManager::~DevToolsNavigationGatingRuleManager() =
 void DevToolsNavigationGatingRuleManager::IsNavigationAllowed(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
-  origin_gating_checker_.ComputeGatingDecision(
+  CHECK(origin_gating_checker_);
+  origin_gating_checker_->ComputeGatingDecision(
       /*context=*/nullptr, origin_gating::GateableEvent::kNavigationRequest,
       /*source=*/GURL(), /*destination=*/url,
       base::BindOnce([](std::unique_ptr<origin_gating::GatingDecisionContext>

@@ -33,8 +33,11 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/origin_gating/core/actor_container_config_slot.h"
+#include "components/origin_gating/core/checker_id.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/origin_gating_checker.h"
+#include "components/origin_gating/core/origin_gating_registration.h"
+#include "components/origin_gating/core/origin_gating_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/tabs/public/tab_interface.h"
@@ -59,6 +62,10 @@ class ScopedUmaHistogramTimer;
 
 namespace content {
 class NavigationHandle;
+}
+
+namespace origin_gating {
+class OriginGatingService;
 }
 
 namespace url {
@@ -308,16 +315,15 @@ class ExecutionEngine : public ToolDelegate,
 
   State state() const { return state_; }
 
-  const origin_gating::OriginGatingCache& origin_gating_cache() const {
-    return origin_gating_checker_.cache();
+  origin_gating::CheckerId checker_id() const {
+    return origin_gating_registration_ ? origin_gating_registration_->id()
+                                       : origin_gating::CheckerId();
   }
 
-  const origin_gating::OriginGatingChecker& origin_gating_checker() const {
-    return origin_gating_checker_;
-  }
-  origin_gating::OriginGatingChecker& origin_gating_checker() {
-    return origin_gating_checker_;
-  }
+  const origin_gating::OriginGatingCache& GetOriginGatingCache() const;
+
+  const origin_gating::OriginGatingChecker& GetOriginGatingChecker() const;
+  origin_gating::OriginGatingChecker& GetOriginGatingChecker();
 
   // Currently, navigations are generally forced to happen in the same tab (see
   // https://crbug.com/420669167 ). In some cases we need to drop this
@@ -350,6 +356,9 @@ class ExecutionEngine : public ToolDelegate,
 
  private:
   class NewTabWebContentsObserver;
+
+  origin_gating::OriginGatingService& GetOriginGatingService() const;
+  origin_gating::OriginGatingChecker& GetOriginGatingCheckerInternal() const;
 
   void SetState(State state);
 
@@ -495,8 +504,11 @@ class ExecutionEngine : public ToolDelegate,
   // The results for actions so far.
   std::vector<ActionResultWithLatencyInfo> action_results_;
 
-  // The engine that will determine the origin gating behavior.
-  origin_gating::OriginGatingChecker origin_gating_checker_;
+  // Manages the registration lifetime of this engine's OriginGatingChecker with
+  // the OriginGatingService. Automatically unregisters the checker upon
+  // destruction.
+  std::unique_ptr<origin_gating::OriginGatingRegistration>
+      origin_gating_registration_;
 
   // This will allow us to store already-recorded origins to avoid duplication
   // of dark launch metrics.

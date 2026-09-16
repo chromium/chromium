@@ -4973,6 +4973,7 @@ test("unit_tests") {
     "//chrome/browser/notifications:unit_tests",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/optimization_guide:unit_tests",
+    "//chrome/browser/origin_gating:unit_tests",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/page_content_annotations:unit_tests",

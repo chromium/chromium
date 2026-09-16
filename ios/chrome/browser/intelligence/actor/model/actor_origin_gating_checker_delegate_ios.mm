@@ -17,6 +17,11 @@ ActorOriginGatingCheckerDelegateIOS::ActorOriginGatingCheckerDelegateIOS() =
 ActorOriginGatingCheckerDelegateIOS::~ActorOriginGatingCheckerDelegateIOS() =
     default;
 
+base::WeakPtr<ActorOriginGatingCheckerDelegateIOS>
+ActorOriginGatingCheckerDelegateIOS::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void ActorOriginGatingCheckerDelegateIOS::DoesOriginRequireUserConfirmation(
     origin_gating::GatingDecisionContext* context,
     origin_gating::GateableEvent event,

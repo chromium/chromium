@@ -80,7 +80,7 @@ ActorService::ActorService(ProfileIOS* profile)
       journal_(std::make_unique<AggregatedJournal>()),
       origin_gating_checker_(
           std::make_unique<origin_gating::OriginGatingChecker>(
-              origin_gating_delegate_,
+              origin_gating_delegate_.GetWeakPtr(),
               CreateOriginGatingConfig())) {
   CHECK(tool_factory_);
   CHECK(origin_gating_checker_);

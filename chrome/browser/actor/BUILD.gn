@@ -68,6 +68,7 @@ source_set("actor") {
     "//base",
     "//chrome/browser/actor/ui:dom_node_geometry",
     "//chrome/browser/glic:mojo_bindings",
+    "//chrome/browser/origin_gating",
     "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/profiles",
     "//chrome/browser/search",

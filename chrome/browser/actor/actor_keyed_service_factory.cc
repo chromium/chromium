@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 
+#include "chrome/browser/origin_gating/origin_gating_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -32,6 +33,7 @@ ActorKeyedServiceFactory::ActorKeyedServiceFactory(
     : ProfileKeyedServiceFactory("ActorKeyedService",
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(origin_gating::OriginGatingServiceFactory::GetInstance());
 }
 
 ActorKeyedServiceFactory::~ActorKeyedServiceFactory() = default;

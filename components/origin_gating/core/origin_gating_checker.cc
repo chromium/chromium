@@ -113,7 +113,7 @@ DecisionAttribution MakeAttribution(const CustomPredicate& predicate) {
 
 }  // namespace
 
-OriginGatingChecker::OriginGatingChecker(Delegate& delegate,
+OriginGatingChecker::OriginGatingChecker(base::WeakPtr<Delegate> delegate,
                                          OriginGatingConfiguration config)
     : delegate_(delegate),
       config_(std::move(config)),
@@ -149,6 +149,10 @@ void OriginGatingChecker::EvaluatePredicates(
     GatingDecisionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!delegate_) {
+    return;
+  }
+
   for (size_t i = 0; i < pending_predicates.size(); ++i) {
     const PredicateConfiguration& predicate_config = pending_predicates[i];
     if (!predicate_config.AppliesTo(input.event)) {
@@ -177,6 +181,9 @@ void OriginGatingChecker::EvaluatePredicates(
   RunActionOrGetUserConfirmationInfo(
       context, /*pending_predicates=*/{}, input, callback,
       [&]() VALID_CONTEXT_REQUIRED(sequence_checker_) {
+        if (!delegate_) {
+          return;
+        }
         GatingDecisionContext* raw_context = context.get();
         GateableEvent event = input.event;
         GURL source = input.source;
@@ -357,6 +364,9 @@ void OriginGatingChecker::RunActionOrGetUserConfirmationInfo(
 
   if (input.requires_user_confirmation.has_value()) {
     return action();
+  }
+  if (!delegate_) {
+    return;
   }
   GatingDecisionContext* raw_context = context.get();
   GateableEvent event = input.event;

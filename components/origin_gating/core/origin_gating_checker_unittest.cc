@@ -84,6 +84,13 @@ class MockDelegate : public OriginGatingChecker::Delegate {
                bool requires_user_confirmation,
                base::OnceCallback<void(NoVerdictResult)> callback),
               (override));
+
+  base::WeakPtr<MockDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockDelegate> weak_ptr_factory_{this};
 };
 
 class OriginGatingCheckerTest : public ::testing::Test {
@@ -126,7 +133,8 @@ class OriginGatingCheckerTest : public ::testing::Test {
 
 TEST_F(OriginGatingCheckerTest, FallsBack_Allowed_NoPrompt) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -145,7 +153,8 @@ TEST_F(OriginGatingCheckerTest, FallsBack_Allowed_NoPrompt) {
 
 TEST_F(OriginGatingCheckerTest, FallsBack_Allowed_WithPrompt) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -164,7 +173,8 @@ TEST_F(OriginGatingCheckerTest, FallsBack_Allowed_WithPrompt) {
 
 TEST_F(OriginGatingCheckerTest, FallsBack_Blocked) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -183,7 +193,8 @@ TEST_F(OriginGatingCheckerTest, FallsBack_Blocked) {
 
 TEST_F(OriginGatingCheckerTest, FallsBack_Blocked_WithPrompt) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -209,7 +220,8 @@ class TestGatingContext : public GatingDecisionContext {
 
 TEST_F(OriginGatingCheckerTest, PlumbsContext) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -242,9 +254,10 @@ TEST_F(OriginGatingCheckerTest, PlumbsContext) {
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_AllowSameOrigin_ShortCircuits) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{DecisionSource::kAllowSameOrigin,
-                                             GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {{DecisionSource::kAllowSameOrigin, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com/page1");
   GURL destination("https://example.com/page2");
@@ -263,9 +276,10 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_AllowSameOrigin_NoDecision_FallsBack) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{DecisionSource::kAllowSameOrigin,
-                                             GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {{DecisionSource::kAllowSameOrigin, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -285,7 +299,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_ForbidNonLocalhostIpAddress_Blocked) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration({{DecisionSource::kForbidNonLocalhostIpAddress,
                                   GateableEventSet::All()}},
                                 /*use_site_keyed_cache=*/false));
@@ -307,7 +321,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_ForbidNonLocalhostIpAddress_Ipv4LocalhostFallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration({{DecisionSource::kForbidNonLocalhostIpAddress,
                                   GateableEventSet::All()}},
                                 /*use_site_keyed_cache=*/false));
@@ -330,7 +344,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_ForbidNonLocalhostIpAddress_Ipv6LocalhostFallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration({{DecisionSource::kForbidNonLocalhostIpAddress,
                                   GateableEventSet::All()}},
                                 /*use_site_keyed_cache=*/false));
@@ -353,7 +367,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_ForbidNonLocalhostIpAddress_NoDecision_FallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration({{DecisionSource::kForbidNonLocalhostIpAddress,
                                   GateableEventSet::All()}},
                                 /*use_site_keyed_cache=*/false));
@@ -376,7 +390,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_RequireHttpsOrLocalhost_HttpsFallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -399,7 +413,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_RequireHttpsOrLocalhost_HttpBlocked) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -421,7 +435,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_RequireHttpsOrLocalhost_DomainLocalhostFallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -444,7 +458,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_RequireHttpsOrLocalhost_Ipv4LocalhostFallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -467,7 +481,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_RequireHttpsOrLocalhost_Ipv6LocalhostFallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -490,7 +504,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_RequireHttpsOrLocalhost_NonHttpLocalhostBlocked) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kRequireHttpsOrLocalhost, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -508,7 +522,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_RequireHttpsOrHttp_HttpsFallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kRequireHttpsOrHttp, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -531,7 +545,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_RequireHttpsOrHttp_HttpFallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kRequireHttpsOrHttp, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -554,7 +568,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_RequireHttpsOrHttp_NonWebSchemeBlocked) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kRequireHttpsOrHttp, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -576,7 +590,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_AllowHttpLocalhost_HttpLocalhostAllowed) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kAllowHttpLocalhost, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -598,7 +612,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_AllowHttpLocalhost_NonHttpSchemeFallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kAllowHttpLocalhost, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -621,7 +635,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_AllowHttpLocalhost_NonLocalhostFallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kAllowHttpLocalhost, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -644,9 +658,10 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_AllowAboutBlank_AboutBlankAllowed) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{DecisionSource::kAllowAboutBlank,
-                                             GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {{DecisionSource::kAllowAboutBlank, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("about:blank");
@@ -665,9 +680,10 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_AllowAboutBlank_NonBlankFallsBack) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{DecisionSource::kAllowAboutBlank,
-                                             GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {{DecisionSource::kAllowAboutBlank, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -687,7 +703,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_ActorContainerConfig_NoConfigFallsBack) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kActorContainerConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -710,7 +726,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_ActorContainerConfig_NavigationAllowed) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kActorContainerConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -743,7 +759,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_ActorContainerConfig_NavigationBlocked) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kActorContainerConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -768,7 +784,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_ActorContainerConfig_PageActionAllowed) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kActorContainerConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -803,7 +819,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_ActorContainerConfig_PageActionBlocked) {
   OriginGatingChecker checker(
-      delegate_,
+      delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
           {{DecisionSource::kActorContainerConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
@@ -830,9 +846,10 @@ TEST_F(OriginGatingCheckerTest,
 
 TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{DecisionSource::kEnterprisePolicy,
-                                             GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {{DecisionSource::kEnterprisePolicy, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -859,9 +876,10 @@ TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_EnterprisePolicy_Allowed_PersistsCache) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{DecisionSource::kEnterprisePolicy,
-                                             GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {{DecisionSource::kEnterprisePolicy, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -884,9 +902,10 @@ TEST_F(OriginGatingCheckerTest,
 
 TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Blocked) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{DecisionSource::kEnterprisePolicy,
-                                             GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {{DecisionSource::kEnterprisePolicy, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -908,9 +927,10 @@ TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Blocked) {
 TEST_F(OriginGatingCheckerTest,
        BuiltInPredicate_EnterprisePolicy_NoDecision_FallsBack) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{DecisionSource::kEnterprisePolicy,
-                                             GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {{DecisionSource::kEnterprisePolicy, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -942,8 +962,9 @@ TEST_F(OriginGatingCheckerTest, AsyncCustomPredicate_Allowed_ShortCircuits) {
       TestCustomPredicate::kCustom1);
 
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{custom, GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({{custom, GateableEventSet::All()}},
+                                /*use_site_keyed_cache=*/false));
 
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _, _, _))
       .Times(0);
@@ -968,8 +989,9 @@ TEST_F(OriginGatingCheckerTest,
       TestCustomPredicate::kCustom1);
 
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{custom, GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({{custom, GateableEventSet::All()}},
+                                /*use_site_keyed_cache=*/false));
 
   GatingDecision decision = ComputeGatingDecisionAndVerifyAsynchrony(
       checker, nullptr, GURL("https://example.com"), GURL("https://foo.com"));
@@ -995,8 +1017,9 @@ TEST_F(OriginGatingCheckerTest,
       TestCustomPredicate::kCustom1);
 
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{custom, GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({{custom, GateableEventSet::All()}},
+                                /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -1024,8 +1047,9 @@ TEST_F(OriginGatingCheckerTest, SyncCustomPredicate_Allowed_ShortCircuits) {
       TestCustomPredicate::kCustom2);
 
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{custom, GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({{custom, GateableEventSet::All()}},
+                                /*use_site_keyed_cache=*/false));
 
   EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _, _, _))
       .Times(0);
@@ -1050,8 +1074,9 @@ TEST_F(OriginGatingCheckerTest,
       TestCustomPredicate::kCustom2);
 
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({{custom, GateableEventSet::All()}},
-                                           /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({{custom, GateableEventSet::All()}},
+                                /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -1071,12 +1096,13 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        CacheHit_UserConfirmedOrigin_ShortCircuitsImmediately) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration(
-                     {
-                         {DecisionSource::kCacheWithUserConfirmation,
-                          GateableEventSet::All()},
-                     },
-                     /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {
+              {DecisionSource::kCacheWithUserConfirmation,
+               GateableEventSet::All()},
+          },
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -1097,12 +1123,13 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        CacheMiss_NonConfirmedOrigin_SensitiveDestination_QueriesDelegate) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration(
-                     {
-                         {DecisionSource::kCacheWithUserConfirmation,
-                          GateableEventSet::All()},
-                     },
-                     /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {
+              {DecisionSource::kCacheWithUserConfirmation,
+               GateableEventSet::All()},
+          },
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -1130,14 +1157,15 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest,
        CacheHit_NonConfirmedOrigin_NonSensitiveDestination_ShortCircuits) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration(
-                     {
-                         {DecisionSource::kCacheWithUserConfirmation,
-                          GateableEventSet::All()},
-                         {DecisionSource::kCacheWithoutUserConfirmation,
-                          GateableEventSet::All()},
-                     },
-                     /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {
+              {DecisionSource::kCacheWithUserConfirmation,
+               GateableEventSet::All()},
+              {DecisionSource::kCacheWithoutUserConfirmation,
+               GateableEventSet::All()},
+          },
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -1169,11 +1197,12 @@ TEST_F(OriginGatingCheckerTest, PredicateSkipped_WhenEventNotApplicable) {
       TestCustomPredicate::kCustom2);
 
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration(
-                     {
-                         {page_action_only, {GateableEvent::kPageAction}},
-                     },
-                     /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {
+              {page_action_only, {GateableEvent::kPageAction}},
+          },
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -1207,11 +1236,12 @@ TEST_F(OriginGatingCheckerTest, PredicateRuns_WhenEventApplicable) {
       TestCustomPredicate::kCustom2);
 
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration(
-                     {
-                         {page_action_only, {GateableEvent::kPageAction}},
-                     },
-                     /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {
+              {page_action_only, {GateableEvent::kPageAction}},
+          },
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -1241,9 +1271,10 @@ TEST_F(OriginGatingCheckerTest, EventReachesPredicateAndDelegate) {
       TestCustomPredicate::kCustom2);
 
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration(
-                     {{observing_predicate, GateableEventSet::All()}},
-                     /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {{observing_predicate, GateableEventSet::All()}},
+          /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -1269,7 +1300,8 @@ TEST_F(OriginGatingCheckerTest, EventReachesPredicateAndDelegate) {
 
 TEST_F(OriginGatingCheckerTest, BypassCache_SuppressesCacheWrite) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -1297,7 +1329,8 @@ TEST_F(OriginGatingCheckerTest, BypassCache_SuppressesCacheWrite) {
 
 TEST_F(OriginGatingCheckerTest, NoBypassCache_PersistsCacheWrite) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -1325,7 +1358,8 @@ TEST_F(OriginGatingCheckerTest, NoBypassCache_PersistsCacheWrite) {
 
 TEST_F(OriginGatingCheckerTest, BypassCache_IgnoredWhenBlocked) {
   OriginGatingChecker checker(
-      delegate_, OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration({}, /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -1349,6 +1383,27 @@ TEST_F(OriginGatingCheckerTest, BypassCache_IgnoredWhenBlocked) {
   // A blocked decision is never persisted regardless of bypass_cache.
   EXPECT_FALSE(
       checker.cache().IsNavigationAllowed(source_origin, destination_origin));
+}
+
+TEST_F(OriginGatingCheckerTest, DelegateDestroyedBeforeEvaluation) {
+  auto delegate = std::make_unique<NiceMock<MockDelegate>>();
+  OriginGatingChecker checker(
+      delegate->GetWeakPtr(),
+      OriginGatingConfiguration({{DecisionSource::kCacheWithoutUserConfirmation,
+                                  GateableEventSet::All()}},
+                                /*use_site_keyed_cache=*/false));
+
+  // Destroy the delegate before computing decision.
+  delegate.reset();
+
+  base::test::TestFuture<std::unique_ptr<GatingDecisionContext>, GatingDecision>
+      future;
+  checker.ComputeGatingDecision(
+      nullptr, GateableEvent::kNavigationResponse, GURL("https://example.com"),
+      GURL("https://destination.com"), future.GetCallback());
+
+  // If the delegate was destroyed, the callback is not executed.
+  EXPECT_FALSE(future.IsReady());
 }
 
 }  // namespace

@@ -359,7 +359,7 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
     actor::AddTabToTask(mock_actuation_tab(), *task);
     actor_service()->NotifyTaskStateChanged(*task);
     const auto& slot = task->GetExecutionEngine()
-                           .origin_gating_checker()
+                           .GetOriginGatingChecker()
                            .actor_container_config_slot();
     CHECK(slot.has_value());
     return slot.value();

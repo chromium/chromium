@@ -27,6 +27,8 @@ class ActorOriginGatingCheckerDelegateIOS
   ActorOriginGatingCheckerDelegateIOS& operator=(
       const ActorOriginGatingCheckerDelegateIOS&) = delete;
 
+  base::WeakPtr<ActorOriginGatingCheckerDelegateIOS> GetWeakPtr();
+
   // OriginGatingChecker::Delegate overrides:
   void DoesOriginRequireUserConfirmation(
       origin_gating::GatingDecisionContext* context,

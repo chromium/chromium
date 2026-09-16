@@ -52,6 +52,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
+#include "chrome/browser/origin_gating/origin_gating_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/common/actor.mojom.h"
@@ -72,6 +73,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
+#include "components/origin_gating/core/origin_gating_service.h"
 #include "components/origin_gating/core/types.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_service_impl.h"
@@ -706,8 +708,12 @@ ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine>,
               task_->GetProfile(),
               journal_,
               task_->id())),
-      origin_gating_checker_(
-          *this,
+      dark_launch_origin_gating_cache_(
+          kGlicNavigationGatingUseSiteNotOrigin.Get()) {
+  TRACE_EVENT0("actor", "ExecutionEngine::ExecutionEngine");
+  origin_gating_registration_ =
+      GetOriginGatingService().CreateAndRegisterChecker(
+          weak_ptr_factory_.GetWeakPtr(),
           origin_gating::OriginGatingConfiguration(
               {
                   {CustomPredicate(base::BindRepeating(&BlockTabErrorDocument),
@@ -773,10 +779,7 @@ ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine>,
                   {DecisionSource::kCacheWithoutUserConfirmation,
                    {GateableEvent::kNavigationResponse}},
               },
-              kGlicNavigationGatingUseSiteNotOrigin.Get())),
-      dark_launch_origin_gating_cache_(
-          kGlicNavigationGatingUseSiteNotOrigin.Get()) {
-  TRACE_EVENT0("actor", "ExecutionEngine::ExecutionEngine");
+              kGlicNavigationGatingUseSiteNotOrigin.Get()));
 }
 
 // static
@@ -793,7 +796,7 @@ std::unique_ptr<ExecutionEngine> ExecutionEngine::Create(
 ExecutionEngine::~ExecutionEngine() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   origin_gating::OriginGatingCache::SizeMetrics metrics =
-      origin_gating_cache().GetSizeMetrics();
+      GetOriginGatingCache().GetSizeMetrics();
   RecordActorNavigationGatingListSize(metrics.allow_list_size,
                                       metrics.confirmed_list_size);
 
@@ -872,7 +875,7 @@ void ExecutionEngine::ShouldNavigationCommit(
   auto wrapped_callback = TrackPendingNavigation(
       pending_navigation_cancellations_, std::move(callback),
       /*block_reason_if_dropped=*/MayActOnUrlBlockReason::kTaskCancelled);
-  origin_gating_checker_.ComputeGatingDecision(
+  GetOriginGatingChecker().ComputeGatingDecision(
       std::make_unique<NavigationResponseContext>(
           GetPrimaryMainFrame(navigation_handle)->GetPageUkmSourceId(),
           navigation_handle.IsInPrerenderedMainFrame(), std::move(timer),
@@ -1308,8 +1311,8 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
       if (std::optional<url::Origin> maybe_origin =
               action->AssociatedOriginGrant();
           maybe_origin) {
-        origin_gating_checker_.AllowNavigationTo(maybe_origin.value(),
-                                                 /*is_user_confirmed=*/false);
+        GetOriginGatingChecker().AllowNavigationTo(maybe_origin.value(),
+                                                   /*is_user_confirmed=*/false);
       }
     }
   }
@@ -1383,7 +1386,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   content::WebContents& web_contents = *(tab->GetContents());
   const GURL& url = web_contents.GetPrimaryMainFrame()->GetLastCommittedURL();
   auto event = GateableEvent::kPageAction;
-  origin_gating_checker_.ComputeGatingDecision(
+  GetOriginGatingChecker().ComputeGatingDecision(
       std::make_unique<PageActionGatingContext>(web_contents.GetWeakPtr()),
       event, /*source=*/GURL(), url,
       base::BindOnce(&ResolveGatingDecision,
@@ -1696,7 +1699,7 @@ void ExecutionEngine::IsAcceptableNavigationDestination(
     const GURL& url,
     DecisionCallbackWithReason callback) {
   auto event = GateableEvent::kNavigationRequest;
-  origin_gating_checker_.ComputeGatingDecision(
+  GetOriginGatingChecker().ComputeGatingDecision(
       std::make_unique<OriginGatingDecisionContext>(), event, /*source=*/GURL(),
       url,
       base::BindOnce(&ResolveGatingDecision,
@@ -1924,7 +1927,7 @@ void ExecutionEngine::AddWritableMainframeOrigins(
   if (!IsNavigationGatingEnabled()) {
     return;
   }
-  origin_gating_checker_.AllowNavigationTo(added_writable_mainframe_origins);
+  GetOriginGatingChecker().AllowNavigationTo(added_writable_mainframe_origins);
 }
 
 void ExecutionEngine::SetActorLoginService(
@@ -1965,6 +1968,34 @@ size_t ExecutionEngine::GetResultIndexForAction(size_t action_index) const {
 
 ui::UiEventDispatcher& ExecutionEngine::GetUiEventDispatcher() {
   return task_->ui_event_dispatcher();
+}
+
+origin_gating::OriginGatingService& ExecutionEngine::GetOriginGatingService()
+    const {
+  return CHECK_DEREF(
+      origin_gating::OriginGatingServiceFactory::GetForBrowserContext(
+          task_->GetProfile()));
+}
+
+origin_gating::OriginGatingChecker&
+ExecutionEngine::GetOriginGatingCheckerInternal() const {
+  CHECK(origin_gating_registration_);
+  return CHECK_DEREF(origin_gating_registration_->service().GetChecker(
+      origin_gating_registration_->id()));
+}
+
+const origin_gating::OriginGatingCache& ExecutionEngine::GetOriginGatingCache()
+    const {
+  return GetOriginGatingChecker().cache();
+}
+
+const origin_gating::OriginGatingChecker&
+ExecutionEngine::GetOriginGatingChecker() const {
+  return GetOriginGatingCheckerInternal();
+}
+
+origin_gating::OriginGatingChecker& ExecutionEngine::GetOriginGatingChecker() {
+  return GetOriginGatingCheckerInternal();
 }
 
 std::ostream& operator<<(std::ostream& o, const ExecutionEngine::State& s) {

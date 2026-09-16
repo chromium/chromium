@@ -416,7 +416,7 @@ void GlicPasswordChangeActuator::OnActorTaskStateChanged(
   // TODO(crbug.com/559497033): Inject ActorContainerConfig through API when
   // it's ready
   CHECK(!task.GetExecutionEngine()
-             .origin_gating_checker()
+             .GetOriginGatingChecker()
              .actor_container_config_slot()
              .has_value());
   std::set<net::SchemefulSite> allowed_origins;
@@ -426,7 +426,7 @@ void GlicPasswordChangeActuator::OnActorTaskStateChanged(
   }
 
   task.GetExecutionEngine()
-      .origin_gating_checker()
+      .GetOriginGatingChecker()
       .actor_container_config_slot()
       .Assign(BuildPasswordChangeContainerConfig(allowed_origins));
 

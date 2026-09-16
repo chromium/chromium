@@ -10,6 +10,7 @@ source_set("core") {
     "actor_container_config.h",
     "actor_container_config_slot.cc",
     "actor_container_config_slot.h",
+    "checker_id.h",
     "concepts.h",
     "origin_gating_cache.cc",
     "origin_gating_cache.h",
@@ -17,13 +18,19 @@ source_set("core") {
     "origin_gating_checker.h",
     "origin_gating_configuration.cc",
     "origin_gating_configuration.h",
+    "origin_gating_registration.cc",
+    "origin_gating_registration.h",
+    "origin_gating_service.cc",
+    "origin_gating_service.h",
     "types.cc",
     "types.h",
   ]
 
   deps = [
     "//base",
+    "//components/keyed_service/core",
     "//net",
+    "//third_party/abseil-cpp:absl",
     "//url",
   ]
 }
@@ -36,6 +43,8 @@ source_set("unit_tests") {
     "origin_gating_cache_unittest.cc",
     "origin_gating_checker_unittest.cc",
     "origin_gating_configuration_unittest.cc",
+    "origin_gating_registration_unittest.cc",
+    "origin_gating_service_unittest.cc",
   ]
 
   deps = [

@@ -1453,8 +1453,8 @@ TEST_F(ExecutionEngineUrlGatingTest,
       .Times(0);
 
   ExecutionEngine& engine = GetExecutionEngine();
-  engine.origin_gating_checker().AllowNavigationTo(url::Origin::Create(url),
-                                                   /*is_user_confirmed=*/true);
+  engine.GetOriginGatingChecker().AllowNavigationTo(url::Origin::Create(url),
+                                                    /*is_user_confirmed=*/true);
   base::test::TestFuture<MayActOnUrlBlockReason> allowed;
   engine.IsAcceptableNavigationDestination(url, allowed.GetCallback());
   // Allowed by cache.
@@ -1496,7 +1496,7 @@ TEST_F(ExecutionEngineUrlGatingTest, SafetyChecksForNextAction_AllowedByCache) {
           testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .Times(0);
 
-  GetExecutionEngine().origin_gating_checker().AllowNavigationTo(
+  GetExecutionEngine().GetOriginGatingChecker().AllowNavigationTo(
       url::Origin::Create(url), /*is_user_confirmed=*/true);
   CheckUrl(url, /*expected_allowed=*/true);
 }

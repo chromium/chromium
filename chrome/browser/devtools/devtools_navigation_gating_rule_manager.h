@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_NAVIGATION_GATING_RULE_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
@@ -77,7 +78,16 @@ class DevToolsNavigationGatingRuleManager
 
   content_settings::HostIndexedContentSettings rules_;
   bool has_allowlist_ = false;
-  origin_gating::OriginGatingChecker origin_gating_checker_;
+
+  // TODO(http://b/545563794): Migrate DevTools navigation gating to a
+  // KeyedService that uses OriginGatingService.
+  // The checker needs a weak pointer to this class, which serves as the
+  // delegate. The weak pointer is not available until the constructor which
+  // means this checker cannot be a direct member and is an optional instead to
+  // allow for this delayed initialization.
+  std::optional<origin_gating::OriginGatingChecker> origin_gating_checker_;
+  base::WeakPtrFactory<DevToolsNavigationGatingRuleManager> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_NAVIGATION_GATING_RULE_MANAGER_H_
