@@ -134,6 +134,17 @@ void CriticalActionService::AddCriticalAction(
   backend_.AsyncCall(&CriticalActionBackend::AddCriticalAction).WithArgs(entry);
 }
 
+void CriticalActionService::SetCriticalActionsConversationId(
+    const std::vector<std::string>& actor_task_ids,
+    std::string_view conversation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!backend_ || actor_task_ids.empty() || conversation_id.empty()) {
+    return;
+  }
+  backend_.AsyncCall(&CriticalActionBackend::SetCriticalActionsConversationId)
+      .WithArgs(actor_task_ids, std::string(conversation_id));
+}
+
 void CriticalActionService::AddCriticalActionWithNavigationId(
     const CriticalActionEntry& entry,
     int64_t navigation_id) {

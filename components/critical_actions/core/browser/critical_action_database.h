@@ -41,6 +41,13 @@ class CriticalActionDatabase {
   // already exists or a database error occurs.
   bool AddCriticalAction(const CriticalActionEntry& entry);
 
+  // Associates conversation_id with all critical actions matching
+  // actor_task_ids. Returns true if successfully updated, or false on
+  // database error.
+  bool SetCriticalActionsConversationId(
+      const std::vector<std::string>& actor_task_ids,
+      std::string_view conversation_id);
+
   // Retrieves a critical action record by its ID.
   // Returns the record if found, or std::nullopt if the action ID is not found.
   std::optional<CriticalActionEntry> GetCriticalAction(

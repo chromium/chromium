@@ -69,6 +69,11 @@ class CriticalActionService : public KeyedService,
   // UI thread entry point to add a new critical action.
   virtual void AddCriticalAction(const CriticalActionEntry& entry);
 
+  // UI thread entry point to associate conversation_id with tasks.
+  virtual void SetCriticalActionsConversationId(
+      const std::vector<std::string>& actor_task_ids,
+      std::string_view conversation_id);
+
   // UI thread entry point to log or queue a critical action linked by
   // navigation ID.
   virtual void AddCriticalActionWithNavigationId(

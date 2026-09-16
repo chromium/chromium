@@ -51,6 +51,7 @@ TEST_F(CriticalActionBackendTest, CallBeforeInitReturnsGracefully) {
   // Database is not initialized. All the operations should return gracefully
   // without crashing.
   backend_->AddCriticalAction(entry);
+  backend_->SetCriticalActionsConversationId({"task_id"}, "conv_id");
   EXPECT_FALSE(backend_->GetCriticalAction(action_id).has_value());
   backend_->DeleteCriticalAction(action_id);
   backend_->DeleteCriticalActionsInTimeRange(base::Time::Now(),
@@ -82,6 +83,33 @@ TEST_F(CriticalActionBackendTest, ForwardCallsToDatabase) {
 
   backend_->DeleteCriticalAction(action_id);
   EXPECT_FALSE(backend_->GetCriticalAction(action_id).has_value());
+}
+
+TEST_F(CriticalActionBackendTest, SetCriticalActionsConversationId) {
+  backend_->Init();
+
+  const std::string action_id = "backend_action_1";
+  const std::string task_id = "backend_task_1";
+  const std::string conv_id = "backend_conv_1";
+
+  CriticalActionEntry entry;
+  entry.critical_action_id = action_id;
+  entry.timestamp = base::Time::Now();
+  entry.actor_task_id = task_id;
+  entry.action_type = ActionType::kCredentialAccess;
+  entry.url = GURL("https://example.com/checkout");
+
+  backend_->AddCriticalAction(entry);
+
+  auto retrieved = backend_->GetCriticalAction(action_id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_TRUE(retrieved->conversation_id.empty());
+
+  backend_->SetCriticalActionsConversationId({task_id}, conv_id);
+
+  retrieved = backend_->GetCriticalAction(action_id);
+  ASSERT_TRUE(retrieved.has_value());
+  EXPECT_EQ(retrieved->conversation_id, conv_id);
 }
 
 }  // namespace critical_actions

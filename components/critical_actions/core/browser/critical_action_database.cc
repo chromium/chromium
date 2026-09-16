@@ -313,6 +313,45 @@ bool CriticalActionDatabase::AddCriticalAction(
   return transaction.Commit();
 }
 
+bool CriticalActionDatabase::SetCriticalActionsConversationId(
+    const std::vector<std::string>& actor_task_ids,
+    std::string_view conversation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (actor_task_ids.empty()) {
+    // No-op succeeds since nothing needs updating.
+    return true;
+  }
+  if (conversation_id.empty()) {
+    return false;
+  }
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  // Unlike DeleteCriticalActionsByVisitIds which runs rarely and in bulk, this
+  // is called often with only a few actor tasks per conversation, making
+  // GetCachedStatement preferred over dynamic statement compilation.
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT OR REPLACE INTO CriticalActionConversations (critical_action_id, "
+      "conversation_id) "
+      "SELECT critical_action_id, ? FROM CriticalActionEntries "
+      "WHERE actor_task_id = ?"));
+
+  for (const std::string& task_id : actor_task_ids) {
+    statement.Reset(true);
+    statement.BindString(0, conversation_id);
+    statement.BindString(1, task_id);
+    if (!statement.Run()) {
+      return false;
+    }
+  }
+
+  return transaction.Commit();
+}
+
 std::optional<CriticalActionEntry> CriticalActionDatabase::GetCriticalAction(
     std::string_view critical_action_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "sql/sqlite_result_code.h"
+#include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -500,5 +501,89 @@ TEST(CriticalActionDatabaseHelpersTest,
                                "e.actor_task_id = ?"));
   EXPECT_THAT(query, HasSubstr("ORDER BY e.timestamp DESC LIMIT ?"));
 }
+
+namespace {
+
+struct SetCriticalActionsConversationIdTestCase {
+  std::string test_name;
+  std::vector<std::string> actor_task_ids_to_resolve;
+  std::vector<std::string> entry_task_ids;
+  base::flat_map<std::string, std::string> expected_conversation_ids;
+};
+
+}  // namespace
+
+class SetCriticalActionsConversationIdTest
+    : public CriticalActionDatabaseTest,
+      public ::testing::WithParamInterface<
+          SetCriticalActionsConversationIdTestCase> {};
+
+// Tests SetCriticalActionsConversationId with various task ID sets.
+TEST_P(SetCriticalActionsConversationIdTest, SetCriticalActionsConversationId) {
+  const SetCriticalActionsConversationIdTestCase& test_case = GetParam();
+
+  CriticalActionDatabase database(db_path_);
+  ASSERT_TRUE(database.Init());
+
+  std::vector<CriticalActionEntry> entries;
+  for (const auto& task_id : test_case.entry_task_ids) {
+    CriticalActionEntry entry = CreateDefaultEntry();
+    entry.actor_task_id = task_id;
+    EXPECT_TRUE(database.AddCriticalAction(entry));
+    entries.push_back(entry);
+  }
+
+  // Before resolution, none of the entries should have a conversation ID.
+  for (const auto& entry : entries) {
+    SCOPED_TRACE(entry.actor_task_id);
+    auto retrieved = database.GetCriticalAction(entry.critical_action_id);
+    ASSERT_TRUE(retrieved.has_value());
+    EXPECT_TRUE(retrieved->conversation_id.empty());
+  }
+
+  EXPECT_TRUE(database.SetCriticalActionsConversationId(
+      test_case.actor_task_ids_to_resolve, "conv_resolved1"));
+
+  for (const auto& entry : entries) {
+    SCOPED_TRACE(entry.actor_task_id);
+    auto retrieved = database.GetCriticalAction(entry.critical_action_id);
+    ASSERT_TRUE(retrieved.has_value());
+    EXPECT_EQ(retrieved->conversation_id,
+              test_case.expected_conversation_ids.at(entry.actor_task_id));
+  }
+
+  database.Close();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SetCriticalActionsConversationIdTest,
+    testing::Values(
+        SetCriticalActionsConversationIdTestCase{
+            .test_name = "SubsetResolves",
+            .actor_task_ids_to_resolve = {"task_1", "task_2"},
+            .entry_task_ids = {"task_1", "task_2", "task_other"},
+            .expected_conversation_ids = {{"task_1", "conv_resolved1"},
+                                          {"task_2", "conv_resolved1"},
+                                          {"task_other", ""}},
+        },
+        SetCriticalActionsConversationIdTestCase{
+            .test_name = "AllResolve",
+            .actor_task_ids_to_resolve = {"task_1", "task_2", "task_other"},
+            .entry_task_ids = {"task_1", "task_2", "task_other"},
+            .expected_conversation_ids = {{"task_1", "conv_resolved1"},
+                                          {"task_2", "conv_resolved1"},
+                                          {"task_other", "conv_resolved1"}},
+        },
+        SetCriticalActionsConversationIdTestCase{
+            .test_name = "NoneResolve",
+            .actor_task_ids_to_resolve = {"task_unknown"},
+            .entry_task_ids = {"task_1", "task_2", "task_other"},
+            .expected_conversation_ids = {{"task_1", ""},
+                                          {"task_2", ""},
+                                          {"task_other", ""}},
+        }),
+    [](const testing::TestParamInfo<SetCriticalActionsConversationIdTestCase>&
+           info) { return info.param.test_name; });
 
 }  // namespace critical_actions
