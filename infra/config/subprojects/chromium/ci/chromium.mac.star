@@ -669,8 +669,6 @@ ci.thin_tester(
                         ),
                     ),
                     "mac_26_arm64",
-                    # TODO(crbug.com/562095747): return to CQ after timeouts are fixed
-                    "ci_only",
                 ],
                 remove_mixins = "mac_26_vm_optional",
             ),
