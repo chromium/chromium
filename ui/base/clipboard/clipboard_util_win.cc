@@ -781,9 +781,11 @@ bool GetUrlInfos(IDataObject* data_object,
     if (!GetFilenames(data_object, &filenames))
       return false;
     DCHECK_GT(filenames.size(), 0U);
-    GURL file_url = net::FilePathToFileURL(base::FilePath(filenames[0]));
-    if (file_url.is_valid()) {
-      url_infos.emplace_back(file_url, u"");
+    for (const auto& filename : filenames) {
+      GURL file_url = net::FilePathToFileURL(base::FilePath(filename));
+      if (file_url.is_valid()) {
+        url_infos.emplace_back(file_url, u"");
+      }
     }
     return !url_infos.empty();
   }
