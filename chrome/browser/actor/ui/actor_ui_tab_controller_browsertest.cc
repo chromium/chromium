@@ -10,7 +10,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
                        TabIndicatorVisibleDuringActuation) {
   Profile* const profile = browser()->GetProfile();
   ActorUiStateManagerInterface* state_manager =
-      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+      ActorUiStateManager::Get(profile);
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
@@ -159,7 +159,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
       TestTaskSourceInfo(), NoEnterprisePolicyChecker());
   actor::ActorTask* task = actor_service->GetTask(task_id);
   actor::ui::StartTask start_task_event(task_id);
-  actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
+  ActorUiStateManager::Get(browser()->GetProfile())
+      ->OnUiEvent(start_task_event);
   // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
   base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 
@@ -189,9 +190,9 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   EXPECT_FALSE(GetSpinner()->bounds().IsEmpty());
 
   // Wait for user event.
-  actor_service->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id,
-                                  actor::ActorTask::State::kWaitingOnUser));
+  ActorUiStateManager::Get(browser()->GetProfile())
+      ->OnUiEvent(actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kWaitingOnUser));
   // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
   base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 
@@ -203,8 +204,9 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
   EXPECT_EQ(GetSpinner()->state(), views::AnimatedImageView::State::kStopped);
 
   // Restart the task
-  actor_service->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+  ActorUiStateManager::Get(browser()->GetProfile())
+      ->OnUiEvent(actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kActing));
   // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
   base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 
@@ -268,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerTest,
                        TabStripModelNotifiedOnUpdate) {
   Profile* const profile = browser()->GetProfile();
   ActorUiStateManagerInterface* state_manager =
-      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+      ActorUiStateManager::Get(profile);
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
@@ -308,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabControllerDisabledTest,
                        TabIndicatorNotVisibleWhenFeatureDisabled) {
   Profile* const profile = browser()->GetProfile();
   ActorUiStateManagerInterface* state_manager =
-      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+      ActorUiStateManager::Get(profile);
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);
@@ -350,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiTabIndicatorSpinnerIgnoreReducedMotionDisabled,
                        TabIndicatorVisibleDuringActuation) {
   Profile* const profile = browser()->GetProfile();
   ActorUiStateManagerInterface* state_manager =
-      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+      ActorUiStateManager::Get(profile);
   ASSERT_NE(state_manager, nullptr);
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
   ASSERT_NE(tab, nullptr);

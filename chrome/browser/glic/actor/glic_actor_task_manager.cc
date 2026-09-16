@@ -26,7 +26,7 @@
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tab_observation_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/glic/actor/glic_actor_journal_handler.h"
 #include "chrome/browser/glic/actor/glic_actor_metrics.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
@@ -261,7 +261,7 @@ void GlicActorClientSession::CreateTask(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
                             conversation_id),
       &actor_policy_checker(), std::move(options), GetWeakPtr(),
-      actor_keyed_service().GetActorUiStateManager(),
+      actor::ui::ActorUiStateManager::Get(&profile()),
       instance_metrics().initial_invocation_source());
   CHECK(!current_task_id_.is_null());
 
@@ -587,7 +587,7 @@ void GlicActorTaskManager::MaybeShowDeactivationToastUi() {
 #if !BUILDFLAG(IS_ANDROID)
   BrowserWindowInterface* const last_active_bwi =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  actor_keyed_service_->GetActorUiStateManager()->MaybeShowToast(
+  actor::ui::ActorUiStateManager::Get(profile())->MaybeShowToast(
       last_active_bwi);
 #endif
 }

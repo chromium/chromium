@@ -8,9 +8,8 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
@@ -113,12 +112,12 @@ void GlicActorNudgeController::OnStateUpdate(
           show_bubble);
       break;
     case ActorTaskNudgeState::Text::kCompleteTasks:
-      UpdateNudgeLabelOrRetrigger(l10n_util::GetPluralStringFUTF16(
-                                      IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL,
-                                      actor::ActorKeyedService::Get(profile_)
-                                          ->GetActorUiStateManager()
-                                          ->GetInactiveTaskCount()),
-                                  show_bubble);
+      UpdateNudgeLabelOrRetrigger(
+          l10n_util::GetPluralStringFUTF16(
+              IDS_ACTOR_TASK_NUDGE_TASK_COMPLETE_LABEL,
+              actor::ui::ActorUiStateManager::Get(profile_)
+                  ->GetInactiveTaskCount()),
+          show_bubble);
       break;
     default:
       NOTREACHED();

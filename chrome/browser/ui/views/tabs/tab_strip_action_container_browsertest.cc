@@ -12,7 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
@@ -187,7 +187,8 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
         actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
     actor::ActorTask* task = actor_service()->GetTask(task_id);
     actor::ui::StartTask start_task_event(task_id);
-    actor_service()->GetActorUiStateManager()->OnUiEvent(start_task_event);
+    actor::ui::ActorUiStateManager::Get(browser()->GetProfile())
+        ->OnUiEvent(start_task_event);
 
     // Add tab to task.
     base::test::TestFuture<actor::mojom::ActionResultPtr> add_tab_future;
@@ -411,7 +412,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor::ui::StartTask start_task_event(task_id);
-  actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
+  actor::ui::ActorUiStateManager::Get(browser()->GetProfile())
+      ->OnUiEvent(start_task_event);
   actor_service->StopTask(task_id,
                           actor::ActorTask::StoppedReason::kTaskComplete);
 

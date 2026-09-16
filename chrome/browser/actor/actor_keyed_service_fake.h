@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_KEYED_SERVICE_FAKE_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_KEYED_SERVICE_FAKE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
@@ -36,6 +37,8 @@ class ActorKeyedServiceFake : public ActorKeyedService {
 
   MockPolicyChecker no_enterprise_policy_checker_{
       EnterprisePolicyChecker::UrlBlockReason::kNotBlocked};
+
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<ActorKeyedServiceFake> weak_ptr_factory_{this};
 };

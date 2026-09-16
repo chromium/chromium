@@ -474,7 +474,8 @@ TaskId ActorKeyedService::CreateTask(
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker) {
   return CreateTaskWithOptions(source_info, policy_checker, /*options=*/nullptr,
-                               /*delegate=*/nullptr, GetActorUiStateManager());
+                               /*delegate=*/nullptr,
+                               actor_ui_state_manager_.get());
 }
 
 TaskId ActorKeyedService::CreateTaskWithOptions(
@@ -499,7 +500,8 @@ TaskId ActorKeyedService::CreateTaskForTesting(
     std::optional<glic::mojom::InvocationSource> initial_invocation_source) {
   return CreateTaskImpl(std::move(ui_event_dispatcher), source_info,
                         policy_checker, std::move(options), std::move(delegate),
-                        GetActorUiStateManager(), initial_invocation_source);
+                        actor_ui_state_manager_.get(),
+                        initial_invocation_source);
 }
 
 TaskId ActorKeyedService::CreateTaskImpl(
@@ -839,7 +841,8 @@ ActorTask* ActorKeyedService::GetTask(TaskId task_id) {
   return nullptr;
 }
 
-ActorUiStateManagerInterface* ActorKeyedService::GetActorUiStateManager() {
+ui::ActorUiStateManager* ActorKeyedService::GetActorUiStateManager(
+    base::PassKey<ui::ActorUiStateManager>) {
   return actor_ui_state_manager_.get();
 }
 

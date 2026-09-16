@@ -12,7 +12,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/ui/actor_ui_interactive_browser_test.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_row_button.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
   actor::TaskId task_id = actor_keyed_service()->CreateTaskWithOptions(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker(),
       std::move(task_options), nullptr,
-      actor_keyed_service()->GetActorUiStateManager());
+      actor::ui::ActorUiStateManager::Get(browser()->GetProfile()));
   base::test::TestFuture<actor::mojom::ActionResultPtr> future;
   actor_keyed_service()->GetTask(task_id)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(),

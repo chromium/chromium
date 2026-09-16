@@ -24,7 +24,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
@@ -799,7 +799,8 @@ class InteractiveGlicTestMixin : public T {
     actor::TaskId task_id =
         actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
     actor::ui::StartTask start_task_event(task_id);
-    actor_service->GetActorUiStateManager()->OnUiEvent(start_task_event);
+    actor::ui::ActorUiStateManager::Get(browser()->GetProfile())
+        ->OnUiEvent(start_task_event);
   }
 
   void ReloadGlicWebui() {

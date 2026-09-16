@@ -8,7 +8,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
 #include "chrome/browser/actor/ui/ui_event.h"
@@ -20,7 +20,7 @@ namespace actor {
 using ::testing::_;
 
 ActorKeyedServiceFake::ActorKeyedServiceFake(Profile* profile)
-    : ActorKeyedService(profile) {}
+    : ActorKeyedService(profile), profile_(profile) {}
 
 ActorKeyedServiceFake::~ActorKeyedServiceFake() = default;
 
@@ -84,9 +84,11 @@ void ActorKeyedServiceFake::PauseTaskForTesting(TaskId task_id,  // IN-TEST
   GetTask(task_id)->Pause(from_actor);
   // This fake mocks out the event dispatcher, so we need to manually notify the
   // ui state manager.
-  GetActorUiStateManager()->OnUiEvent(ui::TaskStateChanged(
-      task_id, from_actor ? ActorTask::State::kPausedByActor
-                          : ActorTask::State::kPausedByUser));
+  if (auto* ui_state_manager = ui::ActorUiStateManager::Get(profile_)) {
+    ui_state_manager->OnUiEvent(ui::TaskStateChanged(
+        task_id, from_actor ? ActorTask::State::kPausedByActor
+                            : ActorTask::State::kPausedByUser));
+  }
 }
 
 void ActorKeyedServiceFake::StopTaskForTesting(  // IN-TEST
@@ -97,10 +99,13 @@ void ActorKeyedServiceFake::StopTaskForTesting(  // IN-TEST
   StopTask(task_id, stopped_reason);
   // This fake mocks out the event dispatcher, so we need to manually notify the
   // ui state manager.
-  GetActorUiStateManager()->OnUiEvent(ui::StopTask(
-      task_id, ActorTask::GetTaskStateFromStoppedReason(stopped_reason),
-      "Test Task",
-      /*last_acted_on_tab_handle=*/tabs::TabHandle(), duration, feature_mode));
+  if (auto* ui_state_manager = ui::ActorUiStateManager::Get(profile_)) {
+    ui_state_manager->OnUiEvent(ui::StopTask(
+        task_id, ActorTask::GetTaskStateFromStoppedReason(stopped_reason),
+        "Test Task",
+        /*last_acted_on_tab_handle=*/tabs::TabHandle(), duration,
+        feature_mode));
+  }
 }
 
 }  // namespace actor

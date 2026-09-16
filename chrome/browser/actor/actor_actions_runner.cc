@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/actor/core/task_source_info.h"
@@ -193,7 +194,7 @@ void ActorActionsRunner::Start() {
   // blocking or content validation at the actor task level.
   task_id_ = actor_service->CreateTaskWithOptions(
       source_info_, GetNullEnterprisePolicyChecker(), std::move(options),
-      nullptr, actor_service->GetActorUiStateManager());
+      nullptr, ui::ActorUiStateManager::Get(&profile_.get()));
   if (!task_id_) {
     LOG(ERROR) << "Failed to create Actor task.";
     Finish(std::make_unique<optimization_guide::proto::ActionsResult>(

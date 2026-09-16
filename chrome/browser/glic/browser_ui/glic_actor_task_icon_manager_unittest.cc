@@ -5,12 +5,13 @@
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -91,6 +92,7 @@ class GlicActorTaskIconManagerTest : public testing::Test,
     actor_service_ = nullptr;
     display_service_tester_.reset();
     profile_.reset();
+    actor_service_ = nullptr;
     testing::Test::TearDown();
   }
 
@@ -289,10 +291,11 @@ TEST_F(GlicActorTaskIconManagerTest,
   // Stop task.
   actor_service()->StopTask(task_id_1,
                             actor::ActorTask::StoppedReason::kTaskComplete);
-  actor_service()->GetActorUiStateManager()->OnUiEvent(actor::ui::StopTask(
-      task_id_1, actor::ActorTask::State::kFinished, "Test Task",
-      /*last_acted_on_tab_handle=*/tabs::TabHandle(),
-      actor::ActorTask::TaskDuration::kDefault));
+  actor::ui::ActorUiStateManager::Get(profile_.get())
+      ->OnUiEvent(actor::ui::StopTask(
+          task_id_1, actor::ActorTask::State::kFinished, "Test Task",
+          /*last_acted_on_tab_handle=*/tabs::TabHandle(),
+          actor::ActorTask::TaskDuration::kDefault));
   task_environment().FastForwardBy(base::Seconds(
       features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()));
 
@@ -310,8 +313,9 @@ TEST_F(GlicActorTaskIconManagerTest,
   actor_service()->PauseTaskForTesting(task_id_2, /*from_actor=*/true);
   manager()->OnActorTaskStateUpdate(task_id_2);
   TaskId task_id_3 = actor_service()->CreateTaskForTesting();
-  actor_service()->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id_3, actor::ActorTask::State::kActing));
+  actor::ui::ActorUiStateManager::Get(profile_.get())
+      ->OnUiEvent(actor::ui::TaskStateChanged(
+          task_id_3, actor::ActorTask::State::kActing));
   manager()->OnActorTaskStateUpdate(task_id_3);
 
   EXPECT_EQ(manager()->actor_task_list_bubble_rows().at(task_id_1), false);
@@ -479,8 +483,9 @@ TEST_F(GlicActorTaskIconManagerTest, HasActiveExperimentalTask) {
   TaskId task_id =
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor_service()->GetTask(task_id)->SetState(actor::ActorTask::State::kActing);
-  actor_service()->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+  actor::ui::ActorUiStateManager::Get(profile_.get())
+      ->OnUiEvent(actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kActing));
   manager()->UpdateTaskIconComponents(task_id);
   EXPECT_TRUE(manager()->HasActiveExperimentalTask());
 
@@ -658,8 +663,9 @@ TEST_F(GlicActorTaskIconManagerOsNotificationTest,
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
   task->SetState(actor::ActorTask::State::kActing);
-  actor_service()->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+  actor::ui::ActorUiStateManager::Get(profile_.get())
+      ->OnUiEvent(actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kActing));
 
   manager()->UpdateTaskIconComponents(task_id);
 
@@ -684,8 +690,9 @@ TEST_F(GlicActorTaskIconManagerOsNotificationTest,
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
   task->SetState(actor::ActorTask::State::kActing);
-  actor_service()->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+  actor::ui::ActorUiStateManager::Get(profile_.get())
+      ->OnUiEvent(actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kActing));
 
   manager()->UpdateTaskIconComponents(task_id);
 
@@ -716,8 +723,9 @@ TEST_F(GlicActorTaskIconManagerTest,
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
   task->SetState(actor::ActorTask::State::kActing);
-  actor_service()->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+  actor::ui::ActorUiStateManager::Get(profile_.get())
+      ->OnUiEvent(actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kActing));
 
   manager()->UpdateTaskIconComponents(task_id);
 
@@ -733,8 +741,9 @@ TEST_F(GlicActorTaskIconManagerOsNotificationTest,
   TaskId task_id = actor_service()->CreateTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
   task->SetState(actor::ActorTask::State::kActing);
-  actor_service()->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+  actor::ui::ActorUiStateManager::Get(profile_.get())
+      ->OnUiEvent(actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kActing));
 
   manager()->UpdateTaskIconComponents(task_id);
 
@@ -752,8 +761,9 @@ TEST_F(GlicActorTaskIconManagerOsNotificationTest,
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
   task->SetState(actor::ActorTask::State::kActing);
-  actor_service()->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+  actor::ui::ActorUiStateManager::Get(profile_.get())
+      ->OnUiEvent(actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kActing));
 
   manager()->UpdateTaskIconComponents(task_id);
 
@@ -778,8 +788,9 @@ TEST_F(GlicActorTaskIconManagerOsNotificationTest,
       actor_service()->CreateExperimentalTriggeringTaskForTesting();
   actor::ActorTask* task = actor_service()->GetTask(task_id);
   task->SetState(actor::ActorTask::State::kActing);
-  actor_service()->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id, actor::ActorTask::State::kActing));
+  actor::ui::ActorUiStateManager::Get(profile_.get())
+      ->OnUiEvent(actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kActing));
 
   manager()->UpdateTaskIconComponents(task_id);
 

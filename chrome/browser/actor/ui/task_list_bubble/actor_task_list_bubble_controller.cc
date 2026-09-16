@@ -13,9 +13,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
@@ -122,12 +121,8 @@ std::vector<actor::ui::ActorTaskRowData>
 ActorTaskListBubbleController::GetActorTaskRowsForBubble(
     Profile* profile,
     const absl::flat_hash_map<actor::TaskId, bool>& task_list) {
-  auto* actor_service = actor::ActorKeyedService::Get(profile);
-  if (!actor_service) {
-    return {};
-  }
   actor::ui::ActorUiStateManagerInterface* actor_ui_state_manager =
-      actor_service->GetActorUiStateManager();
+      actor::ui::ActorUiStateManager::Get(profile);
   if (!actor_ui_state_manager) {
     return {};
   }
@@ -356,7 +351,7 @@ ActorTaskListBubbleController::RegisterBubbleDestroyedCallback(
 void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
   Profile* profile = browser_->GetProfile();
   actor::ui::ActorUiStateManagerInterface* manager =
-      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+      actor::ui::ActorUiStateManager::Get(profile);
   if (auto last_tab_opt = manager->GetLastActedOnTab(task_id);
       last_tab_opt && *last_tab_opt) {
     tabs::TabInterface* last_tab = *last_tab_opt;

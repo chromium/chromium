@@ -11,6 +11,10 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "components/actor/core/task_id.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace tabs {
 class TabInterface;
 }
@@ -24,6 +28,9 @@ class ActorTabStripTrackerDesktop;
 namespace actor::ui {
 class ActorUiStateManager : public ActorUiStateManagerInterface {
  public:
+  // Returns the ActorUiStateManager for the given context. May return nullptr.
+  static ActorUiStateManager* Get(content::BrowserContext* context);
+
   explicit ActorUiStateManager(ActorKeyedService& actor_service);
   ~ActorUiStateManager() override;
 

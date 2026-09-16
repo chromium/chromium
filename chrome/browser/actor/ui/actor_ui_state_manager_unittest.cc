@@ -105,8 +105,8 @@ class ActorUiStateManagerTest : public testing::Test {
             });
   }
 
-  ActorUiStateManagerInterface* actor_ui_state_manager() {
-    return actor_keyed_service_fake_->GetActorUiStateManager();
+  ActorUiStateManager* actor_ui_state_manager() {
+    return ActorUiStateManager::Get(profile());
   }
 
   ActorKeyedServiceFake* actor_keyed_service() {
