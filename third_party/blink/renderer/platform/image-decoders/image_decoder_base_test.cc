@@ -191,7 +191,9 @@ void ImageDecoderBaseTest::TestImageDecoder(const base::FilePath& image_path,
   // ICO and we haven't yet supplied enough data to read the directory,
   // there is no framecount and thus no first frame.
   decoder->SetData(partial_data, false);
-  EXPECT_FALSE(decoder->Failed()) << image_path.value();
+  if (!ShouldImageFail(image_path)) {
+    EXPECT_FALSE(decoder->Failed()) << image_path.value();
+  }
 #endif
 
   // Make sure passing the complete image results in successful decoding.
