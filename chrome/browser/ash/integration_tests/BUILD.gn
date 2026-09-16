@@ -31,6 +31,7 @@ if (is_chromeos_device) {
       "//base/test:test_support",
       "//chrome/browser/ash/login/test:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/common:constants",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",

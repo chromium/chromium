@@ -256,6 +256,7 @@ source_set("live_site_tests") {
     "//chrome/browser",
     "//chrome/browser/devtools",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/renderer",
     "//chrome/test:test_support",
     "//content/public/browser",

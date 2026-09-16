@@ -169,11 +169,9 @@ if (!is_android) {
   # talk to the window can depend on it without depending on :ui, which would
   # be circular for the many targets that :ui itself depends on.
   source_set("browser_window_header") {
-    public = [
-      "browser_window.h",
-      "browser_window_deleter.h",
-    ]
+    public = [ "browser_window.h" ]
     public_deps = [
+      ":browser_window_deleter",
       ":download_close_type",
       "//base",
       "//chrome/browser/ui/hats",
@@ -367,6 +365,7 @@ if (!is_android) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":browser_window_header",
       "//chrome/browser/themes",
       "//chrome/browser/ui/browser_window",
     ]
@@ -382,7 +381,10 @@ if (!is_android) {
       ":browser_window_deleter",
       "//chrome/browser:browser_public_dependencies",
     ]
-    deps = [ "//chrome/browser/ui/browser_window" ]
+    deps = [
+      ":browser_window_header",
+      "//chrome/browser/ui/browser_window",
+    ]
   }
 
   source_set("browser_tabrestore") {
@@ -400,6 +402,7 @@ if (!is_android) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":browser_window_header",
       ":tab_ui_helper",
       "//base",
       "//chrome/browser/apps/app_service",
@@ -436,6 +439,7 @@ if (is_mac) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":browser_window_header",
       ":fullscreen_util_mac",
       "//base",
       "//chrome/browser/profiles:profile",
@@ -1531,7 +1535,6 @@ static_library("ui") {
       "browser_tab_strip_model_delegate.cc",
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
-      "browser_window.h",
       "chrome_pages.cc",
       "intent_picker_tab_helper.cc",
       "intent_picker_tab_helper.h",
@@ -1562,6 +1565,7 @@ static_library("ui") {
       ":accelerator_table",
       ":browser_actions",
       ":browser_select_file_dialog_controller",
+      ":browser_window_header",
       ":browser_window_state",
       ":collected_cookies_infobar_delegate",
       ":confirm_bubble_model",
