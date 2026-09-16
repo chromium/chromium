@@ -381,6 +381,22 @@ enum class ItemIdentifier {
 
 #pragma mark - Private
 
+// Posts a VoiceOver announcement with the number of available search results.
+- (void)announceSearchResultsForAccessibility {
+  if (!UIAccessibilityIsVoiceOverRunning() || !self.view.window) {
+    return;
+  }
+
+  NSAttributedString* announcement = [[NSAttributedString alloc]
+      initWithString:
+          l10n_util::GetPluralNSStringF(
+              IDS_IOS_AUTOFILL_AT_MEMORY_SEARCH_RESULTS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+              static_cast<int>(_searchResults.count))
+          attributes:@{UIAccessibilitySpeechAttributeQueueAnnouncement : @YES}];
+  UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                  announcement);
+}
+
 // Initiates the Gemini entry flow for an unsupported query and dismisses the
 // AtMemory UI upon success.
 - (void)openGeminiForUnsupportedQuery {
@@ -508,6 +524,8 @@ enum class ItemIdentifier {
                  @(static_cast<int>(SectionIdentifier::kSearchResultsSection))];
 
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+  [self announceSearchResultsForAccessibility];
+
   [self updateTableViewBackgroundStyle];
 }
 
