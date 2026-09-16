@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_autofill_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -241,6 +242,19 @@ AutofillClient::GetPaymentsAutofillClient() const {
   // payments::PaymentsAutofillClient for a given platform this will return
   // nullptr.
   return const_cast<AutofillClient*>(this)->GetPaymentsAutofillClient();
+}
+
+payments::WalletReminderNoticeManager*
+AutofillClient::GetWalletReminderNoticeManager() {
+  payments::PaymentsAutofillClient* payments_client =
+      GetPaymentsAutofillClient();
+  return payments_client ? payments_client->GetWalletReminderNoticeManager()
+                         : nullptr;
+}
+
+const payments::WalletReminderNoticeManager*
+AutofillClient::GetWalletReminderNoticeManager() const {
+  return const_cast<AutofillClient*>(this)->GetWalletReminderNoticeManager();
 }
 
 GeoIpCountryCode AutofillClient::GetVariationConfigCountryCode() const {

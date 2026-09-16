@@ -38,8 +38,11 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager_test_api.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/wallet_reminder_notice_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_autofill_ai_personal_context_access_manager.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -48,6 +51,7 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/form_data.h"
@@ -185,6 +189,17 @@ class MockAutofillClient : public TestAutofillClient {
                const FieldTypeSet& triggering_field_types),
               (override));
 };
+
+class MockWalletReminderNoticeManager
+    : public payments::WalletReminderNoticeManager {
+ public:
+  explicit MockWalletReminderNoticeManager(AutofillClient* client)
+      : payments::WalletReminderNoticeManager(client) {}
+  ~MockWalletReminderNoticeManager() override = default;
+
+  MOCK_METHOD(void, ShowWalletReminderNotice, (FlowType), (override));
+};
+
 class AutofillAiManagerTest
     : public testing::Test,
       public WithTestAutofillClientDriverManager<NiceMock<MockAutofillClient>,
@@ -2080,6 +2095,299 @@ TEST_F(AutofillAiManagerImportFormTest,
   ASSERT_EQ(saved_entities.size(), 1u);
   EXPECT_EQ(saved_entities[0].record_type(),
             EntityInstance::RecordType::kLocal);
+}
+
+class AutofillAiManagerWalletReminderNoticeTest
+    : public AutofillAiManagerImportFormTest {
+ public:
+  AutofillAiManagerWalletReminderNoticeTest() {
+    notice_manager_ = SetupMockNoticeManager();
+  }
+
+  // The mock notice manager is owned by the `PaymentsAutofillClient`, which is
+  // destroyed by the base class' `TearDown()`. Reset the pointer first to avoid
+  // leaving a dangling `raw_ptr` behind.
+  void TearDown() override {
+    notice_manager_ = nullptr;
+    AutofillAiManagerImportFormTest::TearDown();
+  }
+
+  EntityInstance AddDefaultWalletVehicle() {
+    EntityInstance vehicle = GetVehicleEntityInstance(
+        {.name = kDefaultVehicleOwner,
+         .plate = kDefaultLicensePlate,
+         .record_type = EntityInstance::RecordType::kServerWallet});
+    AddOrUpdateEntityInstance(vehicle);
+    return vehicle;
+  }
+
+  // Simulates the user seeing Autofill AI suggestions on `field` and then
+  // accepting the suggestion for `entity`. The suggestions-shown event is
+  // required: `RecentUserAutofillAiInteractionsForHats` only records accepted
+  // suggestions for forms whose suggestions have been shown beforehand.
+  void ShowAndAcceptSuggestion(const EntityInstance& entity,
+                               const FormStructure& form,
+                               const AutofillField& field) {
+    manager().OnAutofillAiSuggestionsShown(
+        form, field, /*shown_suggestions=*/{}, /*ukm_source_id=*/{},
+        /*update_suggestions_callback=*/{});
+    manager().OnDidFillSuggestion(entity, form, field, /*filled_fields=*/{},
+                                  /*ukm_source_id=*/{});
+  }
+
+  MockWalletReminderNoticeManager& notice_manager() { return *notice_manager_; }
+
+ private:
+  MockWalletReminderNoticeManager* SetupMockNoticeManager() {
+    auto mock_notice_manager =
+        std::make_unique<MockWalletReminderNoticeManager>(&autofill_client());
+    MockWalletReminderNoticeManager* wallet_reminder_notice_manager =
+        mock_notice_manager.get();
+    autofill_client()
+        .GetPaymentsAutofillClient()
+        ->set_wallet_reminder_notice_manager(std::move(mock_notice_manager));
+    return wallet_reminder_notice_manager;
+  }
+
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillEnableWalletReminderNoticePublicPass};
+  raw_ptr<MockWalletReminderNoticeManager> notice_manager_ = nullptr;
+};
+
+// Tests that submitting a form with eligible public passes triggers the wallet
+// reminder notice if it has not been shown before and no save or update prompt
+// is shown.
+TEST_F(AutofillAiManagerWalletReminderNoticeTest,
+       OnFormSubmitted_EligiblePublicPass_TriggersWalletReminderNotice) {
+  EntityInstance vehicle_entity = AddDefaultWalletVehicle();
+
+  std::unique_ptr<FormStructure> form = CreateVehicleForm();
+  ShowAndAcceptSuggestion(vehicle_entity, *form, *form->field(0));
+
+  ASSERT_EQ(autofill_client().GetWalletReminderNoticeManager(),
+            &notice_manager());
+
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble).Times(0);
+  EXPECT_CALL(
+      notice_manager(),
+      ShowWalletReminderNotice(
+          payments::WalletReminderNoticeManager::FlowType::kWalletPass));
+
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+// Tests that the wallet reminder notice is not triggered if a save or update
+// prompt is shown for the submitted entity, even though the user filled a
+// suggestion that would otherwise make the notice eligible.
+TEST_F(AutofillAiManagerWalletReminderNoticeTest,
+       OnFormSubmitted_SavePromptShown_DoesNotTriggerNotice) {
+  EntityInstance vehicle_entity = AddDefaultWalletVehicle();
+
+  // The user fills the form with the saved Wallet vehicle, which alone would
+  // make the reminder notice eligible, but submits a different license plate.
+  std::unique_ptr<FormStructure> form = CreateVehicleForm(kOtherLicensePlate);
+  ShowAndAcceptSuggestion(vehicle_entity, *form, *form->field(0));
+
+  // The submitted data cannot be deduplicated with the saved entity, so a save
+  // prompt is shown, which suppresses the reminder notice.
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble);
+  EXPECT_CALL(notice_manager(), ShowWalletReminderNotice).Times(0);
+
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+// Tests that the wallet reminder notice is not triggered if the user has
+// already acknowledged it previously (indicated by the pref).
+TEST_F(AutofillAiManagerWalletReminderNoticeTest,
+       OnFormSubmitted_AlreadyAcknowledgedPref_DoesNotTriggerNotice) {
+  EntityInstance vehicle_entity = AddDefaultWalletVehicle();
+  prefs::SetHasShownWalletReminderNotice(autofill_client().GetPrefs());
+
+  std::unique_ptr<FormStructure> form = CreateVehicleForm();
+  ShowAndAcceptSuggestion(vehicle_entity, *form, *form->field(0));
+
+  EXPECT_CALL(notice_manager(), ShowWalletReminderNotice).Times(0);
+
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+// Tests that submitting a form with multiple suggestions filled where the last
+// accepted entity is an eligible public pass emits
+// `kNotShownAlreadyAcknowledgedAccordingToPref` only once when the user has
+// already acknowledged the notice.
+TEST_F(AutofillAiManagerWalletReminderNoticeTest,
+       OnFormSubmitted_MultipleEligibleEntitiesAlreadyAcknowledged_LogsOnce) {
+  base::HistogramTester histogram_tester;
+
+  EntityInstance vehicle_entity_1 = AddDefaultWalletVehicle();
+  EntityInstance vehicle_entity_2 = GetVehicleEntityInstance(
+      {.name = u"Second Owner",
+       .plate = u"OTHERPLATE",
+       .record_type = EntityInstance::RecordType::kServerWallet});
+  AddOrUpdateEntityInstance(vehicle_entity_2);
+
+  prefs::SetHasShownWalletReminderNotice(autofill_client().GetPrefs());
+
+  std::unique_ptr<FormStructure> form = CreateFormStructure(
+      {NAME_FULL, VEHICLE_LICENSE_PLATE, NAME_FULL, VEHICLE_LICENSE_PLATE});
+  form->field(0)->set_value(kDefaultVehicleOwner);
+  form->field(1)->set_value(kDefaultLicensePlate);
+  form->field(2)->set_value(u"Second Owner");
+  form->field(3)->set_value(u"OTHERPLATE");
+
+  ShowAndAcceptSuggestion(vehicle_entity_1, *form, *form->field(0));
+  ShowAndAcceptSuggestion(vehicle_entity_2, *form, *form->field(2));
+
+  EXPECT_CALL(notice_manager(), ShowWalletReminderNotice).Times(0);
+
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownAlreadyAcknowledgedAccordingToPref,
+      1);
+}
+
+// Tests that private passes (e.g. passport) do not trigger the wallet
+// reminder notice because the notice is only applicable to public wallet
+// passes.
+TEST_F(AutofillAiManagerWalletReminderNoticeTest,
+       OnFormSubmitted_PrivatePass_DoesNotTriggerNotice) {
+  EntityInstance passport_entity = MaskEntityInstance(GetPassportEntityInstance(
+      {.name = u"Jon Doe",
+       .number = kDefaultPassportNumber,
+       .record_type = EntityInstance::RecordType::kServerWallet}));
+  AddOrUpdateEntityInstance(passport_entity);
+
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
+  ShowAndAcceptSuggestion(passport_entity, *form, *form->field(0));
+
+  EXPECT_CALL(notice_manager(), ShowWalletReminderNotice).Times(0);
+
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+// Tests that submitting a form matching a local-only saved entity
+// (`RecordType::kLocal`) does not trigger the Wallet reminder notice, even when
+// Wallet sync/import permissions are enabled.
+TEST_F(AutofillAiManagerWalletReminderNoticeTest,
+       OnFormSubmitted_PublicPass_LocalSavedEntity_DoesNotTriggerNotice) {
+  // The base fixture enables `kAutofillAiWalletVehicleRegistration`, which
+  // makes local vehicles eligible for upstreaming and therefore turns the
+  // saved entity below into a Wallet migration candidate. The resulting
+  // migration prompt would short-circuit `MaybeShowWalletReminderNotice()`,
+  // so the notice would be suppressed for the wrong reason. Disabling the
+  // feature isolates the behavior under test: the notice is not shown because
+  // the filled entity is local rather than a Wallet pass.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillAiWalletVehicleRegistration);
+
+  EntityInstance vehicle_entity = GetVehicleEntityInstance(
+      {.name = kDefaultVehicleOwner,
+       .plate = kDefaultLicensePlate,
+       .record_type = EntityInstance::RecordType::kLocal});
+  AddOrUpdateEntityInstance(vehicle_entity);
+
+  std::unique_ptr<FormStructure> form = CreateVehicleForm();
+  ShowAndAcceptSuggestion(vehicle_entity, *form, *form->field(0));
+
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble).Times(0);
+  EXPECT_CALL(notice_manager(), ShowWalletReminderNotice).Times(0);
+
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+// Tests that submitting a form matching a saved entity without the user
+// having filled a suggestion does not trigger the Wallet reminder notice
+// (conforming to the PRD requirement that the notice is triggered after
+// a fill).
+TEST_F(AutofillAiManagerWalletReminderNoticeTest,
+       OnFormSubmitted_SavedEntityNotFilled_DoesNotTriggerNotice) {
+  AddDefaultWalletVehicle();
+
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble).Times(0);
+  EXPECT_CALL(notice_manager(), ShowWalletReminderNotice).Times(0);
+
+  // The form has values matching the saved vehicle, but OnDidFillSuggestion was
+  // never called.
+  EXPECT_FALSE(
+      manager().OnFormSubmitted(*CreateVehicleForm(), /*ukm_source_id=*/{}));
+}
+
+// Tests that when multiple different fields are filled on the same form (e.g.
+// field 0 with an eligible public pass and field 1 with a PersonalContext
+// entity), only the latest accepted entity is evaluated for the Wallet
+// reminder notice. When the latest filled entity is a PersonalContext entity
+// (not eligible for the notice), the notice is not shown, while the survey is
+// triggered.
+TEST_F(AutofillAiManagerWalletReminderNoticeTest,
+       OnFormSubmitted_MultipleFieldsFilled_IneligibleLatest_NoNotice) {
+  EntityInstance vehicle_entity = AddDefaultWalletVehicle();
+
+  EntityInstance passport_entity = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  edm().SetPersonalContextEntitiesForTesting({passport_entity});
+
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({NAME_FULL, VEHICLE_LICENSE_PLATE, PASSPORT_NUMBER});
+  form->field(0)->set_value(kDefaultVehicleOwner);
+  form->field(1)->set_value(kDefaultLicensePlate);
+  form->field(2)->set_value(GetValueFromEntityForAttributeTypeName(
+      passport_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""));
+
+  // Fill vehicle on field 0, then personal context on field 2.
+  ShowAndAcceptSuggestion(vehicle_entity, *form, *form->field(0));
+  ShowAndAcceptSuggestion(passport_entity, *form, *form->field(2));
+
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble).Times(0);
+  EXPECT_CALL(notice_manager(), ShowWalletReminderNotice).Times(0);
+  // The survey is triggered because a PersonalContext suggestion was accepted
+  // on the form, and it reports the first accepted entity (the vehicle).
+  EXPECT_CALL(autofill_client(),
+              TriggerAutofillAiFillingJourneySurvey(
+                  /*suggestion_accepted=*/true, vehicle_entity.type(), _, _));
+
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+// Tests that when multiple different fields are filled on the same form and the
+// latest filled entity is an eligible public pass, the Wallet reminder notice
+// is triggered. The survey is triggered as well, because a PersonalContext
+// entity was accepted on the form.
+TEST_F(
+    AutofillAiManagerWalletReminderNoticeTest,
+    OnFormSubmitted_MultipleFieldsFilled_EligiblePublicPassLatest_TriggersNotice) {
+  EntityInstance passport_entity = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kPersonalContext});
+  edm().SetPersonalContextEntitiesForTesting({passport_entity});
+
+  EntityInstance vehicle_entity = AddDefaultWalletVehicle();
+
+  std::unique_ptr<FormStructure> form =
+      CreateFormStructure({PASSPORT_NUMBER, NAME_FULL, VEHICLE_LICENSE_PLATE});
+  form->field(0)->set_value(GetValueFromEntityForAttributeTypeName(
+      passport_entity, AttributeTypeName::kPassportNumber, /*app_locale=*/""));
+  form->field(1)->set_value(kDefaultVehicleOwner);
+  form->field(2)->set_value(kDefaultLicensePlate);
+
+  // Fill personal context on field 0, then vehicle on field 1.
+  ShowAndAcceptSuggestion(passport_entity, *form, *form->field(0));
+  ShowAndAcceptSuggestion(vehicle_entity, *form, *form->field(1));
+
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble).Times(0);
+  EXPECT_CALL(
+      notice_manager(),
+      ShowWalletReminderNotice(
+          payments::WalletReminderNoticeManager::FlowType::kWalletPass));
+  // While the notice evaluates the latest accepted suggestion, the survey
+  // reports the first one accepted on the form.
+  EXPECT_CALL(autofill_client(),
+              TriggerAutofillAiFillingJourneySurvey(
+                  /*suggestion_accepted=*/true, passport_entity.type(), _, _));
+
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 }
 
 class AutofillAiManagerUpstreamTest : public AutofillAiManagerTest {

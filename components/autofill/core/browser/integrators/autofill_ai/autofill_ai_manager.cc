@@ -55,6 +55,7 @@
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
+#include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
@@ -439,10 +440,16 @@ bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
   //    entity. If the user has Wallet enabled and the resulting entity is not a
   //    duplicate of data saved in Wallet, a save prompt to Wallet is shown. On
   //    acceptance, the local entity is removed.
-  const bool form_imported = MaybeImportForm(form, ukm_source_id);
+  // 4. The user submits a form where no save, update, or migration prompt is
+  //    shown, and the last accepted suggestion on the form was for an eligible
+  //    saved Wallet pass. In this case, a Wallet reminder notice is shown.
+  bool prompt_or_notice_shown = MaybeImportForm(form, ukm_source_id);
+  if (!prompt_or_notice_shown) {
+    prompt_or_notice_shown = MaybeShowWalletReminderNotice(form);
+  }
   MaybeTriggerAutofillAiSubmissionHatsSurveys(
       *client_, form, user_suggestion_interactions_per_form_);
-  return form_imported;
+  return prompt_or_notice_shown;
 }
 
 bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
@@ -485,6 +492,29 @@ bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
                                     std::move(prompt_result_callback));
   }
   return prompt_shown;
+}
+
+bool AutofillAiManager::MaybeShowWalletReminderNotice(
+    const FormStructure& form) {
+  std::optional<RecentUserAutofillAiInteractionsForHats::InteractionDetails>
+      interaction =
+          user_suggestion_interactions_per_form_.GetRecentUserInteraction(
+              form.global_id());
+  if (!interaction || interaction->entity_type_accepted.empty() ||
+      interaction->accepted_entity_record_type.empty()) {
+    return false;
+  }
+
+  payments::WalletReminderNoticeManager* notice_manager =
+      client_->GetWalletReminderNoticeManager();
+  if (notice_manager && notice_manager->IsWalletReminderNoticeEligible(
+                            interaction->entity_type_accepted.back(),
+                            interaction->accepted_entity_record_type.back())) {
+    notice_manager->ShowWalletReminderNotice(
+        payments::WalletReminderNoticeManager::FlowType::kWalletPass);
+    return true;
+  }
+  return false;
 }
 
 void AutofillAiManager::HandlePromptResult(

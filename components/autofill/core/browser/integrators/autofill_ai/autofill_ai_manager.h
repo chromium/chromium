@@ -21,8 +21,10 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
+#include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_attribute.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_update_strike_database.h"
@@ -62,9 +64,10 @@ class AutofillAiManager
       const FormStructure& form,
       const FormFieldData& trigger_field);
 
-  // Attempts to display an import bubble for `form` if Autofill AI is
-  // interested in the form. Returns whether an import bubble will be shown.
-  // Also contains metric logging logic.
+  // Attempts to display an import bubble or wallet reminder notice for `form`
+  // if Autofill AI is interested in the form. Returns whether an import bubble
+  // or a wallet reminder notice was displayed to the user. Also contains
+  // metric logging logic.
   virtual bool OnFormSubmitted(const FormStructure& form,
                                ukm::SourceId ukm_source_id);
 
@@ -202,6 +205,10 @@ class AutofillAiManager
   // Attempts to display an import bubble for `form` if Autofill AI is
   // interested in the form. Returns whether an import bubble will be shown.
   bool MaybeImportForm(const FormStructure& form, ukm::SourceId ukm_source_id);
+
+  // Displays a Wallet reminder notice if the last accepted suggestion on `form`
+  // was for an eligible saved Wallet pass. Returns true if a notice was shown.
+  bool MaybeShowWalletReminderNotice(const FormStructure& form);
 
   // Handles the logic that needs to run when an import prompt is closed.
   void HandlePromptResult(

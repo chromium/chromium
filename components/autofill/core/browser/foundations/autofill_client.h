@@ -172,6 +172,7 @@ class FormInteractionsUkmLogger;
 
 namespace payments {
 class PaymentsAutofillClient;
+class WalletReminderNoticeManager;
 }
 
 // A client interface that needs to be supplied to the Autofill component by the
@@ -575,6 +576,13 @@ class AutofillClient {
   // functions will return nullptr.
   virtual payments::PaymentsAutofillClient* GetPaymentsAutofillClient();
   const payments::PaymentsAutofillClient* GetPaymentsAutofillClient() const;
+
+  // Returns the WalletReminderNoticeManager for showing the legal reminder
+  // notice when required.
+  virtual payments::WalletReminderNoticeManager*
+  GetWalletReminderNoticeManager();
+  const payments::WalletReminderNoticeManager*
+  GetWalletReminderNoticeManager() const;
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.
