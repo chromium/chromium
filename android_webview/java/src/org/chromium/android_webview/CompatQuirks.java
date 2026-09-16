@@ -27,6 +27,7 @@ import javax.annotation.concurrent.GuardedBy;
 @NullMarked
 public abstract class CompatQuirks {
     @IntDef({
+        Quirk.ALLOW_ALL_CLEARTEXT_TRAFFIC,
         Quirk.ALLOW_SNIFFING_FILE_URLS,
         Quirk.DATA_DIRECTORY_LOCK_WARN_ONLY,
         Quirk.FIXUP_OCTOTHORPES_IN_LOAD_DATA,
@@ -37,41 +38,47 @@ public abstract class CompatQuirks {
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Quirk {
+        /**
+         * Allow all cleartext network traffic without policy checks. Normally enabled for apps
+         * targeting < O.
+         */
+        int ALLOW_ALL_CLEARTEXT_TRAFFIC = 0;
+
         /** Allows MIME-type sniffing for file:// URLs. Normally enabled for apps targeting < P. */
-        int ALLOW_SNIFFING_FILE_URLS = 0;
+        int ALLOW_SNIFFING_FILE_URLS = 1;
 
         /**
          * Log a warning instead of crashing if locking the data directory fails. Normally enabled
          * for apps targeting < P.
          */
-        int DATA_DIRECTORY_LOCK_WARN_ONLY = 1;
+        int DATA_DIRECTORY_LOCK_WARN_ONLY = 2;
 
         /**
          * Fixes up unencoded '#' characters in data: URLs in WebView.loadData(). Normally enabled
          * for apps targeting < Q.
          */
-        int FIXUP_OCTOTHORPES_IN_LOAD_DATA = 2;
+        int FIXUP_OCTOTHORPES_IN_LOAD_DATA = 3;
 
         /** Allow loading file:// URLs by default. Normally enabled for apps targeting < R. */
-        int ALLOW_FILE_URL_ACCESS_BY_DEFAULT = 3;
+        int ALLOW_FILE_URL_ACCESS_BY_DEFAULT = 4;
 
         /**
          * Uses legacy dark mode logic instead of modern simplified dark mode. Normally enabled for
          * apps targeting < T.
          */
-        int LEGACY_DARK_MODE = 4;
+        int LEGACY_DARK_MODE = 5;
 
         /**
          * Default to the legacy full useragent instead of the reduced UA. Normally enabled for apps
          * targeting < C.
          */
-        int FULL_USERAGENT = 5;
+        int FULL_USERAGENT = 6;
 
         /**
          * Disable the Filesystem Access API for compatibility with old implementations of
          * WebChromeClient.onShowFileChooser(). Normally enabled for apps targeting < C.
          */
-        int DISABLE_FILESYSTEM_ACCESS_API = 6;
+        int DISABLE_FILESYSTEM_ACCESS_API = 7;
     }
 
     /**

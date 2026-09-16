@@ -1221,6 +1221,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         int targetSdkVersion =
                 ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
         return switch (quirk) {
+            case CompatQuirks.Quirk.ALLOW_ALL_CLEARTEXT_TRAFFIC ->
+                    targetSdkVersion < Build.VERSION_CODES.O;
             case CompatQuirks.Quirk.ALLOW_SNIFFING_FILE_URLS,
                     CompatQuirks.Quirk.DATA_DIRECTORY_LOCK_WARN_ONLY ->
                     targetSdkVersion < Build.VERSION_CODES.P;

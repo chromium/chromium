@@ -226,8 +226,7 @@ public final class StartupTasks {
             }
 
             AwContentsStatics.setCheckClearTextPermitted(
-                    ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
-                            >= Build.VERSION_CODES.O);
+                    !CompatQuirks.isEnabled(CompatQuirks.Quirk.ALLOW_ALL_CLEARTEXT_TRAFFIC));
         } finally {
             sNonUiThreadCapableStartupTasksLatch.countDown();
         }

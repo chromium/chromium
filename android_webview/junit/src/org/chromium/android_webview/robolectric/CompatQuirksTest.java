@@ -24,6 +24,7 @@ public class CompatQuirksTest {
     public void testWithoutDelegateReturnsFalse() {
         Assert.assertFalse(CompatQuirks.isEnabled(CompatQuirks.Quirk.LEGACY_DARK_MODE));
         Assert.assertFalse(CompatQuirks.isEnabled(CompatQuirks.Quirk.ALLOW_SNIFFING_FILE_URLS));
+        Assert.assertFalse(CompatQuirks.isEnabled(CompatQuirks.Quirk.ALLOW_ALL_CLEARTEXT_TRAFFIC));
     }
 
     @Test
