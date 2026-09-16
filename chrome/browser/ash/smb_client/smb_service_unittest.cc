@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/smb_client/smb_service.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
@@ -210,7 +212,7 @@ TEST_F(SmbServiceWithSmbfsTest, Mount_SaveCredentials) {
 }
 
 TEST_F(SmbServiceWithSmbfsTest, MountPreconfigured) {
-  const char kPremountPath[] = "smb://preconfigured/share";
+  constexpr std::string_view kPremountPath = "smb://preconfigured/share";
   const char kPreconfiguredShares[] =
       R"([{"mode":"pre_mount","share_url":"\\\\preconfigured\\share"}])";
   auto parsed_shares = base::JSONReader::Read(

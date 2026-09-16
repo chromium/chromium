@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>

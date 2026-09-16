@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_metrics.h"
 
+#include <array>
+#include <string_view>
+
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -25,14 +28,26 @@ namespace ash::cert_provisioning {
 namespace {
 // "*.User" should have index 0, "*.Device" should have index 1 (same as values
 // of CertScope).
-const char* const kResult[][2] = {
-    {CP_PREFIX CP_RESULT CP_USER, CP_PREFIX CP_RESULT CP_DEVICE},
-    {CP_PREFIX CP_RESULT CP_DYNAMIC CP_USER,
-     CP_PREFIX CP_RESULT CP_DYNAMIC CP_DEVICE}};
-const char* const kEvent[][2] = {
-    {CP_PREFIX CP_EVENT CP_USER, CP_PREFIX CP_EVENT CP_DEVICE},
-    {CP_PREFIX CP_EVENT CP_DYNAMIC CP_USER,
-     CP_PREFIX CP_EVENT CP_DYNAMIC CP_DEVICE}};
+constexpr auto kResult = std::to_array<std::array<std::string_view, 2>>({
+    {{
+        CP_PREFIX CP_RESULT CP_USER,
+        CP_PREFIX CP_RESULT CP_DEVICE,
+    }},
+    {{
+        CP_PREFIX CP_RESULT CP_DYNAMIC CP_USER,
+        CP_PREFIX CP_RESULT CP_DYNAMIC CP_DEVICE,
+    }},
+});
+constexpr auto kEvent = std::to_array<std::array<std::string_view, 2>>({
+    {{
+        CP_PREFIX CP_EVENT CP_USER,
+        CP_PREFIX CP_EVENT CP_DEVICE,
+    }},
+    {{
+        CP_PREFIX CP_EVENT CP_DYNAMIC CP_USER,
+        CP_PREFIX CP_EVENT CP_DYNAMIC CP_DEVICE,
+    }},
+});
 
 // CertScope has stable indexes because it is also used for serialization.
 constexpr int ScopeToIdx(CertScope scope) {
@@ -59,13 +74,11 @@ void RecordResult(ProtocolVersion protocol_version,
   DCHECK(!IsFinalState(prev_state));
   DCHECK(IsFinalState(final_state));
   base::UmaHistogramEnumeration(
-      UNSAFE_TODO(
-          kResult[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)]),
+      kResult[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)],
       final_state);
   if (final_state == CertProvisioningWorkerState::kFailed) {
     base::UmaHistogramEnumeration(
-        UNSAFE_TODO(
-            kResult[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)]),
+        kResult[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)],
         prev_state);
   }
 }
@@ -74,9 +87,7 @@ void RecordEvent(ProtocolVersion protocol_version,
                  CertScope scope,
                  CertProvisioningEvent event) {
   base::UmaHistogramEnumeration(
-      UNSAFE_TODO(
-          kEvent[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)]),
-      event);
+      kEvent[ProtocolVersionToIdx(protocol_version)][ScopeToIdx(scope)], event);
 }
 
 void RecordDmStatusForDynamic(policy::DeviceManagementStatus status) {

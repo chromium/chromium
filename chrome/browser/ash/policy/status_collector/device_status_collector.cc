@@ -10,6 +10,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
@@ -2378,10 +2380,11 @@ bool DeviceStatusCollector::GetWriteProtectSwitch(
 bool DeviceStatusCollector::GetNetworkConfiguration(
     em::DeviceStatusReportRequest* status) {
   // Note: keep in sync with `::reporting::NetworkInfoSampler`
-  static const struct {
+  struct DeviceTypeMapping {
     const char* type_string;
     em::NetworkInterface::NetworkDeviceType type_constant;
-  } kDeviceTypeMap[] = {
+  };
+  constexpr auto kDeviceTypeMap = std::to_array<DeviceTypeMapping>({
       {
           shill::kTypeEthernet,
           em::NetworkInterface::TYPE_ETHERNET,
@@ -2394,7 +2397,7 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
           shill::kTypeCellular,
           em::NetworkInterface::TYPE_CELLULAR,
       },
-  };
+  });
 
   ash::NetworkStateHandler::DeviceStateList device_list;
   ash::NetworkStateHandler* network_state_handler =
@@ -2404,23 +2407,17 @@ bool DeviceStatusCollector::GetNetworkConfiguration(
   bool anything_reported = false;
   ash::NetworkStateHandler::DeviceStateList::const_iterator device;
   for (device = device_list.begin(); device != device_list.end(); ++device) {
-    // Determine the type enum constant for |device|.
-    size_t type_idx = 0;
-    for (; type_idx < std::size(kDeviceTypeMap); ++type_idx) {
-      if ((*device)->type() ==
-          UNSAFE_TODO(kDeviceTypeMap[type_idx]).type_string) {
-        break;
-      }
-    }
-
-    // If the type isn't in |kDeviceTypeMap|, the interface is not relevant for
-    // reporting. This filters out VPN devices.
-    if (type_idx >= std::size(kDeviceTypeMap)) {
+    // Determine the type enum constant for |device|. If the type isn't in
+    // |kDeviceTypeMap|, the interface is not relevant for reporting. This
+    // filters out VPN devices.
+    const auto it = std::ranges::find(kDeviceTypeMap, (*device)->type(),
+                                      &DeviceTypeMapping::type_string);
+    if (it == kDeviceTypeMap.end()) {
       continue;
     }
 
     em::NetworkInterface* interface = status->add_network_interfaces();
-    interface->set_type(UNSAFE_TODO(kDeviceTypeMap[type_idx]).type_constant);
+    interface->set_type(it->type_constant);
     if (!(*device)->mac_address().empty()) {
       interface->set_mac_address((*device)->mac_address());
     }

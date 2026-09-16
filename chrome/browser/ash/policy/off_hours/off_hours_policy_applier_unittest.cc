@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/off_hours/off_hours_policy_applier.h"
 
+#include <array>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -18,7 +19,7 @@ namespace {
 
 namespace em = ::enterprise_management;
 
-constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
+constexpr auto kWeekdays = std::to_array<em::WeeklyTimeProto_DayOfWeek>({
     em::WeeklyTimeProto::DAY_OF_WEEK_UNSPECIFIED,
     em::WeeklyTimeProto::MONDAY,
     em::WeeklyTimeProto::TUESDAY,
@@ -26,7 +27,8 @@ constexpr em::WeeklyTimeProto_DayOfWeek kWeekdays[] = {
     em::WeeklyTimeProto::THURSDAY,
     em::WeeklyTimeProto::FRIDAY,
     em::WeeklyTimeProto::SATURDAY,
-    em::WeeklyTimeProto::SUNDAY};
+    em::WeeklyTimeProto::SUNDAY,
+});
 
 const char kUtcTimezone[] = "UTC";
 
@@ -54,11 +56,9 @@ em::WeeklyTimeIntervalProto ConvertWeeklyTimeIntervalToProto(
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* start = interval_proto.mutable_start();
   em::WeeklyTimeProto* end = interval_proto.mutable_end();
-  start->set_day_of_week(
-      UNSAFE_TODO(kWeekdays[weekly_time_interval.start().day_of_week()]));
+  start->set_day_of_week(kWeekdays[weekly_time_interval.start().day_of_week()]);
   start->set_time(weekly_time_interval.start().milliseconds());
-  end->set_day_of_week(
-      UNSAFE_TODO(kWeekdays[weekly_time_interval.end().day_of_week()]));
+  end->set_day_of_week(kWeekdays[weekly_time_interval.end().day_of_week()]);
   end->set_time(weekly_time_interval.end().milliseconds());
   return interval_proto;
 }
