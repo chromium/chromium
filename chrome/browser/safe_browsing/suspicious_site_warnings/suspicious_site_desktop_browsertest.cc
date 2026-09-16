@@ -14,7 +14,9 @@
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_test_accessor.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/suspicious_site_bubble_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -266,6 +268,73 @@ IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
   ASSERT_TRUE(bubble);
   ASSERT_TRUE(bubble->GetWidget());
   EXPECT_TRUE(bubble->GetWidget()->IsVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SuspiciousSiteDesktopBrowserTest,
+                       MarkAsSafeInPageInfoBubbleRemovesWarningChip) {
+  GURL malicious_url = embedded_test_server()->GetURL("/title1.html");
+  SetURLThreatType(malicious_url,
+                   SBThreatType::SB_THREAT_TYPE_WARNABLE_SUSPICIOUS_SITE);
+
+  base::test::TestFuture<void> shown_future;
+  SuspiciousSiteControllerDesktop::SetBubbleShownCallbackForTesting(
+      shown_future.GetCallback());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), malicious_url));
+  EXPECT_TRUE(shown_future.Wait());
+
+  // Dismiss the initial warning bubble.
+  auto* bubble_view = static_cast<SuspiciousSiteBubbleView*>(
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+  ASSERT_TRUE(bubble_view);
+  bubble_view->GetWidget()->CloseNow();
+  EXPECT_FALSE(PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+
+  // Suspicious security state and controller should still be active.
+  EXPECT_TRUE(safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+      GetActiveWebContents()));
+  auto security_state =
+      chrome_security_state::GetVisibleSecurityState(GetActiveWebContents());
+  ASSERT_TRUE(security_state);
+  EXPECT_EQ(security_state->malicious_content_status,
+            security_state::MALICIOUS_CONTENT_STATUS_WARNABLE_SUSPICIOUS_SITE);
+
+  // Open Page Info bubble via location icon.
+  LocationIconTestAccessor(browser()).ShowBubble();
+  views::BubbleDialogDelegateView* page_info =
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  ASSERT_TRUE(page_info);
+
+  views::View* mark_as_safe_btn =
+      page_info->GetWidget()->GetRootView()->GetViewByID(
+          PageInfoViewFactory::
+              VIEW_ID_PAGE_INFO_SUSPICIOUS_SITE_MARK_AS_SAFE_BUTTON);
+  ASSERT_TRUE(mark_as_safe_btn);
+
+  views::test::ButtonTestApi(
+      static_cast<views::MdTextButton*>(mark_as_safe_btn))
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks(),
+                                  ui::EF_LEFT_MOUSE_BUTTON,
+                                  ui::EF_LEFT_MOUSE_BUTTON));
+
+  // Site should be allowed in settings.
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+  EXPECT_TRUE(SuspiciousSiteWarningAllowlist(hcsm).IsSiteAllowedForHost(
+      std::string(malicious_url.host())));
+
+  // Controller should be destroyed.
+  EXPECT_FALSE(safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+      GetActiveWebContents()));
+
+  // Security state should immediately revert to normal without needing a page
+  // refresh.
+  security_state =
+      chrome_security_state::GetVisibleSecurityState(GetActiveWebContents());
+  ASSERT_TRUE(security_state);
+  EXPECT_NE(security_state->malicious_content_status,
+            security_state::MALICIOUS_CONTENT_STATUS_WARNABLE_SUSPICIOUS_SITE);
 }
 
 }  // namespace safe_browsing

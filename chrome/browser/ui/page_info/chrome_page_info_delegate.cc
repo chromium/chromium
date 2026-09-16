@@ -33,6 +33,8 @@
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/suspicious_site_controller_android.h"
+#else
+#include "chrome/browser/safe_browsing/suspicious_site_warnings/suspicious_site_controller_desktop.h"
 #endif
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
@@ -468,6 +470,13 @@ void ChromePageInfoDelegate::OnSuspiciousSiteBackToSafety() {
             kBackToSafetyButton);
     return;
   }
+#else
+  if (auto* ssc =
+          safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+              web_contents_)) {
+    ssc->OnBackToSafetyClicked();
+    return;
+  }
 #endif
   if (!web_contents_) {
     return;
@@ -502,6 +511,13 @@ void ChromePageInfoDelegate::OnSuspiciousSiteMarkAsSafe() {
     ssc->OnContinueButtonClicked();
     return;
   }
+#else
+  if (auto* ssc =
+          safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+              web_contents_)) {
+    ssc->OnMarkAsSafeClicked();
+    return;
+  }
 #endif
   if (!web_contents_) {
     return;
@@ -519,6 +535,7 @@ void ChromePageInfoDelegate::OnSuspiciousSiteMarkAsSafe() {
           std::string(current_url.host()));
     }
   }
+  web_contents_->DidChangeVisibleSecurityState();
 }
 
 std::u16string ChromePageInfoDelegate::GetSubjectName(const GURL& url) {
