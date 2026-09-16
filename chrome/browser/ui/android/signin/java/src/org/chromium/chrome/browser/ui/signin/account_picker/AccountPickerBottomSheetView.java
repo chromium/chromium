@@ -34,6 +34,8 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
+import org.chromium.components.browser_ui.bottomsheet.UserCriticalFeature;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.DualControlLayout.DualControlLayoutAlignment;
@@ -91,6 +93,12 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 R.id.account_picker_auth_error_title,
                 R.id.account_picker_confirm_management_title,
             };
+
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserInitiated(true)
+                    .setUserCritical(UserCriticalFeature.ACCOUNT_PICKER)
+                    .build();
 
     private final Activity mActivity;
     private final BackPressListener mBackPressListener;
@@ -382,6 +390,11 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     public int getPriority() {

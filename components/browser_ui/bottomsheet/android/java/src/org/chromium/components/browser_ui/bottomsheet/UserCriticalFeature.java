@@ -44,6 +44,7 @@ import java.lang.annotation.RetentionPolicy;
     UserCriticalFeature.AUTOFILL_VCN_ENROLL,
     UserCriticalFeature.TOUCH_TO_FILL_AUTOFILL,
     UserCriticalFeature.FEDERATED_ACCOUNT_SELECTION,
+    UserCriticalFeature.ACCOUNT_PICKER,
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface UserCriticalFeature {
@@ -65,4 +66,5 @@ public @interface UserCriticalFeature {
     int AUTOFILL_VCN_ENROLL = 15;
     int TOUCH_TO_FILL_AUTOFILL = 16;
     int FEDERATED_ACCOUNT_SELECTION = 17;
+    int ACCOUNT_PICKER = 18;
 }
