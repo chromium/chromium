@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -26,6 +27,7 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
+import android.graphics.Rect;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -612,6 +614,42 @@ public class SigninButtonCoordinatorTest {
         assertTrue(avatarButton.isPressed());
     }
 
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testAvatarButtonTouchTargetOnPhone() {
+        startActivityOnNtp();
+        verifySignedOutButtonVisible();
+
+        int expectedWidth =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.signin_button_width);
+        assertEquals(
+                "On phones the signin button keeps the identity disc's wider touch target",
+                expectedWidth,
+                getAvatarButtonHitRect().width());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testAvatarButtonTouchTargetOnTablet() {
+        startActivityOnNtp();
+        verifySignedOutButtonVisible();
+
+        int expectedWidth =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_button_width);
+        assertEquals(
+                "On tablets the signin button matches other toolbar buttons' touch target width",
+                expectedWidth,
+                getAvatarButtonHitRect().width());
+    }
+
     private void startActivityOnNtp() {
         mPage = mActivityTestRule.startOnNtp();
         NewTabPageTestUtils.waitForNtpLoaded(mPage.getTab());
@@ -632,6 +670,18 @@ public class SigninButtonCoordinatorTest {
                         isDisplayed(),
                         withContentDescription(
                                 R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+    }
+
+    private Rect getAvatarButtonHitRect() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ListMenuButton avatarButton =
+                            mActivityTestRule.getActivity().findViewById(R.id.avatar_button);
+                    assertNotNull(avatarButton);
+                    Rect hitRect = new Rect();
+                    avatarButton.getHitRect(hitRect);
+                    return hitRect;
+                });
     }
 
     private void setSigninAllowed(boolean allowed) {

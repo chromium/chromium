@@ -165,7 +165,7 @@ public class SigninButtonCoordinator extends ToolbarChildButton implements UrlFo
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
             width = mView.getMeasuredWidth();
         } else {
-            width = mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_button_width);
+            width = mContext.getResources().getDimensionPixelSize(R.dimen.signin_button_width);
         }
         setHasSpaceToShow(availableWidth >= width);
         return Math.min(availableWidth, width);

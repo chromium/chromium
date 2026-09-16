@@ -9,4 +9,7 @@ found in the LICENSE file.
     <!-- Tab Strip Dimensions -->
     <dimen name="tab_strip_height">40dp</dimen>
     <dimen name="tab_strip_reserved_top_padding">2dp</dimen>
+
+    <!-- Matches the other toolbar buttons. See crbug.com/543773382. -->
+    <dimen name="signin_button_width">@dimen/toolbar_button_width</dimen>
 </resources>
