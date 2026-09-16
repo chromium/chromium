@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/crx_info.pb.h"
 #include "content/public/browser/browser_thread.h"
