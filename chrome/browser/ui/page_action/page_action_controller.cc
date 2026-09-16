@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -211,6 +212,11 @@ void PageActionControllerImpl::DoHideSuggestionChip(
 void PageActionControllerImpl::ShowAnchoredMessage(
     actions::ActionId action_id,
     const AnchoredMessageConfig& config) {
+  if (config.priority != PageActionPriorityCategory::kUserInteraction &&
+      IsAnyPageActionBubbleShowing()) {
+    ShowSuggestionChip(action_id, {.priority = config.priority});
+    return;
+  }
   if (config.priority == PageActionPriorityCategory::kUnknown &&
       default_priorities_.contains(action_id)) {
     // If the config does not specify the priority level, we fall back to the
@@ -294,6 +300,25 @@ void PageActionControllerImpl::ResumeAnchoredMessageTimeout(
   }
 }
 
+bool PageActionControllerImpl::IsAnyPageActionBubbleShowing() const {
+  return std::ranges::any_of(page_actions_, [](const auto& pair) {
+    return pair.second->GetActionItemIsShowingBubble() ||
+           pair.second->GetActionActive();
+  });
+}
+
+void PageActionControllerImpl::OnPageActionAnchoredUiShown() {
+  chip_selector_->DowngradeQueuedAnchoredMessageRequests();
+  // Only downgrade if the timeout is running so that we don't downgrade
+  // anchored messages that users are actively interacting with (e.g. expanded
+  // or user-triggered messages).
+  if (anchored_message_timeout_.IsRunning()) {
+    anchored_message_timeout_.Stop();
+    CHECK(active_anchored_message_.has_value());
+    DowngradeAnchoredMessage(active_anchored_message_.value());
+  }
+}
+
 std::optional<actions::ActionId>
 PageActionControllerImpl::GetActiveAnchoredMessage() const {
   return active_anchored_message_;
@@ -302,8 +327,12 @@ PageActionControllerImpl::GetActiveAnchoredMessage() const {
 ScopedPageActionActivity PageActionControllerImpl::AddActivity(
     actions::ActionId action_id) {
   auto& counter = activity_counters_[action_id];
+  const bool was_active = (counter > 0);
   ++counter;
   FindPageActionModel(action_id).SetActionActive(PageActionPassKey(), true);
+  if (!was_active) {
+    OnPageActionAnchoredUiShown();
+  }
   return ScopedPageActionActivity(*this, action_id);
 }
 
@@ -321,7 +350,11 @@ void PageActionControllerImpl::DecrementActivityCounter(
 void PageActionControllerImpl::ActionItemChanged(
     const actions::ActionItem* action_item) {
   auto& model = FindPageActionModel(action_item->GetActionId().value());
+  const bool was_showing_bubble = model.GetActionItemIsShowingBubble();
   model.SetActionItemProperties(PageActionPassKey(), action_item);
+  if (!was_showing_bubble && model.GetActionItemIsShowingBubble()) {
+    OnPageActionAnchoredUiShown();
+  }
 }
 
 void PageActionControllerImpl::OnTabActivated(tabs::TabInterface* tab) {

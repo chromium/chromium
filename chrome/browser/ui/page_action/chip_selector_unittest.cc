@@ -207,6 +207,20 @@ TEST_F(DefaultChipSelectorTest, OnTabActiveChangedNoOp) {
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
 }
 
+TEST_F(DefaultChipSelectorTest, DowngradeQueuedAnchoredMessageRequests) {
+  selector->RequestAnchoredMessageShow(0, AnchoredMessageConfig{});
+  selector->RequestAnchoredMessageShow(1, AnchoredMessageConfig{});
+  selector->RequestAnchoredMessageShow(2, AnchoredMessageConfig{});
+  calls.clear();
+
+  selector->DowngradeQueuedAnchoredMessageRequests();
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 2), Pair("show_chip", 1)));
+
+  calls.clear();
+  selector->RequestAnchoredMessageHide(0);
+  EXPECT_THAT(calls, ElementsAre(Pair("hide_anchored_message", 0)));
+}
+
 class PriorityChipSelectorTest : public testing::Test {
  public:
   void SetUp() override {
@@ -1020,6 +1034,30 @@ TEST_F(PriorityChipSelectorPmcTest, NullPmc_ShowsImmediately) {
                                    PageActionPriorityCategory::kContextualCue});
 
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
+}
+
+TEST_F(PriorityChipSelectorPmcTest,
+       DowngradeQueuedAnchoredMessageRequests_CancelsPendingPmcAndShowsChip) {
+  user_education::ProductMessagingHandle blocking_handle =
+      AcquireBlockingNotice();
+
+  selector->RequestAnchoredMessageShow(
+      0, AnchoredMessageConfig{.priority =
+                                   PageActionPriorityCategory::kContextualCue});
+  EXPECT_THAT(calls, IsEmpty());
+  EXPECT_EQ(pmc().GetMessageStatus(
+                internal::PriorityChipSelector::kAnchoredMessageId),
+            user_education::ProductMessageStatus::kWaiting);
+
+  selector->DowngradeQueuedAnchoredMessageRequests();
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
+  EXPECT_EQ(pmc().GetMessageStatus(
+                internal::PriorityChipSelector::kAnchoredMessageId),
+            user_education::ProductMessageStatus::kNone);
+
+  blocking_handle.reset();
+  task_environment().FastForwardBy(base::Seconds(10));
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
 }
 
 }  // namespace

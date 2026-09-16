@@ -536,6 +536,9 @@ class PageActionControllerImpl : public PageActionController,
   void PauseAnchoredMessageTimeout(actions::ActionId action_id);
   void ResumeAnchoredMessageTimeout(actions::ActionId action_id);
 
+  bool IsAnyPageActionBubbleShowing() const;
+  void OnPageActionAnchoredUiShown();
+
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
   const raw_ptr<PageActionMetricsRecorderFactory>
       page_action_metrics_recorder_factory_ = nullptr;
