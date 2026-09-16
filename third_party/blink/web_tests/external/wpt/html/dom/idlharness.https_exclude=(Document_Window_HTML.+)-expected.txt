@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] TextTrack interface: attribute inBandMetadataTrackDispatchType
   assert_true: The prototype object must have a property "inBandMetadataTrackDispatchType" expected true got false
 [FAIL] TextTrack interface: document.createElement("track").track must inherit property "inBandMetadataTrackDispatchType" with the proper type
@@ -64,5 +64,29 @@ Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: The prototype object must have a property "onunhandledrejection" expected true got false
 [FAIL] SVGSVGElement interface: attribute onunload
   assert_true: The prototype object must have a property "onunload" expected true got false
+[FAIL] MathMLAnchorElement interface: attribute origin
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute protocol
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute username
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute password
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute host
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute hostname
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute port
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute pathname
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute search
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute hash
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute hreflang
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute type
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
 Harness: the test ran to completion.
 

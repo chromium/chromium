@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Changing 'hyphenate-limit-lines' via CSSOM triggers a layout
+  assert_greater_than: the element should now span 3 lines after style change expected a number greater than 34 but got 34
+Harness: the test ran to completion.
+

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] unparseable width attribute falls back to the density-corrected natural width
+  assert_array_equals: width and height expected property 0 to be 50 but got 100 (expected array [50, 50] got [100, 100])
+Harness: the test ran to completion.
+

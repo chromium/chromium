@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] SVGNumberList (text rotate): a held item reports the new value when the count is unchanged
+  assert_equals: the held item should report the new value, per step 4.4 expected 40 but got 1
+[FAIL] SVGNumberList (text rotate): a held item is still the element at its index when the count is unchanged
+  assert_equals: the held object should still be the very same object at index 0 expected object "[object SVGNumber]" but got object "[object SVGNumber]"
+[FAIL] SVGNumberList (text rotate): a shrink detaches only the items at or above the new length
+  assert_equals: an item below the new length survives and takes the new value expected 40 but got 1
+[FAIL] SVGLengthList (text x): a held item reports the new value when the count is unchanged
+  assert_equals: the held item should report the new value, per step 4.4 expected 40 but got 10
+[FAIL] SVGLengthList (text x): a held item is still the element at its index when the count is unchanged
+  assert_equals: the held object should still be the very same object at index 0 expected object "[object SVGLength]" but got object "[object SVGLength]"
+[FAIL] SVGLengthList (text x): a shrink detaches only the items at or above the new length
+  assert_equals: an item below the new length survives and takes the new value expected 40 but got 10
+[FAIL] SVGPointList (polyline points): a held item reports the new value when the count is unchanged
+  assert_equals: the held item should report the new value, per step 4.4 expected 40 but got 1
+[FAIL] SVGPointList (polyline points): a held item is still the element at its index when the count is unchanged
+  assert_equals: the held object should still be the very same object at index 0 expected object "[object SVGPoint]" but got object "[object SVGPoint]"
+[FAIL] SVGPointList (polyline points): a shrink detaches only the items at or above the new length
+  assert_equals: an item below the new length survives and takes the new value expected 40 but got 1
+[FAIL] SVGTransformList (rect transform): a held item reports the new value when the count is unchanged
+  assert_equals: the held item should report the new value, per step 4.4 expected 40 but got 1
+[FAIL] SVGTransformList (rect transform): a held item is still the element at its index when the count is unchanged
+  assert_equals: the held object should still be the very same object at index 0 expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (rect transform): a shrink detaches only the items at or above the new length
+  assert_equals: an item below the new length survives and takes the new value expected 40 but got 1
+Harness: the test ran to completion.
+

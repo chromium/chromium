@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] The size shorthand expands to the width and height longhands
+  assert_equals: expected "100px" but got ""
+[FAIL] Content authored with size serializes back as the width and height longhands, not as size
+  assert_equals: expected "width: 100px; height: 200px;" but got "size: 100px 200px;"
+Harness: the test ran to completion.
+

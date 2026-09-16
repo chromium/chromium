@@ -5,5 +5,17 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 [FAIL] ML-KEM-512 vector-based sampleCiphertext decapsulation
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] MLKEM768-P256 encapsulateBits basic functionality
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] MLKEM768-P256 encapsulateBits/decapsulateBits round-trip compatibility
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] MLKEM768-P256 vector-based sampleCiphertext decapsulation
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] MLKEM1024-P384 encapsulateBits basic functionality
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] MLKEM1024-P384 encapsulateBits/decapsulateBits round-trip compatibility
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] MLKEM1024-P384 vector-based sampleCiphertext decapsulation
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
 Harness: the test ran to completion.
 

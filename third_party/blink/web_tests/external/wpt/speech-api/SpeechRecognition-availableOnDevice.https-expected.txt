@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] SpeechRecognition.available rejects with SyntaxError for an invalid language tag.
+  assert_unreached: Should have rejected: available must reject with SyntaxError for langs ["invalid language code"], which is not a valid BCP47 language tag. Reached unreachable code
+Harness: the test ran to completion.
+

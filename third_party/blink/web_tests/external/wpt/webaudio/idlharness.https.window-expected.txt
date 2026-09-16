@@ -1,11 +1,15 @@
 This is a testharness.js-based test.
-Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] AudioContext interface: operation createMediaStreamTrackSource(MediaStreamTrack)
   assert_own_property: interface prototype object missing non-static operation expected property "createMediaStreamTrackSource" missing
 [FAIL] AudioContext interface: context must inherit property "createMediaStreamTrackSource(MediaStreamTrack)" with the proper type
   assert_inherits: property "createMediaStreamTrackSource" not found in prototype chain
 [FAIL] AudioContext interface: calling createMediaStreamTrackSource(MediaStreamTrack) on context with too few arguments must throw TypeError
   assert_inherits: property "createMediaStreamTrackSource" not found in prototype chain
+[FAIL] OfflineAudioContext interface: operation close()
+  assert_own_property: interface prototype object missing non-static operation expected property "close" missing
+[FAIL] OfflineAudioContext interface: new OfflineAudioContext(1, 1, sample_rate) must inherit property "close()" with the proper type
+  assert_inherits: property "close" not found in prototype chain
 [FAIL] MediaStreamTrackAudioSourceNode interface: existence and properties of interface object
   assert_own_property: self does not have own property "MediaStreamTrackAudioSourceNode" expected property "MediaStreamTrackAudioSourceNode" missing
 [FAIL] MediaStreamTrackAudioSourceNode interface object length

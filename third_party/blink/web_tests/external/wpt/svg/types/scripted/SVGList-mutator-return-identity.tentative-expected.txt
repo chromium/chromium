@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] SVGNumberList (text rotate): appendItem returns the element it appended
+  assert_equals: appendItem should return the item it was given expected object "[object SVGNumber]" but got object "[object SVGNumber]"
+[FAIL] SVGNumberList (text rotate): insertItemBefore returns the element it inserted
+  assert_equals: insertItemBefore should return the item it was given expected object "[object SVGNumber]" but got object "[object SVGNumber]"
+[FAIL] SVGNumberList (text rotate): replaceItem returns the element it placed
+  assert_equals: replaceItem should return the item it was given expected object "[object SVGNumber]" but got object "[object SVGNumber]"
+[FAIL] SVGNumberList (text rotate): initialize returns the element it placed
+  assert_equals: initialize should return the item it was given expected object "[object SVGNumber]" but got object "[object SVGNumber]"
+[FAIL] SVGLengthList (text dx): appendItem returns the element it appended
+  assert_equals: appendItem should return the item it was given expected object "[object SVGLength]" but got object "[object SVGLength]"
+[FAIL] SVGLengthList (text dx): insertItemBefore returns the element it inserted
+  assert_equals: insertItemBefore should return the item it was given expected object "[object SVGLength]" but got object "[object SVGLength]"
+[FAIL] SVGLengthList (text dx): replaceItem returns the element it placed
+  assert_equals: replaceItem should return the item it was given expected object "[object SVGLength]" but got object "[object SVGLength]"
+[FAIL] SVGLengthList (text dx): initialize returns the element it placed
+  assert_equals: initialize should return the item it was given expected object "[object SVGLength]" but got object "[object SVGLength]"
+[FAIL] SVGPointList (polyline points): appendItem returns the element it appended
+  assert_equals: appendItem should return the item it was given expected object "[object SVGPoint]" but got object "[object SVGPoint]"
+[FAIL] SVGPointList (polyline points): insertItemBefore returns the element it inserted
+  assert_equals: insertItemBefore should return the item it was given expected object "[object SVGPoint]" but got object "[object SVGPoint]"
+[FAIL] SVGPointList (polyline points): replaceItem returns the element it placed
+  assert_equals: replaceItem should return the item it was given expected object "[object SVGPoint]" but got object "[object SVGPoint]"
+[FAIL] SVGPointList (polyline points): initialize returns the element it placed
+  assert_equals: initialize should return the item it was given expected object "[object SVGPoint]" but got object "[object SVGPoint]"
+[FAIL] SVGTransformList (rect transform): appendItem returns the element it appended
+  assert_equals: appendItem should return the item it was given expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (rect transform): insertItemBefore returns the element it inserted
+  assert_equals: insertItemBefore should return the item it was given expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (rect transform): replaceItem returns the element it placed
+  assert_equals: replaceItem should return the item it was given expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (rect transform): initialize returns the element it placed
+  assert_equals: initialize should return the item it was given expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] An item that is already in a list is copied on insertion, not moved
+  assert_equals: the copy, not the original, is the element that was appended expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+Harness: the test ran to completion.
+

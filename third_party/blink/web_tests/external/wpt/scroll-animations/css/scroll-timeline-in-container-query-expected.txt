@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] Timeline appearing via container queries
-  assert_equals: expected "rgb(100, 100, 100)" but got "rgb(0, 0, 0)"
+  assert_equals: expected "rgb(0, 0, 0)" but got "rgb(100, 100, 100)"
 Harness: the test ran to completion.
 

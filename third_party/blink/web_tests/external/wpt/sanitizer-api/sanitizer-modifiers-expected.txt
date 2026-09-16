@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] sanitizer.setJavascriptURLs()
+  s.setJavascriptURLs is not a function
+[FAIL] sanitizer.setComments()
+  assert_false: expected false got undefined
+[FAIL] sanitizer.setDataAttributes()
+  assert_false: expected false got undefined
+Harness: the test ran to completion.
+

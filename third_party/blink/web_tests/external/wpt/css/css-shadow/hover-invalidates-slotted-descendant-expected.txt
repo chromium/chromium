@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Ancestor :hover invalidates a descendant slotted into a shadow tree
+  promise_test: Unhandled rejection with value: "error: Action action_sequence not implemented"
+Harness: the test ran to completion.
+

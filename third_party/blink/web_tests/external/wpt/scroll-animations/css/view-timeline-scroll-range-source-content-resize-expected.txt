@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Growing the scrollable overflow of a view timeline's scroll container updates an animation attached to the scroll range
+  assert_approx_equals: progress before resize expected 0.5 +/- 0.001 but got 1
+Harness: the test ran to completion.
+

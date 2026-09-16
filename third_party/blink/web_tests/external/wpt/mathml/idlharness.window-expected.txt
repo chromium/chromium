@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] MathMLAnchorElement interface: existence and properties of interface object
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface object length
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface object name
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute href
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement interface: attribute target
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+[FAIL] MathMLAnchorElement must be primary interface of objects.a
+  assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
+Harness: the test ran to completion.
+

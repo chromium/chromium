@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_modifier_click[\\ue00a-altKey]
+  AssertionError: assert [{'type': 'mousemove', 'altKey': False, 'metaKey': False, 'shiftKey': False, 'ctrlKey': False}, {'type': 'mousedown', 'altKey': True, 'metaKey': False, 'shiftKey': False, 'ctrlKey': False}, {'type': 'mouseup', 'altKey': True, 'metaKey': False, 'shiftKey': False, 'ctrlKey': False}, {'type': 'click', 'altKey': True, 'metaKey': False, 'shiftKey': False, 'ctrlKey': False}] == []
+Harness: the test ran to completion.
+

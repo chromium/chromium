@@ -1,0 +1,76 @@
+This is a testharness.js-based test.
+Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] SVGNumberList (rotate on text): getItem returns the same object for one index, with no attribute change
+  assert_equals: getItem must return the same object for the same index expected object "[object SVGNumber]" but got object "[object SVGNumber]"
+[FAIL] SVGNumberList (rotate on text): a same-count change updates the values of the held items
+  assert_equals: held item 0 expected 40 but got 10
+[FAIL] SVGNumberList (rotate on text): a same-count change keeps the held item in the list
+  assert_equals: the object at index 0 is unchanged expected object "[object SVGNumber]" but got object "[object SVGNumber]"
+[FAIL] SVGNumberList (rotate on text): the held item is still attached after a same-count change
+  assert_equals: the list reports the value written through the held item expected 42 but got 40
+[FAIL] SVGNumberList (rotate on text): a grow updates the held item and appends new ones
+  assert_equals: held item 0 expected 40 but got 10
+[FAIL] SVGNumberList (rotate on text): a shrink updates the held items that are still in range
+  assert_equals: the item still in range expected 40 but got 10
+[FAIL] SVGLengthList (x on text): getItem returns the same object for one index, with no attribute change
+  assert_equals: getItem must return the same object for the same index expected object "[object SVGLength]" but got object "[object SVGLength]"
+[FAIL] SVGLengthList (x on text): a same-count change updates the values of the held items
+  assert_equals: held item 0 expected 7 but got 1
+[FAIL] SVGLengthList (x on text): a same-count change keeps the held item in the list
+  assert_equals: the object at index 0 is unchanged expected object "[object SVGLength]" but got object "[object SVGLength]"
+[FAIL] SVGLengthList (x on text): the held item is still attached after a same-count change
+  assert_equals: the list reports the value written through the held item expected 42 but got 7
+[FAIL] SVGLengthList (x on text): a grow updates the held item and appends new ones
+  assert_equals: held item 0 expected 7 but got 1
+[FAIL] SVGLengthList (x on text): a shrink updates the held items that are still in range
+  assert_equals: the item still in range expected 7 but got 1
+[FAIL] SVGPointList (points on polyline): getItem returns the same object for one index, with no attribute change
+  assert_equals: getItem must return the same object for the same index expected object "[object SVGPoint]" but got object "[object SVGPoint]"
+[FAIL] SVGPointList (points on polyline): a same-count change updates the values of the held items
+  assert_equals: held item 0 expected 11 but got 1
+[FAIL] SVGPointList (points on polyline): a same-count change keeps the held item in the list
+  assert_equals: the object at index 0 is unchanged expected object "[object SVGPoint]" but got object "[object SVGPoint]"
+[FAIL] SVGPointList (points on polyline): the held item is still attached after a same-count change
+  assert_equals: the list reports the value written through the held item expected 42 but got 11
+[FAIL] SVGPointList (points on polyline): a grow updates the held item and appends new ones
+  assert_equals: held item 0 expected 11 but got 1
+[FAIL] SVGPointList (points on polyline): a shrink updates the held items that are still in range
+  assert_equals: the item still in range expected 11 but got 1
+[FAIL] SVGTransformList (transform on g): getItem returns the same object for one index, with no attribute change
+  assert_equals: getItem must return the same object for the same index expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (transform on g): a same-count change updates the values of the held items
+  assert_equals: held item 0 expected 11 but got 1
+[FAIL] SVGTransformList (transform on g): a same-count change keeps the held item in the list
+  assert_equals: the object at index 0 is unchanged expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (transform on g): the held item is still attached after a same-count change
+  assert_equals: the list reports the value written through the held item expected 42 but got 11
+[FAIL] SVGTransformList (transform on g): a grow updates the held item and appends new ones
+  assert_equals: held item 0 expected 11 but got 1
+[FAIL] SVGTransformList (transform on g): a shrink updates the held items that are still in range
+  assert_equals: the item still in range expected 11 but got 1
+[FAIL] SVGTransformList (gradientTransform on linearGradient): getItem returns the same object for one index, with no attribute change
+  assert_equals: getItem must return the same object for the same index expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (gradientTransform on linearGradient): a same-count change updates the values of the held items
+  assert_equals: held item 0 expected 11 but got 1
+[FAIL] SVGTransformList (gradientTransform on linearGradient): a same-count change keeps the held item in the list
+  assert_equals: the object at index 0 is unchanged expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (gradientTransform on linearGradient): the held item is still attached after a same-count change
+  assert_equals: the list reports the value written through the held item expected 42 but got 11
+[FAIL] SVGTransformList (gradientTransform on linearGradient): a grow updates the held item and appends new ones
+  assert_equals: held item 0 expected 11 but got 1
+[FAIL] SVGTransformList (gradientTransform on linearGradient): a shrink updates the held items that are still in range
+  assert_equals: the item still in range expected 11 but got 1
+[FAIL] SVGTransformList (transform): a changed transform function keeps the held item in the list
+  assert_equals: the object at index 0 is unchanged expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (transform): a changed transform function updates the held item's type and matrix
+  assert_equals: type expected 3 but got 2
+[FAIL] SVGTransformList (transform): swapping two transform functions keeps both held items
+  assert_equals: index 0 expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (gradientTransform): a changed transform function keeps the held item in the list
+  assert_equals: the object at index 0 is unchanged expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (gradientTransform): a changed transform function updates the held item's type and matrix
+  assert_equals: type expected 3 but got 2
+[FAIL] SVGTransformList (gradientTransform): swapping two transform functions keeps both held items
+  assert_equals: index 0 expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+Harness: the test ran to completion.
+

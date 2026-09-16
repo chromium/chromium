@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] SpeechRecognition.install rejects with SyntaxError for an invalid language tag.
+  assert_unreached: Should have rejected: install must reject with SyntaxError when a lang is not a valid BCP47 language tag. Reached unreachable code
+Harness: the test ran to completion.
+

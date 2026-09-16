@@ -23,5 +23,7 @@ This is a wdspec test.
   assert 0 == 1
 [FAIL] test_cookie_attributes_before_request_sent[same site strict]
   assert 0 == 1
+[FAIL] test_cookie_with_redirect_before_request_sent
+  assert 0 == 1
 Harness: the test ran to completion.
 

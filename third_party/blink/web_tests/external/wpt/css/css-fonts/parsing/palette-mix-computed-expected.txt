@@ -1,0 +1,44 @@
+This is a testharness.js-based test.
+Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property font-palette value 'palette-mix(          light 30%, dark)'
+  assert_true: 'palette-mix(          light 30%, dark)' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(in oklab, light 30%, dark)'
+  assert_equals: expected "palette-mix(light 30%, dark 70%)" but got "palette-mix(in oklab, light 30%, dark 70%)"
+[FAIL] Property font-palette value 'palette-mix(in oklab, 30% light, dark)'
+  assert_equals: expected "palette-mix(light 30%, dark 70%)" but got "palette-mix(in oklab, light 30%, dark 70%)"
+[FAIL] Property font-palette value 'palette-mix(in oklab, light 30%, light)'
+  assert_equals: expected "palette-mix(light 30%, light 70%)" but got "light"
+[FAIL] Property font-palette value 'palette-mix(in oklab, light 30%, normal)'
+  assert_equals: expected "palette-mix(light 30%, normal 70%)" but got "palette-mix(in oklab, light 30%, normal 70%)"
+[FAIL] Property font-palette value 'palette-mix(in oklab, --foo 30%, normal)'
+  assert_equals: expected "palette-mix(--foo 30%, normal 70%)" but got "palette-mix(in oklab, --foo 30%, normal 70%)"
+[FAIL] Property font-palette value 'palette-mix(in oklab, 30% --foo, normal)'
+  assert_equals: expected "palette-mix(--foo 30%, normal 70%)" but got "palette-mix(in oklab, --foo 30%, normal 70%)"
+[FAIL] Property font-palette value 'palette-mix(in oklab, light calc(sign(1rem - 1px) * 10%), dark calc(sign(1rem - 1px) * 40%))'
+  assert_equals: expected "palette-mix(light 10%, dark 40%)" but got "palette-mix(in oklab, light 10%, dark 40%)"
+[FAIL] Property font-palette value 'palette-mix(palette-mix(in srgb, light 30%, normal) 20%, dark)'
+  assert_true: 'palette-mix(palette-mix(in srgb, light 30%, normal) 20%, dark)' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(palette-mix(in srgb, light 30%, normal) 30%, palette-mix(in srgb, --foo 30%, dark))'
+  assert_true: 'palette-mix(palette-mix(in srgb, light 30%, normal) 30%, palette-mix(in srgb, --foo 30%, dark))' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(in srgb, dark)'
+  assert_true: 'palette-mix(in srgb, dark)' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(in srgb, dark 50%)'
+  assert_true: 'palette-mix(in srgb, dark 50%)' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(in srgb, dark,           light,     --foo)'
+  assert_true: 'palette-mix(in srgb, dark,           light,     --foo)' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(in srgb, dark 50%,       light 30%, --foo  20%)'
+  assert_true: 'palette-mix(in srgb, dark 50%,       light 30%, --foo  20%)' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(in srgb, dark 30%,       light 60%, --foo  90%)'
+  assert_true: 'palette-mix(in srgb, dark 30%,       light 60%, --foo  90%)' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(in srgb, dark,           light,     --foo,     --bar)'
+  assert_true: 'palette-mix(in srgb, dark,           light,     --foo,     --bar)' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(in srgb, dark  0%)'
+  assert_true: 'palette-mix(in srgb, dark  0%)' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(in srgb, dark  0%,       light  0%, --foo   0%)'
+  assert_true: 'palette-mix(in srgb, dark  0%,       light  0%, --foo   0%)' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(in srgb, dark  0%,       light  0%, --foo 100%)'
+  assert_true: 'palette-mix(in srgb, dark  0%,       light  0%, --foo 100%)' is a supported value for font-palette. expected true got false
+[FAIL] Property font-palette value 'palette-mix(in srgb, dark  0%,       light  0%, --foo  50%)'
+  assert_true: 'palette-mix(in srgb, dark  0%,       light  0%, --foo  50%)' is a supported value for font-palette. expected true got false
+Harness: the test ran to completion.
+

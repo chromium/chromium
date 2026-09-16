@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] putting background-clip initial value after background shorthand
+  assert_equals: expected "background: red;" but got "background: border-box red;"
+[FAIL] putting background-clip value after background shorthand
+  assert_equals: expected "background: padding-box content-box red;" but got "background: content-box red;"
+Harness: the test ran to completion.
+

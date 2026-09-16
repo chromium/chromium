@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] remove() puts a string item into the disabled mode
+  assert_equals: kind after removal expected "" but got "string"
+[FAIL] remove() puts a File item into the disabled mode
+  assert_equals: kind after removal expected "" but got "file"
+[FAIL] clear() puts every item into the disabled mode
+  assert_equals: kind of the cleared string item expected "" but got "string"
+[FAIL] clearData() puts the removed string item into the disabled mode
+  assert_equals: kind after clearData() expected "" but got "string"
+[FAIL] setData() puts the replaced string item into the disabled mode
+  assert_equals: kind of the replaced item expected "" but got "string"
+Harness: the test ran to completion.
+

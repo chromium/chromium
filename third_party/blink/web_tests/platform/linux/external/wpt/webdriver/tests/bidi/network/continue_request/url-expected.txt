@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_navigation
-  TypeError: list indices must be integers or slices, not str
-Harness: the test ran to completion.
-

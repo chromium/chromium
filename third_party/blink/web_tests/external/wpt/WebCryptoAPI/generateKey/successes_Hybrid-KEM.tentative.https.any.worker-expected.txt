@@ -1,0 +1,628 @@
+This is a testharness.js-based test.
+Found 312 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Success: generateKey(MLKEM768-P256, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM768-P256, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM768-P256}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem768-p256, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem768-p256}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem768-p256, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem768-p256}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(MLKEM1024-P384, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: MLKEM1024-P384}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(mlkem1024-p384, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: mlkem1024-p384}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey(Mlkem1024-p384, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [encapsulateKey, encapsulateBits, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [encapsulateKey, decapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [encapsulateKey, encapsulateBits, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [encapsulateKey, decapsulateBits])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [encapsulateKey, encapsulateBits, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [encapsulateKey, decapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, false, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+[FAIL] Success: generateKey({name: Mlkem1024-p384}, true, [decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey, decapsulateBits, decapsulateKey, decapsulateBits, decapsulateKey, encapsulateBits, encapsulateKey])
+  assert_unreached: exportKey threw an unexpected error: Error: assert_unreached: generateKey threw an unexpected error: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code Reached unreachable code
+Harness: the test ran to completion.
+

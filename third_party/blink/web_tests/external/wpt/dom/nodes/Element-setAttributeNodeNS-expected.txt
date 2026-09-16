@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Replacing an attribute prefix preserves name lookup order with namespacedFirst=false
+  assert_equals: expected (object) null but got (string) "replacement"
+[FAIL] Replacing an attribute prefix preserves name lookup order with namespacedFirst=true
+  assert_equals: expected (object) null but got (string) "replacement"
+[FAIL] Replacing an attribute prefix preserves other attributes with the old qualified name
+  assert_equals: expected (string) "replacement" but got (object) null
+Harness: the test ran to completion.
+

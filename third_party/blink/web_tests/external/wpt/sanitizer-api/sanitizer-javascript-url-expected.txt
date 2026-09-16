@@ -1,0 +1,328 @@
+This is a testharness.js-based test.
+Found 162 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/0, "<a href="javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/0, "<a href="javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/0, "<a href="javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/0, "<a href="javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/0, "<a href="javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/0, "<a href="javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/1, "<area href="javascript:alert(1)"></area>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <AREA>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/1, "<area href="javascript:alert(1)"></area>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <AREA>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/1, "<area href="javascript:alert(1)"></area>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <AREA>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/1, "<area href="javascript:alert(1)"></area>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <AREA>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/1, "<area href="javascript:alert(1)"></area>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <AREA>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/1, "<area href="javascript:alert(1)"></area>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <AREA>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/2, "<button formaction="javascript:alert(1)"></button>"
+  assert_true: [object HTMLButtonElement].isEqual([object HTMLButtonElement]) fails. Path: <DIV> / <BUTTON>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/2, "<button formaction="javascript:alert(1)"></button>"
+  assert_true: [object HTMLButtonElement].isEqual([object HTMLButtonElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <BUTTON>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/2, "<button formaction="javascript:alert(1)"></button>"
+  assert_true: [object HTMLButtonElement].isEqual([object HTMLButtonElement]) fails. Path: <DIV> / <BUTTON>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/2, "<button formaction="javascript:alert(1)"></button>"
+  assert_true: [object HTMLButtonElement].isEqual([object HTMLButtonElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <BUTTON>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/2, "<button formaction="javascript:alert(1)"></button>"
+  assert_true: [object HTMLButtonElement].isEqual([object HTMLButtonElement]) fails. Path: <DIV> / <BUTTON>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/2, "<button formaction="javascript:alert(1)"></button>"
+  assert_true: [object HTMLButtonElement].isEqual([object HTMLButtonElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <BUTTON>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/3, "<form action="javascript:alert(1)"></form>"
+  assert_true: [object HTMLFormElement].isEqual([object HTMLFormElement]) fails. Path: <DIV> / <FORM>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/3, "<form action="javascript:alert(1)"></form>"
+  assert_true: [object HTMLFormElement].isEqual([object HTMLFormElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <FORM>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/3, "<form action="javascript:alert(1)"></form>"
+  assert_true: [object HTMLFormElement].isEqual([object HTMLFormElement]) fails. Path: <DIV> / <FORM>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/3, "<form action="javascript:alert(1)"></form>"
+  assert_true: [object HTMLFormElement].isEqual([object HTMLFormElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <FORM>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/3, "<form action="javascript:alert(1)"></form>"
+  assert_true: [object HTMLFormElement].isEqual([object HTMLFormElement]) fails. Path: <DIV> / <FORM>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/3, "<form action="javascript:alert(1)"></form>"
+  assert_true: [object HTMLFormElement].isEqual([object HTMLFormElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <FORM>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/4, "<input formaction="javascript:alert(1)"></input>"
+  assert_true: [object HTMLInputElement].isEqual([object HTMLInputElement]) fails. Path: <DIV> / <INPUT>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/4, "<input formaction="javascript:alert(1)"></input>"
+  assert_true: [object HTMLInputElement].isEqual([object HTMLInputElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <INPUT>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/4, "<input formaction="javascript:alert(1)"></input>"
+  assert_true: [object HTMLInputElement].isEqual([object HTMLInputElement]) fails. Path: <DIV> / <INPUT>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/4, "<input formaction="javascript:alert(1)"></input>"
+  assert_true: [object HTMLInputElement].isEqual([object HTMLInputElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <INPUT>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/4, "<input formaction="javascript:alert(1)"></input>"
+  assert_true: [object HTMLInputElement].isEqual([object HTMLInputElement]) fails. Path: <DIV> / <INPUT>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/4, "<input formaction="javascript:alert(1)"></input>"
+  assert_true: [object HTMLInputElement].isEqual([object HTMLInputElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <INPUT>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/5, "<svg><a href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/5, "<svg><a href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/5, "<svg><a href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/5, "<svg><a href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/5, "<svg><a href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/5, "<svg><a href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/6, "<svg><a xlink:href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/6, "<svg><a xlink:href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/6, "<svg><a xlink:href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-navigating-url-attributes-list/6, "<svg><a xlink:href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/6, "<svg><a xlink:href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/6, "<svg><a xlink:href="javascript:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/0, "<svg><animate attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/0, "<svg><animate attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/0, "<svg><animate attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/0, "<svg><animate attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/0, "<svg><animate attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/0, "<svg><animate attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/1, "<svg><animate attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/1, "<svg><animate attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/1, "<svg><animate attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/1, "<svg><animate attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/1, "<svg><animate attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/1, "<svg><animate attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/4, "<svg><animateTransform attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/4, "<svg><animateTransform attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/4, "<svg><animateTransform attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/4, "<svg><animateTransform attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/4, "<svg><animateTransform attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/4, "<svg><animateTransform attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/5, "<svg><animateTransform attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/5, "<svg><animateTransform attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/5, "<svg><animateTransform attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/5, "<svg><animateTransform attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/5, "<svg><animateTransform attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/5, "<svg><animateTransform attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/6, "<svg><set attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/6, "<svg><set attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/6, "<svg><set attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/6, "<svg><set attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/6, "<svg><set attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/6, "<svg><set attributeName="href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/7, "<svg><set attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/7, "<svg><set attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/7, "<svg><set attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase built-in-animating-url-attributes-list/7, "<svg><set attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/7, "<svg><set attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-animating-url-attributes-list/7, "<svg><set attributeName="xlink:href"></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/0, "<a href="JaVaScRiPt:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/0, "<a href="JaVaScRiPt:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/0, "<a href="JaVaScRiPt:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/0, "<a href="JaVaScRiPt:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/0, "<a href="JaVaScRiPt:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/0, "<a href="JaVaScRiPt:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/1, "<a href=" javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/1, "<a href=" javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/1, "<a href=" javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/1, "<a href=" javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/1, "<a href=" javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/1, "<a href=" javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/2, "<a href="&#10;javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/2, "<a href="&#10;javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/2, "<a href="&#10;javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/2, "<a href="&#10;javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/2, "<a href="&#10;javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/2, "<a href="&#10;javascript:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/3, "<a href="java&#9;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/3, "<a href="java&#9;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/3, "<a href="java&#9;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/3, "<a href="java&#9;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/3, "<a href="java&#9;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/3, "<a href="java&#9;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/4, "<a href="java&#10;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/4, "<a href="java&#10;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/4, "<a href="java&#10;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/4, "<a href="java&#10;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/4, "<a href="java&#10;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/4, "<a href="java&#10;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/5, "<a href="java&#13;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/5, "<a href="java&#13;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/5, "<a href="java&#13;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/5, "<a href="java&#13;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/5, "<a href="java&#13;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/5, "<a href="java&#13;script:alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/6, "<a href="javascript&#58;alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/6, "<a href="javascript&#58;alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/6, "<a href="javascript&#58;alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/6, "<a href="javascript&#58;alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/6, "<a href="javascript&#58;alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/6, "<a href="javascript&#58;alert(1)"></a>"
+  assert_true: javascript:alert(1).isEqual() fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <A>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/7, "<svg><a xlink:href="java&#9;script:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase url-normalization/7, "<svg><a xlink:href="java&#9;script:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/7, "<svg><a xlink:href="java&#9;script:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase url-normalization/7, "<svg><a xlink:href="java&#9;script:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/7, "<svg><a xlink:href="java&#9;script:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/7, "<svg><a xlink:href="java&#9;script:alert(1)"></a></svg>"
+  assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: "default" } default configuration, "<a href="javascript:alert(1)"></a>"
+  assert_equals: javascript: URL is removed expected (object) null but got (string) "javascript:alert(1)"
+[FAIL] parseHTMLUnsafe { sanitizer: "default" } default configuration, "<a href="javascript:alert(1)"></a>"
+  assert_equals: javascript: URL is removed expected (object) null but got (string) "javascript:alert(1)"
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer() } default configuration, "<a href="javascript:alert(1)"></a>"
+  assert_equals: javascript: URL is removed expected (object) null but got (string) "javascript:alert(1)"
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer() } default configuration, "<a href="javascript:alert(1)"></a>"
+  assert_equals: javascript: URL is removed expected (object) null but got (string) "javascript:alert(1)"
+[FAIL] setJavascriptURLs(true) on the default configuration, "<a href="javascript:alert(1)"></a>"
+  sanitizer.setJavascriptURLs is not a function
+[FAIL] setHTMLUnsafe { sanitizer: "default" } default configuration, "<svg><a href="javascript:alert(1)"></a></svg>"
+  assert_equals: javascript: URL is removed expected (object) null but got (string) "javascript:alert(1)"
+[FAIL] parseHTMLUnsafe { sanitizer: "default" } default configuration, "<svg><a href="javascript:alert(1)"></a></svg>"
+  assert_equals: javascript: URL is removed expected (object) null but got (string) "javascript:alert(1)"
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer() } default configuration, "<svg><a href="javascript:alert(1)"></a></svg>"
+  assert_equals: javascript: URL is removed expected (object) null but got (string) "javascript:alert(1)"
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer() } default configuration, "<svg><a href="javascript:alert(1)"></a></svg>"
+  assert_equals: javascript: URL is removed expected (object) null but got (string) "javascript:alert(1)"
+[FAIL] setJavascriptURLs(true) on the default configuration, "<svg><a href="javascript:alert(1)"></a></svg>"
+  sanitizer.setJavascriptURLs is not a function
+[FAIL] sanitizer.setJavascriptURLs() controls URL preservation in setHTMLUnsafe
+  s.setJavascriptURLs is not a function
+[FAIL] Template and ShadowRoot handling with javascriptURLs
+  assert_false: expected false got true
+Harness: the test ran to completion.
+

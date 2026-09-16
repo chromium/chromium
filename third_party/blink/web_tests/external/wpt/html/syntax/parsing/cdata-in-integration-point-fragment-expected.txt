@@ -15,5 +15,13 @@ This is a testharness.js-based test.
   assert_equals: CDATA should be parsed as character data because the adjusted current node is not in the HTML namespace expected "xy" but got "x"
 [FAIL] CDATA allowed when fragment-parsing with <title> context (SVG HTML integration point)
   assert_equals: CDATA should be parsed as character data because the adjusted current node is not in the HTML namespace expected "xy" but got "x"
+[FAIL] CDATA allowed at the start of a fragment with <ms> context (MathML text integration point)
+  assert_equals: CDATA should be parsed as character data because the adjusted current node is not in the HTML namespace expected "y" but got ""
+[FAIL] CDATA allowed at the start of a fragment with <title> context (SVG HTML integration point)
+  assert_equals: CDATA should be parsed as character data because the adjusted current node is not in the HTML namespace expected "y" but got ""
+[FAIL] CDATA allowed at the start of a fragment with <path> context (non-integration-point SVG element)
+  assert_equals: CDATA should be parsed as character data because the adjusted current node is not in the HTML namespace expected "y" but got ""
+[FAIL] CDATA allowed at the start of a fragment with <annotation-xml> context (non-integration-point MathML element)
+  assert_equals: CDATA should be parsed as character data because the adjusted current node is not in the HTML namespace expected "y" but got ""
 Harness: the test ran to completion.
 

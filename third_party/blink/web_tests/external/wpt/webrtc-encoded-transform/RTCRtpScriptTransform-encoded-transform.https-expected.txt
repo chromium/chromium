@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] Receiver and sender read/write frames (inplace, audio).
+  assert_equals: expected "sender written" but got "structuredClone should not work on consumed frame!"
+[FAIL] Receiver and sender read/write frames (detach, audio).
+  assert_equals: expected "sender written" but got "structuredClone should not work on consumed frame!"
+[FAIL] Receiver and sender read/write frames (overwrite, audio).
+  assert_equals: expected "sender written" but got "structuredClone should not work on consumed frame!"
+[FAIL] Receiver and sender read/write frames (clone-frame, audio).
+  assert_equals: expected "sender written" but got "structuredClone should not work on consumed frame!"
+[FAIL] Receiver and sender read/write frames (inplace, video).
+  assert_equals: expected "sender written" but got "structuredClone should not work on consumed frame!"
+[FAIL] Receiver and sender read/write frames (detach, video).
+  assert_equals: expected "sender written" but got "structuredClone should not work on consumed frame!"
+[FAIL] Receiver and sender read/write frames (overwrite, video).
+  assert_equals: expected "sender written" but got "structuredClone should not work on consumed frame!"
+[FAIL] Receiver and sender read/write frames (clone-frame, video).
+  assert_equals: expected "sender written" but got "structuredClone should not work on consumed frame!"
+Harness: the test ran to completion.
+

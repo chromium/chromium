@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] fetching a notification with navigate URL
+  assert_equals: Should keep track of Notification.navigate. expected (string) "https://example.com/" but got (undefined) undefined
+[FAIL] fetching a notification with no navigate URL
+  assert_equals: Should return an empty string for Notification.navigate if URL is not set. expected (string) "" but got (undefined) undefined
+[FAIL] fetching a notification with invalid navigate URL
+  assert_equals: Should return an empty string for Notification.navigate if URL is invalid. expected (string) "" but got (undefined) undefined
+Harness: the test ran to completion.
+

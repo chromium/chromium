@@ -44,6 +44,7 @@
 ../../web_tests/external/wpt/fonts/baseline-diagnostic/BaselineDiagnosticAlphabeticZero.ttf
 ../../web_tests/external/wpt/fonts/fail.woff
 ../../web_tests/external/wpt/fonts/hasubi-mono/HasubiMono-Regular.woff2
+../../web_tests/external/wpt/fonts/mark-anchor-test.ttf
 ../../web_tests/external/wpt/fonts/math/axisheight5000-verticalarrow14000.woff
 ../../web_tests/external/wpt/fonts/math/css-units.woff
 ../../web_tests/external/wpt/fonts/math/fraction-axisheight7000-rulethickness1000.woff
@@ -172,6 +173,7 @@
 ../../web_tests/external/wpt/jpegxl/resources/hdr_alpha.jxl
 ../../web_tests/external/wpt/jpegxl/resources/hdr_hlg_test.jxl
 ../../web_tests/external/wpt/jpegxl/resources/hdr_pq_test.jxl
+../../web_tests/external/wpt/jpegxl/resources/incomplete-codestream-trailing-box.jxl
 ../../web_tests/external/wpt/jpegxl/resources/issue648_palette0.jxl
 ../../web_tests/external/wpt/jpegxl/resources/orientation1_identity.jxl
 ../../web_tests/external/wpt/jpegxl/resources/orientation6_rotate_90_cw.jxl

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] SVGNumberList (text rotate): getItem returns the same object for the same index
+  assert_equals: getItem(0) twice should give the same object, not two objects holding the same value expected object "[object SVGNumber]" but got object "[object SVGNumber]"
+[FAIL] SVGNumberList (text rotate): the indexed getter returns the same object as getItem
+  assert_equals: list[0] should be the very same object as getItem(0) expected object "[object SVGNumber]" but got object "[object SVGNumber]"
+[FAIL] SVGLengthList (text x): getItem returns the same object for the same index
+  assert_equals: getItem(0) twice should give the same object, not two objects holding the same value expected object "[object SVGLength]" but got object "[object SVGLength]"
+[FAIL] SVGLengthList (text x): the indexed getter returns the same object as getItem
+  assert_equals: list[0] should be the very same object as getItem(0) expected object "[object SVGLength]" but got object "[object SVGLength]"
+[FAIL] SVGPointList (polyline points): getItem returns the same object for the same index
+  assert_equals: getItem(0) twice should give the same object, not two objects holding the same value expected object "[object SVGPoint]" but got object "[object SVGPoint]"
+[FAIL] SVGPointList (polyline points): the indexed getter returns the same object as getItem
+  assert_equals: list[0] should be the very same object as getItem(0) expected object "[object SVGPoint]" but got object "[object SVGPoint]"
+[FAIL] SVGTransformList (rect transform): getItem returns the same object for the same index
+  assert_equals: getItem(0) twice should give the same object, not two objects holding the same value expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+[FAIL] SVGTransformList (rect transform): the indexed getter returns the same object as getItem
+  assert_equals: list[0] should be the very same object as getItem(0) expected object "[object SVGTransform]" but got object "[object SVGTransform]"
+Harness: the test ran to completion.
+
