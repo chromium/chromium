@@ -242,7 +242,6 @@ source_set("internal") {
   ]
 
   deps = [
-    "//base:i18n",
     "//build:android_buildflags",
     "//components/account_id",
     "//components/enterprise/common:strings",
@@ -258,6 +257,7 @@ source_set("internal") {
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
+    "//third_party/abseil-cpp:absl",
     "//third_party/libxml:xml_writer",
     "//third_party/metrics_proto",
     "//third_party/re2",

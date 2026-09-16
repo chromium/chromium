@@ -73,7 +73,7 @@ export function getHtml(this: PolicyLogsAppElement) {
           log => html`
           <div role="row" class="log-line">
             <div role="gridcell" class="log-column timestamp">${
-              this.getLogTimestamp(log)}</div>
+              log.timestamp}</div>
             <div role="gridcell" class="log-column severity">
               ${highlightText(log.logSeverity, this.getFilterWords())}
             </div>
@@ -101,9 +101,11 @@ export function getHtml(this: PolicyLogsAppElement) {
     <h2>$i18n{variations}</h2>
 
     <ul id="active-variations-container" aria-label="Active Variations List">
-      ${this.versionInfo?.variations.map(variation => html`
+      ${
+      this.versionInfo?.variations.map(variation => html`
         <li>${variation}</li>
-      `) ?? ''}
+      `) ??
+      ''}
     </ul>
   <!--_html_template_end_-->`;
 }

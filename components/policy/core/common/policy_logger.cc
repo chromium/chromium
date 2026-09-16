@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check_is_test.h"
-#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -20,6 +19,7 @@
 #include "components/policy/core/common/features.h"
 #include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/channel/channel_info.h"
@@ -139,6 +139,18 @@ std::string GetFileAndLine(std::string_view file, int line) {
   return base::StrCat({GetFileBasename(file), ":", base::NumberToString(line)});
 }
 
+std::string GetTimestampString(base::Time timestamp) {
+  base::Time::Exploded exploded;
+  timestamp.LocalExplode(&exploded);
+  int hour12 = exploded.hour % 12;
+  if (hour12 == 0) {
+    hour12 = 12;
+  }
+  const char* ampm = exploded.hour >= 12 ? "PM" : "AM";
+  return absl::StrFormat("%d-%02d-%02d %02d:%02d:%02d %s", exploded.year,
+                         exploded.month, exploded.day_of_month, hour12,
+                         exploded.minute, exploded.second, ampm);
+}
 
 }  // namespace
 
@@ -236,14 +248,14 @@ base::DictValue PolicyLogger::Log::GetAsDict() const {
       .Set("logSource", GetLogSourceValue(log_source_))
       .Set("fileAndLine", GetFileAndLine(file_, line_))
       .Set("location", GetLineURL(file_, line_))
-      .Set("timestamp", base::TimeFormatHTTP(timestamp_));
+      .Set("timestamp", GetTimestampString(timestamp_));
 }
 
 policy::mojom::LogPtr PolicyLogger::Log::GetAsMojoLog() const {
   return policy::mojom::Log::New(
       message_, GetLogSeverity(log_severity_), GetLogSourceValue(log_source_),
       GetFileAndLine(file_, line_), GetLineURL(file_, line_),
-      base::TimeFormatHTTP(timestamp_));
+      GetTimestampString(timestamp_));
 }
 
 PolicyLogger::PolicyLogger() = default;

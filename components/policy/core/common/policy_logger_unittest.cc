@@ -9,6 +9,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/policy/resources/webui/mojom/policy.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -66,16 +67,24 @@ TEST_F(PolicyLoggerTest, PolicyLoggingEnabled) {
   size_t log_count_before_adding = GetLogCount(policy_logger);
   AddLogs("when the feature is enabled.", policy_logger);
 
+  constexpr char kTimestampRegex[] =
+      R"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} (AM|PM))";
   base::ListValue logs = GetLogsAsList(policy_logger);
   EXPECT_EQ(logs.size(), log_count_before_adding + 1);
-  EXPECT_EQ(*(logs[log_count_before_adding].GetDict().FindString("message")),
+  const base::DictValue& dict = logs[log_count_before_adding].GetDict();
+  EXPECT_EQ(*(dict.FindString("message")),
             "Element added: when the feature is enabled.");
+  ASSERT_NE(dict.FindString("timestamp"), nullptr);
+  EXPECT_THAT(*dict.FindString("timestamp"),
+              testing::MatchesRegex(kTimestampRegex));
 
   std::vector<policy::mojom::LogPtr> mojo_logs =
       GetLogsAsMojoList(policy_logger);
   EXPECT_EQ(mojo_logs.size(), log_count_before_adding + 1);
   EXPECT_EQ(mojo_logs[log_count_before_adding]->message,
             "Element added: when the feature is enabled.");
+  EXPECT_THAT(mojo_logs[log_count_before_adding]->timestamp,
+              testing::MatchesRegex(kTimestampRegex));
 }
 
 // Checks that the first log added is deleted when `PolicyLogger::kMaxLogCount`

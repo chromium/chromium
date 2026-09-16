@@ -128,13 +128,6 @@ export class PolicyLogsAppElement extends CrLitElement {
     });
   }
 
-  protected getLogTimestamp(log: Log): string {
-    return new Date(log.timestamp).toLocaleString('en-CA', {
-      timeZoneName: 'short',
-      hour12: false,
-    });
-  }
-
   protected getLogFileAndLine(log: Log): {file: string, line: string} {
     const parts = log.fileAndLine.split(':');
     return {
