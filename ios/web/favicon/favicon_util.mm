@@ -44,23 +44,35 @@ std::vector<web::FaviconURL> ExtractFaviconURL(const base::ListValue& favicons,
   std::vector<web::FaviconURL> favicon_urls;
   for (const base::Value& favicon : favicons) {
     if (!favicon.is_dict()) {
-      return {};
+      continue;
     }
 
     const base::DictValue& favicon_dict = favicon.GetDict();
     const std::string* href_value = favicon_dict.FindString("href");
     if (!href_value) {
-      DLOG(WARNING) << "JS message parameter not found: href";
-      return {};
+      continue;
     }
-    auto href = *href_value;
+
+    const GURL url(*href_value);
+    if (!url.is_valid() || !IsAllowedFaviconURL(url, page_url)) {
+      continue;
+    }
 
     const std::string* rel_value = favicon_dict.FindString("rel");
     if (!rel_value) {
-      DLOG(WARNING) << "JS message parameter not found: rel";
-      return {};
+      continue;
     }
     auto rel = *rel_value;
+
+    BOOL is_apple_touch = YES;
+    web::FaviconURL::IconType icon_type = web::FaviconURL::IconType::kFavicon;
+    if (rel == "apple-touch-icon") {
+      icon_type = web::FaviconURL::IconType::kTouchIcon;
+    } else if (rel == "apple-touch-icon-precomposed") {
+      icon_type = web::FaviconURL::IconType::kTouchPrecomposedIcon;
+    } else {
+      is_apple_touch = NO;
+    }
 
     std::vector<gfx::Size> sizes;
     if (const std::string* size_value = favicon_dict.FindString("sizes")) {
@@ -77,7 +89,6 @@ std::vector<web::FaviconURL> ExtractFaviconURL(const base::ListValue& favicons,
         int width = 0, height = 0;
         if (pieces.size() != 2 || !base::StringToInt(pieces[0], &width) ||
             !base::StringToInt(pieces[1], &height)) {
-          DLOG(WARNING) << "JS message parameter sizes incorrectly formatted.";
           continue;
         }
 
@@ -85,25 +96,6 @@ std::vector<web::FaviconURL> ExtractFaviconURL(const base::ListValue& favicons,
           sizes.push_back(gfx::Size(width, height));
         }
       }
-    }
-
-    BOOL is_apple_touch = YES;
-    web::FaviconURL::IconType icon_type = web::FaviconURL::IconType::kFavicon;
-    if (rel == "apple-touch-icon") {
-      icon_type = web::FaviconURL::IconType::kTouchIcon;
-    } else if (rel == "apple-touch-icon-precomposed") {
-      icon_type = web::FaviconURL::IconType::kTouchPrecomposedIcon;
-    } else {
-      is_apple_touch = NO;
-    }
-    GURL url(href);
-    if (!url.is_valid()) {
-      DLOG(WARNING) << "JS message parameter not a valid URL: href";
-      continue;
-    }
-
-    if (!IsAllowedFaviconURL(url, page_url)) {
-      continue;
     }
 
     favicon_urls.push_back(web::FaviconURL(url, icon_type, sizes));

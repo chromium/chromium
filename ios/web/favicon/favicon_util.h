@@ -18,9 +18,8 @@ namespace web {
 // message. It is also used to check whether the favicon url is acceptable.
 //
 // The `favicons` message is structured as containing a list of dictionaries
-// containing the `href`, `rel` and `size` attributes of the favicon.
-//
-// If the message is malformed, returns an empty vector.
+// containing the `href`, `rel` and `size` attributes of the favicon. Will
+// skip any malformed favicons in the message.
 std::vector<web::FaviconURL> ExtractFaviconURL(const base::ListValue& favicons,
                                                const GURL& page_url);
 

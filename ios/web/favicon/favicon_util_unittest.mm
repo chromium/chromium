@@ -10,8 +10,6 @@
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 
-namespace web {
-
 using FaviconUtilTest = PlatformTest;
 
 // Tries to extract multiple favicons url, all should be extracted.
@@ -67,7 +65,15 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoRel) {
   const std::vector<web::FaviconURL> urls =
       web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
 
-  EXPECT_TRUE(urls.empty());
+  ASSERT_EQ(2U, urls.size());
+  EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+  EXPECT_EQ(0U, urls[0].icon_sizes.size());
+
+  EXPECT_EQ(GURL("http://fav3.ico"), urls[1].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kTouchPrecomposedIcon,
+            urls[1].icon_type);
+  EXPECT_EQ(0U, urls[1].icon_sizes.size());
 }
 
 // Tries to extract favicons with the rel attributes being an int.
@@ -87,7 +93,15 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLIntRel) {
   const std::vector<web::FaviconURL> urls =
       web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
 
-  EXPECT_TRUE(urls.empty());
+  ASSERT_EQ(2U, urls.size());
+  EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+  EXPECT_EQ(0U, urls[0].icon_sizes.size());
+
+  EXPECT_EQ(GURL("http://fav3.ico"), urls[1].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kTouchPrecomposedIcon,
+            urls[1].icon_type);
+  EXPECT_EQ(0U, urls[1].icon_sizes.size());
 }
 
 // Tries to extract favicons with the href attributes missing in one of them.
@@ -105,7 +119,43 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoHref) {
   const std::vector<web::FaviconURL> urls =
       web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
 
-  EXPECT_TRUE(urls.empty());
+  ASSERT_EQ(2U, urls.size());
+  EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+  EXPECT_EQ(0U, urls[0].icon_sizes.size());
+
+  EXPECT_EQ(GURL("http://fav3.ico"), urls[1].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kTouchPrecomposedIcon,
+            urls[1].icon_type);
+  EXPECT_EQ(0U, urls[1].icon_sizes.size());
+}
+
+// Tries to extract favicons with the href attributes is an invalid url.
+TEST_F(FaviconUtilTest, ExtractFaviconURLHrefNotValidURL) {
+  const base::ListValue favicons =
+      base::ListValue()
+          .Append(base::DictValue()
+                      .Set("href", "http://fav.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "this is not a valid url")
+                      .Set("rel", "apple-touch-icon"))
+          .Append(base::DictValue()
+                      .Set("href", "http://fav3.ico")
+                      .Set("rel", "apple-touch-icon-precomposed"));
+
+  const std::vector<web::FaviconURL> urls =
+      web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
+
+  ASSERT_EQ(2U, urls.size());
+  EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+  EXPECT_EQ(0U, urls[0].icon_sizes.size());
+
+  EXPECT_EQ(GURL("http://fav3.ico"), urls[1].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kTouchPrecomposedIcon,
+            urls[1].icon_type);
+  EXPECT_EQ(0U, urls[1].icon_sizes.size());
 }
 
 // Tries to extract the default favicon when there are no favicon in the
@@ -211,12 +261,15 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLFromNormalOrigin) {
   ASSERT_EQ(3U, urls.size());
   EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+  EXPECT_EQ(0U, urls[0].icon_sizes.size());
 
   EXPECT_EQ(GURL("https://fav.ico"), urls[1].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[1].icon_type);
+  EXPECT_EQ(0U, urls[1].icon_sizes.size());
 
   EXPECT_EQ(GURL("data:favicon.ico"), urls[2].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[2].icon_type);
+  EXPECT_EQ(0U, urls[2].icon_sizes.size());
 }
 
 // Tries to extract favicons from various origins from a custom orign.
@@ -248,15 +301,17 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLFromCustomOrigin) {
   ASSERT_EQ(4U, urls.size());
   EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+  EXPECT_EQ(0U, urls[0].icon_sizes.size());
 
   EXPECT_EQ(GURL("https://fav.ico"), urls[1].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[1].icon_type);
+  EXPECT_EQ(0U, urls[1].icon_sizes.size());
 
   EXPECT_EQ(GURL("data:favicon.ico"), urls[2].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[2].icon_type);
+  EXPECT_EQ(0U, urls[2].icon_sizes.size());
 
   EXPECT_EQ(GURL("testwebui:favicon.ico"), urls[3].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[3].icon_type);
+  EXPECT_EQ(0U, urls[3].icon_sizes.size());
 }
-
-}  // namespace web
