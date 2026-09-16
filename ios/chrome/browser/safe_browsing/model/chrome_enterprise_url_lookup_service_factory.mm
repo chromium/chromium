@@ -113,6 +113,8 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile), management_service,
       profile->IsOffTheRecord(),
       /*is_guest_session=*/false,
+      // Enterprise Isolated mode is not currently supported in iOS.
+      /*is_isolated_profile=*/false,
       base::BindRepeating(&enterprise_connectors::GetProfileEmail,
                           identity_manager),
       base::BindRepeating(

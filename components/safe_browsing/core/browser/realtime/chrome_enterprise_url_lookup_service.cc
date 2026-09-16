@@ -81,6 +81,7 @@ ChromeEnterpriseRealTimeUrlLookupService::
         policy::ManagementService* management_service,
         bool is_off_the_record,
         bool is_guest_session,
+        bool is_isolated_profile,
         base::RepeatingCallback<std::string()> get_profile_email_callback,
         base::RepeatingCallback<std::string(const GURL&)>
             get_content_area_account_email_callback,
@@ -104,6 +105,7 @@ ChromeEnterpriseRealTimeUrlLookupService::
       management_service_(management_service),
       is_off_the_record_(is_off_the_record),
       is_guest_session_(is_guest_session),
+      is_isolated_profile_(is_isolated_profile),
       get_profile_email_callback_(get_profile_email_callback),
       get_content_area_account_email_callback_(
           get_content_area_account_email_callback),
@@ -117,7 +119,7 @@ bool ChromeEnterpriseRealTimeUrlLookupService::CanPerformFullURLLookup() const {
   return RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
       pref_service_,
       connectors_service_->GetDMTokenForRealTimeUrlCheck().has_value(),
-      is_off_the_record_, is_guest_session_);
+      is_off_the_record_, is_guest_session_, is_isolated_profile_);
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::

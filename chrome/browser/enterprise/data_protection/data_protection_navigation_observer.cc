@@ -194,7 +194,7 @@ bool IsEnterpriseLookupEnabled(Profile* profile) {
       connectors_service->GetDMTokenForRealTimeUrlCheck().has_value();
   return safe_browsing::RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
       profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord(),
-      profile->IsGuestSession());
+      profile->IsGuestSession(), profile->IsEnterpriseIsolatedModeProfile());
 #else
   return false;
 #endif

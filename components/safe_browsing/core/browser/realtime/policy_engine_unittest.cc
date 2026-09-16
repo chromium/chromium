@@ -69,9 +69,11 @@ class RealTimePolicyEngineTest : public PlatformTest {
 
   bool CanPerformEnterpriseFullURLLookup(bool has_valid_dm_token,
                                          bool is_off_the_record,
-                                         bool is_guest_mode) {
+                                         bool is_guest_mode,
+                                         bool is_isolated_profile) {
     return RealTimePolicyEngine::CanPerformEnterpriseFullURLLookup(
-        &pref_service_, has_valid_dm_token, is_off_the_record, is_guest_mode);
+        &pref_service_, has_valid_dm_token, is_off_the_record, is_guest_mode,
+        is_isolated_profile);
   }
 
   bool IsInExcludedCountry(const std::string& country_code) {
@@ -206,16 +208,17 @@ TEST_F(
 }
 
 TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup){
-    // Is off the record non-guest profile.
+    // Is off the record non-guest non-isolated profile.
     {EXPECT_FALSE(CanPerformEnterpriseFullURLLookup(/*has_valid_dm_token=*/true,
                                                     /*is_off_the_record=*/true,
-                                                    /*is_guest_mode=*/false));
+                                                    /*is_guest_mode=*/false,
+                                                    /*is_isolated_profile=*/false));
   }
   // No valid DM token.
   {
     EXPECT_FALSE(CanPerformEnterpriseFullURLLookup(
         /*has_valid_dm_token=*/false, /*is_off_the_record=*/false,
-        /*is_guest_mode=*/false));
+        /*is_guest_mode=*/false, /*is_isolated_profile=*/false));
   }
 
 #if BUILDFLAG(USE_BLINK)
@@ -227,7 +230,7 @@ TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup){
             enterprise_connectors::REAL_TIME_CHECK_DISABLED));
     EXPECT_FALSE(CanPerformEnterpriseFullURLLookup(
         /*has_valid_dm_token=*/true, /*is_off_the_record=*/false,
-        /*is_guest_mode=*/false));
+        /*is_guest_mode=*/false, /*is_isolated_profile=*/false));
   }
   // Policy enabled.
   {
@@ -237,7 +240,7 @@ TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup){
             enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED));
     EXPECT_TRUE(CanPerformEnterpriseFullURLLookup(
         /*has_valid_dm_token=*/true, /*is_off_the_record=*/false,
-        /*is_guest_mode=*/false));
+        /*is_guest_mode=*/false, /*is_isolated_profile=*/false));
   }
   // Policy enabled in guest mode.
   {
@@ -247,7 +250,17 @@ TEST_F(RealTimePolicyEngineTest, TestCanPerformEnterpriseFullURLLookup){
             enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED));
     EXPECT_TRUE(CanPerformEnterpriseFullURLLookup(
         /*has_valid_dm_token=*/true, /*is_off_the_record=*/true,
-        /*is_guest_mode=*/true));
+        /*is_guest_mode=*/true, /*is_isolated_profile=*/false));
+  }
+  // Policy enabled in isolated profile.
+  {
+    pref_service_.SetUserPref(
+        enterprise_connectors::kEnterpriseRealTimeUrlCheckMode,
+        std::make_unique<base::Value>(
+            enterprise_connectors::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED));
+    EXPECT_TRUE(CanPerformEnterpriseFullURLLookup(
+        /*has_valid_dm_token=*/true, /*is_off_the_record=*/true,
+        /*is_guest_mode=*/false, /*is_isolated_profile=*/true));
   }
 #endif  // BUILDFLAG(USE_BLINK)
 }

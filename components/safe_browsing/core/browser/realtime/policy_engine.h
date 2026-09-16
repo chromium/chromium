@@ -56,7 +56,8 @@ class RealTimePolicyEngine {
   static bool CanPerformEnterpriseFullURLLookup(const PrefService* pref_service,
                                                 bool has_valid_dm_token,
                                                 bool is_off_the_record,
-                                                bool is_guest_profile);
+                                                bool is_guest_profile,
+                                                bool is_isolated_profile);
 
   friend class SafeBrowsingService;
 

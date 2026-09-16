@@ -4,10 +4,14 @@
 
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,6 +64,29 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceFactoryTest,
   EXPECT_NE(
       nullptr,
       ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile(profile));
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceFactoryTest,
+       EnabledForIsolatedMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
+  TestingProfile* original_profile =
+      profile_manager_->CreateTestingProfile("original_profile");
+  original_profile->GetPrefs()->SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+  TestingProfile* profile =
+      TestingProfile::Builder().BuildIncognito(original_profile);
+  ASSERT_TRUE(profile->IsEnterpriseIsolatedModeProfile());
+
+  auto* service =
+      ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile(profile);
+  EXPECT_NE(service, nullptr);
+  EXPECT_NE(service,
+            ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile(
+                original_profile));
 }
 
 }  // namespace safe_browsing

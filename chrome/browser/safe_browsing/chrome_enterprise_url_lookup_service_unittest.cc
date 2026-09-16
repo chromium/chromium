@@ -148,6 +148,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
     enterprise_rt_service_ =
         CreateServiceAndEnablePolicy(test_profile_, /*is_off_the_record=*/false,
                                      /*is_guest_session=*/false,
+                                     /*is_isolated_profile=*/false,
                                      /*set_raw_token_fetcher=*/true);
   }
 
@@ -160,6 +161,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   CreateServiceAndEnablePolicy(Profile* profile,
                                bool is_off_the_record = false,
                                bool is_guest_session = false,
+                               bool is_isolated_profile = false,
                                bool set_raw_token_fetcher = false) {
     auto token_fetcher = std::make_unique<TestSafeBrowsingTokenFetcher>();
     if (set_raw_token_fetcher) {
@@ -189,6 +191,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         referrer_chain_provider_.get(), &test_pref_service_,
         /*webui_delegate=*/nullptr, identity_test_env_.identity_manager(),
         management_service_.get(), is_off_the_record, is_guest_session,
+        is_isolated_profile,
         base::BindRepeating([]() -> std::string { return kTestProfileEmail; }),
         base::BindRepeating([](const GURL& tab_url) -> std::string {
           return kContentAreaAccountEmail;
@@ -559,6 +562,15 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
   SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
   auto guest_rt_service = CreateServiceAndEnablePolicy(
       test_profile_, /*is_off_the_record=*/false, /*is_guest_session=*/true);
+  EXPECT_TRUE(guest_rt_service->CanPerformFullURLLookup());
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       CanPerformFullURLLookup_IsolatedModeEnabled) {
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
+  auto guest_rt_service = CreateServiceAndEnablePolicy(
+      test_profile_, /*is_off_the_record=*/false, /*is_guest_session=*/false,
+      /*is_isolated_profile=*/true);
   EXPECT_TRUE(guest_rt_service->CanPerformFullURLLookup());
 }
 
