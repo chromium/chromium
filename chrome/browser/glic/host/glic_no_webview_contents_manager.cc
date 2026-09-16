@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic_overlay_ui.h"
+#include "chrome/browser/glic/host/glic_pwc_permission_delegate.h"
 #include "chrome/browser/glic/host/glic_theme_util.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/guest_source.h"
@@ -377,6 +378,8 @@ GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
           base::BindRepeating(&GlicNoWebviewContentsManager::OnZoomLevelChange,
                               base::Unretained(this))) {
   CHECK(privileged_guest_contents_);
+  privileged_guest_contents_->SetPermissionDelegate(
+      std::make_unique<GlicPwcPermissionDelegate>(profile));
   content::WebContents* guest = guest_contents();
   CHECK(guest);
 
