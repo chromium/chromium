@@ -126,21 +126,23 @@ class DebugHeaderBuilder {
       case RefreshResult::kInitializedService:
         NOTREACHED();
       case RefreshResult::kUnreachable:
-        item = structured_headers::Item("unreachable",
-                                        structured_headers::Item::kTokenType);
+        item = structured_headers::Item(structured_headers::Item::token,
+                                        "unreachable");
         break;
       case RefreshResult::kServerError:
-        item = structured_headers::Item("server_error",
-                                        structured_headers::Item::kTokenType);
+        item = structured_headers::Item(structured_headers::Item::token,
+                                        "server_error");
         break;
       case RefreshResult::kSigningQuotaExceeded:
-        item = structured_headers::Item("quota_exceeded",
-                                        structured_headers::Item::kTokenType);
+        item = structured_headers::Item(structured_headers::Item::token,
+                                        "quota_exceeded");
         break;
     }
 
     structured_headers::Parameters params = {
-        {"session_identifier", structured_headers::Item(key.id.value())}};
+        {"session_identifier",
+         structured_headers::Item(structured_headers::Item::string,
+                                  key.id.value())}};
     skipped_sessions_.emplace_back(std::move(item), std::move(params));
   }
 

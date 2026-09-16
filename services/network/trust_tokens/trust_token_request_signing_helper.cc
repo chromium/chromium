@@ -68,11 +68,10 @@ std::optional<std::string> ConstructRedemptionRecordHeader(
 
   for (const auto& issuer_and_record : records_per_issuer) {
     net::structured_headers::Item issuer_item(
-        issuer_and_record.first.Serialize(),
-        net::structured_headers::Item::ItemType::kStringType);
+        net::structured_headers::Item::string,
+        issuer_and_record.first.Serialize());
     net::structured_headers::Item redemption_record_item(
-        issuer_and_record.second.body(),
-        net::structured_headers::Item::ItemType::kStringType);
+        net::structured_headers::Item::string, issuer_and_record.second.body());
     header_items.emplace_back(net::structured_headers::ParameterizedMember(
         std::move(issuer_item), {{kRedemptionRecordHeaderRedemptionRecordKey,
                                   std::move(redemption_record_item)}}));

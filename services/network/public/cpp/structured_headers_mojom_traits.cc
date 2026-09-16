@@ -61,21 +61,21 @@ bool UnionTraits<StructuredHeadersItemDataView, Item>::Read(
       std::string value;
       if (!data.ReadStringValue(&value))
         return false;
-      *out = Item(std::move(value), Item::kStringType);
+      *out = Item(Item::string, std::move(value));
       return true;
     }
     case StructuredHeadersItemDataView::Tag::kTokenValue: {
       std::string value;
       if (!data.ReadTokenValue(&value))
         return false;
-      *out = Item(std::move(value), Item::kTokenType);
+      *out = Item(Item::token, std::move(value));
       return true;
     }
     case StructuredHeadersItemDataView::Tag::kByteSequenceValue: {
       std::string value;
       if (!data.ReadByteSequenceValue(&value))
         return false;
-      *out = Item(std::move(value), Item::kByteSequenceType);
+      *out = Item(Item::byte_sequence, std::move(value));
       return true;
     }
     case StructuredHeadersItemDataView::Tag::kBooleanValue:

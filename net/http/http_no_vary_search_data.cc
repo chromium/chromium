@@ -426,8 +426,8 @@ std::optional<std::string> HttpNoVarySearchData::SerializeToString() const {
       for (const auto& param : affected_params_) {
         param_items.push_back(structured_headers::ParameterizedItem(
             structured_headers::Item(
-                base::EscapeQueryParamValue(param, /*use_plus=*/true),
-                structured_headers::Item::kStringType),
+                structured_headers::Item::string,
+                base::EscapeQueryParamValue(param, /*use_plus=*/true)),
             {}));
       }
       members.emplace_back(
@@ -444,8 +444,8 @@ std::optional<std::string> HttpNoVarySearchData::SerializeToString() const {
       for (const auto& param : affected_params_) {
         except_items.push_back(structured_headers::ParameterizedItem(
             structured_headers::Item(
-                base::EscapeQueryParamValue(param, /*use_plus=*/true),
-                structured_headers::Item::kStringType),
+                structured_headers::Item::string,
+                base::EscapeQueryParamValue(param, /*use_plus=*/true)),
             {}));
       }
       members.emplace_back(

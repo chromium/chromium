@@ -214,7 +214,7 @@ std::optional<mojom::SRIMessageSignatureComponentPtr> ParseComponent(
 
 std::optional<std::string> SerializeByteSequence(std::string_view input) {
   return net::structured_headers::SerializeItem(net::structured_headers::Item(
-      std::string(input), net::structured_headers::Item::kByteSequenceType));
+      net::structured_headers::Item::byte_sequence, input));
 }
 
 // net::StructuredHeaders doesn't expose the ability to serialize a parameter
