@@ -335,12 +335,9 @@ void AutofillPopupControllerImpl::Show(
     rfh = FindRenderFrameHostByToken(*web_contents_,
                                      controller_common_.frame_token);
   } else {
-    // The focused frame may be different from the one one the controller is
-    // anchored to. This happens in two scenarios:
-    // - With frame-transcending forms: the focused frame is a subframe whose
-    //   form has been flattened into an ancestor form.
-    // - With race conditions: while Autofill parsed the form, the focus may
-    //   have moved to another frame.
+    // The focused frame may be different from the one the controller is
+    // anchored to. This happens with race conditions: while Autofill parsed the
+    // form, the focus may have moved to another frame.
     // We support the case where the focused frame is a descendant of the
     // `delegate_`'s frame. We observe the focused frame's RenderFrameDeleted()
     // event.
