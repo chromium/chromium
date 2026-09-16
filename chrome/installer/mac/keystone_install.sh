@@ -22,6 +22,11 @@
 # GOOGLE_CHROME_UPDATER_TEST_ENROLLMENT_PATH
 #   When set to a non-empty value, the installer will search for an enrollment
 #   ticket at this path. Otherwise, the default path will be used.
+# GOOGLE_CHROME_UPDATER_TEST_DUPLICATE_ERR_PATH
+#   When set to a non-empty value, error messages will be appended to the file
+#   at this path in addition to being written to stderr.  This allows tests
+#   that deliberately close the script's stderr to still observe the errors it
+#   reports.
 #
 # Exit codes:
 #  0  Happiness
@@ -38,6 +43,7 @@
 # 12  Deprecated: dirpatcher failed for versioned directory
 # 13  Deprecated: dirpatcher failed for outer .app bundle
 # 14  The update is incompatible with the system (presently unused)
+# 99  Testing configuration could not be used
 #
 # The following exit codes were formerly used and shouldn't be reassigned:
 #  4  Update driven by user ticket when a system ticket is also present
@@ -68,6 +74,8 @@ export -n SHELLOPTS
 set -o pipefail
 shopt -s nullglob
 
+trap '' PIPE
+
 ME="$(basename "${0}")"
 readonly ME
 
@@ -80,6 +88,7 @@ readonly KS_CHANNEL_KEY="KSChannelID"
 : ${GOOGLE_CHROME_UPDATER_DEBUG:=}
 : ${GOOGLE_CHROME_UPDATER_TEST_PATH:=}
 : ${GOOGLE_CHROME_UPDATER_TEST_ENROLLMENT_PATH:=}
+: ${GOOGLE_CHROME_UPDATER_TEST_DUPLICATE_ERR_PATH:=}
 
 err() {
   local error="${1}"
@@ -89,7 +98,13 @@ err() {
     id=": ${$} $(date "+%Y-%m-%d %H:%M:%S %z")"
   fi
 
-  echo "${ME}${id}: ${error}" >& 2
+  local msg="${ME}${id}: ${error}"
+  (echo "${msg}" >&2) || true
+
+  if [[ -n "${GOOGLE_CHROME_UPDATER_TEST_DUPLICATE_ERR_PATH}" ]]; then
+    echo "${msg}" >> "${GOOGLE_CHROME_UPDATER_TEST_DUPLICATE_ERR_PATH}" ||
+        exit 99
+  fi
 }
 
 note() {
@@ -111,6 +126,19 @@ handle_exit() {
   if [[ ${status} -gt 128 && ${status} -lt 160 ]]; then
     local sig=$((status - 128))
     err "Child exited because of signal ${sig} ($(kill -l "${sig}"))"
+  fi
+
+  # main() clears this trap immediately before it returns, so reaching this
+  # point at all means the script is terminating before it finished its work.
+  # A zero status here is therefore always wrong, and reporting it would tell
+  # the updater that a half-applied update succeeded. This can occur because
+  # bash 3.2 contains a bug where, under `set -eu`, an EXIT trap observes
+  # `$?` to be 0 when the script aborts due to an undefined variable. Since
+  # bash ignores the return value of traps, this function must explicitly
+  # re-exit with a corrected status code.
+  if [[ ${status} -eq 0 ]]; then
+    err "exiting without completing the update; reporting unknown failure"
+    exit 1
   fi
 }
 

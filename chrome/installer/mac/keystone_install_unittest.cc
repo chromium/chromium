@@ -177,23 +177,37 @@ exit 0
     env["PATH"] = base::StrCat({extra_path.AsUTF8Unsafe(), ":", env["PATH"]});
   }
 
+  base::FilePath GetInstallScriptPath() {
+    base::FilePath ksinstall;
+    if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &ksinstall)) {
+      return {};
+    }
+    return ksinstall.AppendUTF8("chrome")
+        .AppendUTF8("installer")
+        .AppendUTF8("mac")
+        .AppendUTF8("keystone_install.sh");
+  }
+
   void RunInstallScript(
       ProcessStatus want_status,
       std::optional<base::FilePath> prepend_path = std::nullopt,
-      base::ProcessId* pid_out = nullptr) {
-    base::FilePath ksinstall;
-    ASSERT_TRUE(
-        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &ksinstall));
-    ksinstall = ksinstall.AppendUTF8("chrome")
-                    .AppendUTF8("installer")
-                    .AppendUTF8("mac")
-                    .AppendUTF8("keystone_install.sh");
+      base::ProcessId* pid_out = nullptr,
+      std::optional<base::FilePath> script_override = std::nullopt) {
+    const base::FilePath ksinstall =
+        script_override.value_or(GetInstallScriptPath());
+    ASSERT_FALSE(ksinstall.empty());
     base::CommandLine cmd(ksinstall);
     cmd.AppendArgPath(mount_dir_);
     cmd.AppendArgPath(app_install_dir_);
     cmd.AppendArg("1.0.0.0");  // Previous version.
 
     base::EnvironmentMap env = GetDefaultEnvironment();
+    base::FilePath duplicate_err_path =
+        temp_.GetPath().AppendUTF8("duplicate_err.log");
+    base::DeleteFile(duplicate_err_path);
+    env["GOOGLE_CHROME_UPDATER_TEST_DUPLICATE_ERR_PATH"] =
+        duplicate_err_path.AsUTF8Unsafe();
+
     if (prepend_path) {
       ASSERT_NO_FATAL_FAILURE(PrependToEnvPath(env, *prepend_path));
     }
@@ -202,7 +216,19 @@ exit 0
     if (pid_out) {
       *pid_out = result.pid;
     }
-    ASSERT_EQ(result.status, want_status) << result.combined_output;
+
+    ASSERT_EQ(result.status, want_status)
+        << result.combined_output << [&duplicate_err_path]() -> std::string {
+      std::string duplicate_err;
+      if (base::PathExists(duplicate_err_path)) {
+        if (!base::ReadFileToString(duplicate_err_path, &duplicate_err)) {
+          duplicate_err = "<error reading duplicate_err.log>";
+        }
+      }
+      return duplicate_err.empty()
+                 ? ""
+                 : base::StrCat({"\nFull duplicate err log:\n", duplicate_err});
+    }();
   }
 
   void SetInfoPlistItem(base::FilePath dir,
@@ -347,6 +373,17 @@ TEST_F(KeystoneInstallTest, RunTestScript) {
       << output;
 }
 
+std::string MakeFailureScriptFunc(const base::FilePath& fail_path) {
+  return ReplaceAll(
+      R"-(fail_test() {
+  echo "$2" >> "@FAIL_FILE@" || true
+  echo "$2" >& 2 || true
+  exit "$1"
+}
+)-",
+      {{"@FAIL_FILE@", fail_path.AsUTF8Unsafe()}});
+}
+
 std::string MakeInterceptorScript(std::string_view pre_tool_hook) {
   return base::StrCat({R"-(#!/bin/bash
 set -e
@@ -395,42 +432,42 @@ class RsyncInterceptor {
   std::string rsync_script_;
 };
 
+void ExpectNoInterceptorFailure(const base::FilePath& fail_path) {
+  if (base::PathExists(fail_path)) {
+    std::string fail_msg;
+    if (!base::ReadFileToString(fail_path, &fail_msg)) {
+      fail_msg = "<error reading fail.out>";
+    }
+    ADD_FAILURE() << "rsync interceptor error: "
+                  << base::TrimWhitespaceASCII(fail_msg, base::TRIM_ALL);
+  }
+}
+
 TEST_F(KeystoneInstallTest, VerifyProcessGroupSignalDeferral) {
   base::FilePath pgid_path = temp_.GetPath().AppendUTF8("pgid.out");
   base::FilePath fail_path = temp_.GetPath().AppendUTF8("fail.out");
   RsyncInterceptor interceptor(
       temp_.GetPath(), installer::mac::test::ReplaceAll(
-                           R"-(
+                           R"-(@FAIL_FUNC@
 if [[ "$*" == *"--include"* ]] &&
     [[ "$*" == *"--exclude"* ]] &&
     [[ "$*" == *"/Current"* ]] ; then
   if [[ -f "@PGID_FILE@" ]]; then
-    local msg="Unexpected extra matching rsync args: $*"
-    echo "${msg}" >> "@FAIL_FILE@"
-    echo "${msg}" >& 2
-    exit 100
+    fail_test 100 "Unexpected extra matching rsync args: $*"
   fi
   PGID=$(ps -o pgid= -p "$$")
   PGID=${PGID//[[:space:]]/}
   echo "${PGID}" >> "@PGID_FILE@"
   kill -s TERM -- "-${PGID}"
 fi)-",
-                           {{"@PGID_FILE@", pgid_path.AsUTF8Unsafe()},
-                            {"@FAIL_FILE@", fail_path.AsUTF8Unsafe()}}));
+                           {{"@FAIL_FUNC@", MakeFailureScriptFunc(fail_path)},
+                            {"@PGID_FILE@", pgid_path.AsUTF8Unsafe()}}));
   interceptor.SetUp();
 
   base::ProcessId pid = 0;
   EXPECT_NO_FATAL_FAILURE(RunInstallScript(ProcessTerminatedWithSignal{SIGTERM},
                                            interceptor.bin_dir(), &pid));
-  if (base::PathExists(fail_path)) {
-    std::string fail_msg;
-    if (!base::ReadFileToString(fail_path, &fail_msg)) {
-      fail_msg = "<error reading fail.out>";
-    }
-    std::string_view trimmed =
-        base::TrimWhitespaceASCII(fail_msg, base::TRIM_ALL);
-    ADD_FAILURE() << "rsync interceptor error: " << trimmed;
-  }
+  ExpectNoInterceptorFailure(fail_path);
 
   // The signal was deferred, so the entire copy should be complete before
   // halting.
@@ -453,37 +490,26 @@ TEST_F(KeystoneInstallTest, VerifyScriptSignalDeferral) {
   // ${PPID} is a subshell rather than the intended target.
   RsyncInterceptor interceptor(
       temp_.GetPath(), installer::mac::test::ReplaceAll(
-                           R"-(
+                           R"-(@FAIL_FUNC@
 if [[ "$*" == *"--include"* ]] &&
     [[ "$*" == *"--exclude"* ]] &&
     [[ "$*" == *"/Current"* ]] ; then
   if [[ -f "@PGID_FILE@" ]]; then
-    local msg="Unexpected extra matching rsync args: $*"
-    echo "${msg}" >> "@FAIL_FILE@"
-    echo "${msg}" >& 2
-    exit 100
+    fail_test 100 "Unexpected extra matching rsync args: $*"
   fi
   PGID=$(ps -o pgid= -p "$$")
   PGID=${PGID//[[:space:]]/}
   echo "${PGID}" >> "@PGID_FILE@"
   kill -s INT -- "${PGID}"
 fi)-",
-                           {{"@PGID_FILE@", pgid_path.AsUTF8Unsafe()},
-                            {"@FAIL_FILE@", fail_path.AsUTF8Unsafe()}}));
+                           {{"@FAIL_FUNC@", MakeFailureScriptFunc(fail_path)},
+                            {"@PGID_FILE@", pgid_path.AsUTF8Unsafe()}}));
   interceptor.SetUp();
 
   base::ProcessId pid = 0;
   EXPECT_NO_FATAL_FAILURE(RunInstallScript(ProcessTerminatedWithSignal{SIGINT},
                                            interceptor.bin_dir(), &pid));
-  if (base::PathExists(fail_path)) {
-    std::string fail_msg;
-    if (!base::ReadFileToString(fail_path, &fail_msg)) {
-      fail_msg = "<error reading fail.out>";
-    }
-    std::string_view trimmed =
-        base::TrimWhitespaceASCII(fail_msg, base::TRIM_ALL);
-    ADD_FAILURE() << "rsync interceptor error: " << trimmed;
-  }
+  ExpectNoInterceptorFailure(fail_path);
 
   // The signal was deferred, so the entire copy should be complete before
   // halting.
@@ -503,35 +529,24 @@ TEST_F(KeystoneInstallTest, VerifyRsyncSignalIgnored) {
   base::FilePath fail_path = temp_.GetPath().AppendUTF8("fail.out");
   RsyncInterceptor interceptor(
       temp_.GetPath(), installer::mac::test::ReplaceAll(
-                           R"-(
+                           R"-(@FAIL_FUNC@
 if [[ "$*" == *"--include"* ]] &&
     [[ "$*" == *"--exclude"* ]] &&
     [[ "$*" == *"/Current"* ]] ; then
   if [[ -f "@PID_FILE@" ]]; then
-    local msg="Unexpected extra matching rsync args: $*"
-    echo "${msg}" >> "@FAIL_FILE@"
-    echo "${msg}" >& 2
-    exit 100
+    fail_test 100 "Unexpected extra matching rsync args: $*"
   fi
   echo "$$" >> "@PID_FILE@"
   kill -s HUP -- "$$"
 fi)-",
-                           {{"@PID_FILE@", pid_path.AsUTF8Unsafe()},
-                            {"@FAIL_FILE@", fail_path.AsUTF8Unsafe()}}));
+                           {{"@FAIL_FUNC@", MakeFailureScriptFunc(fail_path)},
+                            {"@PID_FILE@", pid_path.AsUTF8Unsafe()}}));
   interceptor.SetUp();
 
   base::ProcessId pid = 0;
   EXPECT_NO_FATAL_FAILURE(
       RunInstallScript(ProcessExitedWithValue{0}, interceptor.bin_dir(), &pid));
-  if (base::PathExists(fail_path)) {
-    std::string fail_msg;
-    if (!base::ReadFileToString(fail_path, &fail_msg)) {
-      fail_msg = "<error reading fail.out>";
-    }
-    std::string_view trimmed =
-        base::TrimWhitespaceASCII(fail_msg, base::TRIM_ALL);
-    ADD_FAILURE() << "rsync interceptor error: " << trimmed;
-  }
+  ExpectNoInterceptorFailure(fail_path);
 
   // The signal was ignored, so the entire script should have completed.
   EXPECT_TRUE(base::PathExists(dest_versioned_path("1")));
@@ -554,19 +569,13 @@ TEST_F(KeystoneInstallTest, VerifyInfoPlistCreatedLast) {
   RsyncInterceptor interceptor(
       temp_.GetPath(),
       installer::mac::test::ReplaceAll(
-          R"-(
+          R"-(@FAIL_FUNC@
 if [[ -e "@DEST_INFO_PLIST@" ]]; then
-  msg="Top-level Info.plist already exists before rsync call: $*"
-  echo "${msg}" >> "@FAIL_FILE@"
-  echo "${msg}" >& 2
-  exit 100
+  fail_test 100 "Top-level Info.plist already exists before rsync call: $*"
 fi
 
 if [[ -f "@PLIST_RSYNC_FILE@" ]]; then
-  msg="Unexpected extra rsync call after Info.plist rsync: $*"
-  echo "${msg}" >> "@FAIL_FILE@"
-  echo "${msg}" >& 2
-  exit 100
+  fail_test 101 "Unexpected extra rsync call after Info.plist rsync: $*"
 fi
 
 non_flags=()
@@ -584,21 +593,13 @@ if [[ "${#non_flags[@]}" -eq 2 ]] && \
   echo "$*" >> "@PLIST_RSYNC_FILE@"
 fi)-",
           {{"@DEST_INFO_PLIST@", dest_info_plist_path().AsUTF8Unsafe()},
-           {"@FAIL_FILE@", fail_path.AsUTF8Unsafe()},
+           {"@FAIL_FUNC@", MakeFailureScriptFunc(fail_path)},
            {"@PLIST_RSYNC_FILE@", plist_rsync_path.AsUTF8Unsafe()}}));
   interceptor.SetUp();
 
   EXPECT_NO_FATAL_FAILURE(
       RunInstallScript(ProcessExitedWithValue{0}, interceptor.bin_dir()));
-  if (base::PathExists(fail_path)) {
-    std::string fail_msg;
-    if (!base::ReadFileToString(fail_path, &fail_msg)) {
-      fail_msg = "<error reading fail.out>";
-    }
-    std::string_view trimmed =
-        base::TrimWhitespaceASCII(fail_msg, base::TRIM_ALL);
-    ADD_FAILURE() << "rsync interceptor error: " << trimmed;
-  }
+  ExpectNoInterceptorFailure(fail_path);
 
   // Verify that an rsync call copying only Info.plist was intercepted.
   ASSERT_TRUE(base::PathExists(plist_rsync_path));
@@ -632,20 +633,14 @@ TEST_F(KeystoneInstallTest, VerifyInfoPlistUpdatedLast) {
   RsyncInterceptor interceptor(
       temp_.GetPath(),
       installer::mac::test::ReplaceAll(
-          R"-(
+          R"-(@FAIL_FUNC@
 if [[ "$(__CFPREFERENCES_AVOID_DAEMON=1 defaults read \
           "@DEST_CONTENTS@/Info" KSVersion 2>/dev/null)" != "1" ]]; then
-  msg="Top-level Info.plist already updated before rsync call: $*"
-  echo "${msg}" >> "@FAIL_FILE@"
-  echo "${msg}" >& 2
-  exit 100
+  fail_test 100 "Top-level Info.plist already updated before rsync call: $*"
 fi
 
 if [[ -f "@PLIST_RSYNC_FILE@" ]]; then
-  msg="Unexpected extra rsync call after Info.plist rsync: $*"
-  echo "${msg}" >> "@FAIL_FILE@"
-  echo "${msg}" >& 2
-  exit 100
+  fail_test 101 "Unexpected extra rsync call after Info.plist rsync: $*"
 fi
 
 non_flags=()
@@ -663,21 +658,13 @@ if [[ "${#non_flags[@]}" -eq 2 ]] && \
   echo "$*" >> "@PLIST_RSYNC_FILE@"
 fi)-",
           {{"@DEST_CONTENTS@", dest_contents_path().AsUTF8Unsafe()},
-           {"@FAIL_FILE@", fail_path.AsUTF8Unsafe()},
+           {"@FAIL_FUNC@", MakeFailureScriptFunc(fail_path)},
            {"@PLIST_RSYNC_FILE@", plist_rsync_path.AsUTF8Unsafe()}}));
   interceptor.SetUp();
 
   EXPECT_NO_FATAL_FAILURE(
       RunInstallScript(ProcessExitedWithValue{0}, interceptor.bin_dir()));
-  if (base::PathExists(fail_path)) {
-    std::string fail_msg;
-    if (!base::ReadFileToString(fail_path, &fail_msg)) {
-      fail_msg = "<error reading fail.out>";
-    }
-    std::string_view trimmed =
-        base::TrimWhitespaceASCII(fail_msg, base::TRIM_ALL);
-    ADD_FAILURE() << "rsync interceptor error: " << trimmed;
-  }
+  ExpectNoInterceptorFailure(fail_path);
 
   // Verify that an rsync call copying only Info.plist was intercepted.
   ASSERT_TRUE(base::PathExists(plist_rsync_path));
@@ -686,6 +673,110 @@ fi)-",
   EXPECT_NE(plist_rsync_args.find("Contents/Info.plist"), std::string::npos);
 
   // Verify all files were copied successfully and Info.plist was updated.
+  EXPECT_TRUE(base::PathExists(dest_versioned_path("1")));
+  EXPECT_TRUE(base::PathExists(dest_contents_path().AppendUTF8("PkgInfo")));
+  EXPECT_TRUE(base::PathExists(dest_info_plist_path()));
+  EXPECT_EQ(ReadPlistItem(dest_contents_path().AppendUTF8("Info"), "KSVersion"),
+            "2\n");
+}
+
+TEST_F(KeystoneInstallTest, VerifyStdoutPipeClosureDoesNotCrash) {
+  base::FilePath fail_path = temp_.GetPath().AppendUTF8("fail.out");
+  base::FilePath reader_pid_path = temp_.GetPath().AppendUTF8("reader_pid.out");
+  base::FilePath reader_script_path = temp_.GetPath().AppendUTF8("reader.sh");
+  base::FilePath wrapper_script_path = temp_.GetPath().AppendUTF8("wrapper.sh");
+
+  base::FilePath ksinstall = GetInstallScriptPath();
+  ASSERT_FALSE(ksinstall.empty());
+
+  // reader.sh records its PID and execs cat to read from the pipe.
+  std::string reader_script = installer::mac::test::ReplaceAll(
+      R"-(#!/bin/bash
+echo "$$" > "@READER_PID_FILE@"
+exec cat
+)-",
+      {{"@READER_PID_FILE@", reader_pid_path.AsUTF8Unsafe()}});
+
+  ASSERT_TRUE(base::WriteFile(reader_script_path, reader_script));
+  ASSERT_TRUE(base::SetPosixFilePermissions(
+      reader_script_path, base::FILE_PERMISSION_READ_BY_USER |
+                              base::FILE_PERMISSION_WRITE_BY_USER |
+                              base::FILE_PERMISSION_EXECUTE_BY_USER));
+
+  // wrapper.sh routes keystone_install.sh output into reader.sh via a pipe,
+  // returning keystone_install.sh's exit code via PIPESTATUS[0]. It waits
+  // for reader_pid.out to be written before launching keystone_install.sh.
+  std::string wrapper_script = installer::mac::test::ReplaceAll(
+      R"-(#!/bin/bash
+set +e
+{
+  attempts=0
+  while [[ ! -s "@READER_PID_FILE@" ]]; do
+    sleep 0.05
+    attempts=$((attempts + 1))
+    if [[ ${attempts} -gt 100 ]]; then
+      echo "Wrapper timed out waiting for reader PID file" >&2
+      exit 1
+    fi
+  done
+  exec "@KEYSTONE_INSTALL@" "$@"
+} 2>&1 | "@READER_SCRIPT@"
+exit "${PIPESTATUS[0]}"
+)-",
+      {{"@KEYSTONE_INSTALL@", ksinstall.AsUTF8Unsafe()},
+       {"@READER_SCRIPT@", reader_script_path.AsUTF8Unsafe()},
+       {"@READER_PID_FILE@", reader_pid_path.AsUTF8Unsafe()}});
+
+  ASSERT_TRUE(base::WriteFile(wrapper_script_path, wrapper_script));
+  ASSERT_TRUE(base::SetPosixFilePermissions(
+      wrapper_script_path, base::FILE_PERMISSION_READ_BY_USER |
+                               base::FILE_PERMISSION_WRITE_BY_USER |
+                               base::FILE_PERMISSION_EXECUTE_BY_USER));
+
+  // When the interceptor finds the target rsync call, it halts
+  // reader.sh and waits for it to exit, breaking stdout and stderr.
+  RsyncInterceptor interceptor(
+      temp_.GetPath(),
+      installer::mac::test::ReplaceAll(
+          R"-(@FAIL_FUNC@
+if [[ "$*" == *"--include"* ]] &&
+    [[ "$*" == *"--exclude"* ]] &&
+    [[ "$*" == *"/Current"* ]] ; then
+  if [[ -f "@FAIL_FILE@" ]]; then
+    fail_test 100 "Unexpected extra matching rsync args: $*"
+  fi
+  if [[ ! -f "@READER_PID_FILE@" ]]; then
+    fail_test 101 "Reader PID file does not exist: @READER_PID_FILE@"
+  fi
+  reader_pid=$(cat "@READER_PID_FILE@")
+  if ! kill -s TERM "${reader_pid}"; then
+    fail_test 102 "Failed to send TERM to reader PID ${reader_pid}"
+  fi
+  attempts=0
+  while kill -0 "${reader_pid}" 2>/dev/null; do
+    state=$(ps -o state= -p "${reader_pid}" 2>/dev/null || echo "")
+    if [[ -z "${state}" || "${state}" == *Z* ]]; then
+      break
+    fi
+    sleep 0.05
+    attempts=$((attempts + 1))
+    if [[ ${attempts} -gt 40 ]]; then
+      fail_test 103 "Timed out waiting for reader ${reader_pid} to terminate"
+    fi
+  done
+fi)-",
+          {{"@FAIL_FILE@", fail_path.AsUTF8Unsafe()},
+           {"@FAIL_FUNC@", MakeFailureScriptFunc(fail_path)},
+           {"@READER_PID_FILE@", reader_pid_path.AsUTF8Unsafe()}}));
+  interceptor.SetUp();
+
+  EXPECT_NO_FATAL_FAILURE(
+      RunInstallScript(ProcessExitedWithValue{0}, interceptor.bin_dir(),
+                       /*pid_out=*/nullptr, wrapper_script_path));
+  ExpectNoInterceptorFailure(fail_path);
+
+  // Verify the entire installation completed successfully despite the
+  // broken pipe.
   EXPECT_TRUE(base::PathExists(dest_versioned_path("1")));
   EXPECT_TRUE(base::PathExists(dest_contents_path().AppendUTF8("PkgInfo")));
   EXPECT_TRUE(base::PathExists(dest_info_plist_path()));
