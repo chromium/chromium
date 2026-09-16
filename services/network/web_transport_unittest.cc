@@ -24,6 +24,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/system/simple_watcher.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -144,8 +145,14 @@ std::string Read(mojo::ScopedDataPipeConsumerHandle readable) {
                                            actually_read_bytes);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       base::RunLoop run_loop;
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, run_loop.QuitClosure());
+      mojo::SimpleWatcher watcher(FROM_HERE,
+                                  mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC);
+      watcher.Watch(
+          readable.get(),
+          MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+          MOJO_WATCH_CONDITION_SATISFIED,
+          base::IgnoreArgs<MojoResult, const mojo::HandleSignalsState&>(
+              run_loop.QuitClosure()));
       run_loop.Run();
       continue;
     }
