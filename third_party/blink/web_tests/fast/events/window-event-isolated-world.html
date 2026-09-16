@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<title>window.event is only exposed to the world the event belongs to</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<x-probe id="probe"></x-probe>
+<script>
+'use strict';
+
+// Records what the main world observes as window.event when a custom element
+// reaction re-enters the main world synchronously from inside an event
+// listener that runs in another world.
+const mainWorldSaw = new Map();
+
+class XProbe extends HTMLElement {
+  static get observedAttributes() {
+    return ['trigger'];
+  }
+  attributeChangedCallback(name, oldValue, newValue) {
+    mainWorldSaw.set(newValue, window.event);
+  }
+}
+customElements.define('x-probe', XProbe);
+
+function isolatedWorldScript() {
+  const probe = document.getElementById('probe');
+  const report = (key, value) => {
+    document.documentElement.setAttribute('data-isolated-' + key, value);
+  };
+
+  const cases = [
+    ['error-event', new ErrorEvent('test-error')],
+    [
+      'rejection-event',
+      new PromiseRejectionEvent('test-rejection', {promise: Promise.resolve()})
+    ],
+    ['custom-event', new CustomEvent('test-custom')],
+  ];
+  for (const [key, event] of cases) {
+    const listener = () => {
+      report(key, String(window.event === event));
+      // Re-enter the main world synchronously through a custom element
+      // reaction while this world's event is the window's current event.
+      probe.setAttribute('trigger', key);
+    };
+    document.addEventListener(event.type, listener);
+    document.dispatchEvent(event);
+    document.removeEventListener(event.type, listener);
+  }
+}
+
+test(() => {
+  assert_own_property(window, 'testRunner',
+                      'this test requires content_shell');
+  testRunner.evaluateScriptInIsolatedWorld(
+      1, `(${isolatedWorldScript.toString()})();`);
+
+  const isolatedWorldSaw = key =>
+      document.documentElement.getAttribute('data-isolated-' + key);
+  assert_equals(isolatedWorldSaw('error-event'), 'true',
+                'the isolated world sees its own ErrorEvent');
+  assert_equals(isolatedWorldSaw('rejection-event'), 'true',
+                'the isolated world sees its own PromiseRejectionEvent');
+  assert_equals(isolatedWorldSaw('custom-event'), 'true',
+                'the isolated world sees its own CustomEvent');
+
+  assert_equals(mainWorldSaw.get('error-event'), undefined,
+                'an ErrorEvent bound to an isolated world is not exposed ' +
+                'to the main world');
+  assert_equals(mainWorldSaw.get('rejection-event'), undefined,
+                'a PromiseRejectionEvent bound to an isolated world is not ' +
+                'exposed to the main world');
+  assert_true(mainWorldSaw.get('custom-event') instanceof CustomEvent,
+              'an event with no world binding stays visible across worlds');
+  assert_equals(mainWorldSaw.get('custom-event').type, 'test-custom');
+}, 'window.event does not expose events bound to another world');
+
+test(() => {
+  let seen;
+  const event = new ErrorEvent('test-main-error');
+  const listener = () => {
+    seen = window.event;
+  };
+  document.addEventListener('test-main-error', listener);
+  document.dispatchEvent(event);
+  document.removeEventListener('test-main-error', listener);
+  assert_equals(seen, event,
+                'window.event exposes an ErrorEvent to its own world');
+}, 'window.event still exposes same-world events');
+</script>

@@ -319,8 +319,11 @@ void LocalDOMWindow::AcceptLanguagesChanged() {
 }
 
 ScriptValue LocalDOMWindow::event(ScriptState* script_state) {
-  // If current event is null, return undefined.
-  if (!current_event_) {
+  // If current event is null, or belongs to a different world than the
+  // calling one (mirroring the check made before event listeners are
+  // invoked, see JSBasedEventListener::Invoke()), return undefined.
+  if (!current_event_ ||
+      !current_event_->CanBeDispatchedInWorld(script_state->World())) {
     return ScriptValue(script_state->GetIsolate(),
                        v8::Undefined(script_state->GetIsolate()));
   }
