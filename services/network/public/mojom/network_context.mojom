@@ -1334,10 +1334,9 @@ interface NetworkContext {
   //
   // The registration lifetime is bound to `shared_http_cache_client` until
   // `CreateClient` is invoked, after which it transfers to the resulting
-  // `SharedHttpCacheClient` connection.
-  // TODO(crbug.com/473666511): If the network service restarts or the Mojo pipe
-  // disconnects, `SharedHttpCacheClient` should treat subsequent lookups as
-  // cache misses and fall back to normal `URLLoader` requests.
+  // `SharedHttpCacheClient` connection. If the network service restarts or the
+  // Mojo pipe disconnects, `SharedHttpCacheClient` treats subsequent lookups as
+  // cache misses and transparently falls back to normal `URLLoader` requests.
   [EnableIf=enable_disk_cache_sql_backend]
   RegisterHttpCacheClient(
     NetworkIsolationKey key,

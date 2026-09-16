@@ -1057,4 +1057,109 @@ TEST_F(SharedHttpCacheClientTest, DestructOnNonClientSequence) {
   EXPECT_TRUE(disconnect_future.Wait());
 }
 
+TEST_F(SharedHttpCacheClientTest,
+       MojoPipeDisconnectedAfterInitializeTreatsLookupsAsCacheMiss) {
+  mojo::Remote<mojom::SharedHttpCacheClientFactory> factory_remote;
+  base::test::TestFuture<void> db_init_future;
+  auto client = SharedHttpCacheClient::CreateAndInit(
+      factory_remote.BindNewPipeAndPassReceiver(),
+      base::SequencedTaskRunner::GetCurrentDefault(), database_task_runner_,
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         db_init_future.GetCallback()));
+
+  const GURL cached_url("https://example.com/cached.js");
+  std::string headers = SerializeResponseInfo(
+      "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
+  auto file_set = PopulateDatabase(cached_url, headers, "Hello World");
+
+  mojo::Remote<mojom::SharedHttpCacheClient> client_remote;
+  factory_remote->CreateClient(std::move(file_set),
+                               client_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(db_init_future.Wait());
+  client_remote->OnResourcesAdded({base::PersistentHash(cached_url.spec())});
+  client_remote.FlushForTesting();
+
+  ResourceRequest request = CreateRequest(cached_url);
+
+  // Verify initial lookup succeeds.
+  {
+    base::test::TestFuture<std::optional<SharedHttpCacheClient::Response>>
+        hit_future;
+    client->Find(request, factory_, hit_future.GetCallback(),
+                 base::SequencedTaskRunner::GetCurrentDefault());
+    auto result = hit_future.Take();
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(GetStringFromBuffers(result->body), "Hello World");
+  }
+
+  // Disconnect the client Mojo pipe (e.g. simulating network service crash or
+  // restart).
+  client_remote.reset();
+
+  // Wait until the disconnection is processed and subsequent lookups return
+  // cache misses (`std::nullopt`).
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    base::test::TestFuture<std::optional<SharedHttpCacheClient::Response>>
+        miss_future;
+    client->Find(request, factory_, miss_future.GetCallback(),
+                 base::SequencedTaskRunner::GetCurrentDefault());
+    return !miss_future.Take().has_value();
+  }));
+
+  // Flush `database_task_runner_` to ensure `DatabaseBackend::OnMojoDisconnect`
+  // has also executed and released `db_reader_`.
+  base::test::TestFuture<void> flush_future;
+  database_task_runner_->PostTask(FROM_HERE,
+                                  flush_future.GetSequenceBoundCallback());
+  ASSERT_TRUE(flush_future.Wait());
+
+  // Subsequent lookups continue to return `std::nullopt`.
+  base::test::TestFuture<std::optional<SharedHttpCacheClient::Response>>
+      final_future;
+  client->Find(request, factory_, final_future.GetCallback(),
+               base::SequencedTaskRunner::GetCurrentDefault());
+  EXPECT_FALSE(final_future.Take().has_value());
+}
+
+TEST_F(SharedHttpCacheClientTest,
+       FactoryPipeDisconnectedAfterCreateClientDoesNotInvalidateClient) {
+  mojo::Remote<mojom::SharedHttpCacheClientFactory> factory_remote;
+  base::test::TestFuture<void> db_init_future;
+  auto client = SharedHttpCacheClient::CreateAndInit(
+      factory_remote.BindNewPipeAndPassReceiver(),
+      base::SequencedTaskRunner::GetCurrentDefault(), database_task_runner_,
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         db_init_future.GetCallback()));
+
+  const GURL cached_url("https://example.com/cached.js");
+  std::string headers = SerializeResponseInfo(
+      "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
+  auto file_set = PopulateDatabase(cached_url, headers, "Hello World");
+
+  mojo::Remote<mojom::SharedHttpCacheClient> client_remote;
+  factory_remote->CreateClient(std::move(file_set),
+                               client_remote.BindNewPipeAndPassReceiver());
+  ASSERT_TRUE(db_init_future.Wait());
+  client_remote->OnResourcesAdded({base::PersistentHash(cached_url.spec())});
+  client_remote.FlushForTesting();
+
+  // Closing the single-use `factory_remote` after `CreateClient` should NOT
+  // invalidate `client` because registration lifetime transferred to
+  // `client_remote`.
+  factory_remote.reset();
+  base::test::TestFuture<void> flush_future;
+  database_task_runner_->PostTask(FROM_HERE,
+                                  flush_future.GetSequenceBoundCallback());
+  ASSERT_TRUE(flush_future.Wait());
+
+  ResourceRequest request = CreateRequest(cached_url);
+  base::test::TestFuture<std::optional<SharedHttpCacheClient::Response>>
+      hit_future;
+  client->Find(request, factory_, hit_future.GetCallback(),
+               base::SequencedTaskRunner::GetCurrentDefault());
+  auto result = hit_future.Take();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(GetStringFromBuffers(result->body), "Hello World");
+}
+
 }  // namespace network

@@ -12,8 +12,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
@@ -49,6 +51,8 @@ class ThreadSafeSet : public base::RefCountedThreadSafe<ThreadSafeSet> {
 
   void Initialize();
   void Insert(const std::vector<uint32_t>& new_hashes);
+  void OnDisconnected();
+  bool IsDisconnected();
   bool ShouldEarlyReturn(uint32_t hash);
 
  private:
@@ -59,6 +63,7 @@ class ThreadSafeSet : public base::RefCountedThreadSafe<ThreadSafeSet> {
   base::Lock lock_;
   std::optional<base::HashingLRUCacheSet<uint32_t>> set_ GUARDED_BY(lock_);
   bool init_called_ GUARDED_BY(lock_) = false;
+  bool disconnected_ GUARDED_BY(lock_) = false;
 };
 
 // Implements network::mojom::SharedHttpCacheClient on `client_task_runner_`.
@@ -67,12 +72,13 @@ class CacheClient : public network::mojom::SharedHttpCacheClient {
  public:
   CacheClient(mojo::PendingReceiver<network::mojom::SharedHttpCacheClient>
                   pending_receiver,
-              scoped_refptr<ThreadSafeSet> shared_state)
+              scoped_refptr<ThreadSafeSet> shared_state,
+              base::OnceClosure on_disconnect_callback)
       : receiver_(this, std::move(pending_receiver)),
-        shared_state_(std::move(shared_state)) {
-    // TODO(crbug.com/473666511): Handle Mojo pipe disconnection (e.g., when
-    // the network service crashes or restarts) so that subsequent lookups are
-    // treated as cache misses and fall back to normal `URLLoader` requests.
+        shared_state_(std::move(shared_state)),
+        on_disconnect_callback_(std::move(on_disconnect_callback)) {
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&CacheClient::OnMojoDisconnect, base::Unretained(this)));
   }
   ~CacheClient() override = default;
   CacheClient(const CacheClient&) = delete;
@@ -84,8 +90,16 @@ class CacheClient : public network::mojom::SharedHttpCacheClient {
   }
 
  private:
+  void OnMojoDisconnect() {
+    shared_state_->OnDisconnected();
+    if (on_disconnect_callback_) {
+      std::move(on_disconnect_callback_).Run();
+    }
+  }
+
   mojo::Receiver<network::mojom::SharedHttpCacheClient> receiver_;
   const scoped_refptr<ThreadSafeSet> shared_state_;
+  base::OnceClosure on_disconnect_callback_;
 };
 
 // Implements network::mojom::SharedHttpCacheClientFactory and executes SQLite
@@ -102,7 +116,10 @@ class DatabaseBackend : public network::mojom::SharedHttpCacheClientFactory {
         client_task_runner_(std::move(client_task_runner)),
         shared_state_(std::move(shared_state)),
         on_db_reader_initialized_callback_(
-            std::move(on_db_reader_initialized_callback)) {}
+            std::move(on_db_reader_initialized_callback)) {
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &DatabaseBackend::OnMojoDisconnect, base::Unretained(this)));
+  }
   ~DatabaseBackend() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
@@ -119,12 +136,19 @@ class DatabaseBackend : public network::mojom::SharedHttpCacheClientFactory {
       return;
     }
     client_created_ = true;
+    // Once `CreateClient` is called, registration lifetime transfers to
+    // `client_receiver`. Clear `receiver_`'s disconnect handler so closing the
+    // factory pipe does not invalidate the client.
+    receiver_.set_disconnect_handler(base::NullCallback());
+
     db_reader_ =
         std::make_unique<disk_cache::SqlSharedCacheIsolatedDatabaseReader>(
             std::move(pending_file_set));
     shared_state_->Initialize();
-    cache_client_.emplace(client_task_runner_, std::move(client_receiver),
-                          shared_state_);
+    cache_client_.emplace(
+        client_task_runner_, std::move(client_receiver), shared_state_,
+        base::BindPostTaskToCurrentDefault(base::BindOnce(
+            &DatabaseBackend::OnMojoDisconnect, weak_factory_.GetWeakPtr())));
     if (on_db_reader_initialized_callback_) {
       std::move(on_db_reader_initialized_callback_).Run();
     }
@@ -138,6 +162,10 @@ class DatabaseBackend : public network::mojom::SharedHttpCacheClientFactory {
       base::OnceCallback<void(std::optional<SharedHttpCacheClient::Response>)>
           callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (shared_state_->IsDisconnected()) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
     CHECK(db_reader_);
     const base::TimeTicks send_start = base::TimeTicks::Now();
     const base::TimeTicks send_end = send_start;
@@ -164,6 +192,13 @@ class DatabaseBackend : public network::mojom::SharedHttpCacheClientFactory {
   }
 
  private:
+  void OnMojoDisconnect() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    shared_state_->OnDisconnected();
+    db_reader_.reset();
+    cache_client_.Reset();
+  }
+
   static void ParseAndDecode(
       scoped_refptr<DataBufferFactory> data_buffer_factory,
       base::TimeTicks request_start,
@@ -187,6 +222,7 @@ class DatabaseBackend : public network::mojom::SharedHttpCacheClientFactory {
   std::unique_ptr<disk_cache::SqlSharedCacheIsolatedDatabaseReader> db_reader_
       GUARDED_BY_CONTEXT(sequence_checker_);
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<DatabaseBackend> weak_factory_{this};
 };
 
 // static
@@ -320,6 +356,7 @@ void ThreadSafeSet::Initialize() {
   base::AutoLock auto_lock(lock_);
   init_called_ = true;
 }
+
 void ThreadSafeSet::Insert(const std::vector<uint32_t>& new_hashes) {
   base::AutoLock auto_lock(lock_);
   if (!set_.has_value()) {
@@ -331,9 +368,20 @@ void ThreadSafeSet::Insert(const std::vector<uint32_t>& new_hashes) {
   }
 }
 
+void ThreadSafeSet::OnDisconnected() {
+  base::AutoLock auto_lock(lock_);
+  disconnected_ = true;
+  set_.reset();
+}
+
+bool ThreadSafeSet::IsDisconnected() {
+  base::AutoLock auto_lock(lock_);
+  return disconnected_;
+}
+
 bool ThreadSafeSet::ShouldEarlyReturn(uint32_t hash) {
   base::AutoLock auto_lock(lock_);
-  if (!init_called_) {
+  if (disconnected_ || !init_called_) {
     // TODO(crbug.com/473666511): Consider making early-return vs queuing before
     // database initialization configurable via a base::FeatureParam.
     return true;
