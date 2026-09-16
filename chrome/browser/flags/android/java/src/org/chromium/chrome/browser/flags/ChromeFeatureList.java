@@ -713,6 +713,8 @@ public abstract class ChromeFeatureList {
     public static final String PRERENDER2 = "Prerender2";
     public static final String PRICE_ANNOTATIONS = "PriceAnnotations";
     public static final String PRICE_CHANGE_MODULE = "PriceChangeModule";
+    public static final String PRINT_FALLBACK_TO_PRIMARY_MAIN_FRAME =
+            "PrintFallbackToPrimaryMainFrame";
     public static final String PRINT_SELECTION_MENU = "PrintSelectionMenu";
     public static final String PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION =
             "PrivacySandboxAdPrivacyUxDeprecation";

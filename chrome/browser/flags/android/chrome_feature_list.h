@@ -271,6 +271,7 @@ BASE_DECLARE_FEATURE(kPictureInPictureMovesToolbarAndroid);
 BASE_DECLARE_FEATURE(kPowerSavingModeBroadcastReceiverInBackground);
 BASE_DECLARE_FEATURE(kPreconnectOnTabCreation);
 BASE_DECLARE_FEATURE(kPriceChangeModule);
+BASE_DECLARE_FEATURE(kPrintFallbackToPrimaryMainFrame);
 BASE_DECLARE_FEATURE(kPrintSelectionMenu);
 BASE_DECLARE_FEATURE(kProtectRecentlyVisibleTab);
 BASE_DECLARE_FEATURE(kPwaRestoreUi);
