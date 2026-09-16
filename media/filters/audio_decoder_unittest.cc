@@ -1020,6 +1020,71 @@ TEST_P(OpusDecodingTest, DisableDiscardDecoderDelay) {
   EXPECT_EQ(total_frames_disabled_discard - total_frames_default, 312);
 }
 
+// Verifies that configuring with a non-48 kHz sample rate (such as 44100 Hz
+// from WebCodecs) decodes successfully and outputs 48000 Hz buffers in both
+// OpusAudioDecoder and FFmpegAudioDecoder.
+TEST_P(OpusDecodingTest, Non48kSampleRate) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+
+  // 1. Decode with default config (48000 Hz) to record baseline decoded audio.
+  DecodeAllPackets();
+  const int total_frames_default = GetTotalDecodedFrames();
+  EXPECT_GT(total_frames_default, 0);
+
+  // 2. Re-initialize with 44100 Hz config.
+  ResetReader();
+  decoded_audio_.clear();
+
+  AudioDecoderConfig config;
+  ASSERT_TRUE(AVCodecContextToAudioDecoderConfig(
+      reader_->codec_context_for_testing(), EncryptionScheme::kUnencrypted,
+      &config));
+  config.Initialize(config.codec(), config.sample_format(),
+                    config.channel_layout_config(), 44100, config.extra_data(),
+                    config.encryption_scheme(), config.seek_preroll(),
+                    config.codec_delay());
+
+  InitializeDecoder(config);
+  DecodeAllPackets();
+  EXPECT_EQ(GetTotalDecodedFrames(), total_frames_default);
+  for (const auto& buffer : decoded_audio_) {
+    EXPECT_EQ(buffer->sample_rate(), 48000);
+  }
+}
+
+// Verifies that configuring with empty extra_data (as permitted by WebCodecs
+// for 1 or 2 channels) decodes successfully in both OpusAudioDecoder and
+// FFmpegAudioDecoder.
+TEST_P(OpusDecodingTest, EmptyExtraData) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+
+  // 1. Decode with default config to record baseline decoded audio.
+  DecodeAllPackets();
+  const int total_frames_default = GetTotalDecodedFrames();
+  EXPECT_GT(total_frames_default, 0);
+
+  // 2. Re-initialize with empty extra_data.
+  ResetReader();
+  decoded_audio_.clear();
+
+  AudioDecoderConfig config;
+  ASSERT_TRUE(AVCodecContextToAudioDecoderConfig(
+      reader_->codec_context_for_testing(), EncryptionScheme::kUnencrypted,
+      &config));
+  config.Initialize(config.codec(), config.sample_format(),
+                    config.channel_layout_config(), config.samples_per_second(),
+                    /*extra_data=*/{}, config.encryption_scheme(),
+                    config.seek_preroll(), 0);
+
+  InitializeDecoder(config);
+  DecodeAllPackets();
+  EXPECT_GT(GetTotalDecodedFrames(), 0);
+  for (const auto& buffer : decoded_audio_) {
+    EXPECT_EQ(buffer->sample_rate(), 48000);
+    EXPECT_EQ(buffer->channel_count(), config.channels());
+  }
+}
+
 TEST_P(OpusDecodingTest, MultichannelVorbis) {
   struct MultichannelTestCase {
     ChannelLayout layout;

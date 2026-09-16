@@ -76,4 +76,24 @@ TEST_F(AudioDecoderTest, IsConfigSupported_Invalid) {
   EXPECT_FALSE(support->supported());
 }
 
+TEST_F(AudioDecoderTest, IsConfigSupported_Opus_Non48k) {
+  V8TestingScope scope;
+  auto* config = AudioDecoderConfig::Create();
+  config->setCodec("opus");
+  config->setNumberOfChannels(2);
+  config->setSampleRate(44100);
+
+  ScriptPromise promise = AudioDecoder::isConfigSupported(
+      scope.GetScriptState(), config, scope.GetExceptionState());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  auto* support = ToAudioDecoderSupport(&scope, tester.Value());
+  ASSERT_TRUE(support);
+  EXPECT_TRUE(support->supported());
+}
+
 }  // namespace blink

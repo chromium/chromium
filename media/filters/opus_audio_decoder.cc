@@ -372,7 +372,7 @@ bool OpusAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
                  static_cast<int>(extra_data->skip_samples)));
   }
 
-  sample_rate_ = config.samples_per_second();
+  sample_rate_ = kOpusDefaultSampleRate;
   channels_ = config.channels();
   channel_layout_ = config.channel_layout();
   codec_delay_ = extra_data->skip_samples;
@@ -401,6 +401,17 @@ bool OpusAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
     DLOG(ERROR) << "Failed to set OPUS header gain; status="
                 << opus_strerror(status);
     return false;
+  }
+
+  // Disable phase inversion to avoid artifacts in downstream mono downmix
+  // (e.g. crbug.com/806219).
+  if (config.target_output_channel_layout() == ChannelLayoutConfig::Mono()) {
+    status = opus_multistream_decoder_ctl(opus_decoder_.get(),
+                                          OPUS_SET_PHASE_INVERSION_DISABLED(1));
+    if (status != OPUS_OK) {
+      DLOG(WARNING) << "Failed to disable phase inversion; status="
+                    << opus_strerror(status);
+    }
   }
 
   ResetTimestampState();

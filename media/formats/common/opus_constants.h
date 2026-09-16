@@ -42,6 +42,11 @@ namespace media {
 //         - else
 //            - stream = byte-M
 
+// Libopus always decodes at 48 kHz in Chromium, matching FFmpeg's libopusdec.
+// RFC 7845 Section 5.1: "All Opus audio is coded at 48 kHz, and should also
+// be decoded at 48 kHz by default."
+inline constexpr int kOpusDefaultSampleRate = 48000;
+
 enum : uint8_t {
   // Default audio output channel layout. Used to initialize |stream_map| in
   // OpusExtraData, and passed to opus_multistream_decoder_create() when the
