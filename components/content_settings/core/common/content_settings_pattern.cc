@@ -168,6 +168,12 @@ class ContentSettingsPattern::Builder
   // the canonicalization was successful.
   static bool Canonicalize(PatternParts* parts);
 
+  // Canonicalizes the host part. Repeating the process ensures that hosts with
+  // trailing dots that were not visible before canonicalization (e.g. because
+  // UTS#46 / IDNA stripped ignorable characters after trailing dots, or mapped
+  // Unicode fullwidth dots) are trimmed and re-canonicalized consistently.
+  static bool CanonicalizeHost(PatternParts* parts);
+
   // Returns true when the pattern |parts| represent a valid pattern.
   static bool Validate(const PatternParts& parts);
 
@@ -280,44 +286,59 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
     }
   }
 
-  // Canonicalize the host part.
-  url::CanonHostInfo host_info;
-  std::string canonicalized_host;
-  if (parts->scheme == url::kFileScheme) {
-    canonicalized_host = net::CanonicalizeFileHost(parts->host, &host_info);
-  } else {
-    canonicalized_host = net::CanonicalizeHost(parts->host, &host_info);
-  }
+  return CanonicalizeHost(parts);
+}
 
-  if (host_info.IsIPAddress() && parts->has_domain_wildcard) {
-    return false;
-  }
+// static
+bool ContentSettingsPattern::Builder::CanonicalizeHost(PatternParts* parts) {
+  // Canonicalize the host part. Repeating the process ensures that hosts with
+  // trailing dots that were not visible before canonicalization (e.g. because
+  // UTS#46 / IDNA stripped ignorable characters after trailing dots, or mapped
+  // Unicode fullwidth dots) are trimmed and re-canonicalized consistently.
+  while (true) {
+    while (parts->host.length() > 1 && parts->host.ends_with(".")) {
+      parts->host.pop_back();
+    }
 
-  // A domain wildcard pattern involves exactly one separating dot, inside the
-  // square brackets. This is a common misunderstanding of that pattern that we
-  // want to check for. See: https://crbug.com/823706.
-  if (parts->has_domain_wildcard && base::StartsWith(canonicalized_host, ".")) {
-    return false;
-  }
+    url::CanonHostInfo host_info;
+    std::string canonicalized_host;
+    if (parts->scheme == url::kFileScheme) {
+      canonicalized_host = net::CanonicalizeFileHost(parts->host, &host_info);
+    } else {
+      canonicalized_host = net::CanonicalizeHost(parts->host, &host_info);
+    }
 
-  // Omit a single ending dot as long as there is at least one non-dot character
-  // before it, which is in line with the behavior of net::TrimEndingDot; but
-  // consider two ending dots an invalid pattern, otherwise canonicalization of
-  // a canonical pattern would not be idempotent.
-  if (base::EndsWith(canonicalized_host, "..", base::CompareCase::SENSITIVE)) {
-    return false;
-  } else if (canonicalized_host.size() >= 2u &&
-             base::EndsWith(canonicalized_host, ".",
-                            base::CompareCase::SENSITIVE)) {
-    canonicalized_host.pop_back();
-  }
+    if (host_info.family == url::CanonHostInfo::BROKEN) {
+      return false;
+    }
 
-  if ((parts->host.find('*') == std::string::npos) &&
-      !canonicalized_host.empty()) {
-    // Valid host.
+    if (host_info.IsIPAddress() && parts->has_domain_wildcard) {
+      return false;
+    }
+
+    // A domain wildcard pattern involves exactly one separating dot, inside the
+    // square brackets. This is a common misunderstanding of that pattern that
+    // we want to check for. See: https://crbug.com/823706.
+    if (parts->has_domain_wildcard &&
+        base::StartsWith(canonicalized_host, ".")) {
+      return false;
+    }
+
+    while (canonicalized_host.length() > 1 &&
+           canonicalized_host.ends_with(".")) {
+      canonicalized_host.pop_back();
+    }
+
+    if (parts->host.find('*') != std::string::npos ||
+        canonicalized_host.empty()) {
+      parts->host.clear();
+      break;
+    }
+
+    if (parts->host == canonicalized_host) {
+      break;
+    }
     parts->host = std::move(canonicalized_host);
-  } else {
-    parts->host.clear();
   }
 
   return true;
@@ -633,11 +654,9 @@ bool ContentSettingsPattern::Matches(const GURL& url) const {
     return parts_.is_path_wildcard || parts_.path == local_url->path();
   }
 
-  // Match the host part. Code is the same as url::TrimEndingDot but that method
-  // unnecessarily creates a new std::string.
+  // Match the host part, removing all trailing dots.
   std::string_view trimmed_host = local_url->host();
-  size_t len = trimmed_host.length();
-  if (len > 1 && trimmed_host[len - 1] == '.') {
+  while (trimmed_host.length() > 1 && trimmed_host.back() == '.') {
     trimmed_host.remove_suffix(1);
   }
 

@@ -235,17 +235,24 @@ class UrlRuleFlatBufferConverter {
     domains_included.reserve(domains_size);
 
     for (const auto& domain_list_item : domain_list_items) {
-      const std::string& domain = domain_list_item.domain();
+      std::string_view domain = domain_list_item.domain();
 
       // Non-ascii characters in domains are unsupported.
       if (!base::IsStringASCII(domain))
         return false;
 
+      // Trimming trailing dots from the domain.
+      while (domain.length() > 1 && domain.back() == '.') {
+        domain.remove_suffix(1);
+      }
+
       // Note: This is not always correct. Chrome's URL parser uses upper-case
       // for percent encoded hosts. E.g. https://,.com is encoded as
       // https://%2C.com.
-      auto offset = builder->CreateSharedString(
-          HasNoUpperAscii(domain) ? domain : base::ToLowerASCII(domain));
+      std::string domain_lower = HasNoUpperAscii(domain)
+                                     ? std::string(domain)
+                                     : base::ToLowerASCII(domain);
+      auto offset = builder->CreateSharedString(domain_lower);
 
       if (domain_list_item.exclude())
         domains_excluded.push_back(offset);
@@ -584,21 +591,23 @@ size_t GetLongestMatchingSubdomain(std::string_view host,
   if (host.empty())
     return 0;
 
+  // If the host name ends with dots, then ignore them.
+  while (host.length() > 1 && host.back() == '.') {
+    host.remove_suffix(1);
+  }
+
   // If the |domains| list is short, then the simple strategy is usually faster.
   if (domains.size() <= 5) {
     for (auto* domain : domains) {
       const std::string_view domain_piece = ToStringView(domain);
-      if (url::DomainIs(host, domain_piece))
+      if (url::DomainIs(host, domain_piece)) {
         return domain_piece.size();
+      }
     }
     return 0;
   }
 
   // Otherwise look for each subdomain of the `host` using binary search.
-
-  // If the host name ends with a dot, then ignore it.
-  if (host.back() == '.')
-    host.remove_suffix(1);
 
   // The |left| bound of the search is shared between iterations, because
   // subdomains are considered in decreasing order of their lengths, therefore
