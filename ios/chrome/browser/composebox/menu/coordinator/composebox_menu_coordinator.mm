@@ -458,7 +458,7 @@ CGFloat const kSheetTopPadding = 40.0f;
   [_mediator processImageItems:results];
 }
 
-- (void)composeboxPickerPresenterDidDissmissCamera:
+- (void)composeboxPickerPresenterDidDismissCamera:
     (ComposeboxPickerPresenter*)presenter {
   // NO-OP.
 }

@@ -31,7 +31,7 @@
              didPickFilesWithURLs:(NSArray<NSURL*>*)urls;
 
 /// Called when the camera picker presentation dismisses.
-- (void)composeboxPickerPresenterDidDissmissCamera:
+- (void)composeboxPickerPresenterDidDismissCamera:
     (ComposeboxPickerPresenter*)presenter;
 
 // Called when the tab picker finishes picking tabs.

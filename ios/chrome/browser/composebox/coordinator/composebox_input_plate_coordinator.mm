@@ -866,7 +866,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                  completion:stopAccessScopedResourcesIfNeeded];
 }
 
-- (void)composeboxPickerPresenterDidDissmissCamera:
+- (void)composeboxPickerPresenterDidDismissCamera:
     (ComposeboxPickerPresenter*)presenter {
   [self focusComposebox];
 }

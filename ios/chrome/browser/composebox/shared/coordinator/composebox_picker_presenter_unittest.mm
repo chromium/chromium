@@ -212,7 +212,7 @@
              didPickFilesWithURLs:(NSArray<NSURL*>*)urls {
 }
 
-- (void)composeboxPickerPresenterDidDissmissCamera:
+- (void)composeboxPickerPresenterDidDismissCamera:
     (ComposeboxPickerPresenter*)presenter {
 }
 

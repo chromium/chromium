@@ -336,7 +336,7 @@ constexpr int kChromeIOSProductId = 71720513;
     didFinishPickingMediaWithInfo:(NSDictionary<NSString*, id>*)info {
   __weak __typeof(self) weakSelf = self;
   [self dismissPickerWithCompletion:^{
-    [weakSelf.delegate composeboxPickerPresenterDidDissmissCamera:weakSelf];
+    [weakSelf.delegate composeboxPickerPresenterDidDismissCamera:weakSelf];
   }];
 
   UIImage* image = info[UIImagePickerControllerOriginalImage];
@@ -370,7 +370,7 @@ constexpr int kChromeIOSProductId = 71720513;
 
   __weak __typeof(self) weakSelf = self;
   [self dismissPickerWithCompletion:^{
-    [weakSelf.delegate composeboxPickerPresenterDidDissmissCamera:weakSelf];
+    [weakSelf.delegate composeboxPickerPresenterDidDismissCamera:weakSelf];
   }];
 }
 
