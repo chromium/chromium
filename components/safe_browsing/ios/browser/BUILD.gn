@@ -11,7 +11,7 @@ source_set("allow_list") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
     "//components/security_interstitials/core:unsafe_resource",
     "//ios/web/public",
     "//url",

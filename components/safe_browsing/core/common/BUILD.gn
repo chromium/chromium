@@ -117,7 +117,7 @@ source_set("common") {
     "//components/policy/core/browser",
     "//components/prefs",
     "//components/safe_browsing:buildflags",
-    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/variations",

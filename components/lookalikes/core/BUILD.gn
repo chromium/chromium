@@ -50,7 +50,7 @@ static_library("safety_tips") {
   ]
   deps = [
     ":proto",
-    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
     "//components/security_state/core",
     "//third_party/re2",
     "//url",

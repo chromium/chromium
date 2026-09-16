@@ -71,7 +71,7 @@ if (safe_browsing_mode == 2) {
     deps = [
       "//base",
       "//components/resources:components_resources",
-      "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+      "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common/proto:realtimeallowlist_proto",
       "//ui/base",
@@ -92,8 +92,8 @@ static_library("remote_database_manager") {
     ":safe_browsing_api_handler",
     "//base",
     "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
     "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",
-    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/common",
     "//components/variations",
     "//content/public/browser",

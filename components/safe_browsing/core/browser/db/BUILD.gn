@@ -42,9 +42,9 @@ static_library("database_manager") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    ":sb_protocol_manager_util",
     ":util",
     ":v4_get_hash_protocol_manager",
-    ":v4_protocol_manager_util",
     ":v5_get_hash_protocol_manager",
     "//base",
     "//components/safe_browsing/core/common",
@@ -68,8 +68,8 @@ static_library("test_database_manager") {
   ]
   deps = [
     ":database_manager",
+    ":sb_protocol_manager_util",
     ":util",
-    ":v4_protocol_manager_util",
     "//base",
     "//components/safe_browsing/core/common:features",
     "//net",
@@ -87,7 +87,7 @@ static_library("util") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
-    ":v4_protocol_manager_util",
+    ":sb_protocol_manager_util",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
   ]
   deps = [
@@ -110,8 +110,8 @@ static_library("sb_database") {
 
   public_deps = [ ":safebrowsing_proto" ]
   deps = [
+    ":sb_protocol_manager_util",
     ":sb_store",
-    ":v4_protocol_manager_util",
     "//base",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
@@ -133,7 +133,7 @@ static_library("v4_get_hash_protocol_manager") {
     ":util",
   ]
   deps = [
-    ":v4_protocol_manager_util",
+    ":sb_protocol_manager_util",
     "//base",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:webui_proto",
@@ -177,7 +177,7 @@ source_set("v5_get_hash_protocol_manager") {
     ":v5_search_hashes_util",
   ]
   deps = [
-    ":v4_protocol_manager_util",
+    ":sb_protocol_manager_util",
     ":v5_search_hashes_cache",
     "//base",
     "//components/keyed_service/core",
@@ -200,10 +200,10 @@ static_library("sb_local_database_manager") {
     ":database_manager",
     ":safebrowsing_proto",
     ":sb_database",
+    ":sb_protocol_manager_util",
     ":sb_store",
     ":sb_update_protocol_manager",
     ":v4_get_hash_protocol_manager",
-    ":v4_protocol_manager_util",
     ":v5_get_hash_protocol_manager",
     "//base",
     "//build:branding_buildflags",
@@ -266,7 +266,7 @@ source_set("prefix_iterator") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    ":v4_protocol_manager_util",
+    ":sb_protocol_manager_util",
     "//base",
   ]
 }
@@ -343,7 +343,7 @@ source_set("sb_store") {
   ]
   deps = [
     ":prefix_iterator",
-    ":v4_protocol_manager_util",
+    ":sb_protocol_manager_util",
     ":v4_rice",
     ":v5_rice",
     "//base",
@@ -366,10 +366,10 @@ static_library("sb_test_util") {
   ]
   deps = [
     ":sb_database",
+    ":sb_protocol_manager_util",
     ":sb_store",
     ":util",
     ":v4_get_hash_protocol_manager",
-    ":v4_protocol_manager_util",
     ":v5_search_hashes_util",
     "//base",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
@@ -401,8 +401,8 @@ static_library("sb_update_protocol_manager") {
 
   deps = [
     ":safebrowsing_proto",
+    ":sb_protocol_manager_util",
     ":util",
-    ":v4_protocol_manager_util",
     ":v5_rice",
     "//base",
     "//components/safe_browsing:buildflags",
@@ -425,7 +425,7 @@ static_library("v5_search_hashes_cache") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    ":v4_protocol_manager_util",
+    ":sb_protocol_manager_util",
     "//base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
@@ -451,11 +451,11 @@ source_set("unit_tests_shared") {
     ":allowlist_checker_client",
     ":database_manager",
     ":safebrowsing_proto",
+    ":sb_protocol_manager_util",
     ":sb_test_util",
     ":test_database_manager",
     ":util",
     ":v4_get_hash_protocol_manager",
-    ":v4_protocol_manager_util",
     ":v5_get_hash_protocol_manager",
     ":v5_search_hashes_cache",
     ":v5_search_hashes_util",
@@ -487,12 +487,12 @@ source_set("unit_tests_local_db") {
     ":database_manager",
     ":sb_database",
     ":sb_local_database_manager",
+    ":sb_protocol_manager_util",
     ":sb_store",
     ":sb_test_util",
     ":sb_update_protocol_manager",
     ":unit_tests_shared",
     ":util",
-    ":v4_protocol_manager_util",
     ":v4_store_proto",
     ":v5_get_hash_protocol_manager",
     ":v5_search_hashes_cache",
@@ -553,9 +553,9 @@ fuzzer_test("v4_get_hash_protocol_manager_fuzzer") {
 fuzzer_test("v4_store_fuzzer") {
   sources = [ "v4_store_fuzzer.cc" ]
   deps = [
+    ":sb_protocol_manager_util",
     ":sb_store",
     ":sb_test_util",
-    ":v4_protocol_manager_util",
     "//base/test:test_support",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]

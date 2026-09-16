@@ -16,7 +16,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/trace_event/traced_value.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace safe_browsing {

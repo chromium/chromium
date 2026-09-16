@@ -24,14 +24,13 @@
 #include "base/types/pass_key.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/sb_database.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/sb_update_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_update_protocol_manager.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "url/gurl.h"
 
-// TODO(crbug.com/362791941): Handle v4 references
 namespace safe_browsing {
 
 namespace V5 {

@@ -1434,9 +1434,9 @@ if (use_blink) {
     if (safe_browsing_mode == 1 || is_ios) {
       sources += [ "safe_browsing/core/browser/db/v4_store_perftest.cc" ]
       deps += [
+        "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
         "//components/safe_browsing/core/browser/db:sb_store",
         "//components/safe_browsing/core/browser/db:sb_test_util",
-        "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
         "//crypto",
       ]
     }
