@@ -7304,10 +7304,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kComposeboxRichImageSuggestionsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxRichImageSuggestions)},
 
-    {"composebox-persistent-aim-button",
-     flag_descriptions::kComposeboxPersistentAimButtonName,
-     flag_descriptions::kComposeboxPersistentAimButtonDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kComposeboxPersistentAimButton)},
+    {"composebox-persistent-aim-button-omnibox",
+     flag_descriptions::kComposeboxPersistentAimButtonOmniboxName,
+     flag_descriptions::kComposeboxPersistentAimButtonOmniboxDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kComposeboxPersistentAimButtonOmnibox)},
+
+    {"composebox-persistent-aim-button-realbox",
+     flag_descriptions::kComposeboxPersistentAimButtonRealboxName,
+     flag_descriptions::kComposeboxPersistentAimButtonRealboxDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kComposeboxPersistentAimButtonRealbox)},
 
     {"composebox-persistent-aim-button-with-x",
      flag_descriptions::kComposeboxPersistentAimButtonWithXName,

@@ -821,9 +821,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddInteger("browserPromoCompletedLimit",
                      browser_completed_promo_limit);
 
-  source->AddBoolean(
-      "composeboxPersistentAimButton",
-      base::FeatureList::IsEnabled(omnibox::kComposeboxPersistentAimButton));
+  source->AddBoolean("composeboxPersistentAimButton",
+                     base::FeatureList::IsEnabled(
+                         omnibox::kComposeboxPersistentAimButtonRealbox));
   source->AddBoolean("composeboxPersistentAimButtonWithX",
                      base::FeatureList::IsEnabled(
                          omnibox::kComposeboxPersistentAimButtonWithX));

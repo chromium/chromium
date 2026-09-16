@@ -7818,7 +7818,6 @@ from previous Chrome versions.
   <int value="-2132161378" label="SendTabToSelfHistory:disabled"/>
   <int value="-2131860332" label="WebRtcPipeWireCamera:enabled"/>
   <int value="-2130901095" label="MediaAppImageMantisErase:disabled"/>
-  <int value="-2130607344" label="ComposeboxPersistentAimButton:disabled"/>
   <int value="-2130526300"
       label="BlinkSchedulerDiscreteInputMatchesResponsivenessMetrics:disabled"/>
   <int value="-2129940395" label="WebAssemblySimd:disabled"/>
@@ -9162,6 +9161,8 @@ from previous Chrome versions.
   <int value="-1731997767" label="SharingHubDesktopAppMenu:enabled"/>
   <int value="-1731267886" label="AutofillEnableStickyPaymentsBubble:enabled"/>
   <int value="-1731149013" label="AndroidMessagesIntegration:enabled"/>
+  <int value="-1731106128"
+      label="ComposeboxPersistentAimButtonRealbox:enabled"/>
   <int value="-1730315292"
       label="AndroidWindowPopupPredictFinalBounds:enabled"/>
   <int value="-1729953886"
@@ -9494,6 +9495,8 @@ from previous Chrome versions.
   <int value="-1631329950" label="ssl-version-max"/>
   <int value="-1631100739" label="PersonalizationJelly:disabled"/>
   <int value="-1631037170" label="IncludeIpcOverheadInNavigationStart:enabled"/>
+  <int value="-1630952661"
+      label="ComposeboxPersistentAimButtonOmnibox:enabled"/>
   <int value="-1630419335" label="enable-download-notification"/>
   <int value="-1630332314" label="CellularForbidAttachApn:enabled"/>
   <int value="-1630215503" label="CaptureModeEducationBypassLimits:disabled"/>
@@ -13361,7 +13364,6 @@ from previous Chrome versions.
       label="AutofillSaveCreditCardUsesImprovedMessaging:disabled"/>
   <int value="-450917820" label="EnableCbdSignOut:enabled"/>
   <int value="-450578554" label="WGIGamepadTriggerRumble:enabled"/>
-  <int value="-450563845" label="ComposeboxPersistentAimButton:enabled"/>
   <int value="-450100254" label="OverviewButton:enabled"/>
   <int value="-449465495" label="disable-browser-task-scheduler"/>
   <int value="-449229817" label="ArcExternalStorageAccess:enabled"/>
@@ -18231,6 +18233,8 @@ from previous Chrome versions.
       label="AutofillEnableAmountExtractionDesktopLogging:disabled"/>
   <int value="1063490936" label="ExoSurroundingTextOffset:enabled"/>
   <int value="1063909131" label="CrOSDspBasedAgcAllowed:disabled"/>
+  <int value="1063954987"
+      label="ComposeboxPersistentAimButtonRealbox:disabled"/>
   <int value="1064288458" label="OfflineRecentPages:enabled"/>
   <int value="1064317648" label="UseMojoVideoDecoderForPepper:disabled"/>
   <int value="1064904452" label="BottomSheetTypes:enabled"/>
@@ -21496,6 +21500,8 @@ from previous Chrome versions.
   <int value="2058921256" label="LeftClickOpensTabGroupBubble:enabled"/>
   <int value="2059322877" label="new-avatar-menu"/>
   <int value="2060099975" label="AndroidBottomToolbar:enabled"/>
+  <int value="2060738464"
+      label="ComposeboxPersistentAimButtonOmnibox:disabled"/>
   <int value="2061585881" label="EnableAIPromptAPI:enabled"/>
   <int value="2062051946" label="AccessCodeCastFreezeUI:disabled"/>
   <int value="2062665434" label="AddPrinterViaPrintscanmgr:enabled"/>
