@@ -316,6 +316,7 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154475
     public void testDeleteGroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -382,6 +383,7 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154475
     public void testUpdateGroupColor() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -501,6 +503,7 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154475
     public void testSubMenuScrollability() throws InterruptedException {
         // Specifically test the drill-down case.
         HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
