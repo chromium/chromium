@@ -1179,10 +1179,6 @@ BASE_FEATURE(kLocalFactorsPasswordComplexity, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables local authentication controller with PIN support.
 BASE_FEATURE(kLocalAuthenticationWithPin, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables nearby-internals logs to be automatically saved to disk and attached
-// to feedback reports.
-BASE_FEATURE(kLinkCrossDeviceInternals, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature to allow MAC address randomization to be enabled for WiFi networks.
 BASE_FEATURE(kMacAddressRandomization, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2731,10 +2727,6 @@ bool IsLauncherContinueSectionWithRecentsEnabled() {
   return base::FeatureList::IsEnabled(kLauncherContinueSectionWithRecents) ||
          base::FeatureList::IsEnabled(
              kLauncherContinueSectionWithRecentsRollout);
-}
-
-bool IsLinkCrossDeviceInternalsEnabled() {
-  return base::FeatureList::IsEnabled(kLinkCrossDeviceInternals);
 }
 
 bool IsLobsterEnabled() {

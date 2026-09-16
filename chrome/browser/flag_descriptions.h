@@ -7368,12 +7368,6 @@ inline constexpr char kAllowCrossDeviceFeatureSuiteDescription[] =
     "ChromeOS Flex). If disabled, this removes all Cross-Device features and "
     "their entries in the Settings app.";
 
-inline constexpr char kLinkCrossDeviceInternalsName[] =
-    "Link Cross-Device internals logging to Feedback reports.";
-inline constexpr char kLinkCrossDeviceInternalsDescription[] =
-    "Improves debugging of Cross-Device features by recording more verbose "
-    "logs and attaching these logs to filed Feedback reports.";
-
 inline constexpr char kAltClickAndSixPackCustomizationName[] =
     "Allow users to customize Alt-Click and 6-pack key remapping.";
 

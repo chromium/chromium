@@ -6848,11 +6848,6 @@
     "expiry_milestone": 152
   },
   {
-    "name": "link-cross-device-internals",
-    "owners": [ "chromeos-cross-device-eng@google.com", "dclasson@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "linked-accounts",
     "owners": ["msalama@chromium.org", "chrome-signin-team@google.com"],
     "expiry_milestone": 160
