@@ -224,6 +224,7 @@ class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
           user->GetAccountId().GetUserEmail());
     }
 
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager_->OnUserProfileCreated(user->GetAccountId(),
                                         profile->GetPrefs());
     GetSessionControllerClient()->SetUnownedUserPrefService(

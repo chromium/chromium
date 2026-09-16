@@ -71,6 +71,7 @@ class KcerPkcs12MigratorTest : public testing::Test {
     auto account = AccountId::FromUserEmail("test@example.com");
     fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
         account, false, user_manager::UserType::kRegular, profile_.get());
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     fake_user_manager_->OnUserProfileCreated(account, profile_->GetPrefs());
     fake_user_manager_->LoginUser(account);
 

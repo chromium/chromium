@@ -18,6 +18,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -73,6 +74,9 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            testing_profile_manager_->profile_manager(), user_manager_.Get());
 
     // Create user session and its profile.
     user_manager_->UserLoggedIn(
@@ -82,7 +86,6 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
         testing_profile_manager_->profile_manager(), kTestAccountId);
     profile_ = testing_profile_manager_->CreateTestingProfile(
         std::string(kTestAccountId.GetUserEmail()));
-    user_manager_->OnUserProfileCreated(kTestAccountId, profile_->GetPrefs());
 
     // Set up app usage telemetry sampler for the test profile.
     app_usage_telemetry_sampler_ =
@@ -90,11 +93,9 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    if (profile_) {
-      user_manager_->OnUserProfileWillBeDestroyed(kTestAccountId);
-      profile_ = nullptr;
-    }
+    profile_ = nullptr;
     testing_profile_manager_.reset();
+    profile_user_manager_controller_.reset();
     user_manager_.Reset();
   }
 
@@ -167,7 +168,6 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
   Profile& profile() { return CHECK_DEREF(profile_.get()); }
 
   void DeleteProfile() {
-    user_manager_->OnUserProfileWillBeDestroyed(kTestAccountId);
     profile_ = nullptr;
     testing_profile_manager_->DeleteAllTestingProfiles();
   }
@@ -176,6 +176,8 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   user_manager::ScopedUserManager user_manager_;
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<TestingProfile> profile_;
 

@@ -710,6 +710,7 @@ class ManagementUIHandlerTests :
     profile_->GetTestingPrefService()->SetManagedPref(
         chromeos::prefs::kFloatingSsoEnabled,
         std::make_unique<base::Value>(GetTestConfig().sync_cookies));
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     fake_user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

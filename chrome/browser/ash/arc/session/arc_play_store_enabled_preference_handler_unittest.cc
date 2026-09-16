@@ -110,6 +110,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
         kTestAccountId, identity_test_env_profile_adaptor_->identity_test_env()
                             ->identity_manager());
 
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager_->OnUserProfileCreated(kTestAccountId, profile_->GetPrefs());
 
     arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();

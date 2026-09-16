@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -96,14 +97,14 @@ class SessionControllerClientImplTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            profile_manager_->profile_manager(), user_manager_.Get());
   }
 
   void TearDown() override {
-
-    for (user_manager::User* user : user_manager_->GetPersistedUsers()) {
-      user_manager_->OnUserProfileWillBeDestroyed(user->GetAccountId());
-    }
     profile_manager_.reset();
+    profile_user_manager_controller_.reset();
 
     // We must ensure that the network::CertVerifierWithTrustAnchors outlives
     // the PolicyCertService so shutdown the profile here. Additionally, we need
@@ -162,16 +163,9 @@ class SessionControllerClientImplTest : public testing::Test {
   // Calls private methods to create a testing profile. The created profile
   // is owned by ProfileManager.
   TestingProfile* CreateTestingProfile(const AccountId& account_id) {
-    TestingProfile* profile = nullptr;
-    {
-      ash::ScopedAccountIdAnnotator account_id_annotator(
-          profile_manager_->profile_manager(), account_id);
-      profile =
-          profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
-    }
-    user_manager::UserManager::Get()->OnUserProfileCreated(account_id,
-                                                           profile->GetPrefs());
-    return profile;
+    ash::ScopedAccountIdAnnotator account_id_annotator(
+        profile_manager_->profile_manager(), account_id);
+    return profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
   }
 
   session_manager::SessionManager& session_manager() {
@@ -186,6 +180,8 @@ class SessionControllerClientImplTest : public testing::Test {
   ash::SessionTerminationManager session_termination_manager_;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager user_manager_;
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
   std::unique_ptr<TestingProfileManager> profile_manager_;

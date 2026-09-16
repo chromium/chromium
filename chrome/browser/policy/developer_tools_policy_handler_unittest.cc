@@ -246,6 +246,7 @@ class DeveloperToolsPolicyHandlerWithProfileTest
       primary_profile_ =
           profile_manager_.CreateTestingProfile(kPrimaryProfileName);
 
+      // TODO(crbug.com/40225390): Use ProfileUserManagerController.
       user_manager_->OnUserProfileCreated(kPrimaryUserAccountId,
                                           primary_profile_->GetPrefs());
     }
@@ -260,6 +261,7 @@ class DeveloperToolsPolicyHandlerWithProfileTest
           profile_manager_.profile_manager(), kSecondaryUserAccountId);
       secondary_profile_ =
           profile_manager_.CreateTestingProfile(kSecondaryProfileName);
+      // TODO(crbug.com/40225390): Use ProfileUserManagerController.
       user_manager_->OnUserProfileCreated(kSecondaryUserAccountId,
                                           secondary_profile_->GetPrefs());
     }

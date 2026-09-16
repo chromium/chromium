@@ -456,6 +456,7 @@ source_set("unit_tests") {
       "nss_temp_certs_cache_chromeos_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/ash/login/users",
       "//chrome/browser/prefs",
       "//chromeos/dbus/regmon",
       "//components/account_id:test_support",

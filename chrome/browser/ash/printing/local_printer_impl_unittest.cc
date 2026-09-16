@@ -9,6 +9,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
@@ -159,14 +161,17 @@ class LocalPrinterImplTestBase : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            profile_manager_->profile_manager(),
+            user_manager::UserManager::Get());
 
     ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
     user_session_test_environment_->LogIn(kAccountId);
 
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            kAccountId);
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
-    ash::AnnotatedAccountId::Set(profile_, kAccountId);
-    user_manager::UserManager::Get()->OnUserProfileCreated(
-        kAccountId, profile_->GetPrefs());
 
     std::vector<base::test::FeatureRefAndParams> features_to_enable = {};
     std::vector<base::test::FeatureRef> features_to_disable = {};
@@ -254,10 +259,11 @@ class LocalPrinterImplTestBase : public testing::Test {
 
     local_printer_ = nullptr;
     printers_manager_ = nullptr;
-    user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(kAccountId);
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile(kEmail);
     profile_manager_.reset();
+    profile_user_manager_controller_.reset();
+    user_session_test_environment_.reset();
   }
 
  protected:
@@ -334,6 +340,8 @@ class LocalPrinterImplTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   scoped_refptr<::printing::TestPrintBackend> sandboxed_test_backend_;
   scoped_refptr<::printing::TestPrintBackend> unsandboxed_test_backend_;

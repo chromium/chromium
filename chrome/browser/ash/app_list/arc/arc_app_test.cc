@@ -196,6 +196,7 @@ void ArcAppTest::PostProfileSetUp(Profile* profile) {
                                    /*for_test=*/true);
     }
 
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager_.Get()->OnUserProfileCreated(user_->GetAccountId(),
                                               profile->GetPrefs());
 

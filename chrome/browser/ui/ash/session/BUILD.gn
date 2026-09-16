@@ -86,6 +86,7 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/constants",
     "//base/test:test_support",
+    "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings:test_support",

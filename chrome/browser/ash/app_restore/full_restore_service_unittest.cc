@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/prefs/browser_prefs.h"
@@ -144,6 +145,8 @@ class FullRestoreTestHelper {
       TestingProfileManager& profile_manager)
       : account_id_(account_id) {
     user_session_test_environment.LogIn(account_id);
+    ash::ScopedAccountIdAnnotator annotator(profile_manager.profile_manager(),
+                                            account_id);
     profile_ = profile_manager.CreateTestingProfile(account_id_.GetUserEmail());
 
     ::app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id_,

@@ -169,6 +169,7 @@ class ClientCertSourceWritableUnitTest
     fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
         account_, /*is_affiliated=*/true, user_manager::UserType::kRegular,
         profile());
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     fake_user_manager_->OnUserProfileCreated(account_, profile()->GetPrefs());
     fake_user_manager_->LoginUser(account_);
 #else

@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
@@ -237,16 +238,19 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            profile_manager_->profile_manager(),
+            user_manager::UserManager::Get());
 
     ash::LoginState::Initialize();
 
     ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
     user_session_test_environment_->LogIn(kAccountId);
 
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            kAccountId);
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
-    ash::AnnotatedAccountId::Set(profile_, kAccountId);
-    user_manager::UserManager::Get()->OnUserProfileCreated(
-        kAccountId, profile_->GetPrefs());
 
     preview_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
@@ -299,10 +303,10 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
     web_ui_.reset();
     preview_web_contents_.reset();
     ash::LoginState::Shutdown();
-    user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(kAccountId);
     profile_ = nullptr;
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
+    profile_user_manager_controller_.reset();
     user_session_test_environment_.reset();
   }
 
@@ -343,6 +347,8 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<TestPrintServersManager> test_print_servers_manager_;
   std::unique_ptr<ash::FakeLocalPrinter> local_printer_;

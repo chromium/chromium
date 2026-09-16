@@ -207,6 +207,7 @@ class SecureDnsManagerTest : public testing::Test {
 
     // Simulate login.
     user_session_test_environment_->LogIn(kTestAccountId);
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager::UserManager::Get()->OnUserProfileCreated(kTestAccountId,
                                                            &profile_prefs_);
 

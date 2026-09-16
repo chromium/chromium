@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -82,6 +83,8 @@ class AmbientClientImplTest : public testing::Test {
     user_session_test_environment_->LogIn(account_id);
 
     CHECK(!profile_);
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            account_id);
     profile_ = profile_manager_->CreateTestingProfile(
         account_id.GetUserEmail(), /*prefs=*/{},
         base::UTF8ToUTF16(account_id.GetUserEmail()),

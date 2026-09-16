@@ -6,12 +6,13 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/dbus/regmon/regmon_client.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
@@ -19,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,24 +36,25 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
 
   ash::test::UserSessionTestEnvironment user_session_test_environment(
       TestingBrowserProcess::GetGlobal()->GetTestingLocalState());
+  // Declare before `profile_manager` to match production destruction order.
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller;
+  TestingProfileManager profile_manager(TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(profile_manager.SetUp());
+  profile_user_manager_controller =
+      std::make_unique<ash::ProfileUserManagerController>(
+          profile_manager.profile_manager(), user_manager::UserManager::Get());
+
   ASSERT_TRUE(user_session_test_environment.AddRegularUser(kAccountId));
   user_session_test_environment.LogIn(kAccountId);
 
   // Setup profile with the disabled hash code in blocklist pref.
-  TestingProfileManager profile_manager_(TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(profile_manager_.SetUp());
-  auto* profile = profile_manager_.CreateTestingProfile("testing_profile");
-  ash::AnnotatedAccountId::Set(profile, kAccountId);
-  {
-    auto* profile_prefs = profile->GetPrefs();
-    profile_prefs->SetDict(
-        prefs::kNetworkAnnotationBlocklist,
-        base::DictValue().Set(base::NumberToString(kTestDisabledHashCode),
-                              true));
-
-    user_manager::UserManager::Get()->OnUserProfileCreated(kAccountId,
-                                                           profile_prefs);
-  }
+  ash::ScopedAccountIdAnnotator annotator(profile_manager.profile_manager(),
+                                          kAccountId);
+  auto* profile = profile_manager.CreateTestingProfile("testing_profile");
+  profile->GetPrefs()->SetDict(
+      prefs::kNetworkAnnotationBlocklist,
+      base::DictValue().Set(base::NumberToString(kTestDisabledHashCode), true));
 
   // Initialize fake Regmon D-Bus client. This fake client is used below to
   // verify that violations are reported.
@@ -71,8 +74,6 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
   std::list<int32_t> expected_reported_hash_codes{kTestDisabledHashCode};
   EXPECT_EQ(regmon_client->GetReportedHashCodes(),
             expected_reported_hash_codes);
-
-  user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(kAccountId);
 }
 
 // Verify that GetClient() can be called multiple times. This simulates what

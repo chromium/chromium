@@ -22,6 +22,7 @@ class EssentialSearchManager;
 }  // namespace app_list
 
 namespace ash {
+class AccountIdAnnotator;
 class AccountManagerFactory;
 class AshProxyMonitor;
 class AutoSignOutService;
@@ -200,6 +201,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
       automatic_reboot_manager_;
 
   std::unique_ptr<user_manager::UserManager> user_manager_;
+
+  std::unique_ptr<ash::AccountIdAnnotator> account_id_annotator_;
 
   std::unique_ptr<ash::ProfileUserManagerController>
       profile_user_manager_controller_;

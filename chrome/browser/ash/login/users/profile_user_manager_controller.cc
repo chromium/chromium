@@ -5,13 +5,8 @@
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -26,39 +21,6 @@ ProfileUserManagerController::ProfileUserManagerController(
 }
 
 ProfileUserManagerController::~ProfileUserManagerController() = default;
-
-void ProfileUserManagerController::OnProfileCreationStarted(Profile* profile) {
-  // Find a User instance from directory path, and annotate the AccountId.
-  // Hereafter, we can use AnnotatedAccountId::Get() to find the User.
-  if (ash::IsUserBrowserContext(profile)) {
-    auto logged_in_users = user_manager_->GetLoggedInUsers();
-    auto it = std::ranges::find(
-        logged_in_users,
-        ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile),
-        [](const user_manager::User* user) { return user->username_hash(); });
-    if (it == logged_in_users.end()) {
-      // User may not be found for now on testing.
-      // TODO(crbug.com/40225390): fix tests to annotate AccountId properly.
-      CHECK_IS_TEST();
-    } else {
-      const user_manager::User* user = *it;
-      auto* session_manager = session_manager::SessionManager::Get();
-      if (session_manager) {
-        // A |User| instance should always exist for a profile which is not the
-        // initial, the sign-in or the lock screen app profile.
-        CHECK(session_manager->HasSessionForAccountId(user->GetAccountId()))
-            << "Attempting to construct the profile before starting the user "
-               "session";
-      } else {
-        // SessionManager should be always initialized before Profile creation,
-        // except tests.
-        CHECK_IS_TEST();
-      }
-      ash::AnnotatedAccountId::Set(profile, user->GetAccountId(),
-                                   /*for_test=*/false);
-    }
-  }
-}
 
 void ProfileUserManagerController::OnProfileAdded(Profile* profile) {
   // TODO(crbug.com/40225390): Use ash::AnnotatedAccountId::Get(), when

@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -73,6 +74,8 @@ class ArcGhostWindowViewTest : public testing::Test {
     user_session_test_environment_->LogIn(account_id);
 
     // Note that user profiles are created after user login in reality.
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            account_id);
     profile_ = profile_manager_->CreateTestingProfile(
         kTestProfileName, /*prefs=*/{}, kTestProfileName16,
         /*avatar_id=*/0,

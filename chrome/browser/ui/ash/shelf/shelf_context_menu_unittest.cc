@@ -161,6 +161,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
           std::string(kPrimaryUserId.GetUserEmail()));
     }
 
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager_->OnUserProfileCreated(kPrimaryUserId, profile_->GetPrefs());
 
     extensions::TestExtensionSystem* extension_system(

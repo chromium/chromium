@@ -20,6 +20,8 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/fake_local_printer.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
@@ -407,16 +409,19 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            profile_manager_->profile_manager(),
+            user_manager::UserManager::Get());
     ash::LoginState::Initialize();
 
     ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
     user_session_test_environment_->LogIn(kAccountId);
 
-    testing_profile_ =
-        profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
-    ash::AnnotatedAccountId::Set(testing_profile_, kAccountId);
-    user_manager::UserManager::Get()->OnUserProfileCreated(
-        kAccountId, testing_profile_->GetPrefs());
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            kAccountId);
+    testing_profile_ = profile_manager_->CreateTestingProfile(
+        std::string(kAccountId.GetUserEmail()));
 
     print_job_manager_ =
         std::make_unique<ash::TestCupsPrintJobManager>(testing_profile_);
@@ -478,9 +483,9 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     event_router_ = nullptr;
     print_job_history_service_.reset();
     ash::LoginState::Shutdown();
-    user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(kAccountId);
     testing_profile_ = nullptr;
-    profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
+    profile_manager_->DeleteTestingProfile(
+        std::string(kAccountId.GetUserEmail()));
     // HistoryService and CupsPrintJobManager must be shutdown later than
     // deleting the TestingProfile.
     // TestingProfile deletion will shutdown keyed service TestPrintingManager.
@@ -489,6 +494,7 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     print_job_manager_.reset();
     history_service_.reset();
     profile_manager_.reset();
+    profile_user_manager_controller_.reset();
     user_session_test_environment_.reset();
   }
 
@@ -508,6 +514,8 @@ class PrintingAPIHandlerUnittest : public testing::Test {
   base::AutoReset<bool> disable_pdf_flattening_reset_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<ash::TestCupsPrintJobManager> print_job_manager_;
   std::unique_ptr<ash::PrintJobHistoryServiceImpl> print_job_history_service_;

@@ -65,6 +65,7 @@ class UserImageManagerImplTest : public testing::Test {
     user_manager::User* user = fake_chrome_user_manager()->AddUser(account_id);
     TestingProfile* profile =
         profile_manager_.CreateTestingProfile(account_id.GetUserEmail());
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     fake_chrome_user_manager()->OnUserProfileCreated(account_id,
                                                      profile->GetPrefs());
     return user;

@@ -27,6 +27,8 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -208,6 +210,9 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   void SetUp() override {
     UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
     ASSERT_TRUE(profile_manager_.SetUp());
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            profile_manager_.profile_manager(), user_manager_.Get());
 
     // Add a User then log in.
     const AccountId account_id =
@@ -219,8 +224,9 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
         account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
 
     // Create a profile and set it as User profile.
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_.profile_manager(),
+                                            account_id);
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
-    user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
@@ -236,8 +242,12 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    user_manager_->OnUserProfileWillBeDestroyed(
-        AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId));
+    user_provider_.reset();
+    web_ui_.set_web_contents(nullptr);
+    web_contents_.reset();
+    profile_ = nullptr;
+    profile_manager_.DeleteAllTestingProfiles();
+    profile_user_manager_controller_.reset();
   }
 
   TestingProfile* profile() { return profile_; }
@@ -312,6 +322,8 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   FakeVideoCaptureService fake_video_capture_service_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
   UserImageManagerRegistry user_image_manager_registry_{
       TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),

@@ -21,6 +21,8 @@
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/printing/fake_local_printer.h"
 #include "chrome/browser/ash/printing/ipp_client_info_calculator.h"
 #include "chrome/common/pref_names.h"
@@ -175,14 +177,17 @@ class LocalPrinterHandlerChromeosWithAshTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            profile_manager_->profile_manager(),
+            user_manager::UserManager::Get());
 
     ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
     user_session_test_environment_->LogIn(kAccountId);
 
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            kAccountId);
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
-    ash::AnnotatedAccountId::Set(profile_, kAccountId);
-    user_manager::UserManager::Get()->OnUserProfileCreated(
-        kAccountId, profile_->GetPrefs());
 
     auto ipp_client_info_calculator =
         std::make_unique<FakeIppClientInfoCalculator>();
@@ -194,10 +199,10 @@ class LocalPrinterHandlerChromeosWithAshTest : public testing::Test {
   void TearDown() override {
     ipp_client_info_calculator_ = nullptr;
     local_printer_handler_.reset();
-    user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(kAccountId);
     profile_ = nullptr;
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
+    profile_user_manager_controller_.reset();
     user_session_test_environment_.reset();
   }
 
@@ -219,6 +224,8 @@ class LocalPrinterHandlerChromeosWithAshTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<LocalPrinterHandlerChromeos> local_printer_handler_;
   raw_ptr<TestingProfile> profile_;

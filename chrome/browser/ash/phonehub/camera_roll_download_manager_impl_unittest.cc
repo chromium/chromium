@@ -72,6 +72,7 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
 
     profile_ = profile_manager_->CreateTestingProfile(kUserEmail);
     ash::AnnotatedAccountId::Set(profile_, account_id);
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
 
     holding_space_keyed_service_ =

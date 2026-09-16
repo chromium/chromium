@@ -133,6 +133,7 @@ class ScopedTestingProfile {
       : profile_(profile),
         profile_manager_(profile_manager),
         account_id_(account_id) {
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager::UserManager::Get()->OnUserProfileCreated(account_id,
                                                            profile->GetPrefs());
   }

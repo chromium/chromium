@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -65,8 +65,10 @@ TEST_F(ProfileUserManagerControllerTest, GetProfilePrefs) {
   ASSERT_FALSE(user->GetProfilePrefs());
 
   // Triggers ProfileUserManagerController::OnProfileAdded().
-  auto* profile = testing_profile_manager().CreateTestingProfile(
-      kOwnerAccountId.GetUserEmail());
+  ScopedAccountIdAnnotator annotator(
+      testing_profile_manager().profile_manager(), kOwnerAccountId);
+  auto* profile =
+      testing_profile_manager().CreateTestingProfile("arbitrary_profile_name");
 
   EXPECT_TRUE(user->GetProfilePrefs());
   EXPECT_EQ(profile->GetPrefs(), user->GetProfilePrefs());
@@ -75,26 +77,6 @@ TEST_F(ProfileUserManagerControllerTest, GetProfilePrefs) {
   testing_profile_manager().DeleteAllTestingProfiles();
 
   EXPECT_FALSE(user->GetProfilePrefs());
-}
-
-TEST_F(ProfileUserManagerControllerTest, AnnotateAccountId) {
-  const AccountId kAccountId = AccountId::FromUserEmailGaiaId(
-      "account@example.com", GaiaId("1234567890"));
-
-  // Log in the user and create the profile.
-  user_manager().AddGaiaUser(kAccountId, user_manager::UserType::kRegular);
-  user_manager().UserLoggedIn(
-      kAccountId, user_manager::TestHelper::GetFakeUsernameHash(kAccountId));
-  user_manager::User* user = user_manager().GetActiveUser();
-  ASSERT_FALSE(user->GetProfilePrefs());
-
-  // Trigger OnProfileCreationStarted() which annotates AccountId.
-  auto* profile =
-      testing_profile_manager().CreateTestingProfile(kAccountId.GetUserEmail());
-
-  auto* account_id = ash::AnnotatedAccountId::Get(profile);
-  ASSERT_TRUE(account_id);
-  EXPECT_EQ(*account_id, kAccountId);
 }
 
 }  // namespace ash

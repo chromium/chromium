@@ -259,6 +259,7 @@ void AppPlatformMetricsServiceTestBase::AddRegularUser(
   testing_profile_ = profile_manager_->CreateTestingProfile(
       std::string(account_id.GetUserEmail()), GetTestingFactories());
 
+  // TODO(crbug.com/40225390): Use ProfileUserManagerController.
   user_manager_->Get()->OnUserProfileCreated(account_id,
                                              testing_profile_->GetPrefs());
 

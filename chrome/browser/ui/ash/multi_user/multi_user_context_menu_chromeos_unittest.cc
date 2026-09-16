@@ -105,6 +105,7 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
         testing_profile_manager_->profile_manager(), account_id);
     TestingProfile* profile = testing_profile_manager_->CreateTestingProfile(
         account_id.GetUserEmail());
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager_->OnUserProfileCreated(account_id, profile->GetPrefs());
   }
 

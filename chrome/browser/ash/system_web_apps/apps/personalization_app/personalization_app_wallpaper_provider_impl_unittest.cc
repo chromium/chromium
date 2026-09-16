@@ -34,6 +34,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -192,6 +193,10 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
     user_session_test_environment_ =
         std::make_unique<ash::test::UserSessionTestEnvironment>(
             TestingBrowserProcess::GetGlobal()->local_state());
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            profile_manager_.profile_manager(),
+            user_manager::UserManager::Get());
 
     auto* user = user_session_test_environment_->AddRegularUser(kTestAccountId);
     ASSERT_TRUE(user);
@@ -216,9 +221,6 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
                 GetInstance(),
             base::BindRepeating(&MakeMockPersonalizationAppManager)}});
 
-    user_manager::UserManager::Get()->OnUserProfileCreated(
-        kTestAccountId, profile_->GetPrefs());
-
     test_wallpaper_controller()->SetCurrentUser(kTestAccountId);
 
     web_contents_ = content::WebContents::Create(
@@ -239,10 +241,9 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
     web_contents_.reset();
     wallpaper_provider_.reset();
     wallpaper_controller_client_.reset();
-    user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
-        kTestAccountId);
     profile_ = nullptr;
     profile_manager_.DeleteAllTestingProfiles();
+    profile_user_manager_controller_.reset();
     user_session_test_environment_.reset();
     cros_settings_holder_.reset();
   }
@@ -330,6 +331,8 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
   std::unique_ptr<ash::CrosSettingsHolder> cros_settings_holder_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
   SeaPenWallpaperManager sea_pen_wallpaper_manager_;

@@ -61,6 +61,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
@@ -1099,6 +1100,8 @@ class DeviceStatusCollectorTestBase : public testing::Test {
     user_session_test_environment_->LogIn(account_id);
 
     CHECK(!testing_profile_);
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            account_id);
     testing_profile_ =
         profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
     user_manager::UserManager::Get()->SetUserPolicyStatus(
@@ -1129,6 +1132,8 @@ class DeviceStatusCollectorTestBase : public testing::Test {
     user_session_test_environment_->LogIn(user->GetAccountId());
 
     CHECK(!testing_profile_);
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            user->GetAccountId());
     testing_profile_ = profile_manager_->CreateTestingProfile(
         user->GetAccountId().GetUserEmail());
     SetDeviceLocalAccountsForTesting(&owner_settings_service_, {account});

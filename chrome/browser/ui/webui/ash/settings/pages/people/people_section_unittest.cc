@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -87,6 +88,8 @@ class PeopleSectionTest : public testing::Test {
     user_ = user_session_test_environment_->AddRegularUser(primary_account_id);
     ASSERT_TRUE(user_);
     user_session_test_environment_->LogIn(primary_account_id);
+    ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                       primary_account_id);
     profile_ = profile_manager_->CreateTestingProfile(kPrimaryEmail);
     ASSERT_TRUE(profile_);
 

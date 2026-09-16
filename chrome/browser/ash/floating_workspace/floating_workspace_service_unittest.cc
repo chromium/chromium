@@ -383,6 +383,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
         TestingProfile::TestingFactories());
     prefs_ptr->SetManagedPref(chromeos::prefs::kFloatingWorkspaceV2Enabled,
                               base::Value(true));
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     fake_user_manager()->OnUserProfileCreated(account_id_, prefs_ptr);
     fake_desk_sync_service_ =
         std::make_unique<desks_storage::FakeDeskSyncService>(

@@ -16,7 +16,7 @@ class ProfileManager;
 
 namespace ash {
 
-// In production, ProfileUserManagerController annotates AccountId via
+// In production, AccountIdAnnotator annotates AccountId via
 // ProfileManagerObserver::OnProfileCreationStarted. However, the calculation
 // of the AccountId is inferred from the directory path, which is slightly
 // inconvenient for writing tests. This registers the same observer, and

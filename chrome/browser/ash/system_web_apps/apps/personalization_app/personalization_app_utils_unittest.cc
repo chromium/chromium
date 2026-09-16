@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/global_features.h"
@@ -88,8 +89,6 @@ class PersonalizationAppUtilsTest : public testing::Test {
         user_type == user_manager::UserType::kGuest
             ? profile_manager_->CreateGuestProfile()
             : profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
-    user_manager::UserManager::Get()->OnUserProfileCreated(account_id,
-                                                           profile->GetPrefs());
     return profile;
   }
 
@@ -122,6 +121,10 @@ class PersonalizationAppUtilsTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+    profile_user_manager_controller_ =
+        std::make_unique<ash::ProfileUserManagerController>(
+            profile_manager_->profile_manager(),
+            user_manager::UserManager::Get());
 
     // Ensures ProfileHelper / BrowserContextHelper singleton is initialized.
     TestingBrowserProcess::GetGlobal()->platform_part()->profile_helper();
@@ -149,8 +152,9 @@ class PersonalizationAppUtilsTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
     test_variations_service_.reset();
     metrics_state_manager_.reset();
-    user_session_test_environment_.reset();
     profile_manager_.reset();
+    profile_user_manager_controller_.reset();
+    user_session_test_environment_.reset();
     browser_controller_.reset();
     testing::Test::TearDown();
   }
@@ -192,6 +196,8 @@ class PersonalizationAppUtilsTest : public testing::Test {
   std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
   std::unique_ptr<ash::test::UserSessionTestEnvironment>
       user_session_test_environment_;
+  std::unique_ptr<ash::ProfileUserManagerController>
+      profile_user_manager_controller_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
       /*consent=*/false, /*enabled=*/false};

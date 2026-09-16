@@ -985,6 +985,7 @@ class ChromeHidDelegateRenderFrameTestBase
 
 #if BUILDFLAG(IS_CHROMEOS)
     // Notify ChromeOS User that its profile is created.
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager::UserManager::Get()->OnUserProfileCreated(
         kTestAccountId, profile_->GetPrefs());
 #endif

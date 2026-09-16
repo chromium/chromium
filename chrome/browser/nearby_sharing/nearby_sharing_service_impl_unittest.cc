@@ -629,6 +629,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     profile_ = profile_manager_->CreateTestingProfile(kProfileName);
     profile_->GetPrefs()->SetBoolean(prefs::kNearbySharingEnabledPrefName,
                                      true);
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     fake_user_manager_->OnUserProfileCreated(user->GetAccountId(),
                                              profile_->GetPrefs());
 

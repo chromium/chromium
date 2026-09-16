@@ -179,6 +179,7 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
   void LoginUser(size_t user_index) {
     ASSERT_LT(user_index, test_users_.size());
     user_session_test_environment_->LogIn(test_users_[user_index], false);
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager::UserManager::Get()->OnUserProfileCreated(
         test_users_[user_index], user_profiles_[user_index]->GetPrefs());
   }

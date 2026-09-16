@@ -124,6 +124,7 @@ class NearbyShareLocalDeviceDataManagerImplTest
         user_->GetAccountId(),
         user_manager::TestHelper::GetFakeUsernameHash(user_->GetAccountId()));
     RegisterNearbySharingPrefs(pref_service_.registry());
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     fake_user_manager_->OnUserProfileCreated(user_->GetAccountId(),
                                              &pref_service_);
     ash::nearby::NearbySchedulerFactory::SetFactoryForTesting(

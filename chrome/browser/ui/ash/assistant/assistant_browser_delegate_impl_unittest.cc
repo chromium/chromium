@@ -112,6 +112,7 @@ class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
       profile_ = profile_manager_->CreateTestingProfile(
           std::string(kAccountId.GetUserEmail()));
     }
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager_->OnUserProfileCreated(kAccountId, profile_->GetPrefs());
 
     web_app::FakeWebAppProvider::Get(profile_.get())

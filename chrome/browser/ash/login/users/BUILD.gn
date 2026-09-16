@@ -6,6 +6,8 @@ assert(is_chromeos)
 
 static_library("users") {
   sources = [
+    "account_id_annotator.cc",
+    "account_id_annotator.h",
     "affiliation.cc",
     "affiliation.h",
     "chrome_user_manager_util.cc",
@@ -171,6 +173,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "account_id_annotator_unittest.cc",
     "multi_user_sign_in_policy_controller_unittest.cc",
     "profile_user_manager_controller_unittest.cc",
     "user_manager_unittest.cc",

@@ -376,6 +376,7 @@ void BrowserWithTestWindowTest::OnUserProfileCreated(const std::string& email,
   }
   // Do not use the member directly, because another UserManager instance
   // may be injected.
+  // TODO(crbug.com/40225390): Use ProfileUserManagerController instead.
   user_manager->OnUserProfileCreated(account_id, profile->GetPrefs());
   GetSessionControllerClient()->SetUnownedUserPrefService(account_id,
                                                           profile->GetPrefs());

@@ -37,7 +37,6 @@ class ProfileUserManagerController : public ProfileManagerObserver,
   ~ProfileUserManagerController() override;
 
   // ProfileManagerObserver:
-  void OnProfileCreationStarted(Profile* profile) override;
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
 

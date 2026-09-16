@@ -2008,6 +2008,7 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
 
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
     ash::AnnotatedAccountId::Set(profile_, account_id);
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
     user_manager_->OnUserProfileCreated(account_id, profile_->GetPrefs());
 
     static_cast<ash::SessionObserver*>(holding_space_controller_.get())

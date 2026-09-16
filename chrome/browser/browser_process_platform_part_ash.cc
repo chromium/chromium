@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/session/session_manager_delegate_impl.h"
+#include "chrome/browser/ash/login/users/account_id_annotator.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/policy_user_manager_controller.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
@@ -140,6 +141,8 @@ void BrowserProcessPlatformPart::InitializeUserManager() {
   auto* local_state = g_browser_process->local_state();
   user_manager_ = std::make_unique<user_manager::UserManagerImpl>(
       std::make_unique<ash::UserManagerDelegateImpl>(), local_state);
+  account_id_annotator_ = std::make_unique<ash::AccountIdAnnotator>(
+      g_browser_process->profile_manager(), user_manager_.get());
   profile_user_manager_controller_ =
       std::make_unique<ash::ProfileUserManagerController>(
           g_browser_process->profile_manager(), user_manager_.get());
@@ -190,6 +193,7 @@ void BrowserProcessPlatformPart::DestroyUserManager() {
   multi_user_sign_in_policy_controller_.reset();
   user_image_manager_registry_.reset();
   profile_user_manager_controller_.reset();
+  account_id_annotator_.reset();
   user_manager_.reset();
 }
 
