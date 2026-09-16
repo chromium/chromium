@@ -365,6 +365,7 @@ static_library("sb_test_util") {
     ":v4_get_hash_protocol_manager",
     ":v5_search_hashes_util",
     "//base",
+    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//net:test_support",
     "//services/network/public/cpp",

@@ -257,8 +257,7 @@ class SafeBrowsingServiceTest : public PlatformTest,
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
-    // TODO(crbug.com/362791941): Handle v4 references.
-    store_factory_ = new safe_browsing::TestV4StoreFactory();
+    store_factory_ = new safe_browsing::TestSBStoreFactory();
     safe_browsing::SBDatabase::RegisterStoreFactoryForTest(
         base::WrapUnique(store_factory_.get()));
 
@@ -451,7 +450,7 @@ class SafeBrowsingServiceTest : public PlatformTest,
   raw_ptr<safe_browsing::TestV4GetHashProtocolManagerFactory, DanglingUntriaged>
       v4_get_hash_factory_;
   // Owned by SBDatabase.
-  raw_ptr<safe_browsing::TestV4StoreFactory, DanglingUntriaged> store_factory_;
+  raw_ptr<safe_browsing::TestSBStoreFactory, DanglingUntriaged> store_factory_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   std::unique_ptr<safe_browsing::VerdictCacheManager> verdict_cache_manager_;
 };

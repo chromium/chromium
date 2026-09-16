@@ -17,6 +17,7 @@
 #include "components/safe_browsing/core/browser/db/sb_database.h"
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_store.h"
+#include "components/safe_browsing/core/browser/db/v5_store.h"
 
 namespace safe_browsing {
 
@@ -62,6 +63,71 @@ class TestV4StoreFactory : public V4StoreFactory {
       PrefixSize v5_prefix_size,
       bool is_eligible_for_migration,
       bool is_extensions_blocklist) override;
+};
+
+// Test implementation of V5Store for mocking hash prefixes.
+class TestV5Store : public V5Store {
+ public:
+  TestV5Store(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+              const base::FilePath& store_path,
+              PrefixSize prefix_size,
+              const base::FilePath& v4_store_path,
+              bool is_eligible_for_v4_to_v5_disk_migration,
+              bool is_extensions_blocklist);
+  ~TestV5Store() override;
+
+  bool HasValidData() override;
+
+  // Marks `prefix` as bad by inserting it into the mock prefixes.
+  void MarkPrefixAsBad(HashPrefixStr prefix);
+
+  // Sets the mock `prefixes` of the given `size`. `prefixes` does not need to
+  // be sorted.
+  void SetPrefixes(std::vector<HashPrefixStr> prefixes, PrefixSize size);
+
+  // Returns the matching prefix in the store for `full_hash` if one exists, or
+  // an empty prefix otherwise.
+  HashPrefixStr GetMatchingHashPrefix(const FullHashStr& full_hash) override;
+
+ private:
+  // Holds mock prefixes from calls to MarkPrefixAsBad / SetPrefixes. Stored as
+  // a vector for simplicity.
+  std::map<PrefixSize, std::vector<HashPrefixStr>> mock_prefixes_;
+};
+
+// Factory for creating TestV5Store instances.
+class TestV5StoreFactory : public V5StoreFactory {
+ public:
+  TestV5StoreFactory();
+  ~TestV5StoreFactory() override;
+
+  V5StorePtr CreateV5Store(
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+      const base::FilePath& store_path,
+      PrefixSize prefix_size,
+      const base::FilePath& v4_store_path,
+      bool is_eligible_for_v4_to_v5_disk_migration,
+      bool is_extensions_blocklist) override;
+};
+
+// Test factory that routes store creation to V4 or V5 test factories based on
+// `kLocalListsUseSBv5` feature flag.
+class TestSBStoreFactory : public SBStoreFactory {
+ public:
+  TestSBStoreFactory();
+  ~TestSBStoreFactory() override;
+
+  SBStorePtr CreateStore(
+      const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+      const base::FilePath& base_path,
+      const ListInfo& list_info) override;
+
+  TestV4StoreFactory* v4_store_factory() { return &v4_store_factory_; }
+  TestV5StoreFactory* v5_store_factory() { return &v5_store_factory_; }
+
+ private:
+  TestV4StoreFactory v4_store_factory_;
+  TestV5StoreFactory v5_store_factory_;
 };
 
 class TestSBDatabase : public SBDatabase {

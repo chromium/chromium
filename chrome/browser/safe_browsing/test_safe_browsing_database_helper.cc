@@ -52,13 +52,12 @@ class FakeSafeBrowsingUIManager
 
 }  // namespace
 
-// TODO(crbug.com/362791941): Handle v4 references.
 // This class automatically inserts lists into the store map when initializing
 // the test database.
 class InsertingDatabaseFactory : public safe_browsing::TestSBDatabaseFactory {
  public:
   explicit InsertingDatabaseFactory(
-      safe_browsing::TestV4StoreFactory* store_factory,
+      safe_browsing::TestSBStoreFactory* store_factory,
       const std::vector<safe_browsing::ListIdentifier>& lists_to_insert)
       : lists_to_insert_(lists_to_insert), store_factory_(store_factory) {}
 
@@ -69,13 +68,23 @@ class InsertingDatabaseFactory : public safe_browsing::TestSBDatabaseFactory {
     for (const auto& id : lists_to_insert_) {
       if (!store_map->contains(id)) {
         const base::FilePath store_path = base::GetUniquePath(base_store_path);
-        store_map->insert(
-            {id, store_factory_->CreateV4Store(
-                     db_task_runner,
-                     store_path.empty() ? base_store_path : store_path,
-                     /*v5_prefix_size=*/4,
-                     /*is_eligible_for_migration=*/true,
-                     /*is_extensions_blocklist=*/false)});
+        const base::FilePath effective_store_path =
+            store_path.empty() ? base_store_path : store_path;
+        if (base::FeatureList::IsEnabled(safe_browsing::kLocalListsUseSBv5)) {
+          store_map->insert(
+              {id, store_factory_->v5_store_factory()->CreateV5Store(
+                       db_task_runner, effective_store_path, /*prefix_size=*/4,
+                       /*v4_store_path=*/effective_store_path,
+                       /*is_eligible_for_v4_to_v5_disk_migration=*/false,
+                       /*is_extensions_blocklist=*/false)});
+        } else {
+          store_map->insert(
+              {id, store_factory_->v4_store_factory()->CreateV4Store(
+                       db_task_runner, effective_store_path,
+                       /*v5_prefix_size=*/4,
+                       /*is_eligible_for_migration=*/true,
+                       /*is_extensions_blocklist=*/false)});
+        }
       }
     }
 
@@ -90,7 +99,7 @@ class InsertingDatabaseFactory : public safe_browsing::TestSBDatabaseFactory {
  private:
   std::vector<safe_browsing::ListIdentifier> lists_to_insert_;
   std::vector<safe_browsing::ListIdentifier> lists_;
-  raw_ptr<safe_browsing::TestV4StoreFactory> store_factory_;
+  raw_ptr<safe_browsing::TestSBStoreFactory> store_factory_;
 };
 
 TestSafeBrowsingDatabaseHelper::TestSafeBrowsingDatabaseHelper()
@@ -110,7 +119,7 @@ TestSafeBrowsingDatabaseHelper::TestSafeBrowsingDatabaseHelper(
   sb_factory_->UseSBLocalDatabaseManager();
   safe_browsing::SafeBrowsingService::RegisterFactory(sb_factory_.get());
 
-  auto store_factory = std::make_unique<safe_browsing::TestV4StoreFactory>();
+  auto store_factory = std::make_unique<safe_browsing::TestSBStoreFactory>();
   auto sb_db_factory = std::make_unique<InsertingDatabaseFactory>(
       store_factory.get(), lists_to_insert);
 

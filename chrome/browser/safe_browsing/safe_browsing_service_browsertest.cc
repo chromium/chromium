@@ -441,7 +441,7 @@ class SBSafeBrowsingServiceTestBase : public InProcessBrowserTest {
     sb_factory_->UseSBLocalDatabaseManager();
     SafeBrowsingService::RegisterFactory(sb_factory_.get());
 
-    store_factory_ = new TestV4StoreFactory();
+    store_factory_ = new TestSBStoreFactory();
     SBDatabase::RegisterStoreFactoryForTest(
         base::WrapUnique(store_factory_.get()));
 
@@ -612,7 +612,7 @@ class SBSafeBrowsingServiceTestBase : public InProcessBrowserTest {
   raw_ptr<TestV4GetHashProtocolManagerFactory, AcrossTasksDanglingUntriaged>
       v4_get_hash_factory_ = nullptr;
   // Owned by the SBDatabase.
-  raw_ptr<TestV4StoreFactory, AcrossTasksDanglingUntriaged> store_factory_;
+  raw_ptr<TestSBStoreFactory, AcrossTasksDanglingUntriaged> store_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
 #if defined(ADDRESS_SANITIZER)

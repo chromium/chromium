@@ -8,9 +8,12 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {
@@ -75,6 +78,47 @@ HashPrefixStr TestV4Store::GetMatchingHashPrefix(const FullHashStr& full_hash) {
   return HashPrefixStr();
 }
 
+TestV5Store::TestV5Store(
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    const base::FilePath& store_path,
+    PrefixSize prefix_size,
+    const base::FilePath& v4_store_path,
+    bool is_eligible_for_v4_to_v5_disk_migration,
+    bool is_extensions_blocklist)
+    : V5Store(task_runner,
+              store_path,
+              prefix_size,
+              v4_store_path,
+              is_eligible_for_v4_to_v5_disk_migration,
+              is_extensions_blocklist) {}
+
+TestV5Store::~TestV5Store() = default;
+
+bool TestV5Store::HasValidData() {
+  return true;
+}
+
+void TestV5Store::MarkPrefixAsBad(HashPrefixStr prefix) {
+  auto& vec = mock_prefixes_[prefix.size()];
+  vec.insert(std::upper_bound(vec.begin(), vec.end(), prefix), prefix);
+}
+
+void TestV5Store::SetPrefixes(std::vector<HashPrefixStr> prefixes,
+                              PrefixSize size) {
+  std::sort(prefixes.begin(), prefixes.end());
+  mock_prefixes_[size] = std::move(prefixes);
+}
+
+HashPrefixStr TestV5Store::GetMatchingHashPrefix(const FullHashStr& full_hash) {
+  for (const auto& [size, prefixes] : mock_prefixes_) {
+    HashPrefixStr prefix = full_hash.substr(0, size);
+    if (std::find(prefixes.begin(), prefixes.end(), prefix) != prefixes.end()) {
+      return prefix;
+    }
+  }
+  return HashPrefixStr();
+}
+
 TestSBDatabase::TestSBDatabase(
     const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
     std::unique_ptr<StoreMap> store_map)
@@ -83,8 +127,13 @@ TestSBDatabase::TestSBDatabase(
 void TestSBDatabase::MarkPrefixAsBad(ListIdentifier list_id,
                                      HashPrefixStr prefix) {
   SBStore* base_store = store_map_->at(list_id).get();
-  TestV4Store* test_store = static_cast<TestV4Store*>(base_store);
-  test_store->MarkPrefixAsBad(prefix);
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    TestV5Store* test_store = static_cast<TestV5Store*>(base_store);
+    test_store->MarkPrefixAsBad(prefix);
+  } else {
+    TestV4Store* test_store = static_cast<TestV4Store*>(base_store);
+    test_store->MarkPrefixAsBad(prefix);
+  }
 }
 
 int64_t TestSBDatabase::GetStoreSizeInBytes(const ListIdentifier& store) const {
@@ -107,6 +156,40 @@ V4StorePtr TestV4StoreFactory::CreateV4Store(
       SBStoreDeleter(task_runner));
   new_store->Initialize();
   return new_store;
+}
+
+TestV5StoreFactory::TestV5StoreFactory() = default;
+
+TestV5StoreFactory::~TestV5StoreFactory() = default;
+
+V5StorePtr TestV5StoreFactory::CreateV5Store(
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    const base::FilePath& store_path,
+    PrefixSize prefix_size,
+    const base::FilePath& v4_store_path,
+    bool is_eligible_for_v4_to_v5_disk_migration,
+    bool is_extensions_blocklist) {
+  V5StorePtr new_store(
+      new TestV5Store(task_runner, store_path, prefix_size, v4_store_path,
+                      is_eligible_for_v4_to_v5_disk_migration,
+                      is_extensions_blocklist),
+      SBStoreDeleter(task_runner));
+  new_store->Initialize();
+  return new_store;
+}
+
+TestSBStoreFactory::TestSBStoreFactory() = default;
+
+TestSBStoreFactory::~TestSBStoreFactory() = default;
+
+SBStorePtr TestSBStoreFactory::CreateStore(
+    const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
+    const base::FilePath& base_path,
+    const ListInfo& list_info) {
+  if (base::FeatureList::IsEnabled(kLocalListsUseSBv5)) {
+    return v5_store_factory_.CreateStore(db_task_runner, base_path, list_info);
+  }
+  return v4_store_factory_.CreateStore(db_task_runner, base_path, list_info);
 }
 
 TestSBDatabaseFactory::TestSBDatabaseFactory() = default;
@@ -142,7 +225,11 @@ TestV4GetHashProtocolManager::TestV4GetHashProtocolManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const StoresToCheck& stores_to_check,
     const SBProtocolConfig& config)
-    : V4GetHashProtocolManager(url_loader_factory, stores_to_check, config) {}
+    : V4GetHashProtocolManager(url_loader_factory, stores_to_check, config) {
+  // TestV4GetHashProtocolManager should not be instantiated when V5 local
+  // lists are enabled; V5 uses its own protocol manager.
+  CHECK(!base::FeatureList::IsEnabled(kLocalListsUseSBv5));
+}
 
 void TestV4GetHashProtocolManager::AddToFullHashCache(FullHashInfo fhi) {
   full_hash_cache_[fhi.full_hash].full_hash_infos.push_back(fhi);

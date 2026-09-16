@@ -88,7 +88,7 @@ class SBEmbeddedTestServerBrowserTest
     // We only need to mock a local database. The tests will use a true real
     // protocol manager.
     SBDatabase::RegisterStoreFactoryForTest(
-        std::make_unique<TestV4StoreFactory>());
+        std::make_unique<TestSBStoreFactory>());
 
     auto sb_db_factory = std::make_unique<TestSBDatabaseFactory>();
     sb_db_factory_ = sb_db_factory.get();

@@ -45,7 +45,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/platform_test.h"
 
-// TODO(crbug.com/362791941): Handle v4 references
 namespace safe_browsing {
 
 using enum ExtendedReportingLevel;
@@ -76,7 +75,11 @@ class FakeGetHashProtocolManager : public V4GetHashProtocolManager {
       const SBProtocolConfig& config,
       const FullHashInfos& full_hash_infos)
       : V4GetHashProtocolManager(url_loader_factory, stores_to_check, config),
-        full_hash_infos_(full_hash_infos) {}
+        full_hash_infos_(full_hash_infos) {
+    // FakeGetHashProtocolManager should not be instantiated when V5 local
+    // lists are enabled; V5 uses its own protocol manager.
+    CHECK(!base::FeatureList::IsEnabled(kLocalListsUseSBv5));
+  }
 
   void GetFullHashes(const FullHashToStoreAndHashPrefixesMap,
                      const std::vector<std::string>&,
