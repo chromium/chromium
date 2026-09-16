@@ -752,8 +752,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   histogram_tester->ExpectTotalCount(
       "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
   histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.PredictionModelRemoved.PainfulPageLoad", 0);
-  histogram_tester->ExpectTotalCount(
       "OptimizationGuide.PredictionModelStore.ModelRemovalReason."
       "PainfulPageLoad",
       0);

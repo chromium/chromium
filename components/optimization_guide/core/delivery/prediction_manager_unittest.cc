@@ -692,8 +692,6 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
         "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
     histogram_tester2.ExpectTotalCount(
         "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
-    histogram_tester2.ExpectTotalCount(
-        "OptimizationGuide.PredictionModelRemoved.PainfulPageLoad", 0);
   }
 
   // Now remove and reset observer.

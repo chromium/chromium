@@ -2879,33 +2879,6 @@ chromium-metrics-reviews@google.com.
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
-<histogram name="OptimizationGuide.PredictionModelExpired.{OptimizationTarget}"
-    enum="BooleanExpired" expires_after="M145">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>wittman@chromium.org</owner>
-  <summary>
-    Records whether a prediction model for an OptimizationTarget expired if it
-    was not updated or used within the configured expiration time, but can
-    change subject to Finch or server configuration. Recorded once per browser
-    startup.
-  </summary>
-  <token key="OptimizationTarget" variants="OptimizationTarget"/>
-</histogram>
-
-<histogram
-    name="OptimizationGuide.PredictionModelExpiredVersion.{OptimizationTarget}"
-    units="version number" expires_after="M145">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>wittman@chromium.org</owner>
-  <summary>
-    Records the version of a prediction model for an OptimizationTarget that
-    expired if it was not updated or used within the configured expiration time,
-    but can change subject to Finch or server configuration. Recorded once per
-    browser startup.
-  </summary>
-  <token key="OptimizationTarget" variants="OptimizationTarget"/>
-</histogram>
-
 <histogram
     name="OptimizationGuide.PredictionModelFetcher.GetModelsResponse.NetErrorCode"
     enum="NetErrorCodes" expires_after="2026-11-09">
@@ -2959,17 +2932,6 @@ chromium-metrics-reviews@google.com.
     Records the version of the prediction model that was loaded from the store
     and used until updated by a fetch. Recorded only if the loaded model was
     valid.
-  </summary>
-  <token key="OptimizationTarget" variants="OptimizationTarget"/>
-</histogram>
-
-<histogram name="OptimizationGuide.PredictionModelRemoved.{OptimizationTarget}"
-    enum="Boolean" expires_after="M145">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>wittman@chromium.org</owner>
-  <summary>
-    Recorded whenever the prediction model for {OptimizationTarget} was removed
-    from the model store.
   </summary>
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
