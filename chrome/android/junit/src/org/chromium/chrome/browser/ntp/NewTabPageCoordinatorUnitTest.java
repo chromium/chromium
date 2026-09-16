@@ -798,6 +798,13 @@ public class NewTabPageCoordinatorUnitTest {
         mCoordinator.setSearchProviderInfo(targetHasLogo, targetIsGoogle);
         mCoordinator.updateActionButtonVisibility();
 
+        assertEquals(
+                targetHasLogo,
+                mCoordinator.getSearchProviderInfoDelegateForTesting().getSearchProviderHasLogo());
+        assertEquals(
+                targetIsGoogle,
+                mCoordinator.getSearchProviderInfoDelegateForTesting().getSearchProviderIsGoogle());
+
         Resources resources = mActivity.getResources();
         int logoTopMargin = resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
         int expectedBottomMargin = NtpCustomizationUtils.getLogoViewBottomMarginPx(resources);

@@ -929,6 +929,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedTab.java",
   "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedTabManager.java",
   "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedWindow.java",
+  "java/src/org/chromium/chrome/browser/ntp/SearchProviderInfoDelegate.java",
   "java/src/org/chromium/chrome/browser/ntp/SessionRecentlyClosedEntry.java",
   "java/src/org/chromium/chrome/browser/ntp/SnapScrollHelperImpl.java",
   "java/src/org/chromium/chrome/browser/ntp/TabGroupContainer.java",

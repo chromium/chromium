@@ -147,6 +147,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final SideUiObserver mSideUiObserver;
     private final SearchEngineService mSearchEngineService;
     private final BackPressManager mBackPressManager;
+    private final SearchProviderInfoDelegate mSearchProviderInfoDelegate;
 
     /**
      * The predefined baseline vertical scroll distance before the fake search box reaches the top
@@ -191,10 +192,6 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * flags used to track initialization progress.
      */
     private boolean mHasShownView;
-
-    private boolean mSearchProviderHasLogo = true;
-    private boolean mSearchProviderIsGoogle;
-    private boolean mShowingNonStandardGoogleLogo;
 
     private boolean mInitialized;
 
@@ -301,6 +298,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mIsLff = isLff;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mSearchEngineService = SearchEngineService.getForProfile(mProfile);
+        mSearchProviderInfoDelegate = new SearchProviderInfoDelegate();
 
         Resources resources = mActivity.getResources();
         mNtpSearchBoxTopMarginWithoutLogo =
@@ -650,7 +648,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                 mCallbackController.makeCancelable(
                         (logo) -> {
                             mSnapshotTileGridChanged = true;
-                            mShowingNonStandardGoogleLogo = logo != null && mSearchProviderIsGoogle;
+                            mSearchProviderInfoDelegate.setShowingNonStandardGoogleLogo(
+                                    logo != null
+                                            && mSearchProviderInfoDelegate
+                                                    .getSearchProviderIsGoogle());
                             NtpCustomizationConfigManager.getInstance()
                                     .setDefaultSearchEngineLogoBitmap(
                                             logo == null ? null : logo.image);
@@ -788,17 +789,13 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
      * @param isGoogle Whether the search provider is Google.
      */
     void setSearchProviderInfo(boolean hasLogo, boolean isGoogle) {
-        if (hasLogo == mSearchProviderHasLogo
-                && isGoogle == mSearchProviderIsGoogle
-                && mInitialized) {
-            return;
-        }
-        boolean isSearchProviderIsGoogleChanged = mSearchProviderIsGoogle != isGoogle;
-        mSearchProviderHasLogo = hasLogo;
-        mSearchProviderIsGoogle = isGoogle;
+        boolean isSearchProviderIsGoogleChanged =
+                mSearchProviderInfoDelegate.getSearchProviderIsGoogle() != isGoogle;
 
-        if (!mSearchProviderIsGoogle) {
-            mShowingNonStandardGoogleLogo = false;
+        // Always calls mSearchProviderInfoDelegate.setSearchProviderInfo() as the first one to
+        // prevent it is being skipped.
+        if (!mSearchProviderInfoDelegate.setSearchProviderInfo(hasLogo, isGoogle) && mInitialized) {
+            return;
         }
 
         setSearchProviderTopMargin();
@@ -1013,7 +1010,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     @VisibleForTesting
     void setSearchProviderTopMargin() {
-        boolean showFakeSearchBoxWithoutLogo = !mSearchProviderHasLogo;
+        boolean showFakeSearchBoxWithoutLogo =
+                !mSearchProviderInfoDelegate.getSearchProviderHasLogo();
         mCurrentNtpFakeSearchBoxTransitionStartOffset =
                 getNtpSearchBoxTransitionStartOffset(showFakeSearchBoxWithoutLogo);
 
@@ -1043,7 +1041,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private int getLogoTopMargin() {
         Resources resources = mActivity.getResources();
 
-        if (mShowingNonStandardGoogleLogo && mSearchProviderHasLogo) {
+        if (mSearchProviderInfoDelegate.getShowingNonStandardGoogleLogo()
+                && mSearchProviderInfoDelegate.getSearchProviderHasLogo()) {
             return LogoUtils.getTopMarginForDoodle(resources);
         }
 
@@ -1097,7 +1096,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         if (mComposeplateCoordinator != null) {
             shouldShowComposeplateButton =
                     mCanShowComposeplateButton == TriState.TRUE
-                            && mSearchProviderIsGoogle
+                            && mSearchProviderInfoDelegate.getSearchProviderIsGoogle()
                             && IncognitoUtils.isIncognitoModeEnabled(mProfile);
             mComposeplateCoordinator.setVisibility(
                     shouldShowComposeplateButton, mManager.isCurrentPage());
@@ -1157,7 +1156,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     private boolean shouldShowLogo() {
-        return mSearchProviderHasLogo;
+        return mSearchProviderInfoDelegate.getSearchProviderHasLogo();
     }
 
     private boolean hasLoadCompleted() {
@@ -1563,7 +1562,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private void updateDoodleOnTablet() {
         if (!mIsLff || mLogoCoordinator == null) return;
 
-        mLogoCoordinator.updateDoodleOnTablet(mShowingNonStandardGoogleLogo);
+        mLogoCoordinator.updateDoodleOnTablet(
+                mSearchProviderInfoDelegate.getShowingNonStandardGoogleLogo());
     }
 
     private void updateSearchBoxTwoSideMargin() {
@@ -1589,7 +1589,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
         mTopInset = supportsEdgeToEdgeOnTop ? systemTopInset : 0;
         mCurrentNtpFakeSearchBoxTransitionStartOffset =
-                getNtpSearchBoxTransitionStartOffset(!mSearchProviderHasLogo) + mTopInset;
+                getNtpSearchBoxTransitionStartOffset(
+                                !mSearchProviderInfoDelegate.getSearchProviderHasLogo())
+                        + mTopInset;
 
         int toolbarHeightNoShadow =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
@@ -1714,5 +1716,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     void setIsWhiteBackgroundOnComposeplateApplied(@TriState int applied) {
         mIsWhiteBackgroundOnComposeplateApplied = applied;
+    }
+
+    SearchProviderInfoDelegate getSearchProviderInfoDelegateForTesting() {
+        return mSearchProviderInfoDelegate;
     }
 }
