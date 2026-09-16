@@ -16,12 +16,13 @@
   --cr-composebox-grid-min-item-width: 100px;
   --cr-composebox-grid-padding-bottom: 10px;
   --cr-composebox-grid-row-gap: 16px;
-  --cr-composebox-header-color: #474747;
+  --cr-composebox-header-color: var(--color-sys-on-surface-subtle);
   --cr-composebox-header-font-size: 12px;
   --cr-composebox-header-font-weight: 500;
   --cr-composebox-header-line-height: 18px;
   --cr-composebox-image-card-aspect-ratio: 4 / 3;
   --cr-composebox-image-card-border-radius: 16px;
+  --cr-composebox-image-card-text-color: var(--color-sys-on-surface);
   --input-bottom-spacing: 10px;
   --text-input-top-spacing: 10px;
   --text-input-inline-end-spacing: 80px;
