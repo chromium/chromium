@@ -2213,6 +2213,9 @@
     <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH" desc="Label for a text input placeholder allowing the user to search/filter the displayed search engines">
       Filter sites on page
     </message>
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH_V2" desc="Label for a text input placeholder allowing the user to search/filter the displayed search engines">
+      Filter sites
+    </message>
     <message name="IDS_SETTINGS_SEARCH_ENGINES_SUBTITLE_FOR_POLICY" desc="Subtitle for a dialog that allows editing/viewing an existing search engine that is created by policy.">
       This setting is managed by your administrator
     </message>
@@ -2337,6 +2340,9 @@
     </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_FILTER" desc="Placeholder text for the search text box that allows the user to filter the All Sites list with their search query.">
       Filter sites on page
+    </message>
+    <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_FILTER_V2" desc="Placeholder text for the search text box that allows the user to filter the All Sites list with their search query.">
+      Filter sites
     </message>
     <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SEARCH" desc="Placeholder text for the filter text box that allows the user to filter the All Sites list with their search query.">
       Search

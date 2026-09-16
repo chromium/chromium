@@ -3294,7 +3294,6 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
       {"searchEnginesExtension", IDS_SETTINGS_SEARCH_ENGINES_EXTENSION_ENGINES},
       {"searchEnginesExtensionExplanation",
        IDS_SETTINGS_SEARCH_ENGINES_EXTENSION_ENGINES_EXPLANATION},
-      {"searchEnginesSearch", IDS_SETTINGS_SEARCH_ENGINES_SEARCH},
       {"searchEnginesName", IDS_SETTINGS_SEARCH_ENGINES_NAME},
       {"searchEnginesShortcut", IDS_SETTINGS_SEARCH_ENGINES_SHORTCUT},
       {"searchEnginesQueryURL", IDS_SETTINGS_SEARCH_ENGINES_QUERY_URL},
@@ -3328,6 +3327,10 @@ void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SEARCH_ENGINES_EDIT_SEARCH_ENGINE_BUTTON_ARIA_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddLocalizedString("searchEnginesSearch",
+                                  features::IsSettingsRefresh2026Enabled()
+                                      ? IDS_SETTINGS_SEARCH_ENGINES_SEARCH_V2
+                                      : IDS_SETTINGS_SEARCH_ENGINES_SEARCH);
 }
 
 void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
@@ -3413,8 +3416,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsAllSites", IDS_SETTINGS_SITE_SETTINGS_ALL_SITES},
       {"siteSettingsAllSitesDescription",
        IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_DESCRIPTION},
-      {"siteSettingsAllSitesFilter",
-       IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_FILTER},
       {"siteSettingsAllSitesSearch",
        IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SEARCH},
       {"siteSettingsAllSitesSort", IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SORT},
@@ -4253,6 +4254,11 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SITE_SETTINGS_LOOPBACK_NETWORK_BLOCKED_EXCEPTIONS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddLocalizedString(
+      "siteSettingsAllSitesFilter",
+      features::IsSettingsRefresh2026Enabled()
+          ? IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_FILTER_V2
+          : IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_FILTER);
 
   // These ones cannot be constexpr because we need to check base::FeatureList.
   static webui::LocalizedString kSensorsLocalizedStrings[] = {

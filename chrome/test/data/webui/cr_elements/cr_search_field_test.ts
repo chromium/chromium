@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 
 import type {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-search-field. */
@@ -38,6 +38,7 @@ suite('cr-search-field', function() {
 
   teardown(function() {
     searches = null;
+    document.documentElement.removeAttribute('settings-refresh-2026');
   });
 
   // Test that no initial 'search-changed' event is fired during
@@ -126,5 +127,25 @@ suite('cr-search-field', function() {
     field.setValue(`  ${value}  `);
     assertTrue(calledSetValue);
     assertEquals(0, searches!.length);
+  });
+
+  test('settings refresh 2026 styles applied', async () => {
+    document.documentElement.setAttribute('settings-refresh-2026', '');
+    const searchInput = field.$.searchInput;
+    const underline =
+        searchInput.shadowRoot.querySelector<HTMLElement>('#underline');
+    assertTrue(!!underline);
+    assertFalse(isVisible(underline));
+
+    field.click();
+    simulateSearch('query1');
+    assertEquals('query1', field.getValue());
+    assertTrue(field.hasSearchText);
+
+    field.$.clearSearch.click();
+    assertEquals('', field.getValue());
+    assertFalse(field.hasSearchText);
+    await microtasksFinished();
+    assertEquals(searchInput, field.shadowRoot.activeElement);
   });
 });

@@ -78,3 +78,55 @@
   left: 0;
   right: auto;
 }
+
+:host-context([settings-refresh-2026]) {
+  --cr-search-field-clear-icon-fill: var(--cr-secondary-text-color);
+  --cr-search-field-clear-icon-margin-end: 6px;
+  --cr-search-field-input-border-bottom: none;
+  --cr-search-field-search-icon-fill: var(--cr-secondary-text-color);
+  --cr-search-field-underline-display: none;
+
+  #searchIcon {
+    --iron-icon-fill-color: var(--cr-secondary-text-color);
+  }
+
+  #searchInput {
+    --cr-input-background-color: transparent;
+    --cr-input-border: 1px solid
+        var(--color-focusable-border-unfocused,
+            var(--cr-fallback-color-outline));
+    --cr-input-border-radius: 4px;
+    --cr-input-error-display: none;
+    --cr-input-min-height: 36px;
+    --cr-input-padding-bottom: 9px;
+    --cr-input-padding-end: 9px;
+    --cr-input-padding-start: 10px;
+    --cr-input-padding-top: 9px;
+    line-height: 16px;
+    margin-inline-start: 8px;
+    width: var(--cr-search-field-input-width, 240px);
+
+    &[focused_] {
+      --cr-input-border: 2px solid var(--cr-focus-outline-color);
+      --cr-input-padding-bottom: 8px;
+      --cr-input-padding-end: 8px;
+      --cr-input-padding-start: 9px;
+      --cr-input-padding-top: 8px;
+    }
+  }
+
+  &:host([has-search-text]) #searchInput {
+    --cr-input-padding-end: calc(24px +
+        var(--cr-search-field-clear-icon-margin-end));
+
+    &[focused_] {
+      --cr-input-padding-end: calc(24px +
+          var(--cr-search-field-clear-icon-margin-end) - 1px);
+    }
+  }
+
+  #clearSearch {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
