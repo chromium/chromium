@@ -6424,6 +6424,21 @@
             ]
         }
     ],
+    "DefaultANGLEVulkan": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultANGLEVulkan"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultBrowserChangedOsNotification": [
         {
             "platforms": [
