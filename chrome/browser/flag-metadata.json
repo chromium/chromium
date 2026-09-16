@@ -3563,7 +3563,7 @@
   {
     "name": "enable-chrome-refresh-token-binding-upgrade",
     "owners": ["alexilin@chromium.org", "chrome-signin-team@google.com"],
-    "expiry_milestone": 156
+    "expiry_milestone": 160
   },
   {
     "name": "enable-command-line-on-non-rooted-devices",
@@ -3737,7 +3737,7 @@
   {
     "name": "enable-device-bound-sessions-dse-prewarmer",
     "owners": [ "santosls@google.com", "jdoerrie@chromium.org", "alexilin@chromium.org" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 160
   },
   {
     "name": "enable-devtools-deep-link-via-extensibility-api",
