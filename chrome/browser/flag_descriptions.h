@@ -209,6 +209,15 @@ inline constexpr char kNewTabPageCustomizationV2Name[] =
     "Customize the new tab page V2";
 inline constexpr char kNewTabPageCustomizationV2Description[] =
     "Allows users to customize the new tab page, like appearance.";
+
+inline constexpr char kAndroidBeforeUnloadSupportName[] =
+    "Android beforeunload support";
+inline constexpr char kAndroidBeforeUnloadSupportDescription[] =
+    "Enables JavaScript beforeunload and unload handler support on Android. "
+    "This is limited to Desktop Android, for parity with the Desktop "
+    "form-factor. Note that this capability is being deprecated, see "
+    "https://chromestatus.com/feature/5579556305502208.";
+
 inline constexpr char kAndroidBottomBarName[] = "Android Bottom Bar";
 inline constexpr char kAndroidBottomBarDescription[] =
     "Enables the chrome android bottom bar.";

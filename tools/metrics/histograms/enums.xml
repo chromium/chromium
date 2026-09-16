@@ -12275,6 +12275,7 @@ from previous Chrome versions.
   <int value="-780646596"
       label="CustomizeChromeWallpaperSearchInspirationCard:enabled"/>
   <int value="-780566251" label="SyncAIThread:enabled"/>
+  <int value="-779952093" label="AndroidBeforeUnloadSupport:disabled"/>
   <int value="-779220222" label="WebXRLayers:disabled"/>
   <int value="-778126349" label="DownloadsLocationChange:enabled"/>
   <int value="-778098896" label="EnableAggregatedMlSearchRanking:disabled"/>
@@ -20106,6 +20107,7 @@ from previous Chrome versions.
       label="AutofillAlwaysReturnCloudTokenizedCard:enabled"/>
   <int value="1634897915" label="password-import-export:enabled"/>
   <int value="1634980726" label="VrShellExperimentalRendering:disabled"/>
+  <int value="1635410334" label="AndroidBeforeUnloadSupport:enabled"/>
   <int value="1635695770" label="CSSContainerQueries:disabled"/>
   <int value="1635755615" label="ScanAppMultiPageScan:disabled"/>
   <int value="1635809519" label="TabSharingToolbarAndroid:disabled"/>
