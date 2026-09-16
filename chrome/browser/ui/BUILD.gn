@@ -4400,14 +4400,21 @@ source_set("unit_tests") {
       "browser_unittest.cc",
       "browser_window_state_unittest.cc",
       "intent_picker_tab_helper_unittest.cc",
+      "managed_ui_for_supervised_user_unittest.cc",
     ]
     deps += [
       ":accelerator_table",
       ":browser_window_state",
+      ":managed_ui",
       "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
       "//chrome/browser/apps/link_capturing:test_support",
+      "//chrome/browser/supervised_user",
       "//components/apps/link_capturing",
+      "//components/supervised_user/core/browser:test_support",
     ]
+    if (is_chromeos) {
+      deps += [ "//ui/chromeos" ]
+    }
   }
 
   if (is_mac) {
