@@ -1735,7 +1735,7 @@ Cette règle a été supprimée dans Chrome 145. Nous vous recommandons d'utili
 <translation id="2149957154942061013">Usage interne uniquement</translation>
 <translation id="2151831603578119302">Activer les raccourcis des fonctionnalités d'accessibilité</translation>
 <translation id="2156132677421487971">Configurer les règles pour <ph name="PRODUCT_NAME" />, une fonctionnalité permettant aux utilisateurs de caster le contenu des onglets, des sites ou de leur bureau depuis leur navigateur sur des écrans ou systèmes audio distants.</translation>
-<translation id="2156359411909638496">Paramètres pour les Découvertes Chrome</translation>
+<translation id="2156359411909638496">Paramètres Chrome Finds</translation>
 <translation id="2156755242840687300">Serveurs d'impression externes activés</translation>
 <translation id="2157842368188031417">Cette règle ne concerne que les sessions Invité gérées. Elle doit être activée pour que le mode station de travail partagée d'Imprivata autorise les changements d'utilisateurs en cours de session.
       Si cette règle est définie sur "True", certaines règles sont ignorées d'office pour des fonctionnalités, qui conservent les données utilisateur sensibles et qui ne sont pas gérées par le mécanisme de nettoyage utilisé pour les changements d'utilisateurs en cours de session avec le mode station de travail partagée d'Imprivata.
@@ -4266,7 +4266,7 @@ Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />,
 <translation id="3749511622128647337">Désactiver la sortie audio</translation>
 <translation id="3750220015372671395">Bloquer la génération de clé sur ces sites</translation>
 <translation id="3753267109888284695">Liste d'autorisation HTTP</translation>
-<translation id="3753514818525019935">Ne pas autoriser les Découvertes Chrome.</translation>
+<translation id="3753514818525019935">Ne pas autoriser Chrome Finds.</translation>
 <translation id="3753959315989102457">Désactiver la mise à jour de la position de l'appareil</translation>
 <translation id="3755237588083934849">Permet de spécifier la fréquence d'envoi (en millisecondes) des informations sur l'état de l'appareil. La fréquence minimale autorisée est de 60 secondes.
 
@@ -7496,7 +7496,7 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
 <translation id="5776508475264864949">Interdire à l'appli Gemini d'effectuer des actions sur les pages Web.</translation>
 <translation id="5779185945203505880">Demander chaque fois qu'un site veut accéder aux capteurs</translation>
 <translation id="5783009211970309878">Imprimer les en-têtes et les pieds de page</translation>
-<translation id="5786913136266632175">Autoriser les Découvertes Chrome et améliorer les modèles d'IA.</translation>
+<translation id="5786913136266632175">Autoriser Chrome Finds et améliorer les modèles d'IA.</translation>
 <translation id="5789288985554424301">Permet de définir si les sites Web sont autorisés à utiliser l'API Idle Detection.
 
 Si cette règle est définie sur "1 - <ph name="ALLOW_IDLE_DETECTION_VALUE_NAME" />", les sites Web peuvent utiliser l'API sans demander l'autorisation de l'utilisateur.
@@ -9101,7 +9101,7 @@ Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, c'est
 
       Si cette règle n'est pas configurée, aucune donnée de télémétrie supplémentaire ne sera signalée en cas d'événements de modification de l'intensité du signal.</translation>
 <translation id="6751612743847158732">Restaurez toujours la dernière session.</translation>
-<translation id="6751882390104737961">Les Découvertes Chrome sont une fonctionnalité basée sur l'IA qui aide les utilisateurs à rechercher et à comprendre le contenu de la page Web actuelle.
+<translation id="6751882390104737961">Chrome Finds est une fonctionnalité basée sur l'IA qui aide les utilisateurs à rechercher et à comprendre le contenu de la page Web actuelle.
 
 0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. Elles pourront également être examinées par des réviseurs humains afin d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
 
@@ -12219,7 +12219,7 @@ Si <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> est désactivée, la traductio
 <translation id="8713535263782304771">Désactiver la navigation sécurisée</translation>
 <translation id="8714556680280715750">URL permettant aux utilisateurs d'en savoir plus. Si cette règle n'est pas configurée, plus aucune URL "En savoir plus" ne figurera dans le programme d'installation. Si l'URL est spécifiée, elle doit utiliser le format HTTPS.</translation>
 <translation id="8715885991031124968">Autoriser les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente.</translation>
-<translation id="8720288018555457355">Autoriser les Découvertes Chrome sans améliorer les modèles d'IA.</translation>
+<translation id="8720288018555457355">Autoriser Chrome Finds sans améliorer les modèles d'IA.</translation>
 <translation id="8720547069538712402">Autoriser l'utilisateur à activer ou désactiver le correcteur orthographique</translation>
 <translation id="8721685661759544418">Activer la lecture à voix haute des pages Web (distillation du texte et synthèse vocale)</translation>
 <translation id="8726080977639508431">Cette règle contrôle la façon dont <ph name="PRODUCT_NAME" /> interprète les règles des listes grises/de sites pour la fonctionnalité Legacy Browser Support. Cela concerne ces règles : <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> et <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.

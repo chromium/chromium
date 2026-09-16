@@ -880,7 +880,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis}one{# mot de passe compromis}other{# mots de passe compromis}}</translation>
 <translation id="4641919525231168205">Accéder à la page suivante</translation>
 <translation id="4642472735733036929">Suivi des prix interrompu</translation>
-<translation id="4643661539340338954">Notifications des découvertes Chrome activées</translation>
+<translation id="4643661539340338954">Notifications Chrome Finds activées</translation>
 <translation id="4649493483932335039">Afficher les onglets récents</translation>
 <translation id="465657074423018424">La navigation sécurisée vous protège contre les sites Web trompeurs. Si vous la désactivez, faites preuve d'une grande vigilance en ligne, surtout lorsque vous saisissez des mots de passe.</translation>
 <translation id="4662373422909645029">Le pseudo ne doit pas contenir de chiffres</translation>
@@ -1669,7 +1669,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7686086654630106285">En savoir plus sur les annonces suggérées par les sites</translation>
 <translation id="7690596512217303514">Votre appareil n'a pas pu ouvrir Chrome. Pour résoudre ce problème, téléchargez la dernière mise à jour de Chrome depuis votre plate-forme de téléchargement d'applications.</translation>
 <translation id="7692761875510935111">Ouvrez rapidement dans le navigateur. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
-<translation id="7695270712963178084">Découvertes Chrome</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">Poignée de déplacement</translation>
 <translation id="7698359219371678927">Créer un e-mail dans <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Bottom sheet d'activité récente ouverte à pleine hauteur</translation>
@@ -1809,7 +1809,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="82296173028782770">Modifier la requête de recherche : <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Ajouter aux favoris</translation>
 <translation id="8243077599929149377">Ajouter votre nom d'utilisateur</translation>
-<translation id="8244387390464017490">Person. page Nouv. onglet</translation>
+<translation id="8244387390464017490">Personnaliser la page</translation>
 <translation id="8244444485683708655">Joindre une image de la caméra</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8257429805444572809">Désabonné de <ph name="DOMAIN" /></translation>
