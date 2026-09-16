@@ -37,6 +37,7 @@
 #import "components/send_tab_to_self/send_tab_to_self_entry.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#import "components/send_tab_to_self/target_device_info.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -1043,6 +1044,33 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   send_tab_to_self::SendTabToSelfModel* model =
       service->GetSendTabToSelfModel();
   return model->GetEntryByGUID(base::SysNSStringToUTF8(guid)) != nullptr;
+}
+
++ (BOOL)hasSendTabToSelfTargetDevice:(NSString*)deviceName {
+  if (!deviceName.length) {
+    return NO;
+  }
+  ProfileIOS* original_profile = chrome_test_util::GetOriginalProfile();
+  if (!original_profile) {
+    return NO;
+  }
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(original_profile);
+  if (!service) {
+    return NO;
+  }
+  send_tab_to_self::SendTabToSelfModel* model =
+      service->GetSendTabToSelfModel();
+  if (!model || !model->IsReady()) {
+    return NO;
+  }
+  const std::string target_device_name = base::SysNSStringToUTF8(deviceName);
+  for (const auto& device : model->GetTargetDeviceInfoSortedList()) {
+    if (device.device_name == target_device_name) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 + (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL {

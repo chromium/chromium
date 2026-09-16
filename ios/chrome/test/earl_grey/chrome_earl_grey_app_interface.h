@@ -458,6 +458,10 @@ enum class TipsNotificationType;
 // GUID.
 + (BOOL)hasSendTabToSelfEntryWithGUID:(NSString*)guid;
 
+// Checks if the local Send Tab To Self model is ready and contains a target
+// device with the given `deviceName`.
++ (BOOL)hasSendTabToSelfTargetDevice:(NSString*)deviceName;
+
 // Returns the generated text fragment for the given URL, or nil if no entry
 // exists or no fragment is set.
 + (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL;

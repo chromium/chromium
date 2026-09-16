@@ -173,6 +173,8 @@ void DismissSendTabToSelfModal() {
       send_tab_to_self::kSendTabToSelfEnhancedBottomsheet);
   config.features_enabled.push_back(
       send_tab_to_self::kSendTabToSelfPostSendToast);
+  config.features_enabled.push_back(
+      send_tab_to_self::kSendTabToSelfIOSShareSheetDeviceList);
   return config;
 }
 
@@ -180,6 +182,17 @@ void DismissSendTabToSelfModal() {
   [super setUp];
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+}
+
+- (void)setupHistogramTester {
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Cannot setup histogram tester.");
+  [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
+  [self addTeardownBlock:^{
+    [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
+    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                  @"Cannot reset histogram tester.");
+  }];
 }
 
 // Tests that the entry point button is shown to a signed out user, even if
@@ -397,6 +410,100 @@ void DismissSendTabToSelfModal() {
                                                        errorSnackbarMessage)];
 
   DismissSnackbar();
+}
+
+// Tests that tapping a direct target device in the Share Sheet sends the tab
+// directly to that device, bypasses the modal picker, and displays a success
+// snackbar toast.
+- (void)testShareTabViaDirectTargetInShareSheetAndVerifySuccessSnackbar {
+  [self setupHistogramTester];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+  LoadActivePage(self.testServer);
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGrey waitForSendTabToSelfTargetDevice:kTargetDeviceName];
+
+  // Open the Share Sheet.
+  [ChromeEarlGreyUI shareCurrentPage];
+  [ChromeEarlGrey verifyActivitySheetVisible];
+
+  // Tap the direct target item in the Share Sheet.
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:kTargetDeviceName];
+
+  // Verify that the Share Sheet is dismissed.
+  [ChromeEarlGrey verifyActivitySheetNotVisible];
+
+  // Wait for and verify the success snackbar message.
+  NSString* snackbarMessage =
+      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_POST_SEND_SUCCESS_TOAST,
+                              base::SysNSStringToUTF16(kTargetDeviceName));
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      SnackbarWithMessageAndSubtext(snackbarMessage,
+                                                    fakeIdentity.userEmail)];
+
+  // Verify that the modal device picker is bypassed and not presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSendTabToSelfModalSendButton)]
+      assertWithMatcher:grey_nil()];
+
+  // Verify that entry point metrics for direct share were recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:
+                                8  // ShareEntryPoint::kShareSheetDirectShare
+                                   // is 8
+                         forHistogram:
+                             @"Sharing.SendTabToSelf.InvokedEntryPoint"],
+      @"Sharing.SendTabToSelf.InvokedEntryPoint histogram not logged.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:
+                                8  // ShareEntryPoint::kShareSheetDirectShare
+                                   // is 8
+                         forHistogram:@"Sharing.SendTabToSelf.SentEntryPoint"],
+      @"Sharing.SendTabToSelf.SentEntryPoint histogram not logged.");
+}
+
+// Tests that when network connectivity is lost, attempting to share a tab via a
+// direct target in the Share Sheet displays an error snackbar toast.
+- (void)testShareTabViaDirectTargetAndVerifyErrorSnackbarOnNetworkFailure {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+  LoadActivePage(self.testServer);
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGrey waitForSendTabToSelfTargetDevice:kTargetDeviceName];
+
+  // Register teardown before disconnecting to guarantee network restoration.
+  [self addTeardownBlock:^{
+    [ChromeEarlGrey connectFakeSyncServerNetwork];
+  }];
+  [ChromeEarlGrey disconnectFakeSyncServerNetwork];
+
+  // Open the Share Sheet.
+  [ChromeEarlGreyUI shareCurrentPage];
+  [ChromeEarlGrey verifyActivitySheetVisible];
+
+  // Tap the direct target item in the Share Sheet.
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:kTargetDeviceName];
+
+  // Verify that the Share Sheet is dismissed.
+  [ChromeEarlGrey verifyActivitySheetNotVisible];
+
+  // Wait for and verify the error snackbar message.
+  NSString* errorSnackbarMessage =
+      l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_POST_SEND_NO_INTERNET_TOAST);
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SnackbarWithMessage(
+                                                       errorSnackbarMessage)];
+
+  // Verify that the modal device picker is bypassed and not presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSendTabToSelfModalSendButton)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that a text fragment is correctly consumed and scrolls the page

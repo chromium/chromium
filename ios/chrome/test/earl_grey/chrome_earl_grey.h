@@ -379,6 +379,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // given GUID.
 - (void)waitForSendTabToSelfEntryWithGUID:(NSString*)guid;
 
+// Waits for the local Send Tab To Self model to contain a target device with
+// the given `deviceName`.
+- (void)waitForSendTabToSelfTargetDevice:(NSString*)deviceName;
+
 // Returns the generated text fragment for the given URL, or nil if no entry
 // exists or no fragment is set.
 - (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL;
