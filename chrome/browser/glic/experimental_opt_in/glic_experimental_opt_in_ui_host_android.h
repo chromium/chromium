@@ -28,6 +28,7 @@ class GlicExperimentalOptInUIHostAndroid : public GlicExperimentalOptInUIHost {
   // GlicExperimentalOptInUIHost:
   void Show(content::WebContents* web_contents) override;
   void Close(bool accepted) override;
+  void OpenLinkInNewTab(const GURL& url) override;
   content::WebContents* GetOrCreateSuitableWebContents() override;
 
   // Called from Java when the dialog is dismissed.

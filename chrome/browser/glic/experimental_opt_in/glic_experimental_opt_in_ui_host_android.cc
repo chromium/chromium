@@ -11,15 +11,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui_host_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+#include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 // JNI headers must be included after standard headers.
 #include "chrome/browser/glic/android/jni_headers/GlicExperimentalOptInUiCoordinator_jni.h"
@@ -131,6 +135,17 @@ void GlicExperimentalOptInUIHostAndroid::OnDismissed() {
   }
 
   NotifyDelegateClosed(is_accepted_);
+}
+
+void GlicExperimentalOptInUIHostAndroid::OpenLinkInNewTab(const GURL& url) {
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+  std::unique_ptr<NavigateParams> params =
+      std::make_unique<NavigateParams>(profile_, url, ui::PAGE_TRANSITION_LINK);
+  params->disposition = WindowOpenDisposition::NEW_POPUP;
+  params->opened_by_another_window = true;
+  glic::NavigateAsync(std::move(params), base::DoNothing());
 }
 
 content::WebContents*
