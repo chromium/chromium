@@ -3584,15 +3584,22 @@ static_library("ui") {
     ]
 
     if (is_linux) {
-      sources += [
-        "views/frame/browser_frame_view_layout_linux.cc",
-        "views/frame/browser_frame_view_layout_linux.h",
-        "views/frame/browser_frame_view_layout_linux_native.cc",
-        "views/frame/browser_frame_view_layout_linux_native.h",
-        "views/frame/browser_frame_view_linux.cc",
-        "views/frame/browser_frame_view_linux.h",
-        "views/frame/browser_frame_view_linux_native.cc",
-        "views/frame/browser_frame_view_linux_native.h",
+      deps += [
+        "//chrome/browser/ui/views/frame:browser_frame_view_layout_linux_native",
+        "//chrome/browser/ui/views/frame:browser_frame_view_linux",
+        "//chrome/browser/ui/views/frame:browser_frame_view_linux_native",
+      ]
+      allow_circular_includes_from += [
+        # views/frame/browser_frame_view_layout_linux_native.cc includes
+        # opaque_browser_frame_view_layout.h from //chrome/browser/ui:ui.
+        "//chrome/browser/ui/views/frame:browser_frame_view_layout_linux_native",
+
+        # views/frame/browser_frame_view_linux.{h,cc} and
+        # views/frame/browser_frame_view_layout_linux.{h,cc} include
+        # opaque_browser_frame_view.h, opaque_browser_frame_view_layout.h,
+        # browser_native_widget_aura_linux.h, and browser_view.h from
+        # //chrome/browser/ui:ui.
+        "//chrome/browser/ui/views/frame:browser_frame_view_linux",
       ]
     }
 

@@ -1457,6 +1457,7 @@ if (is_linux) {
     ]
     deps = [
       ":browser_desktop_window_tree_host",
+      ":browser_frame_view_linux",
       ":safe_invoke",
       "//base",
       "//build:buildflag_header_h",
@@ -1478,6 +1479,67 @@ if (is_linux) {
     if (use_dbus) {
       deps += [ ":dbus_appmenu" ]
     }
+  }
+
+  source_set("browser_frame_view_linux") {
+    public = [
+      "browser_frame_view_layout_linux.h",
+      "browser_frame_view_linux.h",
+    ]
+    sources = [
+      "browser_frame_view_layout_linux.cc",
+      "browser_frame_view_linux.cc",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser:browser_public_dependencies",
+      "//skia",
+      "//ui/base/metadata",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+      "//ui/linux:linux_ui",
+      "//ui/views",
+    ]
+    deps = [
+      "//base:i18n",
+      "//build:buildflag_header_h",
+      "//chrome/browser/ui/views:layout_provider",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
+
+  source_set("browser_frame_view_layout_linux_native") {
+    public = [ "browser_frame_view_layout_linux_native.h" ]
+    sources = [ "browser_frame_view_layout_linux_native.cc" ]
+    public_deps = [
+      ":browser_frame_view_linux",
+      "//base",
+      "//ui/linux:linux_ui",
+    ]
+    deps = [
+      "//build:buildflag_header_h",
+      "//ui/gfx/geometry",
+      "//ui/linux:linux_ui",
+      "//ui/views",
+    ]
+  }
+
+  source_set("browser_frame_view_linux_native") {
+    public = [ "browser_frame_view_linux_native.h" ]
+    sources = [ "browser_frame_view_linux_native.cc" ]
+    public_deps = [
+      ":browser_frame_view_linux",
+      "//base",
+      "//ui/base/metadata",
+      "//ui/linux:linux_ui",
+      "//ui/views",
+    ]
+    deps = [
+      ":browser_frame_view_layout_linux_native",
+      "//ui/gfx",
+      "//ui/views",
+    ]
   }
 
   source_set("picture_in_picture_browser_frame_view_linux") {
@@ -1511,6 +1573,9 @@ if (use_aura && !is_chromeos) {
     ]
     if (is_linux) {
       deps += [
+        ":browser_frame_view_layout_linux_native",
+        ":browser_frame_view_linux",
+        ":browser_frame_view_linux_native",
         ":picture_in_picture_browser_frame_view_linux",
         "//ui/base:types",
         "//ui/linux:linux_ui",

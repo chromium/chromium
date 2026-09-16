@@ -7484,7 +7484,11 @@ test("unit_tests") {
         "../browser/ui/views/frame/browser_frame_view_layout_linux_native_unittest.cc",
         "../browser/ui/views/frame/browser_frame_view_layout_linux_unittest.cc",
       ]
-      deps += [ "//ui/linux:linux_ui" ]
+      deps += [
+        "//chrome/browser/ui/views/frame:browser_frame_view_layout_linux_native",
+        "//chrome/browser/ui/views/frame:browser_frame_view_linux",
+        "//ui/linux:linux_ui",
+      ]
     }
     if (is_win || (is_linux && use_dbus)) {
       deps += [ "//chrome/browser/ui/views/status_icons:unit_tests" ]

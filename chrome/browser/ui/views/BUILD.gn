@@ -728,6 +728,7 @@ if (is_linux) {
       "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/frame:browser_frame_view_linux",
       "//chrome/common:constants",
       "//components/prefs",
       "//ui/base/mojom:ui_base_types",
