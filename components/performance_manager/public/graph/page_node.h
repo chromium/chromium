@@ -137,7 +137,7 @@ class PageNode : public TypedNode<PageNode> {
   virtual bool HasPictureInPicture() const = 0;
 
   // Returns true if this page is opted-out from freezing via origin trial, i.e.
-  // if any of its current frames sets the origin trial.
+  // if any of its active frames sets the origin trial.
   virtual bool HasFreezingOriginTrialOptOut() const = 0;
 
   // Returns true if this page is off the record, false otherwise.
@@ -190,12 +190,11 @@ class PageNode : public TypedNode<PageNode> {
   // frame tree (i.e. not prerendering, not in the BackForwardCache, and not
   // an inner/embedded frame tree like a fenced frame).
   //
-  // Note: If multiple current outermost main frames exist (which can happen
-  // due to a state tracking bug, see crbug.com/40910297), an arbitrary one
-  // is returned.
+  // Note: If multiple active outermost main frames exist (which can happen
+  // transiently during frame swaps), an arbitrary one is returned.
   virtual const FrameNode* GetPrimaryMainFrameNode() const = 0;
 
-  // Returns all of the main frame nodes associated with this page, both current
+  // Returns all of the main frame nodes associated with this page, both active
   // and otherwise. If there are no main frames at the moment, returns the empty
   // set.
   //

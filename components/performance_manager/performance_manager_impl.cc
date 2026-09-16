@@ -112,13 +112,12 @@ std::unique_ptr<FrameNodeImpl> PerformanceManagerImpl::CreateFrameNode(
     const perfetto::Track& tracing_track,
     content::BrowsingInstanceId browsing_instance_id,
     content::SiteInstanceGroupId site_instance_group_id,
-    bool is_current,
     bool is_active) {
   return CreateNodeImpl<FrameNodeImpl>(
       process_node, page_node, parent_frame_node,
       outer_document_for_inner_frame_root, render_frame_id, frame_token,
       frame_tree_node_id, tracing_track, browsing_instance_id,
-      site_instance_group_id, is_current, is_active);
+      site_instance_group_id, is_active);
 }
 
 // static

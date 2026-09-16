@@ -51,8 +51,7 @@ class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
       const PageNode* pending_page_node,
       const ProcessNode* pending_process_node,
       const FrameNode* pending_parent_or_outer_document_or_embedder) override;
-  void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
-                             const FrameNode* current_frame_node) override;
+  void OnIsActiveChanged(const FrameNode* frame_node) override;
   void OnViewportIntersectionChanged(const FrameNode* frame_node) override;
 
  private:

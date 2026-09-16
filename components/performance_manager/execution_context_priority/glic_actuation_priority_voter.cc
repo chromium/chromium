@@ -81,7 +81,7 @@ void GlicActuationPriorityVoter::OnBeforeFrameNodeAdded(
   const GlicActuationState state =
       PageLiveStateDecorator::Data::FromPageNode(pending_page_node)
           ->GetGlicActuationState();
-  if (state != GlicActuationState::kNone && frame_node->IsCurrent()) {
+  if (state != GlicActuationState::kNone && frame_node->IsActive()) {
     UpdateFrameNodeVote(frame_node, state);
   }
 }
@@ -91,22 +91,22 @@ void GlicActuationPriorityVoter::OnBeforeFrameNodeRemoved(
   voting_channel_.SetVote(frame_node, std::nullopt);
 }
 
-void GlicActuationPriorityVoter::OnCurrentFrameChanged(
-    const FrameNode* previous_frame_node,
-    const FrameNode* current_frame_node) {
-  if (previous_frame_node) {
-    voting_channel_.SetVote(previous_frame_node, std::nullopt);
-  }
-
-  if (!current_frame_node || current_frame_node->GetParentOrOuterDocument()) {
+void GlicActuationPriorityVoter::OnIsActiveChanged(
+    const FrameNode* frame_node) {
+  if (!frame_node->IsActive()) {
+    voting_channel_.SetVote(frame_node, std::nullopt);
     return;
   }
 
-  const GlicActuationState state = PageLiveStateDecorator::Data::FromPageNode(
-                                       current_frame_node->GetPageNode())
-                                       ->GetGlicActuationState();
+  if (frame_node->GetParentOrOuterDocument()) {
+    return;
+  }
+
+  const GlicActuationState state =
+      PageLiveStateDecorator::Data::FromPageNode(frame_node->GetPageNode())
+          ->GetGlicActuationState();
   if (state != GlicActuationState::kNone) {
-    UpdateFrameNodeVote(current_frame_node, state);
+    UpdateFrameNodeVote(frame_node, state);
   }
 }
 

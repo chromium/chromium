@@ -39,29 +39,17 @@ void FrozenFrameAggregator::OnBeforeFrameNodeRemoved(
   AddOrRemoveFrame(FrameNodeImpl::FromNode(frame_node), -1);
 }
 
-void FrozenFrameAggregator::OnCurrentFrameChanged(
-    const FrameNode* previous_frame_node,
-    const FrameNode* current_frame_node) {
-  if (previous_frame_node) {
-    auto* frame_impl = FrameNodeImpl::FromNode(previous_frame_node);
-    CHECK(!frame_impl->IsCurrent());
-    int32_t current_frame_delta = -1;
-    int32_t frozen_frame_delta = IsFrozen(frame_impl) ? -1 : 0;
-    UpdateFrameCounts(frame_impl, current_frame_delta, frozen_frame_delta);
-  }
-  if (current_frame_node) {
-    auto* frame_impl = FrameNodeImpl::FromNode(current_frame_node);
-    CHECK(frame_impl->IsCurrent());
-    int32_t current_frame_delta = 1;
-    int32_t frozen_frame_delta = IsFrozen(frame_impl) ? 1 : 0;
-    UpdateFrameCounts(frame_impl, current_frame_delta, frozen_frame_delta);
-  }
+void FrozenFrameAggregator::OnIsActiveChanged(const FrameNode* frame_node) {
+  auto* frame_impl = FrameNodeImpl::FromNode(frame_node);
+  int32_t active_frame_delta = frame_impl->IsActive() ? 1 : -1;
+  int32_t frozen_frame_delta = IsFrozen(frame_impl) ? active_frame_delta : 0;
+  UpdateFrameCounts(frame_impl, active_frame_delta, frozen_frame_delta);
 }
 
 void FrozenFrameAggregator::OnFrameLifecycleStateChanged(
     const FrameNode* frame_node) {
   auto* frame_impl = FrameNodeImpl::FromNode(frame_node);
-  if (!frame_impl->IsCurrent()) {
+  if (!frame_impl->IsActive()) {
     return;
   }
   int32_t frozen_frame_delta = IsFrozen(frame_impl) ? 1 : -1;
@@ -119,24 +107,26 @@ void FrozenFrameAggregator::UnregisterObservers(Graph* graph) {
 
 void FrozenFrameAggregator::AddOrRemoveFrame(FrameNodeImpl* frame_node,
                                              int32_t delta) {
-  int32_t current_frame_delta = 0;
+  int32_t active_frame_delta = 0;
   int32_t frozen_frame_delta = 0;
-  if (frame_node->IsCurrent()) {
-    current_frame_delta = delta;
-    if (IsFrozen(frame_node))
+  if (frame_node->IsActive()) {
+    active_frame_delta = delta;
+    if (IsFrozen(frame_node)) {
       frozen_frame_delta = delta;
+    }
   }
 
-  UpdateFrameCounts(frame_node, current_frame_delta, frozen_frame_delta);
+  UpdateFrameCounts(frame_node, active_frame_delta, frozen_frame_delta);
 }
 
 void FrozenFrameAggregator::UpdateFrameCounts(FrameNodeImpl* frame_node,
-                                              int32_t current_frame_delta,
+                                              int32_t active_frame_delta,
                                               int32_t frozen_frame_delta) {
-  // If a non-current frame is added or removed the deltas can be zero. In this
+  // If a non-active frame is added or removed the deltas can be zero. In this
   // case the logic can be aborted early to save some effort.
-  if (current_frame_delta == 0 && frozen_frame_delta == 0)
+  if (active_frame_delta == 0 && frozen_frame_delta == 0) {
     return;
+  }
 
   auto* page_node = frame_node->page_node();
   auto* process_node = frame_node->process_node();
@@ -147,14 +137,14 @@ void FrozenFrameAggregator::UpdateFrameCounts(FrameNodeImpl* frame_node,
   DCHECK_EQ(content::PROCESS_TYPE_RENDERER, process_node->GetProcessType());
 
   // Set the page lifecycle state based on the state of the frame tree.
-  if (page_data.ChangeFrameCounts(current_frame_delta, frozen_frame_delta)) {
+  if (page_data.ChangeFrameCounts(active_frame_delta, frozen_frame_delta)) {
     page_node->SetLifecycleState(base::PassKey<FrozenFrameAggregator>(),
                                  page_data.AsLifecycleState());
   }
 
   // Update the process state, and notify when all frames in the tree are
   // frozen.
-  if (process_data.ChangeFrameCounts(current_frame_delta, frozen_frame_delta) &&
+  if (process_data.ChangeFrameCounts(active_frame_delta, frozen_frame_delta) &&
       process_data.IsFrozen()) {
     process_node->OnAllFramesInProcessFrozen(
         base::PassKey<FrozenFrameAggregator>());

@@ -37,8 +37,7 @@ class PageAggregator : public FrameNodeObserver,
   // FrameNodeObserver:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
-  void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
-                             const FrameNode* current_frame_node) override;
+  void OnIsActiveChanged(const FrameNode* frame_node) override;
   void OnFrameIsHoldingWebLockChanged(const FrameNode* frame_node) override;
   void OnFrameIsHoldingBlockingIndexedDBLockChanged(
       const FrameNode* frame_node) override;

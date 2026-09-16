@@ -141,21 +141,123 @@ TEST_F(PageAggregatorTest, FreezingOriginTrialAggregation) {
   frame_1->OnFreezingOriginTrialOptOut();
   EXPECT_TRUE(page->HasFreezingOriginTrialOptOut());
 
-  // |frame_1| becomes non-current -> the page is still opted-out.
-  FrameNodeImpl::UpdateCurrentFrame(frame_1.get(), nullptr, graph());
+  // |frame_1| becomes non-active -> the page is still opted-out.
+  frame_1->SetIsActive(false);
   EXPECT_TRUE(page->HasFreezingOriginTrialOptOut());
 
-  // |frame_0| becomes non-current -> the page is no longer opted-out.
-  FrameNodeImpl::UpdateCurrentFrame(frame_0.get(), nullptr, graph());
+  // |frame_0| becomes non-active -> the page is no longer opted-out.
+  frame_0->SetIsActive(false);
   EXPECT_FALSE(page->HasFreezingOriginTrialOptOut());
 
-  // |frame_0| becomes current -> the page is opted-out.
-  FrameNodeImpl::UpdateCurrentFrame(nullptr, frame_0.get(), graph());
+  // |frame_0| becomes active -> the page is opted-out.
+  frame_0->SetIsActive(true);
   EXPECT_TRUE(page->HasFreezingOriginTrialOptOut());
 
   // |frame_0| is destroyed -> the page is no longer opted-out.
   frame_0.reset();
   EXPECT_FALSE(page->HasFreezingOriginTrialOptOut());
+}
+
+TEST_F(PageAggregatorTest, FormInteractionAggregation) {
+  // Creates a page containing 2 frames.
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  TestNodeWrapper<FrameNodeImpl> frame_0 =
+      graph()->CreateFrameNodeAutoId(process.get(), page.get());
+  TestNodeWrapper<FrameNodeImpl> frame_1 =
+      graph()->CreateFrameNodeAutoId(process.get(), page.get());
+
+  // By default the page doesn't have form interaction.
+  EXPECT_FALSE(page->HadFormInteraction());
+
+  // |frame_0| has form interaction -> the page has form interaction.
+  frame_0->SetHadFormInteraction();
+  EXPECT_TRUE(page->HadFormInteraction());
+
+  // |frame_1| also has form interaction -> the page still has form interaction.
+  frame_1->SetHadFormInteraction();
+  EXPECT_TRUE(page->HadFormInteraction());
+
+  // |frame_1| becomes non-active -> the page still has form interaction.
+  frame_1->SetIsActive(false);
+  EXPECT_TRUE(page->HadFormInteraction());
+
+  // |frame_0| becomes non-active -> the page no longer has form interaction.
+  frame_0->SetIsActive(false);
+  EXPECT_FALSE(page->HadFormInteraction());
+
+  // |frame_0| becomes active -> the page has form interaction again.
+  frame_0->SetIsActive(true);
+  EXPECT_TRUE(page->HadFormInteraction());
+
+  // |frame_1| navigates (resetting form interaction) while non-active -> page
+  // still has form interaction from |frame_0|.
+  frame_1->OnNavigationCommitted(
+      GURL("http://www.foo.com"),
+      url::Origin::Create(GURL("http://www.foo.com")),
+      /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
+  EXPECT_TRUE(page->HadFormInteraction());
+
+  // |frame_0| navigates (resetting form interaction) while active -> page no
+  // longer has form interaction.
+  frame_0->OnNavigationCommitted(
+      GURL("http://www.bar.com"),
+      url::Origin::Create(GURL("http://www.bar.com")),
+      /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
+  EXPECT_FALSE(page->HadFormInteraction());
+}
+
+TEST_F(PageAggregatorTest, UserEditsAggregation) {
+  // Creates a page containing 2 frames.
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page = CreateNode<PageNodeImpl>();
+  TestNodeWrapper<FrameNodeImpl> frame_0 =
+      graph()->CreateFrameNodeAutoId(process.get(), page.get());
+  TestNodeWrapper<FrameNodeImpl> frame_1 =
+      graph()->CreateFrameNodeAutoId(process.get(), page.get());
+
+  // By default the page doesn't have user edits.
+  EXPECT_FALSE(page->HadUserEdits());
+
+  // |frame_0| has user edits -> the page has user edits.
+  frame_0->SetHadUserEdits();
+  EXPECT_TRUE(page->HadUserEdits());
+
+  // |frame_1| also has user edits -> the page still has user edits.
+  frame_1->SetHadUserEdits();
+  EXPECT_TRUE(page->HadUserEdits());
+
+  // |frame_1| becomes non-active -> the page still has user edits.
+  frame_1->SetIsActive(false);
+  EXPECT_TRUE(page->HadUserEdits());
+
+  // |frame_0| becomes non-active -> the page no longer has user edits.
+  frame_0->SetIsActive(false);
+  EXPECT_FALSE(page->HadUserEdits());
+
+  // |frame_0| becomes active -> the page has user edits again.
+  frame_0->SetIsActive(true);
+  EXPECT_TRUE(page->HadUserEdits());
+
+  // |frame_1| navigates (resetting user edits) while non-active -> page still
+  // has user edits from |frame_0|.
+  frame_1->OnNavigationCommitted(
+      GURL("http://www.foo.com"),
+      url::Origin::Create(GURL("http://www.foo.com")),
+      /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
+  EXPECT_TRUE(page->HadUserEdits());
+
+  // |frame_0| navigates (resetting user edits) while active -> page no longer
+  // has user edits.
+  frame_0->OnNavigationCommitted(
+      GURL("http://www.bar.com"),
+      url::Origin::Create(GURL("http://www.bar.com")),
+      /*same_document=*/false,
+      /*is_served_from_back_forward_cache=*/false);
+  EXPECT_FALSE(page->HadUserEdits());
 }
 
 }  // namespace performance_manager

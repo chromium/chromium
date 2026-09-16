@@ -46,21 +46,21 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
 
   template <typename NodeType>
   void ExpectData(NodeType* node,
-                  uint32_t current_frame_count,
+                  uint32_t active_frame_count,
                   uint32_t frozen_frame_count) {
     FrozenData& data = FrozenData::Get(node);
-    EXPECT_EQ(current_frame_count, data.current_frame_count());
+    EXPECT_EQ(active_frame_count, data.active_frame_count());
     EXPECT_EQ(frozen_frame_count, data.frozen_frame_count());
   }
 
-  void ExpectPageData(uint32_t current_frame_count,
+  void ExpectPageData(uint32_t active_frame_count,
                       uint32_t frozen_frame_count) {
-    ExpectData(page_node_.get(), current_frame_count, frozen_frame_count);
+    ExpectData(page_node_.get(), active_frame_count, frozen_frame_count);
   }
 
-  void ExpectProcessData(uint32_t current_frame_count,
+  void ExpectProcessData(uint32_t active_frame_count,
                          uint32_t frozen_frame_count) {
-    ExpectData(process_node_.get(), current_frame_count, frozen_frame_count);
+    ExpectData(process_node_.get(), active_frame_count, frozen_frame_count);
   }
 
   void ExpectRunning() {
@@ -72,13 +72,13 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
   }
 
   TestNodeWrapper<FrameNodeImpl> CreateFrame(FrameNodeImpl* parent_frame_node,
-                                             bool is_current = true) {
+                                             bool is_active = true) {
     return TestNodeWrapper<FrameNodeImpl>::Create(
         graph(), process_node_.get(), page_node_.get(), parent_frame_node,
         /*outer_document_for_fenced_frame=*/nullptr, NextTestFrameRoutingId(),
         blink::LocalFrameToken(), NextTestFrameTreeNodeId(),
         content::BrowsingInstanceId(), content::SiteInstanceGroupId(),
-        is_current);
+        is_active);
   }
 
   raw_ptr<FrozenFrameAggregator> ffa_;
@@ -86,24 +86,22 @@ class FrozenFrameAggregatorTest : public GraphTestHarness {
   TestNodeWrapper<PageNodeImpl> page_node_;
 };
 
-TEST_F(FrozenFrameAggregatorTest, NotCurrent) {
+TEST_F(FrozenFrameAggregatorTest, NotActive) {
   ExpectProcessData(0, 0);
 
-  // Add a non-current main frame.
-  auto f0 = CreateFrame(nullptr, /*is_current=*/false);
+  // Add a non-active main frame.
+  auto f0 = CreateFrame(nullptr, /*is_active=*/false);
   ExpectProcessData(0, 0);
 
-  // Make it current. The frame starts being counted.
-  FrameNodeImpl::UpdateCurrentFrame(/*previous_frame_node=*/nullptr,
-                                    /*current_frame_node=*/f0.get(), graph());
+  // Make it active. The frame starts being counted.
+  f0->SetIsActive(true);
   ExpectProcessData(1, 0);
 
   f0->SetLifecycleState(LifecycleState::kFrozen);
   ExpectProcessData(1, 1);
 
-  // Make no longer current. Stops being counted.
-  FrameNodeImpl::UpdateCurrentFrame(/*previous_frame_node=*/f0.get(),
-                                    /*current_frame_node=*/nullptr, graph());
+  // Make no longer active. Stops being counted.
+  f0->SetIsActive(false);
   ExpectProcessData(0, 0);
 }
 
@@ -184,7 +182,7 @@ TEST_F(FrozenFrameAggregatorTest, PageAggregation) {
   ExpectPageData(0, 0);
   ExpectRunning();
 
-  // Add a current frame.
+  // Add an active frame.
   auto f0 = CreateFrame(nullptr);
   ExpectPageData(1, 0);
   ExpectRunning();
@@ -220,30 +218,30 @@ TEST_F(FrozenFrameAggregatorTest, PageAggregation) {
   ExpectPageData(2, 0);
   ExpectRunning();
 
-  // Create a third frame that is not current.
-  auto f1a = CreateFrame(f0.get(), /*is_current=*/false);
+  // Create a third frame that is not active.
+  auto f1a = CreateFrame(f0.get(), /*is_active=*/false);
   ExpectPageData(2, 0);
   ExpectRunning();
 
-  // Swap the f1 and f1a.
-  FrameNodeImpl::UpdateCurrentFrame(/*previous_frame_node=*/f1.get(),
-                                    /*current_frame_node=*/f1a.get(), graph());
+  // Swap f1 and f1a.
+  f1a->SetIsActive(true);
+  f1->SetIsActive(false);
   ExpectPageData(2, 0);
   ExpectRunning();
 
   // Freeze the original frame and swap it back.
   f1->SetLifecycleState(LifecycleState::kFrozen);
-  FrameNodeImpl::UpdateCurrentFrame(/*previous_frame_node=*/f1a.get(),
-                                    /*current_frame_node=*/f1.get(), graph());
+  f1->SetIsActive(true);
+  f1a->SetIsActive(false);
   ExpectPageData(2, 1);
   ExpectRunning();
 
-  // Freeze the non-current frame and expect nothing to change.
+  // Freeze the non-active frame and expect nothing to change.
   f1a->SetLifecycleState(LifecycleState::kFrozen);
   ExpectPageData(2, 1);
   ExpectRunning();
 
-  // Remove the non-current frame and expect nothing to change.
+  // Remove the non-active frame and expect nothing to change.
   f1a.reset();
   ExpectPageData(2, 1);
   ExpectRunning();

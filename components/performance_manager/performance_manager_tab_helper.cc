@@ -243,7 +243,6 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
       render_frame_host->GetTracingTrack(),
       site_instance->GetBrowsingInstanceId(),
       site_instance->GetSiteInstanceGroupId(),
-      /*is_current=*/render_frame_host->IsActive(),
       /*is_active=*/render_frame_host->IsActive());
   FrameNodeImpl* frame = frame_node.get();
   frames_[render_frame_host] = std::move(frame_node);
@@ -305,23 +304,8 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
     return;
   }
 
-  // `old_host` and its subframes have already been marked with a pending
-  // lifecycle state update in content/ (so `old_host->IsActive()` is false),
-  // even though `RenderFrameHostStateChanged` won't fire until UnloadOldFrame.
-  if (old_frame) {
-    CHECK(!old_host->IsActive());
-    GraphImplOperations::VisitFrameAndChildrenPreOrder(
-        old_frame, [](FrameNodeImpl* frame_node) {
-          frame_node->SetIsActive(false);
-          return true;
-        });
-  }
-
-  // Ensure the new frame's active state is in sync. This is necessary because
-  // early-commit of speculative frames goes directly from kSpeculative to
-  // kActive, skipping the RenderFrameHostStateChanged notification entirely
-  // due to a check in content/ that avoids exposing kSpeculative states to
-  // embedders.
+  // Activate `new_frame` before deactivating `old_frame` to prevent observers
+  // from seeing a transient 0-active-frame state.
   if (new_frame) {
     // Ensure the new frame's FrameTreeNodeId is up to date in case this was a
     // prerendered page that updated to a new FrameTreeNodeId upon
@@ -330,8 +314,16 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
     new_frame->SetIsActive(new_host->IsActive());
   }
 
-  FrameNodeImpl::UpdateCurrentFrame(old_frame, new_frame,
-                                    PerformanceManagerImpl::GetGraphImpl());
+  // Deactivate `old_frame` and its descendants immediately since outgoing
+  // subframes are no longer active (e.g. entering BFCache or unloading).
+  if (old_frame) {
+    CHECK(!old_host->IsActive());
+    GraphImplOperations::VisitFrameAndChildrenPreOrder(
+        old_frame, [](FrameNodeImpl* frame_node) {
+          frame_node->SetIsActive(false);
+          return true;
+        });
+  }
 }
 
 void PerformanceManagerTabHelper::RenderFrameHostStateChanged(

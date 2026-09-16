@@ -24,21 +24,21 @@ class FrozenData : public NodeInlineData<FrozenData> {
 
   // Applies a change to frame counts. Returns true if that causes the frozen
   // state to change for this object.
-  bool ChangeFrameCounts(int32_t current_frame_delta,
+  bool ChangeFrameCounts(int32_t active_frame_delta,
                          int32_t frozen_frame_delta);
 
   base::DictValue Describe();
 
-  uint32_t current_frame_count() const { return current_frame_count_; }
+  uint32_t active_frame_count() const { return active_frame_count_; }
 
   uint32_t frozen_frame_count() const { return frozen_frame_count_; }
 
  private:
-  // The number of current frames associated with a given page/process.
-  uint32_t current_frame_count_ = 0;
+  // The number of active frames associated with a given page/process.
+  uint32_t active_frame_count_ = 0;
 
-  // The number of frozen current frames associated with a given page/process.
-  // This is always <= |current_frame_count|.
+  // The number of frozen active frames associated with a given page/process.
+  // This is always <= |active_frame_count|.
   uint32_t frozen_frame_count_ = 0;
 };
 

@@ -24,20 +24,6 @@ PageAggregatorData& GetOrCreateData(PageNodeImpl* page_node) {
   return PageAggregatorData::Get(page_node);
 }
 
-const PageNode* GetPageNodeFromEither(const FrameNode* frame_node1,
-                                      const FrameNode* frame_node2) {
-  // Sanity check.
-  CHECK(frame_node1 || frame_node2);
-  if (frame_node1 && frame_node2) {
-    CHECK_EQ(frame_node1->GetPageNode(), frame_node2->GetPageNode());
-  }
-
-  if (frame_node1) {
-    return frame_node1->GetPageNode();
-  } else {
-    return frame_node2->GetPageNode();
-  }
-}
 
 }  // namespace
 
@@ -61,18 +47,20 @@ void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
 
   Data& data = Data::Get(page_node);
 
-  if (frame_node->IsCurrent()) {
+  if (frame_node->IsActive()) {
     // Decrement the form interaction, user edits and freezing origin trial
     // opt-out counters for this page if needed.
     if (frame_node->HadFormInteraction()) {
-      data.UpdateCurrentFrameCountForFormInteraction(
-          /*frame_had_form_interaction=*/false);
+      data.UpdateActiveFrameCountForFormInteraction(
+          /*is_active_with_form_interaction=*/false);
     }
     if (frame_node->HadUserEdits()) {
-      data.UpdateCurrentFrameCountForUserEdits(/*frame_had_user_edits=*/false);
+      data.UpdateActiveFrameCountForUserEdits(
+          /*is_active_with_user_edits=*/false);
     }
     if (frame_node->HasFreezingOriginTrialOptOut()) {
-      data.UpdateCurrentFrameCountForFreezingOriginTrialOptOut(false);
+      data.UpdateActiveFrameCountForFreezingOriginTrialOptOut(
+          /*is_active_with_freezing_origin_trial_opt_out=*/false);
     }
   }
 
@@ -91,34 +79,19 @@ void PageAggregator::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   }
 }
 
-void PageAggregator::OnCurrentFrameChanged(
-    const FrameNode* previous_frame_node,
-    const FrameNode* current_frame_node) {
-  auto* page_node = PageNodeImpl::FromNode(
-      GetPageNodeFromEither(previous_frame_node, current_frame_node));
+void PageAggregator::OnIsActiveChanged(const FrameNode* frame_node) {
+  auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
   Data& data = GetOrCreateData(page_node);
 
-  // This lambda adjusts the form interaction, user edits and freezing origin
-  // trial opt-out counters for a `frame_node` which just became current (if
-  // `is_current` is true) or non-current (if `is_current` is false).
-  auto adjust_counters = [&data](const FrameNode* frame_node, bool is_current) {
-    if (frame_node->HadFormInteraction()) {
-      data.UpdateCurrentFrameCountForFormInteraction(is_current);
-    }
-    if (frame_node->HadUserEdits()) {
-      data.UpdateCurrentFrameCountForUserEdits(is_current);
-    }
-    if (frame_node->HasFreezingOriginTrialOptOut()) {
-      data.UpdateCurrentFrameCountForFreezingOriginTrialOptOut(is_current);
-    }
-  };
-
-  if (previous_frame_node) {
-    adjust_counters(previous_frame_node, /*is_current=*/false);
+  const bool is_active = frame_node->IsActive();
+  if (frame_node->HadFormInteraction()) {
+    data.UpdateActiveFrameCountForFormInteraction(is_active);
   }
-
-  if (current_frame_node) {
-    adjust_counters(current_frame_node, /*is_current=*/true);
+  if (frame_node->HadUserEdits()) {
+    data.UpdateActiveFrameCountForUserEdits(is_active);
+  }
+  if (frame_node->HasFreezingOriginTrialOptOut()) {
+    data.UpdateActiveFrameCountForFreezingOriginTrialOptOut(is_active);
   }
 }
 
@@ -144,28 +117,28 @@ void PageAggregator::OnFrameUsesWebRTCChanged(const FrameNode* frame_node) {
 }
 
 void PageAggregator::OnHadFormInteractionChanged(const FrameNode* frame_node) {
-  if (frame_node->IsCurrent()) {
+  if (frame_node->IsActive()) {
     auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
     Data& data = GetOrCreateData(page_node);
-    data.UpdateCurrentFrameCountForFormInteraction(
+    data.UpdateActiveFrameCountForFormInteraction(
         frame_node->HadFormInteraction());
   }
 }
 
 void PageAggregator::OnHadUserEditsChanged(const FrameNode* frame_node) {
-  if (frame_node->IsCurrent()) {
+  if (frame_node->IsActive()) {
     auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
     Data& data = GetOrCreateData(page_node);
-    data.UpdateCurrentFrameCountForUserEdits(frame_node->HadUserEdits());
+    data.UpdateActiveFrameCountForUserEdits(frame_node->HadUserEdits());
   }
 }
 
 void PageAggregator::OnFrameHasFreezingOriginTrialOptOutChanged(
     const FrameNode* frame_node) {
-  if (frame_node->IsCurrent()) {
+  if (frame_node->IsActive()) {
     auto* page_node = PageNodeImpl::FromNode(frame_node->GetPageNode());
     Data& data = GetOrCreateData(page_node);
-    data.UpdateCurrentFrameCountForFreezingOriginTrialOptOut(
+    data.UpdateActiveFrameCountForFreezingOriginTrialOptOut(
         frame_node->HasFreezingOriginTrialOptOut());
   }
 }

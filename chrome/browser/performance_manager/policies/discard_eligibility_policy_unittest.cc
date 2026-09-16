@@ -122,22 +122,20 @@ class DiscardEligibilityPolicyTest
   }
 };
 
-TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardMultipleCurrentMainFrames) {
-  // TODO(crbug.com/40910297): It shouldn't be possible to have two main frames
-  // both marked "current", but due to a state tracking bug this sometimes
-  // occurs. Until the bug is fixed, make sure CanDiscard works around it. (See
-  // comment at
-  // https://source.chromium.org/chromium/chromium/src/+/main:components/performance_manager/graph/frame_node_impl.cc;l=272;drc=6d331b84c048659c6a9a89bd81e92dfdddd6bae7.)
+TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardMultipleActiveMainFrames) {
+  // Multiple main frames can transiently be marked "active" during a frame
+  // swap. Make sure CanDiscard works around it. (See comment on
+  // `PageNode::GetPrimaryMainFrameNode()`.)
   TestNodeWrapper<FrameNodeImpl> other_frame_node =
       CreateFrameNodeAutoId(process_node(), page_node());
 
   // frame_node() is created with a URL. `other_frame_node` starts without.
   ASSERT_FALSE(frame_node()->GetURL().is_empty());
-  ASSERT_TRUE(frame_node()->IsCurrent());
+  ASSERT_TRUE(frame_node()->IsActive());
   ASSERT_TRUE(other_frame_node->GetURL().is_empty());
-  ASSERT_TRUE(other_frame_node->IsCurrent());
+  ASSERT_TRUE(other_frame_node->IsActive());
 
-  // An arbitrary "current" frame will be returned by GetPrimaryMainFrameNode().
+  // An arbitrary active frame will be returned by GetPrimaryMainFrameNode().
   // Make sure the page can be discarded even if the one without a url is
   // returned. Discarding is only blocked if neither have a url.
   ExpectCanDiscardEligibleAllReasons(page_node());
@@ -145,9 +143,9 @@ TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardMultipleCurrentMainFrames) {
   SetPageAndFrameUrl(GURL(), page_node(), frame_node());
 
   ASSERT_TRUE(frame_node()->GetURL().is_empty());
-  ASSERT_TRUE(frame_node()->IsCurrent());
+  ASSERT_TRUE(frame_node()->IsActive());
   ASSERT_TRUE(other_frame_node->GetURL().is_empty());
-  ASSERT_TRUE(other_frame_node->IsCurrent());
+  ASSERT_TRUE(other_frame_node->IsActive());
 
   ExpectCanDiscardProtected(page_node(),
                             {DiscardReason::URGENT, DiscardReason::PROACTIVE,
@@ -161,9 +159,9 @@ TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardMultipleCurrentMainFrames) {
                      other_frame_node.get());
 
   ASSERT_TRUE(frame_node()->GetURL().is_empty());
-  ASSERT_TRUE(frame_node()->IsCurrent());
+  ASSERT_TRUE(frame_node()->IsActive());
   ASSERT_FALSE(other_frame_node->GetURL().is_empty());
-  ASSERT_TRUE(other_frame_node->IsCurrent());
+  ASSERT_TRUE(other_frame_node->IsActive());
 
   ExpectCanDiscardEligibleAllReasons(page_node());
 }

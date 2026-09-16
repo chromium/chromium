@@ -31,16 +31,16 @@ class FrameVisibilityDecoratorTest : public GraphTestHarness {
 };
 
 // Tests that a main frame in a visible page is not visible if it is not
-// current.
-TEST_F(FrameVisibilityDecoratorTest, IsCurrent) {
+// active.
+TEST_F(FrameVisibilityDecoratorTest, IsActive) {
   auto page_node = CreateNode<PageNodeImpl>();
   page_node->SetIsVisible(true);
   auto main_frame_node = CreateFrameNodeAutoId(process_node(), page_node.get());
 
-  EXPECT_TRUE(main_frame_node->IsCurrent());
+  EXPECT_TRUE(main_frame_node->IsActive());
   EXPECT_EQ(main_frame_node->GetVisibility(), FrameNode::Visibility::kVisible);
 
-  FrameNodeImpl::UpdateCurrentFrame(main_frame_node.get(), nullptr, graph());
+  main_frame_node->SetIsActive(false);
   EXPECT_EQ(main_frame_node->GetVisibility(),
             FrameNode::Visibility::kNotVisible);
 }

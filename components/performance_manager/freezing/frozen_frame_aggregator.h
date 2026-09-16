@@ -37,8 +37,7 @@ class FrozenFrameAggregator : public FrameNodeObserver,
   // FrameNodeObserver implementation:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
-  void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
-                             const FrameNode* current_frame_node) override;
+  void OnIsActiveChanged(const FrameNode* frame_node) override;
   void OnFrameLifecycleStateChanged(const FrameNode* frame_node) override;
 
   // GraphOwned implementation:
@@ -73,7 +72,7 @@ class FrozenFrameAggregator : public FrameNodeObserver,
   // care of updating page and process state, as well as firing any needed
   // notifications.
   void UpdateFrameCounts(FrameNodeImpl* frame_node,
-                         int32_t current_frame_delta,
+                         int32_t active_frame_delta,
                          int32_t frozen_frame_delta);
 };
 

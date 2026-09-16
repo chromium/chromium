@@ -258,8 +258,6 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kResourceAttributionIncludeOrigins,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSeamlessRenderFrameSwap, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUnimportantFramesPriority, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kThrottleUnimportantFrameRate, base::FEATURE_DISABLED_BY_DEFAULT);

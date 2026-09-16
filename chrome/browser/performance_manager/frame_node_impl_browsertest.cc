@@ -378,7 +378,6 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplIsActiveBrowserTest,
 
   EXPECT_NE(initial_frame_ptr.get(), new_frame_ptr.get());
   EXPECT_TRUE(new_frame_ptr->IsActive());
-  EXPECT_TRUE(new_frame_ptr->IsCurrent());
 }
 
 // Tests that FrameNode::IsActive() is correctly set for speculative frames
@@ -426,7 +425,6 @@ IN_PROC_BROWSER_TEST_F(FrameNodeImplIsActiveBrowserTest,
 
   EXPECT_NE(initial_frame_ptr.get(), new_frame_ptr.get());
   EXPECT_TRUE(new_frame_ptr->IsActive());
-  EXPECT_TRUE(new_frame_ptr->IsCurrent());
 }
 
 }  // namespace performance_manager

@@ -81,7 +81,7 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
           ++next_render_frame_id, blink::LocalFrameToken(),
           NextTestFrameTreeNodeId(), perfetto::NamedTrack("Frame"),
           content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
-          /*is_current=*/true, /*is_active=*/true);
+          /*is_active=*/true);
   EXPECT_NE(nullptr, frame_node.get());
 
   PerformanceManagerImpl::DeleteNode(std::move(frame_node));
@@ -130,7 +130,7 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
           ++next_render_frame_id, blink::LocalFrameToken(),
           NextTestFrameTreeNodeId(), perfetto::NamedTrack("Frame"),
           content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
-          /*is_current=*/true, /*is_active=*/true);
+          /*is_active=*/true);
   std::unique_ptr<FrameNodeImpl> parent2_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), /*parent_frame_node=*/nullptr,
@@ -138,7 +138,7 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
           ++next_render_frame_id, blink::LocalFrameToken(),
           NextTestFrameTreeNodeId(), perfetto::NamedTrack("Frame"),
           content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
-          /*is_current=*/true, /*is_active=*/true);
+          /*is_active=*/true);
 
   std::unique_ptr<FrameNodeImpl> child1_frame =
       PerformanceManagerImpl::CreateFrameNode(
@@ -147,7 +147,7 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
           ++next_render_frame_id, blink::LocalFrameToken(),
           NextTestFrameTreeNodeId(), perfetto::NamedTrack("Frame"),
           content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
-          /*is_current=*/true, /*is_active=*/true);
+          /*is_active=*/true);
   std::unique_ptr<FrameNodeImpl> child2_frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node.get(), page_node.get(), parent2_frame.get(),
@@ -155,7 +155,7 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
           ++next_render_frame_id, blink::LocalFrameToken(),
           NextTestFrameTreeNodeId(), perfetto::NamedTrack("Frame"),
           content::BrowsingInstanceId(0), content::SiteInstanceGroupId(0),
-          /*is_current=*/true, /*is_active=*/true);
+          /*is_active=*/true);
 
   std::vector<std::unique_ptr<NodeBase>> nodes;
   for (size_t i = 0; i < 10; ++i) {
@@ -164,15 +164,13 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
         /*outer_document_for_inner_frame_root=*/nullptr, ++next_render_frame_id,
         blink::LocalFrameToken(), NextTestFrameTreeNodeId(),
         perfetto::NamedTrack("Frame"), content::BrowsingInstanceId(0),
-        content::SiteInstanceGroupId(0), /*is_current=*/true,
-        /*is_active=*/true));
+        content::SiteInstanceGroupId(0), /*is_active=*/true));
     nodes.push_back(PerformanceManagerImpl::CreateFrameNode(
         process_node.get(), page_node.get(), child1_frame.get(),
         /*outer_document_for_inner_frame_root=*/nullptr, ++next_render_frame_id,
         blink::LocalFrameToken(), NextTestFrameTreeNodeId(),
         perfetto::NamedTrack("Frame"), content::BrowsingInstanceId(0),
-        content::SiteInstanceGroupId(0), /*is_current=*/true,
-        /*is_active=*/true));
+        content::SiteInstanceGroupId(0), /*is_active=*/true));
   }
 
   nodes.push_back(std::move(process_node));

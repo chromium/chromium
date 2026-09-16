@@ -75,7 +75,6 @@ class PerformanceManagerImpl : public PerformanceManager {
       const perfetto::Track& tracing_track,
       content::BrowsingInstanceId browsing_instance_id,
       content::SiteInstanceGroupId site_instance_group_id,
-      bool is_current,
       bool is_active);
   static std::unique_ptr<PageNodeImpl> CreatePageNode(
       base::WeakPtr<content::WebContents> web_contents,

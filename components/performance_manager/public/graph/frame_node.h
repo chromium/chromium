@@ -49,20 +49,22 @@ using execution_context_priority::PriorityAndReason;
 // docs/render_document.md for more details.) The PM node types should be
 // cleaned up to more accurately reflect this.
 //
-// Each RFH is part of a frame tree made up of content::FrameTreeNodes (FTNs).
-// Note that a document in an FTN can be replaced with another, so it is
-// possible to have multiple "sibling" FrameNodes corresponding to RFHs in the
-// same FTN. Only one of these may contribute to the content being rendered,
-// and this node is designated the "current" node in content terminology.
+// Each RFH is part of a frame tree made up of content::FrameTreeNodes.
+// Note that a document in a FrameTreeNode can be replaced with another, so it
+// is possible to have multiple "sibling" FrameNodes corresponding to RFHs in
+// the same FrameTreeNode. Only one of these may contribute to the content being
+// rendered, and this node is designated the "active" node in content
+// terminology.
 //
 // This can occur, for example, when an in-flight navigation creates a new RFH.
 // The new RFH will swap with the previously active RFH when the navigation
-// commits, but until then the two will coexist for the same FTN.
+// commits, but until then the two will coexist for the same FrameTreeNode.
 //
-// A swap is effectively atomic but will take place in two steps in the graph:
-// the outgoing frame will first be marked as not current, and the incoming
-// frame will be marked as current. As such, the graph invariant is that there
-// will be 0 or 1 |is_current| FrameNode's for a given FTN.
+// During navigations and frame swaps, multiple FrameNodes for the same
+// FrameTreeNode may transiently be active simultaneously until the outgoing
+// frame is deactivated. Conversely, a FrameTreeNode position or PageNode may
+// have zero active FrameNodes (for example, in prerendered frame trees, after
+// a renderer crash, or during teardown).
 //
 // It is only valid to access this object on the sequence of the graph that owns
 // it.
@@ -191,12 +193,11 @@ class FrameNode : public TypedNode<FrameNode> {
   // was committed. See FrameNodeObserver::OnOriginChanged.
   virtual const std::optional<url::Origin>& GetOrigin() const = 0;
 
-  // Returns true if this frame is current (is part of a content::FrameTree).
-  // See FrameNodeObserver::OnCurrentFrameChanged.
-  virtual bool IsCurrent() const = 0;
-
   // Returns true if this frame is active (the document is in the 'active'
   // lifecycle state). See RenderFrameHost::IsActive() for more details.
+  // Note that a PageNode or FrameTreeNode position is not guaranteed to always
+  // have an active frame (e.g. in prerendered trees, when a renderer has
+  // crashed, or during teardown). See FrameNodeObserver::OnIsActiveChanged.
   virtual bool IsActive() const = 0;
 
   // Returns the current priority of the frame, and the reason for the frame
@@ -372,9 +373,8 @@ class FrameNodeObserver : public base::CheckedObserver {
 
   // Notifications of property changes.
 
-  // Invoked when the current frame changes. Both arguments can be nullptr.
-  virtual void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
-                                     const FrameNode* current_frame_node) {}
+  // Invoked when the IsActive property changes.
+  virtual void OnIsActiveChanged(const FrameNode* frame_node) {}
 
   // Invoked when the NetworkAlmostIdle property changes.
   virtual void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) {}

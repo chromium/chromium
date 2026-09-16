@@ -53,8 +53,7 @@ class GlicActuationPriorityVoter
       const ProcessNode* pending_process_node,
       const FrameNode* pending_parent_or_outer_document_or_embedder) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
-  void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
-                             const FrameNode* current_frame_node) override;
+  void OnIsActiveChanged(const FrameNode* frame_node) override;
 
   VoterId voter_id() const { return voting_channel_.voter_id(); }
 

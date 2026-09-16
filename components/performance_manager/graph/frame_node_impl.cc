@@ -64,7 +64,6 @@ FrameNodeImpl::FrameNodeImpl(
     const perfetto::Track& tracing_track,
     content::BrowsingInstanceId browsing_instance_id,
     content::SiteInstanceGroupId site_instance_group_id,
-    bool is_current,
     bool is_active)
     : parent_frame_node_(parent_frame_node),
       outer_document_for_inner_frame_root_(outer_document_for_inner_frame_root),
@@ -79,7 +78,6 @@ FrameNodeImpl::FrameNodeImpl(
           process_node->GetRenderProcessHostId().value(),
           render_frame_id)),
       tracing_track_(tracing_track),
-      is_current_(is_current),
       is_active_(is_active),
       priority_and_reason_(PriorityAndReason(base::Process::Priority::kMinValue,
                                              kDefaultPriorityReason),
@@ -138,7 +136,7 @@ void FrameNodeImpl::SetFrameTreeNodeId(
 
 void FrameNodeImpl::SetIsActive(bool is_active) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  is_active_ = is_active;
+  is_active_.SetAndMaybeNotify(this, is_active);
 }
 
 void FrameNodeImpl::SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload) {
@@ -255,14 +253,9 @@ const std::optional<url::Origin>& FrameNodeImpl::GetOrigin() const {
   return document_.origin;
 }
 
-bool FrameNodeImpl::IsCurrent() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_current_;
-}
-
 bool FrameNodeImpl::IsActive() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_active_;
+  return is_active_.value();
 }
 
 const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
@@ -457,37 +450,6 @@ FrameNode::NodeSetView<WorkerNodeImpl*> FrameNodeImpl::child_worker_nodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return NodeSetView<WorkerNodeImpl*>(child_worker_nodes_);
-}
-
-// static
-void FrameNodeImpl::UpdateCurrentFrame(FrameNodeImpl* previous_frame_node,
-                                       FrameNodeImpl* current_frame_node,
-                                       GraphImpl* graph) {
-  if (previous_frame_node) {
-    bool did_change = previous_frame_node->SetIsCurrent(false);
-    // Don't notify if the frame was already not current.
-    if (!did_change) {
-      previous_frame_node = nullptr;
-    }
-  }
-
-  if (current_frame_node) {
-    bool did_change = current_frame_node->SetIsCurrent(true);
-    // Don't notify if the frame was already current.
-    if (!did_change) {
-      current_frame_node = nullptr;
-    }
-  }
-
-  // No need to notify observers.
-  if (!previous_frame_node && !current_frame_node) {
-    return;
-  }
-
-  // Notify observers.
-  for (auto& observer : graph->GetObservers<FrameNodeObserver>()) {
-    observer.OnCurrentFrameChanged(previous_frame_node, current_frame_node);
-  }
 }
 
 void FrameNodeImpl::SetHadUserActivation() {
@@ -966,11 +928,6 @@ bool FrameNodeImpl::HasFrameNodeInTree(FrameNodeImpl* frame_node) const {
   return GetFrameTreeRoot() == frame_node->GetFrameTreeRoot();
 }
 
-bool FrameNodeImpl::SetIsCurrent(bool is_current) {
-  CHECK(CanSetAndNotifyProperty());
-  bool was_current = std::exchange(is_current_, is_current);
-  return was_current != is_current_;
-}
 
 void FrameNodeImpl::SetInheritedIsIntersectingLargeArea(
     bool is_intersecting_large_area) {

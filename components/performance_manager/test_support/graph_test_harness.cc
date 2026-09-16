@@ -60,8 +60,7 @@ TestNodeWrapper<FrameNodeImpl> TestGraphImpl::CreateSpeculativeFrameNodeAutoId(
       this, process_node, page_node, parent_frame_node,
       /*outer_document_for_inner_frame_root=*/nullptr, NextTestFrameRoutingId(),
       blink::LocalFrameToken(), frame_tree_node_id, browsing_instance_id,
-      content::SiteInstanceGroupId(0), /*is_current=*/false,
-      /*is_active=*/false);
+      content::SiteInstanceGroupId(0), /*is_active=*/false);
 }
 
 TestNodeWrapper<ProcessNodeImpl> TestGraphImpl::CreateBrowserProcessNode() {

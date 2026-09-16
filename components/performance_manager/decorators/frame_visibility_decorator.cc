@@ -25,8 +25,8 @@ FrameNode::Visibility GetFrameNodeVisibility(FrameNodeImpl* frame_node,
     return FrameNode::Visibility::kNotVisible;
   }
 
-  // Only frame nodes that are current can be visible.
-  if (!frame_node->IsCurrent()) {
+  // Only frame nodes that are active can be visible.
+  if (!frame_node->IsActive()) {
     return FrameNode::Visibility::kNotVisible;
   }
 
@@ -119,24 +119,8 @@ void FrameVisibilityDecorator::OnBeforeFrameNodeAdded(
       frame_node_impl, IsPageUserVisible(pending_page_node)));
 }
 
-void FrameVisibilityDecorator::OnCurrentFrameChanged(
-    const FrameNode* previous_frame_node,
-    const FrameNode* current_frame_node) {
-  if (base::FeatureList::IsEnabled(features::kSeamlessRenderFrameSwap)) {
-    if (current_frame_node) {
-      OnFramePropertyChanged(current_frame_node);
-    }
-    if (previous_frame_node) {
-      OnFramePropertyChanged(previous_frame_node);
-    }
-  } else {
-    if (previous_frame_node) {
-      OnFramePropertyChanged(previous_frame_node);
-    }
-    if (current_frame_node) {
-      OnFramePropertyChanged(current_frame_node);
-    }
-  }
+void FrameVisibilityDecorator::OnIsActiveChanged(const FrameNode* frame_node) {
+  OnFramePropertyChanged(frame_node);
 }
 
 void FrameVisibilityDecorator::OnViewportIntersectionChanged(

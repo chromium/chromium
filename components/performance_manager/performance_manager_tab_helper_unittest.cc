@@ -48,14 +48,9 @@ const char kGrandchildUrl[] = "https://grandchild.com/";
 const char kNewGrandchildUrl[] = "https://newgrandchild.com/";
 const char kCousinFreddyUrl[] = "https://cousinfreddy.com/";
 
-class PerformanceManagerTabHelperTest
-    : public PerformanceManagerTestHarness,
-      public testing::WithParamInterface<bool> {
+class PerformanceManagerTabHelperTest : public PerformanceManagerTestHarness {
  public:
-  PerformanceManagerTabHelperTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kSeamlessRenderFrameSwap, GetParam());
-  }
+  PerformanceManagerTabHelperTest() = default;
 
   void TearDown() override {
     // Clean up the web contents, which should dispose of the page and frame
@@ -91,8 +86,6 @@ class PerformanceManagerTabHelperTest
     }
     return num_hosts;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void PerformanceManagerTabHelperTest::CheckGraphTopology(
@@ -120,10 +113,10 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
   EXPECT_GE(num_hosts, CountAllRenderProcessNodes(graph));
   EXPECT_EQ(4u, graph->GetAllFrameNodes().size());
 
-  // Expect all frame nodes to be current. This fails if our
+  // Expect all frame nodes to be active. This fails if our
   // implementation of RenderFrameHostChanged is borked.
   for (auto* frame : graph->GetAllFrameNodes()) {
-    EXPECT_TRUE(frame->IsCurrent());
+    EXPECT_TRUE(frame->IsActive());
   }
 
   ASSERT_EQ(1u, graph->GetAllPageNodes().size());
@@ -161,9 +154,7 @@ void PerformanceManagerTabHelperTest::CheckGraphTopology(
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(All, PerformanceManagerTabHelperTest, testing::Bool());
-
-TEST_P(PerformanceManagerTabHelperTest, FrameHierarchyReflectsToGraph) {
+TEST_F(PerformanceManagerTabHelperTest, FrameHierarchyReflectsToGraph) {
   SetContents(CreateTestWebContents());
 
   auto* parent = content::NavigationSimulator::NavigateAndCommitFromBrowser(
@@ -241,7 +232,7 @@ void ExpectNotificationPermissionStatus(
 
 }  // namespace
 
-TEST_P(PerformanceManagerTabHelperTest, PageIsAudible) {
+TEST_F(PerformanceManagerTabHelperTest, PageIsAudible) {
   SetContents(CreateTestWebContents());
 
   ExpectPageIsAudible(false);
@@ -252,7 +243,7 @@ TEST_P(PerformanceManagerTabHelperTest, PageIsAudible) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_P(PerformanceManagerTabHelperTest, NotificationPermission) {
+TEST_F(PerformanceManagerTabHelperTest, NotificationPermission) {
   auto owned_permission_controller =
       std::make_unique<testing::NiceMock<content::MockPermissionController>>();
   auto* permission_controller = owned_permission_controller.get();
@@ -344,7 +335,7 @@ TEST_P(PerformanceManagerTabHelperTest, NotificationPermission) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_P(PerformanceManagerTabHelperTest, GetFrameNode) {
+TEST_F(PerformanceManagerTabHelperTest, GetFrameNode) {
   SetContents(CreateTestWebContents());
 
   auto* tab_helper =
@@ -368,7 +359,7 @@ TEST_P(PerformanceManagerTabHelperTest, GetFrameNode) {
   EXPECT_TRUE(new_frame_node);
 }
 
-TEST_P(PerformanceManagerTabHelperTest,
+TEST_F(PerformanceManagerTabHelperTest,
        NotificationsFromInactiveFrameTreeAreIgnored) {
   // When this feature is enabled, PerformanceManagerTabHelper does not ignore
   // the first favicon/title update.

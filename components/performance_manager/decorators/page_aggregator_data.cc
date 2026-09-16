@@ -16,8 +16,8 @@ PageAggregatorData::~PageAggregatorData() {
   DCHECK_EQ(num_frames_holding_web_lock_, 0);
   DCHECK_EQ(num_frames_holding_blocking_indexeddb_lock_, 0);
   DCHECK_EQ(num_frames_using_web_rtc_, 0);
-  DCHECK_EQ(num_current_frames_with_form_interaction_, 0);
-  DCHECK_EQ(num_current_frames_with_user_edits_, 0);
+  DCHECK_EQ(num_active_frames_with_form_interaction_, 0);
+  DCHECK_EQ(num_active_frames_with_user_edits_, 0);
 }
 
 void PageAggregatorData::UpdateFrameCountForWebLockUsage(
@@ -57,43 +57,43 @@ void PageAggregatorData::UpdateFrameCountForWebRTCUsage(
   page_node_->SetUsesWebRTC(PassKey(), num_frames_using_web_rtc_ > 0);
 }
 
-void PageAggregatorData::UpdateCurrentFrameCountForFormInteraction(
-    bool frame_had_form_interaction) {
-  if (frame_had_form_interaction) {
-    ++num_current_frames_with_form_interaction_;
+void PageAggregatorData::UpdateActiveFrameCountForFormInteraction(
+    bool is_active_with_form_interaction) {
+  if (is_active_with_form_interaction) {
+    ++num_active_frames_with_form_interaction_;
   } else {
-    DCHECK_GT(num_current_frames_with_form_interaction_, 0);
-    --num_current_frames_with_form_interaction_;
+    DCHECK_GT(num_active_frames_with_form_interaction_, 0);
+    --num_active_frames_with_form_interaction_;
   }
 
   page_node_->SetHadFormInteraction(
-      PassKey(), num_current_frames_with_form_interaction_ > 0);
+      PassKey(), num_active_frames_with_form_interaction_ > 0);
 }
 
-void PageAggregatorData::UpdateCurrentFrameCountForUserEdits(
-    bool frame_had_user_edits) {
-  if (frame_had_user_edits) {
-    ++num_current_frames_with_user_edits_;
+void PageAggregatorData::UpdateActiveFrameCountForUserEdits(
+    bool is_active_with_user_edits) {
+  if (is_active_with_user_edits) {
+    ++num_active_frames_with_user_edits_;
   } else {
-    DCHECK_GT(num_current_frames_with_user_edits_, 0);
-    --num_current_frames_with_user_edits_;
+    DCHECK_GT(num_active_frames_with_user_edits_, 0);
+    --num_active_frames_with_user_edits_;
   }
 
   page_node_->SetHadUserEdits(PassKey(),
-                              num_current_frames_with_user_edits_ > 0);
+                              num_active_frames_with_user_edits_ > 0);
 }
 
-void PageAggregatorData::UpdateCurrentFrameCountForFreezingOriginTrialOptOut(
-    bool frame_has_freezing_origin_trial_opt_out) {
-  if (frame_has_freezing_origin_trial_opt_out) {
-    ++num_current_frames_with_freezing_origin_trial_opt_out_;
+void PageAggregatorData::UpdateActiveFrameCountForFreezingOriginTrialOptOut(
+    bool is_active_with_freezing_origin_trial_opt_out) {
+  if (is_active_with_freezing_origin_trial_opt_out) {
+    ++num_active_frames_with_freezing_origin_trial_opt_out_;
   } else {
-    DCHECK_GT(num_current_frames_with_freezing_origin_trial_opt_out_, 0);
-    --num_current_frames_with_freezing_origin_trial_opt_out_;
+    DCHECK_GT(num_active_frames_with_freezing_origin_trial_opt_out_, 0);
+    --num_active_frames_with_freezing_origin_trial_opt_out_;
   }
 
   page_node_->SetHasFreezingOriginTrialOptOut(
-      PassKey(), num_current_frames_with_freezing_origin_trial_opt_out_ > 0);
+      PassKey(), num_active_frames_with_freezing_origin_trial_opt_out_ > 0);
 }
 
 base::DictValue PageAggregatorData::Describe() {
@@ -102,10 +102,10 @@ base::DictValue PageAggregatorData::Describe() {
   ret.Set("num_frames_holding_blocking_indexeddb_lock",
           num_frames_holding_blocking_indexeddb_lock_);
   ret.Set("num_frames_using_web_rtc", num_frames_using_web_rtc_);
-  ret.Set("num_current_frames_with_form_interaction",
-          num_current_frames_with_form_interaction_);
-  ret.Set("num_current_frames_with_user_edits",
-          num_current_frames_with_user_edits_);
+  ret.Set("num_active_frames_with_form_interaction",
+          num_active_frames_with_form_interaction_);
+  ret.Set("num_active_frames_with_user_edits",
+          num_active_frames_with_user_edits_);
   return ret;
 }
 

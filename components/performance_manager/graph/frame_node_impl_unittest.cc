@@ -392,10 +392,9 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
   const FrameNode* raw_frame_node = frame_node.get();
   EXPECT_EQ(raw_frame_node, obs.created_frame_node());
 
-  // Invoke "UpdateCurrentFrame" and expect a "OnCurrentFrameChanged" callback.
-  EXPECT_CALL(obs, OnCurrentFrameChanged(raw_frame_node, nullptr));
-  FrameNodeImpl::UpdateCurrentFrame(/*previous_frame_node=*/frame_node.get(),
-                                    /*current_frame_node=*/nullptr, graph());
+  // Invoke "SetIsActive" and expect an "OnIsActiveChanged" callback.
+  EXPECT_CALL(obs, OnIsActiveChanged(raw_frame_node));
+  frame_node->SetIsActive(false);
   testing::Mock::VerifyAndClear(&obs);
 
   // Invoke "SetNetworkAlmostIdle" and expect an "OnNetworkAlmostIdleChanged"

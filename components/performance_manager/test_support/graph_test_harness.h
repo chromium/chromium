@@ -126,7 +126,6 @@ struct TestNodeWrapper<FrameNodeImpl>::Factory {
           content::BrowsingInstanceId(0),
       content::SiteInstanceGroupId site_instance_group_id =
           content::SiteInstanceGroupId(0),
-      bool is_current = true,
       bool is_active = true) {
     return std::make_unique<FrameNodeImpl>(
         process_node, page_node, parent_frame_node,
@@ -134,7 +133,7 @@ struct TestNodeWrapper<FrameNodeImpl>::Factory {
         frame_tree_node_id,
         perfetto::NamedTrack("Frame",
                              base::PersistentHash(frame_token->AsBytes())),
-        browsing_instance_id, site_instance_group_id, is_current, is_active);
+        browsing_instance_id, site_instance_group_id, is_active);
   }
 };
 
@@ -277,8 +276,8 @@ class TestGraphImpl : public GraphImpl {
           content::BrowsingInstanceId(),
       content::FrameTreeNodeId frame_tree_node_id = content::FrameTreeNodeId());
 
-  // Creates a speculative (non-current, non-active) frame node with an
-  // automatically generated routing id.
+  // Creates a speculative (non-active) frame node with an automatically
+  // generated routing id.
   TestNodeWrapper<FrameNodeImpl> CreateSpeculativeFrameNodeAutoId(
       ProcessNodeImpl* process_node,
       PageNodeImpl* page_node,

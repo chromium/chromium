@@ -11,8 +11,7 @@ namespace performance_manager {
 FrozenData::FrozenData() = default;
 
 bool FrozenData::IsFrozen() const {
-  return current_frame_count_ > 0 &&
-         frozen_frame_count_ == current_frame_count_;
+  return active_frame_count_ > 0 && frozen_frame_count_ == active_frame_count_;
 }
 
 // Returns the state as an equivalent LifecycleState.
@@ -24,21 +23,21 @@ performance_manager::mojom::LifecycleState FrozenData::AsLifecycleState()
   return performance_manager::mojom::LifecycleState::kRunning;
 }
 
-bool FrozenData::ChangeFrameCounts(int32_t current_frame_delta,
+bool FrozenData::ChangeFrameCounts(int32_t active_frame_delta,
                                    int32_t frozen_frame_delta) {
   // Each delta should be -1, 0 or 1.
-  DCHECK(current_frame_delta != 0 || frozen_frame_delta != 0);
-  DCHECK_GE(1, abs(current_frame_delta));
+  DCHECK(active_frame_delta != 0 || frozen_frame_delta != 0);
+  DCHECK_GE(1, abs(active_frame_delta));
   DCHECK_GE(1, abs(frozen_frame_delta));
   // We should never have (-1, 1) or (1, -1).
-  DCHECK_NE(-current_frame_delta, frozen_frame_delta);
+  DCHECK_NE(-active_frame_delta, frozen_frame_delta);
 
   // If the deltas are negative, the counts need to be positive.
-  DCHECK(current_frame_delta >= 0 || current_frame_count_ > 0);
+  DCHECK(active_frame_delta >= 0 || active_frame_count_ > 0);
   DCHECK(frozen_frame_delta >= 0 || frozen_frame_count_ > 0);
 
   bool was_frozen = IsFrozen();
-  current_frame_count_ += current_frame_delta;
+  active_frame_count_ += active_frame_delta;
   frozen_frame_count_ += frozen_frame_delta;
 
   return IsFrozen() != was_frozen;
@@ -46,7 +45,7 @@ bool FrozenData::ChangeFrameCounts(int32_t current_frame_delta,
 
 base::DictValue FrozenData::Describe() {
   base::DictValue ret;
-  ret.Set("current_frame_count", static_cast<int>(current_frame_count_));
+  ret.Set("active_frame_count", static_cast<int>(active_frame_count_));
   ret.Set("frozen_frame_count", static_cast<int>(frozen_frame_count_));
   return ret;
 }

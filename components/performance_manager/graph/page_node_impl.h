@@ -361,7 +361,7 @@ class PageNodeImpl
       &PageNodeObserver::OnHasPictureInPictureChanged>
       has_picture_in_picture_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // Whether the page is opted-out from freezing via origin trial, i.e. if any
-  // of its current frames sets the origin trial.
+  // of its active frames sets the origin trial.
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,
       &PageNodeObserver::OnPageHasFreezingOriginTrialOptOutChanged>

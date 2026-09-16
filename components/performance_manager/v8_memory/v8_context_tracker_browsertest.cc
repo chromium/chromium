@@ -178,9 +178,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest,
       v8_context_tracker->GetExecutionContextState(frame_node->GetFrameToken());
   ASSERT_TRUE(ec_state);
   ASSERT_TRUE(ec_state->iframe_attribution_data)
-      << "url " << frame_node->GetURL() << ", current "
-      << frame_node->IsCurrent() << ", state "
-      << frame_node->GetLifecycleState();
+      << "url " << frame_node->GetURL() << ", active " << frame_node->IsActive()
+      << ", state " << frame_node->GetLifecycleState();
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest, SameSiteNavigation) {

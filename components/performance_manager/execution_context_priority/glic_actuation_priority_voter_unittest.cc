@@ -176,15 +176,9 @@ TEST_F(GlicActuationPriorityVoterTest, FencedFrameNavigationNoCrash) {
       /*frame_tree_node_id=*/fenced_frame_node->GetFrameTreeNodeId(),
       /*browsing_instance_id=*/content::BrowsingInstanceId(0),
       /*site_instance_group_id=*/content::SiteInstanceGroupId(0),
-      /*is_current=*/false,
-      /*is_active=*/true);
+      /*is_active=*/false);
+  new_fenced_frame_node->SetIsActive(true);
   fenced_frame_node->SetIsActive(false);
-
-  // Transition: fenced_frame_node (current -> false), new_fenced_frame_node
-  // (current -> true). This triggers OnCurrentFrameChanged for a non-outermost
-  // main frame.
-  FrameNodeImpl::UpdateCurrentFrame(fenced_frame_node.get(),
-                                    new_fenced_frame_node.get(), graph());
 
   // Vote should remain unaffected on the primary main frame.
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
@@ -204,14 +198,9 @@ TEST_F(GlicActuationPriorityVoterTest, FencedFrameNavigationNoCrash) {
       /*frame_tree_node_id=*/main_frame_node->GetFrameTreeNodeId(),
       /*browsing_instance_id=*/content::BrowsingInstanceId(0),
       /*site_instance_group_id=*/content::SiteInstanceGroupId(0),
-      /*is_current=*/false,
-      /*is_active=*/true);
+      /*is_active=*/false);
+  new_main_frame_node->SetIsActive(true);
   main_frame_node->SetIsActive(false);
-
-  // Transition: main_frame_node (current -> false), new_main_frame_node
-  // (current -> true) This triggers OnCurrentFrameChanged.
-  FrameNodeImpl::UpdateCurrentFrame(main_frame_node, new_main_frame_node.get(),
-                                    graph());
 
   // The vote should have moved to the new main frame.
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
