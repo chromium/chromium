@@ -3249,10 +3249,6 @@
       // a Chromium level feature (kFontDataServiceForCSSLocalFonts).
     },
     {
-      name: "FontFallbackForTabSize",
-      status: "stable",
-    },
-    {
       name: "FontFamilyPostscriptMatchingCTMigration",
     },
     {

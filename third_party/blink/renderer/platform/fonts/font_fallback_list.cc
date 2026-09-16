@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
@@ -115,8 +114,7 @@ const SimpleFontData* FontFallbackList::DeterminePrimarySimpleFontDataCore(
         font_data->FontDataForCharacter(lookup_character);
     DCHECK(font_data_for_space);
 
-    if (RuntimeEnabledFeatures::FontFallbackForTabSizeEnabled() &&
-        should_contain_glyph &&
+    if (should_contain_glyph &&
         !font_data_for_space->GlyphForCharacter(lookup_character)) {
       continue;
     }
