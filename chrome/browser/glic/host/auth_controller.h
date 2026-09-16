@@ -33,9 +33,10 @@ enum class GlicCookieSyncTrigger {
   kOnRefreshTokenUpdated = 3,
   kMaybeSyncCookiesOnError = 4,
   kGlicClient = 5,
-  kMaxValue = kGlicClient,
+  kInstanceCreated = 6,
+  kMaxValue = kInstanceCreated,
 };
-// LINT.ThenChange(tools/metrics/histograms/metadata/glic/enums.xml:GlicCookieSyncTrigger)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicCookieSyncTrigger)
 
 bool IsPrimaryAccountGoogleInternal(signin::IdentityManager& signin_manager);
 
@@ -89,6 +90,16 @@ class AuthController : public signin::IdentityManager::Observer {
     return cookie_synchronizer_.get();
   }
 
+  // Called when a Glic instance is created due to user action.
+  void OnInstanceCreated();
+
+  bool HasInstanceBeenCreatedForTesting() const {
+    return has_instance_been_created_;
+  }
+  void SetInstanceCreatedForTesting(bool created) {
+    has_instance_been_created_ = created;
+  }
+
   bool NeedsSyncForTesting() const;
 
   // signin::IdentityManager::Observer implementation.
@@ -133,6 +144,7 @@ class AuthController : public signin::IdentityManager::Observer {
       observation_;
   base::TimeTicks last_sync_on_error_time_;
   base::OneShotTimer token_change_sync_timer_;
+  bool has_instance_been_created_ = false;
   base::WeakPtrFactory<AuthController> weak_ptr_factory_{this};
 };
 

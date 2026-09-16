@@ -73,7 +73,8 @@ class AuthControllerTest : public testing::Test {
         /*disabled_features=*/{
             features::kGlicCookieSyncOnTokenChange,
             features::kGlicCookieSyncOnOpenEvenIfNoSyncNeeded,
-            features::kGlicCookieSyncOnError});
+            features::kGlicCookieSyncOnError,
+            features::kGlicCookieSyncEarlyNoStartup});
     profile_ = std::make_unique<TestingProfile>();
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
 
@@ -666,6 +667,156 @@ TEST_F(AuthControllerTest, OnRefreshTokenUpdated_NoSyncIfTokenInvalid) {
 
   // Verify no sync was triggered because the token is invalid.
   EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+}
+
+TEST_F(AuthControllerTest, CookieSyncEarlyNoStartup_NoSyncOnStartup) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicCookieSyncOnTokenChange,
+                            features::kGlicCookieSyncEarlyNoStartup},
+      /*disabled_features=*/{});
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync, true);
+
+  CoreAccountInfo account_info =
+      identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+
+  auth_controller_->OnRefreshTokenUpdatedForAccount(account_info);
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // No sync should be triggered since no instance has been created.
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  signin::ClearPrimaryAccount(identity_test_env_->identity_manager());
+  AccountInfo account_info2 =
+      identity_test_env_->MakeAccountAvailable("user2@gmail.com");
+  identity_test_env_->SetPrimaryAccount(account_info2.GetEmail(),
+                                        signin::ConsentLevel::kSignin);
+  task_environment_.FastForwardBy(base::Seconds(10));
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+TEST_F(AuthControllerTest,
+       CookieSyncEarlyNoStartup_CheckAuthBeforeLoadSyncsAndSucceeds) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicCookieSyncOnTokenChange,
+                            features::kGlicCookieSyncEarlyNoStartup},
+      /*disabled_features=*/{});
+  base::HistogramTester histogram_tester;
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync, true);
+
+  // Calling CheckAuthBeforeLoad (e.g. during prewarming) should perform the
+  // sync and succeed.
+  base::test::TestFuture<mojom::PrepareForClientResult> future;
+  auth_controller_->CheckAuthBeforeLoad(future.GetCallback());
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+
+  synchronizer_->WaitForSyncToComplete();
+  EXPECT_EQ(future.Get(), mojom::PrepareForClientResult::kSuccess);
+  EXPECT_FALSE(
+      profile_->GetPrefs()->GetBoolean(prefs::kGlicPartitionNeedsCookieSync));
+  histogram_tester.ExpectUniqueSample(
+      "Glic.CookieSynchronization.SuccessByTrigger",
+      GlicCookieSyncTrigger::kCheckAuthBeforeLoad, 1);
+}
+
+TEST_F(AuthControllerTest,
+       CookieSyncEarlyNoStartup_InstanceCreationTriggersSync) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicCookieSyncOnTokenChange,
+                            features::kGlicCookieSyncEarlyNoStartup},
+      /*disabled_features=*/{});
+  base::HistogramTester histogram_tester;
+  profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync, true);
+
+  EXPECT_FALSE(auth_controller_->HasInstanceBeenCreatedForTesting());
+  auth_controller_->OnInstanceCreated();
+  EXPECT_TRUE(auth_controller_->HasInstanceBeenCreatedForTesting());
+
+  // Early sync should have been triggered immediately.
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+  synchronizer_->WaitForSyncToComplete();
+
+  EXPECT_FALSE(
+      profile_->GetPrefs()->GetBoolean(prefs::kGlicPartitionNeedsCookieSync));
+  histogram_tester.ExpectUniqueSample(
+      "Glic.CookieSynchronization.SuccessByTrigger",
+      GlicCookieSyncTrigger::kInstanceCreated, 1);
+}
+
+TEST_F(AuthControllerTest,
+       CookieSyncEarlyNoStartup_TokenUpdateTriggersSyncAfterInstanceCreated) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicCookieSyncOnTokenChange,
+                            features::kGlicCookieSyncEarlyNoStartup},
+      /*disabled_features=*/{});
+  base::HistogramTester histogram_tester;
+
+  // Create an instance first and let early sync complete.
+  auth_controller_->OnInstanceCreated();
+  synchronizer_->WaitForSyncToComplete();
+  ASSERT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+
+  CoreAccountInfo account_info =
+      identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+
+  // Now token changes while Chrome is running.
+  identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+  task_environment_.FastForwardBy(base::Seconds(10));
+  synchronizer_->WaitForSyncToComplete();
+
+  // Subsequent token update should trigger sync because an instance was
+  // created.
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 2);
+  histogram_tester.ExpectBucketCount(
+      "Glic.CookieSynchronization.SuccessByTrigger",
+      GlicCookieSyncTrigger::kOnRefreshTokenUpdated, 1);
+}
+
+TEST_F(AuthControllerTest,
+       CookieSyncEarlyNoStartup_CheckAuthBeforeLoadFastWhenEarlySyncDone) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicCookieSyncOnTokenChange,
+                            features::kGlicCookieSyncEarlyNoStartup},
+      /*disabled_features=*/{});
+  base::HistogramTester histogram_tester;
+
+  // Simulate instance creation starting early sync.
+  auth_controller_->OnInstanceCreated();
+  synchronizer_->WaitForSyncToComplete();
+  ASSERT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+
+  // WebUI finishes loading and calls CheckAuthBeforeLoad.
+  base::test::TestFuture<mojom::PrepareForClientResult> future;
+  auth_controller_->CheckAuthBeforeLoad(future.GetCallback());
+
+  // Should succeed immediately without triggering a second sync.
+  EXPECT_EQ(future.Get(), mojom::PrepareForClientResult::kSuccess);
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Auth.CheckAuthBeforeLoadOutcome",
+      CheckAuthBeforeLoadOutcome::kTokenChangeNoSyncNeeded, 1);
+}
+
+TEST_F(
+    AuthControllerTest,
+    CookieSyncEarlyNoStartup_SubsequentInstanceCreationSkipsIfAlreadySynced) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicCookieSyncOnTokenChange,
+                            features::kGlicCookieSyncEarlyNoStartup},
+      /*disabled_features=*/{});
+
+  // First instance creation triggers early sync.
+  auth_controller_->OnInstanceCreated();
+  synchronizer_->WaitForSyncToComplete();
+  ASSERT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+
+  // Second instance creation when cookies are already synced (needs_sync ==
+  // false).
+  auth_controller_->OnInstanceCreated();
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
 }
 
 }  // namespace glic
