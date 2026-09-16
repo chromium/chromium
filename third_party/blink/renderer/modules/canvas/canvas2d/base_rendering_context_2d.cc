@@ -163,8 +163,13 @@ const MemoryManagedPaintRecorder* BaseRenderingContext2D::Recorder() const {
   return recorder_.get();
 }
 
-void BaseRenderingContext2D::CreateRecorder(const gfx::Size& size) {
+void BaseRenderingContext2D::CreateRecorder(const gfx::Size& size,
+                                            bool is_graphite) {
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(size, this);
+  if (is_graphite) {
+    recorder_->DisableLineDrawingAsPaths();
+  }
+  UpdateRecordingLimits(is_graphite);
 }
 
 void BaseRenderingContext2D::ResetRecorder() {
@@ -180,11 +185,15 @@ BaseRenderingContext2D::ReleaseRecorder() {
 }
 
 void BaseRenderingContext2D::SetRecorder(
-    std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
+    std::unique_ptr<MemoryManagedPaintRecorder> recorder,
+    bool is_graphite) {
   if (recorder) {
     recorder->SetClient(this);
   }
   recorder_ = std::move(recorder);
+  if (recorder_ && is_graphite) {
+    recorder_->DisableLineDrawingAsPaths();
+  }
 }
 
 void BaseRenderingContext2D::UpdateRecordingLimits(bool is_graphite) {

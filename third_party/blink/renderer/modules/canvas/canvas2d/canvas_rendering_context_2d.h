@@ -322,8 +322,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void WakeUpFromHibernation();
 
-  void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);
-
   FilterOperations filter_operations_;
   HashMap<String, FontDescription> fonts_resolved_using_current_style_;
   bool should_prune_local_font_cache_;

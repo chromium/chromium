@@ -279,17 +279,13 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
   }
 
   if (shared_image_provider_ || bitmap_provider_) {
-    CreateRecorder(host->Size());
-    UpdateRecordingLimits(shared_image_provider_ &&
-                          shared_image_provider_->IsGraphite());
+    CreateRecorder(host->Size(), shared_image_provider_ &&
+                                     shared_image_provider_->IsGraphite());
   }
 
   Host()->UpdateMemoryUsage();
 
   if (shared_image_provider_) {
-    if (shared_image_provider_->IsGraphite()) {
-      Recorder()->DisableLineDrawingAsPaths();
-    }
     base::UmaHistogramBoolean("Blink.Canvas.ResourceProviderIsAccelerated",
                               shared_image_provider_->IsAccelerated());
     base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",

@@ -84,7 +84,7 @@ class TestRenderingContext2D final
             CanvasContextCreationAttributesCore(),
             scheduler::GetSingleThreadTaskRunnerForTesting()),
         execution_context_(scope.GetExecutionContext()) {
-    CreateRecorder(gfx::Size(Width(), Height()));
+    CreateRecorder(gfx::Size(Width(), Height()), /*is_graphite=*/false);
   }
   ~TestRenderingContext2D() override = default;
 
@@ -114,6 +114,7 @@ class TestRenderingContext2D final
 
     return &Recorder()->getRecordingCanvas();
   }
+  using BaseRenderingContext2D::CreateRecorder;
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
   using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
   const MemoryManagedPaintCanvas* GetPaintCanvas() const override {
@@ -269,14 +270,14 @@ TEST(BaseRenderingContext2DTest, RecordingLimits) {
   EXPECT_EQ(context->max_pinned_image_bytes(),
             static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024);
 
-  context->UpdateRecordingLimits(/*is_graphite=*/true);
+  context->CreateRecorder(gfx::Size(300, 300), /*is_graphite=*/true);
   EXPECT_EQ(
       context->max_recorded_op_bytes(),
       static_cast<size_t>(features::kMaxRecordedOpGraphiteKB.Get()) * 1024);
   EXPECT_EQ(context->max_pinned_image_bytes(),
             static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024);
 
-  context->UpdateRecordingLimits(/*is_graphite=*/false);
+  context->CreateRecorder(gfx::Size(300, 300), /*is_graphite=*/false);
   EXPECT_EQ(context->max_recorded_op_bytes(),
             static_cast<size_t>(features::kMaxRecordedOpKB.Get()) * 1024);
 }

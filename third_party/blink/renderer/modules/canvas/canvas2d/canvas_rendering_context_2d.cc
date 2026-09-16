@@ -518,15 +518,6 @@ CanvasRenderingContext2D::ReleaseRecorder() {
   return BaseRenderingContext2D::ReleaseRecorder();
 }
 
-void CanvasRenderingContext2D::SetRecorder(
-    std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
-  BaseRenderingContext2D::SetRecorder(std::move(recorder));
-  if (Recorder() && shared_image_provider_ &&
-      shared_image_provider_->IsGraphite()) {
-    Recorder()->DisableLineDrawingAsPaths();
-  }
-}
-
 void CanvasRenderingContext2D::RecordingCleared() {
   BaseRenderingContext2D::RecordingCleared();
   if (shared_image_provider_) {
@@ -1216,12 +1207,8 @@ void CanvasRenderingContext2D::CreateProvider() {
         canvas());
   }
   if (shared_image_provider_ || bitmap_provider_) {
-    CreateRecorder(canvas()->Size());
-    if (shared_image_provider_ && shared_image_provider_->IsGraphite()) {
-      Recorder()->DisableLineDrawingAsPaths();
-    }
-    UpdateRecordingLimits(shared_image_provider_ &&
-                          shared_image_provider_->IsGraphite());
+    CreateRecorder(canvas()->Size(), shared_image_provider_ &&
+                                         shared_image_provider_->IsGraphite());
   }
 }
 
@@ -1373,7 +1360,8 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
   } else {
     bitmap_provider_->RestoreBackBuffer(image->PaintImageForCurrentFrame());
   }
-  SetRecorder(std::move(recorder));
+  SetRecorder(std::move(recorder),
+              shared_image_provider_ && shared_image_provider_->IsGraphite());
 
   canvas()->UpdateMemoryUsage();
 }
@@ -1443,7 +1431,8 @@ void CanvasRenderingContext2D::WakeUpFromHibernation() {
   } else if (bitmap_provider_) {
     bitmap_provider_->RestoreBackBuffer(builder.TakePaintImage());
   }
-  SetRecorder(hibernation_handler->ReleaseRecorder());
+  SetRecorder(hibernation_handler->ReleaseRecorder(),
+              shared_image_provider_ && shared_image_provider_->IsGraphite());
   // The hibernation image is no longer valid, clear it.
   hibernation_handler->Clear();
   DCHECK(!hibernation_handler->IsHibernating());
@@ -1461,11 +1450,7 @@ void CanvasRenderingContext2D::SetCanvas2DResourceProviderForTesting(
   ResetResourceProvider();
   shared_image_provider_ = std::move(provider);
   if (shared_image_provider_) {
-    CreateRecorder(size);
-    if (shared_image_provider_->IsGraphite()) {
-      Recorder()->DisableLineDrawingAsPaths();
-    }
-    UpdateRecordingLimits(shared_image_provider_->IsGraphite());
+    CreateRecorder(size, shared_image_provider_->IsGraphite());
   }
 }
 
@@ -1478,8 +1463,7 @@ void CanvasRenderingContext2D::SetBitmapProviderForTesting(
   ResetResourceProvider();
   bitmap_provider_ = std::move(provider);
   if (bitmap_provider_) {
-    CreateRecorder(size);
-    UpdateRecordingLimits(/*is_graphite=*/false);
+    CreateRecorder(size, /*is_graphite=*/false);
   }
 }
 

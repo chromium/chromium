@@ -92,7 +92,6 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   size_t max_recorded_op_bytes() const { return max_recorded_op_bytes_; }
   size_t max_pinned_image_bytes() const { return max_pinned_image_bytes_; }
-  void UpdateRecordingLimits(bool is_graphite);
 
   static constexpr unsigned kFallbackToCPUAfterReadbacks = 2;
 
@@ -299,10 +298,11 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void FlushIfRecordingLimitExceeded();
 
-  void CreateRecorder(const gfx::Size& size);
+  void CreateRecorder(const gfx::Size& size, bool is_graphite);
   void ResetRecorder();
   std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
-  void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);
+  void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder,
+                   bool is_graphite);
 
   explicit BaseRenderingContext2D(
       CanvasRenderingContextHost* canvas,
@@ -351,6 +351,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   Canvas2DColorParams color_params_;
 
  private:
+  void UpdateRecordingLimits(bool is_graphite);
   virtual bool IsHibernating() const { return false; }
   virtual void EnableAccelerationIfPossible() {}
   void DrawTextInternal(const String& text,
