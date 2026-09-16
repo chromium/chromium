@@ -38,11 +38,11 @@ the `com.apple.security.get-task-allow` that lets the app be debugged.
 
 The above section speaks of the `--identity` parameter to `sign_chrome.py`, and
 how the normal development identity will do, and how a self-signed identity will
-not work. However, the identity used for Installer (.pkg) files is different.
+not work. However, the identity used for Installer packages (.pkg) is different.
 
-Installer files require a special Installer Package Signing Certificate, which
-is different than a normal certificate in that it has a special Extended Key
-Usage extension.
+Installer packages require a special Installer Package Signing Certificate,
+which is different than a normal certificate in that it has a special Extended
+Key Usage extension.
 
 For the normal identity, Apple provides both a development and a deployment
 certificate, and while the deployment certificate can be (and should be)
@@ -54,11 +54,13 @@ Directions on how to create a self-signed certificate with the special Extended
 Key Usage extension for installer use can be found on
 [security.stackexchange](https://security.stackexchange.com/a/47908).
 
-You will need to explicitly mark the certificate as trusted. This can be done
-with
-`sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain my_installer_cert.crt`.
-Be sure that `sudo security -v find-identity` lists this new certificate as a
-valid identity.
+You can get away with putting the self-signed certificate in the login keychain
+for the purpose of building test packages. However, the Installer runs as root
+and ignores the login keychain, so if you want to install those test packages,
+you will need to explicitly add the certificate as trusted to the system
+keychain. This can be done with `sudo security add-trusted-cert -d -r trustRoot
+-k /Library/Keychains/System.keychain my_installer_cert.crt`. Be sure that `sudo
+security -v find-identity` lists this new certificate as a valid identity.
 
 ## Chromium
 
