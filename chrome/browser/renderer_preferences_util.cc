@@ -241,6 +241,11 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
         prefs->autofill_trigger_string = u"";
       }
     }
+    prefs->autofill_at_memory_double_ctrl_trigger_enabled =
+        pref_service->GetBoolean(
+            autofill::prefs::kAutofillAtMemoryDoubleCtrlTriggerEnabled);
+  } else {
+    prefs->autofill_at_memory_double_ctrl_trigger_enabled = false;
   }
 
   ui::AXPlatform::GetInstance().SetCaretBrowsingState(

@@ -125,6 +125,8 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   if (!data.ReadAutofillTriggerString(&out->autofill_trigger_string)) {
     return false;
   }
+  out->autofill_at_memory_double_ctrl_trigger_enabled =
+      data.autofill_at_memory_double_ctrl_trigger_enabled();
 
   if (!data.ReadExplicitlyAllowedNetworkPorts(
           &out->explicitly_allowed_network_ports)) {

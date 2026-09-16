@@ -7,10 +7,10 @@ module blink.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom";
-import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
-import "ui/gfx/mojom/font_render_params.mojom";
-import "ui/events/mojom/keyboard_codes.mojom";
 import "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_url_entry.mojom";
+import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
+import "ui/events/mojom/keyboard_codes.mojom";
+import "ui/gfx/mojom/font_render_params.mojom";
 
 const int64 kDefaultCaretBlinkIntervalInMilliseconds = 500;
 
@@ -203,6 +203,9 @@ struct RendererPreferences {
   int32 autofill_shortcut_key_code = 0;
   // A `ui::EventFlags` bitmask.
   int32 autofill_shortcut_modifiers = 0;
+  // Whether pressing Ctrl (or Cmd on Mac) twice triggers the Autofill AtMemory
+  // UI.
+  bool autofill_at_memory_double_ctrl_trigger_enabled = false;
 
   array<uint16> explicitly_allowed_network_ports;
 

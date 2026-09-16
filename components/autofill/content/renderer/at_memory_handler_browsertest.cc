@@ -68,6 +68,7 @@ class AtMemoryHandlerTest : public test::AutofillRendererTest {
   void SetUp() override {
     test::AutofillRendererTest::SetUp();
     GetWebFrameWidget()->SetFocus(true);
+    SetDoubleCtrlTrigger(true);
     run_loop_.emplace();
     ON_CALL(autofill_driver(), AskForValuesToFill)
         .WillByDefault([this](const FormData& form, FieldRendererId field_id,
@@ -112,6 +113,13 @@ class AtMemoryHandlerTest : public test::AutofillRendererTest {
     prefs.autofill_trigger_string = u"";
     prefs.autofill_shortcut_key_code = key_code;
     prefs.autofill_shortcut_modifiers = modifiers;
+    GetMainRenderFrame()->GetWebView()->SetRendererPreferences(prefs);
+  }
+
+  void SetDoubleCtrlTrigger(bool enabled) {
+    blink::RendererPreferences prefs =
+        GetMainRenderFrame()->GetWebView()->GetRendererPreferences();
+    prefs.autofill_at_memory_double_ctrl_trigger_enabled = enabled;
     GetMainRenderFrame()->GetWebView()->SetRendererPreferences(prefs);
   }
 
@@ -299,9 +307,10 @@ TEST_P(AtMemoryHandlerTest_SingleField, AtMemoryShortcutTriggerRepeatBlocked) {
   task_environment_.RunUntilIdle();
 }
 
-// Tests that setting a keyboard shortcut disables the double Ctrl trigger.
-TEST_P(AtMemoryHandlerTest_SingleField, ShortcutDisablesOtherTriggers) {
-  SetShortcutTrigger(ui::VKEY_Y, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+// Tests that pressing Ctrl twice does not trigger AtMemory when the preference
+// is disabled.
+TEST_P(AtMemoryHandlerTest_SingleField, DoubleCtrlDisabledByPreference) {
+  SetDoubleCtrlTrigger(false);
 
   EXPECT_CALL(
       autofill_driver(),
@@ -317,6 +326,54 @@ TEST_P(AtMemoryHandlerTest_SingleField, ShortcutDisablesOtherTriggers) {
   SendCtrlKeyDown();
   SendCtrlKeyDown();
   task_environment_.RunUntilIdle();
+}
+
+// Tests that both custom shortcut and double Ctrl can trigger AtMemory when
+// both are enabled.
+TEST_F(AtMemoryHandlerTest, ShortcutAndDoubleCtrlBothTrigger) {
+  SetShortcutTrigger(ui::VKEY_Y, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  SetDoubleCtrlTrigger(true);
+
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  Focus("f");
+
+  {
+    testing::InSequence s;
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _,
+            Eq(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut), _));
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl),
+            _));
+  }
+
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _,
+          AllOf(Ne(AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut),
+                Ne(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl)),
+          _))
+      .Times(AnyNumber());
+
+  // 1. Send configured shortcut.
+  blink::WebKeyboardEvent shortcut_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kControlKey | blink::WebInputEvent::kShiftKey,
+      base::TimeTicks::Now());
+  shortcut_event.windows_key_code = ui::VKEY_Y;
+  SendWebKeyboardEvent(shortcut_event);
+  WaitForApplyFieldAction();
+
+  // 2. Send double Ctrl.
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  WaitForApplyFieldAction();
 }
 
 // Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory aborts if no

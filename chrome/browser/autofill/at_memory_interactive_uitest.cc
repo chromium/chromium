@@ -28,6 +28,8 @@
 #include "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -104,6 +106,9 @@ class AtMemoryInteractiveUiTest : public AutofillUiTest,
         base::BindRepeating(
             &AtMemoryInteractiveUiTest::CreateMockAtMemoryQueryService,
             base::Unretained(this)));
+
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kAutofillAtMemoryDoubleCtrlTriggerEnabled, true);
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleTestURL(

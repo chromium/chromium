@@ -202,9 +202,7 @@ void AtMemoryHandler::DidReceiveKeyDownForDoubleCtrl(
   }
 
   if (const RendererPreferences* prefs = GetRendererPreferences();
-      !prefs || prefs->autofill_shortcut_key_code != ui::VKEY_UNKNOWN) {
-    // The double Ctrl trigger is mutually exclusive with the configurable
-    // keyboard shortcut.
+      !prefs || !prefs->autofill_at_memory_double_ctrl_trigger_enabled) {
     return;
   }
 

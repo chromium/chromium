@@ -279,6 +279,11 @@ struct BLINK_COMMON_EXPORT
     return data.autofill_trigger_string;
   }
 
+  static bool autofill_at_memory_double_ctrl_trigger_enabled(
+      const ::blink::RendererPreferences& data) {
+    return data.autofill_at_memory_double_ctrl_trigger_enabled;
+  }
+
   static const std::vector<uint16_t>& explicitly_allowed_network_ports(
       const ::blink::RendererPreferences& data) {
     return data.explicitly_allowed_network_ports;

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -141,6 +142,33 @@ TEST_F(RendererPreferencesUtilTest, AutofillAtMemoryTriggerString) {
     EXPECT_TRUE(renderer_preferences.autofill_trigger_string.empty());
   } else {
     EXPECT_EQ(renderer_preferences.autofill_trigger_string, u"@@");
+  }
+}
+
+TEST_F(RendererPreferencesUtilTest, AutofillAtMemoryDoubleCtrlTriggerEnabled) {
+  blink::RendererPreferences renderer_preferences;
+  renderer_preferences_util::UpdateFromSystemSettings(&renderer_preferences,
+                                                      &profile_);
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_FALSE(
+        renderer_preferences.autofill_at_memory_double_ctrl_trigger_enabled);
+  } else {
+    EXPECT_TRUE(
+        renderer_preferences.autofill_at_memory_double_ctrl_trigger_enabled);
+
+    pref_service_->SetBoolean(
+        autofill::prefs::kAutofillAtMemoryDoubleCtrlTriggerEnabled, false);
+    renderer_preferences_util::UpdateFromSystemSettings(&renderer_preferences,
+                                                        &profile_);
+    EXPECT_FALSE(
+        renderer_preferences.autofill_at_memory_double_ctrl_trigger_enabled);
+
+    pref_service_->SetBoolean(
+        autofill::prefs::kAutofillAtMemoryDoubleCtrlTriggerEnabled, true);
+    renderer_preferences_util::UpdateFromSystemSettings(&renderer_preferences,
+                                                        &profile_);
+    EXPECT_TRUE(
+        renderer_preferences.autofill_at_memory_double_ctrl_trigger_enabled);
   }
 }
 
