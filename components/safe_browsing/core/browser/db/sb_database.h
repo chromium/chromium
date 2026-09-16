@@ -226,6 +226,12 @@ class SBDatabase {
   // the old store to get deleted.
   void UpdatedStoreReady(ListIdentifier identifier, SBStorePtr store);
 
+  // Called after a store update has been finalized (including extra file
+  // cleanup on the DB task runner). Decrements the count of pending store
+  // updates and triggers the database update callback once all pending stores
+  // have completed.
+  void OnStoreUpdateFinalized();
+
   // See `VerifyChecksum`.
   void OnChecksumVerified(
       DatabaseReadyForUpdatesCallback db_ready_for_updates_callback,

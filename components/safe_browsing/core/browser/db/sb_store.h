@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -370,6 +371,13 @@ class SBStore {
   // Returns the state of the store (i.e. state for V4, version for V5).
   virtual const std::string& GetStoreState() const = 0;
 
+  // Cleans up files associated with `store_path` that are no longer needed.
+  // `store_path`: The base path of the store whose extra files to clean up.
+  // `paths_in_use`: The set of file paths currently in use by the active store.
+  static void CleanupExtraFiles(
+      const base::FilePath& store_path,
+      const base::flat_set<base::FilePath>& paths_in_use);
+
   // Converts a 32-character extension ID string into its raw 16-byte binary
   // hash representation.
   // `extension_id` is the base-16 string extension ID to convert. Must be
@@ -417,7 +425,6 @@ class SBStore {
   //    store file path as argument.
   //  - `get_hash_files_size`: Callback to calculate the total size of the hash
   //    files.
-  //  - `cleanup_extra_files`: Callback to clean up any old/temporary files.
   // Returns the final size of the written file on success, or an
   // SBStoreWriteResult indicating the specific failure reason on failure.
   // TODO(crbug.com/372395685): Collapse + simplify this method into v5
@@ -429,8 +436,7 @@ class SBStore {
       Container* container,
       base::FunctionRef<void()> set_file_metadata,
       base::FunctionRef<void(const base::FilePath&)> cleanup_on_error,
-      base::FunctionRef<int64_t()> get_hash_files_size,
-      base::FunctionRef<void()> cleanup_extra_files);
+      base::FunctionRef<int64_t()> get_hash_files_size);
 
   // Helper template method to merge additions and removals into
   // `out_container`. It performs a merge sort of `old_prefixes` and

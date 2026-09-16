@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/db/v4_store.h"
 
 #include "base/base64.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -2362,6 +2363,12 @@ TEST_F(V4StoreTest, CleanUpOldFiles) {
                 /*is_eligible_for_migration=*/true,
                 /*is_extensions_blocklist=*/false);
   EXPECT_EQ(WRITE_SUCCESS, store.WriteToDisk(Checksum()));
+
+  // Before cleanup, the old hashes file exists.
+  EXPECT_TRUE(base::PathExists(old_hashes_path));
+
+  SBStore::CleanupExtraFiles(
+      store_path_, base::flat_set<base::FilePath>(store.GetPathsInUse()));
 
   EXPECT_FALSE(base::PathExists(old_hashes_path));
   EXPECT_TRUE(base::PathExists(other_path));

@@ -311,10 +311,30 @@ void SBDatabase::UpdatedStoreReady(ListIdentifier identifier,
   CHECK(pending_store_updates_, base::NotFatalUntil::M162);
   if (new_store) {
     if (auto it = store_map_->find(identifier); it != store_map_->end()) {
-      it->second.swap(new_store);
+      SBStorePtr old_store = std::exchange(it->second, std::move(new_store));
+      base::flat_set<base::FilePath> paths_in_use(it->second->GetPathsInUse());
+      base::FilePath store_path = it->second->store_path();
+      // Reset `old_store` explicitly to trigger `SBStoreDeleter`, which posts
+      // the deletion of the old store to `db_task_runner_`. This ensures that
+      // any memory-mapped files held by the old store are unmapped before
+      // `CleanupExtraFiles` runs.
+      old_store.reset();
+      db_task_runner_->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&SBStore::CleanupExtraFiles, store_path,
+                         std::move(paths_in_use)),
+          base::BindOnce(&SBDatabase::OnStoreUpdateFinalized,
+                         weak_factory_on_io_.GetWeakPtr()));
+      return;
     }
   }
 
+  OnStoreUpdateFinalized();
+}
+
+void SBDatabase::OnStoreUpdateFinalized() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(pending_store_updates_, base::NotFatalUntil::M162);
   pending_store_updates_--;
   if (!pending_store_updates_) {
     db_updated_callback_.Run();

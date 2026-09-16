@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -370,6 +371,49 @@ class SBDatabaseTest_V4V5 : public SBDatabaseTest,
     return update_map;
   }
 
+  // Creates an update response map containing a single 4-byte hash prefix for
+  // each store in `store_state_map`.
+  std::unique_ptr<SBUpdateResponseMap> CreateUpdateResponseMapWithPrefix(
+      const StoreStateMap& store_state_map,
+      std::string_view prefix) {
+    CHECK_EQ(prefix.size(), 4u);
+    auto update_map = std::make_unique<SBUpdateResponseMap>();
+    std::string checksum_str(
+        base::as_string_view(crypto::hash::Sha256(base::as_byte_span(prefix))));
+
+    for (const auto& store_state_iter : store_state_map) {
+      ListIdentifier identifier = store_state_iter.first;
+      auto sb_response = std::make_unique<SBUpdateResponse>();
+      if (IsV5Enabled()) {
+        auto v5_response = std::make_unique<V5::HashList>();
+        v5_response->set_version(store_state_iter.second);
+        v5_response->set_sha256_checksum(checksum_str);
+        V5::RiceDeltaEncoded32Bit* additions =
+            v5_response->mutable_additions_four_bytes();
+        additions->set_entries_count(0);
+        additions->set_first_value(
+            base::U32FromBigEndian(base::as_byte_span(prefix).first<4u>()));
+        additions->set_rice_parameter(3);
+        sb_response->v5_response = std::move(v5_response);
+      } else {
+        auto lur = std::make_unique<ListUpdateResponse>();
+        lur->set_platform_type(identifier.platform_type());
+        lur->set_threat_entry_type(identifier.threat_entry_type());
+        lur->set_threat_type(identifier.threat_type());
+        lur->set_new_client_state(store_state_iter.second);
+        lur->set_response_type(ListUpdateResponse::FULL_UPDATE);
+        lur->mutable_checksum()->set_sha256(checksum_str);
+        ThreatEntrySet* additions = lur->add_additions();
+        additions->set_compression_type(RAW);
+        additions->mutable_raw_hashes()->set_prefix_size(4);
+        additions->mutable_raw_hashes()->set_raw_hashes(std::string(prefix));
+        sb_response->v4_response = std::move(lur);
+      }
+      update_map->insert({identifier, std::move(sb_response)});
+    }
+    return update_map;
+  }
+
   // Helper to test startup cleanup behavior under various feature and file
   // configurations.
   void RunStartupInactiveStoreFilesCleanupTest(
@@ -515,6 +559,77 @@ TEST_P(SBDatabaseTest_V4V5, TestApplyUpdateWithNewStates) {
   callback_db_updated_run_loop.Run();
 
   VerifyExpectedStoresState(true);
+}
+
+// Test to verify that after a store update completes, the old store's hash
+// file is cleaned up and deleted from disk, while the new store file and new
+// hash file are retained.
+TEST_P(SBDatabaseTest_V4V5, CleanupExtraFilesAfterUpdate) {
+  RegisterFactory();
+
+  WaitForSBDatabaseReady(CreateTaskRunner(),
+                         /*simple_task_runners_to_wait_for=*/{});
+
+  EXPECT_TRUE(sb_database_);
+  const StoreMap* db_stores = GetStoreMap();
+  ASSERT_FALSE(db_stores->empty());
+
+  // Apply an initial update with hash prefixes to create initial hash files.
+  StoreStateMap state_map_1;
+  for (const auto& [identifier, store] : *db_stores) {
+    state_map_1[identifier] = "version_1";
+  }
+
+  base::RunLoop run_loop_1;
+  sb_database_->ApplyUpdate(
+      CreateUpdateResponseMapWithPrefix(state_map_1, "abcd"),
+      run_loop_1.QuitClosure());
+  run_loop_1.Run();
+
+  // Verify that each store has a store file and an active hash file on disk.
+  struct StoreFiles {
+    base::FilePath store_path;
+    base::FilePath old_hash_file;
+  };
+  std::unordered_map<ListIdentifier, StoreFiles> stores_files;
+  for (const auto& [identifier, store] : *db_stores) {
+    const base::FilePath store_path = store->store_path();
+    std::vector<base::FilePath> paths = store->GetPathsInUse();
+    ASSERT_EQ(paths.size(), 2u);
+    EXPECT_EQ(paths[0], store_path);
+    const base::FilePath old_hash_file = paths[1];
+    ASSERT_TRUE(base::PathExists(store_path));
+    ASSERT_TRUE(base::PathExists(old_hash_file));
+    stores_files[identifier] = {store_path, old_hash_file};
+  }
+
+  // Apply a second update with different hash prefixes.
+  StoreStateMap state_map_2;
+  for (const auto& [identifier, store] : *db_stores) {
+    state_map_2[identifier] = "version_2";
+  }
+
+  base::RunLoop run_loop_2;
+  sb_database_->ApplyUpdate(
+      CreateUpdateResponseMapWithPrefix(state_map_2, "wxyz"),
+      run_loop_2.QuitClosure());
+  run_loop_2.Run();
+
+  // Verify that for each store, the old hash file is deleted, and the new store
+  // and hash file exist.
+  for (const auto& [identifier, files] : stores_files) {
+    ASSERT_TRUE(db_stores->contains(identifier));
+    const SBStorePtr& store = db_stores->at(identifier);
+    std::vector<base::FilePath> new_paths = store->GetPathsInUse();
+    ASSERT_EQ(new_paths.size(), 2u);
+    EXPECT_EQ(new_paths[0], files.store_path);
+    const base::FilePath new_hash_file = new_paths[1];
+
+    EXPECT_NE(files.old_hash_file, new_hash_file);
+    EXPECT_FALSE(base::PathExists(files.old_hash_file));
+    EXPECT_TRUE(base::PathExists(new_hash_file));
+    EXPECT_TRUE(base::PathExists(files.store_path));
+  }
 }
 
 // Test to ensure no state updates leads to no store updates.

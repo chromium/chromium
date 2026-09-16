@@ -17,7 +17,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
-#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -161,28 +160,6 @@ void RecordStoreWriteResult(StoreWriteResult result) {
                             STORE_WRITE_RESULT_MAX);
 }
 
-// Cleans up files that are no longer needed after a successful write. These are
-// hash files that may be left behind in the event of a crash or other failure
-// which fails to clean up.
-void CleanupExtraFiles(const base::FilePath& store_path,
-                       const V4StoreFileFormat& file_format) {
-  std::set<base::FilePath> paths_in_use{store_path};
-  for (const auto& hash_file : file_format.hash_files()) {
-    paths_in_use.insert(
-        HashPrefixMap::GetPath(store_path, hash_file.extension()));
-  }
-
-  // Iterate through all files that start with the store path name. All hash
-  // files will be the store path plus an extension.
-  base::FileEnumerator e(
-      store_path.DirName(), false, base::FileEnumerator::FILES,
-      store_path.BaseName().value() + FILE_PATH_LITERAL(".*"));
-  for (base::FilePath name = e.Next(); !name.empty(); name = e.Next()) {
-    if (paths_in_use.find(name) == paths_in_use.end()) {
-      base::DeleteFile(name);
-    }
-  }
-}
 
 void RecordMigrationTime(base::TimeDelta elapsed,
                          const base::FilePath& store_path) {
@@ -1107,10 +1084,6 @@ StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
               size += hash_file.file_size();
             }
             return size;
-          },
-          /*cleanup_extra_files=*/
-          [this, file_format] {
-            CleanupExtraFiles(store_path_, *file_format);
           });
 
   if (file_size_or_error.has_value()) {
