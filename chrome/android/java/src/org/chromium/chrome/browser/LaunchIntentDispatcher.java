@@ -13,7 +13,6 @@ import android.app.ActivityManager.RecentTaskInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -442,10 +441,7 @@ public class LaunchIntentDispatcher {
                 // the flag to take effect only once.
                 newIntent.setFlags(newIntent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
             }
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.Intent.HasNonSpoofablePackageName", hasNonSpoofablePackageName());
-            boolean identityShared = maybePutCallingAppPackage(newIntent);
-            RecordHistogram.recordBooleanHistogram("Android.Intent.IdentityShared", identityShared);
+            maybePutCallingAppPackage(newIntent);
         }
 
         if (mActivity instanceof ChromeLauncherActivity) {
@@ -529,11 +525,6 @@ public class LaunchIntentDispatcher {
             // mistakenly lead to a Chrome task being removed.
             return true;
         }
-    }
-
-    private boolean hasNonSpoofablePackageName() {
-        return !TextUtils.isEmpty(mActivity.getCallingPackage())
-                || !TextUtils.isEmpty(getCallingPackageIdentitySharing());
     }
 
     private static boolean clearTopIntentsForCustomTabsEnabled(Intent intent) {
