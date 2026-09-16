@@ -5,6 +5,7 @@
 #include "services/network/logical_invalidation_store.h"
 
 #include <string_view>
+#include <utility>
 
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -22,16 +23,26 @@ namespace {
 
 constexpr char kInvalidationFiltersFileName[] = "invalidation_filters";
 
-base::TimeDelta SerializeAndWriteInvalidationFiltersFile(
+// Returns whether the write succeeded, and how long the attempt took.
+std::pair<bool, base::TimeDelta> SerializeAndWriteInvalidationFiltersFile(
     const base::FilePath& path,
     const LogicalInvalidationStore::InvalidationFilterVector& filters) {
   base::ElapsedTimer timer;
+  // WriteFileAtomically() does not create the parent directory, and no
+  // embedder reliably does: Android bypasses the sandbox setup that creates it
+  // elsewhere. Create it on every save; base::CreateDirectory() succeeds if the
+  // directory already exists, costing one stat() in the steady state, and
+  // tolerates racing the browser process. It only fails on a path that cannot
+  // be a directory at all, where the write would fail anyway.
+  if (!base::CreateDirectory(path.DirName())) {
+    return {false, timer.Elapsed()};
+  }
   base::Pickle pickle;
   net::WriteToPickle(pickle, filters);
   base::span<const uint8_t> bytes = pickle.AsBytes();
-  base::ImportantFileWriter::WriteFileAtomically(path,
-                                                 base::as_string_view(bytes));
-  return timer.Elapsed();
+  const bool success = base::ImportantFileWriter::WriteFileAtomically(
+      path, base::as_string_view(bytes));
+  return {success, timer.Elapsed()};
 }
 
 std::pair<LogicalInvalidationStore::LoadResult,
@@ -111,12 +122,20 @@ void LogicalInvalidationStore::Save(const InvalidationFilterVector& filters,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void LogicalInvalidationStore::OnSaved(base::OnceClosure callback,
-                                       base::TimeDelta write_duration) {
+void LogicalInvalidationStore::OnSaved(
+    base::OnceClosure callback,
+    std::pair<bool, base::TimeDelta> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::UmaHistogramTimes(
-      "Net.HttpCache.LogicalInvalidation.PersistenceWriteDuration",
-      write_duration);
+  const auto [success, write_duration] = result;
+  base::UmaHistogramBoolean(
+      "Net.HttpCache.LogicalInvalidation.PersistenceWriteSuccess", success);
+  // Only time successful writes. A failure can bail out before the write even
+  // starts, so its near-zero duration would skew the distribution.
+  if (success) {
+    base::UmaHistogramTimes(
+        "Net.HttpCache.LogicalInvalidation.PersistenceWriteDuration",
+        write_duration);
+  }
   if (callback) {
     std::move(callback).Run();
   }

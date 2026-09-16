@@ -93,6 +93,43 @@ TEST_F(LogicalInvalidationStoreTest, SaveAndLoad) {
       static_cast<int>(LogicalInvalidationStore::LoadResult::kSuccess), 1);
   histogram_tester_.ExpectUniqueSample(
       "Net.HttpCache.LogicalInvalidation.LoadedFilterCount", 2, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Net.HttpCache.LogicalInvalidation.PersistenceWriteSuccess", true, 1);
+}
+
+// The store is constructed with a directory that no other component is
+// guaranteed to have created. On Android in particular the browser-process
+// sandbox setup that creates cache subdirectories elsewhere is bypassed, so
+// the directory is absent and every write used to fail silently.
+TEST_F(LogicalInvalidationStoreTest, SaveCreatesMissingDirectory) {
+  const base::FilePath missing_dir =
+      temp_dir_.GetPath().AppendASCII("Cache").AppendASCII(
+          "Logical_Invalidation");
+  ASSERT_FALSE(base::PathExists(missing_dir));
+
+  LogicalInvalidationStore store(missing_dir, file_task_runner_);
+  LogicalInvalidationStore::InvalidationFilterVector original_filters = {
+      CreateTestFilter("https://example.com")};
+
+  {
+    base::test::TestFuture<void> save_future;
+    store.Save(original_filters, save_future.GetCallback());
+    ASSERT_TRUE(save_future.Wait());
+  }
+
+  EXPECT_TRUE(
+      base::PathExists(missing_dir.AppendASCII("invalidation_filters")));
+  histogram_tester_.ExpectUniqueSample(
+      "Net.HttpCache.LogicalInvalidation.PersistenceWriteSuccess", true, 1);
+
+  // The filters survive a round trip through the newly created directory.
+  base::test::TestFuture<LogicalInvalidationStore::LoadResult,
+                         LogicalInvalidationStore::InvalidationFilterVector>
+      future;
+  store.Load(future.GetCallback());
+  auto [result, loaded] = future.Take();
+  EXPECT_EQ(LogicalInvalidationStore::LoadResult::kSuccess, result);
+  EXPECT_EQ(original_filters, loaded);
 }
 
 TEST_F(LogicalInvalidationStoreTest, LoadFileNotFound) {

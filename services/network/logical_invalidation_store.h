@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_LOGICAL_INVALIDATION_STORE_H_
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/component_export.h"
@@ -55,7 +56,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) LogicalInvalidationStore {
   void OnLoaded(base::TimeTicks load_start_time,
                 LoadCallback callback,
                 std::pair<LoadResult, InvalidationFilterVector> result);
-  void OnSaved(base::OnceClosure callback, base::TimeDelta write_duration);
+  void OnSaved(base::OnceClosure callback,
+               std::pair<bool, base::TimeDelta> result);
 
   base::FilePath file_path_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;

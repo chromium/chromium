@@ -4123,8 +4123,22 @@ chromium-metrics-reviews@google.com.
   <owner>net-dev@chromium.org</owner>
   <summary>
     The time taken to serialize and atomically write the active logical HTTP
-    cache invalidation filters to persistent disk storage. Recorded every time
-    LogicalInvalidationStore saves filters to disk.
+    cache invalidation filters to persistent disk storage. Recorded only when
+    LogicalInvalidationStore successfully saves filters to disk; failed attempts
+    are counted by Net.HttpCache.LogicalInvalidation.PersistenceWriteSuccess
+    instead.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpCache.LogicalInvalidation.PersistenceWriteSuccess"
+    enum="BooleanSuccess" expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Whether serializing and atomically writing the active logical HTTP cache
+    invalidation filters to persistent disk storage succeeded. Recorded every
+    time LogicalInvalidationStore attempts to save filters to disk, including
+    when the attempt fails because the storage directory could not be created.
   </summary>
 </histogram>
 
