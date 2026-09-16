@@ -2753,25 +2753,22 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                         getActivityTab());
             }
 
-            // On automotive, ignore density changes to prevent Chrome from exiting fullscreen.
-            // See https://crbug.com/352816133.
-            if (newConfig.densityDpi != mConfig.densityDpi) {
+            // On automotive, ignore density and fontScale changes to prevent Chrome from restarting
+            // when window size changes. See https://crbug.com/537023087.
+            if (newConfig.densityDpi != mConfig.densityDpi
+                    || newConfig.fontScale != mConfig.fontScale) {
                 if (!DeviceInfo.isAutomotive()) {
                     doRecreateActivity();
                     return;
                 }
             }
 
-            if (newConfig.fontScale != mConfig.fontScale) {
-                doRecreateActivity();
-                return;
-            }
-
             // Maintain tab state by re-parenting tabs when a Chrome window is moved between
             // displays.
             if ((newConfig.touchscreen != mConfig.touchscreen
                             || newConfig.colorMode != mConfig.colorMode)
-                    && !ChromeFeatureList.sAvoidRecreateOnTouchscreenOrColorModeChange.isEnabled()) {
+                    && !ChromeFeatureList.sAvoidRecreateOnTouchscreenOrColorModeChange
+                            .isEnabled()) {
                 doRecreateActivity();
                 return;
             }

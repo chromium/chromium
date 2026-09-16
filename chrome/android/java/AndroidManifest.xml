@@ -728,7 +728,7 @@ by a child template that "extends" this file.
             android:excludeFromRecents="true"
             android:autoRemoveFromRecents="true"
             android:windowSoftInputMode="stateHidden|adjustPan"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|fontScale"
             {% endblock %}>
         </activity>
         {% set enable_cardboard = enable_cardboard|default(0) %}

@@ -253,7 +253,7 @@
     <activity  # DIFF-ANCHOR: 2121eb0d
         android:name="org.chromium.chrome.browser.firstrun.FirstRunActivity"
         android:autoRemoveFromRecents="true"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|fontScale"
         android:excludeFromRecents="true"
         android:label="@string/fre_activity_label"
         android:launchMode="singleTop"
@@ -264,7 +264,7 @@
     <activity  # DIFF-ANCHOR: 67932092
         android:name="org.chromium.chrome.browser.firstrun.LightweightFirstRunActivity"
         android:autoRemoveFromRecents="true"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|fontScale"
         android:excludeFromRecents="true"
         android:label="@string/fre_activity_label"
         android:launchMode="singleInstance"
