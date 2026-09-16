@@ -6,15 +6,14 @@
 // to the browser via mojo.
 
 import {assertNotReached} from '//resources/js/assert.js';
-import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 
 import {enumFromClient} from '../../enum_conversions.js';
-import {PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo, TabDataHandlerReceiver, TabFaviconHandlerReceiver} from '../../glic.mojom-webui.js';
-import type {TabDataHandlerInterface, TabDataMojoType, TabFaviconHandlerInterface, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
+import {PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo, TabDataHandlerReceiver} from '../../glic.mojom-webui.js';
+import type {TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureScreenshotErrorReason, ResponseStopCause} from '../../glic_api/glic_api.js';
 import type {ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PinTabsOptions, PromptType, Screenshot, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
-import type {GlicException, ImageBytesResultPrivate, RgbaImage, TabContextResultPrivate, WebClientHost, WebClientTabDataObserver, WebClientTabFaviconObserver} from '../request_types.js';
+import type {GlicException, ImageBytesResultPrivate, RgbaImage, TabContextResultPrivate, WebClientHost, WebClientTabDataObserver} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
 import {ResponseExtras} from '../transport/messaging.js';
 import type {PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
@@ -413,15 +412,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
         this.host.router);
   }
 
-  subscribeToTabFavicon(request: {
-    tabId: string,
-    remote: PendingRemote<WebClientTabFaviconObserver>,
-  }): void {
-    new TabFaviconHandlerImpl(
-        idFromClient(request.tabId), this.handler, request.remote,
-        this.host.router);
-  }
-
   setErrorDialogState(request: {
     shownDialogType?: ClientErrorDialogType,
   }): void {
@@ -455,37 +445,6 @@ class TabDataHandlerImpl implements TabDataHandlerInterface {
     this.pmRemote.requestNoResponse(
         'tabDataChanged', {
           tabData: tabDataToPrivate(tabData, extras),
-        },
-        extras.transfers);
-  }
-}
-
-class TabFaviconHandlerImpl implements TabFaviconHandlerInterface {
-  private mojoReceiver?: TabFaviconHandlerReceiver;
-  private pmRemote: PostMessageRemote<WebClientTabFaviconObserver>;
-
-  constructor(
-      tabId: number, handler: WebClientHandlerInterface,
-      pendingRemote: PendingRemote<WebClientTabFaviconObserver>,
-      router: PostMessageRouter) {
-    this.pmRemote = router.newRemote(pendingRemote);
-    this.mojoReceiver = new TabFaviconHandlerReceiver(this);
-    linkPipeClosure(this.pmRemote, this.mojoReceiver);
-    handler.subscribeToTabFavicon(
-        tabId, this.mojoReceiver.$.bindNewPipeAndPassRemote());
-  }
-  onTabFaviconChanged(favicon: BitmapN32|null): void {
-    const extras = new ResponseExtras();
-    let faviconImage: RgbaImage|undefined = undefined;
-    if (favicon) {
-      faviconImage = bitmapN32ToRGBAImage(favicon);
-      if (faviconImage) {
-        extras.addTransfer(faviconImage.dataRGBA);
-      }
-    }
-    this.pmRemote.requestNoResponse(
-        'tabFaviconChanged', {
-          favicon: faviconImage,
         },
         extras.transfers);
   }

@@ -363,14 +363,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 81},
     },
     {
-      name: 'subscribeToTabFavicon',
-      request: defMessage<{
-        tabId: string,
-        remote: PendingRemote<WebClientTabFaviconObserver>,
-      }>(),
-      histogram: {id: 94},
-    },
-    {
       name: 'onMicrophoneStatusChange',
       request: defMessage<{
         status: MicrophoneStatus,
@@ -432,22 +424,8 @@ export const WebClientTabDataObserverDef = defInterface({
 });
 export type WebClientTabDataObserver = typeof WebClientTabDataObserverDef;
 
-export const WebClientTabFaviconObserverDef = defInterface({
-  name: 'WebClientTabFaviconObserver',
-  methods: [
-    {
-      name: 'tabFaviconChanged',
-      request: defMessage<{
-        favicon?: RgbaImage,
-      }>(),
-    },
-  ],
-});
-export type WebClientTabFaviconObserver = typeof WebClientTabFaviconObserverDef;
-
 export type WebClientRequestTypes = InterfaceDefMethods<WebClient>&
-    InterfaceDefMethods<WebClientTabDataObserver>&
-    InterfaceDefMethods<WebClientTabFaviconObserver>;
+    InterfaceDefMethods<WebClientTabDataObserver>;
 
 export type HostRequestTypes = InterfaceDefMethods<WebClientHost>;
 
@@ -555,7 +533,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 91,
   DeleteCapturedRegion: 92,
   OnActionSubmitted: 93,
-  SubscribeToTabFavicon: 94,
+  // Do not reuse deleted request ID: 94,
   // Do not reuse deleted request ID: 95,
   // Do not reuse deleted request ID: 96,
   // Do not reuse deleted request ID: 97,

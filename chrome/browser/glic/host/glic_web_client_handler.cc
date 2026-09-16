@@ -1689,6 +1689,7 @@ class GlicWebClientHandler
   void SubscribeToTabFavicon(
       int32_t tab_id,
       ::mojo::PendingRemote<mojom::TabFaviconHandler> receiver) override {
+    LogApiRequest(GlicHostApiRequestId::kSubscribeToTabFavicon);
     glic_service_->tab_favicon_observer().SubscribeToTabFavicon(
         tab_id, std::move(receiver));
   }

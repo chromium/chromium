@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
+
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../../enum_conversions.js';
-import {CaptureRegionObserverReceiver, PinCandidatesObserverReceiver, SettingsPageField as SettingsPageFieldMojo, WebClientReceiver} from '../../glic.mojom-webui.js';
-import type {AdditionalContext as AdditionalContextMojo, CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverInterface, CaptureRegionResult as CaptureRegionResultMojo, FileUploadPolicyState as FileUploadPolicyStateMojo, FocusedTabData as FocusedTabDataMojo, GeminiEnterpriseSettings as GeminiEnterpriseSettingsMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserverInterface, TabData as TabDataMojo, WebClientHandlerRemote, WebClientInterface} from '../../glic.mojom-webui.js';
+import {CaptureRegionObserverReceiver, PinCandidatesObserverReceiver, SettingsPageField as SettingsPageFieldMojo, TabFaviconHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
+import type {AdditionalContext as AdditionalContextMojo, CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverInterface, CaptureRegionResult as CaptureRegionResultMojo, FileUploadPolicyState as FileUploadPolicyStateMojo, FocusedTabData as FocusedTabDataMojo, GeminiEnterpriseSettings as GeminiEnterpriseSettingsMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserverInterface, TabData as TabDataMojo, TabFaviconHandlerInterface, WebClientHandlerRemote, WebClientInterface} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason, ClientCapabilities, HostCapability} from '../../glic_api/glic_api.js';
 import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState, FocusedTabData, FormFactor, GeicBrowserHost, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, PromptType, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
+import {OneShotTimer} from '../../timer.js';
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
 import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
 import {GlicBrowserHostGeic} from '../geic/geic_client.js';
-import {additionalContextToClient, captureRegionResultToClient, conversionSettings, createTabOptionsFromClient, fileUploadPolicyStateToClient, focusedTabDataToClient, getPinCandidatesOptionsFromClient, idFromClient, idToClient, invokeOptionsToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, pinCandidateToClient, tabContextOptionsFromClient, tabDataToClient, timeDeltaFromClient, urlFromClient, webClientModeToMojo} from '../host/conversions.js';
+import {additionalContextToClient, bitmapN32ToRGBAImage, captureRegionResultToClient, conversionSettings, createTabOptionsFromClient, fileUploadPolicyStateToClient, focusedTabDataToClient, getPinCandidatesOptionsFromClient, idFromClient, idToClient, invokeOptionsToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, pinCandidateToClient, tabContextOptionsFromClient, tabDataToClient, timeDeltaFromClient, urlFromClient, webClientModeToMojo} from '../host/conversions.js';
 import type {GlicApiHost} from '../host/glic_api_host.js';
 import {PanelOpenState} from '../host/types.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
@@ -24,8 +27,8 @@ import type {createDirectMessagingPair, PendingRemote, PostMessageHandler, PostM
 import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
 
 import {replaceProperties} from './../conversions.js';
-import {ErrorWithReasonImpl, newTransferableException, WebClientTabDataObserverDef, WebClientTabFaviconObserverDef} from './../request_types.js';
-import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, GlicException, ImageBytesResultPrivate, ImageInfoPrivate, InvokeOptionsPrivate, PdfDocumentDataPrivate, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClient, WebClientHost, WebClientTabDataObserver, WebClientTabFaviconObserver} from './../request_types.js';
+import {ErrorWithReasonImpl, newTransferableException, WebClientTabDataObserverDef} from './../request_types.js';
+import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, GlicException, ImageBytesResultPrivate, ImageInfoPrivate, InvokeOptionsPrivate, PdfDocumentDataPrivate, ResumeActorTaskResultPrivate, TabContextResultPrivate, TabDataPrivate, WebClient, WebClientHost, WebClientTabDataObserver} from './../request_types.js';
 import type {GlicBrowserHostBaseContext} from './glic_client_common.js';
 import {createDelegationProxy} from './glic_client_common.js';
 import {rgbaImageToBlob} from './image_utils.js';
@@ -123,8 +126,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
   getTabByIdObservableSet:
       ObservableSetByTabId<TabData, WebClientTabDataObserver>;
-  getTabFaviconByIdObservableSet:
-      ObservableSetByTabId<Blob|undefined, WebClientTabFaviconObserver>;
+  getTabFaviconByIdObservableSet: TabFaviconObservableSet;
   notifyPanelWillOpenCompleted = Promise.withResolvers<void>();
   private panelOpenState = PanelOpenState.CLOSED;
 
@@ -151,9 +153,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
         new ObservableSetByTabId<TabData, WebClientTabDataObserver>(
             new GetTabByIdObservableSetImpl(), this.clientRemote, this.router);
     this.getTabFaviconByIdObservableSet =
-        new ObservableSetByTabId<Blob|undefined, WebClientTabFaviconObserver>(
-            new GetTabFaviconByIdObservableSetImpl(), this.clientRemote,
-            this.router);
+        new TabFaviconObservableSet(this.handler);
     this.metrics = new GlicBrowserHostMetricsImpl(this.clientRemote);
 
     const proxy = createDelegationProxy(this as GlicBrowserHostImpl, [
@@ -1294,27 +1294,81 @@ class WebClientTabDataObserverHandler implements
   }
 }
 
-class GetTabFaviconByIdObservableSetImpl implements
-    ObservableSetByTabIdDelegate<Blob|undefined, WebClientTabFaviconObserver> {
-  readonly interfaceDef = WebClientTabFaviconObserverDef;
-  readonly unsubscribeDelay = 1000;
-  subscribe(
-      clientRemote: PostMessageRemote<WebClientHost>, tabId: string,
-      remote: PendingRemote<WebClientTabFaviconObserver>): void {
-    clientRemote.requestNoResponse('subscribeToTabFavicon', {tabId, remote});
-  }
-  createHandler(observable: ObservableValueImpl<Blob|undefined>):
-      PostMessageHandler<WebClientTabFaviconObserver> {
-    return new WebClientTabFaviconObserverHandler(observable);
+export class TabFaviconObservableSet {
+  private observablesByTabId = new Map<string, TabFaviconObservable>();
+
+  constructor(private handler: WebClientHandlerRemote) {}
+
+  getObservableByTabId(tabId: string): ObservableValueImpl<Blob|undefined> {
+    let obs = this.observablesByTabId.get(tabId);
+    if (obs !== undefined) {
+      return obs;
+    }
+    obs = new TabFaviconObservable(tabId, this.handler, () => {
+      this.observablesByTabId.delete(tabId);
+    });
+    this.observablesByTabId.set(tabId, obs);
+    return obs;
   }
 }
 
-class WebClientTabFaviconObserverHandler implements
-    PostMessageHandler<WebClientTabFaviconObserver> {
-  constructor(private observable: ObservableValueImpl<Blob|undefined>) {}
-  tabFaviconChanged(payload: {favicon?: RgbaImage}): void {
-    this.observable.assignAndSignal(
-        payload.favicon ? rgbaImageToBlob(payload.favicon) : undefined);
+export class TabFaviconObservable extends ObservableValueImpl<Blob|undefined>
+    implements TabFaviconHandlerInterface {
+  private unsubscribeTimer = new OneShotTimer(1000);
+  private receiver?: TabFaviconHandlerReceiver;
+  private isCompleting = false;
+
+  constructor(
+      public tabId: string, private handler: WebClientHandlerRemote,
+      private onComplete: () => void) {
+    super(/*isSet=*/ false);
+  }
+
+  override activeSubscriptionChanged(hasActiveSubscription: boolean): void {
+    super.activeSubscriptionChanged(hasActiveSubscription);
+    if (!hasActiveSubscription) {
+      this.unsubscribeTimer.start(() => {
+        if (this.hasActiveSubscription()) {
+          return;
+        }
+        this.complete();
+      });
+      return;
+    }
+    this.unsubscribeTimer.reset();
+    if (!this.receiver) {
+      this.receiver = new TabFaviconHandlerReceiver(this);
+      this.receiver.onConnectionError.addListener(() => {
+        this.complete();
+      });
+      this.handler.subscribeToTabFavicon(
+          idFromClient(this.tabId), this.receiver.$.bindNewPipeAndPassRemote());
+    }
+  }
+
+  onTabFaviconChanged(favicon: BitmapN32|null): void {
+    if (this.isCompleting || this.isStopped()) {
+      return;
+    }
+    let blob: Blob|undefined;
+    if (favicon) {
+      const rgba = bitmapN32ToRGBAImage(favicon);
+      if (rgba) {
+        blob = rgbaImageToBlob(rgba);
+      }
+    }
+    this.assignAndSignal(blob);
+  }
+
+  override complete() {
+    if (this.isCompleting || this.isStopped()) {
+      return;
+    }
+    this.isCompleting = true;
+    this.receiver?.$.close();
+    this.receiver = undefined;
+    this.onComplete();
+    super.complete();
   }
 }
 
