@@ -3314,7 +3314,7 @@ Google Chrome is unable to recover your settings.
         Search with Chrome from anywhere
       </message>
       <message name="IDS_LOOMNIBOX_FRE_LENS_SECONDARY" desc="Secondary description detailing Google Lens functionality in Loomnibox.">
-        Ask about content outside of Chrome, like another app or file you have open
+        Ask about content outside of Chrome, like other apps or files
       </message>
       <message name="IDS_LOOMNIBOX_FRE_TO_SEARCH_OR_CUSTOMIZE" desc="Text in the Stage 2 FRE chin following the shortcut dropdown indicating it searches with Chrome or customizes in settings.">
         to search with Chrome or customize in <ph name="BEGIN_LINK">&lt;a href="#" class="settings-link"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>

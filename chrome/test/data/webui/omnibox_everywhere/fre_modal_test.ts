@@ -18,8 +18,7 @@ suite('FreModalTest', () => {
       loomniboxFreTitle: 'Search with Chrome from anywhere',
       loomniboxFreLensPrimary: 'Share what’s on your screen with Google Lens',
       loomniboxFreLensSecondary:
-          'Ask about content outside of Chrome, like another app or file ' +
-          'you have open',
+          'Ask about content outside of Chrome, like other apps or files',
       loomniboxFreWhereToFindPrimary: 'Open from the Mac menu bar',
       loomniboxFreCloseButtonAria: 'Close',
       isFuseboxEligible: true,
@@ -78,8 +77,7 @@ suite('FreModalTest', () => {
       loomniboxFreTitle: 'Search with Chrome from anywhere',
       loomniboxFreLensPrimary: 'Share what’s on your screen with Google Lens',
       loomniboxFreLensSecondary:
-          'Ask about content outside of Chrome, like another app or file ' +
-          'you have open',
+          'Ask about content outside of Chrome, like other apps or files',
       loomniboxFreWhereToFindPrimary: 'Open from the Mac menu bar',
       loomniboxFreCloseButtonAria: 'Close',
       isFuseboxEligible: false,
