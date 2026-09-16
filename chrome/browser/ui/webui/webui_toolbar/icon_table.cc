@@ -169,6 +169,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:search_spark", IconType::kIconSet}},
           {{&omnibox::kSearchSparkOldIcon},
            {"webui-toolbar:search_spark", IconType::kIconSet}},
+          {{&omnibox::kSparkIcon},
+           {"webui-toolbar:search_spark", IconType::kIconSet}},
           {{&omnibox::kSecurePageInfoChromeRefreshOldIcon},
            {"webui-toolbar:page_info_custom", IconType::kIconSet}},
           {{&omnibox::kStarActiveChromeRefreshOldIcon},
