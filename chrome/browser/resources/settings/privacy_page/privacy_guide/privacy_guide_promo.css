@@ -1,0 +1,40 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=../../settings_shared_lit.css.js
+ * #include=cr-shared-style-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+#wrapper {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+#controlsColumn {
+  margin-top: 4px;
+}
+
+h2 {
+  color: var(--cr-primary-text-color);
+  font-size: 22px;
+  padding-top: 0;
+}
+
+#title {
+  font-weight: 400;
+}
+
+#bodyText {
+  padding-block-end: 16px;
+}
+
+#startButton {
+  margin-bottom: 4px;
+  margin-inline-end: 16px;
+}

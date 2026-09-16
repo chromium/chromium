@@ -9,39 +9,48 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions} from '../../metrics_browser_proxy.js';
 import {routes} from '../../route.js';
 import {Router} from '../../router.js';
 
-import {getTemplate} from './privacy_guide_promo.html.js';
+import {getCss} from './privacy_guide_promo.css.js';
+import {getHtml} from './privacy_guide_promo.html.js';
 
-const PrivacyGuidePromoElementBase = PrefsMixin(PolymerElement);
-
-export class PrivacyGuidePromoElement extends PrivacyGuidePromoElementBase {
+export class PrivacyGuidePromoElement extends CrLitElement {
   static get is() {
     return 'settings-privacy-guide-promo';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  private onPrivacyGuideStartClick_() {
+  protected onPrivacyGuideStartClick_() {
     this.metricsBrowserProxy_.recordAction('Settings.PrivacyGuide.StartPromo');
     this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
         PrivacyGuideInteractions.PROMO_ENTRY);
     Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
   }
 
-  private onNoThanksButtonClick_() {
-    this.setPrefValue('privacy_guide.viewed', true);
+  protected onNoThanksButtonClick_() {
+    PrefService.getInstance().setPrefValue('privacy_guide.viewed', true);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-privacy-guide-promo': PrivacyGuidePromoElement;
   }
 }
 

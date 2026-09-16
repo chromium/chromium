@@ -1,34 +1,14 @@
-<style include="cr-shared-style settings-shared">
-  #wrapper {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
-  }
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-  #controlsColumn {
-    margin-top: 4px;
-  }
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-  h2 {
-    color: var(--cr-primary-text-color);
-    font-size: 22px;
-    padding-top: 0;
-  }
+import type {PrivacyGuidePromoElement} from './privacy_guide_promo.js';
 
-  #title {
-    font-weight: 400;
-  }
-
-  #bodyText {
-    padding-block-end: 16px;
-  }
-
-  #startButton {
-    margin-bottom: 4px;
-    margin-inline-end: 16px;
-  }
-</style>
+export function getHtml(this: PrivacyGuidePromoElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div id="wrapper">
   <div id="controlsColumn">
     <h2 id="title">$i18n{privacyGuidePromoHeader}</h2>
@@ -36,11 +16,11 @@
       $i18n{privacyGuidePromoBody}
     </div>
     <cr-button class="action-button" id="startButton" role="button"
-        aria-describedby="title bodyText" on-click="onPrivacyGuideStartClick_">
+        aria-describedby="title bodyText" @click="${this.onPrivacyGuideStartClick_}">
       $i18n{privacyGuidePromoStartButton}
     </cr-button>
     <cr-button id="noThanksButton" role="button"
-        on-click="onNoThanksButtonClick_">
+        @click="${this.onNoThanksButtonClick_}">
       $i18n{noThanks}
     </cr-button>
   </div>
@@ -52,3 +32,6 @@
         src="./images/privacy_guide/promo_banner.svg">
   </picture>
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}
