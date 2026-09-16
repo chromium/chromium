@@ -6,7 +6,6 @@
 
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -119,11 +118,6 @@ const url::Origin& StubPasswordManagerDriver::GetLastCommittedOrigin() const {
 
 bool StubPasswordManagerDriver::HasCrossOriginAncestor() const {
   return false;
-}
-
-gfx::RectF StubPasswordManagerDriver::TransformToRootCoordinates(
-    const gfx::RectF& bounds_in_frame_coordinates) {
-  return gfx::RectF();
 }
 
 void StubPasswordManagerDriver::CheckViewAreaVisible(

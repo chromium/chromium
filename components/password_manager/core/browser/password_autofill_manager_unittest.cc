@@ -180,11 +180,6 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const override));
   MOCK_METHOD(bool, HasValidURL, (bool), (override));
   MOCK_METHOD(bool, IsRenderFrameHostSupported, (), (override));
-
-  gfx::RectF TransformToRootCoordinates(
-      const gfx::RectF& bounds_in_frame_coordinates) override {
-    return bounds_in_frame_coordinates;  // No transformation in tests.
-  }
 };
 
 class TestPasswordManagerClient : public StubPasswordManagerClient {

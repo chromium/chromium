@@ -14,7 +14,6 @@
 #import "components/password_manager/core/browser/password_generation_frame_helper.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 using password_manager::PasswordAutofillManager;
 using password_manager::PasswordManager;
@@ -232,12 +231,6 @@ bool IOSPasswordManagerDriver::HasCrossOriginAncestor() const {
   // TODO(crbug.com/539923959): Implement once child frame registration is done,
   // and the ancestors of a web frame could be tracked.
   NOTREACHED();
-}
-
-gfx::RectF IOSPasswordManagerDriver::TransformToRootCoordinates(
-    const gfx::RectF& bounds_in_frame_coordinates) {
-  NOTIMPLEMENTED();
-  return bounds_in_frame_coordinates;
 }
 
 void IOSPasswordManagerDriver::CheckViewAreaVisible(

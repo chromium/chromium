@@ -72,8 +72,6 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   const url::Origin& GetLastCommittedOrigin() const override;
   bool HasCrossOriginAncestor() const override;
 
-  gfx::RectF TransformToRootCoordinates(
-      const gfx::RectF& bounds_in_frame_coordinates) override;
   void CheckViewAreaVisible(autofill::FieldRendererId field_id,
                             base::OnceCallback<void(bool)>) override;
   bool HasValidURL(bool may_kill_renderer) override;

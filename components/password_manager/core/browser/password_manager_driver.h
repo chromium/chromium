@@ -30,10 +30,6 @@ class AutofillDriver;
 class PasswordManagerDelegate;
 }  // namespace autofill
 
-namespace gfx {
-class RectF;
-}  // namespace gfx
-
 namespace password_manager {
 
 class PasswordAutofillManager;
@@ -235,9 +231,6 @@ class PasswordManagerDriver {
   // corresponding HTML attributes. It is used only for debugging.
   virtual void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) {}
-
-  virtual gfx::RectF TransformToRootCoordinates(
-      const gfx::RectF& bounds_in_frame_coordinates) = 0;
 
   // Checks if the view area of the field is visible.
   virtual void CheckViewAreaVisible(autofill::FieldRendererId field_id,

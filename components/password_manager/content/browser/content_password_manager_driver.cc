@@ -37,13 +37,11 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 using autofill::mojom::FocusedFieldType;
 
@@ -182,17 +180,6 @@ DriverId ContentPasswordManagerDriver::GetId() const {
 int ContentPasswordManagerDriver::GetFrameId() const {
   // Use the associated FrameTreeNode ID as the Frame ID.
   return render_frame_host_->GetFrameTreeNodeId().value();
-}
-
-gfx::RectF ContentPasswordManagerDriver::TransformToRootCoordinates(
-    const gfx::RectF& bounds_in_frame_coordinates) {
-  content::RenderWidgetHostView* rwhv = render_frame_host_->GetView();
-  if (!rwhv) {
-    return bounds_in_frame_coordinates;
-  }
-  return gfx::RectF(rwhv->TransformPointToRootCoordSpaceF(
-                        bounds_in_frame_coordinates.origin()),
-                    bounds_in_frame_coordinates.size());
 }
 
 void ContentPasswordManagerDriver::PropagateFillDataOnParsingCompletion(

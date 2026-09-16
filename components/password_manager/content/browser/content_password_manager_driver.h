@@ -21,7 +21,6 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_widget_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -58,8 +57,6 @@ class ContentPasswordManagerDriver final
 
   // PasswordManagerDriver implementation.
   DriverId GetId() const override;
-  gfx::RectF TransformToRootCoordinates(
-      const gfx::RectF& bounds_in_frame_coordinates) override;
   void PropagateFillDataOnParsingCompletion(
       const autofill::PasswordFormFillData& form_data) override;
   void InformNoSavedCredentials(
