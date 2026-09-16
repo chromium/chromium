@@ -22,13 +22,13 @@
 #import "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #import "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
-#import "chrome/test/base/browser_with_test_window_test.h"
 #import "chrome/test/base/testing_profile.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/signin/public/base/signin_switches.h"
+#include "content/public/test/browser_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -37,7 +37,7 @@ using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
-class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
+class BookmarkMenuBridgeTest : public CocoaTest {
  public:
   BookmarkMenuBridgeTest() = default;
 
@@ -45,33 +45,38 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
   BookmarkMenuBridgeTest& operator=(const BookmarkMenuBridgeTest&) = delete;
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    service_ = BookmarkMergedSurfaceServiceFactory::GetForProfile(profile());
+    CocoaTest::SetUp();
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        BookmarkModelFactory::GetInstance(),
+        BookmarkModelFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        ManagedBookmarkServiceFactory::GetInstance(),
+        ManagedBookmarkServiceFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        BookmarkMergedSurfaceServiceFactory::GetInstance(),
+        BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
+
+    service_ =
+        BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get());
     CHECK(service_);
     WaitForBookmarkMergedSurfaceServiceToLoad(service_);
     menu_ = [[NSMenu alloc] initWithTitle:@"test"];
 
-    bridge_ = std::make_unique<BookmarkMenuBridge>(profile(), menu_);
+    bridge_ = std::make_unique<BookmarkMenuBridge>(profile_.get(), menu_);
     CHECK(bridge_->IsMenuRoot(menu_));
   }
 
   void TearDown() override {
     bridge_ = nullptr;
     service_ = nullptr;
-    BrowserWithTestWindowTest::TearDown();
+    menu_ = nil;
+    profile_.reset();
+    CocoaTest::TearDown();
   }
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return {TestingProfile::TestingFactory{
-                BookmarkModelFactory::GetInstance(),
-                BookmarkModelFactory::GetDefaultFactory()},
-            TestingProfile::TestingFactory{
-                ManagedBookmarkServiceFactory::GetInstance(),
-                ManagedBookmarkServiceFactory::GetDefaultFactory()},
-            TestingProfile::TestingFactory{
-                BookmarkMergedSurfaceServiceFactory::GetInstance(),
-                BookmarkMergedSurfaceServiceFactory::GetDefaultFactory()}};
-  }
+  TestingProfile* profile() { return profile_.get(); }
 
   void UpdateRootMenu() { bridge_->UpdateRootMenuIfInvalid(); }
 
@@ -116,7 +121,8 @@ class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
   std::unique_ptr<BookmarkMenuBridge> bridge_;
 
  private:
-  CocoaTestHelper cocoa_test_helper_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 // Tests that the menu has separators for different bookmark sources.
@@ -574,9 +580,9 @@ TEST_F(BookmarkMenuBridgeTest, TestReorderBookmarkNodes) {
   //    + Folder 1
   //    + Account folder 1
   service()->Move(item1, BookmarkParentFolder::BookmarkBarFolder(), 0u,
-                  browser());
+                  /*browser=*/nullptr);
   service()->Move(folder1, BookmarkParentFolder::BookmarkBarFolder(), 2u,
-                  browser());
+                  /*browser=*/nullptr);
   EXPECT_TRUE(service()->IsNonDefaultOrderingTracked(
       BookmarkParentFolder::BookmarkBarFolder()));
 
