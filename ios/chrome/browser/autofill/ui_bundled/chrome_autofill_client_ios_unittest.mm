@@ -555,8 +555,8 @@ TEST_F(ChromeAutofillClientIOSTest, GetEntitySuppressionManager) {
   EXPECT_NE(client().GetEntitySuppressionManager(), nullptr);
 }
 
-// Test that `HideSuggestions` dismisses AtMemory when product is kAtMemory or
-// nullopt, but not for other products.
+// Test that `HideSuggestions` dismisses AtMemory when product is `kAtMemory`,
+// but not when product is `std::nullopt` or other products.
 TEST_F(ChromeAutofillClientIOSTest, HideSuggestionsDismissesAtMemory) {
   id mock_at_memory_handler =
       OCMStrictProtocolMock(@protocol(AtMemoryCommands));
@@ -568,8 +568,8 @@ TEST_F(ChromeAutofillClientIOSTest, HideSuggestionsDismissesAtMemory) {
                            FillingProduct::kAtMemory);
   EXPECT_OCMOCK_VERIFY(mock_at_memory_handler);
 
-  // When product is nullopt, dismissAtMemory should also be called.
-  OCMExpect([mock_at_memory_handler dismissAtMemory]);
+  // When product is nullopt, dismissAtMemory should not be called.
+  [[mock_at_memory_handler reject] dismissAtMemory];
   client().HideSuggestions(SuggestionHidingReason::kTabGone, std::nullopt);
   EXPECT_OCMOCK_VERIFY(mock_at_memory_handler);
 

@@ -556,11 +556,9 @@ void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
 void ChromeAutofillClientIOS::HideSuggestions(
     SuggestionHidingReason reason,
     std::optional<FillingProduct> product) {
-  if (!product || product == FillingProduct::kAtMemory) {
+  if (product == FillingProduct::kAtMemory) {
     [at_memory_handler_ dismissAtMemory];
-    if (product == FillingProduct::kAtMemory) {
-      return;
-    }
+    return;
   }
 
   // If a `product` filter is specified, only hide if it matches the active
