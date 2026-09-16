@@ -186,7 +186,8 @@ void VoiceIsolationHandler::ProcessCapturedAudio(
     const media::AudioBus& audio_source,
     base::TimeTicks audio_capture_time,
     const media::AudioGlitchInfo& audio_glitch_info) {
-  TRACE_EVENT("audio", "VoiceIsolationHandler::ProcessCapturedAudio");
+  TRACE_EVENT("audio", "VoiceIsolationHandler::ProcessCapturedAudio", "frames",
+              audio_source.frames(), "channels", audio_source.channels());
   if (IsVoiceIsolationBypassed()) {
     deliver_processed_audio_callback_.Run(audio_source, audio_capture_time,
                                           audio_glitch_info);
