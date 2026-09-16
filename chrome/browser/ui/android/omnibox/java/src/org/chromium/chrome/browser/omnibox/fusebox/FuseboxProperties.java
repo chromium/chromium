@@ -329,7 +329,7 @@ class FuseboxProperties {
 
     /** The start icon, an {@link IconResourceIds} value, for the request type button. */
     public static final WritableIntDefPropertyKey<IconResourceIds> REQUEST_TYPE_BUTTON_ICON_ID =
-            new WritableIntDefPropertyKey<>(IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE);
+            new WritableIntDefPropertyKey<>(IconResourceIds.PLACE_WHITE);
 
     /** Whether to tint the start icon of the request type button. */
     public static final WritableBooleanPropertyKey REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON =

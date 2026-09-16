@@ -202,7 +202,7 @@ public class FuseboxViewBinderUnitTest {
                 .with(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.SEARCH)
                 .with(
                         FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
-                        IconResourceIdsProtoIntDef.IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE)
+                        IconResourceIdsProtoIntDef.IconResourceIds.PLACE_WHITE)
                 .with(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON, false)
                 .with(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, "test label")
                 .with(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, false)
