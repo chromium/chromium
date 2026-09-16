@@ -1173,23 +1173,22 @@
   </message>
 
   <!-- Attributes of the order entity -->
-  <!-- TODO(crbug.com/485269384): Make Order entity attributes translatable. -->
-  <message name="IDS_AUTOFILL_AI_ORDER_ID_ATTRIBUTE_NAME" desc="Used as a general label for the order id attribute." translateable="false">
+  <message name="IDS_AUTOFILL_AI_ORDER_ID_ATTRIBUTE_NAME" desc="Used as a general label for the order id attribute.">
     Id
   </message>
-  <message name="IDS_AUTOFILL_AI_ORDER_ACCOUNT_ATTRIBUTE_NAME" desc="Used as a general label for the order account attribute." translateable="false">
+  <message name="IDS_AUTOFILL_AI_ORDER_ACCOUNT_ATTRIBUTE_NAME" desc="Used as a general label for the order account attribute.">
     Account
   </message>
-  <message name="IDS_AUTOFILL_AI_ORDER_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the order date attribute." translateable="false">
+  <message name="IDS_AUTOFILL_AI_ORDER_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the order date attribute.">
     Date
   </message>
-  <message name="IDS_AUTOFILL_AI_ORDER_MERCHANT_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the order merchant name attribute." translateable="false">
+  <message name="IDS_AUTOFILL_AI_ORDER_MERCHANT_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the order merchant name attribute.">
     Merchant name
   </message>
-  <message name="IDS_AUTOFILL_AI_ORDER_MERCHANT_DOMAIN_ATTRIBUTE_NAME" desc="Used as a general label for the order merchant domain attribute." translateable="false">
+  <message name="IDS_AUTOFILL_AI_ORDER_MERCHANT_DOMAIN_ATTRIBUTE_NAME" desc="Used as a general label for the order merchant domain attribute.">
     Merchant domain
   </message>
-  <message name="IDS_AUTOFILL_AI_ORDER_PRODUCT_NAMES_ATTRIBUTE_NAME" desc="Used as a general label for the order product names attribute." translateable="false">
+  <message name="IDS_AUTOFILL_AI_ORDER_PRODUCT_NAMES_ATTRIBUTE_NAME" desc="Used as a general label for the order product names attribute.">
     Product names
   </message>
 
