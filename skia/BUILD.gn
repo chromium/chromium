@@ -377,7 +377,6 @@ component("skia") {
     "//third_party/skia/src/sfnt/SkOTUtils.cpp",
   ]
   if (use_blink) {
-    sources += skia_codec_decode_bmp
     sources += skia_encode_jpeg_srcs
     public += skia_encode_jpeg_public
     sources += [
