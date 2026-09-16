@@ -37,11 +37,11 @@
         }
       },
       {
-        "note": "Policy set to Ask (3) - falls back to Allow (1) because kSensorsAllowAskBlockPermissionModel is OFF by default",
+        "note": "Policy set to Ask (3) - maps to Ask because SensorsAllowAskBlockPermissionModel is enabled via the field trial testing config. Without the feature the handler falls back to Allow (1).",
         "policies": { "DefaultSensorsSetting": 3 },
         "prefs": {
           "profile.managed_default_content_settings.sensors": {
-            "value": 1
+            "value": 3
           }
         }
       }
