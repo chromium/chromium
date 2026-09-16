@@ -52,7 +52,7 @@ class TestAwContentsLifecycleNotifier : public AwContentsLifecycleNotifier {
   ~TestAwContentsLifecycleNotifier() override = default;
 
   size_t GetAwContentsStateCount(AwContentsState state) const {
-    return UNSAFE_TODO(state_count_[ToIndex(state)]);
+    return state_count_[ToIndex(state)];
   }
 
   bool HasAwContentsInstanceForTesting() const {

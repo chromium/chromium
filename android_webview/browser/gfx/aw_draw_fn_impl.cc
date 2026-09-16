@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/gfx/aw_draw_fn_impl.h"
 
+#include <array>
 #include <utility>
 
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
@@ -137,24 +138,17 @@ OverlaysParams::Mode GetOverlaysMode(AwDrawFnOverlaysMode mode) {
 template <typename T>
 HardwareRendererDrawParams CreateHRDrawParams(T* params,
                                               SkColorSpace* color_space) {
-  struct HardwareRendererDrawParams hr_params {};
-  hr_params.clip_left = params->clip_left;
-  hr_params.clip_top = params->clip_top;
-  hr_params.clip_right = params->clip_right;
-  hr_params.clip_bottom = params->clip_bottom;
-  hr_params.width = params->width;
-  hr_params.height = params->height;
-  if (color_space)
-    hr_params.color_space = gfx::ColorSpace(*color_space);
-
-  static_assert(std::size(decltype(params->transform){}) ==
-                    std::size(hr_params.transform),
-                "transform size mismatch");
-  for (size_t i = 0; i < std::size(hr_params.transform); ++i) {
-    UNSAFE_TODO(hr_params.transform[i]) = UNSAFE_TODO(params->transform[i]);
-  }
-
-  return hr_params;
+  return HardwareRendererDrawParams{
+      .clip_left = params->clip_left,
+      .clip_top = params->clip_top,
+      .clip_right = params->clip_right,
+      .clip_bottom = params->clip_bottom,
+      .width = params->width,
+      .height = params->height,
+      .transform = std::to_array(params->transform),
+      .color_space =
+          color_space ? gfx::ColorSpace(*color_space) : gfx::ColorSpace(),
+  };
 }
 
 template <class T>
