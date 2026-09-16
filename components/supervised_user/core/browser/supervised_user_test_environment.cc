@@ -269,7 +269,6 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
       identity_test_env_.identity_manager(),
       *pref_store_environment_.settings_service(),
       /*check_user_child_status_callback=*/base::DoNothing());
-  child_account_service_->Init();
   service_ = std::make_unique<SupervisedUserService>(
       identity_test_env_.identity_manager(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

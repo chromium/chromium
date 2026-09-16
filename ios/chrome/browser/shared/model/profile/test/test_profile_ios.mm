@@ -197,12 +197,14 @@ void TestProfileIOS::Init() {
         pref_registry);
   }
 
-  ProfileDependencyManagerIOS::GetInstance()->CreateProfileServicesForTest(
-      this);
-  // `SupervisedUserSettingsService` needs to be initialized for SyncService.
+  // `FamilyLinkSettingsService` needs to be initialized for the SyncService and
+  // for the PrefService to be accessible by other KeyedService instances.
   supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(this)->Init(
       GetStatePath(), GetIOTaskRunner().get(),
       /*load_synchronously=*/true);
+
+  ProfileDependencyManagerIOS::GetInstance()->CreateProfileServicesForTest(
+      this);
 }
 
 bool TestProfileIOS::IsOffTheRecord() const {

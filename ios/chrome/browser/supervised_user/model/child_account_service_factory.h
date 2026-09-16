@@ -17,6 +17,7 @@ class ChildAccountServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static supervised_user::ChildAccountService* GetForProfile(
       ProfileIOS* profile);
+  static TestingFactory GetDefaultFactory();
 
   static ChildAccountServiceFactory* GetInstance();
 

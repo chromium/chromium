@@ -50,12 +50,14 @@ class ChildAccountService : public KeyedService,
     TRANSIENT_MOVING_TO_AUTHENTICATED,
   };
 
+  ChildAccountService(
+      PrefService& user_prefs,
+      signin::IdentityManager* identity_manager,
+      FamilyLinkSettingsService& family_link_settings_service,
+      base::OnceCallback<void(bool)> check_user_child_status_callback);
   ChildAccountService(const ChildAccountService&) = delete;
   ChildAccountService& operator=(const ChildAccountService&) = delete;
-
   ~ChildAccountService() override;
-
-  void Init();
 
   // KeyedService:
   void Shutdown() override;
@@ -77,12 +79,6 @@ class ChildAccountService : public KeyedService,
   // state has not changed.
   base::CallbackListSubscription ObserveGoogleAuthState(
       const base::RepeatingCallback<void()>& callback);
-
-  ChildAccountService(
-      PrefService& user_prefs,
-      signin::IdentityManager* identity_manager,
-      FamilyLinkSettingsService& family_link_settings_service,
-      base::OnceCallback<void(bool)> check_user_child_status_callback);
 
  private:
   // Sets whether the signed-in account is a supervised account.

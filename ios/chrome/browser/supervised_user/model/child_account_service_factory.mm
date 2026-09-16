@@ -13,6 +13,22 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 
+namespace {
+// Creates a ChildAccountService instance.
+std::unique_ptr<KeyedService> CreateChildAccountService(ProfileIOS* profile) {
+  supervised_user::FamilyLinkSettingsService& family_link_settings_service =
+      CHECK_DEREF(
+          supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
+              profile));
+  return std::make_unique<supervised_user::ChildAccountService>(
+      CHECK_DEREF(profile->GetPrefs()),
+      IdentityManagerFactory::GetForProfile(profile),
+      family_link_settings_service,
+      // Callback relevant only for Chrome OS.
+      /*check_user_child_status_callback=*/base::DoNothing());
+}
+}  // namespace
+
 // static
 supervised_user::ChildAccountService* ChildAccountServiceFactory::GetForProfile(
     ProfileIOS* profile) {
@@ -28,7 +44,9 @@ ChildAccountServiceFactory* ChildAccountServiceFactory::GetInstance() {
 }
 
 ChildAccountServiceFactory::ChildAccountServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ChildAccountService") {
+    : ProfileKeyedServiceFactoryIOS("ChildAccountService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   // Source of truth for the supervision status.
   DependsOn(IdentityManagerFactory::GetInstance());
   // Consumer that shall be activated according to supervision status.
@@ -37,14 +55,11 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
 
 std::unique_ptr<KeyedService>
 ChildAccountServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
-  supervised_user::FamilyLinkSettingsService& family_link_settings_service =
-      CHECK_DEREF(
-          supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
-              profile));
-  return std::make_unique<supervised_user::ChildAccountService>(
-      CHECK_DEREF(profile->GetPrefs()),
-      IdentityManagerFactory::GetForProfile(profile),
-      family_link_settings_service,
-      // Callback relevant only for Chrome OS.
-      /*check_user_child_status_callback=*/base::DoNothing());
+  return CreateChildAccountService(profile);
+}
+
+// static
+ChildAccountServiceFactory::TestingFactory
+ChildAccountServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&CreateChildAccountService);
 }

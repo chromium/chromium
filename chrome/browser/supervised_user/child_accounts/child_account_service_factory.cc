@@ -14,6 +14,7 @@
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
@@ -48,10 +49,22 @@ ChildAccountServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
 
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    // Match lifecycle of the identity manager. No identity makes impossible to
+    // determine supervision status.
+    return nullptr;
+  }
+
   CHECK(profile->GetPrefs());
   return std::make_unique<supervised_user::ChildAccountService>(
-      *profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+      *profile->GetPrefs(), identity_manager,
       CHECK_DEREF(supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
           profile->GetProfileKey())),
       base::BindOnce(&supervised_user::AssertChildStatusOfTheUser, profile));
+}
+
+bool ChildAccountServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
 }

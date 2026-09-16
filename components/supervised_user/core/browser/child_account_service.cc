@@ -72,9 +72,6 @@ ChildAccountService::ChildAccountService(
 
 ChildAccountService::~ChildAccountService() = default;
 
-void ChildAccountService::Init() {
-}
-
 void ChildAccountService::Shutdown() {
   identity_manager_observer_.Reset();
 }

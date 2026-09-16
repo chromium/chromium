@@ -68,8 +68,6 @@ class ChildAccountServiceTest : public ::testing::Test {
         syncable_pref_service_, identity_test_environment_->identity_manager(),
         family_link_settings_service_,
         /*check_user_child_status_callback=*/base::DoNothing());
-
-    child_account_service_->Init();
   }
 
   void TearDown() override {

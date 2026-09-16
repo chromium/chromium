@@ -73,9 +73,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
     supervised_user::UpdateSupervisionStatusForAccount(
         account, identity_manager, is_subject_to_parental_controls);
 
-    // Initialize supervised_user services.
-    ChildAccountServiceFactory::GetForProfile(profile_.get())->Init();
-    EXPECT_EQ(supervised_user::IsSubjectToParentalControls(profile_.get()),
+    ASSERT_EQ(supervised_user::IsSubjectToParentalControls(profile_.get()),
               is_subject_to_parental_controls);
   }
 

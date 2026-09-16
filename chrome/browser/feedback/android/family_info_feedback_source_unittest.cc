@@ -70,7 +70,6 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
     builder.AddTestingFactory(
         ChromeSigninClientFactory::GetInstance(),
         base::BindRepeating(&signin::BuildTestSigninClient));
-    builder.SetIsSupervisedProfile();
 
     role_ = kidsmanagement::CHILD;
     profile_ = IdentityTestEnvironmentProfileAdaptor::
@@ -208,9 +207,6 @@ class FamilyInfoFeedbackSourceTest
             ->current_test_info()
             ->value_param()) {
       is_child_ = GetParam() == kidsmanagement::CHILD;
-      if (is_child_) {
-        builder.SetIsSupervisedProfile();
-      }
     }
 
     profile_ = IdentityTestEnvironmentProfileAdaptor::
@@ -290,10 +286,12 @@ TEST_P(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedIn) {
       CreateFamilyWithOneMember(primary_account.GetGaiaId(), role);
 
   if (is_child()) {
-    // Set some filtering behavior for the user, as ListFamilyMembers
-    // will try to obtain this along with the family role (and crush otherwise).
-    supervised_user_test_util::SetWebFilterType(
-        profile(), supervised_user::WebFilterType::kAllowAllSites);
+    // Explicitly update the mocked Identity account so the ChildAccountService
+    // is also aware of the child status.
+    primary_account = AccountInfo::Builder(primary_account)
+                          .SetIsChildAccount(signin::TriboolFromBool(true))
+                          .Build();
+    identity_test_env()->UpdateAccountInfoForAccount(primary_account);
   }
 
   base::WeakPtr<FamilyInfoFeedbackSource> feedback_source =
