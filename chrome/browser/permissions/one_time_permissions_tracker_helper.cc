@@ -14,14 +14,32 @@
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
+
+bool ShouldIgnoreOrigin(const url::Origin& origin) {
+  // There are cases where chrome://newtab/ and chrome://new-tab-page/ are
+  // used synonymously causing inconsistencies in the map. So we just ignore
+  // them.
+  return origin.opaque() ||
+         origin == url::Origin::Create(GURL("chrome://newtab/")) ||
+         origin == url::Origin::Create(GURL("chrome://new-tab-page/"));
+}
 
 // A helper class for tracking events relevant to OneTimePermissions expiration
 // which are tied to a single Page.
 class OneTimePermissionsPageTracker
     : public content::PageUserData<OneTimePermissionsPageTracker> {
  public:
+  static void MaybeCreateForPage(content::Page& page) {
+    if (ShouldIgnoreOrigin(page.GetMainDocument().GetLastCommittedOrigin())) {
+      return;
+    }
+    CreateForPage(page);
+  }
+
   ~OneTimePermissionsPageTracker() override;
 
   void OnVisibilityChanged(content::Visibility visibility);
@@ -123,6 +141,12 @@ void OneTimePermissionsPageTracker::OnIsCapturingAudioChanged(
 
 }  // namespace
 
+// static
+bool OneTimePermissionsTrackerHelper::ShouldIgnoreOriginForTesting(
+    const url::Origin& origin) {
+  return ShouldIgnoreOrigin(origin);
+}
+
 OneTimePermissionsTrackerHelper::~OneTimePermissionsTrackerHelper() = default;
 
 void OneTimePermissionsTrackerHelper::WebContentsDestroyed() {
@@ -140,7 +164,7 @@ void OneTimePermissionsTrackerHelper::OnVisibilityChanged(
 }
 
 void OneTimePermissionsTrackerHelper::PrimaryPageChanged(content::Page& page) {
-  OneTimePermissionsPageTracker::CreateForPage(page);
+  OneTimePermissionsPageTracker::MaybeCreateForPage(page);
 }
 
 void OneTimePermissionsTrackerHelper::PrimaryPageWillBeDeactivated(

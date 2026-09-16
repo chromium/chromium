@@ -19,8 +19,6 @@
 
 // This observable class keeps track of one-time permission related browsing
 // states.
-class OneTimePermissionsTrackerTest;
-
 class OneTimePermissionsTracker : public KeyedService {
   using NotifyFunction =
       void (OneTimePermissionsTracker::*)(const url::Origin&);
@@ -76,13 +74,6 @@ class OneTimePermissionsTracker : public KeyedService {
   // Fires all running timers for testing purposes.
   void FireRunningTimersForTesting();
 
-  FRIEND_TEST_ALL_PREFIXES(OneTimePermissionsTrackerTest,
-                           ShouldIgnoreOrigin_IsolatedWebApp);
-  FRIEND_TEST_ALL_PREFIXES(OneTimePermissionsTrackerTest,
-                           ShouldIgnoreOrigin_OpaqueOrigin);
-  FRIEND_TEST_ALL_PREFIXES(OneTimePermissionsTrackerTest,
-                           ShouldIgnoreOrigin_ChromePages);
-
  protected:
   void NotifyLastPageFromOriginClosed(const url::Origin& origin);
   void NotifyBackgroundTimerExpired(
@@ -131,7 +122,6 @@ class OneTimePermissionsTracker : public KeyedService {
         content_setting_specific_expiration_timer_map;
   };
 
-  bool ShouldIgnoreOrigin(const url::Origin& origin);
   bool AreAllTabsToOriginBackgroundedOrDiscarded(const url::Origin& origin);
   void RemoveContentSettingUsedFromOrigin(const url::Origin& origin,
                                           ContentSettingsType content_setting);

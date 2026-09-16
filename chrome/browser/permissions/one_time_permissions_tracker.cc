@@ -77,53 +77,45 @@ void OneTimePermissionsTracker::
 
 void OneTimePermissionsTracker::WebContentsBackgrounded(
     const url::Origin& origin) {
-  if (!ShouldIgnoreOrigin(origin)) {
-    // For some reason using `origin_tracker_[origin].background_tab_counter++;`
-    // on some builds leaves the value of
-    // `origin_tracker_[origin].background_tab_counter` at 0 in case of
-    // insertion. My best efforts to understand it have failed. Hence, `+=` is
-    // necessary here for the feature to work at all there.
-    origin_tracker_[origin].background_tab_counter += 1;
+  // For some reason using `origin_tracker_[origin].background_tab_counter++;`
+  // on some builds leaves the value of
+  // `origin_tracker_[origin].background_tab_counter` at 0 in case of
+  // insertion. My best efforts to understand it have failed. Hence, `+=` is
+  // necessary here for the feature to work at all there.
+  origin_tracker_[origin].background_tab_counter += 1;
 
-    if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
-      StartBackgroundExpirationTimersAndHandleMediaState(origin);
+  if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
+    StartBackgroundExpirationTimersAndHandleMediaState(origin);
 
-    } else {
-      origin_tracker_[origin].background_expiration_timer->Stop();
-      origin_tracker_[origin].background_expiration_long_timer->Stop();
-    }
+  } else {
+    origin_tracker_[origin].background_expiration_timer->Stop();
+    origin_tracker_[origin].background_expiration_long_timer->Stop();
   }
 }
 
 void OneTimePermissionsTracker::WebContentsUnbackgrounded(
     const url::Origin& origin) {
-  if (!ShouldIgnoreOrigin(origin)) {
-    origin_tracker_[origin].background_tab_counter--;
-    // Since the tab has been unbackgrounded, the timers should be reset
-    origin_tracker_[origin].background_expiration_timer->Stop();
-    origin_tracker_[origin].background_expiration_long_timer->Stop();
-  }
+  origin_tracker_[origin].background_tab_counter--;
+  // Since the tab has been unbackgrounded, the timers should be reset
+  origin_tracker_[origin].background_expiration_timer->Stop();
+  origin_tracker_[origin].background_expiration_long_timer->Stop();
 }
 
 void OneTimePermissionsTracker::WebContentsLoadedOrigin(
     const url::Origin& origin) {
-  if (!ShouldIgnoreOrigin(origin)) {
-    origin_tracker_[origin].undiscarded_tab_counter++;
-    origin_tracker_[origin].background_expiration_timer->Stop();
-    origin_tracker_[origin].background_expiration_long_timer->Stop();
-  }
+  origin_tracker_[origin].undiscarded_tab_counter++;
+  origin_tracker_[origin].background_expiration_timer->Stop();
+  origin_tracker_[origin].background_expiration_long_timer->Stop();
 }
 
 void OneTimePermissionsTracker::WebContentsUnloadedOrigin(
     const url::Origin& origin) {
-  if (!ShouldIgnoreOrigin(origin)) {
-    origin_tracker_[origin].undiscarded_tab_counter--;
-    DCHECK(!(origin_tracker_[origin].undiscarded_tab_counter < 0));
-    if (origin_tracker_[origin].undiscarded_tab_counter == 0) {
-      NotifyLastPageFromOriginClosed(origin);
-    } else if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
-      StartBackgroundExpirationTimersAndHandleMediaState(origin);
-    }
+  origin_tracker_[origin].undiscarded_tab_counter--;
+  DCHECK(!(origin_tracker_[origin].undiscarded_tab_counter < 0));
+  if (origin_tracker_[origin].undiscarded_tab_counter == 0) {
+    NotifyLastPageFromOriginClosed(origin);
+  } else if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
+    StartBackgroundExpirationTimersAndHandleMediaState(origin);
   }
 }
 
@@ -181,37 +173,32 @@ void OneTimePermissionsTracker::HandleUserMediaState(
 
 void OneTimePermissionsTracker::CapturingVideoChanged(const url::Origin& origin,
                                                       bool is_capturing_video) {
-  if (!ShouldIgnoreOrigin(origin)) {
-    if (is_capturing_video &&
-        origin_tracker_[origin].used_content_settings_set.find(
-            ContentSettingsType::MEDIASTREAM_CAMERA) ==
-            origin_tracker_[origin].used_content_settings_set.end()) {
-      origin_tracker_[origin].used_content_settings_set.insert(
-          ContentSettingsType::MEDIASTREAM_CAMERA);
-    }
-
-    origin_tracker_[origin].content_setting_specific_counter_map
-        [ContentSettingsType::MEDIASTREAM_CAMERA] +=
-        is_capturing_video ? 1 : -1;
-    HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_CAMERA);
+  if (is_capturing_video &&
+      origin_tracker_[origin].used_content_settings_set.find(
+          ContentSettingsType::MEDIASTREAM_CAMERA) ==
+          origin_tracker_[origin].used_content_settings_set.end()) {
+    origin_tracker_[origin].used_content_settings_set.insert(
+        ContentSettingsType::MEDIASTREAM_CAMERA);
   }
+
+  origin_tracker_[origin].content_setting_specific_counter_map
+      [ContentSettingsType::MEDIASTREAM_CAMERA] += is_capturing_video ? 1 : -1;
+  HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_CAMERA);
 }
 
 void OneTimePermissionsTracker::CapturingAudioChanged(const url::Origin& origin,
                                                       bool is_capturing_audio) {
-  if (!ShouldIgnoreOrigin(origin)) {
-    if (is_capturing_audio &&
-        origin_tracker_[origin].used_content_settings_set.find(
-            ContentSettingsType::MEDIASTREAM_MIC) ==
-            origin_tracker_[origin].used_content_settings_set.end()) {
-      origin_tracker_[origin].used_content_settings_set.insert(
-          ContentSettingsType::MEDIASTREAM_MIC);
-    }
-
-    origin_tracker_[origin].content_setting_specific_counter_map
-        [ContentSettingsType::MEDIASTREAM_MIC] += is_capturing_audio ? 1 : -1;
-    HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_MIC);
+  if (is_capturing_audio &&
+      origin_tracker_[origin].used_content_settings_set.find(
+          ContentSettingsType::MEDIASTREAM_MIC) ==
+          origin_tracker_[origin].used_content_settings_set.end()) {
+    origin_tracker_[origin].used_content_settings_set.insert(
+        ContentSettingsType::MEDIASTREAM_MIC);
   }
+
+  origin_tracker_[origin].content_setting_specific_counter_map
+      [ContentSettingsType::MEDIASTREAM_MIC] += is_capturing_audio ? 1 : -1;
+  HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_MIC);
 }
 
 void OneTimePermissionsTracker::CleanupStateForExpiredContentSetting(
@@ -274,15 +261,6 @@ void OneTimePermissionsTracker::NotifyLastPageFromOriginClosed(
   for (auto& observer : observer_list_) {
     observer.OnLastPageFromOriginClosed(origin);
   }
-}
-
-bool OneTimePermissionsTracker::ShouldIgnoreOrigin(const url::Origin& origin) {
-  // There are cases where chrome://newtab/ and chrome://new-tab-page/ are
-  // used synonymously causing inconsistencies in the map. So we just ignore
-  // them.
-  return origin.opaque() ||
-         origin == url::Origin::Create(GURL("chrome://newtab/")) ||
-         origin == url::Origin::Create(GURL("chrome://new-tab-page/"));
 }
 
 void OneTimePermissionsTracker::NotifyBackgroundTimerExpired(

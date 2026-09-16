@@ -106,23 +106,27 @@ TEST_F(OneTimePermissionsTrackerTest, ShouldIgnoreOrigin_IsolatedWebApp) {
       "cpt62davrxj4yzauslsummydorzgy2kcnhbayaziceuqlzhaue7qaaic/");
   url::Origin isolated_web_app_origin =
       url::Origin::Create(isolated_web_app_url);
-  EXPECT_FALSE(tracker()->ShouldIgnoreOrigin(isolated_web_app_origin));
+  EXPECT_FALSE(OneTimePermissionsTrackerHelper::ShouldIgnoreOriginForTesting(
+      isolated_web_app_origin));
 }
 
 TEST_F(OneTimePermissionsTrackerTest, ShouldIgnoreOrigin_OpaqueOrigin) {
   url::Origin opaque_origin;
   ASSERT_TRUE(opaque_origin.opaque());
-  EXPECT_TRUE(tracker()->ShouldIgnoreOrigin(opaque_origin));
+  EXPECT_TRUE(OneTimePermissionsTrackerHelper::ShouldIgnoreOriginForTesting(
+      opaque_origin));
 }
 
 TEST_F(OneTimePermissionsTrackerTest, ShouldIgnoreOrigin_ChromePages) {
   GURL page_1("chrome://newtab/");
   url::Origin page_1_origin = url::Origin::Create(page_1);
-  EXPECT_TRUE(tracker()->ShouldIgnoreOrigin(page_1_origin));
+  EXPECT_TRUE(OneTimePermissionsTrackerHelper::ShouldIgnoreOriginForTesting(
+      page_1_origin));
 
   GURL page_2("chrome://new-tab-page/");
   url::Origin page_2_origin = url::Origin::Create(page_2);
-  EXPECT_TRUE(tracker()->ShouldIgnoreOrigin(page_2_origin));
+  EXPECT_TRUE(OneTimePermissionsTrackerHelper::ShouldIgnoreOriginForTesting(
+      page_2_origin));
 }
 
 TEST_F(OneTimePermissionsTrackerTest, NotifyAfterShortTimeout) {

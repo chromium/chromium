@@ -10,6 +10,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+namespace url {
+class Origin;
+}
+
 // This class informs OneTimePermissionsTracker of pages being loaded, navigated
 // or destroyed in each tab. This information is then used by the
 // OneTimePermissionProvider to revoke permissions.
@@ -18,6 +22,8 @@ class OneTimePermissionsTrackerHelper
       public content::WebContentsUserData<OneTimePermissionsTrackerHelper>,
       public MediaStreamCaptureIndicator::Observer {
  public:
+  static bool ShouldIgnoreOriginForTesting(const url::Origin& origin);
+
   ~OneTimePermissionsTrackerHelper() override;
 
   OneTimePermissionsTrackerHelper(const OneTimePermissionsTrackerHelper&) =
