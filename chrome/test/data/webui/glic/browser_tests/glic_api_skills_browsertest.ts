@@ -334,6 +334,13 @@ class SkillsDesktopOnlyApiTests extends SkillsApiTests {
     this.host.showBrowseSkillsUi();
   }
 
+  async testShowManageSkillsUiActivatesExistingTab() {
+    assertDefined(this.host.showManageSkillsUi);
+    this.host.showManageSkillsUi();
+    await this.advanceToNextStep();
+    this.host.showManageSkillsUi();
+  }
+
   async testShowManageSkillsUiNoWindow() {
     assertDefined(this.host.showManageSkillsUi);
     this.host.showManageSkillsUi();

@@ -259,6 +259,37 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithSkills, testShowBrowseSkillsUi) {
   ExecuteJsTest();
   WaitForSkillsTab(chrome::kChromeUISkillsBrowsePath);
 }
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithSkills,
+                       testShowManageSkillsUiActivatesExistingTab) {
+  ExecuteJsTest();
+  WaitForSkillsTab(chrome::kChromeUISkillsYourSkillsPath);
+
+  CreateAndActivateTab(
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html"));
+
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(active_tab);
+  EXPECT_FALSE(
+      active_tab->GetContents()->GetLastCommittedURL().spec().starts_with(
+          chrome::kChromeUISkillsURL));
+
+  ContinueJsTest();
+  WaitForSkillsTab(chrome::kChromeUISkillsYourSkillsPath);
+
+  size_t skills_tab_count = 0;
+  for (BrowserWindowInterface* bwi : GetAllBrowserWindowInterfaces()) {
+    if (auto* tab_list = TabListInterface::From(bwi)) {
+      for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+        if (tab->GetContents()->GetLastCommittedURL().spec().starts_with(
+                chrome::kChromeUISkillsURL)) {
+          skills_tab_count++;
+        }
+      }
+    }
+  }
+  EXPECT_EQ(skills_tab_count, 1u);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithSkills,

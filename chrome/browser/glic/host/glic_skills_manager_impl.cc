@@ -210,7 +210,7 @@ void GlicSkillsManagerImpl::ShowSkillsUiAtRelativePath(
 
   bool existing_skills_tab_found = false;
 
-  BrowserWindowInterface* most_recent_browser = nullptr;
+  base::WeakPtr<BrowserWindowInterface> most_recent_browser;
 
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&skills_url_without_query, &existing_skills_tab_found,
@@ -220,25 +220,43 @@ void GlicSkillsManagerImpl::ShowSkillsUiAtRelativePath(
           return true;
         }
 
+        base::WeakPtr<BrowserWindowInterface> weak_browser =
+            browser->GetWeakPtr();
         if (!most_recent_browser) {
-          most_recent_browser = browser;
+          most_recent_browser = weak_browser;
         }
 
         TabListInterface* tab_list = TabListInterface::From(browser);
         if (!tab_list) {
           return true;
         }
-        for (const auto& tab : tab_list->GetAllTabs()) {
+        std::vector<tabs::TabHandle> tab_handles;
+        for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+          tab_handles.push_back(tab->GetHandle());
+        }
+        for (const tabs::TabHandle& tab_handle : tab_handles) {
+          tabs::TabInterface* tab = tab_handle.Get();
+          if (!tab) {
+            continue;
+          }
           content::WebContents* web_contents = tab->GetContents();
           if (web_contents) {
             GURL::Replacements clear_query;
             clear_query.ClearQuery();
             if (web_contents->GetURL().ReplaceComponents(clear_query) ==
                 skills_url_without_query) {
-              if (browser->GetWindow()) {
-                browser->GetWindow()->Activate();
+              if (weak_browser && weak_browser->GetWindow()) {
+                weak_browser->GetWindow()->Activate();
               }
-              tab_list->ActivateTab(tab->GetHandle());
+              tabs::TabInterface* const tab_to_activate = tab_handle.Get();
+              if (!tab_to_activate) {
+                continue;
+              }
+              TabListInterface* const current_tab_list = TabListInterface::From(
+                  tab_to_activate->GetBrowserWindowInterface());
+              if (current_tab_list) {
+                current_tab_list->ActivateTab(tab_handle);
+              }
               existing_skills_tab_found = true;
               return false;
             }
@@ -249,7 +267,7 @@ void GlicSkillsManagerImpl::ShowSkillsUiAtRelativePath(
 
   if (!existing_skills_tab_found) {
     if (most_recent_browser) {
-      TabListInterface::From(most_recent_browser)
+      TabListInterface::From(most_recent_browser.get())
           ->OpenTab(skills_url, /*index=*/-1);
       return;
     }
