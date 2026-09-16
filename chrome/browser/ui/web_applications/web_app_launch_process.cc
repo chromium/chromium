@@ -313,9 +313,15 @@ content::WebContents* WebAppLaunchProcess::Run() {
           : NavigateParams(browser, url_to_navigate,
                            ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   nav_params.disposition = navigation_disposition;
-  if (!open_in_new_window) {
+  nav_params.initiator_origin = params_->initiator_origin;
+  if (params_->initiator_origin.has_value() ||
+      !params_->referrer_url.is_empty()) {
     nav_params.referrer = content::Referrer::SanitizeForRequest(
-        launch_url,
+        url_to_navigate,
+        content::Referrer(params_->referrer_url, params_->referrer_policy));
+  } else if (!open_in_new_window) {
+    nav_params.referrer = content::Referrer::SanitizeForRequest(
+        url_to_navigate,
         content::Referrer(existing_tab->GetURL(),
                           network::mojom::ReferrerPolicy::kDefault));
   }

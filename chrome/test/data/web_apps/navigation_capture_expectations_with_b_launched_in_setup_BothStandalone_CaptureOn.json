@@ -717,7 +717,7 @@
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?dont_redirect"
                   }, {
-                     "referrer": "/banners/link_capturing/scope_b/destination.html?dont_redirect",
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Right"
                   } ],
@@ -769,7 +769,7 @@
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?dont_redirect"
                   }, {
-                     "referrer": "/banners/link_capturing/scope_b/destination.html?dont_redirect",
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Right"
                   } ],
@@ -1125,7 +1125,7 @@
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?dont_redirect"
                   }, {
-                     "referrer": "/banners/link_capturing/scope_b/destination.html?dont_redirect",
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Right"
                   } ],
@@ -1168,7 +1168,7 @@
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?dont_redirect"
                   }, {
-                     "referrer": "/banners/link_capturing/scope_b/destination.html?dont_redirect",
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Right"
                   } ],

@@ -1789,6 +1789,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-BLANK-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-BLANK-OPENER&click=Right"
                   } ],
@@ -1837,6 +1838,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-FRAME-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-FRAME-OPENER&click=Right"
                   } ],
@@ -1885,6 +1887,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-NO_FRAME-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-NO_FRAME-OPENER&click=Right"
                   } ],
@@ -1933,6 +1936,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-SELF-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-SELF-OPENER&click=Right"
                   } ],
@@ -1981,6 +1985,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-BLANK-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-BLANK-NO_OPENER&click=Right"
                   } ],
@@ -2029,6 +2034,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-FRAME-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-FRAME-NO_OPENER&click=Right"
                   } ],
@@ -2077,6 +2083,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-NO_FRAME-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-NO_FRAME-NO_OPENER&click=Right"
                   } ],
@@ -2125,6 +2132,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-SELF-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-SELF-NO_OPENER&click=Right"
                   } ],
@@ -4477,6 +4485,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-OPENER&click=Right"
                   } ],
@@ -4525,6 +4534,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-FRAME-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-FRAME-OPENER&click=Right"
                   } ],
@@ -4573,6 +4583,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-NO_FRAME-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-NO_FRAME-OPENER&click=Right"
                   } ],
@@ -4621,6 +4632,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-OPENER&click=Right"
                   } ],
@@ -4669,6 +4681,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Right"
                   } ],
@@ -4717,6 +4730,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-FRAME-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-FRAME-NO_OPENER&click=Right"
                   } ],
@@ -4765,6 +4779,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-NO_FRAME-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-NO_FRAME-NO_OPENER&click=Right"
                   } ],
@@ -4813,6 +4828,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Right"
                   } ],
@@ -5302,6 +5318,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_A-BLANK-NO_OPENER&click=Right&did_redirect",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_A-BLANK-NO_OPENER&click=Right&did_redirect"
                   } ]
@@ -5392,6 +5409,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Right&did_redirect",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Right&did_redirect"
                   } ],
@@ -12235,6 +12253,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-BLANK-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-BLANK-OPENER&click=Right"
                   } ],
@@ -12274,6 +12293,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-FRAME-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-FRAME-OPENER&click=Right"
                   } ],
@@ -12313,6 +12333,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-NO_FRAME-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-NO_FRAME-OPENER&click=Right"
                   } ],
@@ -12352,6 +12373,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-SELF-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-SELF-OPENER&click=Right"
                   } ],
@@ -12391,6 +12413,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-BLANK-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-BLANK-NO_OPENER&click=Right"
                   } ],
@@ -12430,6 +12453,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-FRAME-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-FRAME-NO_OPENER&click=Right"
                   } ],
@@ -12469,6 +12493,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-NO_FRAME-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-NO_FRAME-NO_OPENER&click=Right"
                   } ],
@@ -12508,6 +12533,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-SELF-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_a/destination.html?id-LINK-A_TO_A-SELF-NO_OPENER&click=Right"
                   } ],
@@ -14398,6 +14424,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-OPENER&click=Right"
                   } ],
@@ -14437,6 +14464,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-FRAME-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-FRAME-OPENER&click=Right"
                   } ],
@@ -14476,6 +14504,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-NO_FRAME-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-NO_FRAME-OPENER&click=Right"
                   } ],
@@ -14515,6 +14544,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-OPENER&click=Right"
                   } ],
@@ -14554,6 +14584,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Right"
                   } ],
@@ -14593,6 +14624,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-FRAME-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-FRAME-NO_OPENER&click=Right"
                   } ],
@@ -14632,6 +14664,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-NO_FRAME-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-NO_FRAME-NO_OPENER&click=Right"
                   } ],
@@ -14671,6 +14704,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Right",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-SELF-NO_OPENER&click=Right"
                   } ],
@@ -15054,6 +15088,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_A-BLANK-NO_OPENER&click=Right&did_redirect",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_A-BLANK-NO_OPENER&click=Right&did_redirect"
                   } ]
@@ -15092,6 +15127,7 @@
                   "active": true,
                   "current_url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Right&did_redirect",
                   "history": [ {
+                     "referrer": "/banners/link_capturing/scope_a/start.html",
                      "transition": "auto_bookmark",
                      "url": "/banners/link_capturing/scope_b/destination.html?id-LINK-A_TO_B-BLANK-NO_OPENER&click=Right&did_redirect"
                   } ],

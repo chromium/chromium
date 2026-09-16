@@ -169,6 +169,8 @@ source_set("app_launch_params") {
     "app_launch_params.h",
   ]
 
+  public_deps = [ "//services/network/public/mojom:url_loader_base" ]
+
   deps = [
     ":app_types",
     ":intents",

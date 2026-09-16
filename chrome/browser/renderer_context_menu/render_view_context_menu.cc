@@ -4902,6 +4902,13 @@ void RenderViewContextMenu::ExecOpenWebApp() {
       *app_id, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromMenu);
   launch_params.override_url = params_.link_url;
+  // Forwarding `params_.frame_origin`, `params_.frame_url.GetAsReferrer()`, and
+  // `params_.referrer_policy` directly mirrors
+  // `GetOpenURLParamsWithExtraHeaders()` for other link context menu items
+  // (e.g. `IDC_CONTENT_CONTEXT_OPENLINKNEWTAB`).
+  launch_params.initiator_origin = params_.frame_origin;
+  launch_params.referrer_url = params_.frame_url.GetAsReferrer();
+  launch_params.referrer_policy = params_.referrer_policy;
   apps::AppServiceProxyFactory::GetForProfile(GetProfile())
       ->LaunchAppWithParams(std::move(launch_params));
 }
