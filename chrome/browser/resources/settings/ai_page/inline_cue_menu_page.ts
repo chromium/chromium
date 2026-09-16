@@ -15,7 +15,6 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -36,8 +35,8 @@ export interface InlineCueMenuPageElement {
   };
 }
 
-const InlineCueMenuPageElementBase = SettingsViewMixin(SiteSettingsMixin(
-    PrefsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
+const InlineCueMenuPageElementBase = SettingsViewMixin(
+    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 export class InlineCueMenuPageElement extends InlineCueMenuPageElementBase {
   static get is() {

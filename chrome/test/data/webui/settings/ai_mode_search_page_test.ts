@@ -5,21 +5,48 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {SettingsAiModeSearchPageElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {OpenWindowProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'contextual_tasks.share_open_tabs_every_thread',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'contextual_tasks.site_exclusions',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
+    },
+    {
+      key: 'contextual_tasks.smart_tab_sharing_settings',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: 0,
+    },
+  ];
+}
+
 suite('AiModeSearchSubpage', function() {
   let openWindowProxy: TestOpenWindowProxy;
   let subpage: SettingsAiModeSearchPageElement;
+  let prefService: PrefService;
 
-  suiteSetup(function() {
+  setup(async function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
-    document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
   });
 
   teardown(function() {
@@ -29,22 +56,6 @@ suite('AiModeSearchSubpage', function() {
   function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-ai-mode-search-page');
-    subpage.set('prefs', {
-      contextual_tasks: {
-        share_open_tabs_every_thread: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-        site_exclusions: {
-          type: chrome.settingsPrivate.PrefType.DICTIONARY,
-          value: {},
-        },
-        smart_tab_sharing_settings: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: 0,
-        },
-      },
-    });
     document.body.appendChild(subpage);
     return flushTasks();
   }
@@ -59,7 +70,7 @@ suite('AiModeSearchSubpage', function() {
     // Click toggle
     toggle.click();
     assertTrue(
-        subpage
+        prefService
             .getPref<boolean>('contextual_tasks.share_open_tabs_every_thread')
             .value);
     assertTrue(toggle.checked);
@@ -67,7 +78,7 @@ suite('AiModeSearchSubpage', function() {
     // Click again
     toggle.click();
     assertFalse(
-        subpage
+        prefService
             .getPref<boolean>('contextual_tasks.share_open_tabs_every_thread')
             .value);
     assertFalse(toggle.checked);
@@ -86,10 +97,8 @@ suite('AiModeSearchSubpage', function() {
 
   test('smartTabSharingDisabledByPolicy', async () => {
     await createPage();
-    subpage.set('prefs.contextual_tasks.smart_tab_sharing_settings', {
-      type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 1,
-    });
+    await prefService.setPrefValue(
+        'contextual_tasks.smart_tab_sharing_settings', 1);
     await flushTasks();
 
     const indicator =

@@ -11,15 +11,13 @@ import '../settings_shared.css.js';
 import '../icons.html.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './skills_page.html.js';
 
-const SettingsSkillsPageElementBase =
-    SettingsViewMixin(PrefsMixin(PolymerElement));
+const SettingsSkillsPageElementBase = SettingsViewMixin(PolymerElement);
 
 export class SettingsSkillsPageElement extends SettingsSkillsPageElementBase {
   static get is() {

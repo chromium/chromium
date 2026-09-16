@@ -11,7 +11,8 @@ import '../internal/icons.html.js';
 
 // </if>
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -32,8 +33,8 @@ import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './on_device_ai_bro
 import {OnDeviceAiBrowserProxyImpl} from './on_device_ai_browser_proxy.js';
 // </if>
 
-const SettingsAiPageElementBase =
-    WebUiListenerMixin(SettingsViewMixin(PrefsMixin(PolymerElement)));
+const SettingsAiPageElementBase = WebUiListenerMixin(
+    SettingsViewMixin(PrefServiceObserverMixin(PolymerElement)));
 export class SettingsAiPageElement extends SettingsAiPageElementBase {
   static get is() {
     return 'settings-ai-page';
@@ -91,6 +92,8 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         value: () => loadTimeData.getBoolean('showDictationControl'),
       },
 
+      historySearchPref_: Object,
+
       // <if expr="_google_chrome">
       showOnDeviceAiSettings_: {
         type: Boolean,
@@ -109,6 +112,8 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     };
   }
 
+  declare private historySearchPref_: chrome.settingsPrivate.PrefObject<number>|
+      undefined;
   declare private showComposeControl_: boolean;
   declare private showHistorySearchControl_: boolean;
   declare private showPasswordChangeControl_: boolean;
@@ -131,6 +136,8 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.mirrorPref(
+        SettingsAiPageFeaturePrefName.HISTORY_SEARCH, 'historySearchPref_');
     this.maybeLogVisibilityMetrics_();
     // <if expr="_google_chrome">
     const setOnDeviceAiPref = (onDeviceAiEnabled: OnDeviceAiEnabled) =>
@@ -242,7 +249,9 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     let isRestricted = false;
     try {
       const consentState =
-          this.getPref('contextual_search.drive_consent_state').value;
+          PrefService.getInstance()
+              .getPref<number>('contextual_search.drive_consent_state')
+              .value;
       isRestricted = consentState === 1;  // DriveConsentState::kRestricted
     } catch (e) {
       console.error(
@@ -272,8 +281,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   private getHistorySearchSublabel_(): string {
     const isAnswersEnabled =
         loadTimeData.getBoolean('historyEmbeddingsAnswersFeatureEnabled');
-    if (this.getPref(SettingsAiPageFeaturePrefName.HISTORY_SEARCH).value ===
-        FeatureOptInState.ENABLED) {
+    if (this.historySearchPref_?.value === FeatureOptInState.ENABLED) {
       return isAnswersEnabled ?
           loadTimeData.getString('historySearchWithAnswersSublabelOn') :
           loadTimeData.getString('historySearchSublabelOn');

@@ -6,7 +6,7 @@ import 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js'
 import '../settings_shared.css.js';
 import '../settings_page/settings_subpage.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrShortcutInputElement} from 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -23,7 +23,7 @@ export interface SettingsDictationPageElement {
 }
 
 const SettingsDictationPageElementBase =
-    SettingsViewMixin(PrefsMixin(PolymerElement));
+    SettingsViewMixin(PrefServiceObserverMixin(PolymerElement));
 
 /**
  * Polymer element for the Talk to type (Dictation) settings page.
@@ -48,13 +48,13 @@ export class SettingsDictationPageElement extends
     };
   }
 
-  static get observers() {
-    return [
-      'onPrefChanged_(prefs.browser.voice_typing_hotkey.value)',
-    ];
-  }
-
   declare private registeredShortcut_: string;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addPrefObserver(
+        'browser.voice_typing_hotkey', () => this.onPrefChanged_());
+  }
 
   // SettingsViewMixin implementation.
   override focusBackButton() {

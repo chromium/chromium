@@ -5,43 +5,54 @@
 // clang-format off
 import type {SettingsHistorySearchPageElement} from 'chrome://settings/lazy_load.js';
 import {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {AiPageHistorySearchInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
+import {AiPageHistorySearchInteractions, loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
+
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: PrefName.HISTORY_SEARCH,
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: FeatureOptInState.NOT_INITIALIZED,
+    },
+    {
+      key: AiEnterpriseFeaturePrefName.HISTORY_SEARCH,
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: ModelExecutionEnterprisePolicyValue.ALLOW,
+    },
+  ];
+}
 
 suite('HistorySearchSubpage', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let subpage: SettingsHistorySearchPageElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
 
-  suiteSetup(function() {
+  setup(async function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  teardown(function() {
-    // Reset pref policy to ALLOW.
-    settingsPrefs.set(
-        `prefs.${AiEnterpriseFeaturePrefName.HISTORY_SEARCH}.value`,
-        ModelExecutionEnterprisePolicyValue.ALLOW);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
   });
 
   function createPage() {
-    metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-history-search-page');
-    subpage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(subpage);
     return flushTasks();
   }
@@ -68,7 +79,7 @@ suite('HistorySearchSubpage', function() {
     // Check NOT_INITIALIZED case.
     assertEquals(
         FeatureOptInState.NOT_INITIALIZED,
-        subpage.getPref(PrefName.HISTORY_SEARCH).value);
+        prefService.getPref(PrefName.HISTORY_SEARCH).value);
     assertFalse(toggle.checked);
 
     // Check ENABLED case.
@@ -78,7 +89,7 @@ suite('HistorySearchSubpage', function() {
         AiPageActions.HISTORY_SEARCH_ENABLED);
     assertEquals(
         FeatureOptInState.ENABLED,
-        subpage.getPref(PrefName.HISTORY_SEARCH).value);
+        prefService.getPref(PrefName.HISTORY_SEARCH).value);
     assertTrue(toggle.checked);
 
     metricsBrowserProxy.reset();
@@ -90,13 +101,13 @@ suite('HistorySearchSubpage', function() {
         AiPageActions.HISTORY_SEARCH_DISABLED);
     assertEquals(
         FeatureOptInState.DISABLED,
-        subpage.getPref(PrefName.HISTORY_SEARCH).value);
+        prefService.getPref(PrefName.HISTORY_SEARCH).value);
     assertFalse(toggle.checked);
   });
 
   test('historySearchToggleDisabled', async () => {
-    settingsPrefs.set(
-        `prefs.${AiEnterpriseFeaturePrefName.HISTORY_SEARCH}.value`,
+    await prefService.setPrefValue(
+        AiEnterpriseFeaturePrefName.HISTORY_SEARCH,
         ModelExecutionEnterprisePolicyValue.DISABLE);
     await createPage();
 
@@ -143,8 +154,8 @@ suite('HistorySearchSubpage', function() {
   });
 
   test('historySearchLearnMoreManaged', async () => {
-    settingsPrefs.set(
-        `prefs.${AiEnterpriseFeaturePrefName.HISTORY_SEARCH}.value`,
+    await prefService.setPrefValue(
+        AiEnterpriseFeaturePrefName.HISTORY_SEARCH,
         ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING);
     await createPage();
 

@@ -59,8 +59,8 @@
     <settings-toggle-button
         id="showSuggestionsToggle"
         aria-label="$i18n{aiSuggestionsToggleLabel}"
-        pref="{{prefs.optimization_guide.contextual_cueing_setting_state}}"
-        numeric-unchecked-values="[[computeNumericUncheckedValues_()]]"
+        pref-key="optimization_guide.contextual_cueing_setting_state"
+        numeric-unchecked-values="[[computeNumericUncheckedValues_(enterprisePref_)]]"
         numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
         disabled="[[isDisabledByPolicy_(enterprisePref_)]]"
         on-settings-boolean-control-change="onSuggestionsToggleChange_">

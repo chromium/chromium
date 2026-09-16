@@ -16,7 +16,8 @@ import '../settings_shared.css.js';
 import './ai_site_add_dialog.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -25,7 +26,8 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 
 import {getTemplate} from './ai_mode_search_page.html.js';
 
-const SettingsAiModeSearchPageElementBase = PrefsMixin(PolymerElement);
+const SettingsAiModeSearchPageElementBase =
+    PrefServiceObserverMixin(PolymerElement);
 
 export interface SettingsAiModeSearchPageElement {
   $: {
@@ -57,18 +59,8 @@ export class SettingsAiModeSearchPageElement extends
         type: String,
         value: '',
       },
-      enterprisePref_: {
-        type: Object,
-        computed:
-            `computePref(prefs.contextual_tasks.smart_tab_sharing_settings)`,
-      },
+      enterprisePref_: Object,
     };
-  }
-
-  static get observers() {
-    return [
-      'onSiteExclusionsChanged_(prefs.contextual_tasks.site_exclusions.value.*)',
-    ];
   }
 
   declare private siteList_: string[];
@@ -76,8 +68,17 @@ export class SettingsAiModeSearchPageElement extends
   declare private siteToEdit_: string;
   declare private enterprisePref_: chrome.settingsPrivate.PrefObject;
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.mirrorPref(
+        'contextual_tasks.smart_tab_sharing_settings', 'enterprisePref_');
+    this.addPrefObserver(
+        'contextual_tasks.site_exclusions',
+        () => this.onSiteExclusionsChanged_());
+  }
+
   private isDisabledByPolicy_(): boolean {
-    return this.enterprisePref_ && this.enterprisePref_.value === 1;
+    return !!this.enterprisePref_ && this.enterprisePref_.value === 1;
   }
 
   private onSiteExclusionsChanged_() {
@@ -121,18 +122,19 @@ export class SettingsAiModeSearchPageElement extends
   }
 
   getSiteExclusions(): Record<string, number> {
-    const pref = this.getPref<Record<string, number>>(
+    const pref = PrefService.getInstance().getPref<Record<string, number>>(
         'contextual_tasks.site_exclusions');
     return pref ? pref.value : {};
   }
 
   addSiteExclusion(domain: string, timeAddedMs: number) {
-    this.setPrefDictEntry(
+    PrefService.getInstance().setPrefDictEntry(
         'contextual_tasks.site_exclusions', domain, timeAddedMs);
   }
 
   removeSiteExclusion(domain: string) {
-    this.deletePrefDictEntry('contextual_tasks.site_exclusions', domain);
+    PrefService.getInstance().deletePrefDictEntry(
+        'contextual_tasks.site_exclusions', domain);
   }
 
   private onLearnMoreRowClick_() {

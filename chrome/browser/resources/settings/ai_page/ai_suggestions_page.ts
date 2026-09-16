@@ -12,7 +12,7 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../controls/settings_toggle_button.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -27,7 +27,7 @@ import {getTemplate} from './ai_suggestions_page.html.js';
 import {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState} from './constants.js';
 
 const SettingsAiSuggestionsPageElementBase =
-    SettingsViewMixin(PrefsMixin(PolymerElement));
+    SettingsViewMixin(PrefServiceObserverMixin(PolymerElement));
 
 export class SettingsAiSuggestionsPageElement extends
     SettingsAiSuggestionsPageElementBase {
@@ -46,11 +46,7 @@ export class SettingsAiSuggestionsPageElement extends
         value: FeatureOptInState,
       },
 
-      enterprisePref_: {
-        type: Object,
-        computed: `computePref(prefs.${
-            AiEnterpriseFeaturePrefName.CONTEXTUAL_CUEING})`,
-      },
+      enterprisePref_: Object,
     };
   }
 
@@ -58,6 +54,12 @@ export class SettingsAiSuggestionsPageElement extends
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.mirrorPref(
+        AiEnterpriseFeaturePrefName.CONTEXTUAL_CUEING, 'enterprisePref_');
+  }
 
   private recordInteractionMetrics_(
       interaction: AiPageSuggestionsInteractions, action: string) {

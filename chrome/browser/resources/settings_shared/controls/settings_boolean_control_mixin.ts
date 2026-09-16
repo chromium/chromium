@@ -102,7 +102,7 @@ export const SettingsBooleanControlMixin = dedupingMixin(
         }
 
         static get observers() {
-          return ['prefValueChanged_(pref.value)'];
+          return ['prefValueChanged_(pref.value, numericUncheckedValues.*)'];
         }
 
         declare inverted: boolean;
@@ -158,8 +158,11 @@ export const SettingsBooleanControlMixin = dedupingMixin(
           this.set('pref.value', value);
         }
 
-        private prefValueChanged_(prefValue: number|boolean) {
-          this.checked = this.getNewValue_(prefValue);
+        private prefValueChanged_() {
+          if (this.pref === undefined) {
+            return;
+          }
+          this.checked = this.getNewValue_(this.pref.value);
         }
 
         /**

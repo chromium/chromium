@@ -5,8 +5,8 @@
 import 'chrome://settings/settings.js';
 
 import {EntityDataManagerProxyImpl, FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
-import type {CrLinkRowElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {AiPageInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import type {CrLinkRowElement, SettingsAiPageElement} from 'chrome://settings/settings.js';
+import {AiPageInteractions, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -14,12 +14,28 @@ import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: PrefName.HISTORY_SEARCH,
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: FeatureOptInState.NOT_INITIALIZED,
+    },
+    {
+      key: 'contextual_search.drive_consent_state',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: 0,
+    },
+  ];
+}
 
 suite('AiPage', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let page: SettingsAiPageElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
   let entityDataManager: TestEntityDataManagerProxy;
 
   suiteSetup(function() {
@@ -33,11 +49,15 @@ suite('AiPage', function() {
       showAiPageAiFeatureSection: true,
       showGoogleSearchAiModeWorkspaceControl: true,
     });
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
   });
 
-  setup(function() {
+  setup(async function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
   });
@@ -51,7 +71,6 @@ suite('AiPage', function() {
   async function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-ai-page');
-    page.prefs = settingsPrefs.prefs!;
     Router.getInstance().navigateTo(routes.AI);
     document.body.appendChild(page);
     return flushTasks();
@@ -182,18 +201,20 @@ suite('AiPage', function() {
     assertTrue(!!historySearchRow);
     assertTrue(isVisible(historySearchRow));
 
-    page.setPrefValue(
+    await prefService.setPrefValue(
         PrefName.HISTORY_SEARCH, FeatureOptInState.NOT_INITIALIZED);
     assertEquals(
         loadTimeData.getString('historySearchSublabelOff'),
         historySearchRow.subLabel);
 
-    page.setPrefValue(PrefName.HISTORY_SEARCH, FeatureOptInState.DISABLED);
+    await prefService.setPrefValue(
+        PrefName.HISTORY_SEARCH, FeatureOptInState.DISABLED);
     assertEquals(
         loadTimeData.getString('historySearchSublabelOff'),
         historySearchRow.subLabel);
 
-    page.setPrefValue(PrefName.HISTORY_SEARCH, FeatureOptInState.ENABLED);
+    await prefService.setPrefValue(
+        PrefName.HISTORY_SEARCH, FeatureOptInState.ENABLED);
     assertEquals(
         loadTimeData.getString('historySearchSublabelOn'),
         historySearchRow.subLabel);
@@ -370,7 +391,7 @@ suite('AiPage', function() {
     assertTrue(!!row);
     assertTrue(isVisible(row));
 
-    page.setPrefValue('contextual_search.drive_consent_state', 0);
+    await prefService.setPrefValue('contextual_search.drive_consent_state', 0);
     row.click();
     await verifyFeatureInteractionMetrics(
         AiPageInteractions.GOOGLE_SEARCH_AI_MODE_WORKSPACE_CLICK,
@@ -391,7 +412,7 @@ suite('AiPage', function() {
     assertTrue(!!row);
     assertTrue(isVisible(row));
 
-    page.setPrefValue('contextual_search.drive_consent_state', 1);
+    await prefService.setPrefValue('contextual_search.drive_consent_state', 1);
     row.click();
     await verifyFeatureInteractionMetrics(
         AiPageInteractions.GOOGLE_SEARCH_AI_MODE_WORKSPACE_CLICK,

@@ -6,24 +6,47 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsOfferWritingHelpPageElement} from 'chrome://settings/lazy_load.js';
 import {AiEnterpriseFeaturePrefName, AiPageActions, COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {AiPageComposeInteractions, CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
+import {AiPageComposeInteractions, loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
+
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: COMPOSE_PROACTIVE_NUDGE_PREF,
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF,
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
+    },
+    {
+      key: AiEnterpriseFeaturePrefName.COMPOSE,
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: ModelExecutionEnterprisePolicyValue.ALLOW,
+    },
+  ];
+}
 
 suite('ComposePage', function() {
   let metricsBrowserProxy: TestMetricsBrowserProxy;
   let page: SettingsOfferWritingHelpPageElement;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
+  setup(async function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
   });
 
   function createPage() {
@@ -31,7 +54,6 @@ suite('ComposePage', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-offer-writing-help-page');
-    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     return flushTasks();
   }
@@ -48,7 +70,7 @@ suite('ComposePage', function() {
   // Test that interacting with the main toggle updates the corresponding pref.
   test('MainToggle', async () => {
     await createPage();
-    page.setPrefValue(COMPOSE_PROACTIVE_NUDGE_PREF, false);
+    await prefService.setPrefValue(COMPOSE_PROACTIVE_NUDGE_PREF, false);
 
     const mainToggle = page.shadowRoot!.querySelector('settings-toggle-button');
     assertTrue(!!mainToggle);
@@ -61,7 +83,7 @@ suite('ComposePage', function() {
     await assertFeatureInteractionMetrics(
         AiPageComposeInteractions.COMPOSE_PROACTIVE_NUDGE_ENABLED,
         AiPageActions.COMPOSE_PROACTIVE_NUDGE_ENABLED);
-    assertEquals(true, page.getPref(COMPOSE_PROACTIVE_NUDGE_PREF).value);
+    assertEquals(true, prefService.getPref(COMPOSE_PROACTIVE_NUDGE_PREF).value);
     assertTrue(mainToggle.checked);
 
     metricsBrowserProxy.reset();
@@ -71,7 +93,8 @@ suite('ComposePage', function() {
         AiPageActions.COMPOSE_PROACTIVE_NUDGE_DISABLED);
   });
 
-  test('DisabledSitesListUpdate', function() {
+  test('DisabledSitesListUpdate', async function() {
+    await createPage();
     // "No sites added" message should be shown when list is empty.
     const noDisabledSitesLabel =
         page.shadowRoot!.querySelector('#noDisabledSitesLabel');
@@ -84,7 +107,7 @@ suite('ComposePage', function() {
 
     // Adding an entry to the pref should populate the list and remove the "No
     // sites added" message.
-    page.setPrefDictEntry(
+    await prefService.setPrefDictEntry(
         COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, 'foo', 'bar');
     flush();
     assertFalse(isVisible(noDisabledSitesLabel));
@@ -92,10 +115,11 @@ suite('ComposePage', function() {
     assertEquals(1, newSites.length);
   });
 
-  test('DisabledSitesListDelete', function() {
-    page.setPrefDictEntry(
+  test('DisabledSitesListDelete', async function() {
+    await createPage();
+    await prefService.setPrefDictEntry(
         COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, 'foo', 'foo');
-    page.setPrefDictEntry(
+    await prefService.setPrefDictEntry(
         COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, 'bar', 'bar');
     flush();
 
@@ -165,8 +189,8 @@ suite('ComposePage', function() {
   });
 
   test('ComposeLearnMoreManaged', async () => {
-    settingsPrefs.set(
-        `prefs.${AiEnterpriseFeaturePrefName.COMPOSE}.value`,
+    await prefService.setPrefValue(
+        AiEnterpriseFeaturePrefName.COMPOSE,
         ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING);
     await createPage();
 

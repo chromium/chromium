@@ -11,7 +11,7 @@ import '../settings_columned_section.css.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,7 +27,7 @@ import {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState} from './c
 import {getTemplate} from './history_search_page.html.js';
 
 const SettingsHistorySearchPageElementBase =
-    SettingsViewMixin(PrefsMixin(PolymerElement));
+    SettingsViewMixin(PrefServiceObserverMixin(PolymerElement));
 
 export class SettingsHistorySearchPageElement extends
     SettingsHistorySearchPageElementBase {
@@ -74,11 +74,7 @@ export class SettingsHistorySearchPageElement extends
         },
       },
 
-      enterprisePref_: {
-        type: Object,
-        computed:
-            `computePref(prefs.${AiEnterpriseFeaturePrefName.HISTORY_SEARCH})`,
-      },
+      enterprisePref_: Object,
     };
   }
 
@@ -88,6 +84,12 @@ export class SettingsHistorySearchPageElement extends
   declare private enterprisePref_: chrome.settingsPrivate.PrefObject;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.mirrorPref(
+        AiEnterpriseFeaturePrefName.HISTORY_SEARCH, 'enterprisePref_');
+  }
 
   private recordInteractionMetrics_(
       interaction: AiPageHistorySearchInteractions, action: string) {

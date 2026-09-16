@@ -16,8 +16,7 @@
   <settings-ai-info-card slot="view" id="aiInfoCard"></settings-ai-info-card>
 
   <template is="dom-if" if="[[enableAiModeSearchSetting_]]">
-    <settings-ai-mode-search-page slot="view" id="aiModeSearch"
-        prefs="{{prefs}}">
+    <settings-ai-mode-search-page slot="view" id="aiModeSearch">
     </settings-ai-mode-search-page>
   </template>
 
@@ -41,48 +40,48 @@
   </template>
 
   <template is="dom-if" if="[[showAiPageAiFeatureSection_]]">
-    <settings-ai-page slot="view" id="parent" prefs="{{prefs}}">
+    <settings-ai-page slot="view" id="parent">
     </settings-ai-page>
   </template>
 
   <template is="dom-if" if="[[showHistorySearchControl_]]">
     <settings-history-search-page slot="view" id="historySearch"
-        data-parent-view-id="parent" prefs="{{prefs}}"
+        data-parent-view-id="parent"
         route-path$="[[routes_.HISTORY_SEARCH.path]]">
     </settings-history-search-page>
   </template>
 
   <template is="dom-if" if="[[showComposeControl_]]">
     <settings-offer-writing-help-page slot="view" id="compose"
-        data-parent-view-id="parent" prefs="{{prefs}}"
+        data-parent-view-id="parent"
         route-path$="[[routes_.OFFER_WRITING_HELP.path]]">
     </settings-offer-writing-help-page>
   </template>
 
   <template is="dom-if" if="[[showAiSuggestionsControl_]]">
     <settings-ai-suggestions-page slot="view" id="aiSuggestions"
-        data-parent-view-id="parent" prefs="{{prefs}}"
+        data-parent-view-id="parent"
         route-path$="[[routes_.AI_SUGGESTIONS.path]]">
     </settings-ai-suggestions-page>
   </template>
 
   <template is="dom-if" if="[[showInlineCueMenuControl_]]">
     <settings-inline-cue-menu-page slot="view" id="inlineCueMenu"
-        data-parent-view-id="parent" prefs="{{prefs}}"
+        data-parent-view-id="parent"
         route-path$="[[routes_.INLINE_CUE_MENU.path]]">
     </settings-inline-cue-menu-page>
   </template>
 
   <template is="dom-if" if="[[showSkillsSettingPage_]]">
     <settings-skills-page slot="view" id="skills"
-        data-parent-view-id="parent" prefs="{{prefs}}"
+        data-parent-view-id="parent"
         route-path$="[[routes_.SKILLS.path]]">
     </settings-skills-page>
   </template>
 
   <template is="dom-if" if="[[showDictationControl_]]">
     <settings-dictation-page slot="view" id="dictation"
-        data-parent-view-id="parent" prefs="{{prefs}}"
+        data-parent-view-id="parent"
         route-path$="[[routes_.DICTATION.path]]">
     </settings-dictation-page>
   </template>

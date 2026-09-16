@@ -7,16 +7,28 @@ import 'chrome://settings/settings.js';
 
 import type {SettingsDictationPageElement} from 'chrome://settings/lazy_load.js';
 import {DictationBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData, resetRouterForTesting} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefsBrowserProxy, PrefService, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestDictationBrowserProxy} from './test_dictation_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'browser.voice_typing_hotkey',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: '',
+    },
+  ];
+}
 
 suite('DictationPage', function() {
   let browserProxy: TestDictationBrowserProxy;
   let page: SettingsDictationPageElement;
+  let prefService: PrefService;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -29,13 +41,13 @@ suite('DictationPage', function() {
     browserProxy = new TestDictationBrowserProxy();
     DictationBrowserProxyImpl.setInstance(browserProxy);
 
-    const settingsPrefs = document.createElement('settings-prefs');
-    document.body.appendChild(settingsPrefs);
-
-    await CrSettingsPrefs.initialized;
+    const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     page = document.createElement('settings-dictation-page');
-    page.prefs = settingsPrefs.prefs!;
     document.body.appendChild(page);
     await flushTasks();
   });
@@ -54,7 +66,7 @@ suite('DictationPage', function() {
   test('ShortcutUpdateFailedRevertsPref', async () => {
     browserProxy.setDictationShortcutResult(false);
     browserProxy.setDictationShortcutValue('Ctrl+Alt+D');
-    page.setPrefValue('browser.voice_typing_hotkey', 'Ctrl+Alt+D');
+    await prefService.setPrefValue('browser.voice_typing_hotkey', 'Ctrl+Alt+D');
 
     assertTrue(isVisible(page.$.shortcutInput));
 
@@ -70,7 +82,8 @@ suite('DictationPage', function() {
 
   test('PrefChangeShowsFormattedShortcutFromBrowser', async () => {
     browserProxy.setDictationShortcutValue('⌃⇧D');
-    page.setPrefValue('browser.voice_typing_hotkey', 'Ctrl+Shift+D');
+    await prefService.setPrefValue(
+        'browser.voice_typing_hotkey', 'Ctrl+Shift+D');
     await flushTasks();
 
     assertEquals('⌃⇧D', page.$.shortcutInput.shortcut);

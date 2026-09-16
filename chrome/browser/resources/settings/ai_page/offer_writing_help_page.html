@@ -80,7 +80,7 @@
 
 <template is="dom-if" if="[[enableComposeProactiveNudge_]]" restamp>
   <settings-toggle-button class="hr"
-      pref="{{prefs.compose.proactive_nudge_enabled}}"
+      pref-key="compose.proactive_nudge_enabled"
       label="$i18n{offerWritingHelpToggleLabel}"
       sub-label="$i18n{offerWritingHelpToggleSublabel}"
       on-settings-boolean-control-change="onComposeProactiveNudgeToggleChange_">

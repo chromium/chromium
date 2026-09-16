@@ -10,7 +10,8 @@ import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -29,8 +30,8 @@ export const COMPOSE_PROACTIVE_NUDGE_PREF = 'compose.proactive_nudge_enabled';
 export const COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF =
     'compose.proactive_nudge_disabled_sites_with_time';
 
-const SettingsOfferWritingHelpPageElementBase = SettingsViewMixin(
-    I18nMixin(ListPropertyUpdateMixin(PrefsMixin(PolymerElement))));
+const SettingsOfferWritingHelpPageElementBase = SettingsViewMixin(I18nMixin(
+    ListPropertyUpdateMixin(PrefServiceObserverMixin(PolymerElement))));
 
 export class SettingsOfferWritingHelpPageElement extends
     SettingsOfferWritingHelpPageElementBase {
@@ -52,21 +53,21 @@ export class SettingsOfferWritingHelpPageElement extends
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableComposeProactiveNudge'),
       },
-      enterprisePref_: {
-        type: Object,
-        computed: `computePref(prefs.${AiEnterpriseFeaturePrefName.COMPOSE})`,
-      },
+      enterprisePref_: Object,
     };
-  }
-
-  static get observers() {
-    return [`onPrefsChanged_(
-        prefs.${COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF}.value.*)`];
   }
 
   declare private siteList_: string[];
   declare private enableComposeProactiveNudge_: boolean;
   declare private enterprisePref_: chrome.settingsPrivate.PrefObject;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.mirrorPref(AiEnterpriseFeaturePrefName.COMPOSE, 'enterprisePref_');
+    this.addPrefObserver(
+        COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF,
+        () => this.onPrefsChanged_());
+  }
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -101,12 +102,13 @@ export class SettingsOfferWritingHelpPageElement extends
   }
 
   private onDeleteClick_(e: DomRepeatEvent<string>) {
-    this.deletePrefDictEntry(
+    PrefService.getInstance().deletePrefDictEntry(
         COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, e.model.item);
   }
 
   private onPrefsChanged_() {
-    const prefDict = this.getPref<Record<string, number>>(
+    const prefDict = PrefService.getInstance()
+                         .getPref<Record<string, number>>(
                              COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF)
                          .value;
     const newSites = Object.keys(prefDict);
