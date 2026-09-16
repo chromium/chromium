@@ -4933,7 +4933,7 @@
     "name": "experimental-web-machine-learning-neural-network",
     "owners": [
       "patelpooja@microsoft.com", "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 180
   },
   {
     "name": "explain-gemini-edit-menu",
@@ -10384,8 +10384,8 @@
   },
   {
     "name": "web-machine-learning-neural-network",
-    "owners": [ "qjw@chromium.org", "ningxin.hu@intel.com", "rafael.cintron@microsoft.com" ],
-    "expiry_milestone": 156
+    "owners": [ "reillyg@chromium.org", "ningxin.hu@intel.com", "rafael.cintron@microsoft.com" ],
+    "expiry_milestone": 180
   },
   {
     "name": "web-otp-backend",
@@ -10415,17 +10415,17 @@
   {
     "name": "webnn-coreml",
     "owners": [ "reillyg@chromium.org", "phillis@chromium.org" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 180
   },
   {
     "name": "webnn-coreml-explicit-gpu-or-npu",
     "owners": [ "reillyg@chromium.org", "phillis@chromium.org" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 180
   },
   {
     "name": "webnn-onnxruntime",
     "owners": [ "reillyg@chromium.org", "rafael.cintron@microsoft.com" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 180
   },
   {
     "name": "webrtc-hw-decoding",
