@@ -391,4 +391,46 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_MultiSlice_PPS) {
                                 ));
 }
 
+TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_SPSChange_NonIDR) {
+  scoped_refptr<H264Picture> pic0 = accelerator_->CreateH264Picture();
+  scoped_refptr<H264Picture> pic1 = accelerator_->CreateH264Picture();
+  pic1->idr = false;
+  H264SPS sps;
+  H264PPS pps;
+  H264DPB dpb;
+  H264Picture::Vector ref_pic_list;
+  H264SliceHeader slice_hdr;
+  std::vector<SubsampleEntry> subsamples;
+
+  // First frame.
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS0));
+  accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
+                                    ref_pic_list, pic0);
+  accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic0,
+                            kSliceData, sizeof(kSliceData), subsamples);
+
+  // Save the resulting sample.
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample0;
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample0));
+  accelerator_->SubmitDecode(pic0);
+
+  // Second frame with new SPS, but on a non-IDR frame.
+  accelerator_->ProcessSPS(&sps, base::span(kSPS1));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS1));
+  accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
+                                    ref_pic_list, pic1);
+  accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic1,
+                            kSliceData, sizeof(kSliceData), subsamples);
+
+  // Save the resulting sample.
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample1;
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample1));
+  accelerator_->SubmitDecode(pic1);
+
+  // The format description must be recreated even though pic1 is not an IDR
+  // frame.
+  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
+}
 }  // namespace media
