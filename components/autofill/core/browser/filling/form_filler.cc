@@ -1220,8 +1220,8 @@ FormFiller::GetFieldFillingData(
           [&](const AutofillProfile* profile) {
             return GetFillingValueAndTypeForProfile(
                 CHECK_DEREF(profile), manager_->client().GetAppLocale(),
-                field.Type(), field, manager_->client().GetAddressNormalizer(),
-                failure_to_fill);
+                field.Type().GetAddressType(), field,
+                manager_->client().GetAddressNormalizer(), failure_to_fill);
           },
           [&](const CreditCard* credit_card) {
             return GetFillingValueAndTypeForCreditCard(

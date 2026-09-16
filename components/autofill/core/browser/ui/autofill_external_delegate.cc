@@ -1487,8 +1487,8 @@ void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
   const auto& [filling_value, select_text, filling_type] =
       GetFillingValueAndTypeForProfile(
           profile, manager_->client().GetAppLocale(),
-          AutofillType(*suggestion.field_by_field_filling_type_used),
-          *trigger_field, manager_->client().GetAddressNormalizer());
+          *suggestion.field_by_field_filling_type_used, *trigger_field,
+          manager_->client().GetAddressNormalizer());
   if (!filling_value.empty()) {
     manager_->FillOrPreviewField(
         mojom::ActionPersistence::kPreview, mojom::FieldActionType::kReplaceAll,
@@ -1508,8 +1508,8 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
   const auto& [filling_value, select_text, filling_type] =
       GetFillingValueAndTypeForProfile(
           profile, manager_->client().GetAppLocale(),
-          AutofillType(*suggestion.field_by_field_filling_type_used),
-          *trigger_field, manager_->client().GetAddressNormalizer());
+          *suggestion.field_by_field_filling_type_used, *trigger_field,
+          manager_->client().GetAddressNormalizer());
   if (!filling_value.empty()) {
     manager_->FillOrPreviewField(
         mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,

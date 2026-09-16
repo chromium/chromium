@@ -54,11 +54,11 @@ AutofillField CreateTestSelectAutofillField(
 
 std::u16string GetValueForProfile(const AutofillProfile& profile,
                                   const std::string& app_locale,
-                                  const AutofillType& field_type,
-                                  const FormFieldData& field_data,
+                                  FieldType field_type,
+                                  const AutofillField& field,
                                   AddressNormalizer* address_normalizer) {
   return GetFillingValueAndTypeForProfile(profile, app_locale, field_type,
-                                          field_data, address_normalizer)
+                                          field, address_normalizer)
       .value;
 }
 
@@ -79,10 +79,9 @@ TEST_F(FieldFillingAddressUtilTest,
 
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FIRST, u"Test");
-  EXPECT_EQ(
-      GetValueForProfile(profile, kAppLocale, AutofillType(NAME_FIRST), field,
-                         /*address_normalizer=*/nullptr),
-      u"Test");
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, NAME_FIRST, field,
+                               /*address_normalizer=*/nullptr),
+            u"Test");
 }
 
 struct FieldFillingAddressUtilTestCase {
@@ -125,9 +124,8 @@ TEST_P(PhoneNumberTest, FillPhoneNumber) {
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER,
                      test_case.phone_home_whole_number_value);
-  AutofillType type = AutofillType(
-      HtmlFieldTypeToBestCorrespondingFieldType(test_case.field_type),
-      /*is_country_code=*/test_case.field_type == HtmlFieldType::kCountryCode);
+  FieldType type =
+      HtmlFieldTypeToBestCorrespondingFieldType(test_case.field_type);
   EXPECT_EQ(test_case.expected_value,
             GetValueForProfile(profile, kAppLocale, type, field,
                                /*address_normalizer=*/nullptr));
@@ -233,8 +231,7 @@ TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {
   // nullptr means we expect them not to match without normalization.
   if (test_case.expected_value_without_normalization != nullptr) {
     EXPECT_EQ(test_case.expected_value_without_normalization,
-              GetValueForProfile(profile, kAppLocale,
-                                 AutofillType(ADDRESS_HOME_STATE), field,
+              GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STATE, field,
                                  /*address_normalizer=*/nullptr));
   }
 
@@ -242,9 +239,8 @@ TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {
   AutofillProfile canadian_profile = test::GetFullCanadianProfile();
   canadian_profile.SetRawInfo(ADDRESS_HOME_STATE, test_case.input_value);
   // Fill a first time without loading the rules for the region.
-  std::u16string value_to_fill =
-      GetValueForProfile(canadian_profile, kAppLocale,
-                         AutofillType(ADDRESS_HOME_STATE), field, normalizer());
+  std::u16string value_to_fill = GetValueForProfile(
+      canadian_profile, kAppLocale, ADDRESS_HOME_STATE, field, normalizer());
   // If the expectation with normalization is nullptr, this means that the same
   // result than without a normalizer is expected.
   if (test_case.expected_value_with_normalization == nullptr) {
@@ -258,8 +254,7 @@ TEST_P(AutofillSelectWithStatesTest, FillSelectWithStates) {
     normalizer()->LoadRulesForRegion("CA");
     EXPECT_EQ(test_case.expected_value_with_normalization,
               GetValueForProfile(canadian_profile, kAppLocale,
-                                 AutofillType(ADDRESS_HOME_STATE), field,
-                                 normalizer()));
+                                 ADDRESS_HOME_STATE, field, normalizer()));
   }
 }
 
@@ -321,19 +316,22 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectWithCountryName) {
 
   AutofillField field = CreateTestSelectAutofillField({"Albania", "Canada"},
                                                       ADDRESS_HOME_COUNTRY);
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, field.Type(), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
+                               field.Type().GetAddressType(), field,
                                /*address_normalizer=*/nullptr),
             u"Canada");
 
   field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true),
                   AutofillPredictionSource::kHeuristics);
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, field.Type(), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
+                               field.Type().GetAddressType(), field,
                                /*address_normalizer=*/nullptr),
             u"Canada");
 
   field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
                   AutofillPredictionSource::kHeuristics);
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, field.Type(), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
+                               field.Type().GetAddressType(), field,
                                /*address_normalizer=*/nullptr),
             u"Canada");
 }
@@ -344,19 +342,22 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectWithCountryCode) {
 
   AutofillField field =
       CreateTestSelectAutofillField({"FR", "CA", "BR"}, ADDRESS_HOME_COUNTRY);
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, field.Type(), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
+                               field.Type().GetAddressType(), field,
                                /*address_normalizer=*/nullptr),
             u"CA");
 
   field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true),
                   AutofillPredictionSource::kHeuristics);
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, field.Type(), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
+                               field.Type().GetAddressType(), field,
                                /*address_normalizer=*/nullptr),
             u"CA");
 
   field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
                   AutofillPredictionSource::kHeuristics);
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, field.Type(), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
+                               field.Type().GetAddressType(), field,
                                /*address_normalizer=*/nullptr),
             u"CA");
 }
@@ -370,19 +371,23 @@ TEST_F(FieldFillingAddressUtilTest, FillInputWithCountry) {
   field.set_form_control_type(FormControlType::kInputText);
   field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_COUNTRY);
 
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, field.Type(), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
+                               field.Type().GetAddressType(), field,
                                /*address_normalizer=*/nullptr),
             u"Canada");
 
   field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
                   AutofillPredictionSource::kHeuristics);
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, field.Type(), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
+                               field.Type().GetAddressType(), field,
                                /*address_normalizer=*/nullptr),
             u"Canada");
 
+  field.SetHtmlType(HtmlFieldType::kCountryCode, HtmlFieldMode::kNone);
   field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true),
                   AutofillPredictionSource::kHeuristics);
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, field.Type(), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
+                               field.Type().GetAddressType(), field,
                                /*address_normalizer=*/nullptr),
             u"CA");
 }
@@ -395,19 +400,17 @@ TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextArea) {
                            ADDRESS_HOME_STREET_ADDRESS);
 
   std::u16string value = u"123 Fake St.\nApt. 42";
-  profile.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
-  EXPECT_EQ(value,
-            GetValueForProfile(profile, kAppLocale,
-                               AutofillType(ADDRESS_HOME_STREET_ADDRESS), field,
-                               /*address_normalizer=*/nullptr));
+  profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS, value, "en-US");
+  EXPECT_EQ(value, GetValueForProfile(profile, kAppLocale,
+                                      ADDRESS_HOME_STREET_ADDRESS, field,
+                                      /*address_normalizer=*/nullptr));
 
   std::u16string ja_value = u"桜丘町26-1\nセルリアンタワー6階";
   profile.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value, "ja-JP");
   profile.set_language_code("ja-JP");
-  EXPECT_EQ(ja_value,
-            GetValueForProfile(profile, /*app_locale=*/"ja-JP",
-                               AutofillType(ADDRESS_HOME_STREET_ADDRESS), field,
-                               /*address_normalizer=*/nullptr));
+  EXPECT_EQ(ja_value, GetValueForProfile(profile, /*app_locale=*/"ja-JP",
+                                         ADDRESS_HOME_STREET_ADDRESS, field,
+                                         /*address_normalizer=*/nullptr));
 }
 
 TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextField) {
@@ -419,8 +422,8 @@ TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextField) {
 
   std::u16string value = u"123 Fake St.\nApt. 42";
   profile.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
-                               AutofillType(ADDRESS_HOME_STREET_ADDRESS), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STREET_ADDRESS,
+                               field,
                                /*address_normalizer=*/nullptr),
             u"123 Fake St., Apt. 42");
 
@@ -428,7 +431,7 @@ TEST_F(FieldFillingAddressUtilTest, FillStreetAddressTextField) {
   profile.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), ja_value, "ja-JP");
   profile.set_language_code("ja-JP");
   EXPECT_EQ(GetValueForProfile(profile, /*app_locale=*/"ja-JP",
-                               AutofillType(ADDRESS_HOME_STREET_ADDRESS), field,
+                               ADDRESS_HOME_STREET_ADDRESS, field,
                                /*address_normalizer=*/nullptr),
             u"桜丘町26-1セルリアンタワー6階");
 }
@@ -455,9 +458,9 @@ TEST_P(AutofillStateTextTest, FillStateText) {
 
   AutofillProfile profile = test::GetFullProfile();
   profile.SetRawInfo(ADDRESS_HOME_STATE, test_case.value_to_fill);
-  std::u16string value_to_fill = GetValueForProfile(
-      profile, kAppLocale, AutofillType(ADDRESS_HOME_STATE), field,
-      /*address_normalizer=*/nullptr);
+  std::u16string value_to_fill =
+      GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STATE, field,
+                         /*address_normalizer=*/nullptr);
 
   EXPECT_EQ(test_case.should_fill, !value_to_fill.empty());
   if (!value_to_fill.empty()) {
@@ -526,7 +529,7 @@ void DoTestFillAugmentedPhoneCountryCodeField(
                      test_case.phone_home_whole_number_value);
 
   FillingValueAndType filling_value_and_type = GetFillingValueAndTypeForProfile(
-      profile, kAppLocale, AutofillType(PHONE_HOME_COUNTRY_CODE), field,
+      profile, kAppLocale, PHONE_HOME_COUNTRY_CODE, field,
       /*address_normalizer=*/nullptr);
 
   ASSERT_EQ(filling_value_and_type.filling_type, PHONE_HOME_COUNTRY_CODE);
@@ -742,8 +745,7 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectAbbreviatedState) {
   AutofillProfile profile(AddressCountryCode("DE"));
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
 
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
-                               AutofillType(ADDRESS_HOME_STATE), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STATE, field,
                                /*address_normalizer=*/nullptr),
             u"BY");
 }
@@ -757,8 +759,7 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectLocalizedState) {
       {"Bayern", "Berlin", "Brandenburg", "Bremen"}, ADDRESS_HOME_STATE);
   AutofillProfile profile(AddressCountryCode("DE"));
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
-                               AutofillType(ADDRESS_HOME_STATE), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STATE, field,
                                /*address_normalizer=*/nullptr),
             u"Bayern");
 }
@@ -773,8 +774,7 @@ TEST_F(FieldFillingAddressUtilTest, FillSelectLocalizedStateSubstring) {
       {"Bavaria Has Munich", "Berlin has Berlin"}, ADDRESS_HOME_STATE);
   AutofillProfile profile(AddressCountryCode("DE"));
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
-                               AutofillType(ADDRESS_HOME_STATE), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STATE, field,
                                /*address_normalizer=*/nullptr),
             u"Bavaria Has Munich");
 }
@@ -792,8 +792,7 @@ TEST_F(FieldFillingAddressUtilTest, FillStateAbbreviationInTextField) {
 
   AutofillProfile profile(AddressCountryCode("DE"));
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
-                               AutofillType(ADDRESS_HOME_STATE), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STATE, field,
                                /*address_normalizer=*/nullptr),
             u"BY");
 }
@@ -808,8 +807,7 @@ TEST_F(FieldFillingAddressUtilTest, FillStateFieldWithSavedValueInProfile) {
       {"Bavari", "Berlin", "Lower Saxony"}, ADDRESS_HOME_STATE);
   AutofillProfile profile(AddressCountryCode("DE"));
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavari");
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
-                               AutofillType(ADDRESS_HOME_STATE), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STATE, field,
                                /*address_normalizer=*/nullptr),
             u"Bavari");
 }
@@ -829,8 +827,7 @@ TEST_F(FieldFillingAddressUtilTest, FillStateFieldWhenStateIsNotInOptions) {
       {"Connecticut", "California"}, ADDRESS_HOME_STATE);
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-  EXPECT_TRUE(GetValueForProfile(profile, kAppLocale,
-                                 AutofillType(ADDRESS_HOME_STATE), field,
+  EXPECT_TRUE(GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STATE, field,
                                  /*address_normalizer=*/nullptr)
                   .empty());
 }
@@ -845,8 +842,7 @@ TEST_F(FieldFillingAddressUtilTest,
       {"Colorado", "Connecticut", "California"}, ADDRESS_HOME_STATE);
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
-                               AutofillType(ADDRESS_HOME_STATE), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STATE, field,
                                /*address_normalizer=*/nullptr),
             u"Colorado");
 }
@@ -867,8 +863,7 @@ TEST_F(FieldFillingAddressUtilTest, FillUpperCaseAbbreviationInStateTextField) {
 
   AutofillProfile profile(AddressCountryCode("DE"));
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bavaria");
-  EXPECT_EQ(GetValueForProfile(profile, kAppLocale,
-                               AutofillType(ADDRESS_HOME_STATE), field,
+  EXPECT_EQ(GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STATE, field,
                                /*address_normalizer=*/nullptr),
             u"BY");
 }
@@ -883,8 +878,7 @@ TEST_F(FieldFillingAddressUtilTest,
       {"Colombia", "Connecticut", "California"}, ADDRESS_HOME_STATE);
   AutofillProfile profile(AddressCountryCode("US"));
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"CO");
-  EXPECT_TRUE(GetValueForProfile(profile, kAppLocale,
-                                 AutofillType(ADDRESS_HOME_STATE), field,
+  EXPECT_TRUE(GetValueForProfile(profile, kAppLocale, ADDRESS_HOME_STATE, field,
                                  /*address_normalizer=*/nullptr)
                   .empty());
 }
@@ -919,7 +913,7 @@ TEST_P(AlternativeNameFillingTest, FillAlternativeName) {
   base::HistogramTester histogram_tester;
 
   std::u16string actual_value =
-      GetValueForProfile(profile, kAppLocale, AutofillType(field_type), field,
+      GetValueForProfile(profile, kAppLocale, field_type, AutofillField(field),
                          /*address_normalizer=*/nullptr);
   if (test_case.country_code != "JP") {
     EXPECT_THAT(actual_value, testing::IsEmpty());

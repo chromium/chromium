@@ -361,7 +361,8 @@ void AutofillHandler::OnFillOrPreviewForm(
       std::string failure_to_fill;
       filled_value =
           autofill::GetFillingValueAndTypeForProfile(
-              *profile_used_to_fill_form, locale, field->Type(), *field,
+              *profile_used_to_fill_form, locale,
+              field->Type().GetAddressType(), *field,
               manager.client().GetAddressNormalizer(), &failure_to_fill)
               .value;
     }
