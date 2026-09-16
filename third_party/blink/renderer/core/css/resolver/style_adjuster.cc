@@ -748,9 +748,7 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
 }
 
 static bool IsCanvasWithLayoutSubtree(const Element* element) {
-  if (!element || !element->IsCanvasOrInCanvasSubtree() ||
-      !RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          element->GetExecutionContext())) {
+  if (!element || !element->IsCanvasOrInCanvasSubtree()) {
     return false;
   }
 
@@ -765,9 +763,7 @@ static bool IsCanvasWithLayoutSubtree(const Element* element) {
 // to be blockified and have static position.
 // See: https://github.com/WICG/html-in-canvas
 static bool IsLayoutSubtreeCanvasChild(const Element* element) {
-  if (!element || !element->IsInCanvasSubtree() ||
-      !RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          element->GetExecutionContext())) {
+  if (!element || !element->IsInCanvasSubtree()) {
     return false;
   }
   const auto* parent_canvas = DynamicTo<HTMLCanvasElement>(

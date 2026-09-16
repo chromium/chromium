@@ -1058,10 +1058,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       // TODO(crbug.com/1309178): We should disable composited scrolling if the
       // snapshot's scrollers do not match the current scrollers.
 
-      DCHECK(object_.GetDocument().Printing() ||
-             (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-                  object_.GetDocument().GetExecutionContext()) &&
-              object_.IsInCanvasSubtree()) ||
+      DCHECK(object_.GetDocument().Printing() || object_.IsInCanvasSubtree() ||
              full_context_.direct_compositing_reasons.Has(
                  CompositingReason::kAnchorPosition));
       state.direct_compositing_reasons =
@@ -4929,9 +4926,7 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
     // Elements under canvas can only be rendered with `drawElementImage` and
     // need to use regular paint invalidation to ensure js is notified of
     // invalidations.
-    if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-            object_.GetDocument().GetExecutionContext()) &&
-        object_.IsInCanvasSubtree()) {
+    if (object_.IsInCanvasSubtree()) {
       context_.painting_layer->SetNeedsRepaint();
     }
     object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
@@ -4983,9 +4978,7 @@ bool PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(
   // Elements under canvas can only be rendered with `drawElementImage` and need
   // to use regular paint invalidation to ensure js is notified of
   // invalidations.
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          object.GetDocument().GetExecutionContext()) &&
-      object.IsInCanvasSubtree()) {
+  if (object.IsInCanvasSubtree()) {
     return false;
   }
   return true;
@@ -5035,9 +5028,7 @@ bool PaintPropertyTreeBuilder::CanDoDeferredOpacityNodeUpdate(
   // Elements under canvas can only be rendered with `drawElementImage` and need
   // to use regular paint invalidation to ensure js is notified of
   // invalidations.
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          object.GetDocument().GetExecutionContext()) &&
-      object.IsInCanvasSubtree()) {
+  if (object.IsInCanvasSubtree()) {
     return false;
   }
 
