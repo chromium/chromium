@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
@@ -19,8 +21,11 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
@@ -62,6 +67,80 @@ class SameOriginPolicyUI : public MediaStreamUI {
 
   SameOriginObserver observer_;
   base::OnceClosure stop_callback_;
+};
+
+// This helper class is designed to live as long as the capture and is designed
+// to wrap another MediaStreamUI, if applicable.
+// If the captured tab navigates to a URL that the extension is not permitted
+// to capture (e.g.  an enterprise policy-blocked host or user-restricted
+// site), we abort the capture and show a notification dialog.
+class TabCaptureExtensionPolicyUI : public MediaStreamUI,
+                                    public content::WebContentsObserver {
+ public:
+  TabCaptureExtensionPolicyUI(content::WebContents* observed_contents,
+                              const std::string& extension_id,
+                              std::unique_ptr<MediaStreamUI> wrapped_ui)
+      : content::WebContentsObserver(observed_contents),
+        extension_id_(extension_id),
+        wrapped_ui_(std::move(wrapped_ui)) {}
+
+  ~TabCaptureExtensionPolicyUI() override = default;
+
+  gfx::NativeViewId OnStarted(
+      base::OnceClosure stop_callback,
+      content::MediaStreamUI::SourceCallback source_callback,
+      const std::vector<content::DesktopMediaID>& media_ids) override {
+    stop_callback_ = std::move(stop_callback);
+    if (wrapped_ui_) {
+      return wrapped_ui_->OnStarted(
+          base::BindOnce(&TabCaptureExtensionPolicyUI::StopCapture,
+                         weak_factory_.GetWeakPtr()),
+          std::move(source_callback), media_ids);
+    }
+    return 0;
+  }
+
+  void OnRegionCaptureRectChanged(
+      const std::optional<gfx::Rect>& region_capture_rect) override {
+    if (wrapped_ui_) {
+      wrapped_ui_->OnRegionCaptureRectChanged(region_capture_rect);
+    }
+  }
+
+  // WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override {
+    if (!web_contents()) {
+      return;
+    }
+    const extensions::Extension* extension =
+        extensions::ExtensionRegistry::Get(web_contents()->GetBrowserContext())
+            ->GetExtensionById(extension_id_,
+                               extensions::ExtensionRegistry::ENABLED);
+    if (!extension) {
+      StopCapture();
+      return;
+    }
+
+    std::string error;
+    content::WebContents* contents = web_contents();
+    if (!extensions::TabCaptureRegistry::CanCaptureWebContents(
+            *extension, *contents->GetBrowserContext(), *contents, error)) {
+      StopCapture();
+      capture_policy::ShowCaptureTerminatedDialog(contents);
+    }
+  }
+
+ private:
+  void StopCapture() {
+    if (stop_callback_) {
+      std::move(stop_callback_).Run();
+    }
+  }
+
+  const std::string extension_id_;
+  std::unique_ptr<MediaStreamUI> wrapped_ui_;
+  base::OnceClosure stop_callback_;
+  base::WeakPtrFactory<TabCaptureExtensionPolicyUI> weak_factory_{this};
 };
 
 // Returns an instance of MediaStreamUI to be passed to content layer and stores
@@ -161,10 +240,50 @@ void TabCaptureAccessHandler::HandleRequest(
     return;
   }
 
+  // Find the capturing extension whose policy and permissions govern this
+  // capture. If `extension` is null, the capture was initiated via
+  // chrome.tabCapture.getMediaStreamId() and the MediaStreamRequest was made by
+  // the consumer context (e.g. an offscreen document or web page). In that
+  // case, look up the originating extension via the TabCaptureRegistry. Note
+  // that we intentionally keep `extension` separate from `capturing_extension`
+  // so that consumer contexts are not erroneously treated as allowlisted
+  // extensions below.
+  std::string capturing_extension_id = extension_id;
+  if (capturing_extension_id.empty()) {
+    capturing_extension_id = tab_capture_registry->GetExtensionIdForRequest(
+        request.render_process_id, request.render_frame_id);
+  }
+
+  const extensions::Extension* capturing_extension = extension;
+  if (!capturing_extension && !capturing_extension_id.empty()) {
+    capturing_extension =
+        extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
+            capturing_extension_id, extensions::ExtensionRegistry::ENABLED);
+  }
+
+  if (!capturing_extension_id.empty()) {
+    std::string error;
+    if (!capturing_extension ||
+        (target_web_contents &&
+         !extensions::TabCaptureRegistry::CanCaptureWebContents(
+             *capturing_extension, *profile, *target_web_contents, error))) {
+      std::move(callback).Run(
+          blink::mojom::StreamDevicesSet(),
+          blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
+          /*ui=*/nullptr);
+      return;
+    }
+  }
+
   std::unique_ptr<MediaStreamUI> media_ui;
   if (capture_level == AllowedScreenCaptureLevel::kSameOrigin) {
     media_ui = std::make_unique<SameOriginPolicyUI>(
         target_web_contents, url::Origin::Create(request.security_origin));
+  }
+
+  if (!capturing_extension_id.empty() && target_web_contents) {
+    media_ui = std::make_unique<TabCaptureExtensionPolicyUI>(
+        target_web_contents, capturing_extension_id, std::move(media_ui));
   }
   const bool is_allowlisted_extension =
       IsExtensionAllowedForScreenCapture(extension);

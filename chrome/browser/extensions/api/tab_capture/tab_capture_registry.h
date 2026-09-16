@@ -30,8 +30,19 @@ class WebContents;
 }
 
 namespace extensions {
+class Extension;
 
 namespace tab_capture = api::tab_capture;
+
+namespace tab_capture_errors {
+
+inline constexpr char kFindingTabError[] = "Error finding tab to capture.";
+inline constexpr char kGrantError[] =
+    "Extension has not been invoked for the current page (see activeTab "
+    "permission). Chrome pages cannot be captured.";
+inline constexpr char kCannotCapturePage[] = "Cannot capture this page.";
+
+}  // namespace tab_capture_errors
 
 class TabCaptureRegistry : public BrowserContextKeyedAPI,
                            public ExtensionRegistryObserver,
@@ -85,6 +96,20 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
   bool VerifyRequest(int render_process_id,
                      int render_frame_id,
                      const std::string& extension_id);
+
+  // Returns whether `extension` is permitted to capture `target_contents`.
+  // Disallows capturing hosts blocked by enterprise policy, hosts restricted by
+  // the user, and file URLs when file access is not enabled. Also resolves
+  // precursor origins for opaque URLs (such as about:blank). Populates `error`
+  // if not null and capture is disallowed.
+  static bool CanCaptureWebContents(const Extension& extension,
+                                    content::BrowserContext& browser_context,
+                                    content::WebContents& target_contents,
+                                    std::string& error);
+
+  // Looks up the extension ID for a pending request by its render frame ID.
+  std::string GetExtensionIdForRequest(int render_process_id,
+                                       int render_frame_id) const;
 
  private:
   friend class BrowserContextKeyedAPIFactory<TabCaptureRegistry>;

@@ -19,9 +19,13 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/manifest.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "url/origin.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -330,6 +334,52 @@ void TabCaptureRegistry::KillRequest(LiveRequest* request) {
     }
   }
   NOTREACHED();
+}
+
+// static
+bool TabCaptureRegistry::CanCaptureWebContents(
+    const Extension& extension,
+    content::BrowserContext& browser_context,
+    content::WebContents& target_contents,
+    std::string& error) {
+  const url::Origin& origin =
+      target_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  const GURL origin_url =
+      origin.opaque() ? origin.GetTupleOrPrecursorTupleIfOpaque().GetURL()
+                      : origin.GetURL();
+
+  if (origin_url.SchemeIs(url::kFileScheme) &&
+      !util::AllowFileAccess(extension.id(), &browser_context)) {
+    error = tab_capture_errors::kCannotCapturePage;
+    return false;
+  }
+
+  // Component extensions are built into (and are implementation details of) the
+  // browser. Allow them to capture any valid contents (except file contents;
+  // no component extension needs to access those today, and this gives us
+  // nice defense-in-depth).
+  if (Manifest::IsComponentLocation(extension.location())) {
+    return true;
+  }
+
+  if (extension.permissions_data()->IsPolicyBlockedHost(origin_url)) {
+    error = tab_capture_errors::kCannotCapturePage;
+    return false;
+  }
+
+  if (extension.permissions_data()->IsUrlBlockedByUser(origin_url)) {
+    error = tab_capture_errors::kCannotCapturePage;
+    return false;
+  }
+
+  return true;
+}
+
+std::string TabCaptureRegistry::GetExtensionIdForRequest(
+    int render_process_id,
+    int render_frame_id) const {
+  LiveRequest* const request = FindRequest(render_process_id, render_frame_id);
+  return request ? request->extension_id() : std::string();
 }
 
 }  // namespace extensions
