@@ -3,7 +3,7 @@
 <head>
 <style>
 iframe {
-  position: absolute;
+  position: fixed;
   margin-left: 5vw;
   margin-top: 60vh;
   width: 90vw;
@@ -35,27 +35,30 @@ promise_test(async function(t) {
   // Create the large-sticky-ad.
   appendAdFrameTo(document.body);
 
-  let ad_candidate = document.getElementsByTagName("iframe")[0];
-  let initial_margin_top = parseInt(window.getComputedStyle(ad_candidate).marginTop, 10);
-
-  // After 1500ms, force a layout update so that the sticky ad detector is
+  // Wait for FCP and force a layout update so that the sticky ad detector is
   // aware of the sticky ad candidate.
-  await timeout(1500);
+  await waitForFirstContentfulPaint();
   await forceLayoutUpdate();
   assert_false(internals.isUseCounted(document, kLargeStickyAd));
 
-  // Scroll down to 5000px. Reset the frame's position w.r.t. the viewport
-  // to its initial position.
-  window.scrollTo(0, 5000);
-  ad_candidate.style.marginTop = initial_margin_top + window.scrollY + 'px';
+  // Scroll down to 1px.
+  window.scrollTo(0, 1);
 
-  // After 1500ms, force a layout update. At this point the scrolling
-  // position has changed by a distance greater than the candidate's height,
-  // so the use counter kLargeStickyAd should be recorded.
-  await timeout(1500);
+  // Force a layout update. At this point the scrolling position hasn't changed
+  // much since the detector first saw the candidate, so we expect no use
+  // counter for kLargeStickyAd.
+  await forceLayoutUpdate();
+  assert_false(internals.isUseCounted(document, kLargeStickyAd));
+
+  // Scroll down to 5000px.
+  window.scrollTo(0, 5000);
+
+  // Force a layout update. At this point the scrolling position has changed by
+  // a distance greater than the candidate's height, so the use counter
+  // kLargeStickyAd should be recorded.
   await forceLayoutUpdate();
   assert_true(internals.isUseCounted(document, kLargeStickyAd));
-}, "Test UseCounter for large-sticky-ad at the bottom when the frame itself has an absolute position, and along with scrolling the ad's position w.r.t. the browser viewport gets frequently reset to the initial postion.");
+}, "Test UseCounter for large-sticky-ad at the bottom when the frame itself has a fixed position.");
 </script>
 </body>
 </html>

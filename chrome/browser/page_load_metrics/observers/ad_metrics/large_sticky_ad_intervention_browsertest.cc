@@ -32,10 +32,8 @@ class LargeStickyAdViolationBrowserTest
     std::vector<base::test::FeatureRef> enabled = {
         subresource_filter::kAdTagging,
         subresource_filter::kAdsInterventionsEnforced};
-    std::vector<base::test::FeatureRef> disabled = {
-        blink::features::kFrequencyCappingForLargeStickyAdDetection};
 
-    feature_list_.InitWithFeatures(enabled, disabled);
+    feature_list_.InitWithFeatures(enabled, /*disabled_features=*/{});
     subresource_filter::SubresourceFilterBrowserTest::SetUp();
   }
 
@@ -113,8 +111,7 @@ class LargeStickyAdViolationBrowserTestWithoutEnforcement
     std::vector<base::test::FeatureRef> enabled = {
         subresource_filter::kAdTagging};
     std::vector<base::test::FeatureRef> disabled = {
-        subresource_filter::kAdsInterventionsEnforced,
-        blink::features::kFrequencyCappingForLargeStickyAdDetection};
+        subresource_filter::kAdsInterventionsEnforced};
 
     feature_list_.InitWithFeatures(enabled, disabled);
     subresource_filter::SubresourceFilterBrowserTest::SetUp();

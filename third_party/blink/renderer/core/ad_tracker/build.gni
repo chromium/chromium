@@ -21,8 +21,6 @@ blink_core_sources_ad_tracker = [
   "script_initiation_monitor.h",
   "overlay_interstitial_ad_detector.cc",
   "overlay_interstitial_ad_detector.h",
-  "sticky_ad_detector.cc",
-  "sticky_ad_detector.h",
 ]
 
 blink_core_tests_ad_tracker = [
@@ -34,5 +32,4 @@ blink_core_tests_ad_tracker = [
   "script_ancestry_tracker_test.cc",
   "script_initiation_monitor_test.cc",
   "overlay_interstitial_ad_detector_test.cc",
-  "sticky_ad_detector_test.cc",
 ]

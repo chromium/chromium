@@ -1177,7 +1177,6 @@ void LocalFrameView::RunIntersectionObserverSteps() {
 
   if (frame_->IsOutermostMainFrame()) {
     EnsureOverlayInterstitialAdDetector().MaybeFireDetection(frame_.Get());
-    EnsureStickyAdDetector().MaybeFireDetection(frame_.Get());
 
     // Report the main frame's document intersection with itself.
     LayoutObject* layout_object = GetLayoutView();
@@ -5462,13 +5461,6 @@ LocalFrameView::EnsureOverlayInterstitialAdDetector() {
         std::make_unique<OverlayInterstitialAdDetector>();
   }
   return *overlay_interstitial_ad_detector_.get();
-}
-
-StickyAdDetector& LocalFrameView::EnsureStickyAdDetector() {
-  if (!sticky_ad_detector_) {
-    sticky_ad_detector_ = std::make_unique<StickyAdDetector>();
-  }
-  return *sticky_ad_detector_.get();
 }
 
 static PaintLayer* GetXrOverlayLayer(Document& document) {

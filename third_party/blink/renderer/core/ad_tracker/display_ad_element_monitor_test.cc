@@ -25,6 +25,7 @@ class MockFrameClient : public frame_test_helpers::TestWebFrameClient {
               OnMainFrameAdRectangleChanged,
               (int element_dom_node_id, const gfx::Rect& content_rect),
               (override));
+  MOCK_METHOD(void, OnLargeStickyAdDetected, (), (override));
 };
 
 }  // namespace
@@ -423,6 +424,340 @@ TEST_F(DisplayAdElementMonitorTest, ReportingForAdIframe_InsertUpdateHide) {
                            AtomicString("display:none;"));
   UpdateLifecycle();
   testing::Mock::VerifyAndClearExpectations(&MockClient());
+}
+
+TEST_F(DisplayAdElementMonitorTest, LargeStickyAdDetected) {
+  // Add a large div to make the body scrollable.
+  // Viewport is 800x600. Threshold is 0.3 * 480000 = 144000.
+  // Ad is 800x200 = 160000.
+  // Placed at the bottom: 600 * 0.9 = 540. The ad bottom is at 400 + 200 = 600.
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="height: 2000px"></div>
+    <img id="ad" style="position:fixed; left:0px; top:400px; width:800px; height:200px;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
+
+  // Scroll down. The distance should be > ad height (200px).
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(1);
+  UpdateLifecycle();
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+}
+
+TEST_F(DisplayAdElementMonitorTest, StickyAdNotLargeDoesNotTriggerUseCounter) {
+  // Ad is smaller than 30% of viewport.
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="height: 2000px"></div>
+    <img id="ad" style="position:fixed; left:0px; top:500px; width:100px; height:100px;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 150), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+}
+
+TEST_F(DisplayAdElementMonitorTest,
+       StickyAdNotAtBottomDoesNotTriggerUseCounter) {
+  // Viewport is 800x600. Threshold is 0.3 * 480000 = 144000.
+  // Ad is large (800x200 = 160000 > 144000) but placed at the center (top:
+  // 200px). The bottom of the ad is at 400px, which is not >= 540px (90% of
+  // 600px).
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="height: 2000px"></div>
+    <img id="ad" style="position:fixed; left:0px; top:200px; width:800px; height:200px;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+}
+
+TEST_F(DisplayAdElementMonitorTest,
+       LargeAdAtBottomNotStickyDoesNotTriggerUseCounter) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="height: 2000px"></div>
+    <img id="ad" style="position:absolute; left:0px; top:400px; width:800px; height:200px;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+
+  // Scroll down. The ad is absolutely positioned, so it moves up with the page.
+  // The monitor will discard the anchor because the ad's relative position
+  // to the viewport changes significantly.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+}
+
+TEST_F(DisplayAdElementMonitorTest,
+       StaticAdWithScrollAnchoringDoesNotTriggerUseCounter) {
+  // Set up a static in-flow ad at the bottom of the viewport (400px down in a
+  // 600px tall viewport).
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div id="spacer" style="height: 400px"></div>
+    <img id="ad" style="display:block; width:800px; height:200px;">
+    <div style="height: 2000px"></div>
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+
+  // Simulate scroll anchoring: content above grows by 250px (spacer height
+  // expands to 650px), and the scroll offset adjusts by 250px to keep the
+  // content in place within the viewport.
+  auto* spacer_element = GetDocument().getElementById(AtomicString("spacer"));
+  spacer_element->setAttribute(html_names::kStyleAttr,
+                               AtomicString("height: 650px;"));
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  // The ad remains at the same viewport-relative position (400px), and the
+  // scroll offset changed by > ad_height (250px > 200px). Because the ad is
+  // in-flow (static), it should not be considered sticky.
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+}
+
+TEST_F(DisplayAdElementMonitorTest, ParallaxAdDoesNotTriggerUseCounter) {
+  // Set up an ad that is fixed and large, but initially covered by an overlay.
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="position:absolute; left:0px; top:0px; width:800px; height:600px; z-index:3; background-color:white;"></div>
+    <div style="position:absolute; left:0px; top:600px; width:800px; height:600px; z-index:1;"></div>
+    <div style="position:absolute; left:0px; top:1200px; width:800px; height:1000px; z-index:3; background-color:white;"></div>
+    <img id="ad" style="position:fixed; left:0px; top:0px; width:800px; height:600px; z-index:2; background-color:blue;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  ad_element->SetIsAdRelated(NoProvenance{});
+
+  // Scroll down to the position where the parallax-ad is no longer
+  // covered by the first overlay and becomes visible.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 600), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
+
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+
+  // Scroll further down to the position where the parallax-ad is covered by
+  // the second overlay and becomes invisible again. Note we must scroll past
+  // the ad's height (600px) to trigger the sticky check.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 1201), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+
+  // When CalculateStickyAdState determines that the ad is invisible, an empty
+  // rect should be reported rather than an updated rect_to_report.
+  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
+                                ad_element->GetDomNodeId(), gfx::Rect()))
+      .Times(1);
+  UpdateLifecycle();
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+
+  // The ad is now covered again. Even though it is large and fixed, it
+  // shouldn't trigger the use counter.
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+}
+
+TEST_F(DisplayAdElementMonitorTest, LargeStickyAdDetectedWithJitter) {
+  // Viewport is 800x600. Ad is 800x200.
+  // 20% tolerance of 200px is 40px.
+  // We simulate jitter of 30px, which is within the tolerance.
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="height: 2000px"></div>
+    <img id="ad" style="position:absolute; left:0px; top:400px; width:800px; height:200px;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(1);
+
+  // Scroll down incrementally, simulating jitter at each step.
+  // Jitter is 30px, which is <= 40px tolerance.
+  int current_scroll = 0;
+  while (current_scroll < 250) {
+    current_scroll += 30;
+
+    // Simulate scroll
+    GetDocument().View()->LayoutViewport()->SetScrollOffset(
+        ScrollOffset(0, current_scroll),
+        mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
+
+    // In the first lifecycle after scroll, the ad is temporarily out of place
+    // (moved up by 30px in the viewport).
+    UpdateLifecycle();
+
+    // JS repositioning brings it back to the bottom.
+    ad_element->setAttribute(html_names::kStyleAttr,
+                             AtomicString("position:absolute; left:0px; top:" +
+                                          String::Number(400 + current_scroll) +
+                                          "px; width:800px; height:200px;"));
+    UpdateLifecycle();
+  }
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+}
+
+TEST_F(DisplayAdElementMonitorTest, LargeStickyAdNotDetectedWithLargeJitter) {
+  // Viewport is 800x600. Ad is 800x200.
+  // 20% tolerance of 200px is 40px.
+  // We simulate jitter of 50px, which is strictly > the 40px tolerance.
+  // This causes the anchor to be discarded, so it should never trigger.
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="height: 2000px"></div>
+    <img id="ad" style="position:absolute; left:0px; top:400px; width:800px; height:200px;">
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  ad_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
+  EXPECT_CALL(MockClient(), OnLargeStickyAdDetected()).Times(0);
+
+  // Scroll down incrementally, simulating jitter at each step.
+  // Jitter is 50px, which is > 40px tolerance.
+  int current_scroll = 0;
+  while (current_scroll < 250) {
+    current_scroll += 50;
+
+    // Simulate scroll
+    GetDocument().View()->LayoutViewport()->SetScrollOffset(
+        ScrollOffset(0, current_scroll),
+        mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
+
+    // In the first lifecycle after scroll, the ad is temporarily out of place.
+    // The anchor should be discarded.
+    UpdateLifecycle();
+
+    // JS repositioning brings it back to the bottom.
+    // A new anchor is established, but the scroll distance from the new anchor
+    // is 0, so the sticky condition is never met.
+    ad_element->setAttribute(html_names::kStyleAttr,
+                             AtomicString("position:absolute; left:0px; top:" +
+                                          String::Number(400 + current_scroll) +
+                                          "px; width:800px; height:200px;"));
+    UpdateLifecycle();
+  }
+
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLargeStickyAd));
 }
 
 }  // namespace blink

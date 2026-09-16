@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_AD_TRACKER_DISPLAY_AD_ELEMENT_MONITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_AD_TRACKER_DISPLAY_AD_ELEMENT_MONITOR_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 
@@ -41,8 +43,10 @@ class CORE_EXPORT DisplayAdElementMonitor final
   // Performs a hit-test on `element_` to determine if it's the topmost element
   // at its center. This check can be skipped due to frequency-capping or if the
   // element is outside the viewport to reduce performance impact.
+  // Set `ignore_throttling` to true to bypass the frequency capping.
   OverlayVisibility CheckOverlayVisibility(const LocalFrame& main_frame,
-                                           const gfx::Rect& rect_in_viewport);
+                                           const gfx::Rect& rect_in_viewport,
+                                           bool ignore_throttling = false);
 
   bool ShouldHighlight() const { return should_highlight_; }
 
@@ -54,6 +58,38 @@ class CORE_EXPORT DisplayAdElementMonitor final
   void Trace(Visitor*) const override;
 
  private:
+  // Stores the initial viewport scroll position and the ad's Y-position when
+  // first observed, or when its Y-position changes. This establishes the
+  // "anchor" used to detect if the ad remains stationary during scrolling.
+  struct StickyAdMeasurement {
+    // The outermost main frame's scroll position (Y-axis) when measured.
+    int viewport_scroll_position;
+
+    // The ad's Y-coordinate relative to the viewport.
+    int ad_y_position_in_viewport;
+
+    // The ad's height when measured.
+    int ad_height;
+  };
+
+  // Evaluates whether the ad is sticky based on its movement relative to the
+  // viewport. Called on every lifecycle update, but remains inexpensive as it
+  // only performs simple arithmetic on cached geometry.
+  //
+  // Returns the result of the unthrottled hit-test if one was performed as a
+  // final sanity check; otherwise, returns `OverlayVisibility::kSkipped`.
+  OverlayVisibility CalculateStickyAdState(
+      const LocalFrame& local_root_main_frame,
+      const gfx::Rect& rect_in_viewport);
+
+  // Updates the internal state to reflect that the ad is sticky.
+  // `main_frame_viewport` is the outermost main frame's viewport anchored at
+  // (0,0). `ad_visible_rect` is the portion of the ad visible within the
+  // `main_frame_viewport`. Both use the main frame's viewport coordinate space.
+  void UpdateToStickyAd(const LocalFrame& local_root_main_frame,
+                        const gfx::Rect& main_frame_viewport,
+                        const gfx::Rect& ad_visible_rect);
+
   void MaybeRecordVideoAdUseCounter();
 
   Member<Element> element_;
@@ -63,6 +99,9 @@ class CORE_EXPORT DisplayAdElementMonitor final
   bool started_ = false;
   bool is_video_ad_ = false;
   bool did_record_video_ad_use_counter_ = false;
+
+  bool is_sticky_ad_ = false;
+  std::optional<StickyAdMeasurement> sticky_ad_measurement_;
 
   // Caches the last known value of the DevTools "Highlight ads" setting. This
   // value remains `false` if the element is not eligible for monitoring (e.g.,

@@ -524,9 +524,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFrameMetadataObserver);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFreezeSharedWorker);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kFrequencyCappingForLargeStickyAdDetection);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFrequencyCappingForOverlayPopupDetection);
 
 // If enabled, disables subsampling of GlobalPrivacyControl histogram entries.
