@@ -4,7 +4,7 @@
 
 import 'chrome://settings/lazy_load.js';
 
-import type {AtMemoryTriggerPrefValue, CrShortcutInputElement, SettingsSuggestionsFromGeminiPageElement} from 'chrome://settings/lazy_load.js';
+import type {CrShortcutInputElement, SettingsSuggestionsFromGeminiPageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {MetricsBrowserProxyImpl, SuggestionsFromGeminiAction} from 'chrome://settings/settings.js';
@@ -33,7 +33,6 @@ suite('SuggestionsFromGeminiPage', function() {
       personalContextConnectedAppsUrl: 'https://gemini.google.com/apps',
       isAtMemoryEnabled: true,
       isAtMemoryTriggerCustomizationAllowed: true,
-      isAtMemoryDoubleCtrlEnabled: false,
     });
 
     openWindowProxy = new TestOpenWindowProxy();
@@ -208,98 +207,6 @@ suite('SuggestionsFromGeminiPage', function() {
       isAtMemoryTriggerCustomizationAllowed: false,
     });
     const subpage = await setupPage();
-    const inputElement =
-        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
-            '#atMemoryTriggerSetting cr-shortcut-input');
-    assertTrue(!!inputElement);
-    assertFalse(isVisible(inputElement));
-  });
-
-  test('AtMemoryTriggerSettingIsHiddenWhenToggleIsOff', async function() {
-    const subpage = await setupPage();
-    const inputElement =
-        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
-            '#atMemoryTriggerSetting cr-shortcut-input');
-    assertTrue(!!inputElement);
-    assertTrue(isVisible(inputElement));
-
-    subpage.setPrefValue('generated.find_and_fill_with_gemini', false);
-    await flushTasks();
-
-    assertFalse(isVisible(inputElement));
-  });
-
-  test('AtMemoryTriggerSettingShowsCurrentShortcut', async function() {
-    const subpage = await setupPage();
-    const inputElement =
-        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
-            '#atMemoryTriggerSetting cr-shortcut-input');
-    assertTrue(!!inputElement);
-    assertTrue(isVisible(inputElement));
-
-    assertEquals(inputElement.shortcut, '');
-
-    const shortcutString = 'Ctrl+A';
-    subpage.setPrefValue(
-        'autofill.at_memory.trigger_info',
-        {is_shortcut: true, trigger: shortcutString});
-    await flushTasks();
-
-    assertEquals(inputElement.shortcut, shortcutString);
-  });
-
-  test('AtMemoryTriggerSettingSetsShortcut', async function() {
-    const subpage = await setupPage();
-    subpage.setPrefValue(
-        'autofill.at_memory.trigger_info', {is_shortcut: false, trigger: '@@'});
-    await flushTasks();
-
-    const inputElement =
-        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
-            '#atMemoryTriggerSetting cr-shortcut-input');
-    assertTrue(!!inputElement);
-
-    inputElement.$.edit.click();
-    keyDownOn(inputElement.$.input, 65, ['ctrl']);
-    await flushTasks();
-
-    const newPrefValue = subpage
-                             .getPref<AtMemoryTriggerPrefValue>(
-                                 'autofill.at_memory.trigger_info')
-                             .value;
-    assertEquals(newPrefValue.trigger, 'Ctrl+A');
-    assertTrue(newPrefValue.is_shortcut);
-  });
-
-  test('AtMemoryTriggerSettingClearsShortcut', async function() {
-    const subpage = await setupPage();
-    subpage.setPrefValue(
-        'autofill.at_memory.trigger_info',
-        {is_shortcut: true, trigger: 'Ctrl+A'});
-    await flushTasks();
-
-    const inputElement =
-        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
-            '#atMemoryTriggerSetting cr-shortcut-input');
-    assertTrue(!!inputElement);
-
-    inputElement.$.clear.click();
-    await flushTasks();
-
-    const newPrefValue = subpage
-                             .getPref<AtMemoryTriggerPrefValue>(
-                                 'autofill.at_memory.trigger_info')
-                             .value;
-    assertEquals(newPrefValue.trigger, '@@');
-    assertFalse(newPrefValue.is_shortcut);
-  });
-
-  test('DoubleCtrl_AtMemoryTriggerSettingHidden', async function() {
-    loadTimeData.overrideValues({
-      isAtMemoryTriggerCustomizationAllowed: false,
-      isAtMemoryDoubleCtrlEnabled: true,
-    });
-    const subpage = await setupPage();
     const toggleElement = subpage.$.atMemoryDoubleCtrlTriggerToggle;
     assertTrue(!!toggleElement);
     assertFalse(isVisible(toggleElement));
@@ -310,87 +217,69 @@ suite('SuggestionsFromGeminiPage', function() {
     assertFalse(isVisible(inputElement));
   });
 
-  test(
-      'DoubleCtrl_AtMemoryTriggerSettingIsHiddenWhenToggleIsOff',
-      async function() {
-        loadTimeData.overrideValues({
-          isAtMemoryDoubleCtrlEnabled: true,
-        });
-        const subpage = await setupPage();
-        const toggleElement = subpage.$.atMemoryDoubleCtrlTriggerToggle;
-        assertTrue(!!toggleElement);
-        assertTrue(isVisible(toggleElement));
+  test('AtMemoryTriggerSettingIsHiddenWhenToggleIsOff', async function() {
+    const subpage = await setupPage();
+    const toggleElement = subpage.$.atMemoryDoubleCtrlTriggerToggle;
+    assertTrue(!!toggleElement);
+    assertTrue(isVisible(toggleElement));
 
-        const inputElement =
-            subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
-                '#atMemoryShortcutSetting cr-shortcut-input');
-        assertTrue(!!inputElement);
-        assertTrue(isVisible(inputElement));
+    const inputElement =
+        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
+            '#atMemoryShortcutSetting cr-shortcut-input');
+    assertTrue(!!inputElement);
+    assertTrue(isVisible(inputElement));
 
-        subpage.setPrefValue('generated.find_and_fill_with_gemini', false);
-        await flushTasks();
+    subpage.setPrefValue('generated.find_and_fill_with_gemini', false);
+    await flushTasks();
 
-        assertFalse(isVisible(toggleElement));
-        assertFalse(isVisible(inputElement));
-      });
+    assertFalse(isVisible(toggleElement));
+    assertFalse(isVisible(inputElement));
+  });
 
-  test(
-      'DoubleCtrl_AtMemoryDoubleCtrlTriggerToggleUpdatesPref',
-      async function() {
-        loadTimeData.overrideValues({
-          isAtMemoryDoubleCtrlEnabled: true,
-        });
-        const subpage = await setupPage();
-        const toggleElement = subpage.$.atMemoryDoubleCtrlTriggerToggle;
-        assertTrue(!!toggleElement);
-        assertTrue(isVisible(toggleElement));
-        assertFalse(toggleElement.checked);
+  test('AtMemoryDoubleCtrlTriggerToggleUpdatesPref', async function() {
+    const subpage = await setupPage();
+    const toggleElement = subpage.$.atMemoryDoubleCtrlTriggerToggle;
+    assertTrue(!!toggleElement);
+    assertTrue(isVisible(toggleElement));
+    assertFalse(toggleElement.checked);
 
-        toggleElement.click();
-        await flushTasks();
+    toggleElement.click();
+    await flushTasks();
 
-        assertTrue(subpage
-                       .getPref<boolean>(
-                           'autofill.at_memory.double_ctrl_trigger_enabled')
-                       .value);
-        assertTrue(toggleElement.checked);
+    assertTrue(
+        subpage
+            .getPref<boolean>('autofill.at_memory.double_ctrl_trigger_enabled')
+            .value);
+    assertTrue(toggleElement.checked);
 
-        toggleElement.click();
-        await flushTasks();
+    toggleElement.click();
+    await flushTasks();
 
-        assertFalse(subpage
-                        .getPref<boolean>(
-                            'autofill.at_memory.double_ctrl_trigger_enabled')
-                        .value);
-        assertFalse(toggleElement.checked);
-      });
+    assertFalse(
+        subpage
+            .getPref<boolean>('autofill.at_memory.double_ctrl_trigger_enabled')
+            .value);
+    assertFalse(toggleElement.checked);
+  });
 
-  test(
-      'DoubleCtrl_AtMemoryTriggerSettingShowsCurrentShortcut',
-      async function() {
-        loadTimeData.overrideValues({
-          isAtMemoryDoubleCtrlEnabled: true,
-        });
-        const subpage = await setupPage();
-        const inputElement =
-            subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
-                '#atMemoryShortcutSetting cr-shortcut-input');
-        assertTrue(!!inputElement);
-        assertTrue(isVisible(inputElement));
+  test('AtMemoryTriggerSettingShowsCurrentShortcut', async function() {
+    const subpage = await setupPage();
+    const inputElement =
+        subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
+            '#atMemoryShortcutSetting cr-shortcut-input');
+    assertTrue(!!inputElement);
+    assertTrue(isVisible(inputElement));
 
-        assertEquals('', inputElement.shortcut);
+    assertEquals('', inputElement.shortcut);
 
-        const shortcutString = 'Ctrl+A';
-        subpage.setPrefValue('autofill.at_memory.shortcut', shortcutString);
-        await flushTasks();
+    const shortcutString = 'Ctrl+A';
+    subpage.setPrefValue('autofill.at_memory.shortcut', shortcutString);
+    await flushTasks();
 
-        assertEquals(shortcutString, inputElement.shortcut);
-      });
+    assertEquals(shortcutString, inputElement.shortcut);
+  });
 
-  test('DoubleCtrl_AtMemoryTriggerSettingSetsShortcut', async function() {
-    loadTimeData.overrideValues({
-      isAtMemoryDoubleCtrlEnabled: true,
-    });
+  test('AtMemoryTriggerSettingSetsShortcut', async function() {
     const subpage = await setupPage();
     const inputElement =
         subpage.shadowRoot!.querySelector<CrShortcutInputElement>(
@@ -405,10 +294,7 @@ suite('SuggestionsFromGeminiPage', function() {
         'Ctrl+A', subpage.getPref<string>('autofill.at_memory.shortcut').value);
   });
 
-  test('DoubleCtrl_AtMemoryTriggerSettingClearsShortcut', async function() {
-    loadTimeData.overrideValues({
-      isAtMemoryDoubleCtrlEnabled: true,
-    });
+  test('AtMemoryTriggerSettingClearsShortcut', async function() {
     const subpage = await setupPage();
     subpage.setPrefValue('autofill.at_memory.shortcut', 'Ctrl+A');
     await flushTasks();

@@ -1611,10 +1611,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                         Profile* profile,
                         content::WebContents* web_contents) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"atMemoryTriggerSettingLabel",
-       IDS_SETTINGS_AUTOFILL_AT_MEMORY_TRIGGER_SETTING_LABEL},
-      {"atMemoryTriggerSettingSecondaryLabel",
-       IDS_SETTINGS_AUTOFILL_AT_MEMORY_TRIGGER_SETTING_SECONDARY_LABEL},
       {"atMemoryTriggerSettingInputAreaLabel",
        IDS_SETTINGS_AUTOFILL_AT_MEMORY_TRIGGER_SETTING_INPUT_AREA_LABEL},
       {"atMemoryTriggerSettingEditButtonLabel",
