@@ -14,6 +14,7 @@
 #import "base/ios/block_types.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
@@ -50,6 +51,8 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/base/device_form_factor.h"
+
+using ntp_tiles::AimButtonRefactorArm;
 
 namespace {
 
@@ -1156,7 +1159,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   if (!_isAIMAllowed || !IsAimEnabledInNtp()) {
     return NO;
   }
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
   return arm != AimButtonRefactorArm::kAimAsModule &&
          arm != AimButtonRefactorArm::kAimAsMvt &&
          arm != AimButtonRefactorArm::kNoChips;

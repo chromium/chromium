@@ -1208,15 +1208,15 @@ const FeatureEntry::FeatureVariation kNewTabPageUICleanupVariations[] = {
 };
 
 constexpr FeatureEntry::FeatureParam kAimButtonRefactorOneMerchandisingChip[] =
-    {{kAimButtonRefactorArmParam, "1"}};
+    {{ntp_tiles::kAimButtonRefactorArmParam, "1"}};
 constexpr FeatureEntry::FeatureParam kAimButtonRefactorTwoMerchandisingChips[] =
-    {{kAimButtonRefactorArmParam, "2"}};
+    {{ntp_tiles::kAimButtonRefactorArmParam, "2"}};
 constexpr FeatureEntry::FeatureParam kAimButtonRefactorAimAsModule[] = {
-    {kAimButtonRefactorArmParam, "3"}};
+    {ntp_tiles::kAimButtonRefactorArmParam, "3"}};
 constexpr FeatureEntry::FeatureParam kAimButtonRefactorAimAsMvt[] = {
-    {kAimButtonRefactorArmParam, "4"}};
+    {ntp_tiles::kAimButtonRefactorArmParam, "4"}};
 constexpr FeatureEntry::FeatureParam kAimButtonRefactorNoChips[] = {
-    {kAimButtonRefactorArmParam, "5"}};
+    {ntp_tiles::kAimButtonRefactorArmParam, "5"}};
 
 constexpr FeatureEntry::FeatureVariation kAimButtonRefactorVariations[] = {
     {" - One Merchandising Chip", kAimButtonRefactorOneMerchandisingChip,
@@ -2722,7 +2722,7 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(enterprise_reporting::kSaasUsageReporting)},
     {"aim-button-refactor", flag_descriptions::kAimButtonRefactorName,
      flag_descriptions::kAimButtonRefactorDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kAimButtonRefactor,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_tiles::kAimButtonRefactor,
                                     kAimButtonRefactorVariations,
                                     "AimButtonRefactor")},
     {"prevent-cobrowse-on-aim-srp-tap",

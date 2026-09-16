@@ -10,6 +10,34 @@
 
 namespace ntp_tiles {
 
+// Defines the arms for the AIM Refactor Experiment.
+enum class AimButtonRefactorArm {
+  kDisabled = 0,
+  // Present AIM button in the Quick Actions row alongside one merchandising
+  // chips.
+  kOneMerchandisingChip = 1,
+  // Present AIM button in the Quick Actions row alongside two merchandising
+  // chips.
+  kTwoMerchandisingChips = 2,
+  // Present the AIM button as a standalone module beside the Most Visited
+  // Tiles. Remove the Quick Actions row from the NTP.
+  kAimAsModule = 3,
+  // Present the AIM button as a Most Visited Tile. Remove the Quick Actions row
+  // from the NTP.
+  kAimAsMvt = 4,
+  // Remove the AIM button and the Quick Actions row from the NTP.
+  kNoChips = 5,
+};
+
+// Parameter to indicate which arm of the feature kAimButtonRefactor is enabled.
+inline constexpr char kAimButtonRefactorArmParam[] = "aim-button-refactor-arm";
+
+// Enables the AimButtonRefactor feature.
+BASE_DECLARE_FEATURE(kAimButtonRefactor);
+
+// Returns the active arm for the AimButtonRefactor feature.
+AimButtonRefactorArm GetAimButtonRefactorArm();
+
 // Name of the field trial to configure PopularSites.
 extern const char kPopularSitesFieldTrialName[];
 

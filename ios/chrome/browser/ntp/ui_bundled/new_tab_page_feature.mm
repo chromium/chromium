@@ -33,8 +33,6 @@ BASE_FEATURE(kMVTInBottomSheet, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNewTabPageUICleanup, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAimButtonRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
-
 #pragma mark - Feature parameters
 
 // Feature parameters for `kOverrideFeedSettings`.
@@ -65,23 +63,7 @@ BASE_FEATURE_PARAM(int,
                    kNewTabPageUICleanupArmParam,
                    static_cast<int>(NTPUICleanupVariation::kTightPadding));
 
-const char kAimButtonRefactorArmParam[] = "aim-button-refactor-arm";
-
 #pragma mark - Helpers
-
-AimButtonRefactorArm GetAimButtonRefactorArm() {
-  if (base::FeatureList::IsEnabled(kAimButtonRefactor)) {
-    return static_cast<AimButtonRefactorArm>(
-        base::GetFieldTrialParamByFeatureAsInt(kAimButtonRefactor,
-                                               kAimButtonRefactorArmParam,
-                                               /*default_value=*/0));
-  }
-  return AimButtonRefactorArm::kDisabled;
-}
-
-bool IsAimButtonRefactorEnabled() {
-  return GetAimButtonRefactorArm() != AimButtonRefactorArm::kDisabled;
-}
 
 bool IsMVTInBottomSheetEnabled() {
   return base::FeatureList::IsEnabled(kMVTInBottomSheet);
