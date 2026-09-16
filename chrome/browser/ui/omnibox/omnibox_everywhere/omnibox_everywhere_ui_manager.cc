@@ -975,12 +975,11 @@ void OmniboxEverywhereUIManager::ShowScreenshotDisclosureDialog(
                                views::DialogClientView::kCancelButtonElementId))
           .Build();
 
-  auto bubble = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::mojom::ModalType::kWindow);
+  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
+      std::move(dialog_model), widget_->GetContentsView(),
+      views::BubbleBorder::FLOAT);
   bubble->set_fixed_width(600);
   bubble->set_corner_radius(16);
-  bubble->SetAnchorView(widget_->GetContentsView());
-  bubble->SetArrow(views::BubbleBorder::FLOAT);
   bubble->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
