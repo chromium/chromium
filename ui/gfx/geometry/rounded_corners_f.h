@@ -68,6 +68,12 @@ class COMPONENT_EXPORT(GEOMETRY) RoundedCornersF {
            lower_right_ == 0.0f && lower_left_ == 0.0f;
   }
 
+  // Scales each corner radius by `scale`.
+  void Scale(float scale) {
+    Set(upper_left_ * scale, upper_right_ * scale, lower_right_ * scale,
+        lower_left_ * scale);
+  }
+
   friend bool operator==(const RoundedCornersF&,
                          const RoundedCornersF&) = default;
 
@@ -86,6 +92,12 @@ class COMPONENT_EXPORT(GEOMETRY) RoundedCornersF {
   float lower_right_ = 0.0f;
   float lower_left_ = 0.0f;
 };
+
+inline RoundedCornersF ScaleRoundedCorners(RoundedCornersF corners,
+                                           float scale) {
+  corners.Scale(scale);
+  return corners;
+}
 
 }  // namespace gfx
 

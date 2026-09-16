@@ -7,9 +7,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -90,6 +93,58 @@ TEST(SkiaConversionsTest, TransformSkMatrixConversions) {
   m44.getColMajor(v1.data());
   EXPECT_EQ(v, v1);
   EXPECT_EQ(t, SkMatrixToTransform(m));
+}
+
+TEST(SkiaConversionsTest, RoundedRectToSkRRect) {
+  Rect rect(10, 20, 100, 200);
+  RoundedCornersF corners(1.33f, 2.66f, 3.99f, 5.32f);
+
+  SkRRect rrect = RoundedRectToSkRRect(rect, corners);
+  EXPECT_EQ(rrect.rect(), RectToSkRect(rect));
+  EXPECT_EQ(rrect.radii(SkRRect::kUpperLeft_Corner),
+            SkPoint::Make(1.33f, 1.33f));
+  EXPECT_EQ(rrect.radii(SkRRect::kUpperRight_Corner),
+            SkPoint::Make(2.66f, 2.66f));
+  EXPECT_EQ(rrect.radii(SkRRect::kLowerRight_Corner),
+            SkPoint::Make(3.99f, 3.99f));
+  EXPECT_EQ(rrect.radii(SkRRect::kLowerLeft_Corner),
+            SkPoint::Make(5.32f, 5.32f));
+}
+
+TEST(SkiaConversionsTest, RoundedRectFToSkRRect) {
+  RectF rect(10.5f, 20.5f, 100.5f, 200.5f);
+  RoundedCornersF corners(1.33f, 2.66f, 3.99f, 5.32f);
+
+  SkRRect rrect = RoundedRectFToSkRRect(rect, corners);
+  EXPECT_EQ(rrect.rect(), RectFToSkRect(rect));
+  EXPECT_EQ(rrect.radii(SkRRect::kUpperLeft_Corner),
+            SkPoint::Make(1.33f, 1.33f));
+  EXPECT_EQ(rrect.radii(SkRRect::kUpperRight_Corner),
+            SkPoint::Make(2.66f, 2.66f));
+  EXPECT_EQ(rrect.radii(SkRRect::kLowerRight_Corner),
+            SkPoint::Make(3.99f, 3.99f));
+  EXPECT_EQ(rrect.radii(SkRRect::kLowerLeft_Corner),
+            SkPoint::Make(5.32f, 5.32f));
+}
+
+TEST(SkiaConversionsTest, RRectFAndSkRRectConversions) {
+  RectF rect(10.5f, 20.5f, 100.5f, 200.5f);
+  RoundedCornersF corners(1.33f, 2.66f, 3.99f, 5.32f);
+  RRectF rrect_f(rect, corners);
+
+  SkRRect skrrect = RRectFToSkRRect(rrect_f);
+  EXPECT_EQ(skrrect.rect(), RectFToSkRect(rect));
+  EXPECT_EQ(skrrect.radii(SkRRect::kUpperLeft_Corner),
+            SkPoint::Make(1.33f, 1.33f));
+  EXPECT_EQ(skrrect.radii(SkRRect::kUpperRight_Corner),
+            SkPoint::Make(2.66f, 2.66f));
+  EXPECT_EQ(skrrect.radii(SkRRect::kLowerRight_Corner),
+            SkPoint::Make(3.99f, 3.99f));
+  EXPECT_EQ(skrrect.radii(SkRRect::kLowerLeft_Corner),
+            SkPoint::Make(5.32f, 5.32f));
+
+  RRectF round_trip = SkRRectToRRectF(skrrect);
+  EXPECT_EQ(rrect_f, round_trip);
 }
 
 }  // namespace gfx

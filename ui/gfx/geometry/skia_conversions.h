@@ -10,6 +10,7 @@
 
 class SkM44;
 class SkMatrix;
+class SkRRect;
 struct SkIPoint;
 struct SkIRect;
 struct SkISize;
@@ -25,6 +26,8 @@ class PointF;
 class QuadF;
 class Rect;
 class RectF;
+class RoundedCornersF;
+class RRectF;
 class Size;
 class SizeF;
 class Transform;
@@ -47,6 +50,14 @@ COMPONENT_EXPORT(GEOMETRY_SKIA) Size SkISizeToSize(const SkISize& size);
 
 COMPONENT_EXPORT(GEOMETRY_SKIA)
 void QuadFToSkPoints(const QuadF& quad, base::span<SkPoint, 4> points);
+
+COMPONENT_EXPORT(GEOMETRY_SKIA)
+SkRRect RoundedRectToSkRRect(const Rect& rect, const RoundedCornersF& corners);
+COMPONENT_EXPORT(GEOMETRY_SKIA)
+SkRRect RoundedRectFToSkRRect(const RectF& rect,
+                              const RoundedCornersF& corners);
+COMPONENT_EXPORT(GEOMETRY_SKIA) SkRRect RRectFToSkRRect(const RRectF& rrect);
+COMPONENT_EXPORT(GEOMETRY_SKIA) RRectF SkRRectToRRectF(const SkRRect& rrect);
 
 COMPONENT_EXPORT(GEOMETRY_SKIA)
 SkMatrix AxisTransform2dToSkMatrix(const AxisTransform2d& transform);

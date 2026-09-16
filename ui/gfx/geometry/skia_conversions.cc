@@ -13,11 +13,14 @@
 #include "base/numerics/safe_math.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -93,6 +96,23 @@ void QuadFToSkPoints(const QuadF& quad, base::span<SkPoint, 4> points) {
   points[1] = PointFToSkPoint(quad.p2());
   points[2] = PointFToSkPoint(quad.p3());
   points[3] = PointFToSkPoint(quad.p4());
+}
+
+SkRRect RoundedRectToSkRRect(const Rect& rect, const RoundedCornersF& corners) {
+  return RoundedRectFToSkRRect(RectF(rect), corners);
+}
+
+SkRRect RoundedRectFToSkRRect(const RectF& rect,
+                              const RoundedCornersF& corners) {
+  return SkRRect(RRectF(rect, corners));
+}
+
+SkRRect RRectFToSkRRect(const RRectF& rrect) {
+  return SkRRect(rrect);
+}
+
+RRectF SkRRectToRRectF(const SkRRect& rrect) {
+  return RRectF(rrect);
 }
 
 SkMatrix AxisTransform2dToSkMatrix(const AxisTransform2d& transform) {

@@ -184,4 +184,23 @@ TEST(RoundedCornersFTest, Negative) {
   VerifyEmptyAndZero(rc);
 }
 
+TEST(RoundedCornersFTest, Scale) {
+  RoundedCornersF rc(1.33f, 2.66f, 3.99f, 5.32f);
+  rc.Scale(2.0f);
+  EXPECT_EQ(2.66f, rc.upper_left());
+  EXPECT_EQ(5.32f, rc.upper_right());
+  EXPECT_EQ(7.98f, rc.lower_right());
+  EXPECT_EQ(10.64f, rc.lower_left());
+
+  RoundedCornersF scaled = ScaleRoundedCorners(rc, 2.0f);
+  EXPECT_EQ(5.32f, scaled.upper_left());
+  EXPECT_EQ(10.64f, scaled.upper_right());
+  EXPECT_EQ(15.96f, scaled.lower_right());
+  EXPECT_EQ(21.28f, scaled.lower_left());
+
+  // Negative scale should clamp to zero.
+  rc.Scale(-1.0f);
+  VerifyEmptyAndZero(rc);
+}
+
 }  // namespace gfx
