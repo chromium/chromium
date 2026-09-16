@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -516,6 +517,7 @@ public class BackgroundTabPoolTest {
         assertThrows(AssertionError.class, () -> mPool.getLiveTab(TAB_ID_1));
         assertThrows(AssertionError.class, () -> mPool.getAllTabIds());
         assertThrows(AssertionError.class, () -> mPool.getAllPlaceholderTabIds());
+        assertThrows(AssertionError.class, () -> mPool.claimTabIdsWithoutPlaceholders());
         assertThrows(AssertionError.class, () -> mPool.hasPlaceholder(PLACEHOLDER_ID));
         assertThrows(AssertionError.class, () -> mPool.removeTab(PLACEHOLDER_ID));
         assertThrows(AssertionError.class, () -> mPool.removeTabById(TAB_ID_1));
@@ -638,6 +640,46 @@ public class BackgroundTabPoolTest {
         mPool.destroy();
 
         assertThrows(AssertionError.class, () -> mPool.removeLiveTabByOriginalId(TAB_ID_1));
+    }
+
+    @Test
+    public void testClaimTabIdsWithoutPlaceholders() {
+        Tab tab1 = createMockTab(TAB_ID_1);
+        Tab tab2 = createMockTab(TAB_ID_2);
+        TabState tabState1 = createMockTabState();
+        TabState tabState2 = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState1);
+        TabStateExtractor.setTabStateForTesting(TAB_ID_2, tabState2);
+
+        // tab1 has a placeholder
+        mPool.addLiveTab(new LiveBackgroundTab(mPool, tab1, PLACEHOLDER_ID, /* taskId= */ null));
+        // tab2 does not have a placeholder
+        mPool.addLiveTab(
+                new LiveBackgroundTab(mPool, tab2, Tab.INVALID_TAB_ID, /* taskId= */ null));
+
+        // Live entries are excluded from claimTabIdsWithoutPlaceholders.
+        assertTrue(mPool.claimTabIdsWithoutPlaceholders().isEmpty());
+        assertEquals(Set.of(TAB_ID_1, TAB_ID_2), mPool.getAllTabIds());
+
+        // Persist to TabCache across pool lifecycle
+        mPool.onTabStateDirtinessChanged(tab1, DirtinessState.DIRTY);
+        mPool.onTabStateDirtinessChanged(tab2, DirtinessState.DIRTY);
+        mExecutor.runAll();
+        mPool.destroy();
+
+        // 1. First call on cold pool returns Set.of(TAB_ID_2).
+        BackgroundTabPool secondPool = new BackgroundTabPool(PROFILE_TOKEN, mOnEmptyCallback);
+        assertEquals(Set.of(TAB_ID_2), secondPool.claimTabIdsWithoutPlaceholders());
+        assertEquals(Set.of(TAB_ID_1, TAB_ID_2), secondPool.getAllTabIds());
+
+        // 2. Second call on the same pool instance returns Collections.emptySet().
+        assertEquals(Collections.emptySet(), secondPool.claimTabIdsWithoutPlaceholders());
+        secondPool.destroy();
+
+        // 3. Newly created pool instance resets the claimed state and returns Set.of(TAB_ID_2).
+        BackgroundTabPool thirdPool = new BackgroundTabPool(PROFILE_TOKEN, mOnEmptyCallback);
+        assertEquals(Set.of(TAB_ID_2), thirdPool.claimTabIdsWithoutPlaceholders());
+        thirdPool.destroy();
     }
 
     private Tab createMockTab(@TabId int tabId) {

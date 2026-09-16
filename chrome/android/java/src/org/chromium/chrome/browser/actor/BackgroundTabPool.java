@@ -56,6 +56,7 @@ public class BackgroundTabPool
     private final ArrayMap<@TabId Integer, @TabId Integer> mPlaceholderToTabId = new ArrayMap<>();
     private final PlaceholderAssociationStore mAssociationStore;
     private boolean mIsDestroyed;
+    private boolean mUnassociatedTabsClaimed;
 
     /**
      * Constructs a {@link BackgroundTabPool} for the given profile token and on-empty callback.
@@ -178,6 +179,30 @@ public class BackgroundTabPool
     public Set<@TabId Integer> getAllPlaceholderTabIds() {
         checkNotDestroyed();
         return Collections.unmodifiableSet(mPlaceholderToTabId.keySet());
+    }
+
+    /**
+     * Claims and returns all cold tab IDs cached in {@link TabCache} that do not have an associated
+     * placeholder tab ID and are not live in memory.
+     *
+     * <p>This is a one-shot operation per pool instance to ensure unassociated tabs are restored at
+     * most once into the first loaded window. The first call returns the set of unassociated tab
+     * IDs and marks them as claimed; all subsequent calls return an empty set.
+     *
+     * @return An unmodifiable {@link Set} of original {@link TabId} integers without placeholders,
+     *     or an empty set if already claimed.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public Set<@TabId Integer> claimTabIdsWithoutPlaceholders() {
+        checkNotDestroyed();
+        if (mUnassociatedTabsClaimed) {
+            return Collections.emptySet();
+        }
+        mUnassociatedTabsClaimed = true;
+        ArraySet<@TabId Integer> withoutPlaceholders = new ArraySet<>(mTabCache.getAllTabIds());
+        withoutPlaceholders.removeAll(mPlaceholderToTabId.values());
+        withoutPlaceholders.removeAll(mLiveEntries.keySet());
+        return Collections.unmodifiableSet(withoutPlaceholders);
     }
 
     /**
