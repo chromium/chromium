@@ -1128,6 +1128,41 @@ class UnitTest(unittest.TestCase):
       'relative-cwd out/Default -- vpython3 ../../testing/test_env.py', mbw.err
     )
 
+  def test_run_vpython_toml(self):
+    files = {
+      '/fake_src/vpython.toml': '',
+      '/fake_src/vpython.toml.uv.lock': '',
+      '/fake_src/testing/buildbot/gn_isolate_map.pyl': (
+        "{'base_unittests': {"
+        "  'label': '//base:base_unittests',"
+        "  'type': 'console_test_launcher',"
+        "}}\n"
+      ),
+      '/fake_src/out/Default/base_unittests.runtime_deps': ('base_unittests\n'),
+    }
+    mbw = self.check(
+      [
+        'run',
+        '-c',
+        'debug_remoteexec',
+        '//out/Default',
+        'base_unittests',
+        '--force',
+      ],
+      files=files,
+      ret=0,
+    )
+    self.assertEqual(
+      json.loads(mbw.files['/fake_src/out/Default/base_unittests.isolate'])[
+        'variables'
+      ]['files'],
+      [
+        '../../testing/test_env.py',
+        '../../vpython.toml',
+        '../../vpython.toml.uv.lock',
+      ],
+    )
+
   def test_run_swarmed(self):
     files = {
       '/fake_src/testing/buildbot/gn_isolate_map.pyl': (

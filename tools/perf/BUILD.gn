@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/vpython.gni")
+
 COMMON_PERF_DATA = [
   "//third_party/crossbench/vpython.toml",
   "//third_party/crossbench/vpython.toml.uv.lock",
@@ -72,40 +74,39 @@ group("perf_without_chrome") {
   ]
 
   data = [
-    "//tools/perf/",
-    "//.vpython3",
+           "//tools/perf/",
 
-    # Field trial config
-    "//tools/variations/",
-    "//testing/variations/",
+           # Field trial config
+           "//tools/variations/",
+           "//testing/variations/",
 
-    # Field trial dependencies
-    "//tools/json_comment_eater/",
+           # Field trial dependencies
+           "//tools/json_comment_eater/",
 
-    # For blink_perf benchmarks.
-    "//third_party/blink/perf_tests/",
+           # For blink_perf benchmarks.
+           "//third_party/blink/perf_tests/",
 
-    # For Speedometer benchmarks.
-    "//third_party/speedometer",
+           # For Speedometer benchmarks.
+           "//third_party/speedometer",
 
-    # For Jetstream benchmarks.
-    "//third_party/jetstream",
+           # For Jetstream benchmarks.
+           "//third_party/jetstream",
 
-    # For smoothness.tough_canvas_cases
-    "//chrome/test/data/perf/",
+           # For smoothness.tough_canvas_cases
+           "//chrome/test/data/perf/",
 
-    # For image_decoding.measurement
-    "//chrome/test/data/image_decoding/",
+           # For image_decoding.measurement
+           "//chrome/test/data/image_decoding/",
 
-    # For Pylib used by VR tests
-    "//build/android/pylib/",
+           # For Pylib used by VR tests
+           "//build/android/pylib/",
 
-    # For process perf results
-    "//build/util/lib/",
+           # For process perf results
+           "//build/util/lib/",
 
-    # For Crossbench WPR network
-    "//third_party/webpagereplay/",
-  ]
+           # For Crossbench WPR network
+           "//third_party/webpagereplay/",
+         ] + vpython_spec_files
 
   # Runs a script which generates the ad tagging ruleset.
   if (!is_ios) {

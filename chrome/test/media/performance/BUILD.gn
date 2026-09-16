@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/python.gni")
+import("//build/config/vpython.gni")
 
 python_library("common") {
   testonly = true
@@ -13,19 +14,18 @@ python_library("videostack_performance_test") {
   testonly = true
   pydeps_file = "videostack_performance_test.pydeps"
   data = [
-    "//.vpython3",
-    "//build/util/lib/proto",
-    "//fuchsia_web/av_testing/server.py",
-    "//fuchsia_web/av_testing/video.html",
-    "//fuchsia_web/av_testing/cast_starter.html",
-    "//build/fuchsia/test/common.py",
-    "//build/fuchsia/test/compatible_utils.py",
-    "//build/fuchsia/test/monitors.py",
-    "//build/fuchsia/test/perf_trace.py",
-    "//build/fuchsia/test/repeating_log.py",
-    "//build/fuchsia/test/version.py",
-    "//third_party/crossbench/",
-  ]
+           "//build/util/lib/proto",
+           "//fuchsia_web/av_testing/server.py",
+           "//fuchsia_web/av_testing/video.html",
+           "//fuchsia_web/av_testing/cast_starter.html",
+           "//build/fuchsia/test/common.py",
+           "//build/fuchsia/test/compatible_utils.py",
+           "//build/fuchsia/test/monitors.py",
+           "//build/fuchsia/test/perf_trace.py",
+           "//build/fuchsia/test/repeating_log.py",
+           "//build/fuchsia/test/version.py",
+           "//third_party/crossbench/",
+         ] + vpython_spec_files
   deps = [ ":common" ]
 }
 
@@ -33,19 +33,18 @@ python_library("openscreen_cast_performance_test") {
   testonly = true
   pydeps_file = "openscreen_cast_performance_test.pydeps"
   data = [
-    "//.vpython3",
-    "//build/util/lib/proto",
-    "//fuchsia_web/av_testing/server.py",
-    "//fuchsia_web/av_testing/video.html",
-    "//fuchsia_web/av_testing/cast_starter.html",
-    "//build/fuchsia/test/common.py",
-    "//build/fuchsia/test/compatible_utils.py",
-    "//build/fuchsia/test/monitors.py",
-    "//build/fuchsia/test/perf_trace.py",
-    "//build/fuchsia/test/repeating_log.py",
-    "//build/fuchsia/test/version.py",
-    "//third_party/crossbench/",
-  ]
+           "//build/util/lib/proto",
+           "//fuchsia_web/av_testing/server.py",
+           "//fuchsia_web/av_testing/video.html",
+           "//fuchsia_web/av_testing/cast_starter.html",
+           "//build/fuchsia/test/common.py",
+           "//build/fuchsia/test/compatible_utils.py",
+           "//build/fuchsia/test/monitors.py",
+           "//build/fuchsia/test/perf_trace.py",
+           "//build/fuchsia/test/repeating_log.py",
+           "//build/fuchsia/test/version.py",
+           "//third_party/crossbench/",
+         ] + vpython_spec_files
   deps = [ ":common" ]
 }
 
@@ -53,19 +52,18 @@ python_library("openscreen_remoting_performance_test") {
   testonly = true
   pydeps_file = "openscreen_remoting_performance_test.pydeps"
   data = [
-    "//.vpython3",
-    "//build/util/lib/proto",
-    "//fuchsia_web/av_testing/server.py",
-    "//fuchsia_web/av_testing/video.html",
-    "//fuchsia_web/av_testing/remoting_video.html",
-    "//fuchsia_web/av_testing/cast_starter.html",
-    "//build/fuchsia/test/common.py",
-    "//build/fuchsia/test/compatible_utils.py",
-    "//build/fuchsia/test/monitors.py",
-    "//build/fuchsia/test/perf_trace.py",
-    "//build/fuchsia/test/repeating_log.py",
-    "//build/fuchsia/test/version.py",
-    "//third_party/catapult/third_party/gsutil/",
-  ]
+           "//build/util/lib/proto",
+           "//fuchsia_web/av_testing/server.py",
+           "//fuchsia_web/av_testing/video.html",
+           "//fuchsia_web/av_testing/remoting_video.html",
+           "//fuchsia_web/av_testing/cast_starter.html",
+           "//build/fuchsia/test/common.py",
+           "//build/fuchsia/test/compatible_utils.py",
+           "//build/fuchsia/test/monitors.py",
+           "//build/fuchsia/test/perf_trace.py",
+           "//build/fuchsia/test/repeating_log.py",
+           "//build/fuchsia/test/version.py",
+           "//third_party/catapult/third_party/gsutil/",
+         ] + vpython_spec_files
   deps = [ ":common" ]
 }

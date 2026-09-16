@@ -4,6 +4,7 @@
 import("//build/config/chromeos/args.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/python.gni")
+import("//build/config/vpython.gni")
 
 group("orchestrator_all") {
   data_deps = [
@@ -28,18 +29,17 @@ group("orchestrator_all") {
     data_deps += [ "//build/android:test_result_presentations_py" ]
   }
 
+  # Various merge/collect scripts will likely need a venv specified in
+  # the root vpython spec files.
   data = [
-    # Various merge/collect scripts will likely need a venv specified in
-    # the root vpython spec files.
-    "//.vpython3",
+           # Used if the orchestrator needs to run
+           # recipe_module.chromium.get_version() to get the Chrome milestone
+           # being tested.
+           "//chrome/VERSION",
 
-    # Used if the orchestrator needs to run recipe_module.chromium.get_version()
-    # to get the Chrome milestone being tested.
-    "//chrome/VERSION",
-
-    # Test specs the Orchestrator needs to trigger swarming tests
-    "//testing/buildbot/*.json",
-  ]
+           # Test specs the Orchestrator needs to trigger swarming tests
+           "//testing/buildbot/*.json",
+         ] + vpython_spec_files
 
   # Orchestrator will run this script to curl for the coverage tool, which
   # merges and outputs coverage data

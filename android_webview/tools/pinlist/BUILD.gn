@@ -5,6 +5,7 @@
 import("//build/config/android/config.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/python.gni")
+import("//build/config/vpython.gni")
 import("//testing/test.gni")
 
 # Target to run the pinlist generator.
@@ -42,5 +43,5 @@ if (defined(android_app_secondary_abi)) {
 python_library("generate_pinlist_py") {
   testonly = true
   pydeps_file = "generate_pinlist.pydeps"
-  data = [ "//.vpython3" ]
+  data = vpython_spec_files
 }

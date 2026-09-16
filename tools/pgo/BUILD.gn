@@ -4,6 +4,7 @@
 
 import("//build/config/clang/clang.gni")
 import("//build/config/python.gni")
+import("//build/config/vpython.gni")
 import("//testing/test.gni")
 
 # Use the following import to find other suffixes as needed. The suffixes start
@@ -14,13 +15,13 @@ import("//testing/test.gni")
 python_library("generate_profile_py") {
   testonly = true
   pydeps_file = "//tools/pgo/generate_profile.pydeps"
-  data = [ "//.vpython3" ]
+  data = vpython_spec_files
 }
 
 python_library("generate_profile_webview_py") {
   testonly = true
   pydeps_file = "//tools/pgo/generate_profile_webview.pydeps"
-  data = [ "//.vpython3" ]
+  data = vpython_spec_files
 }
 
 template("generate_profile_test") {

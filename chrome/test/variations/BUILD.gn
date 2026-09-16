@@ -1,5 +1,6 @@
 import("//build/config/android/config.gni")
 import("//build/config/python.gni")
+import("//build/config/vpython.gni")
 import("//testing/test.gni")
 
 sdk_data = []
@@ -107,8 +108,5 @@ script_test("variations_desktop_smoke_tests") {
     "//testing:test_scripts_shared",
   ]
 
-  data = [
-    "pytest.ini",
-    "//.vpython3",
-  ]
+  data = [ "pytest.ini" ] + vpython_spec_files
 }

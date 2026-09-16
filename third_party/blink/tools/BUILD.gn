@@ -2,36 +2,36 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/vpython.gni")
+
 # WPT codebase for running webplatform tests
 group("wpt_tests_isolate") {
   testonly = true
   data = [
-    # Include the test runner.
-    "//third_party/blink/tools/run_wpt_tests.py",
+           # Include the test runner.
+           "//third_party/blink/tools/run_wpt_tests.py",
 
-    # WPT tooling
-    "//third_party/wpt_tools/",
+           # WPT tooling
+           "//third_party/wpt_tools/",
 
-    # Include blinkpy tools for uploading results to ResultDB.
-    "//third_party/blink/tools/blinkpy/",
+           # Include blinkpy tools for uploading results to ResultDB.
+           "//third_party/blink/tools/blinkpy/",
 
-    # The web_tests/external directory contains manifest file and public WPTs.
-    "//third_party/blink/web_tests/external/",
+           # The web_tests/external directory contains manifest file and public
+           # WPTs.
+           "//third_party/blink/web_tests/external/",
 
-    # The web_tests/wpt_internal directory contains internal WPTs
-    "//third_party/blink/web_tests/wpt_internal/",
+           # The web_tests/wpt_internal directory contains internal WPTs
+           "//third_party/blink/web_tests/wpt_internal/",
 
-    # Configuration files
-    "//third_party/blink/web_tests/FlagSpecificConfig",
-    "//third_party/blink/web_tests/VirtualTestSuites",
-    "//third_party/blink/web_tests/TestLists/",
+           # Configuration files
+           "//third_party/blink/web_tests/FlagSpecificConfig",
+           "//third_party/blink/web_tests/VirtualTestSuites",
+           "//third_party/blink/web_tests/TestLists/",
 
-    # exception reporting protos
-    "//build/util/lib/proto",
-
-    # Include the root vpython spec.
-    "//.vpython3",
-  ]
+           # exception reporting protos
+           "//build/util/lib/proto",
+         ] + vpython_spec_files
   data_deps = [
     "//testing:test_scripts_shared",
     "//third_party/catapult/third_party/typ",

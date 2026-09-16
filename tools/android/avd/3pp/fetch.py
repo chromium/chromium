@@ -36,7 +36,8 @@ _SRC_PATH = os.path.abspath(
 # The src-relative files and dirs we would like to include in the CIPD.
 _BASE_DEPS = [
   # vpython, binaries and avd configs used by //tools/android/avd/avd.py
-  '.vpython3',
+  'vpython.toml',
+  'vpython.toml.uv.lock',
   'third_party/android_sdk/public/cmdline-tools/',
   'third_party/android_sdk/public/platform-tools/',
   'tools/android/avd/proto/',

@@ -4,12 +4,13 @@
 
 import("//build/config/clang/clang.gni")
 import("//build/config/python.gni")
+import("//build/config/vpython.gni")
 import("//testing/test.gni")
 
 python_library("generate_orderfile_py") {
   testonly = true
   pydeps_file = "//tools/cygprofile/generate_orderfile.pydeps"
-  data = [ "//.vpython3" ]
+  data = vpython_spec_files
 }
 
 template("generate_orderfile_test") {
