@@ -66,8 +66,7 @@ class TabListViewUnitTest : public ChromeViewsTestBase {
     tab_model->GetTabFeatures()->SetTabUIHelperForTesting(
         std::make_unique<TabUIHelper>(*tab_model));
 
-    // Insert at the beginning to match BrowserWithTestWindowTest::AddTab
-    // behavior where newly added tabs are placed at index 0.
+    // Insert at the beginning so that newly added tabs are placed at index 0.
     tab_models_.insert(tab_models_.begin(), std::move(tab_model));
   }
 

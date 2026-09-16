@@ -63,8 +63,7 @@ TEST_F(LoginStateApiUnittest, GetProfileType_UserProfile) {
 // extensions running in the signin profile.
 TEST_F(LoginStateApiUnittest, GetProfileType_SigninProfile) {
   // |ash::ProfileHelper::GetSigninProfile()| cannot be used as the
-  // |TestingProfileManager| set up by |BrowserWithTestWindowTest| has an empty
-  // user data directory.
+  // |TestingProfileManager| has an empty user data directory.
   TestingProfile::Builder builder;
   builder.SetPath(base::FilePath(FILE_PATH_LITERAL(chrome::kInitialProfile)));
   std::unique_ptr<Profile> profile = builder.Build();

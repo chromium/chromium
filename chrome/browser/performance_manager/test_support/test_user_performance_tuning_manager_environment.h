@@ -60,8 +60,8 @@ class TestUserPerformanceTuningManagerEnvironment {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Some tests combine this helper with other helpers that also initialize
-  // FakePowerManagerClient. E.g. BrowserWithTestWindowTest tests. True if we
-  // called chromeos::PowerManagerClient::InitializeFake, because we are then
+  // FakePowerManagerClient. True if we called
+  // chromeos::PowerManagerClient::InitializeFake, because we are then
   // responsible for cleanup.
   bool tear_down_power_manager_client_ = false;
 #endif

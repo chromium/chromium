@@ -61,8 +61,7 @@ class SessionDataServiceTest : public testing::Test {
         base::MakeRefCounted<ExtensionSpecialStoragePolicy>(
             cookie_settings.get()));
 
-    // Simulate an initial browser window open, matching the initial state
-    // previously provided by BrowserWithTestWindowTest.
+    // Simulate an initial browser window open.
     initial_browser_ = CreateMockBrowser(profile_);
     BrowserCollectionObserver* observer =
         GlobalBrowserCollection::GetInstance()->GetPlatformDelegate();

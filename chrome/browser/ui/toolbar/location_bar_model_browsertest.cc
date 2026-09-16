@@ -165,7 +165,7 @@ class LocationBarModelTest : public InProcessBrowserTest {
 
   ~LocationBarModelTest() override;
 
-  // BrowserWithTestWindowTest:
+  // InProcessBrowserTest:
   void SetUpOnMainThread() override;
 
  protected:
