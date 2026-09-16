@@ -4,8 +4,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -29,8 +33,10 @@
 #include "components/permissions/mock_chooser_controller_view.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/hid_chooser.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -42,6 +48,9 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 
 using testing::Contains;
 using testing::StartsWith;
@@ -511,6 +520,177 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestWebHidTest,
 
   EXPECT_EQ("SUCCESS: NO_DEVICES",
             content::EvalJs(controlled_frame, kTestScript).ExtractString());
+}
+
+namespace {
+
+constexpr std::string_view kPermissionAllowedHost = "permission-allowed.com";
+constexpr std::string_view kChooserBubbleWidgetName =
+    "ChooserBubbleUiViewDelegate";
+
+// Reports content fullscreen so that the chooser dialog's
+// ForSecurityDropFullscreen() call reaches the delegate, and runs
+// `on_exit_fullscreen` when it does.
+class ExitFullscreenInterceptingDelegate : public content::WebContentsDelegate {
+ public:
+  ExitFullscreenInterceptingDelegate(
+      content::WebContentsDelegate* original_delegate,
+      base::OnceClosure on_exit_fullscreen)
+      : original_delegate_(original_delegate),
+        on_exit_fullscreen_(std::move(on_exit_fullscreen)) {}
+
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
+    if (on_exit_fullscreen_) {
+      std::move(on_exit_fullscreen_).Run();
+    }
+    if (original_delegate_) {
+      original_delegate_->ExitFullscreenModeForTab(web_contents);
+    }
+  }
+
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const override {
+    content::FullscreenState state;
+    state.target_mode = content::FullscreenMode::kContent;
+    return state;
+  }
+
+  content::WebContentsDelegate* original_delegate() const {
+    return original_delegate_;
+  }
+
+ private:
+  raw_ptr<content::WebContentsDelegate> original_delegate_;
+  base::OnceClosure on_exit_fullscreen_;
+};
+
+}  // namespace
+
+class ControlledFrameHidChooserTest
+    : public ControlledFramePermissionRequestTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    ControlledFramePermissionRequestTestBase::SetUpOnMainThread();
+
+    mojo::PendingRemote<device::mojom::HidManager> pending_remote;
+    hid_manager_.Bind(pending_remote.InitWithNewPipeAndPassReceiver());
+    base::RunLoop run_loop;
+    HidChooserContextFactory::GetForProfile(profile())->SetHidManagerForTesting(
+        std::move(pending_remote),
+        base::BindLambdaForTesting(
+            [&run_loop](std::vector<device::mojom::HidDeviceInfoPtr> devices) {
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+
+    hid_manager_.CreateAndAddDevice("physical-device-id", /*vendor_id=*/0x6666,
+                                    /*product_id=*/0x1234, "Test HID Device",
+                                    /*serial_number=*/"",
+                                    device::mojom::HidBusType::kHIDBusTypeUSB);
+  }
+
+ protected:
+  // ChromeWebViewPermissionHelperDelegate::RequestHidPermission() denies the
+  // request outright unless the Controlled Frame embedder's permissions policy
+  // delegates kHid to the guest origin.
+  std::pair<content::RenderFrameHost*, content::RenderFrameHost*>
+  InstallIwaAndCreateControlledFrameWithHidPolicy() {
+    web_app::ManifestBuilder manifest_builder;
+    manifest_builder.AddPermissionsPolicy(
+        network::mojom::PermissionsPolicyFeature::kHid,
+        /*self=*/true,
+        {embedded_https_test_server().GetOrigin(
+            std::string(kPermissionAllowedHost))});
+    return InstallAndOpenIwaThenCreateControlledFrame(
+        /*controlled_frame_host_name=*/kPermissionAllowedHost,
+        /*controlled_frame_src_relative_url=*/"/index.html", manifest_builder);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      extensions_features::kEnableWebHidInWebView};
+  device::FakeHidManager hid_manager_;
+};
+
+// Regression test for b/555299641. Showing the chooser dialog drops
+// fullscreen, which gives the embedder a chance to destroy the guest's
+// HidChooser before chrome::ShowDeviceChooserDialog() returns. The orphaned
+// dialog must still be dismissed.
+IN_PROC_BROWSER_TEST_F(ControlledFrameHidChooserTest,
+                       ChooserDialogClosedWhenChooserDestroyedWhileOpening) {
+  auto [app_frame, controlled_frame] =
+      InstallIwaAndCreateControlledFrameWithHidPolicy();
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+
+  SetUpPermissionRequestEventListener(app_frame, "hid",
+                                      /*allow_permission=*/true);
+
+  // The test owns the chooser so that it can be destroyed without tearing down
+  // the guest, isolating the ChromeHidDelegate path under test.
+  std::unique_ptr<content::HidChooser> chooser;
+
+  auto* embedder_contents =
+      content::WebContents::FromRenderFrameHost(app_frame);
+  ASSERT_TRUE(embedder_contents);
+  ExitFullscreenInterceptingDelegate intercepting_delegate(
+      embedder_contents->GetDelegate(),
+      base::BindLambdaForTesting([&]() { chooser.reset(); }));
+  embedder_contents->SetDelegate(&intercepting_delegate);
+  base::ScopedClosureRunner restore_delegate(base::BindOnce(
+      &content::WebContents::SetDelegate, base::Unretained(embedder_contents),
+      intercepting_delegate.original_delegate()));
+
+  bool chooser_dialog_closing = false;
+  views::AnyWidgetObserver widget_observer(views::test::AnyWidgetTestPasskey{});
+  widget_observer.set_closing_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        chooser_dialog_closing |= widget->GetName() == kChooserBubbleWidgetName;
+      }));
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      std::string(kChooserBubbleWidgetName));
+
+  ChromeHidDelegate hid_delegate;
+  chooser =
+      hid_delegate.RunChooser(controlled_frame, /*filters=*/{},
+                              /*exclusion_filters=*/{}, base::DoNothing());
+  ASSERT_TRUE(chooser);
+
+  widget_waiter.WaitIfNeededAndGet();
+  EXPECT_FALSE(chooser);
+  EXPECT_TRUE(chooser_dialog_closing);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameHidChooserTest,
+                       ChooserDialogClosedWhenChooserDestroyedAfterOpening) {
+  auto [app_frame, controlled_frame] =
+      InstallIwaAndCreateControlledFrameWithHidPolicy();
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+
+  SetUpPermissionRequestEventListener(app_frame, "hid",
+                                      /*allow_permission=*/true);
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{},
+      std::string(kChooserBubbleWidgetName));
+
+  ChromeHidDelegate hid_delegate;
+  std::unique_ptr<content::HidChooser> chooser =
+      hid_delegate.RunChooser(controlled_frame, /*filters=*/{},
+                              /*exclusion_filters=*/{}, base::DoNothing());
+  ASSERT_TRUE(chooser);
+
+  views::Widget* chooser_widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(chooser_widget);
+  EXPECT_FALSE(chooser_widget->IsClosed());
+
+  // The close closure was handed to the chooser, so destroying the chooser
+  // dismisses the dialog.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(chooser_widget);
+  chooser.reset();
+  destroyed_waiter.Wait();
 }
 
 class ControlledFramePermissionStatusLeakTest : public ControlledFrameTestBase {
