@@ -1486,6 +1486,9 @@ def _create_initial_modules(blueprint, gn, target, bp_module_name,
         # Copy targets are not supported: currently, we stop traversing the
         # dependency tree when we encounter one.
         return ()
+    elif target.type == 'generated_file':
+        # generated_file targets run at `gn gen` time and have no Soong equivalent.
+        return ()
     elif target.type == 'java_library':
         modules = (create_java_module(bp_module_name, target, blueprint,
                                       is_test_target, context), )

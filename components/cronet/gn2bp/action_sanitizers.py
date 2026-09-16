@@ -283,6 +283,32 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
         self.args.update_list_arg('--input-file',
                                   self._add_location_tag_to_filepath)
 
+        # Strip jni_zero's GN metadata type catalog plumbing. The catalog lets a
+        # safe JNI pointer resolve a @JniType token that is declared in another
+        # target; it has no Soong equivalent and each of these flags would break
+        # the genrule at build time:
+        # * --type-catalogs-file points at a `*__type_catalogs.json` file that
+        #   GN's generated_file() writes at `gn gen` time (with no Ninja rule).
+        #   That file does not exist in the Android checkout, and jni_zero reads
+        #   it unconditionally, so it would raise FileNotFoundError.
+        # * --output-type-catalog writes the catalog this target publishes for
+        #   its dependents. Nothing consumes it once the above is gone, and we
+        #   drop it from the declared outputs (see get_outputs), so generating
+        #   it would leave an undeclared file behind in $(genDir).
+        # * --depfile makes jni_zero write a depfile keyed on --srcjar-path,
+        #   which we rewrite to $(genDir)/... . Soong expands $(genDir) to an
+        #   absolute sandbox path, tripping the "Found abs path in depfile"
+        #   assertion. JniRegistrationGeneratorSanitizer drops it for the same
+        #   reason.
+        # Note --enable-safe-pointers is deliberately kept: safe pointers whose
+        # token is annotated in the same .java file resolve without a catalog.
+        # Cross-target tokens will fail loudly at Soong build time with
+        # "does not resolve to a C++ type", at which point we need to teach
+        # gn2bp to propagate catalogs between generate_jni targets.
+        self.args.remove_flag('--type-catalogs-file', throw_if_absent=False)
+        self.args.remove_flag('--output-type-catalog', throw_if_absent=False)
+        self.args.remove_flag('--depfile', throw_if_absent=False)
+
         self.args.remove_flag('--package-prefix', throw_if_absent=False)
         self.args.remove_flag('--package-prefix-filter', throw_if_absent=False)
         if not self.is_test_target and not self.args.has_arg('--jar-file'):
@@ -297,6 +323,14 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
     def get_outputs(self):
         outputs = set()
         for out in super().get_outputs():
+            if out.endswith('.type_catalog.json'):
+                # jni_zero's generate_jni() declares a
+                # `<target>.type_catalog.json` output holding the target's
+                # class-level @JniType annotations, so that dependents can
+                # resolve safe JNI pointer tokens across target boundaries. We
+                # don't generate it in Soong (see _sanitize_args), so declaring
+                # it would make the genrule fail its output verification.
+                continue
             # fix target.output directory to match #include statements.
             outputs.add(re.sub('^jni_headers/', '', out))
         return outputs
