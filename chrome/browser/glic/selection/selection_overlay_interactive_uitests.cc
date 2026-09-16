@@ -12,6 +12,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -32,6 +33,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/common/content_features.h"
@@ -1429,5 +1431,65 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
           "bubbles: true}));"
           "}"));
 }
+
+namespace {
+
+class SelectionOverlayInteractiveScreenshotSizeCapTest
+    : public SelectionOverlayInteractiveTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SelectionOverlayInteractiveScreenshotSizeCapTest() {
+    if (!GetParam()) {
+      feature_list_.InitFromCommandLine(
+          /*enable_features=*/"",
+          /*disable_features=*/"GlicSelectionOverlayFullSizeScreenshot");
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(SelectionOverlayInteractiveScreenshotSizeCapTest,
+                       ScreenshotSizeCap) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  const DeepQuery kOverlayApp = {"selection-overlay-app"};
+  bool feature_enabled = GetParam();
+
+  RunTestSequence(
+      OpenGlic(),
+      // Request a 10x10 capture, which is smaller than a test window on the
+      // bot.
+      Do([this]() {
+        auto* controller = SelectionOverlayController::FromTabWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+        ASSERT_TRUE(controller);
+        auto options = mojom::TabContextOptions::New();
+        options->viewport_screenshot = true;
+        options->annotated_page_content = true;
+        options->screenshot_collection_options.max_width = 10;
+        options->screenshot_collection_options.max_height = 10;
+        controller->Show(std::move(options));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
+                        "el => el.screenshot_ !== null"),
+      CheckJsResultAt(kOverlayWebContentsId, kOverlayApp,
+                      feature_enabled
+                          ? "el => el.screenshot_.imageInfo.width > 10 && "
+                            "el.screenshot_.imageInfo.height > 10"
+                          : "el => el.screenshot_.imageInfo.width <= 10 && "
+                            "el.screenshot_.imageInfo.height <= 10",
+                      true));
+}
+
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         SelectionOverlayInteractiveScreenshotSizeCapTest,
+                         testing::Bool());
 
 }  // namespace glic
