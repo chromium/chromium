@@ -2501,6 +2501,23 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.IOS.FailedToOpenReason"
+    enum="AtMemoryFailedToOpenReason" expires_after="2027-04-01">
+  <owner>leozhao@google.com</owner>
+  <owner>novakovica@google.com</owner>
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records why the AtMemory flow could not be opened when the user taps the
+    AtMemory button in the keyboard accessory bar. &quot;Opened&quot; means all
+    prerequisites (focused field, active WebState, AutofillClient,
+    AtMemoryManager and AutofillManager) were met and the coordinator was
+    started; any other value identifies the missing prerequisite. Recorded on
+    every attempt to open the AtMemory UI. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AtMemory.Latency.DismissedBeforeResults" units="ms"
     expires_after="2027-09-01">
   <owner>ireneuszszulc@google.com</owner>

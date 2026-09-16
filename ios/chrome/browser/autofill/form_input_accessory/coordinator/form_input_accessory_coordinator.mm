@@ -14,6 +14,7 @@
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -39,6 +40,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/coordinator/at_memory_coordinator.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
+#import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_source_item.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_sources_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_sources_view_controller.h"
@@ -115,6 +117,10 @@ constexpr base::TimeDelta kAutofillSuggestionTipDelay = base::Seconds(0.5);
 // Additional vertical offset for the IPH, so that it doesn't appear below the
 // Autofill strip at the top of the keyboard.
 const CGFloat kIPHVerticalOffset = -5;
+
+// The histogram recording why the AtMemory UI failed to open on button tap.
+constexpr std::string_view kAtMemoryFailedToOpenReasonHistogram =
+    "Autofill.AtMemory.IOS.FailedToOpenReason";
 
 // Return the feature corresponding to the `feature_for_iph` enum.
 const base::Feature* FetchIPHFeatureFromEnum(
@@ -380,6 +386,19 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
   [self.childCoordinators removeAllObjects];
 }
 
+// Returns the reason why the AtMemory UI can't be opened for `fieldId`, or
+// `AtMemoryFailedToOpenReason::kNone` if it can be opened.
+- (AtMemoryFailedToOpenReason)atMemoryFailedToOpenReasonForField:
+    (FieldGlobalId)fieldId {
+  if (!fieldId.renderer_id) {
+    return AtMemoryFailedToOpenReason::kNoFocusedField;
+  }
+  if (_atMemoryCoordinator) {
+    return AtMemoryFailedToOpenReason::kAlreadyOpen;
+  }
+  return GetAtMemoryFailedToOpenReason(self.browser);
+}
+
 // Starts the expanded manual fill coordinator and displays its view controller.
 - (void)startManualFillFromButton:(UIButton*)button
                       forDataType:(manual_fill::ManualFillDataType)dataType
@@ -387,11 +406,9 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
   if (dataType == manual_fill::ManualFillDataType::kAtMemory) {
     std::optional<FieldGlobalId> fieldId =
         [_formInputAccessoryMediator lastFocusedFieldGlobalId];
-    // Explicitly using `has_value()` for `FieldGlobalId`.
-    if (!fieldId.has_value()) {
-      return;
-    }
-    [self showAtMemoryForField:fieldId.value()];
+    // `showAtMemoryForField:` records the outcome for all entry points,
+    // including the `kNoFocusedField` reason for a default empty field.
+    [self showAtMemoryForField:fieldId.value_or(FieldGlobalId{})];
     return;
   }
 
@@ -898,7 +915,10 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
 #pragma mark - AtMemoryCommands
 
 - (void)showAtMemoryForField:(FieldGlobalId)fieldId {
-  if (!fieldId.renderer_id || _atMemoryCoordinator) {
+  AtMemoryFailedToOpenReason reason =
+      [self atMemoryFailedToOpenReasonForField:fieldId];
+  base::UmaHistogramEnumeration(kAtMemoryFailedToOpenReasonHistogram, reason);
+  if (reason != AtMemoryFailedToOpenReason::kNone) {
     return;
   }
   _atMemoryCoordinator = [[AtMemoryCoordinator alloc]

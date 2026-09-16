@@ -114,6 +114,21 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Prefill request not sent - not enough time."/>
 </enum>
 
+<!--  LINT.IfChange(AtMemoryFailedToOpenReason) -->
+
+<enum name="AtMemoryFailedToOpenReason">
+  <int value="0" label="Opened: all prerequisites were met"/>
+  <int value="1" label="No browser or no web state list"/>
+  <int value="2" label="No active web state"/>
+  <int value="3" label="No autofill client"/>
+  <int value="4" label="No AtMemory manager"/>
+  <int value="5" label="No autofill manager for the primary main frame"/>
+  <int value="6" label="No focused field"/>
+  <int value="7" label="The AtMemory UI is already open"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h:AtMemoryFailedToOpenReason) -->
+
 <!--  LINT.IfChange(AttemptFormFillingToolEvent) -->
 
 <enum name="AttemptFormFillingToolEvent">

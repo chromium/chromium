@@ -9,11 +9,43 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_granular_fill_item.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/web_state.h"
 
+using autofill::AutofillClientIOS;
 using autofill::Suggestion;
 using autofill::SuggestionType;
+
+AtMemoryFailedToOpenReason GetAtMemoryFailedToOpenReason(Browser* browser) {
+  if (!browser || !browser->GetWebStateList()) {
+    return AtMemoryFailedToOpenReason::kNoBrowser;
+  }
+
+  web::WebState* web_state = browser->GetWebStateList()->GetActiveWebState();
+  if (!web_state) {
+    return AtMemoryFailedToOpenReason::kNoActiveWebState;
+  }
+
+  AutofillClientIOS* autofill_client =
+      AutofillClientIOS::FromWebState(web_state);
+  if (!autofill_client) {
+    return AtMemoryFailedToOpenReason::kNoAutofillClient;
+  }
+
+  if (!autofill_client->GetAtMemoryManager()) {
+    return AtMemoryFailedToOpenReason::kNoAtMemoryManager;
+  }
+
+  if (!autofill_client->GetAutofillManagerForPrimaryMainFrame()) {
+    return AtMemoryFailedToOpenReason::kNoAutofillManager;
+  }
+
+  return AtMemoryFailedToOpenReason::kNone;
+}
 
 NSString* GetAtMemoryGranularFillTitle(const Suggestion& suggestion) {
   const Suggestion::AtMemoryPayload* payload =

@@ -9,8 +9,12 @@ source_set("utils") {
   ]
   deps = [
     "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/ui:item",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
   ]
 }
 
