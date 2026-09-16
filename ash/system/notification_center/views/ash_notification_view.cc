@@ -70,6 +70,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_style.h"
 #include "ui/message_center/notification_list.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -379,6 +380,8 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
                                              *title_view_);
   title_view_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
+  title_row_divider_->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
+
   timestamp_in_collapsed_view_->SetEnabledColor(
       cros_tokens::kCrosSysOnSurfaceVariant);
   ash::TypographyProvider::Get()->StyleLabel(
@@ -435,15 +438,6 @@ gfx::Size AshNotificationView::NotificationTitleRow::CalculatePreferredSize(
   return gfx::Size(max_available_width_,
                    GetLayoutManager()->GetPreferredHeightForWidth(
                        this, max_available_width_));
-}
-
-void AshNotificationView::NotificationTitleRow::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  title_view_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
-  title_row_divider_->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
-  timestamp_in_collapsed_view_->SetEnabledColor(
-      cros_tokens::kCrosSysOnSurfaceVariant);
 }
 
 AshNotificationView::AshNotificationView(
@@ -1157,6 +1151,7 @@ void AshNotificationView::UpdateWithNotification(
 
   // Configure views style.
   UpdateIconAndButtonsColor(&notification);
+  UpdateIconViewBackground();
   if (message_label()) {
     notification_style_utils::ConfigureLabelStyle(message_label(),
                                                   kNotificationMessageLabelSize,
@@ -1374,35 +1369,9 @@ void AshNotificationView::UpdateCornerRadius(int top_radius,
 void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  if (message_label()) {
-    message_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
-  }
-
-  if (message_label_in_expanded_state_) {
-    message_label_in_expanded_state_->SetEnabledColor(
-        cros_tokens::kCrosSysOnSurfaceVariant);
-  }
-
   UpdateIconAndButtonsColor(
       message_center::MessageCenter::Get()->FindVisibleNotificationById(
           notification_id()));
-
-  if (inline_reply()) {
-    inline_reply()->textfield()->SetTextColorId(cros_tokens::kCrosSysOnSurface);
-    inline_reply()->textfield()->SetPlaceholderTextColorId(
-        cros_tokens::kCrosSysOnSurfaceVariant);
-  }
-
-  if (icon_view() &&
-      (right_content()->width() - icon_view()->GetImageDrawingSize().width() >
-           kSmallImageBackgroundThreshold ||
-       right_content()->height() - icon_view()->GetImageDrawingSize().height() >
-           kSmallImageBackgroundThreshold)) {
-    icon_view()->set_apply_rounded_corners(false);
-    right_content()->SetBackground(views::CreateRoundedRectBackground(
-        kColorAshControlBackgroundColorInactive,
-        message_center::kImageCornerRadius));
-  }
 }
 
 std::unique_ptr<message_center::NotificationInputContainer>
@@ -1683,6 +1652,34 @@ void AshNotificationView::UpdateIconAndButtonsColor(
 
   if (snooze_button_) {
     snooze_button_->SetIconColor(button_color);
+  }
+}
+
+void AshNotificationView::UpdateIconViewBackground() {
+  if (!icon_view()) {
+    return;
+  }
+
+  const gfx::Size container_size = GetIconViewSize();
+  const gfx::Size drawing_size = message_center::GetImageSizeForContainerSize(
+      container_size, icon_view()->image().Size());
+
+  const bool needs_background =
+      (container_size.width() - drawing_size.width() >
+           kSmallImageBackgroundThreshold ||
+       container_size.height() - drawing_size.height() >
+           kSmallImageBackgroundThreshold);
+
+  if (needs_background) {
+    icon_view()->set_apply_rounded_corners(false);
+    if (!right_content()->GetBackground()) {
+      right_content()->SetBackground(views::CreateRoundedRectBackground(
+          kColorAshControlBackgroundColorInactive,
+          message_center::kImageCornerRadius));
+    }
+  } else {
+    icon_view()->set_apply_rounded_corners(true);
+    right_content()->SetBackground(nullptr);
   }
 }
 

@@ -212,7 +212,6 @@ class ASH_EXPORT AshNotificationView
     // views::View:
     gfx::Size CalculatePreferredSize(
         const views::SizeBounds& available_size) const override;
-    void OnThemeChanged() override;
 
     views::Label* title_view() { return title_view_; }
 
@@ -264,6 +263,10 @@ class ASH_EXPORT AshNotificationView
   // Update the color of icon and buttons.
   void UpdateIconAndButtonsColor(
       const message_center::Notification* notification);
+
+  // Updates the background and rounded corners of `icon_view()` and
+  // `right_content()` based on the image size relative to `GetIconViewSize()`.
+  void UpdateIconViewBackground();
 
   // Animate resizing a parent notification view after a child notification view
   // has been removed from itself.
