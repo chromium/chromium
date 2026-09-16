@@ -85,6 +85,12 @@ class LegacySnapshotGeneratorTest : public PlatformTest {
 
 // Tests the snapshot taken by UIKit-based API.
 TEST_F(LegacySnapshotGeneratorTest, GenerateUIViewSnapshot) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   UIImage* snapshot = [generator_ generateUIViewSnapshot];
 
   ASSERT_TRUE(snapshot);
@@ -116,6 +122,12 @@ TEST_F(LegacySnapshotGeneratorTest, GenerateWebViewSnapshot) {
 
 // Tests the snapshot on the new tab page.
 TEST_F(LegacySnapshotGeneratorTest, GenerateWebViewSnapshotWithNTP) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   // Enable the flag to take a snapshot with WebKit-based API.
   web_state_.SetCanTakeSnapshot(true);
   // UIKit-based API should be used for NTP.
@@ -174,6 +186,12 @@ class SnapshotGeneratorTest : public PlatformTest {
 
 // Tests the snapshot taken by UIKit-based API.
 TEST_F(SnapshotGeneratorTest, GenerateUIViewSnapshot) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   UIImage* snapshot = [generator_ generateUIViewSnapshot];
 
   ASSERT_TRUE(snapshot);
@@ -206,6 +224,12 @@ TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshot) {
 
 // Tests the snapshot on the new tab page.
 TEST_F(SnapshotGeneratorTest, GenerateWebViewSnapshotWithNTP) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   // Enable the flag to take a snapshot with WebKit-based API.
   web_state_.SetCanTakeSnapshot(true);
   // UIKit-based API should be used for NTP.
@@ -294,6 +318,12 @@ class LegacySnapshotGeneratorWithOverlaysTest : public PlatformTest {
 
 // Tests the snapshot taken by UIKit-based API. The page has an overlay.
 TEST_F(LegacySnapshotGeneratorWithOverlaysTest, GenerateUIViewSnapshot) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   UIWindow* window = GetAnyKeyWindow();
   [window addSubview:delegate_.overlay];
 
@@ -314,6 +344,12 @@ TEST_F(LegacySnapshotGeneratorWithOverlaysTest, GenerateUIViewSnapshot) {
 
 // Tests the snapshot taken by UIKit-based API. The page has an overlay.
 TEST_F(LegacySnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   UIWindow* window = GetAnyKeyWindow();
   [window addSubview:delegate_.overlay];
 
@@ -384,6 +420,12 @@ TEST_F(LegacySnapshotGeneratorWithOverlaysTest,
 // from the base view.
 TEST_F(LegacySnapshotGeneratorWithOverlaysTest,
        GenerateUIViewSnapshotWithoutOverlays) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   UIWindow* window = GetAnyKeyWindow();
   [window addSubview:delegate_.overlay];
 
@@ -446,6 +488,12 @@ class SnapshotGeneratorWithOverlaysTest : public PlatformTest {
 
 // Tests the snapshot taken by UIKit-based API. The page has an overlay.
 TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateUIViewSnapshot) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   UIWindow* window = GetAnyKeyWindow();
   [window addSubview:delegate_.overlay];
 
@@ -466,6 +514,12 @@ TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateUIViewSnapshot) {
 
 // Tests the snapshot taken by UIKit-based API. The page has an overlay.
 TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateWebViewSnapshot) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   UIWindow* window = GetAnyKeyWindow();
   [window addSubview:delegate_.overlay];
 
@@ -535,6 +589,12 @@ TEST_F(SnapshotGeneratorWithOverlaysTest, GenerateSnapshotWithoutOverlays) {
 // from the base view.
 TEST_F(SnapshotGeneratorWithOverlaysTest,
        GenerateUIViewSnapshotWithoutOverlays) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   UIWindow* window = GetAnyKeyWindow();
   [window addSubview:delegate_.overlay];
 

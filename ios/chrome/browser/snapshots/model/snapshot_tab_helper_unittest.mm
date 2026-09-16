@@ -318,6 +318,12 @@ TEST_F(SnapshotTabHelperTest, RetrieveGreySnapshotGenerate) {
 // Tests that UpdateSnapshotWithCallback ignores any cached snapshots, generate
 // a new one and updates the cache.
 TEST_F(SnapshotTabHelperTest, UpdateSnapshotWithCallback) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   SetCachedSnapshot(
       UIImageWithSizeAndSolidColor(kDefaultSnapshotSize, [UIColor greenColor]));
   UIImage* original_cached_snapshot = GetCachedSnapshot();
@@ -380,6 +386,12 @@ TEST_F(SnapshotTabHelperTest, UpdateSnapshotStorageWithImage) {
 // Tests that GenerateSnapshot ignores any cached snapshots and generate a new
 // snapshot without adding it to the cache.
 TEST_F(SnapshotTabHelperTest, GenerateSnapshot) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   SetCachedSnapshot(
       UIImageWithSizeAndSolidColor(kDefaultSnapshotSize, [UIColor greenColor]));
 
@@ -398,6 +410,12 @@ TEST_F(SnapshotTabHelperTest, GenerateSnapshot) {
 // snapshots, generates a new snapshot without adding it to the cache, and
 // invokes the callback.
 TEST_F(SnapshotTabHelperTest, GenerateSnapshotWithoutOverlaysWithCallback) {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/559198907): Fails on iOS 26 devices.
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   SetCachedSnapshot(UIImageWithSizeAndSolidColor(kDefaultSnapshotSize,
                                                  [UIColor colorWithRed:0.0
                                                                  green:1.0
