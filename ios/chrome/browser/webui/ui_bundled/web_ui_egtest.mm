@@ -19,6 +19,8 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -259,6 +261,32 @@ using chrome_test_util::ForwardButton;
       l10n_util::GetNSString(IDS_FLAGS_UI_PAGE_WARNING);
   [ChromeEarlGrey waitForWebStateContainingText:base::SysNSStringToUTF8(
                                                     flags_page_warning)];
+}
+
+// Tests that flags enabled in chrome://flags persist across relaunch and are
+// converted to command-line switches visible on chrome://version.
+- (void)testChromeFlagsPersistAcrossRelaunch {
+  [ChromeEarlGrey loadURL:GURL(kChromeUIFlagsURL)];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIFlagsURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:"Experiments"];
+
+  // Enable a flag via WebUI message.
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:@"chrome.send('enableExperimentalFeature'"
+                                      @", ['use-sync-sandbox', 'true']);"];
+
+  // Relaunch the app cleanly to preserve local state preferences.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Verify that the flag was converted to command line switches on
+  // chrome://version.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIVersionURL)];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIVersionURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:"--flag-switches-begin"];
+  [ChromeEarlGrey waitForWebStateContainingText:"--sync-url"];
+  [ChromeEarlGrey waitForWebStateContainingText:"--flag-switches-end"];
 }
 
 - (void)testChromePasswordManagerInternalsSite {

@@ -163,7 +163,9 @@ source_set("unit_tests") {
     ":flags",
     ":test_data",
     "//base",
+    "//components/prefs:test_support",
     "//components/webui/flags",
+    "//components/webui/flags:switches",
     "//components/webui/flags:test_support",
     "//testing/gtest",
   ]

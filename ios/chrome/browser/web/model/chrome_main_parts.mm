@@ -181,6 +181,7 @@ void IOSChromeMainParts::ApplyFeatureList() {
 
   flags_ui::PrefServiceFlagsStorage flags_storage(
       application_context_->GetLocalState());
+  ConvertFlagsToSwitches(&flags_storage, command_line);
   // Record command line switches and features in crash keys after flags are
   // converted to switches, before field trials are initialized.
   crash_keys::SetFeaturesFromCommandLine(*command_line);
