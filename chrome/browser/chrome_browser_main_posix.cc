@@ -13,6 +13,7 @@
 
 #include <string>
 
+#include "base/allocator/partition_alloc_support.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -68,6 +69,15 @@ class ExitHandler {
 // static
 void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, many shut down hangs have been seen in certain PartitionAlloc
+  // features. Make Free a Noop to prevent that. This was originally done for
+  // normal shutdowns and Googlers can read the report at
+  // go/cros-no-op-free-2024, however this was added after it was discovered
+  // signal handlers don't hit that path. See crbug.com/561483162.
+  base::allocator::MakeFreeNoOp();
+#endif
 
   // DevTools delegate's browser keeplive may prevent browser from closing so
   // remove it before proceeding because we have an explicit shutdown request.

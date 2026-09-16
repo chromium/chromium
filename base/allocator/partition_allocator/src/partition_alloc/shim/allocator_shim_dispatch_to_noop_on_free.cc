@@ -61,7 +61,9 @@ AllocatorDispatch allocator_dispatch = {
 
 void InsertNoOpOnFreeAllocatorShimOnShutDown() {
   static bool called = false;
-  PA_CHECK(!called);
+  if (called) {
+    return;
+  }
   called = true;
   InsertAllocatorDispatch(&allocator_dispatch);
 }
