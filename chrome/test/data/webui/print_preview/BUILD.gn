@@ -28,6 +28,7 @@ build_webui_tests("build") {
     "destination_list_test.ts",
     "destination_search_test.ts",
     "destination_select_test.ts",
+    "destination_settings_interactive_test.ts",
     "destination_settings_test.ts",
     "destination_store_test.ts",
     "dpi_settings_test.ts",

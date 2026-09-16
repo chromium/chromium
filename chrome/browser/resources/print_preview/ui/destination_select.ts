@@ -20,6 +20,12 @@ import {getCss} from './destination_select.css.js';
 import {getHtml} from './destination_select.html.js';
 import {SelectMixin} from './select_mixin.js';
 
+export interface PrintPreviewDestinationSelectElement {
+  $: {
+    select: HTMLSelectElement,
+  };
+}
+
 const PrintPreviewDestinationSelectElementBase = SelectMixin(CrLitElement);
 
 export class PrintPreviewDestinationSelectElement extends
@@ -59,7 +65,7 @@ export class PrintPreviewDestinationSelectElement extends
   protected accessor pdfDestinationKey_: string = PDF_DESTINATION_KEY;
 
   override focus() {
-    this.shadowRoot.querySelector<HTMLElement>('.md-select')!.focus();
+    this.$.select.focus();
   }
 
   /** Sets the select to the current value of |destination|. */

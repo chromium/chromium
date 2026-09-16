@@ -92,3 +92,9 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDialogFocusTest,
                        SearchDestinationsKorean) {
   RunTestCase("SearchDestinationsKorean");
 }
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewFocusTest,
+                       RestoreFocusAfterDestinationChange) {
+  RunTest("chromeos/print_preview/destination_settings_interactive_test.js",
+          "mocha.run()");
+}
