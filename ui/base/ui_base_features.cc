@@ -519,6 +519,9 @@ BASE_FEATURE(kUsePortalAccentColor, base::FEATURE_ENABLED_BY_DEFAULT);
 // ColorProviderKey, hierarchical theme observation, and coalescing updates.
 BASE_FEATURE(kThemeChangeOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRemoveEnsureRFHVisibilityConsistent,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kColorIdCssStyleSheetOptimization,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

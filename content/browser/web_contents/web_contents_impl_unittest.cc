@@ -2046,12 +2046,13 @@ TEST_F(WebContentsImplTest, UpdateWebContentsVisibility) {
       main_test_rfh()->GetRenderViewHost()->GetWidget()->GetView());
   TestWebContentsObserver observer(contents());
 
-  EXPECT_FALSE(view->is_showing());
+  // Test WebContents always start visible.
+  EXPECT_TRUE(view->is_showing());
   EXPECT_FALSE(view->is_occluded());
 
-  // WebContents must be made visible once before it can be hidden.
+  // WebContents must be made visible once before its visibility can be changed.
   contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
-  EXPECT_FALSE(view->is_showing());
+  EXPECT_TRUE(view->is_showing());
   EXPECT_FALSE(view->is_occluded());
   EXPECT_EQ(Visibility::VISIBLE, contents()->GetVisibility());
 
@@ -2208,9 +2209,10 @@ void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,
   TestRenderWidgetHostView* view = static_cast<TestRenderWidgetHostView*>(
       contents->GetRenderWidgetHostView());
 
-  EXPECT_FALSE(view->is_showing());
+  // Test WebContents always start visible.
+  EXPECT_TRUE(view->is_showing());
 
-  // WebContents must be made visible once before it can be hidden.
+  // WebContents must be made visible once before its visibility can be changed.
   contents->UpdateWebContentsVisibility(Visibility::VISIBLE);
   EXPECT_TRUE(view->is_showing());
   EXPECT_FALSE(view->is_occluded());
@@ -2278,7 +2280,8 @@ TEST_F(WebContentsImplTest, KeepVisibleUntilFirstVisuallyNonEmptyPaint) {
   TestRenderWidgetHostView* view = static_cast<TestRenderWidgetHostView*>(
       contents()->GetRenderWidgetHostView());
 
-  EXPECT_FALSE(view->is_showing());
+  // Test WebContents always start visible.
+  EXPECT_TRUE(view->is_showing());
 
   WebUIConfigMap::GetInstance().AddWebUIConfig(
       std::make_unique<KeepVisibleWebUIConfig>());
@@ -2286,6 +2289,7 @@ TEST_F(WebContentsImplTest, KeepVisibleUntilFirstVisuallyNonEmptyPaint) {
   const GURL kGURL("chrome://keep-visible/");
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kGURL);
 
+  // WebContents must be made visible once before its visibility can be changed.
   contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
   EXPECT_TRUE(view->is_showing());
   EXPECT_FALSE(view->is_occluded());

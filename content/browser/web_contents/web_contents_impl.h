@@ -1286,6 +1286,7 @@ class CONTENT_EXPORT WebContentsImpl
       bool* proceed_to_fire_unload) override;
   void CancelModalDialogsForRenderManager() override;
   void NotifyPrimaryPageWillBeDeactivated(PageImpl& page) override;
+  void PrepareToSwapRenderFrameHosts() override;
   void NotifySwappedFromRenderManager(RenderFrameHostImpl* old_frame,
                                       RenderFrameHostImpl* new_frame) override;
   void NotifySwappedFromRenderManagerWithoutFallbackContent(
@@ -2350,6 +2351,8 @@ class CONTENT_EXPORT WebContentsImpl
 
   void OnFocusSelectionBoundsChangedSubscriptionRemoved();
 
+  void UpdateVisibilityPreFocus();
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.
@@ -2921,6 +2924,12 @@ class CONTENT_EXPORT WebContentsImpl
 #if BUILDFLAG(IS_ANDROID)
   bool supports_forward_transition_animation_ = true;
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // True while any frame in this WebContents is changing RenderFrameHosts
+  // during a navigation commit, including while the RenderFrameHostManager is
+  // preparing to swap frames. Notably, this will be true while dispatching
+  // RenderFrameHostChanged() and RenderViewHostChanged() events.
+  bool is_swapping_render_frame_hosts_ = false;
 
   void SetDragSource(const DragId& drag_id,
                      const GlobalRenderFrameHostToken& source_rfh_token);

@@ -360,6 +360,14 @@ BASE_DECLARE_FEATURE(kUsePortalAccentColor);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kThemeChangeOptimization);
 
+// Kill switch for removing
+// RenderFrameHostManager::EnsureRenderFrameHostVisibilityConsistent.
+//
+// A RenderFrameHost will now either be made visible when navigation commits, or
+// when the WebContents is focused (if the WebContents is visible).
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kRemoveEnsureRFHVisibilityConsistent);
+
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kColorIdCssStyleSheetOptimization);
 
