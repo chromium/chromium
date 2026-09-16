@@ -158,7 +158,10 @@ ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
 
   if (extension) {
     const PermissionsData* permissions = extension->permissions_data();
-    if (permissions->HasAPIPermission(APIPermissionID::kTab)) {
+    if (extension->origin().IsSameOriginWith(url)) {
+      // Extensions always have permission to access their own origin URLs.
+      has_permission = true;
+    } else if (permissions->HasAPIPermission(APIPermissionID::kTab)) {
       // Global "tabs" permission allows access to any URL.
       has_permission = true;
     } else if (tab_id != api::tabs::TAB_ID_NONE &&
