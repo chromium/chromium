@@ -85,7 +85,7 @@ PerformanceManager::GetProcessNodeForRenderProcessHost(
 base::WeakPtr<ProcessNode>
 PerformanceManager::GetProcessNodeForRenderProcessHostId(
     RenderProcessHostId id) {
-  DCHECK(id);
+  DCHECK(*id);
   auto* rph = content::RenderProcessHost::FromID(id.value());
   if (!rph)
     return nullptr;
@@ -98,14 +98,14 @@ PerformanceManager::GetProcessNodeForBrowserChildProcessHost(
     content::BrowserChildProcessHost* bcph) {
   DCHECK(bcph);
   return GetProcessNodeForBrowserChildProcessHostId(
-      BrowserChildProcessHostId(bcph->GetData().id));
+      BrowserChildProcessHostId(bcph->GetData().GetChildProcessId()));
 }
 
 // static
 base::WeakPtr<ProcessNode>
 PerformanceManager::GetProcessNodeForBrowserChildProcessHostId(
     BrowserChildProcessHostId id) {
-  DCHECK(id);
+  DCHECK(*id);
   auto* registry = PerformanceManagerRegistryImpl::GetInstance();
   if (!registry) {
     return nullptr;

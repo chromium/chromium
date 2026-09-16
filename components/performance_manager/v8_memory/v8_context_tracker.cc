@@ -212,8 +212,9 @@ void V8ContextTracker::OnRemoteIframeAttached(
   // different parent.
 
   auto rph_id = parent_frame_node->process_node()->GetRenderProcessHostId();
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   auto* rfh = content::RenderFrameHost::FromPlaceholderToken(
-      rph_id.value(), remote_frame_token);
+      rph_id->GetUnsafeValue(), remote_frame_token);
   if (!rfh) {
     return;
   }

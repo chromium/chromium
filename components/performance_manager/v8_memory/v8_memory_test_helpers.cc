@@ -183,7 +183,7 @@ void V8MemoryPerformanceManagerTestHarness::SetUp() {
   SetContents(CreateTestWebContents());
   main_frame_ = content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(kMainFrameUrl));
-  main_process_id_ = main_frame_->GetProcess()->GetID();
+  main_process_id_ = RenderProcessHostId(main_frame_->GetProcess()->GetID());
 }
 
 void V8MemoryPerformanceManagerTestHarness::CreateCrossProcessChildFrame() {
@@ -193,7 +193,7 @@ void V8MemoryPerformanceManagerTestHarness::CreateCrossProcessChildFrame() {
       content::RenderFrameHostTester::For(main_frame_)->AppendChild("frame1");
   child_frame_ = content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL(kChildFrameUrl), child_frame_);
-  child_process_id_ = child_frame_->GetProcess()->GetID();
+  child_process_id_ = RenderProcessHostId(child_frame_->GetProcess()->GetID());
   ASSERT_NE(main_process_id_, child_process_id_);
 }
 

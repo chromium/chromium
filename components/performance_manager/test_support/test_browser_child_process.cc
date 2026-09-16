@@ -25,7 +25,7 @@ TestBrowserChildProcess::~TestBrowserChildProcess() {
 }
 
 BrowserChildProcessHostId TestBrowserChildProcess::GetId() const {
-  return BrowserChildProcessHostId(host_->GetData().id);
+  return BrowserChildProcessHostId(host_->GetData().GetChildProcessId());
 }
 
 BrowserChildProcessHostProxy TestBrowserChildProcess::GetProxy() const {

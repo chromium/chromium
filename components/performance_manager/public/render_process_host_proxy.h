@@ -33,7 +33,7 @@ class RenderProcessHostProxy {
 
   // Returns true iff the proxy has a valid RenderProcessHostId (not 0 or
   // ChildProcessHost::kInvalidUniqueId).
-  bool is_valid() const { return !render_process_host_id_.is_null(); }
+  bool is_valid() const { return !render_process_host_id_->is_null(); }
 
   // Returns the routing id of the render process (from
   // RenderProcessHost::GetID()).
@@ -42,7 +42,7 @@ class RenderProcessHostProxy {
   }
 
   content::ChildProcessId child_process_id() const {
-    return render_process_host_id_;
+    return render_process_host_id_.value();
   }
 
   static RenderProcessHostProxy CreateForTesting(

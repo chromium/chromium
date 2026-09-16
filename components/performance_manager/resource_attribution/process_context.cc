@@ -58,7 +58,7 @@ std::optional<ProcessContext> ProcessContext::FromRenderProcessHost(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(host);
   RenderProcessHostId id(host->GetID());
-  CHECK(!id.is_null());
+  CHECK(!id->is_null());
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForRenderProcessHost(host);
   if (!process_node.MaybeValid()) {
@@ -72,8 +72,8 @@ std::optional<ProcessContext> ProcessContext::FromBrowserChildProcessHost(
     content::BrowserChildProcessHost* host) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(host);
-  BrowserChildProcessHostId id(host->GetData().id);
-  CHECK(!id.is_null());
+  BrowserChildProcessHostId id(host->GetData().GetChildProcessId());
+  CHECK(!id->is_null());
   base::WeakPtr<ProcessNode> process_node =
       PerformanceManager::GetProcessNodeForBrowserChildProcessHost(host);
   if (!process_node.MaybeValid()) {
@@ -100,8 +100,7 @@ bool ProcessContext::IsBrowserChildProcessContext() const {
 content::RenderProcessHost* ProcessContext::GetRenderProcessHost() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const auto* rph_id = std::get_if<RenderProcessHostId>(&id_);
-  return rph_id ? content::RenderProcessHost::FromID(rph_id->GetUnsafeValue())
-                : nullptr;
+  return rph_id ? content::RenderProcessHost::FromID(rph_id->value()) : nullptr;
 }
 
 RenderProcessHostId ProcessContext::GetRenderProcessHostId() const {
@@ -114,8 +113,7 @@ content::BrowserChildProcessHost* ProcessContext::GetBrowserChildProcessHost()
     const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const auto* bcph_id = std::get_if<BrowserChildProcessHostId>(&id_);
-  return bcph_id ? content::BrowserChildProcessHost::FromID(
-                       bcph_id->GetUnsafeValue())
+  return bcph_id ? content::BrowserChildProcessHost::FromID(bcph_id->value())
                  : nullptr;
 }
 
@@ -142,12 +140,12 @@ ProcessContext ProcessContext::FromProcessNode(const ProcessNode* node) {
       break;
     case content::PROCESS_TYPE_RENDERER:
       id = node_impl->GetRenderProcessHostId();
-      CHECK(!std::get<RenderProcessHostId>(id).is_null());
+      CHECK(!std::get<RenderProcessHostId>(id)->is_null());
       break;
     default:
       id = node_impl->GetBrowserChildProcessHostProxy()
                .browser_child_process_host_id();
-      CHECK(!std::get<BrowserChildProcessHostId>(id).is_null());
+      CHECK(!std::get<BrowserChildProcessHostId>(id)->is_null());
       break;
   }
   return ProcessContext(std::move(id), node_impl->GetWeakPtr());
@@ -180,11 +178,11 @@ std::string ProcessContext::ToString() const {
           },
           [](const RenderProcessHostId& id) -> std::string {
             return base::StrCat({"ProcessContext:Renderer:",
-                                 base::NumberToString(id.GetUnsafeValue())});
+                                 base::NumberToString(id->value())});
           },
           [](const BrowserChildProcessHostId& id) -> std::string {
             return base::StrCat({"ProcessContext:BrowserChild:",
-                                 base::NumberToString(id.GetUnsafeValue())});
+                                 base::NumberToString(id->value())});
           },
       },
       id_);

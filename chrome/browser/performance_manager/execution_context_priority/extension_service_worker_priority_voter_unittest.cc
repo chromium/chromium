@@ -88,7 +88,7 @@ class ExtensionServiceWorkerPriorityVoterTest : public GraphTestHarness {
 
   TestNodeWrapper<ProcessNodeImpl> CreateProcessNode() {
     return CreateRendererProcessNode(RenderProcessHostProxy::CreateForTesting(
-        render_process_host_->GetID()));
+        RenderProcessHostId(render_process_host_->GetID())));
   }
 
   TestNodeWrapper<WorkerNodeImpl> CreateWorkerNode(

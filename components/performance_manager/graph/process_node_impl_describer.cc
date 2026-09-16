@@ -178,7 +178,7 @@ base::DictValue ProcessNodeImplDescriber::DescribeProcessNodeData(
 
   if (impl->GetProcessType() == content::PROCESS_TYPE_RENDERER) {
     // Renderer-only properties.
-    ret.Set("render_process_id", impl->GetRenderProcessHostId().value());
+    ret.Set("render_process_id", impl->GetRenderProcessHostId()->value());
 
     ret.Set("main_thread_task_load_is_low", impl->GetMainThreadTaskLoadIsLow());
 
@@ -189,7 +189,7 @@ base::DictValue ProcessNodeImplDescriber::DescribeProcessNodeData(
     ret.Set("browser_child_process_host_id",
             impl->GetBrowserChildProcessHostProxy()
                 .browser_child_process_host_id()
-                .value());
+                ->value());
   }
 
   return ret;

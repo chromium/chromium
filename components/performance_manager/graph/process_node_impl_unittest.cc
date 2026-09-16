@@ -235,7 +235,7 @@ TEST_F(ProcessNodeImplTest, ConstructionArguments_Browser) {
 
 TEST_F(ProcessNodeImplTest, ConstructionArguments_Renderer) {
   constexpr RenderProcessHostId kRenderProcessHostId =
-      RenderProcessHostId(0xF0B);
+      RenderProcessHostId(content::ChildProcessId(0xF0B));
   auto process_node = CreateNode<ProcessNodeImpl>(
       RenderProcessHostProxy::CreateForTesting(kRenderProcessHostId));
 
@@ -246,7 +246,7 @@ TEST_F(ProcessNodeImplTest, ConstructionArguments_Renderer) {
 
 TEST_F(ProcessNodeImplTest, ConstructionArguments_NonRenderer) {
   constexpr BrowserChildProcessHostId kBrowserChildProcessHostId =
-      BrowserChildProcessHostId(0xF0B);
+      BrowserChildProcessHostId(content::ChildProcessId(0xF0B));
   auto process_node = CreateNode<ProcessNodeImpl>(
       content::PROCESS_TYPE_GPU, BrowserChildProcessHostProxy::CreateForTesting(
                                      kBrowserChildProcessHostId));

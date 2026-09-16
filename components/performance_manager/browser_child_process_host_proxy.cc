@@ -17,13 +17,13 @@ BrowserChildProcessHostProxy& BrowserChildProcessHostProxy::operator=(
 
 content::BrowserChildProcessHost* BrowserChildProcessHostProxy::Get() const {
   return content::BrowserChildProcessHost::FromID(
-      browser_child_process_host_id_.value());
+      browser_child_process_host_id_->value());
 }
 
 BrowserChildProcessHostProxy::BrowserChildProcessHostProxy(
     BrowserChildProcessHostId browser_child_process_host_id)
     : browser_child_process_host_id_(browser_child_process_host_id) {
-  DCHECK_GE(browser_child_process_host_id.value(), 0);
+  DCHECK_GE(browser_child_process_host_id->value(), 0);
 }
 
 // static

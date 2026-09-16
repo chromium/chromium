@@ -35,7 +35,7 @@ class BrowserChildProcessHostProxy {
 
   // Returns true iff the proxy has a valid BrowserChildProcessHostId (not 0 or
   // ChildProcessHost::kInvalidUniqueId).
-  bool is_valid() const { return !browser_child_process_host_id_.is_null(); }
+  bool is_valid() const { return !browser_child_process_host_id_->is_null(); }
 
   // Returns the routing id of the BrowserChildProcessHost (from
   // BrowserChildProcessHost::GetID).
@@ -57,8 +57,7 @@ class BrowserChildProcessHostProxy {
       BrowserChildProcessHostId browser_child_process_host_id);
 
  private:
-  BrowserChildProcessHostId browser_child_process_host_id_ =
-      BrowserChildProcessHostId(content::ChildProcessHost::kInvalidUniqueID);
+  BrowserChildProcessHostId browser_child_process_host_id_;
 };
 
 }  // namespace performance_manager

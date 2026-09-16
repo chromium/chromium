@@ -46,10 +46,10 @@ TEST_F(ResourceAttrProcessContextTest, BrowserProcessContext) {
 
   EXPECT_FALSE(process_context->IsRenderProcessContext());
   EXPECT_EQ(nullptr, process_context->GetRenderProcessHost());
-  EXPECT_TRUE(process_context->GetRenderProcessHostId().is_null());
+  EXPECT_TRUE(process_context->GetRenderProcessHostId()->is_null());
   EXPECT_FALSE(process_context->IsBrowserChildProcessContext());
   EXPECT_EQ(nullptr, process_context->GetBrowserChildProcessHost());
-  EXPECT_TRUE(process_context->GetBrowserChildProcessHostId().is_null());
+  EXPECT_TRUE(process_context->GetBrowserChildProcessHostId()->is_null());
 
   base::WeakPtr<ProcessNode> process_node =
       process_context->GetWeakProcessNode();
@@ -89,7 +89,7 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   ASSERT_TRUE(rfh);
   content::RenderProcessHost* rph = rfh->GetProcess();
   ASSERT_TRUE(rph);
-  const RenderProcessHostId rph_id = rph->GetID();
+  const RenderProcessHostId rph_id = RenderProcessHostId(rph->GetID());
   std::optional<ProcessContext> process_context =
       ProcessContext::FromRenderProcessHost(rph);
   ASSERT_TRUE(process_context.has_value());
@@ -100,7 +100,7 @@ TEST_F(ResourceAttrProcessContextTest, RenderProcessContext) {
   EXPECT_FALSE(process_context->IsBrowserProcessContext());
   EXPECT_FALSE(process_context->IsBrowserChildProcessContext());
   EXPECT_EQ(nullptr, process_context->GetBrowserChildProcessHost());
-  EXPECT_TRUE(process_context->GetBrowserChildProcessHostId().is_null());
+  EXPECT_TRUE(process_context->GetBrowserChildProcessHostId()->is_null());
 
   base::WeakPtr<ProcessNode> process_node =
       process_context->GetWeakProcessNode();
@@ -166,7 +166,7 @@ TEST_F(ResourceAttrProcessContextTest, BrowserChildProcessContext) {
   EXPECT_FALSE(process_context->IsBrowserProcessContext());
   EXPECT_FALSE(process_context->IsRenderProcessContext());
   EXPECT_EQ(nullptr, process_context->GetRenderProcessHost());
-  EXPECT_TRUE(process_context->GetRenderProcessHostId().is_null());
+  EXPECT_TRUE(process_context->GetRenderProcessHostId()->is_null());
 
   base::WeakPtr<ProcessNode> process_node =
       process_context->GetWeakProcessNode();

@@ -57,7 +57,7 @@ void BindChildProcessCoordinationUnitForRenderProcessHost(
     mojo::PendingReceiver<mojom::ChildProcessCoordinationUnit> receiver) {
   BindChildProcessCoordinationUnit(
       PerformanceManagerImpl::GetProcessNodeForRenderProcessHostId(
-          render_process_host_id),
+          RenderProcessHostId(render_process_host_id)),
       std::move(receiver));
 }
 

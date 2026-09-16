@@ -65,13 +65,15 @@ ProcessNodeImpl* BrowserChildProcessWatcher::GetChildProcessNode(
 void BrowserChildProcessWatcher::CreateChildProcessNodeForTesting(
     const content::ChildProcessData& data,
     const base::Process& process) {
-  CHECK(!tracked_process_nodes_.contains(BrowserChildProcessHostId(data.id)));
+  CHECK(!tracked_process_nodes_.contains(
+      BrowserChildProcessHostId(data.GetChildProcessId())));
   BrowserChildProcessLaunchedAndConnected(data, process);
 }
 
 void BrowserChildProcessWatcher::DeleteChildProcessNodeForTesting(
     const content::ChildProcessData& data) {
-  CHECK(tracked_process_nodes_.contains(BrowserChildProcessHostId(data.id)));
+  CHECK(tracked_process_nodes_.contains(
+      BrowserChildProcessHostId(data.GetChildProcessId())));
   BrowserChildProcessHostDisconnected(data);
 }
 
@@ -89,10 +91,11 @@ void BrowserChildProcessWatcher::BrowserChildProcessLaunchedAndConnected(
     std::unique_ptr<ProcessNodeImpl> process_node =
         PerformanceManagerImpl::CreateProcessNode(
             static_cast<content::ProcessType>(data.process_type),
-            BrowserChildProcessHostProxy(BrowserChildProcessHostId(data.id)));
+            BrowserChildProcessHostProxy(
+                BrowserChildProcessHostId(data.GetChildProcessId())));
     OnProcessLaunched(process, data.metrics_name, process_node.get());
     const auto [_, inserted] = tracked_process_nodes_.emplace(
-        BrowserChildProcessHostId(data.id), std::move(process_node));
+        data.GetChildProcessId(), std::move(process_node));
     CHECK(inserted);
   }
 }
@@ -101,7 +104,8 @@ void BrowserChildProcessWatcher::BrowserChildProcessHostDisconnected(
     const content::ChildProcessData& data) {
   if (data.process_type == content::PROCESS_TYPE_GPU ||
       data.process_type == content::PROCESS_TYPE_UTILITY) {
-    auto it = tracked_process_nodes_.find(BrowserChildProcessHostId(data.id));
+    auto it = tracked_process_nodes_.find(
+        BrowserChildProcessHostId(data.GetChildProcessId()));
     // Apparently there are cases where a disconnect notification arrives here
     // either multiple times for the same process, or else before a
     // launch-and-connect notification arrives.
@@ -118,7 +122,8 @@ void BrowserChildProcessWatcher::BrowserChildProcessCrashed(
     const content::ChildProcessTerminationInfo& info) {
   if (data.process_type == content::PROCESS_TYPE_GPU ||
       data.process_type == content::PROCESS_TYPE_UTILITY) {
-    TrackedProcessExited(BrowserChildProcessHostId(data.id), info.exit_code);
+    TrackedProcessExited(BrowserChildProcessHostId(data.GetChildProcessId()),
+                         info.exit_code);
   }
 }
 
@@ -127,7 +132,8 @@ void BrowserChildProcessWatcher::BrowserChildProcessKilled(
     const content::ChildProcessTerminationInfo& info) {
   if (data.process_type == content::PROCESS_TYPE_GPU ||
       data.process_type == content::PROCESS_TYPE_UTILITY) {
-    TrackedProcessExited(BrowserChildProcessHostId(data.id), info.exit_code);
+    TrackedProcessExited(BrowserChildProcessHostId(data.GetChildProcessId()),
+                         info.exit_code);
   }
 }
 

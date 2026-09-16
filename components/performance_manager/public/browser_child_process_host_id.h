@@ -5,23 +5,18 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_BROWSER_CHILD_PROCESS_HOST_ID_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_BROWSER_CHILD_PROCESS_HOST_ID_H_
 
-#include "base/types/id_type.h"
-#include "content/public/browser/child_process_host.h"
+#include "base/types/strong_alias.h"
+#include "content/public/common/child_process_id.h"
 
 namespace performance_manager {
 
-// A strongly typed wrapper for the id returned by
-// BrowserChildProcessHost::GetData().id.
-//
-// This uses ChildProcessHost::kInvalidUniqueId (-1) as the default invalid id,
-// but also recognizes 0 as an invalid id because there is existing code that
-// uses 0 as an invalid value. It starts generating id's at 1.
+// A unique identifier for a child process of the browser process, e.g. a
+// utility process. This is represented by a ChildProcessId but wrapped in
+// order to distinguish it from a RenderProcessHostId which is fundamentally
+// the same type but a different type of process.
 using BrowserChildProcessHostId =
-    base::IdType<class BrowserChildProcessHostIdTag,
-                 int32_t,
-                 content::ChildProcessHost::kInvalidUniqueID,
-                 /*kFirstGeneratedId=*/1,
-                 /*kExtraInvalidValues=*/0>;
+    base::StrongAlias<class BrowserChildProcessHostIdTag,
+                      content::ChildProcessId>;
 
 }  // namespace performance_manager
 

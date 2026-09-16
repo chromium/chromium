@@ -129,10 +129,12 @@ TEST_F(FrameNodeImplTest, AddFrameHierarchyBasic) {
 }
 
 TEST_F(FrameNodeImplTest, GetFrameNodeById) {
-  auto process_a = CreateNode<ProcessNodeImpl>(
-      RenderProcessHostProxy::CreateForTesting(RenderProcessHostId(42)));
-  auto process_b = CreateNode<ProcessNodeImpl>(
-      RenderProcessHostProxy::CreateForTesting(RenderProcessHostId(43)));
+  auto process_a =
+      CreateNode<ProcessNodeImpl>(RenderProcessHostProxy::CreateForTesting(
+          RenderProcessHostId(content::ChildProcessId(42))));
+  auto process_b =
+      CreateNode<ProcessNodeImpl>(RenderProcessHostProxy::CreateForTesting(
+          RenderProcessHostId(content::ChildProcessId(43))));
   auto page = CreateNode<PageNodeImpl>();
   auto frame_a1 = CreateFrameNodeAutoId(process_a.get(), page.get());
   auto frame_a2 = CreateFrameNodeAutoId(process_a.get(), page.get());

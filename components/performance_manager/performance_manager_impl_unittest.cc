@@ -57,7 +57,8 @@ class PerformanceManagerImplTest : public testing::Test {
 using PerformanceManagerImplDeathTest = PerformanceManagerImplTest;
 
 TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
-  const auto render_process_host_id = RenderProcessHostId(1);
+  const auto render_process_host_id =
+      RenderProcessHostId(content::ChildProcessId(1));
   int next_render_frame_id = 0;
 
   std::unique_ptr<ProcessNodeImpl> process_node =
@@ -89,7 +90,8 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
 }
 
 TEST_F(PerformanceManagerImplDeathTest, InvalidProcessHostProxies) {
-  const auto browser_child_process_host_id = BrowserChildProcessHostId(1);
+  const auto browser_child_process_host_id =
+      BrowserChildProcessHostId(content::ChildProcessId(1));
   EXPECT_CHECK_DEATH(PerformanceManagerImpl::CreateProcessNode(
       RenderProcessHostProxy(), base::Process::Priority::kMaxValue));
   EXPECT_CHECK_DEATH(PerformanceManagerImpl::CreateProcessNode(
@@ -107,7 +109,8 @@ TEST_F(PerformanceManagerImplDeathTest, InvalidProcessHostProxies) {
 }
 
 TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
-  const auto render_process_host_id = RenderProcessHostId(1);
+  const auto render_process_host_id =
+      RenderProcessHostId(content::ChildProcessId(1));
   int next_render_frame_id = 0;
   // Create a page node and a small hierarchy of frames.
   std::unique_ptr<ProcessNodeImpl> process_node =

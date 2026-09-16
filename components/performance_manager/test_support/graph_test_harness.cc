@@ -15,13 +15,13 @@ int NextTestFrameRoutingId() {
 }
 
 RenderProcessHostId NextTestRenderProcessHostId() {
-  static RenderProcessHostId::Generator id_generator;
-  return id_generator.GenerateNextId();
+  static RenderProcessHostId::underlying_type::Generator id_generator;
+  return RenderProcessHostId(id_generator.GenerateNextId());
 }
 
 BrowserChildProcessHostId NextTestBrowserChildProcessHostId() {
-  static BrowserChildProcessHostId::Generator id_generator;
-  return id_generator.GenerateNextId();
+  static BrowserChildProcessHostId::underlying_type::Generator id_generator;
+  return BrowserChildProcessHostId(id_generator.GenerateNextId());
 }
 
 content::FrameTreeNodeId NextTestFrameTreeNodeId() {

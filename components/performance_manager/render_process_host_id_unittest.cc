@@ -4,36 +4,37 @@
 
 #include "components/performance_manager/public/render_process_host_id.h"
 
-#include "content/public/browser/child_process_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
 
 TEST(RenderProcessHostIdTest, InvalidValues) {
   RenderProcessHostId default_id;
-  EXPECT_TRUE(default_id.is_null());
-  EXPECT_FALSE(default_id);
+  EXPECT_TRUE(default_id->is_null());
+  EXPECT_FALSE(*default_id);
 
-  RenderProcessHostId invalid_id(content::ChildProcessHost::kInvalidUniqueID);
-  EXPECT_TRUE(invalid_id.is_null());
-  EXPECT_FALSE(invalid_id);
+  RenderProcessHostId invalid_id{content::ChildProcessId{}};
+  EXPECT_TRUE(invalid_id->is_null());
+  EXPECT_FALSE(*invalid_id);
 
-  RenderProcessHostId zero_id(0);
-  EXPECT_TRUE(zero_id.is_null());
-  EXPECT_FALSE(zero_id);
+  RenderProcessHostId zero_id(content::ChildProcessId(0));
+  EXPECT_TRUE(zero_id->is_null());
+  EXPECT_FALSE(*zero_id);
 
   EXPECT_EQ(default_id, invalid_id);
   EXPECT_NE(default_id, zero_id);
 
-  RenderProcessHostId valid_id(1);
-  EXPECT_FALSE(valid_id.is_null());
-  EXPECT_TRUE(valid_id);
+  RenderProcessHostId valid_id(content::ChildProcessId(1));
+  EXPECT_FALSE(valid_id->is_null());
+  EXPECT_TRUE(*valid_id);
 }
 
 TEST(RenderProcessHostIdTest, Generator) {
-  RenderProcessHostId::Generator generator;
-  EXPECT_EQ(generator.GenerateNextId(), RenderProcessHostId(1));
-  EXPECT_EQ(generator.GenerateNextId(), RenderProcessHostId(2));
+  RenderProcessHostId::underlying_type::Generator generator;
+  EXPECT_EQ(RenderProcessHostId(generator.GenerateNextId()),
+            RenderProcessHostId(content::ChildProcessId(1)));
+  EXPECT_EQ(RenderProcessHostId(generator.GenerateNextId()),
+            RenderProcessHostId(content::ChildProcessId(2)));
 }
 
 }  // namespace performance_manager

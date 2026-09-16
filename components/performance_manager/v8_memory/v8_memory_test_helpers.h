@@ -82,7 +82,7 @@ class V8MemoryTestBase {
  public:
   // A default process ID to use in tests.
   static constexpr RenderProcessHostId kTestProcessID =
-      RenderProcessHostId(0xFAB);
+      RenderProcessHostId(content::ChildProcessId(0xFAB));
 
   V8MemoryTestBase();
   virtual ~V8MemoryTestBase();

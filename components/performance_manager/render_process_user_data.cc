@@ -41,7 +41,8 @@ RenderProcessUserData::RenderProcessUserData(
   host_->AddObserver(this);
   base::Process::Priority initial_priority = GetInitialPriority();
   process_node_ = PerformanceManagerImpl::CreateProcessNode(
-      RenderProcessHostProxy(host_->GetID()), initial_priority);
+      RenderProcessHostProxy(RenderProcessHostId(host_->GetID())),
+      initial_priority);
 }
 
 RenderProcessUserData::~RenderProcessUserData() {

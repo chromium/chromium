@@ -49,18 +49,19 @@ TEST_F(MockGraphsTest, ProcessNodes) {
       mock_graph.other_process->GetRenderProcessHostProxy();
   const BrowserChildProcessHostProxy& utility_process_proxy =
       mock_graph.utility_process->GetBrowserChildProcessHostProxy();
-  EXPECT_FALSE(process_proxy.render_process_host_id().is_null());
-  EXPECT_FALSE(other_process_proxy.render_process_host_id().is_null());
+  EXPECT_FALSE(process_proxy.render_process_host_id()->is_null());
+  EXPECT_FALSE(other_process_proxy.render_process_host_id()->is_null());
   EXPECT_NE(process_proxy.render_process_host_id(),
             other_process_proxy.render_process_host_id());
-  EXPECT_FALSE(utility_process_proxy.browser_child_process_host_id().is_null());
+  EXPECT_FALSE(
+      utility_process_proxy.browser_child_process_host_id()->is_null());
 
   // Add a custom node to the graph.
   const auto custom_process = TestNodeWrapper<TestProcessNodeImpl>::Create(
       graph(), content::ProcessType::PROCESS_TYPE_GPU);
   const BrowserChildProcessHostProxy& custom_process_proxy =
       custom_process->GetBrowserChildProcessHostProxy();
-  EXPECT_FALSE(custom_process_proxy.browser_child_process_host_id().is_null());
+  EXPECT_FALSE(custom_process_proxy.browser_child_process_host_id()->is_null());
   EXPECT_NE(utility_process_proxy.browser_child_process_host_id(),
             custom_process_proxy.browser_child_process_host_id());
 }

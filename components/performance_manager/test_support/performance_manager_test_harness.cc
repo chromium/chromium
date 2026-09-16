@@ -108,7 +108,7 @@ PerformanceManagerTestHarness::DedicatedWorkerFactory::CreateDedicatedWorker(
     const ProcessNode* process_node,
     const FrameNode* frame_node,
     const url::Origin& origin) {
-  content::ChildProcessId worker_process_id =
+  RenderProcessHostId worker_process_id =
       process_node->GetRenderProcessHostId();
   content::GlobalRenderFrameHostId render_frame_host_id =
       frame_node->GetRenderFrameHostProxy().global_frame_routing_id();
@@ -121,7 +121,7 @@ PerformanceManagerTestHarness::DedicatedWorkerFactory::CreateDedicatedWorker(
   DCHECK(result.second);  // Check inserted.
 
   // Notify observers.
-  observer_->OnWorkerCreated(token, worker_process_id, origin,
+  observer_->OnWorkerCreated(token, *worker_process_id, origin,
                              render_frame_host_id);
 
   return result.first->first;
@@ -132,7 +132,7 @@ PerformanceManagerTestHarness::DedicatedWorkerFactory::CreateDedicatedWorker(
     const ProcessNode* process_node,
     const WorkerNode* parent_dedicated_worker_node,
     const url::Origin& origin) {
-  content::ChildProcessId worker_process_id =
+  RenderProcessHostId worker_process_id =
       process_node->GetRenderProcessHostId();
 
   // Create a new token for the worker and add it to the map, along with its
@@ -147,7 +147,7 @@ PerformanceManagerTestHarness::DedicatedWorkerFactory::CreateDedicatedWorker(
   DCHECK(result.second);  // Check inserted.
 
   // Notify observers.
-  observer_->OnWorkerCreated(token, worker_process_id, origin, parent_token);
+  observer_->OnWorkerCreated(token, *worker_process_id, origin, parent_token);
 
   return result.first->first;
 }
@@ -178,7 +178,7 @@ blink::SharedWorkerToken
 PerformanceManagerTestHarness::SharedWorkerFactory::CreateSharedWorker(
     const ProcessNode* process_node,
     const url::Origin& origin) {
-  content::ChildProcessId worker_process_id =
+  RenderProcessHostId worker_process_id =
       process_node->GetRenderProcessHostId();
 
   // Create a new SharedWorkerToken for the worker and add it to the map.
@@ -189,7 +189,7 @@ PerformanceManagerTestHarness::SharedWorkerFactory::CreateSharedWorker(
   DCHECK(inserted);
 
   // Notify observer.
-  observer_->OnWorkerCreated(shared_worker_token, worker_process_id, origin,
+  observer_->OnWorkerCreated(shared_worker_token, *worker_process_id, origin,
                              base::UnguessableToken::Create());
 
   return shared_worker_token;
@@ -295,7 +295,7 @@ PerformanceManagerTestHarness::ServiceWorkerFactory::StartServiceWorker(
     const ProcessNode* process_node,
     const GURL& worker_url,
     const GURL& scope_url) {
-  content::ChildProcessId worker_process_id =
+  RenderProcessHostId worker_process_id =
       process_node->GetRenderProcessHostId();
 
   // Create a new token for the worker.
@@ -314,7 +314,7 @@ PerformanceManagerTestHarness::ServiceWorkerFactory::StartServiceWorker(
       content::ServiceWorkerRunningInfo(
           worker_url, scope_url,
           blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_url)),
-          worker_process_id, token,
+          *worker_process_id, token,
           content::ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::
               kActivated));
 

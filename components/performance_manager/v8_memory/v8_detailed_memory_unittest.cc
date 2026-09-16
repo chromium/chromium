@@ -228,10 +228,12 @@ TEST_F(V8DetailedMemoryDecoratorTest, OnlyMeasureRenderers) {
 TEST_F(V8DetailedMemoryDecoratorTest, OneShot) {
   // Create 2 renderer processes. Create one request that measures both of
   // them, and a one-shot request that measures only one.
-  constexpr RenderProcessHostId kProcessId1 = RenderProcessHostId(0xFAB);
+  constexpr RenderProcessHostId kProcessId1 =
+      RenderProcessHostId(content::ChildProcessId(0xFAB));
   auto process1 = CreateNode<ProcessNodeImpl>(
       RenderProcessHostProxy::CreateForTesting(kProcessId1));
-  constexpr RenderProcessHostId kProcessId2 = RenderProcessHostId(0xBAF);
+  constexpr RenderProcessHostId kProcessId2 =
+      RenderProcessHostId(content::ChildProcessId(0xBAF));
   auto process2 = CreateNode<ProcessNodeImpl>(
       RenderProcessHostProxy::CreateForTesting(kProcessId2));
 
@@ -1424,10 +1426,12 @@ TEST_F(V8DetailedMemoryDecoratorTest, ObserverOutlivesDecorator) {
 TEST_F(V8DetailedMemoryDecoratorTest, SingleProcessRequest) {
   // Create 2 renderer processes. Create one request that measures both of
   // them, and one request that measures only one.
-  constexpr RenderProcessHostId kProcessId1 = RenderProcessHostId(0xFAB);
+  constexpr RenderProcessHostId kProcessId1 =
+      RenderProcessHostId(content::ChildProcessId(0xFAB));
   auto process1 = CreateNode<ProcessNodeImpl>(
       RenderProcessHostProxy::CreateForTesting(kProcessId1));
-  constexpr RenderProcessHostId kProcessId2 = RenderProcessHostId(0xBAF);
+  constexpr RenderProcessHostId kProcessId2 =
+      RenderProcessHostId(content::ChildProcessId(0xBAF));
   auto process2 = CreateNode<ProcessNodeImpl>(
       RenderProcessHostProxy::CreateForTesting(kProcessId2));
 

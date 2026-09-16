@@ -27,7 +27,7 @@ namespace resource_attribution {
 namespace {
 
 bool IsValidId(content::GlobalRenderFrameHostId id) {
-  return !RenderProcessHostId(id.child_id).is_null() &&
+  return !RenderProcessHostId(id.child_id)->is_null() &&
          id.frame_routing_id != IPC::mojom::kRoutingIdNone;
 }
 
@@ -92,7 +92,7 @@ FrameContext FrameContext::FromFrameNode(const FrameNode* node) {
   auto* node_impl = FrameNodeImpl::FromNode(node);
   CHECK(node_impl->process_node());
   content::GlobalRenderFrameHostId global_id(
-      node_impl->process_node()->GetRenderProcessHostId().GetUnsafeValue(),
+      node_impl->process_node()->GetRenderProcessHostId().value(),
       node_impl->render_frame_id());
   CHECK(IsValidId(global_id));
   return FrameContext(global_id, node_impl->GetWeakPtr());
