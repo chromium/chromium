@@ -199,6 +199,12 @@ void ShareServiceImpl::Share(const std::string& title,
                              ShareCallback callback) {
   UMA_HISTOGRAM_ENUMERATION(kWebShareApiCountMetric, WebShareMethod::kShare);
 
+  if (!render_frame_host().IsActive()) {
+    VLOG(1) << "Cannot share from inactive frame";
+    std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
+    return;
+  }
+
   if (!render_frame_host().IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kWebShare)) {
     std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
@@ -273,7 +279,7 @@ void ShareServiceImpl::Share(const std::string& title,
     safe_browsing_request_.emplace(
         g_browser_process->safe_browsing_service()->database_manager(),
         v5_manager ? v5_manager->GetWeakPtr() : nullptr,
-        web_contents->GetLastCommittedURL(),
+        render_frame_host().GetLastCommittedURL(),
         base::BindOnce(&ShareServiceImpl::RunShareOperation,
                        weak_factory_.GetWeakPtr(), title, text, share_url,
                        std::move(files), std::move(callback)));
@@ -296,6 +302,12 @@ void ShareServiceImpl::RunShareOperation(
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing_request_.reset();
 #endif
+
+  if (!render_frame_host().IsActive()) {
+    VLOG(1) << "Cannot share from inactive frame";
+    std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
+    return;
+  }
 
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(&render_frame_host());
