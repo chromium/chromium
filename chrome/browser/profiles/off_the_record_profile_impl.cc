@@ -199,10 +199,14 @@ void OffTheRecordProfileImpl::Init() {
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
       this);
 
+  const IncognitoModePrefs::IncognitoModeType incognito_type =
+      IncognitoModePrefs::GetIncognitoModeType(profile_);
   // Always crash when incognito is not available.
   CHECK(!IsIncognitoProfile() ||
-        IncognitoModePrefs::GetAvailability(profile_) !=
-            policy::IncognitoModeAvailability::kDisabled);
+        incognito_type == IncognitoModePrefs::IncognitoModeType::kStandard);
+  // Always crash when isolated mode is not available.
+  CHECK(!IsEnterpriseIsolatedModeProfile() ||
+        incognito_type == IncognitoModePrefs::IncognitoModeType::kEnterprise);
 
   TrackZoomLevelsFromParent();
 

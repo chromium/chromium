@@ -245,7 +245,7 @@ class JumpList : public sessions::TabRestoreServiceObserver,
       bool most_visited_should_update,
       bool recently_closed_should_update,
       policy::IncognitoModeAvailability incognito_availability,
-      bool isolated_mode_enabled,
+      IncognitoModePrefs::IncognitoModeType incognito_type,
       UpdateTransaction* update_transaction);
 
   // Creates a new JumpList along with any icons that are not in the cache,
@@ -260,7 +260,7 @@ class JumpList : public sessions::TabRestoreServiceObserver,
       bool most_visited_should_update,
       bool recently_closed_should_update,
       policy::IncognitoModeAvailability incognito_availability,
-      bool isolated_mode_enabled,
+      IncognitoModePrefs::IncognitoModeType incognito_type,
       UpdateTransaction* update_transaction);
 
   // Updates icon files for |item_list| in |icon_dir|, which consists of

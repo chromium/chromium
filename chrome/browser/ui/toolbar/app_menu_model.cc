@@ -1993,7 +1993,9 @@ bool AppMenuModel::IsCommandIdEnabled(int command_id) const {
 
   switch (command_id) {
     case IDC_NEW_INCOGNITO_WINDOW:
-      return IncognitoModePrefs::IsIncognitoAllowed(browser_->GetProfile());
+      return IncognitoModePrefs::IsIncognitoTypeAllowed(
+          browser_->GetProfile(),
+          IncognitoModePrefs::IncognitoModeType::kStandard);
     default:
       return chrome::IsCommandEnabled(browser_, command_id);
   }

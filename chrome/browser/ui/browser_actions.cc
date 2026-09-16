@@ -1021,7 +1021,8 @@ void BrowserActions::InitializeChromeMenuActions() {
           base::BindRepeating(
               [](Profile* profile, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                CHECK(IncognitoModePrefs::IsIncognitoAllowed(profile));
+                CHECK(IncognitoModePrefs::IsIncognitoTypeAllowed(
+                    profile, IncognitoModePrefs::IncognitoModeType::kStandard));
                 chrome::NewIncognitoWindow(profile);
               },
               profile),
@@ -1029,7 +1030,8 @@ void BrowserActions::InitializeChromeMenuActions() {
           IDS_NEW_INCOGNITO_WINDOW,
           features::IsRoundedIconsEnabled() ? kIncognitoIcon
                                             : kIncognitoRefreshMenuOldIcon)
-          .SetEnabled(IncognitoModePrefs::IsIncognitoAllowed(profile))
+          .SetEnabled(IncognitoModePrefs::IsIncognitoTypeAllowed(
+              profile, IncognitoModePrefs::IncognitoModeType::kStandard))
           .SetProperty(actions::kShortTitleTextKey,
                        new std::u16string(
                            l10n_util::GetStringUTF16(IDS_APP_MENU_INCOGNITO)))

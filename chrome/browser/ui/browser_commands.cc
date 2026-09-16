@@ -917,8 +917,7 @@ void NewEmptyWindow(Profile* profile, bool should_trigger_session_restore) {
   bool off_the_record = profile->IsOffTheRecord();
   if (off_the_record) {
     if (IncognitoModePrefs::GetAvailability(profile) ==
-            policy::IncognitoModeAvailability::kDisabled &&
-        !profile->IsEnterpriseIsolatedModeProfile()) {
+        policy::IncognitoModeAvailability::kDisabled) {
       off_the_record = false;
     }
   } else if (profile->IsGuestSession() ||

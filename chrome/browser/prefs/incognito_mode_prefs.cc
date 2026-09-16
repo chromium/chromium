@@ -93,25 +93,43 @@ bool IncognitoModePrefs::CanOpenBrowser(Profile* profile) {
       return true;
 
     case IncognitoModeAvailability::kDisabled:
-      return !profile->IsIncognitoProfile();
+      return !profile->IsIncognitoProfile() &&
+             !profile->IsEnterpriseIsolatedModeProfile();
 
     case IncognitoModeAvailability::kForced:
       return profile->IsIncognitoProfile();
 
-    default:
+    case IncognitoModeAvailability::kNumTypes:
       NOTREACHED();
   }
 }
 
 // static
 bool IncognitoModePrefs::IsIncognitoAllowed(Profile* profile) {
-  return !profile->IsGuestSession() &&
-         IncognitoModePrefs::GetAvailability(profile) !=
-             IncognitoModeAvailability::kDisabled &&
-         // For enterprise profiles, Isolated Mode replaces standard Incognito
-         // Mode. Therefore, Incognito is not allowed when Isolated Mode is
-         // enabled.
-         !enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile);
+  if (profile->IsGuestSession()) {
+    return false;
+  }
+
+  switch (GetIncognitoModeType(profile)) {
+    case IncognitoModeType::kNone:
+      return false;
+    case IncognitoModeType::kStandard:
+    case IncognitoModeType::kEnterprise:
+      return true;
+    case IncognitoModeType::kNumTypes:
+      NOTREACHED();
+  }
+}
+
+// static
+bool IncognitoModePrefs::IsIncognitoTypeAllowed(
+    Profile* profile,
+    IncognitoModePrefs::IncognitoModeType type) {
+  if (profile->IsGuestSession()) {
+    return false;
+  }
+
+  return GetIncognitoModeType(profile) == type;
 }
 
 // static
@@ -126,17 +144,41 @@ bool IncognitoModePrefs::ArePlatformParentalControlsEnabled() {
 }
 
 // static
+IncognitoModePrefs::IncognitoModeType IncognitoModePrefs::GetIncognitoModeType(
+    const Profile* profile) {
+  switch (GetAvailability(profile)) {
+    case IncognitoModeAvailability::kEnabled:
+    case IncognitoModeAvailability::kForced:
+      return enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile)
+                 ? IncognitoModeType::kEnterprise
+                 : IncognitoModeType::kStandard;
+    case IncognitoModeAvailability::kDisabled:
+      return IncognitoModeType::kNone;
+    case IncognitoModeAvailability::kNumTypes:
+      NOTREACHED();
+  }
+}
+
+// static
 IncognitoModeAvailability IncognitoModePrefs::GetAvailabilityInternal(
     const Profile* profile,
     GetAvailabilityMode mode) {
   DCHECK(profile);
-  const PrefService* pref_service = profile->GetPrefs();
-  DCHECK(pref_service);
-  int pref_value = pref_service->GetInteger(
-      policy::policy_prefs::kIncognitoModeAvailability);
+
   IncognitoModeAvailability result = kDefaultAvailability;
-  bool valid = IntToAvailability(pref_value, &result);
-  DCHECK(valid);
+  // Enterprise Isolated Mode has higher priority than the Incognito mode
+  // availability preference.
+  if (enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile)) {
+    result = IncognitoModeAvailability::kEnabled;
+  } else {
+    const PrefService* pref_service = profile->GetPrefs();
+    DCHECK(pref_service);
+    int pref_value = pref_service->GetInteger(
+        policy::policy_prefs::kIncognitoModeAvailability);
+    bool valid = IntToAvailability(pref_value, &result);
+    DCHECK(valid);
+  }
+
   if (result != IncognitoModeAvailability::kDisabled &&
       mode == CHECK_PARENTAL_CONTROLS && ArePlatformParentalControlsEnabled()) {
     if (result == IncognitoModeAvailability::kForced) {
