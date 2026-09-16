@@ -667,9 +667,6 @@ ClipboardExtractedData ClientSideDetectionHostBase::ExtractClipboardData(
       base::SplitString(processed_payload, u" \t\n\r", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
 
-  base::UmaHistogramMediumTimes(
-      "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.SplitStringDuration",
-      base::TimeTicks::Now() - start_time);
   base::UmaHistogramCounts100(
       "SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount",
       tokens.size());
