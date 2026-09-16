@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/app/public/make_conversation.h"
-#include "chrome/browser/ttc/conversation.h"
 #include "chrome/browser/ttc/session_controller_impl.h"
 #include "chrome/browser/ttc/ttc_keyed_service_factory.h"
 

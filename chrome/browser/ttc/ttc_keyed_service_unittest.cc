@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ttc/conversation.h"
+#include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/test_utils.h"
 #include "chrome/browser/ttc/features.h"
 #include "chrome/browser/ttc/session_controller.h"

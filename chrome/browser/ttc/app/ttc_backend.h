@@ -12,7 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "chrome/browser/ttc/tool_definition.h"
+#include "chrome/browser/ttc/app/public/tool_definition.h"
 #include "url/gurl.h"
 
 namespace optimization_guide::proto {

@@ -13,8 +13,7 @@ namespace ttc {
 
 class Conversation;
 
-// Creates the production Conversation implementation. This is the only part of
-// //chrome/browser/ttc/app visible to code outside of it.
+// Creates the concrete ConversationImpl object for use from outside of app/.
 std::unique_ptr<Conversation> MakeConversationImpl(Profile* profile);
 
 }  // namespace ttc

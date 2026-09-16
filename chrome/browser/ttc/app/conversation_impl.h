@@ -15,8 +15,8 @@
 #include "base/containers/span.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ttc/app/audio_controller.h"
+#include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/app/ttc_backend.h"
-#include "chrome/browser/ttc/conversation.h"
 #include "url/gurl.h"
 
 class Profile;

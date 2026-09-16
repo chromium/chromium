@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_CONVERSATION_H_
-#define CHROME_BROWSER_TTC_CONVERSATION_H_
+#ifndef CHROME_BROWSER_TTC_APP_PUBLIC_CONVERSATION_H_
+#define CHROME_BROWSER_TTC_APP_PUBLIC_CONVERSATION_H_
 
 #include <string>
 #include <vector>
@@ -12,7 +12,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/values.h"
-#include "chrome/browser/ttc/tool_definition.h"
+#include "chrome/browser/ttc/app/public/tool_definition.h"
 #include "url/gurl.h"
 
 namespace optimization_guide::proto {
@@ -23,7 +23,8 @@ namespace ttc {
 
 // Manages a voice/multimodal conversation session with the TTC model.
 // Wires audio input/output to the model backend for bidirectional streaming,
-// handling speech capture, audio playback, interruptions, transcripts, and tools.
+// handling speech capture, audio playback, interruptions, transcripts, and
+// tools.
 class Conversation {
  public:
   class Observer : public base::CheckedObserver {
@@ -48,7 +49,8 @@ class Conversation {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Starts the conversation session: connects to backend and begins mic capture.
+  // Starts the conversation session: connects to backend and begins mic
+  // capture.
   virtual void Start() = 0;
 
   // Stops the conversation session: closes backend connection and stops audio.
@@ -73,4 +75,4 @@ class Conversation {
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_CONVERSATION_H_
+#endif  // CHROME_BROWSER_TTC_APP_PUBLIC_CONVERSATION_H_

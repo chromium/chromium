@@ -38,6 +38,7 @@ source_set("test_support") {
     ":core",
     "//base",
     "//chrome/browser/ttc",
+    "//chrome/browser/ttc/app",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gmock",
     "//url",

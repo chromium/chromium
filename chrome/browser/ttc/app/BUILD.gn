@@ -3,26 +3,42 @@
 # found in the LICENSE file.
 
 source_set("app") {
-  sources = [
-    "audio_controller.cc",
+  public = [
     "audio_controller.h",
-    "conversation_impl.cc",
-    "conversation_impl.h",
     "ttc_backend.h",
-    "ttc_mes_client.cc",
     "ttc_mes_client.h",
+
+    # The headers in public/ are the only ones that should be accessible from
+    # core/, this is enforced via DEPS.
+    "public/conversation.h",
+    "public/make_conversation.h",
+    "public/tool_definition.h",
   ]
   public_deps = [
     "//base",
     "//chrome/browser/optimization_guide",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ttc:ttc",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
     "//url",
   ]
+}
+
+source_set("impl") {
+  sources = [
+    "audio_controller.cc",
+    "conversation_impl.cc",
+    "conversation_impl.h",
+    "make_conversation.cc",
+    "tool_definition.cc",
+    "ttc_mes_client.cc",
+  ]
   deps = [
+    ":app",
+    "//base",
+    "//chrome/browser/profiles:profile",
     "//content/public/browser",
     "//services/audio/public/cpp",
   ]
@@ -36,8 +52,8 @@ source_set("unit_tests") {
   ]
   deps = [
     ":app",
+    ":impl",
     "//base/test:test_support",
-    "//chrome/browser/ttc:ttc",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//media",

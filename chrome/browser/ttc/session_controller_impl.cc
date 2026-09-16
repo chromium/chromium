@@ -10,7 +10,7 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ttc/conversation.h"
+#include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
 #include "chrome/browser/ttc/session_view.h"
 #include "chrome/browser/ttc/ttc_keyed_service.h"
