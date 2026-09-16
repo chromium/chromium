@@ -104,10 +104,21 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view);
 
-  views::BubbleAnchor anchor =
-      browser_view->toolbar_button_provider()->GetBubbleAnchor(std::nullopt);
-  views::View* anchor_view = anchor.GetIfView();
-  EXPECT_EQ(anchor_view, browser_view->toolbar()->location_bar_view());
+  if (features::IsWebUILocationBarEnabled()) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return browser_view->toolbar()->location_bar()->GetAnchorOrNull() !=
+             nullptr;
+    }));
+    views::BubbleAnchor anchor =
+        browser_view->toolbar_button_provider()->GetBubbleAnchor(std::nullopt);
+    EXPECT_EQ(anchor.GetIfElement(),
+              browser_view->toolbar()->location_bar()->GetAnchorOrNull());
+  } else {
+    views::BubbleAnchor anchor =
+        browser_view->toolbar_button_provider()->GetBubbleAnchor(std::nullopt);
+    views::View* anchor_view = anchor.GetIfView();
+    EXPECT_EQ(anchor_view, browser_view->toolbar()->location_bar_view());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
@@ -117,9 +128,13 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewUnitTest,
 
   ToolbarView* toolbar = browser_view->toolbar();
   ASSERT_TRUE(toolbar);
-  ASSERT_TRUE(toolbar->location_bar_view());
   // Simulate app windows (no visible location bar) by hiding the location bar.
-  toolbar->location_bar_view()->SetVisible(false);
+  if (toolbar->location_bar_view()) {
+    toolbar->location_bar_view()->SetVisible(false);
+  } else {
+    ASSERT_TRUE(toolbar->GetWebUIToolbarViewForTesting());
+    toolbar->GetWebUIToolbarViewForTesting()->SetVisible(false);
+  }
 
   views::BubbleAnchor anchor =
       browser_view->toolbar_button_provider()->GetBubbleAnchor(std::nullopt);

@@ -1965,16 +1965,17 @@ views::BubbleAnchor ToolbarView::GetBubbleAnchor(
   }
 
   // Otherwise attempt to use the location bar.
-  auto anchor = features::IsWebUILocationBarEnabled()
-                    ? views::BubbleAnchor(location_bar_->GetAnchorOrNull())
-                    : views::BubbleAnchor(location_bar_view_);
+  auto anchor = location_bar_view_
+                    ? views::BubbleAnchor(location_bar_view_)
+                    : views::BubbleAnchor(location_bar_->GetAnchorOrNull());
   bool anchor_not_drawn;
   if (views::View* view = anchor.GetIfView()) {
     anchor_not_drawn = !view->IsDrawn();
   } else {
-    anchor_not_drawn = (features::IsWebUILocationBarEnabled() ||
-                        features::IsWebUIPinnedToolbarActionsEnabled()) &&
-                       anchor.IsNull();
+    anchor_not_drawn =
+        (features::IsWebUILocationBarEnabled() ||
+         features::IsWebUIPinnedToolbarActionsEnabled()) &&
+        (anchor.IsNull() || (toolbar_webview_ && !toolbar_webview_->IsDrawn()));
   }
   // In app windows the location bar view may exist but not be drawn. Avoid
   // anchoring bubbles to a non-drawn view (e.g. on Ozone/Wayland) and always
