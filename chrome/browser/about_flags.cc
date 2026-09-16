@@ -1429,11 +1429,6 @@ const FeatureEntry::FeatureVariation
          nullptr}};
 
 const FeatureEntry::FeatureParam
-    kContextManagementKeepMenuOpenOnTabSelectForRealboxParams[] = {
-        {"ContextManagementInComposebox", "true"},
-        {"KeepMenuOpenOnTabSelectForRealboxComposebox", "true"}};
-
-const FeatureEntry::FeatureParam
     kContextManagementEnableTabDeselectionParams[] = {
         {"enable_tab_deselection", "true"}};
 
@@ -1452,11 +1447,6 @@ const FeatureEntry::FeatureParam
 // and thus the context menu and 'realbox closes menu on tab select'.
 const FeatureEntry::FeatureVariation
     kContextManagementInComposeboxVariations[] = {
-        {"Context Management in composebox (realbox closes menu on tab select)",
-         {}},
-        {"Context management in composebox (realbox keeps menu open on tab "
-         "select)",
-         kContextManagementKeepMenuOpenOnTabSelectForRealboxParams, nullptr},
         {"Context Management in composebox (with tab deselection)",
          kContextManagementEnableTabDeselectionParams, nullptr},
         {"Context Management in composebox (keeps menu open, with tab "
