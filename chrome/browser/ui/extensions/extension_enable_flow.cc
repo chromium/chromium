@@ -16,6 +16,7 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "extensions/browser/api/management/management_api.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
@@ -27,6 +28,28 @@
 
 using extensions::Extension;
 using extensions::InstallPromptData;
+
+namespace {
+
+// Returns whether the extension only has disable reasons that can be resolved
+// through this flow (e.g. user action, permissions increase, remote install,
+// or custodian approval).
+bool HasOnlySupportedDisableReasons(
+    const extensions::DisableReasonSet& disable_reasons) {
+  for (extensions::disable_reason::DisableReason reason : disable_reasons) {
+    if (reason != extensions::disable_reason::DISABLE_NONE &&
+        reason != extensions::disable_reason::DISABLE_USER_ACTION &&
+        reason != extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE &&
+        reason != extensions::disable_reason::DISABLE_REMOTE_INSTALL &&
+        reason !=
+            extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED) {
+      return false;
+    }
+  }
+  return true;
+}
+
+}  // namespace
 
 ExtensionEnableFlow::ExtensionEnableFlow(Profile* profile,
                                          const std::string& extension_id,
@@ -89,6 +112,19 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
   auto* registry = extensions::ExtensionRegistry::Get(profile_);
   const Extension* extension =
       registry->disabled_extensions().GetByID(extension_id_);
+  if (!extension) {
+    delegate_->ExtensionEnableFlowAborted(
+        /*user_initiated=*/false);  // |delegate_| may delete us.
+    return;
+  }
+
+  extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
+  if (!HasOnlySupportedDisableReasons(
+          prefs->GetDisableReasons(extension_id_))) {
+    delegate_->ExtensionEnableFlowAborted(
+        /*user_initiated=*/false);  // |delegate_| may delete us.
+    return;
+  }
 
   extensions::SupervisedUserExtensionsDelegate*
       supervised_user_extensions_delegate =
@@ -96,8 +132,7 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
               ->Get(profile_)
               ->GetSupervisedUserExtensionsDelegate();
   DCHECK(supervised_user_extensions_delegate);
-  if (supervised_user::AreExtensionsPermissionsEnabled(profile_) && extension &&
-
+  if (supervised_user::AreExtensionsPermissionsEnabled(profile_) &&
       // Only ask for parent approval if the extension still requires approval.
       !supervised_user_extensions_delegate->IsExtensionAllowedByParent(
           *extension)) {
@@ -111,11 +146,8 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
     return;
   }
 
-  bool abort =
-      !extension ||
-      // The extension might be force-disabled by policy.
-      system->management_policy()->MustRemainDisabled(extension, nullptr);
-  if (abort) {
+  // The extension might be force-disabled by policy.
+  if (system->management_policy()->MustRemainDisabled(extension, nullptr)) {
     delegate_->ExtensionEnableFlowAborted(
         /*user_initiated=*/false);  // |delegate_| may delete us.
     return;
@@ -130,7 +162,6 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
     return;
   }
 
-  extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
   if (!prefs->DidExtensionEscalatePermissions(extension_id_)) {
     // Enable the extension immediately if its privileges weren't escalated.
     // This is a no-op if the extension was previously terminated.
@@ -244,6 +275,17 @@ void ExtensionEnableFlow::EnableExtension() {
     supervised_user_extensions_delegate->RecordExtensionEnablementUmaMetrics(
         /*enabled=*/true);
   }
+
+  auto* system = extensions::ExtensionSystem::Get(profile_);
+  extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
+  if (system->management_policy()->MustRemainDisabled(extension, nullptr) ||
+      !HasOnlySupportedDisableReasons(
+          prefs->GetDisableReasons(extension_id_))) {
+    delegate_->ExtensionEnableFlowAborted(
+        /*user_initiated=*/false);  // |delegate_| may delete us.
+    return;
+  }
+
   auto* registrar = extensions::ExtensionRegistrar::Get(profile_);
   registrar->GrantPermissionsAndEnableExtension(*extension);
 

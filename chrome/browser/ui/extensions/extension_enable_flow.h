@@ -69,10 +69,12 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
   // CheckPermissionAndMaybePromptUser finish the flow.
   void Run();
 
-  // Checks if there is permission escalation while the extension is
-  // disabled/terminated. If no, enables the extension and notify |delegate_|
-  // synchronously. Otherwise, creates an ExtensionInstallPrompt and asks user
-  // to confirm.
+  // Checks if the extension can be re-enabled and whether user confirmation is
+  // needed. If privileges weren't escalated and the extension only has
+  // supported disable reasons, enables the extension and notifies |delegate_|
+  // synchronously. If permissions need to be confirmed, creates an
+  // ExtensionInstallPrompt and asks user to confirm. If other disable reasons
+  // are present, aborts the flow.
   void CheckPermissionAndMaybePromptUser();
 
   // Creates an ExtensionInstallPrompt in |prompt_| with the given prompt data.
