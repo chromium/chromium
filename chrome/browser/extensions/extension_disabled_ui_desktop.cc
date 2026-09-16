@@ -87,6 +87,10 @@ class ExtensionDisabledGlobalError final
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const Extension* extension,
                               UninstallReason reason) override;
+  void OnExtensionWillBeInstalled(content::BrowserContext* browser_context,
+                                  const Extension* extension,
+                                  bool is_update,
+                                  const std::string& old_name) override;
   void OnShutdown(ExtensionRegistry* registry) override;
 
   void RemoveGlobalError();
@@ -277,6 +281,17 @@ void ExtensionDisabledGlobalError::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UninstallReason reason) {
+  if (extension->id() != extension_->id()) {
+    return;
+  }
+  RemoveGlobalError();
+}
+
+void ExtensionDisabledGlobalError::OnExtensionWillBeInstalled(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    bool is_update,
+    const std::string& old_name) {
   if (extension->id() != extension_->id()) {
     return;
   }

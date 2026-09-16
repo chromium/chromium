@@ -1014,6 +1014,12 @@ void ExtensionRegistrar::OnUnpackedExtensionReloadFailed(
 
 void ExtensionRegistrar::GrantPermissionsAndEnableExtension(
     const Extension& extension) {
+  // Only proceed when the requested input extension still matches the installed
+  // version; otherwise, reject early.
+  const Extension* installed = registry_->GetInstalledExtension(extension.id());
+  if (!installed || installed->version() != extension.version()) {
+    return;
+  }
   delegate_->GrantActivePermissions(&extension);
   EnableExtension(extension.id());
 }
