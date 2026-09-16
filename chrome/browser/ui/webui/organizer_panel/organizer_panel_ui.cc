@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/tab_search/search_handler.h"
@@ -28,6 +29,8 @@
 #include "ui/webui/webui_util.h"
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
+#include "chrome/grit/tab_group_shared_resources.h"
+#include "chrome/grit/tab_group_shared_resources_map.h"
 #include "chrome/grit/tab_search_shared_resources.h"
 #include "chrome/grit/tab_search_shared_resources_map.h"
 #endif  // !BUILDFLAG(OPTIMIZE_WEBUI)
@@ -61,10 +64,13 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
   source->AddString("shortcutText", accelerator.GetShortcutText());
+  source->AddBoolean("useTabGroupColorRefresh",
+                     features::IsTabGroupColorRefreshEnabled());
 
   webui::SetupWebUIDataSource(source, kOrganizerPanelResources,
                               IDR_ORGANIZER_PANEL_ORGANIZER_PANEL_HTML);
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
+  source->AddResourcePaths(kTabGroupSharedResources);
   source->AddResourcePaths(kTabSearchSharedResources);
 #endif
 
