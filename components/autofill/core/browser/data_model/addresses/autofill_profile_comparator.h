@@ -164,13 +164,11 @@ class AutofillProfileComparator {
   static CompareTokensResult CompareTokens(std::u16string_view s1,
                                            std::u16string_view s2);
 
-  // Returns the value of `t` from `p1` or `p2` depending on which is non-empty.
+  // Returns the country code from `p1` or `p2` depending on which is non-empty.
   // This method expects that the value is either the same in `p1` and `p2` or
   // empty in one of them.
-  // TODO(crbug.com/40264633): Pass a `FieldType` instead of `AutofillType`.
-  std::u16string GetNonEmptyOf(const AutofillProfile& p1,
-                               const AutofillProfile& p2,
-                               AutofillType t) const;
+  std::u16string GetNonEmptyCountryCode(const AutofillProfile& p1,
+                                        const AutofillProfile& p2) const;
 
  private:
   const std::string app_locale_;

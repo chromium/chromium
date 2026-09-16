@@ -190,11 +190,14 @@ std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
                                           const AutofillType& autofill_type,
                                           const FormFieldData& field_data,
                                           std::string* failure_to_fill) {
+  const FieldType field_type = autofill_type.GetAddressType();
+  if (field_type == ADDRESS_HOME_COUNTRY && autofill_type.is_country_code()) {
+    return profile.GetRawInfo(ADDRESS_HOME_COUNTRY);
+  }
   const std::u16string value = profile.GetInfo(autofill_type, app_locale);
   if (value.empty()) {
     return {};
   }
-  const FieldType field_type = autofill_type.GetAddressType();
   if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone) {
     return GetPhoneNumberValueForInput(
         field_data.max_length(), value,

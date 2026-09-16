@@ -545,9 +545,8 @@ std::set<FieldGlobalId> PreProcessStateMatchingTypes(
       continue;
     }
 
-    const std::u16string& country_code = profile->GetInfo(
-        AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true),
-        app_locale);
+    const std::string country_code =
+        base::UTF16ToUTF8(profile->GetRawInfo(ADDRESS_HOME_COUNTRY));
 
     for (auto& field : fields) {
       if (fields_that_match_state.contains(field->global_id())) {
@@ -557,7 +556,7 @@ std::set<FieldGlobalId> PreProcessStateMatchingTypes(
       std::optional<AlternativeStateNameMap::CanonicalStateName>
           canonical_state_name_from_text =
               AlternativeStateNameMap::GetCanonicalStateName(
-                  base::UTF16ToUTF8(country_code), field->value_for_import());
+                  country_code, field->value_for_import());
 
       if (canonical_state_name_from_text &&
           canonical_state_name_from_text.value() ==

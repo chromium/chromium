@@ -235,11 +235,10 @@ std::optional<PhoneNumber> AutofillProfileComparator::MergePhoneNumbers(
   }
 
   // Figure out a country code hint.
-  // TODO(crbug.com/40221178) `GetNonEmptyOf()` prefers `new_profile` in case
-  // both are non empty.
-  std::string region = base::UTF16ToUTF8(GetNonEmptyOf(
-      new_profile, old_profile,
-      AutofillType(ADDRESS_HOME_COUNTRY, /*is_country_code=*/true)));
+  // TODO(crbug.com/40221178) `GetNonEmptyCountryCode()` prefers `new_profile`
+  // in case both are non empty.
+  std::string region =
+      base::UTF16ToUTF8(GetNonEmptyCountryCode(new_profile, old_profile));
   // TODO(crbug.com/503704299): Remove this validation once profiles with
   // invalid country codes are cleaned up.
   if (region.empty() || !data_util::IsValidCountryCode(region)) {
@@ -464,15 +463,14 @@ AutofillProfileComparator::CompareTokens(std::u16string_view s1,
   return DIFFERENT_TOKENS;
 }
 
-std::u16string AutofillProfileComparator::GetNonEmptyOf(
+std::u16string AutofillProfileComparator::GetNonEmptyCountryCode(
     const AutofillProfile& p1,
-    const AutofillProfile& p2,
-    AutofillType t) const {
-  const std::u16string& s1 = p1.GetInfo(t, app_locale_);
+    const AutofillProfile& p2) const {
+  const std::u16string& s1 = p1.GetRawInfo(ADDRESS_HOME_COUNTRY);
   if (!s1.empty()) {
     return s1;
   }
-  return p2.GetInfo(t, app_locale_);
+  return p2.GetRawInfo(ADDRESS_HOME_COUNTRY);
 }
 
 }  // namespace autofill
