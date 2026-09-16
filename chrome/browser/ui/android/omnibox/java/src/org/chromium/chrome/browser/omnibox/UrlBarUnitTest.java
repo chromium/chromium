@@ -31,10 +31,12 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Rect;
+import android.os.Build;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -132,6 +134,9 @@ public class UrlBarUnitTest {
             "www.a.com/"
                     + TextUtils.join("", Collections.nCopies(MAX_DISPLAYABLE_LENGTH + 100, "a"));
 
+    /** A supplementary-plane character, i.e. a surrogate pair rather than a single char. */
+    private static final String GRINNING_FACE_EMOJI = "\uD83D\uDE00";
+
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -217,6 +222,11 @@ public class UrlBarUnitTest {
                         anyFloat());
 
         lenient().doReturn(mFontMetrics).when(mPaint).getFontMetrics();
+        lenient().doReturn(14f).when(mPaint).getTextSize();
+        lenient()
+                .doAnswer(invocation -> (float) ((String) invocation.getArgument(0)).length() * 10f)
+                .when(mPaint)
+                .measureText(any(String.class));
     }
 
     @After
@@ -2249,5 +2259,95 @@ public class UrlBarUnitTest {
 
         mUrlBar.bringPointIntoView(0);
         verify(mUrlBar).bringPointIntoView(0);
+    }
+
+    @Test
+    public void testTextWidth_withShortTextAndHintFallback() {
+        mUrlBar.setText("");
+        mUrlBar.setHint("Search or type URL");
+        int hintWidth = mUrlBar.getTextWidth();
+        assertTrue(hintWidth > 0);
+
+        mUrlBar.setText("https://google.com");
+        int textWidth = mUrlBar.getTextWidth();
+        assertTrue(textWidth > 0);
+    }
+
+    @Test
+    public void testTextWidth_ignoresBoundsEllipsisSpanToPreventLayoutLoop() {
+        String text = "https://example.com/a_fairly_long_url_that_exceeds_screen_width";
+        mUrlBar.setText(text);
+        int unspannedWidth = mUrlBar.getTextWidth();
+
+        SpannableStringBuilder spannable = new SpannableStringBuilder(text);
+        spannable.setSpan(
+                UrlBar.BoundsEllipsisSpan.INSTANCE,
+                10,
+                text.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        mUrlBar.setText(spannable);
+        int widthWithSpan = mUrlBar.getTextWidth();
+
+        assertEquals(unspannedWidth, widthWithSpan);
+    }
+
+    @Test
+    public void testTextWidth_shapesOnlyTheSampledPrefixOfLongText() {
+        mUrlBar.setText(SUPER_LONG_URL);
+
+        mUrlBar.getTextWidth();
+
+        verify(mPaint, never()).measureText(SUPER_LONG_URL);
+        verify(mPaint).measureText(sampledPrefixOfSuperLongUrl());
+    }
+
+    @Test
+    public void testTextWidth_extrapolatesSampledPrefixToFullLength() {
+        mUrlBar.setText(SUPER_LONG_URL);
+        String prefix = sampledPrefixOfSuperLongUrl();
+        double sampledWidth = mUrlBar.getPaint().measureText(prefix);
+
+        int expectedWidth =
+                (int) Math.ceil(sampledWidth * SUPER_LONG_URL.length() / prefix.length());
+        assertEquals(expectedWidth, mUrlBar.getTextWidth());
+    }
+
+    @Test
+    public void testTextWidth_cachingAndInvalidation() {
+        mUrlBar.setText("https://google.com");
+        int initialWidth = mUrlBar.getTextWidth();
+        assertEquals(initialWidth, mUrlBar.getTextWidth());
+        verify(mPaint).measureText("https://google.com");
+
+        mUrlBar.setText("https://chromium.org/subpath");
+        int newWidth = mUrlBar.getTextWidth();
+        assertTrue(newWidth > initialWidth);
+        verify(mPaint).measureText("https://chromium.org/subpath");
+    }
+
+    @Test
+    public void testTextWidth_doesNotSampleHalfOfASurrogatePair() {
+        String prefix = "a".repeat(UrlBar.MAX_URL_LENGTH_FOR_MEASUREMENT - 1);
+        // The emoji straddles the sampling boundary, so only the preceding text may be measured.
+        mUrlBar.setText(prefix + GRINNING_FACE_EMOJI + "trailing");
+
+        mUrlBar.getTextWidth();
+
+        verify(mPaint).measureText(prefix);
+    }
+
+    @Test
+    // Android 14+ truncates TextView content to a few thousand characters, which is far too short
+    // to extrapolate past the ceiling, so pin this to a platform version that keeps the full text.
+    @Config(sdk = Build.VERSION_CODES.Q)
+    public void testTextWidth_clampsExtrapolatedWidthOfEnormousText() {
+        // The stubbed paint reports 10px per character, so this extrapolates past the ceiling.
+        mUrlBar.setText("a".repeat(UrlBar.MAX_REPORTED_TEXT_WIDTH_PX / 5));
+
+        assertEquals(UrlBar.MAX_REPORTED_TEXT_WIDTH_PX, mUrlBar.getTextWidth());
+    }
+
+    private static String sampledPrefixOfSuperLongUrl() {
+        return SUPER_LONG_URL.substring(0, UrlBar.MAX_URL_LENGTH_FOR_MEASUREMENT);
     }
 }

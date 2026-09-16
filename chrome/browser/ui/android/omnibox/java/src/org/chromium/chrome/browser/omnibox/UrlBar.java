@@ -97,6 +97,17 @@ public class UrlBar extends AutocompleteEditText {
     // check for text equality, instead of worrying about partial equality with truncated text.
     private static final int MIN_LENGTH_FOR_TRUNCATION = 100;
 
+    // Longest prefix handed to the text shaper by getTextWidth(). Shaping arbitrarily long URLs on
+    // the UI thread stalls layout and triggers HarfBuzz sanitization ANRs, so longer text is
+    // measured by sampling this prefix and scaling the result up to the full length.
+    @VisibleForTesting /* package */ static final int MAX_URL_LENGTH_FOR_MEASUREMENT = 150;
+
+    // Ceiling for the width getTextWidth() reports. Extrapolating a sampled prefix over a
+    // multi-megabyte data: URI can approach Integer.MAX_VALUE, and callers add padding to the
+    // result, which would wrap to a negative width. Any value far beyond the widest conceivable
+    // display signals overflow just as well, so the exact ceiling is unimportant.
+    @VisibleForTesting /* package */ static final int MAX_REPORTED_TEXT_WIDTH_PX = 1_000_000;
+
     @VisibleForTesting static final int MULTILINE_EDIT_MAX_LINES = 5;
     @VisibleForTesting static final int DESKTOP_MULTILINE_EDIT_MAX_LINES = 8;
 
@@ -152,6 +163,10 @@ public class UrlBar extends AutocompleteEditText {
     private float mPreviousScrollFontSize;
     private boolean mPreviousScrollWasRtl;
     private @Nullable CharSequence mVisibleTextPrefixHint;
+    private @Nullable String mLastMeasuredText;
+    private float mLastMeasuredTextSize;
+    private int mLastMeasuredTextLength;
+    private int mLastMeasuredTextWidth = -1;
 
     // Used as a hint to indicate the text may contain an ellipsize span.  This will be true if an
     // ellipsize span was applied the last time the text changed. A true value here does not
@@ -368,6 +383,8 @@ public class UrlBar extends AutocompleteEditText {
         mTextChangeListener = null;
         mManageSearchEnginesCallback = null;
         mShowAiModeCallback = null;
+        mLastMeasuredText = null;
+        mLastMeasuredTextWidth = -1;
     }
 
     /**
@@ -597,6 +614,7 @@ public class UrlBar extends AutocompleteEditText {
         // session remains inactive until typing begins.
         // See crbug.com/410642190
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
+        mLastMeasuredTextWidth = -1;
 
         // Due to crbug.com/40139311, Autofill had to be disabled on the UrlBar to work around
         // an issue on Android Q+. With Autofill disabled, the Autofill compat mode no longer
@@ -1772,9 +1790,55 @@ public class UrlBar extends AutocompleteEditText {
         return fontMetrics.bottom - fontMetrics.top;
     }
 
+    /**
+     * Returns the measured width of the displayed text in pixels, caching the result across
+     * repeated measurement passes to avoid UI thread layout stalls.
+     *
+     * <p>At most {@link #MAX_URL_LENGTH_FOR_MEASUREMENT} characters are handed to the text shaper;
+     * longer text is measured by sampling that prefix and scaling the result up to the full length,
+     * clamped to {@link #MAX_REPORTED_TEXT_WIDTH_PX}. The approximation is safe because callers
+     * only use the value to decide whether the text overflows the available width, and then clamp
+     * it to that width.
+     */
     /* package */ @Px
     int getTextWidth() {
-        return (int) Math.ceil(getPaint().measureText(getText().toString()));
+        CharSequence textToMeasure = getText();
+        if (TextUtils.isEmpty(textToMeasure)) {
+            textToMeasure = getHint();
+            if (TextUtils.isEmpty(textToMeasure)) {
+                return 0;
+            }
+        }
+
+        int totalLength = textToMeasure.length();
+        int lengthToMeasure = Math.min(totalLength, MAX_URL_LENGTH_FOR_MEASUREMENT);
+        // Never hand the shaper half of a surrogate pair; it would render as a replacement glyph.
+        if (lengthToMeasure < totalLength
+                && Character.isHighSurrogate(textToMeasure.charAt(lengthToMeasure - 1))) {
+            lengthToMeasure--;
+        }
+        float textSize = getPaint().getTextSize();
+
+        // Checked before building the substring so that repeated measure passes allocate nothing.
+        if (mLastMeasuredTextWidth >= 0
+                && textSize == mLastMeasuredTextSize
+                && totalLength == mLastMeasuredTextLength
+                && mLastMeasuredText != null
+                && mLastMeasuredText.length() == lengthToMeasure
+                && TextUtils.regionMatches(
+                        textToMeasure, 0, mLastMeasuredText, 0, lengthToMeasure)) {
+            return mLastMeasuredTextWidth;
+        }
+
+        String measuredSubstr = textToMeasure.subSequence(0, lengthToMeasure).toString();
+        double sampledWidth = getPaint().measureText(measuredSubstr);
+        double extrapolatedWidth = sampledWidth * totalLength / lengthToMeasure;
+        int width = (int) Math.min(MAX_REPORTED_TEXT_WIDTH_PX, Math.ceil(extrapolatedWidth));
+        mLastMeasuredText = measuredSubstr;
+        mLastMeasuredTextSize = textSize;
+        mLastMeasuredTextLength = totalLength;
+        mLastMeasuredTextWidth = width;
+        return width;
     }
 
     /* package */ @Px

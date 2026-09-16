@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -270,29 +269,17 @@ class LocationBarPhone extends LocationBarLayout {
                     getMaxUrlWidth(mLocationBarStatusView, maxComponentWidth, heightMeasureSpec);
             maxUrlWidth = Math.max(mMinUrlWidthPx, maxUrlWidth);
 
-            CharSequence text = mUrlBar.getText();
-            if (TextUtils.isEmpty(text)) {
-                text = mUrlBar.getHint();
-            }
-            // TODO(crbug.com/522366005): Clean up layout loop risk in custom spans and restore
-            // native CharSequence measurement.
-            // Ensure we measure plain text to strip any spans (like BoundsEllipsisSpan)
-            // that could trigger layout requests during measurement, causing layout loops.
-            String plainText = text != null ? text.toString() : "";
-
             int desiredUrlWidth =
-                    getUrlTextWidth(plainText)
+                    getUrlBarTextWidth()
                             + mUrlBar.getPaddingStart()
                             + mUrlBar.getPaddingEnd()
                             + mUrlCenteringSafetyMarginPx;
 
-            int finalUrlWidth;
             boolean fitsInCenteringSpace = desiredUrlWidth <= maxUrlWidth;
-            if (fitsInCenteringSpace) {
-                finalUrlWidth = desiredUrlWidth;
-            } else {
-                finalUrlWidth = Math.min(maxUrlWidth, Math.max(mMinUrlWidthPx, desiredUrlWidth));
-            }
+            int finalUrlWidth =
+                    fitsInCenteringSpace
+                            ? desiredUrlWidth
+                            : Math.min(maxUrlWidth, Math.max(mMinUrlWidthPx, desiredUrlWidth));
 
             updateUrlBarCenteringProperties(
                     /* centeringApplied= */ true,
@@ -410,12 +397,6 @@ class LocationBarPhone extends LocationBarLayout {
             mUrlBar.setGravity(targetGravity);
             mUrlBar.setTextAlignment(targetAlignment);
         }
-    }
-
-    /** Returns the measured width of the given text. */
-    private int getUrlTextWidth(CharSequence text) {
-        if (TextUtils.isEmpty(text)) return 0;
-        return (int) Math.ceil(mUrlBar.getPaint().measureText(text, 0, text.length()));
     }
 
     /** Calculates the maximum allowed width for the UrlBar. */
