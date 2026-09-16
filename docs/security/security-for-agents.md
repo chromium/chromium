@@ -289,16 +289,60 @@ When reporting a bug:
       terms given above
     * Which revision, build arguments (args.gn), and command-line flags you
       supplied
-* Your proof of concept should be a single file:
+* Your proof of concept should use minimal files with standard names:
     * For bugs that reproduce via d8, a single Javascript source file called
       "poc.js"
     * For bugs that reproduce via loading in Chromium, a single HTML source file
       called "poc.html"
     * For bugs that reproduce via loading in Chromium, but which cannot be
-      served as a single HTML file, a single Python source file called "poc.py"
-      which, when invoked with a port number, will run a web server on localhost
-      with that port number. That web server must serve any needed exploit code
-      when /poc.html is loaded from it.
+      served as a single static HTML file (for example, when custom HTTP headers
+      or dynamic responses are required), provide both "poc.html" and a Python
+      HTTP server called "server.py".
+      The reproduction environment places `poc.html` and `server.py` in a
+      directory containing a `gen` symlink to the build's generated files, then
+      runs:
+      1. `python3 server.py`
+      2. `chrome http://localhost:8000/poc.html`
+      Therefore, `server.py` must:
+      * Take no command-line arguments.
+      * Listen on port 8000 and serve `poc.html` at
+        `http://localhost:8000/poc.html`.
+      * Only read `poc.html` and the Mojo bindings in `gen` from disk, serving
+        the bindings unmodified under the `/gen/` URL path. All client-side HTML
+        and JavaScript payloads should live in `poc.html` (or be generated
+        dynamically by `server.py`).
+      * Never copy, vendor, or edit Mojo bindings. They load their dependencies
+        by relative path and break when moved.
+      * Be only an HTTP server: serve payloads and set HTTP headers. It must not
+        launch Chromium or modify Chromium's files or directories.
+
+      The payload in `poc.html` imports bindings through `./gen/`:
+
+      ```js
+      import {FooRemote} from './gen/path/to/foo.mojom.m.js';
+      ```
+
+      Because `server.py` serves its own working directory, both `/poc.html` and
+      `/gen/` resolve directly through `SimpleHTTPRequestHandler`:
+
+      ```python
+      import http.server, os
+
+      os.chdir(os.path.dirname(os.path.abspath(__file__)))  # poc.html and ./gen live here
+
+      class Handler(http.server.SimpleHTTPRequestHandler):
+          def end_headers(self):
+              # Add any custom headers required by the exploit, e.g.:
+              # self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
+              # self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
+              super().end_headers()
+
+      http.server.ThreadingHTTPServer(('', 8000), Handler).serve_forever()
+      ```
+
+      To run the PoC locally, create the same symlink next to `server.py` and
+      `poc.html`:
+      `ln -s <chromium-out-dir>/gen gen`.
     * For bugs that simulate a compromised renderer with a source patch, a
       single unified diff called "poc.patch". This patch must only change code
       that runs in the renderer.

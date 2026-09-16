@@ -66,8 +66,11 @@ reports:
   * Your PoC should be constructed to reproduce locally when at all possible.
 * Do *not* provide links to websites (public or unlisted) as PoCs.
   * The PoC should ALWAYS be a file directly attached to the report.
-* Example servers should be written only in Python, other languages may lead
-  to your report being rejected.
+* Example servers should be written only in Python (other languages will lead to
+  your report being rejected). Please name your server `server.py` so that it
+  can be run without arguments (`python3 server.py`) and serves `poc.html` at
+  `http://localhost:8000/poc.html` (with `/gen/` resolving to the build's
+  `gen` directory if MojoJS bindings are used).
 
 ### Patches to simulate a compromised renderer
 
