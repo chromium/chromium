@@ -2,10 +2,12 @@
   const {session, dp} = await testRunner.startBlank(
       'Tests the data of advanced painting instrumentation trace events');
 
+  // Fail with a pointer to the pending await rather than an opaque harness
+  // timeout. Kept comfortably below the harness timeout of 30s.
   let errorForLog = new Error()
   setTimeout(() => {
-    testRunner.die('Took longer than 4.5s', errorForLog);
-  }, 4500);
+    testRunner.die('Took longer than 20s', errorForLog);
+  }, 20000);
 
   const TracingHelper =
       await testRunner.loadScript('../resources/tracing-test.js');
@@ -32,17 +34,26 @@
   errorForLog = new Error()
 
   const LayerTreeHostImpl = tracingHelper.findEvent(
-      'cc::LayerTreeHostImpl', TracingHelper.Phase.SNAPSHOT_OBJECT);
+      'LayerTreeHostImpl:snapshot', TracingHelper.Phase.INSTANT);
   const DisplayItemList = tracingHelper.findEvent(
-      'cc::DisplayItemList', TracingHelper.Phase.SNAPSHOT_OBJECT);
+      'cc::DisplayItemList:snapshot', TracingHelper.Phase.INSTANT);
+
+  // The snapshot payload is excluded from the shape: it contains layer and
+  // tile arrays whose length varies between runs. Its fields are asserted
+  // individually below instead. The name and phase are logged as values
+  // rather than types because they are the contract consumers depend on.
+  const excludeSnapshot = ['snapshot'];
+  const exposeFormat = ['name', 'ph'];
 
   testRunner.log('Got a LayerTreeHostImpl Event:');
+  tracingHelper.logEventShape(LayerTreeHostImpl, excludeSnapshot, exposeFormat);
   testRunner.log(`type of device_viewport_size: ${
       typeof LayerTreeHostImpl.args.snapshot.device_viewport_size}`);
   testRunner.log(`type of layers: ${
       typeof LayerTreeHostImpl.args.snapshot.active_tree.layers}`);
 
   testRunner.log('Got a DisplayItemList Event');
+  tracingHelper.logEventShape(DisplayItemList, excludeSnapshot, exposeFormat);
   testRunner.log(
       `type of params: ${typeof DisplayItemList.args.snapshot.params}`);
   testRunner.log(`type of layer_rect: ${

@@ -3056,10 +3056,15 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   {
     TRACE_EVENT0("cc", "DrawLayers.FrameViewerTracing");
+    // "layerTreeId" matches the id reported by Blink's SetLayerTreeId trace
+    // event, and lets consumers such as DevTools attribute this snapshot to a
+    // frame. It is emitted explicitly because the flow id below is not
+    // recoverable from the exported JSON.
     TRACE_EVENT_INSTANT(frame_viewer_instrumentation::CategoryLayerTree(),
                         "LayerTreeHostImpl:snapshot",
                         perfetto::Flow::ProcessScoped(id_, "LayerTreeHostImpl"),
-                        "snapshot", AsValueWithFrame(frame));
+                        "layerTreeId", id_, "snapshot",
+                        AsValueWithFrame(frame));
   }
 
   const DrawMode draw_mode = GetDrawMode();
