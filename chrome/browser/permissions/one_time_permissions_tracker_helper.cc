@@ -25,6 +25,8 @@ class OneTimePermissionsPageTracker
   ~OneTimePermissionsPageTracker() override;
 
   void OnVisibilityChanged(content::Visibility visibility);
+  void OnIsCapturingVideoChanged(bool is_capturing_video);
+  void OnIsCapturingAudioChanged(bool is_capturing_audio);
 
  private:
   explicit OneTimePermissionsPageTracker(content::Page& page);
@@ -35,6 +37,8 @@ class OneTimePermissionsPageTracker
   url::Origin origin_;
   base::WeakPtr<OneTimePermissionsTracker> tracker_;
   bool is_backgrounded_ = false;
+  bool is_capturing_video_ = false;
+  bool is_capturing_audio_ = false;
 };
 
 PAGE_USER_DATA_KEY_IMPL(OneTimePermissionsPageTracker);
@@ -66,6 +70,12 @@ OneTimePermissionsPageTracker::~OneTimePermissionsPageTracker() {
       base::BindOnce(&OneTimePermissionsTracker::WebContentsUnloadedOrigin,
                      tracker_, origin_));
   if (tracker_) {
+    if (is_capturing_video_) {
+      tracker_->CapturingVideoChanged(origin_, false);
+    }
+    if (is_capturing_audio_) {
+      tracker_->CapturingAudioChanged(origin_, false);
+    }
     if (is_backgrounded_) {
       tracker_->WebContentsUnbackgrounded(origin_);
     }
@@ -89,6 +99,28 @@ void OneTimePermissionsPageTracker::OnVisibilityChanged(
   }
 }
 
+void OneTimePermissionsPageTracker::OnIsCapturingVideoChanged(
+    bool is_capturing_video) {
+  if (is_capturing_video_ == is_capturing_video) {
+    return;
+  }
+  is_capturing_video_ = is_capturing_video;
+  if (tracker_) {
+    tracker_->CapturingVideoChanged(origin_, is_capturing_video);
+  }
+}
+
+void OneTimePermissionsPageTracker::OnIsCapturingAudioChanged(
+    bool is_capturing_audio) {
+  if (is_capturing_audio_ == is_capturing_audio) {
+    return;
+  }
+  is_capturing_audio_ = is_capturing_audio;
+  if (tracker_) {
+    tracker_->CapturingAudioChanged(origin_, is_capturing_audio);
+  }
+}
+
 }  // namespace
 
 OneTimePermissionsTrackerHelper::~OneTimePermissionsTrackerHelper() = default;
@@ -109,8 +141,6 @@ void OneTimePermissionsTrackerHelper::OnVisibilityChanged(
 
 void OneTimePermissionsTrackerHelper::PrimaryPageChanged(content::Page& page) {
   OneTimePermissionsPageTracker::CreateForPage(page);
-
-  last_committed_origin_ = page.GetMainDocument().GetLastCommittedOrigin();
 }
 
 void OneTimePermissionsTrackerHelper::PrimaryPageWillBeDeactivated(
@@ -133,28 +163,24 @@ void OneTimePermissionsTrackerHelper::WasDiscarded() {
 void OneTimePermissionsTrackerHelper::OnIsCapturingVideoChanged(
     content::WebContents* web_contents,
     bool is_capturing_video) {
-  if (last_committed_origin_.has_value() &&
-      last_committed_origin_->IsSameOriginWith(
-          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-    OneTimePermissionsTrackerFactory::GetForBrowserContext(
-        web_contents->GetBrowserContext())
-        ->CapturingVideoChanged(
-            web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-            is_capturing_video);
+  if (web_contents != this->web_contents()) {
+    return;
+  }
+  if (auto* tracker = OneTimePermissionsPageTracker::GetForPage(
+          web_contents->GetPrimaryPage())) {
+    tracker->OnIsCapturingVideoChanged(is_capturing_video);
   }
 }
 
 void OneTimePermissionsTrackerHelper::OnIsCapturingAudioChanged(
     content::WebContents* web_contents,
     bool is_capturing_audio) {
-  if (last_committed_origin_.has_value() &&
-      last_committed_origin_->IsSameOriginWith(
-          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
-    OneTimePermissionsTrackerFactory::GetForBrowserContext(
-        web_contents->GetBrowserContext())
-        ->CapturingAudioChanged(
-            web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-            is_capturing_audio);
+  if (web_contents != this->web_contents()) {
+    return;
+  }
+  if (auto* tracker = OneTimePermissionsPageTracker::GetForPage(
+          web_contents->GetPrimaryPage())) {
+    tracker->OnIsCapturingAudioChanged(is_capturing_audio);
   }
 }
 

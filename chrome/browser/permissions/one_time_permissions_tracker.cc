@@ -50,6 +50,31 @@ void OneTimePermissionsTracker::RemoveObserver(
   observer_list_.RemoveObserver(observer);
 }
 
+void OneTimePermissionsTracker::
+    StartBackgroundExpirationTimersAndHandleMediaState(
+        const url::Origin& origin) {
+  if (!origin_tracker_[origin].background_expiration_timer->IsRunning()) {
+    origin_tracker_[origin].background_expiration_timer->Start(
+        FROM_HERE, permissions::kOneTimePermissionTimeout,
+        base::BindOnce(
+            &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
+            weak_factory_.GetWeakPtr(), origin,
+            OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout));
+  }
+
+  if (!origin_tracker_[origin].background_expiration_long_timer->IsRunning()) {
+    origin_tracker_[origin].background_expiration_long_timer->Start(
+        FROM_HERE, permissions::kOneTimePermissionMaximumLifetime,
+        base::BindOnce(&OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
+                       weak_factory_.GetWeakPtr(), origin,
+                       OneTimePermissionsTrackerObserver::BackgroundExpiryType::
+                           kLongTimeout));
+  }
+
+  HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_CAMERA);
+  HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_MIC);
+}
+
 void OneTimePermissionsTracker::WebContentsBackgrounded(
     const url::Origin& origin) {
   if (!ShouldIgnoreOrigin(origin)) {
@@ -61,26 +86,8 @@ void OneTimePermissionsTracker::WebContentsBackgrounded(
     origin_tracker_[origin].background_tab_counter += 1;
 
     if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
-      // When all undiscarded tabs which point to the origin are in the
-      // background, the timers should be reset.
-      origin_tracker_[origin].background_expiration_timer->Start(
-          FROM_HERE, permissions::kOneTimePermissionTimeout,
-          base::BindOnce(
-              &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
-              weak_factory_.GetWeakPtr(), origin,
-              OneTimePermissionsTrackerObserver::BackgroundExpiryType::
-                  kTimeout));
+      StartBackgroundExpirationTimersAndHandleMediaState(origin);
 
-      origin_tracker_[origin].background_expiration_long_timer->Start(
-          FROM_HERE, permissions::kOneTimePermissionMaximumLifetime,
-          base::BindOnce(
-              &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
-              weak_factory_.GetWeakPtr(), origin,
-              OneTimePermissionsTrackerObserver::BackgroundExpiryType::
-                  kLongTimeout));
-
-      HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_CAMERA);
-      HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_MIC);
     } else {
       origin_tracker_[origin].background_expiration_timer->Stop();
       origin_tracker_[origin].background_expiration_long_timer->Stop();
@@ -114,6 +121,8 @@ void OneTimePermissionsTracker::WebContentsUnloadedOrigin(
     DCHECK(!(origin_tracker_[origin].undiscarded_tab_counter < 0));
     if (origin_tracker_[origin].undiscarded_tab_counter == 0) {
       NotifyLastPageFromOriginClosed(origin);
+    } else if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
+      StartBackgroundExpirationTimersAndHandleMediaState(origin);
     }
   }
 }

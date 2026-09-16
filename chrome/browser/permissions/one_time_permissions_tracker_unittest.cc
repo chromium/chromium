@@ -44,10 +44,26 @@ class OneTimePermissionsTrackerObserverForTesting
     last_notified_origin_ = origin;
   }
 
+  void OnCapturingVideoExpired(const url::Origin& origin) override {
+    ++notified_count_capturing_video_expired_;
+    last_notified_origin_ = origin;
+  }
+
+  void OnCapturingAudioExpired(const url::Origin& origin) override {
+    ++notified_count_capturing_audio_expired_;
+    last_notified_origin_ = origin;
+  }
+
   uint32_t NotifiedCountShortTimeout() { return notified_count_short_timeout_; }
   uint32_t NotifiedCountLongTimeout() { return notified_count_long_timeout_; }
   uint32_t NotifiedCountLastPageClosed() {
     return notified_count_last_page_closed_;
+  }
+  uint32_t NotifiedCountCapturingVideoExpired() {
+    return notified_count_capturing_video_expired_;
+  }
+  uint32_t NotifiedCountCapturingAudioExpired() {
+    return notified_count_capturing_audio_expired_;
   }
   const url::Origin& LastNotifiedOrigin() { return last_notified_origin_; }
 
@@ -55,6 +71,8 @@ class OneTimePermissionsTrackerObserverForTesting
   uint32_t notified_count_short_timeout_ = 0;
   uint32_t notified_count_long_timeout_ = 0;
   uint32_t notified_count_last_page_closed_ = 0;
+  uint32_t notified_count_capturing_video_expired_ = 0;
+  uint32_t notified_count_capturing_audio_expired_ = 0;
   url::Origin last_notified_origin_;
 };
 }  // namespace
@@ -311,6 +329,34 @@ TEST_F(OneTimePermissionsTrackerTest, PageTrackerDiscard) {
   web_contents()->NotifyWasDiscarded();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return observer.NotifiedCountLastPageClosed() == 1u; }));
+  EXPECT_EQ(observer.LastNotifiedOrigin(), origin);
+
+  factory_tracker->RemoveObserver(&observer);
+}
+
+TEST_F(OneTimePermissionsTrackerTest, PageTrackerMediaCapture) {
+  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+  auto* helper =
+      OneTimePermissionsTrackerHelper::FromWebContents(web_contents());
+
+  const GURL origin_url("https://example.com");
+  const url::Origin origin = url::Origin::Create(origin_url);
+
+  OneTimePermissionsTrackerObserverForTesting observer;
+  auto* factory_tracker =
+      OneTimePermissionsTrackerFactory::GetForBrowserContext(profile());
+  factory_tracker->AddObserver(&observer);
+
+  NavigateAndCommit(origin_url);
+  helper->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  helper->OnIsCapturingVideoChanged(web_contents(), true);
+  helper->OnIsCapturingVideoChanged(web_contents(), false);
+
+  EXPECT_EQ(observer.NotifiedCountCapturingVideoExpired(), 0u);
+  task_environment()->FastForwardBy(permissions::kOneTimePermissionTimeout +
+                                    base::Seconds(1));
+  EXPECT_EQ(observer.NotifiedCountCapturingVideoExpired(), 1u);
   EXPECT_EQ(observer.LastNotifiedOrigin(), origin);
 
   factory_tracker->RemoveObserver(&observer);

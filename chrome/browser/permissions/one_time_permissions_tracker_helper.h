@@ -42,8 +42,6 @@ class OneTimePermissionsTrackerHelper
   explicit OneTimePermissionsTrackerHelper(content::WebContents* webContents);
   friend class content::WebContentsUserData<OneTimePermissionsTrackerHelper>;
 
-  std::optional<url::Origin> last_committed_origin_;
-
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

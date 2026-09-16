@@ -627,6 +627,48 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
       permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
+                       CamMicRevokedWhenNavigatedAwayWhileCapturing) {
+  ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT, GetWebrtcGurl()));
+
+  // Open a second tab to the same origin.
+  ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_NEWTAB, GetWebrtcGurl()));
+
+  // Request cam/mic permission in the active tab, expect prompt and grant it.
+  GetUserMediaAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE, true, 1);
+
+  // Navigate the active tab away while capturing is ongoing.
+  ASSERT_NO_FATAL_FAILURE(
+      Initialize(INITIALIZATION_DEFAULT, GetDifferentOriginUrl()));
+
+  // Fire running timers. Since capturing has stopped and the remaining tab to
+  // the origin is in the background, the one-time permissions should expire.
+  FireRunningExpirationTimers();
+
+  // Switch back to the background tab.
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+
+  // Request cam/mic permission, expect a prompt is triggered.
+  GetUserMediaAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE, true, 0);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::MEDIASTREAM_MIC,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 2);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 2);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::MEDIASTREAM_MIC,
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
+  OtpEventExpectBucketCount(
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
+}
+
 class OneTimePermissionExpiryEnforcementUmaInteractiveUiTest
     : public OneTimePermissionInteractiveUiTest,
       public ::testing::WithParamInterface<bool> {

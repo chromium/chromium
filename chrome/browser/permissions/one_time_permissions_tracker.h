@@ -136,6 +136,8 @@ class OneTimePermissionsTracker : public KeyedService {
   void RemoveContentSettingUsedFromOrigin(const url::Origin& origin,
                                           ContentSettingsType content_setting);
 
+  void StartBackgroundExpirationTimersAndHandleMediaState(
+      const url::Origin& origin);
   void HandleUserMediaState(const url::Origin& origin,
                             ContentSettingsType content_setting);
 
