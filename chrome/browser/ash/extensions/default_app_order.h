@@ -11,7 +11,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/synchronization/waitable_event.h"
+#include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 
 namespace chromeos {
@@ -24,9 +26,13 @@ namespace default_app_order {
 // might need to access the ordinals data.
 class ExternalLoader {
  public:
-  // Constructs an ExternalLoader and starts file loading. |async| is true to
-  // load the file asynchronously on the blocking pool.
-  explicit ExternalLoader(bool async);
+  // Constructs an ExternalLoader and starts file loading.
+  // `locale` is the application locale used to resolve localized folder names.
+  // `async` is true to load the file asynchronously on the blocking thread
+  // pool.
+  // TODO(crbug.com/559471293): Introduce a completion callback or observer to
+  // avoid returning an empty list before loading completes.
+  explicit ExternalLoader(std::string locale, bool async);
 
   ExternalLoader(const ExternalLoader&) = delete;
   ExternalLoader& operator=(const ExternalLoader&) = delete;
@@ -37,14 +43,26 @@ class ExternalLoader {
   const std::string& GetOemAppsFolderName();
 
  private:
-  void Load();
+  struct ParsedAppOrder {
+    std::vector<std::string> app_ids;
+    std::string oem_apps_folder_name;
+  };
 
-  // A vector of app id strings that defines the default order of apps.
-  std::vector<std::string> app_ids_;
+  // Reads the app order file at `path` and parses it. Returns the built-in
+  // default order if the file is missing or unreadable. `locale` is used to
+  // resolve the localized OEM apps folder name. Runs on a blocking thread pool
+  // sequence when loading asynchronously.
+  static ParsedAppOrder ReadAndParseAppOrder(base::FilePath path,
+                                             std::string locale);
 
-  std::string oem_apps_folder_name_;
+  void OnLoadFinished(ParsedAppOrder parsed_order);
 
-  base::WaitableEvent loaded_;
+  ParsedAppOrder app_order_;
+  bool is_loaded_ = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<ExternalLoader> weak_ptr_factory_{this};
 };
 
 // Gets the ordered list of app ids.

@@ -266,6 +266,7 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/version/version_loader.h"
 #include "components/account_id/account_id.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -1044,18 +1045,11 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   if (immediate_login) {
     // Redirects Chrome logging to the user data dir.
     RedirectChromeLogging(*base::CommandLine::ForCurrentProcess());
-
-    // Load the default app order synchronously for restarting case.
-    app_order_loader_ =
-        std::make_unique<chromeos::default_app_order::ExternalLoader>(
-            false /* async */);
   }
-
-  if (!app_order_loader_) {
-    app_order_loader_ =
-        std::make_unique<chromeos::default_app_order::ExternalLoader>(
-            true /* async */);
-  }
+  app_order_loader_ =
+      std::make_unique<chromeos::default_app_order::ExternalLoader>(
+          g_browser_process->GetFeatures()->application_locale_storage()->Get(),
+          /*async=*/!immediate_login);
 
   audio::GlobalSoundsManager::Create(
       content::GetAudioServiceStreamFactoryBinder());

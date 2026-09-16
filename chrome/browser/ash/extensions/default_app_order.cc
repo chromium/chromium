@@ -23,7 +23,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/policy/app_service_web_app_policy.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
@@ -235,70 +234,89 @@ size_t DefaultAppCount() {
   return apps.size();
 }
 
-ExternalLoader::ExternalLoader(bool async)
-    : loaded_(base::WaitableEvent::ResetPolicy::MANUAL,
-              base::WaitableEvent::InitialState::NOT_SIGNALED) {
+// static
+ExternalLoader::ParsedAppOrder ExternalLoader::ReadAndParseAppOrder(
+    base::FilePath path,
+    std::string locale) {
+  std::unique_ptr<base::ListValue> ordinals_value =
+      ReadExternalOrdinalFile(path);
+  if (!ordinals_value) {
+    std::vector<std::string> app_ids;
+    GetDefault(&app_ids);
+    return {app_ids, ""};
+  }
+
+  std::vector<std::string> app_ids;
+  std::string oem_apps_folder_name;
+  for (const base::Value& entry : *ordinals_value) {
+    if (entry.is_string()) {
+      app_ids.push_back(entry.GetString());
+      continue;
+    }
+    if (entry.is_dict()) {
+      const base::DictValue& dict = entry.GetDict();
+      if (dict.FindBool(kOemAppsFolderAttr).value_or(false)) {
+        oem_apps_folder_name = GetLocaleSpecificStringImpl(
+            dict, locale, kLocalizedContentAttr, kNameAttr);
+      } else if (dict.FindBool(kImportDefaultOrderAttr).value_or(false)) {
+        GetDefault(&app_ids);
+      } else {
+        LOG(ERROR) << "Invalid syntax in default_app_order.json";
+      }
+      continue;
+    }
+    LOG(ERROR) << "Invalid entry in default_app_order.json";
+  }
+  return {app_ids, oem_apps_folder_name};
+}
+
+ExternalLoader::ExternalLoader(std::string locale, bool async) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!loader_instance);
   loader_instance = this;
 
+  base::FilePath ordinals_file;
+  CHECK(base::PathService::Get(ash::FILE_DEFAULT_APP_ORDER, &ordinals_file));
+
   if (async) {
-    base::ThreadPool::PostTask(
+    base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&ExternalLoader::Load, base::Unretained(this)));
+        base::BindOnce(&ExternalLoader::ReadAndParseAppOrder,
+                       std::move(ordinals_file), std::move(locale)),
+        base::BindOnce(&ExternalLoader::OnLoadFinished,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
-    Load();
+    OnLoadFinished(
+        ReadAndParseAppOrder(std::move(ordinals_file), std::move(locale)));
   }
 }
 
 ExternalLoader::~ExternalLoader() {
-  DCHECK(loaded_.IsSignaled());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(loader_instance, this);
   loader_instance = nullptr;
 }
 
 const std::vector<std::string>& ExternalLoader::GetAppIds() {
-  if (!loaded_.IsSignaled())
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_loaded_) {
     LOG(ERROR) << "GetAppIds() called before loaded.";
-  return app_ids_;
+  }
+  return app_order_.app_ids;
 }
 
 const std::string& ExternalLoader::GetOemAppsFolderName() {
-  if (!loaded_.IsSignaled())
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!is_loaded_) {
     LOG(ERROR) << "GetOemAppsFolderName() called before loaded.";
-  return oem_apps_folder_name_;
+  }
+  return app_order_.oem_apps_folder_name;
 }
 
-void ExternalLoader::Load() {
-  base::FilePath ordinals_file;
-  CHECK(base::PathService::Get(ash::FILE_DEFAULT_APP_ORDER, &ordinals_file));
-
-  std::unique_ptr<base::ListValue> ordinals_value =
-      ReadExternalOrdinalFile(ordinals_file);
-  if (ordinals_value) {
-    std::string locale = g_browser_process->GetApplicationLocale();
-    for (const base::Value& i : *ordinals_value) {
-      if (i.is_string()) {
-        std::string app_id = i.GetString();
-        app_ids_.push_back(app_id);
-      } else if (i.is_dict()) {
-        const base::DictValue& dict = i.GetDict();
-        if (dict.FindBool(kOemAppsFolderAttr).value_or(false)) {
-          oem_apps_folder_name_ = GetLocaleSpecificStringImpl(
-              dict, locale, kLocalizedContentAttr, kNameAttr);
-        } else if (dict.FindBool(kImportDefaultOrderAttr).value_or(false)) {
-          GetDefault(&app_ids_);
-        } else {
-          LOG(ERROR) << "Invalid syntax in default_app_order.json";
-        }
-      } else {
-        LOG(ERROR) << "Invalid entry in default_app_order.json";
-      }
-    }
-  } else {
-    GetDefault(&app_ids_);
-  }
-
-  loaded_.Signal();
+void ExternalLoader::OnLoadFinished(ParsedAppOrder parsed_order) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  app_order_ = std::move(parsed_order);
+  is_loaded_ = true;
 }
 
 void Get(std::vector<std::string>* app_ids) {

@@ -163,6 +163,7 @@ static_library("main_parts") {
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/version",
     "//components/account_id",
+    "//components/application_locale_storage",
     "//components/device_event_log",
     "//components/language/core/browser",
     "//components/metrics",

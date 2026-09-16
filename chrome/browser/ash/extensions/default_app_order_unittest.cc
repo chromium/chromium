@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_paths.h"
@@ -15,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/task_environment.h"
 #include "components/app_constants/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,12 +59,15 @@ class DefaultAppOrderTest : public testing::Test {
         /*create=*/false);
   }
 
-  void CreateExternalOrderFile(const std::string& content) {
+  void CreateExternalOrderFile(std::string_view content) {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::FilePath external_file = temp_dir_.GetPath().Append(kTestFile);
     base::WriteFile(external_file, content);
     SetExternalFile(external_file);
   }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
 
  private:
   std::vector<std::string> built_in_default_;
@@ -81,14 +86,15 @@ TEST_F(DefaultAppOrderTest, BuiltInDefault) {
 
 // Tests external order file overrides built-in default.
 TEST_F(DefaultAppOrderTest, ExternalOrder) {
-  const char kExternalOrder[] =
-      "[\"app1\",\"app2\",\"app3\","
-      "{ \"oem_apps_folder\": true,\"localized_content\": {"
-      "    \"default\": {\"name\": \"OEM name\"}}}]";
-  CreateExternalOrderFile(std::string(kExternalOrder));
+  const char kExternalOrder[] = R"([
+      "app1", "app2", "app3", {
+        "oem_apps_folder": true,
+        "localized_content": { "default": {"name": "OEM name"} }
+      }])";
+  CreateExternalOrderFile(kExternalOrder);
 
-  std::unique_ptr<default_app_order::ExternalLoader> loader(
-      new default_app_order::ExternalLoader(false));
+  auto loader = std::make_unique<default_app_order::ExternalLoader>(
+      /*locale=*/"en_US", /*async=*/false);
 
   std::vector<std::string> apps;
   default_app_order::Get(&apps);
@@ -97,6 +103,30 @@ TEST_F(DefaultAppOrderTest, ExternalOrder) {
   EXPECT_EQ(std::string("app2"), apps[1]);
   EXPECT_EQ(std::string("app3"), apps[2]);
   EXPECT_EQ(std::string("OEM name"), default_app_order::GetOemAppsFolderName());
+}
+
+// Tests external order file with localized OEM folder name.
+TEST_F(DefaultAppOrderTest, ExternalOrderLocalized) {
+  const char kExternalOrder[] = R"([
+      "app1", "app2", "app3", {
+        "oem_apps_folder": true,
+        "localized_content": {
+          "default": {"name": "OEM name"},
+          "fr": {"name": "Nom OEM"}
+        }
+      }])";
+  CreateExternalOrderFile(kExternalOrder);
+
+  auto loader = std::make_unique<default_app_order::ExternalLoader>(
+      /*locale=*/"fr", /*async=*/false);
+
+  std::vector<std::string> apps;
+  default_app_order::Get(&apps);
+  ASSERT_EQ(3u, apps.size());
+  EXPECT_EQ("app1", apps[0]);
+  EXPECT_EQ("app2", apps[1]);
+  EXPECT_EQ("app3", apps[2]);
+  EXPECT_EQ("Nom OEM", default_app_order::GetOemAppsFolderName());
 }
 
 // Tests none-existent order file gives built-in default.
@@ -109,8 +139,8 @@ TEST_F(DefaultAppOrderTest, NoExternalFile) {
   ASSERT_FALSE(base::PathExists(none_existent_file));
   SetExternalFile(none_existent_file);
 
-  std::unique_ptr<default_app_order::ExternalLoader> loader(
-      new default_app_order::ExternalLoader(false));
+  auto loader = std::make_unique<default_app_order::ExternalLoader>(
+      /*locale=*/"en_US", /*async=*/false);
 
   std::vector<std::string> apps;
   default_app_order::Get(&apps);
@@ -120,10 +150,10 @@ TEST_F(DefaultAppOrderTest, NoExternalFile) {
 // Tests bad json file gives built-in default.
 TEST_F(DefaultAppOrderTest, BadExternalFile) {
   const char kExternalOrder[] = "This is not a valid json.";
-  CreateExternalOrderFile(std::string(kExternalOrder));
+  CreateExternalOrderFile(kExternalOrder);
 
-  std::unique_ptr<default_app_order::ExternalLoader> loader(
-      new default_app_order::ExternalLoader(false));
+  auto loader = std::make_unique<default_app_order::ExternalLoader>(
+      /*locale=*/"en_US", /*async=*/false);
 
   std::vector<std::string> apps;
   default_app_order::Get(&apps);
@@ -132,12 +162,11 @@ TEST_F(DefaultAppOrderTest, BadExternalFile) {
 
 TEST_F(DefaultAppOrderTest, ImportDefault) {
   const char kExternalOrder[] =
-      "[\"app1\","
-      "{ \"import_default_order\": true }, \"app2\"]";
-  CreateExternalOrderFile(std::string(kExternalOrder));
+      R"(["app1", {"import_default_order": true}, "app2"])";
+  CreateExternalOrderFile(kExternalOrder);
 
-  std::unique_ptr<default_app_order::ExternalLoader> loader(
-      new default_app_order::ExternalLoader(false));
+  auto loader = std::make_unique<default_app_order::ExternalLoader>(
+      /*locale=*/"en_US", /*async=*/false);
 
   std::vector<std::string> apps;
   default_app_order::Get(&apps);
@@ -146,6 +175,62 @@ TEST_F(DefaultAppOrderTest, ImportDefault) {
   EXPECT_EQ(app_constants::kChromeAppId, apps[1]);
   EXPECT_EQ(std::string("app2"),
             apps[default_app_order::DefaultAppCount() + 1]);
+}
+
+// Tests asynchronous loading of external order file.
+TEST_F(DefaultAppOrderTest, AsyncLoading) {
+  const char kExternalOrder[] = R"([
+      "app1", "app2", "app3", {
+        "oem_apps_folder": true,
+        "localized_content": { "default": {"name": "OEM name"} }
+      }])";
+  CreateExternalOrderFile(kExternalOrder);
+
+  auto loader = std::make_unique<default_app_order::ExternalLoader>(
+      /*locale=*/"en_US", /*async=*/true);
+
+  // Before the task completes, an empty list is returned.
+  std::vector<std::string> apps;
+  default_app_order::Get(&apps);
+  EXPECT_TRUE(apps.empty());
+
+  // NOTE: RunUntilIdle() is necessary because ExternalLoader does not yet
+  // provide a completion callback or observer to await asynchronously.
+  task_environment_.RunUntilIdle();
+
+  // Custom app order is loaded after task completion.
+  apps.clear();
+  default_app_order::Get(&apps);
+  ASSERT_EQ(3u, apps.size());
+  EXPECT_EQ("app1", apps[0]);
+  EXPECT_EQ("app2", apps[1]);
+  EXPECT_EQ("app3", apps[2]);
+  EXPECT_EQ("OEM name", default_app_order::GetOemAppsFolderName());
+}
+
+// Tests that destroying the loader before background task completion is safe
+// and drops the reply callback without crashing or causing use-after-free.
+TEST_F(DefaultAppOrderTest, AsyncLoadingDestroyBeforeCompletion) {
+  const char kExternalOrder[] = R"([
+      "app1", "app2", "app3", {
+        "oem_apps_folder": true,
+        "localized_content": { "default": {"name": "OEM name"} }
+      }])";
+  CreateExternalOrderFile(kExternalOrder);
+
+  auto loader = std::make_unique<default_app_order::ExternalLoader>(
+      /*locale=*/"en_US", /*async=*/true);
+
+  // Immediately destroy the loader while the background task is queued.
+  loader.reset();
+
+  // NOTE: RunUntilIdle() is necessary because ExternalLoader does not yet
+  // provide a completion callback or observer to await asynchronously.
+  task_environment_.RunUntilIdle();
+
+  std::vector<std::string> apps;
+  default_app_order::Get(&apps);
+  EXPECT_TRUE(IsBuiltInDefault(apps));
 }
 
 }  // namespace chromeos
