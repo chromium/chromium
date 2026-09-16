@@ -374,11 +374,27 @@
   [self makeAnyDialogKey];
 }
 
-// If the RenderWidgetHostView is asked to resign first responder while a child
-// window is key, then the user performed some action which targets the browser
-// window, like clicking the omnibox or typing cmd+L. In that case, the browser
-// window should become key.
+// If the RenderWidgetHostView is asked to resign first responder while a dialog
+// child window is key (and not because the view itself is being hidden), then
+// the user performed some action which targets the browser window, like
+// clicking the omnibox or typing cmd+L. In that case, the browser window should
+// become key.
 - (void)resignFirstResponder {
+  if (self.nsView.hiddenOrHasHiddenAncestor) {
+    return;
+  }
+
+  content::WebContents* webContents = self.webContents;
+  if (!webContents) {
+    return;
+  }
+
+  web_modal::WebContentsModalDialogManager* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(webContents);
+  if (!manager || !manager->IsDialogActive()) {
+    return;
+  }
+
   NSWindow* browserWindow = self.nsView.window;
   DCHECK(browserWindow);
 
