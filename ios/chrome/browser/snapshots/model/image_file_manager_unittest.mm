@@ -87,10 +87,13 @@ void ExpectSimilarImages(CGImageRef image1, CGImageRef image2) {
   base::span<const uint8_t> image2_span =
       base::apple::NSDataToSpan((__bridge NSData*)image2_data.get());
 
-  // Colors may not be axactly the same due to compression or roundind
-  // errors, thus allow a small difference.
+  // Colors may not be exactly the same due to JPEG compression or rounding
+  // errors (e.g., up to 2 units difference on iPhone 17 hardware), thus allow a
+  // small difference.
+  static constexpr uint8_t kMaxColorComponentDifference = 2;
   for (size_t index = 0; index < kColorComponents; ++index) {
-    EXPECT_NEAR(image1_span[indices1[index]], image2_span[indices2[index]], 1);
+    EXPECT_NEAR(image1_span[indices1[index]], image2_span[indices2[index]],
+                kMaxColorComponentDifference);
   }
 }
 
