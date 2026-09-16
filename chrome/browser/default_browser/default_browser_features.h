@@ -36,7 +36,7 @@ bool IsDefaultBrowserPromptSurfacesEnabled();
 bool IsVisualGuidedSetterDockingEnabled();
 
 // Returns the UI surface to use for Default Browser Prompt. Defaults to Infobar
-// if the `kDefaultBrowserFramework` feature is disabled.
+// when the `kDefaultBrowserPromptSurfaces` feature is disabled.
 DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface();
 
 // Returns the type of setter to use for the Default Browser interaction. It
