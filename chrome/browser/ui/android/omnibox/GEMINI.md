@@ -46,7 +46,9 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 - **Semantic Grouping & Naming**: Properties listed in `*Properties.java` files must be grouped semantically by prefix (e.g. `BTN_ADD_VISIBLE`, `BTN_ADD_ENABLED`, `BTN_ADD_CALLBACK`) so alphabetical sorting naturally groups related properties together.
 - **ViewBinder Order Consistency**: `ViewBinder` binding logic (`bind(...)` method's `if/else if` chain or dispatch logic) must follow the exact same order as `*Properties.java` for all new code.
 - **Direct Reference Equality (`propertyKey == FooProperties.KEY_NAME`)**: In `ViewBinder.bind(...)` methods, always use direct reference equality (`propertyKey == FooProperties.BAR`) rather than `FooProperties.BAR.equals(propertyKey)` or `propertyKey.equals(...)`. Property keys are unique singleton instances, and equality is never overridden for them; calling `equals()` is unnecessary, incurs virtual method invocation overhead, and is inefficient on hot UI update paths.
-- **`@IntDef` Properties**: Properties representing an `@IntDef` **MUST** use `WritableIntDefPropertyKey<T>` or `ReadableIntDefPropertyKey<T>` (typed with the `@IntDef` annotation interface) rather than generic `WritableIntPropertyKey` / `ReadableIntPropertyKey` for clarity, documentation, and compile-time safety.
+- **`@IntDef` Properties**:
+  - Properties representing an `@IntDef` **MUST** use `WritableIntDefPropertyKey<T>` or `ReadableIntDefPropertyKey<T>` (typed with the `@IntDef` annotation interface) rather than generic `WritableIntPropertyKey` / `ReadableIntPropertyKey` for clarity, documentation, and compile-time safety.
+  - Each `@IntDef` must have a dedicated 1:1 association with a specific property (no multi-purpose omnibus enums; see `@IntDef State Definitions & Naming`).
 - **Prefer `ReadablePropertyKey`s**: Where applicable (such as fixed callbacks, listeners, immutable values, or delegates set only during model instantiation and never mutated afterward), `ReadablePropertyKey`s (`ReadableObjectPropertyKey`, `ReadableIntDefPropertyKey`, `ReadableBooleanPropertyKey`, etc.) should be preferred over `WritablePropertyKey`s.
 
 ### General Guidelines
@@ -82,6 +84,32 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
     - Do **not** add comments for self-evident single-argument calls or setters (e.g., `setValue(/* value= */ value)` is completely unnecessary and discouraged).
     - Parameter comments are intended to clarify ambiguous literals and unclear expressions, not to duplicate variable names.
   - **ErrorProne `[ParameterName]` Strict Rule**: When using `/* paramName= */`, ErrorProne strictly verifies that `paramName` matches the exact formal parameter name in the method declaration (`[ParameterName]`). Checkstyle also strictly requires the `/* paramName= */` syntax (flagging comments without `=`). Always check the target method declaration to ensure the name matches; if the parameter name is unclear or misleading, rename the parameter in the method declaration rather than omitting `=`.
+- **`@IntDef` State Definitions & Naming**:
+  - **Unambiguous, Descriptive State Names**: The combination of the `@IntDef` name and its item constants must clearly communicate concrete domain states:
+    - *Disallowed*: Pseudo-booleans (e.g. `TRUE` / `FALSE`), and generic numerical placeholders (e.g. `STATE_0` / `STATE_1` / `STATE_2`).
+    - *Required*: Concrete, domain-specific state names (e.g. `LayoutMode.POPOVER` / `LayoutMode.EMBEDDED` / `LayoutMode.FLOATING`, or `SearchEngineUsed.UNSET` / `SearchEngineUsed.FIRST_PARTY` / `SearchEngineUsed.THIRD_PARTY`).
+    - The full combination `IntDefName.ITEM_NAME` must clearly describe the state and be completely unambiguous in context.
+  - **Dedicated 1:1 Association (No Multi-Purpose Omnibus Enums)**: One `@IntDef` must be associated with one specific property or domain concept. It must **not** be reused to describe disparate properties across different objects or components (e.g. a generic `@IntDef` with `UNKNOWN` / `PRESENT` / `GONE` cannot be used to describe view visibility, internet connectivity, and soft keyboard presence simultaneously). Each distinct property or concept must define its own dedicated, domain-specific `@IntDef` (or use standard platform definitions like Android `@Visibility`).
+  - **Explicit Equality Checking (`==`) & Helper Methods**: Always explicitly test for **equality** (`state == State.VALUE`) rather than inequality (`state != State.OTHER`). Testing inequality (`!=`) assumes a binary domain and silently breaks when new valid or invalid states are introduced. If multiple states need to be tested across multiple places, devise a dedicated helper method rather than repeating composite conditions:
+    ```java
+    public static boolean isHubOrTabSearch(@PageClassification int pageClassification) {
+        return pageClassification == PageClassification.ANDROID_HUB
+                || pageClassification == PageClassification.ANDROID_TAB_SEARCH_OVERLAY;
+    }
+    ```
+- **Avoid `@TriBool` for Invalid/Uninitialized States**:
+  - Do not use `@TriBool` (or tri-state `@IntDef`s) when one of the states represents an invalid or uninitialized condition (e.g. "not initialized" or "unknown").
+  - An invalid state must fail fast and lead directly to a crash (e.g. throwing an exception or assertion) rather than quietly propagating as a third value. If an `@IntDef` defines 3 states (e.g. `INVALID`, `UNINITIALIZED`, `INITIALIZED`), branching with binary assumptions leads to completely unpredictable outcomes:
+    ```java
+    if (state == Initialized) { do this }
+    if (state != Initialized) { do that } // Matches both Uninitialized AND Invalid!
+    if (state == Uninitialized) { do something else }
+    if (state != Uninitialized) { now we have 4 bugs } // Matches both Initialized AND Invalid!
+    ```
+    When `state` is `INVALID`, both `!= Initialized` and `!= Uninitialized` evaluate to `true`. Every inequality check (`!=`) inadvertently conflates the invalid state with the opposite valid state or conflates multiple states, causing conflicting branch execution and unpredictable runtime behavior across callers.
+  - If the intention is to clearly capture a valid state when an unset/uninitialized state is possible, prefer `@Nullable Boolean` paired with `Boolean.TRUE.equals(state)` or `Boolean.FALSE.equals(state)`. This pattern is safer because:
+    - It requires explicitly naming the exact state being tested *for* (`Boolean.TRUE.equals(state)` only matches `Boolean.TRUE`, not `false` and not `null`).
+    - Any failure to explicitly name the state (such as accidental unboxing `if (state)`) is non-idiomatic, caught by ErrorProne, and results in a fast crash (`NullPointerException`) indicating the state is invalid or uninitialized ("hey, this is incorrect").
 - **Complexity & Early Returns**: Prefer early return statements over deeply nested conditional statements. Keep the cyclomatic complexity of methods low.
 - **Prefer Switch Expressions (`return switch (...)` / `variable = switch (...)`)**:
   - Prefer modern Java `switch` expressions over verbose `if / else if` ladders or legacy statement `switch` blocks when mapping or resolving discrete `@IntDef`, `@LongDef`, `@StringDef`, or primitive/string values to a result (enums are banned in Chromium Java).
@@ -185,6 +213,17 @@ When introducing or modifying Omnibox feature flags:
   }
   ```
   Common setup logic must still be isolated in a helper method or `@Before` block rather than duplicated inline, keeping the test body concise and strictly within the `<30 LOC` target.
+- **Batching On-Device Tests (`@Batch(Batch.PER_CLASS)`)**: On-device suites default to one full browser restart per test case, which dominates their runtime. Every new `*Test.java` / `*UiTest.java` suite should declare `@Batch(Batch.PER_CLASS)` unless a concrete, documented obstacle exists. When batching an existing suite, audit these recurring hazards:
+  - **Per-test `EmbeddedTestServer`**: a server created in `@Before` and destroyed in `@After` gets a new port every test. Anything that captured a URL in process-wide state (most notably a search engine registered with `TemplateUrlService`) is then left pointing at a dead port. Declare `EmbeddedTestServerRule` as a `@ClassRule` by default:
+    - Do not hand-roll the equivalent with `@BeforeClass`/`@AfterClass`. `EmbeddedTestServer` registers `stopAndDestroyServer` with `ResettersForTesting`, which fires after *every* test method, so a manually started server is dead from the second test onwards. The opt-out (`mDisableResetterForTesting`) is package private to `org.chromium.net.test` and only `EmbeddedTestServerRule` can set it.
+    - The rule is lazy: the server is created on the first `getServer()` call, so class scope costs nothing for tests that never touch it.
+    - Keep it a per-test `@Rule` only when the class genuinely needs it: per-test server configuration (`setServerPort`, `setServerUsesHttps`, `setCertificateType` all assert the server has not been created yet), or per-test server-side state (custom request handlers and `addDefaultHandlers` accumulate, request counters, tests that stop the server deliberately).
+  - **Profile-scoped state**: the `Profile` and its `TemplateUrlService` outlive the batch. Register test search engines once per process and only re-apply the selection (`setSearchEngine`) per test. Detect the already-registered case by querying the service (`getTemplateUrlForKeyword(keyword) != null`) rather than by tracking a static boolean, so the guard cannot drift out of sync with the real state. Note `addSearchEngine` returns `false` on a duplicate keyword instead of throwing, so assert its result.
+  - **Static production state**: statics owned by production code (e.g. `GeolocationHeader`'s priming flag) are not reset by the activity teardown. Reset them in `@Before` via a `resetStateForTesting()` style hook — never in `@After`, which may be skipped when a test throws.
+  - **Missing `ResettersForTesting`**: a `setFooForTesting(...)` without a registered resetter silently leaks into the next test in the batch. Fix the setter rather than working around it in the test.
+  - **`@RequiresRestart` is a no-op without `@Batch`**: it only overrides a class-level `@Batch` for a single method. Finding it on an unbatched class is a strong hint the class was meant to be batched.
+  - **Render tests are batchable**: `ChromeRenderTestRule`, night mode `@ClassParameter`s and even `FreshCtaTransitTestRule` all work under `Batch.PER_CLASS` (see `ReaderModeBottomSheetRenderTest`). A fresh activity per test is still required when night mode varies per parameter; batching saves the process restart, not the activity launch.
+  - **Verifying**: the run is batched when the emitted logcat file name contains `_batch_shard0_` and a single logcat covers the whole suite.
 - **Remove Redundant and Zombie Tests**: Redundant and zombie tests need to be removed.
 - **Use `@UiThreadTest` over `runOnUiThreadBlocking()`**:
   - Tests that wrap their entire logic with `runOnUiThreadBlocking()` should be rewritten as `@UiThreadTest`.
