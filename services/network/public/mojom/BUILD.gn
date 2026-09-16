@@ -570,6 +570,41 @@ mojom("mojom_origin_or_wildcard_header_value") {
   }
 }
 
+mojom("mojom_http_request_headers") {
+  generate_blink = true
+  generate_java = true
+  sources = [ "http_request_headers.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.HttpRequestHeaders"
+          cpp = "::net::HttpRequestHeaders"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/http_request_headers_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.HttpRequestHeadersUpdateParams"
+          cpp = "::network::HttpRequestHeadersUpdateParams"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/http_request_headers_mojom_traits.h",
+      ]
+      traits_public_deps = [ "//net" ]
+    },
+  ]
+  blink_cpp_typemaps = cpp_typemaps
+}
+
 # These .mojom files are put in their own target to avoid a circular dependency,
 # which comes from the fact that the typemap for url_loader.mojom
 # (ResourceRequest) depends on them.
@@ -595,7 +630,6 @@ mojom("url_loader_base") {
     "fetch_api.mojom",
     "fetch_retry_options.mojom",
     "http_raw_headers.mojom",
-    "http_request_headers.mojom",
     "ip_address_space.mojom",
     "isolation_info.mojom",
     "link_header.mojom",
@@ -634,6 +668,7 @@ mojom("url_loader_base") {
     ":cookies_mojom",
     ":mojom_connection_allowlist",
     ":mojom_content_security_policy",
+    ":mojom_http_request_headers",
     ":mojom_integrity_algorithm",
     ":mojom_integrity_policy",
     ":mojom_ip_address",
@@ -815,31 +850,6 @@ mojom("url_loader_base") {
         "//base",
         "//url/mojom:url_mojom_gurl",
       ]
-    },
-    {
-      types = [
-        {
-          mojom = "network.mojom.HttpRequestHeaders"
-          cpp = "::net::HttpRequestHeaders"
-        },
-      ]
-      traits_headers = [
-        "//services/network/public/cpp/http_request_headers_mojom_traits.h",
-      ]
-      traits_public_deps = [ "//net" ]
-    },
-    {
-      types = [
-        {
-          mojom = "network.mojom.HttpRequestHeadersUpdateParams"
-          cpp = "::network::HttpRequestHeadersUpdateParams"
-          move_only = true
-        },
-      ]
-      traits_headers = [
-        "//services/network/public/cpp/http_request_headers_mojom_traits.h",
-      ]
-      traits_public_deps = [ "//net" ]
     },
     {
       types = [
@@ -1987,6 +1997,7 @@ mojom("mojom") {
     ":mojom_cors_origin_pattern",
     ":mojom_first_party_sets",
     ":mojom_host_resolver",
+    ":mojom_http_request_headers",
     ":mojom_ip_address",
     ":mojom_network_anonymization_key",
     ":mojom_network_isolation_key",
