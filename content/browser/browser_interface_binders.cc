@@ -828,6 +828,31 @@ void BindDevicePostureProvider(
       ->Bind(std::move(receiver));
 }
 
+void BindPictureInPictureService(
+    RenderFrameHost* host,
+    mojo::PendingReceiver<blink::mojom::PictureInPictureService> receiver) {
+  // Fenced frames are not allowed to use Picture-in-Picture.
+  if (host->IsNestedWithinFencedFrame()) {
+    bad_message::ReceivedBadMessage(
+        host->GetProcess(),
+        bad_message::BadMessageReason::
+            BIBI_BIND_PICTURE_IN_PICTURE_SERVICE_FOR_FENCED_FRAME);
+    return;
+  }
+
+  // Enforce Permissions Policy browser-side.
+  if (!host->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kPictureInPicture)) {
+    bad_message::ReceivedBadMessage(
+        host->GetProcess(),
+        bad_message::BadMessageReason::
+            BIBI_BIND_PICTURE_IN_PICTURE_SERVICE_BLOCKED_BY_PERMISSIONS_POLICY);
+    return;
+  }
+
+  PictureInPictureServiceImpl::Create(host, std::move(receiver));
+}
+
 template <auto Method, typename Interface>
 void BindRenderFrameHostImpl(RenderFrameHost* host,
                              mojo::PendingReceiver<Interface> receiver)
@@ -1392,8 +1417,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::KeyboardLockService>(
       &KeyboardLockServiceImpl::CreateMojoService);
   map->Add<blink::mojom::MediaSessionService>(&MediaSessionServiceImpl::Create);
-  map->Add<blink::mojom::PictureInPictureService>(
-      &PictureInPictureServiceImpl::Create);
+  map->Add<blink::mojom::PictureInPictureService>(&BindPictureInPictureService);
   map->Add<blink::mojom::WakeLockService>(&WakeLockServiceImpl::Create);
 #if BUILDFLAG(ENABLE_VR)
   map->Add<device::mojom::VRService>(&VRServiceImpl::Create);

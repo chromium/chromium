@@ -587,6 +587,10 @@ Called by update_bad_message_reasons.py.-->
   <int value="400" label="RFPH_UPDATE_VIEWPORT_INTERSECTION_WITHOUT_CPFC"/>
   <int value="401"
       label="RFH_DEDICATED_WORKER_HOST_FACTORY_PDF_PROCESS_BLOCKED"/>
+  <int value="402"
+      label="BIBI_BIND_PICTURE_IN_PICTURE_SERVICE_FOR_FENCED_FRAME"/>
+  <int value="403"
+      label="BIBI_BIND_PICTURE_IN_PICTURE_SERVICE_BLOCKED_BY_PERMISSIONS_POLICY"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
