@@ -25,8 +25,6 @@
                 "MEIPreload\\manifest.json",
                 "MEIPreload\\preloaded_data.pb",
                 "notification_helper.exe",
-                "PrivacySandboxAttestationsPreloaded\\manifest.json",
-                "PrivacySandboxAttestationsPreloaded\\privacy-sandbox-attestations.dat",
                 "resources.pak",
                 "setup.exe",
                 "v8_context_snapshot.bin",
