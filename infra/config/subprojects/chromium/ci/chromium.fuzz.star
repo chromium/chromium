@@ -1365,6 +1365,7 @@ libfuzzer_builder(
     description_html = "Libfuzzer ASan for Chrome on Windows in archive schema v1",
     builderless = True,
     os = os.WINDOWS_DEFAULT,
+    free_space = builders.free_space.high,
     gardener_rotations = args.ignore_default(None),
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
