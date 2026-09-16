@@ -33,6 +33,9 @@
 // Sets whether the progress updates are enabled or disabled.
 - (void)setProgressUpdatesEnabled:(BOOL)enabled;
 
+// Sets whether notifications for new tasks are enabled or disabled.
+- (void)setNewTasksNotificationEnabled:(BOOL)enabled;
+
 // The delegate to notify the coordinator about card actions.
 @property(nonatomic, weak) id<LevelUpViewControllerDelegate> delegate;
 

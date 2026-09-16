@@ -49,6 +49,7 @@ enum {
   kLevelUpPasswordsVerifiedStat = 200019,
   kLevelUpPhotoSearchesPerformedStat = 200020,
   kLevelUpOptIn = 200021,
+  kLevelUpNewTasksNotificationEnabled = 200022,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -161,6 +162,11 @@ constexpr auto kIOSChromeSyncablePrefsAllowlist =
         {prefs::kLevelUpOptIn,
          {syncable_prefs_ids::kLevelUpOptIn, syncer::PREFERENCES,
           sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone,
+          sync_preferences::WriteBehavior::kWriteToAccountOnly}},
+        {prefs::kLevelUpNewTasksNotificationEnabled,
+         {syncable_prefs_ids::kLevelUpNewTasksNotificationEnabled,
+          syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone,
           sync_preferences::WriteBehavior::kWriteToAccountOnly}},
     });

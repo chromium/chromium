@@ -73,6 +73,8 @@ const CGFloat kTasksCellHeight = 350.0;
   UIButton* _menuButton;
   // Whether progress updates are enabled.
   BOOL _progressUpdatesEnabled;
+  // Whether notifications for new tasks are enabled.
+  BOOL _newTasksNotificationEnabled;
 }
 
 @synthesize delegate = _delegate;
@@ -97,6 +99,10 @@ const CGFloat kTasksCellHeight = 350.0;
 - (void)setProgressUpdatesEnabled:(BOOL)enabled {
   _progressUpdatesEnabled = enabled;
   [self updateMenuButtonMenu];
+}
+
+- (void)setNewTasksNotificationEnabled:(BOOL)enabled {
+  _newTasksNotificationEnabled = enabled;
 }
 
 #pragma mark - LevelUpProfileConsumer
@@ -133,7 +139,9 @@ const CGFloat kTasksCellHeight = 350.0;
 
 // Configures the progress cell.
 - (void)configureProgressCell:(LevelUpProgressView*)cell {
+  cell.delegate = self.delegate;
   [cell setLevel:_level tasksForLevel:_tasks];
+  [cell setNewTasksNotificationEnabled:_newTasksNotificationEnabled];
 }
 
 // Configures the tasks checklist cell.

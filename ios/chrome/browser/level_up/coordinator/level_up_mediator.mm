@@ -106,6 +106,13 @@
     [self.consumer setProgressUpdatesEnabled:updatesEnabled];
   }
 
+  if ([self.consumer
+          respondsToSelector:@selector(setNewTasksNotificationEnabled:)]) {
+    BOOL newTasksNotificationEnabled =
+        _prefService->GetBoolean(prefs::kLevelUpNewTasksNotificationEnabled);
+    [self.consumer setNewTasksNotificationEnabled:newTasksNotificationEnabled];
+  }
+
   int level = _levelUpService->GetCurrentLevel();
 
   NSMutableArray<LevelUpTask*>* productivityTasks =
@@ -270,6 +277,10 @@
     [self.consumer setProgressUpdatesEnabled:newValue];
   }
   return newValue;
+}
+
+- (void)setNewTasksNotificationEnabled:(BOOL)enabled {
+  _prefService->SetBoolean(prefs::kLevelUpNewTasksNotificationEnabled, enabled);
 }
 
 - (void)turnOffLevelUp {

@@ -508,6 +508,10 @@ inline constexpr char kLevelUpUIEnabled[] = "level_up.ui_enabled";
 // Whether the user opted in to the Level Up feature.
 inline constexpr char kLevelUpOptIn[] = "level_up.opt_in";
 
+// Whether the user wants to be notified when new Level Up tasks arrive.
+inline constexpr char kLevelUpNewTasksNotificationEnabled[] =
+    "level_up.new_tasks_notification_enabled";
+
 // Stats tracked in the Level Up feature.
 inline constexpr char kLevelUpTabsDeclutteredStat[] =
     "level_up.tabs_decluttered_stat";

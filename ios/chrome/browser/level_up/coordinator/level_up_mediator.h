@@ -52,6 +52,9 @@ class IdentityManager;
 // Toggles the progress updates enabled status and returns the new value.
 - (BOOL)toggleProgressUpdates;
 
+// Sets whether new tasks notifications are enabled.
+- (void)setNewTasksNotificationEnabled:(BOOL)enabled;
+
 // Resets task status and turns off Level Up.
 - (void)turnOffLevelUp;
 

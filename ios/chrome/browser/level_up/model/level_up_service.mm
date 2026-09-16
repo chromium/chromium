@@ -325,6 +325,7 @@ void LevelUpService::ResetAllTasksStatus() {
   pref_service_->SetInteger(prefs::kLevelUpPasswordsAutofilledStat, 0);
   pref_service_->SetInteger(prefs::kLevelUpPasswordsVerifiedStat, 0);
   pref_service_->SetInteger(prefs::kLevelUpPhotoSearchesPerformedStat, 0);
+  pref_service_->SetBoolean(prefs::kLevelUpNewTasksNotificationEnabled, true);
   pref_service_->SetInteger(
       prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 0);
 }
@@ -563,6 +564,9 @@ void LevelUpService::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kLevelUpOptIn, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kLevelUpNewTasksNotificationEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kLevelUpTabsDeclutteredStat, 0,

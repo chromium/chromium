@@ -147,6 +147,10 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
   [snackbarHandler showSnackbarMessage:snackbarMessage];
 }
 
+- (void)didToggleNewTasksNotification:(BOOL)enabled {
+  [self.mediator setNewTasksNotificationEnabled:enabled];
+}
+
 - (void)didTapTurnOffLevelUp:(LevelUpViewController*)controller {
   ButtonStackConfiguration* config = [[ButtonStackConfiguration alloc] init];
   config.primaryActionString =
