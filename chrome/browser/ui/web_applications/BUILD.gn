@@ -102,6 +102,7 @@ source_set("impl") {
   sources = []
   deps = [
     "//chrome/browser/banners",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:browser_window_state",
     "//chrome/browser/ui/browser_window:create_browser_window",
   ]
@@ -301,6 +302,7 @@ source_set("browser_tests") {
     "//chrome/browser/preloading:test_support",
     "//chrome/browser/shortcuts",
     "//chrome/browser/themes",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:tab_ui_helper",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_ui_controller",
@@ -393,6 +395,7 @@ source_set("app_service_browser_tests") {
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/badging:test_support",
     "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/web_applications/diagnostics:app_service_browser_tests",
     "//chrome/browser/ui/web_applications/test:test_support_ui",
     "//chrome/browser/web_applications",
@@ -462,6 +465,7 @@ source_set("interactive_ui_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/find_bar",
     "//chrome/browser/ui/tabs:tab_strip",

@@ -12,6 +12,7 @@ source_set("history_embeddings") {
     "//chrome/browser/feedback",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/hats",
     "//chrome/browser/ui/navigator",

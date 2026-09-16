@@ -188,6 +188,7 @@ source_set("impl") {
   if (!is_android) {
     deps += [
       "//chrome/browser/themes",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/new_tab_footer",
       "//chrome/browser/ui/views/side_panel",

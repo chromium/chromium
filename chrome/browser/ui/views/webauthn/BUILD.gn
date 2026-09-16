@@ -194,6 +194,7 @@ source_set("browser_tests") {
     ":webauthn",
     "//base",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/test:dialog",
     "//chrome/browser/ui/webauthn",

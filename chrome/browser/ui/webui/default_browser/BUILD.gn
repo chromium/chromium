@@ -131,6 +131,7 @@ if (is_win) {
       "//base",
       "//chrome/browser/default_browser",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/navigator",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/test:test_support",

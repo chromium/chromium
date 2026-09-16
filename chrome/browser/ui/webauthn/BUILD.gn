@@ -116,6 +116,9 @@ source_set("impl") {
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_window_header" ]
+  }
 }
 
 if (!is_android) {
@@ -168,6 +171,7 @@ if (!is_android) {
       "//chrome/browser/lifetime",
       "//chrome/browser/signin",
       "//chrome/browser/signin:signin_browser_test_base",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/webauthn",
       "//chrome/test:test_support",
