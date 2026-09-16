@@ -45,12 +45,26 @@ std::string FindFirstTextInSubtree(
   return "";
 }
 
+bool IsIframeNode(const optimization_guide::proto::ContentNode& node) {
+  if (!node.has_content_attributes()) {
+    return false;
+  }
+  const auto& attrs = node.content_attributes();
+  return attrs.attribute_type() ==
+             optimization_guide::proto::ContentAttributeType::
+                 CONTENT_ATTRIBUTE_IFRAME ||
+         attrs.has_iframe_data();
+}
+
 void ConvertContentNodesToMojo(
     const google::protobuf::RepeatedPtrField<
         optimization_guide::proto::ContentNode>& proto_nodes,
     std::vector<ai_overlay_dialog::mojom::PageContentNodePtr>& mojo_nodes) {
   for (int i = 0; i < proto_nodes.size(); ++i) {
     const auto& proto_node = proto_nodes[i];
+    if (IsIframeNode(proto_node)) {
+      continue;
+    }
     auto mojo_node = ai_overlay_dialog::mojom::PageContentNode::New();
 
     if (proto_node.has_content_attributes()) {
@@ -165,22 +179,51 @@ void ConvertContentNodesToMojo(
   }
 }
 
-std::string FindUrlForDomNodeId(
+std::string FindUrlByDomNodeId(
     const optimization_guide::proto::ContentNode& node,
-    int target_id) {
+    int target_dom_node_id,
+    const std::string& ancestor_url = "") {
+  if (IsIframeNode(node)) {
+    return "";
+  }
+  std::string current_url = ancestor_url;
   if (node.has_content_attributes()) {
     const auto& attrs = node.content_attributes();
-    if (attrs.has_anchor_data()) {
+    if (attrs.has_anchor_data() && !attrs.anchor_data().url().empty()) {
+      current_url = attrs.anchor_data().url();
+    }
+    if (!current_url.empty() &&
+        attrs.common_ancestor_dom_node_id() == target_dom_node_id) {
+      return current_url;
+    }
+  }
+  for (const auto& child : node.children_nodes()) {
+    std::string url =
+        FindUrlByDomNodeId(child, target_dom_node_id, current_url);
+    if (!url.empty()) {
+      return url;
+    }
+  }
+  return "";
+}
+
+std::string FindUrlByUrlHash(const optimization_guide::proto::ContentNode& node,
+                             int target_url_hash) {
+  if (IsIframeNode(node)) {
+    return "";
+  }
+  if (node.has_content_attributes()) {
+    const auto& attrs = node.content_attributes();
+    if (attrs.has_anchor_data() && !attrs.anchor_data().url().empty()) {
       int url_hash = static_cast<int>(
           base::PersistentHash(attrs.anchor_data().url()) % 10000);
-      if (attrs.common_ancestor_dom_node_id() == target_id ||
-          url_hash == target_id) {
+      if (url_hash == target_url_hash) {
         return attrs.anchor_data().url();
       }
     }
   }
   for (const auto& child : node.children_nodes()) {
-    std::string url = FindUrlForDomNodeId(child, target_id);
+    std::string url = FindUrlByUrlHash(child, target_url_hash);
     if (!url.empty()) {
       return url;
     }
@@ -326,11 +369,16 @@ std::string PageContextMonitor::GetUrlForHash(
   while (!hash_sv.empty() && hash_sv.back() == '}') {
     hash_sv.remove_suffix(1);
   }
-  int target_hash;
-  if (!base::StringToInt(hash_sv, &target_hash)) {
+  int target_id;
+  if (!base::StringToInt(hash_sv, &target_id)) {
     return "";
   }
-  return FindUrlForDomNodeId(last_page_content_->root_node(), target_hash);
+  std::string url =
+      FindUrlByDomNodeId(last_page_content_->root_node(), target_id);
+  if (!url.empty()) {
+    return url;
+  }
+  return FindUrlByUrlHash(last_page_content_->root_node(), target_id);
 }
 
 std::optional<int32_t> PageContextMonitor::ResolveImageDomNodeId(
