@@ -42,7 +42,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -201,8 +200,8 @@ public class LocationBarTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/526811362
     public void testEditingText_withDesktopModeDisabled() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
         testEditingText(/* expectDesktopMode= */ false);
     }
