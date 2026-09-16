@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/dictation/format_transcription.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -81,7 +82,7 @@ void Target::SetComposition(const std::u16string& text, bool is_final) {
   QueuedOperation op{
       .type = is_final ? QueuedOperation::Type::kSetFinalComposition
                        : QueuedOperation::Type::kSetPartialComposition,
-      .text = text,
+      .text = FormatTextForInsertion(text),
   };
   if (is_waiting_on_operation_completion_) {
     // Intentionally overwrites any other pending operation.
@@ -97,7 +98,7 @@ void Target::CommitComposition(const std::u16string& text,
                                base::OnceClosure on_commit_complete) {
   QueuedOperation op{
       .type = QueuedOperation::Type::kCommitComposition,
-      .text = text,
+      .text = FormatTextForInsertion(text),
       .on_commit_complete = std::move(on_commit_complete),
   };
   if (is_waiting_on_operation_completion_) {
@@ -245,6 +246,29 @@ void Target::PasteIntoNode(const std::u16string& text) {
   if (content::RenderWidgetHost* rwh = GetRenderWidgetHost()) {
     rwh->PasteIntoNode(text, global_dom_node_id());
   }
+}
+
+std::optional<std::u16string_view> Target::GetTextPrecedingSelection() {
+  if (content::RenderWidgetHost* rwh = GetRenderWidgetHost()) {
+    return rwh->GetTextPrecedingSelection(global_dom_node_id());
+  }
+  return std::nullopt;
+}
+
+std::u16string Target::FormatTextForInsertion(const std::u16string& text) {
+  if (text.empty()) {
+    return text;
+  }
+
+  if (!preceding_text_.has_value()) {
+    std::optional<std::u16string_view> text_preceding_selection =
+        GetTextPrecedingSelection();
+    preceding_text_ = text_preceding_selection
+                          ? std::u16string(*text_preceding_selection)
+                          : std::u16string();
+  }
+
+  return FormatTranscription(text, *preceding_text_);
 }
 
 }  // namespace dictation

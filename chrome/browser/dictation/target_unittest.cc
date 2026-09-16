@@ -41,6 +41,11 @@ class TestTarget : public Target {
     std::move(pending_callback_).Run();
   }
 
+  void set_text_preceding_selection(
+      std::optional<std::u16string> text_preceding_selection) {
+    text_preceding_selection_ = std::move(text_preceding_selection);
+  }
+
  private:
   void SetExternallySourcedComposition(
       const std::u16string& text,
@@ -63,6 +68,10 @@ class TestTarget : public Target {
     last_sent_paste_ = text;
   }
 
+  std::optional<std::u16string_view> GetTextPrecedingSelection() override {
+    return text_preceding_selection_;
+  }
+
   void SetCompletionCallback(base::OnceClosure on_complete) {
     if (!on_complete) {
       return;
@@ -83,6 +92,7 @@ class TestTarget : public Target {
   std::u16string last_sent_composition_;
   std::u16string last_sent_commit_;
   std::u16string last_sent_paste_;
+  std::optional<std::u16string> text_preceding_selection_;
 };
 
 class DictationTargetTest : public ChromeRenderViewHostTestHarness {
@@ -315,6 +325,31 @@ TEST_F(DictationTargetTest, FocusChangeDuringInFlightComposition) {
   EXPECT_EQ(target.last_sent_commit(), u" world");
 
   target.RunPendingCallback();
+}
+
+TEST_F(DictationTargetTest, SuccessiveDictationPrependsWhitespace) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/false));
+  target.set_text_preceding_selection(u"This is a test.");
+
+  target.SetComposition(u"This is another test.", true);
+  EXPECT_EQ(target.last_sent_composition(), u" This is another test.");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+
+  target.CommitComposition(u"This is another test.", base::NullCallback());
+  EXPECT_EQ(target.last_sent_composition(), u" This is another test.");
+  EXPECT_EQ(target.last_sent_commit(), u" This is another test.");
+}
+
+TEST_F(DictationTargetTest, WhitespacePrependedWithPasteFallback) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/true));
+  target.set_text_preceding_selection(u"Hello.");
+
+  // Multiline composition triggers paste fallback in richly editable targets.
+  target.SetComposition(u"world\nagain", true);
+  target.CommitComposition(u"world\nagain", base::NullCallback());
+  EXPECT_EQ(target.last_sent_paste(), u" world\nagain");
 }
 
 }  // namespace

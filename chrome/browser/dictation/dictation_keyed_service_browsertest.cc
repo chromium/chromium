@@ -690,8 +690,9 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
   WaitForSessionState(SessionState::kInactive);
 
   // Verify the resulting text in the textarea is the initial character,
-  // followed by the additional typed character, followed by the transcription.
-  EXPECT_EDITABLE_TEXT_EQ("#text_id", "abc");
+  // followed by the additional typed character, followed by the transcription
+  // (separated by a space due to whitespace insertion behavior).
+  EXPECT_EDITABLE_TEXT_EQ("#text_id", "ab c");
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
