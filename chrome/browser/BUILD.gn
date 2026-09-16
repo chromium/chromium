@@ -4156,7 +4156,10 @@ source_set("core_unit_tests") {
   ]
 
   if (is_android) {
-    deps += [ "//chrome/browser/android" ]
+    deps += [
+      "//chrome/browser/android",
+      "//chrome/browser/android:web_contents_theme_client",
+    ]
 
     if (enable_guest_view && !enable_extensions_core) {
       deps += [ "//chrome/browser/android/guest_view" ]

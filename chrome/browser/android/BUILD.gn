@@ -138,6 +138,18 @@ if (is_android) {
     ]
   }
 
+  # A leaf target so that it can be used by targets that ":android" itself
+  # depends on (see //chrome/browser/android/thin_webview:initializer).
+  source_set("web_contents_theme_client") {
+    sources = [ "web_contents_theme_client.cc" ]
+    public = [ "web_contents_theme_client.h" ]
+    public_deps = [ "//content/public/browser" ]
+    deps = [
+      "//base",
+      "//chrome/browser/ui/android/night_mode:jni_headers",
+    ]
+  }
+
   source_set("android") {
     sources = [
       "background_sync_launcher_android.cc",
@@ -418,8 +430,6 @@ if (is_android) {
       "tab_web_contents_destroyer.cc",
       "tab_web_contents_destroyer.h",
       "tabbed_startup_window_policy_delegate_bridge.cc",
-      "thin_webview/chrome_thin_webview_initializer.cc",
-      "thin_webview/chrome_thin_webview_initializer.h",
       "trusted_cdn.cc",
       "trusted_cdn.h",
       "usage_stats/usage_stats_bridge.cc",
@@ -428,8 +438,6 @@ if (is_android) {
       "usage_stats/usage_stats_database.h",
       "warmup_manager.cc",
       "web_contents_printer.cc",
-      "web_contents_theme_client.cc",
-      "web_contents_theme_client.h",
       "webapk/pwa_restore_bottom_sheet_mediator.cc",
       "webapk/pwa_restore_bottom_sheet_mediator.h",
       "webapk/webapk_install_service.cc",
@@ -472,6 +480,7 @@ if (is_android) {
       ":tabs_impl",
       ":tabs_public",
       ":usage_stats_proto",
+      ":web_contents_theme_client",
       "//cc/slim",
       "//chrome/android:jni_headers",
       "//chrome/app:command_ids",
@@ -595,7 +604,6 @@ if (is_android) {
       "//chrome/browser/ui/android/layouts:android",
       "//chrome/browser/ui/android/lens",
       "//chrome/browser/ui/android/logo",
-      "//chrome/browser/ui/android/night_mode:jni_headers",
       "//chrome/browser/ui/android/omnibox:jni_headers",
       "//chrome/browser/ui/android/pdf:pdf_jni_headers",
       "//chrome/browser/ui/android/webid",
@@ -714,7 +722,6 @@ if (is_android) {
       "//components/tabs:impl",
       "//components/tabs:public",
       "//components/themes",
-      "//components/thin_webview/internal",
       "//components/translate/content/android",
       "//components/translate/core/browser",
       "//components/translate/core/common",

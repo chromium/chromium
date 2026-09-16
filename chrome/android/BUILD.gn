@@ -1043,9 +1043,6 @@ if (_is_default_toolchain) {
         "//chrome/browser/ui/android/extensions/windowing/stub:java",
       ]
     }
-    if (enable_webui_ntp) {
-      deps += [ "//chrome/browser/ui/customize_chrome:java" ]
-    }
   }
 
   action_with_pydeps("chrome_android_java_google_api_keys_srcjar") {
@@ -1314,9 +1311,6 @@ if (_is_default_toolchain) {
         "//chrome/browser/extensions/api/messaging/android:junit",
         "//chrome/browser/ui/android/extensions/side_panel/internal:junit",
       ]
-    }
-    if (enable_webui_ntp) {
-      deps += [ "//chrome/browser/ui/customize_chrome:java" ]
     }
   }
 

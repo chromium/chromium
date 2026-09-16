@@ -1,0 +1,73 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+source_set("thin_webview") {
+  sources = [
+    "tab_thin_web_view_host.cc",
+    "tab_thin_web_view_host.h",
+  ]
+
+  public_deps = [
+    ":jni_headers",
+    "//base",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//third_party/jni_zero",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/browser_window",
+    "//ui/android",
+    "//ui/base",
+  ]
+}
+
+# Kept separate from ":thin_webview" because attaching tab helpers pulls in
+# heavyweight //chrome/browser deps, which ":thin_webview"'s users cannot take
+# on without creating dependency cycles.
+source_set("initializer") {
+  sources = [
+    "chrome_thin_webview_initializer.cc",
+    "chrome_thin_webview_initializer.h",
+  ]
+
+  public_deps = [ "//components/thin_webview" ]
+
+  deps = [
+    "//chrome/browser/android:web_contents_theme_client",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/android:context_menu_helper",
+    "//components/permissions",
+
+    # Link-time only: pulls the ThinWebView implementation into the binary.
+    "//components/thin_webview/internal",
+  ]
+}
+
+android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/thin_webview/ThinWebViewHost.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//base/version_info/android:version_constants_java",
+    "//build/android:build_java",
+    "//components/embedder_support/android:content_view_java",
+    "//components/thin_webview:factory_java",
+    "//components/thin_webview:java",
+    "//content/public/android:content_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/thin_webview/ThinWebViewHost.java",
+  ]
+}
