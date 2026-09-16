@@ -22,6 +22,8 @@ using extensions::mojom::APIPermissionID;
 constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
     {APIPermissionID::kFileManagerPrivate, "fileManagerPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
+    {APIPermissionID::kInputMethodPrivate, "inputMethodPrivate",
+     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kSpeechRecognitionPrivate, "speechRecognitionPrivate",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
 

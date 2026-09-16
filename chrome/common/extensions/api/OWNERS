@@ -7,7 +7,6 @@ per-file *.idl=file://extensions/common/api/API_OWNERS
 per-file *.webidl=file://extensions/common/api/API_OWNERS
 
 per-file input_ime.json=file://ui/base/ime/OWNERS
-per-file input_method_private.json=file://ui/base/ime/OWNERS
 per-file webview*.json=file://components/guest_view/OWNERS
 
 # For trivial changes only, like adding a new enum value or attribute.

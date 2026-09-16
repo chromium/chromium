@@ -56,12 +56,6 @@ generated_json_strings("generated_api_json_strings") {
   ]
   if (is_chromeos) {
     sources += [ "file_browser_handler.json" ]
-  } else {
-    # On ChromeOS, input_method_private is fully compiled (as part of
-    # schema_files), and so gets added to the bundle already. On other
-    # platforms, we still need it added to the bundle.
-    # TODO(devlin): That's weird. Investigate.
-    sources += [ "input_method_private.json" ]
   }
 
   root_namespace = chrome_extensions_api_root_namespace

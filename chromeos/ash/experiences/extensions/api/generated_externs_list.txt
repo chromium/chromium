@@ -2,4 +2,5 @@
 # TODO(crbug.com/40868715): Remove these as we migrate all consumers towards
 # typescript definitions.
 file_system_provider.webidl
+input_method_private.json
 speech_recognition_private.idl

@@ -59,6 +59,19 @@
     ],
     "platforms": ["chromeos"]
   }],
+  "inputMethodPrivate": [{
+    "dependencies": ["permission:inputMethodPrivate"],
+    "contexts": ["privileged_extension"]
+  }, {
+    "channel": "stable",
+    "contexts": ["webui"],
+    "matches": [
+      // TODO(maybelle): Audit and remove chrome://settings or
+      // chrome://os-settings as appropriate
+      "chrome://os-settings/*",
+      "chrome://settings/*"
+    ]
+  }],
   "speechRecognitionPrivate": {
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["privileged_extension"]

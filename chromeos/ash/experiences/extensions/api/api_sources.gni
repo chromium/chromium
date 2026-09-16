@@ -12,6 +12,7 @@ chromeos_schema_sources_ = [
   "file_manager_private_internal.webidl",
   "file_system_provider.webidl",
   "file_system_provider_internal.idl",
+  "input_method_private.json",
   "speech_recognition_private.idl",
 ]
 

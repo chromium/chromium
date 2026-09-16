@@ -44,7 +44,11 @@ static_library("extensions") {
     "signin_screen_policy_provider.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/extensions/api/input_ime",
+    "//chromeos/ash/experiences/extensions/api",
+  ]
 
   deps = [
     "//ash",
@@ -65,7 +69,6 @@ static_library("extensions") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions:external_loader",
-    "//chrome/browser/extensions/api/input_ime",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/resources/chromeos:app_icon_resources",

@@ -124,7 +124,6 @@ if (enable_extensions) {
       "enterprise_platform_keys_internal.webidl",
       "enterprise_platform_keys_private.json",
       "image_loader_private.webidl",
-      "input_method_private.json",
       "login.webidl",
       "login_screen_storage.webidl",
       "login_screen_ui.webidl",

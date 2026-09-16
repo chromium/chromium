@@ -877,7 +877,9 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kGlicPrivate);
   skip.insert(APIPermissionID::kGlicPrivateInvoke);
   skip.insert(APIPermissionID::kImageLoaderPrivate);
+#if BUILDFLAG(IS_CHROMEOS)
   skip.insert(APIPermissionID::kInputMethodPrivate);
+#endif
   skip.insert(APIPermissionID::kLanguageSettingsPrivate);
   skip.insert(APIPermissionID::kLockWindowFullscreenPrivate);
   skip.insert(APIPermissionID::kMediaPlayerPrivate);

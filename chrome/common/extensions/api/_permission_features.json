@@ -518,20 +518,6 @@
     "extension_types": ["extension"],
     "location": "component"
   }],
-  "inputMethodPrivate": [{
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "platforms": ["chromeos"],
-    "allowlist": [
-      "2462D64ACB971A7E708757159C2B17761D4FF54A",  // Citrix Receiver
-      "3010EF507AFEF487EEA9CDE2930EC94867C60936",  // Citrix Receiver Beta
-      "ABAABC5F49E022A76CBB12972A53B58354C04AC6"   // Citrix Receiver Dev
-    ]
-  },{
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "location": "component"
-  }],
   "languageSettingsPrivate": [
     {
       "channel": "trunk",

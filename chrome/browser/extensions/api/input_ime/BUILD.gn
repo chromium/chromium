@@ -37,6 +37,7 @@ source_set("input_ime") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ui/ash/keyboard",
+    "//chromeos/ash/experiences/extensions/api",
     "//chromeos/ash/services/ime/public/cpp:structs",
     "//ui/base:features",
     "//ui/base/ime",

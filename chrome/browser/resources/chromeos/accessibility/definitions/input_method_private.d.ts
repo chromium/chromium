@@ -1,13 +1,14 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Definitions for chrome.inputMethodPrivate API
- * Generated from: chrome/common/extensions/api/input_method_private.json
- * run `tools/json_schema_compiler/compiler.py
- * chrome/common/extensions/api/input_method_private.json -g ts_definitions` to
- * regenerate.
+ * Generated from:
+ * chromeos/ash/experiences/extensions/api/input_method_private.json run
+ * `tools/json_schema_compiler/compiler.py
+ * chromeos/ash/experiences/extensions/api/input_method_private.json -g
+ * ts_definitions` to regenerate.
  */
 
 import type {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';

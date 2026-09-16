@@ -14,6 +14,8 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/manifest_handlers/input_components_handler.h"
 
+class Profile;
+
 namespace extensions {
 
 class InputImeClearCompositionFunction : public ExtensionFunction {
