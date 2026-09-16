@@ -2080,8 +2080,9 @@ class NetworkContextConfigurationProxySettingsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/540592485): Enabled test once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationProxySettingsBrowserTest,
-                       MaxConnectionsPerProxy) {
+                       DISABLED_MaxConnectionsPerProxy) {
   RunMaxConnectionsPerProxyTest();
 }
 
