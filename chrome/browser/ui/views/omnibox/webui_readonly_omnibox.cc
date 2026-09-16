@@ -212,6 +212,7 @@ void WebUIReadOnlyOmnibox::SetWindowTextAndCaretPos(const std::u16string& text,
   text_ = text;
   selection_ = gfx::Range(caret_pos);
   ResetFormatting();
+  ResetBrowserVersion();
 
   if (update_popup) {
     UpdatePopup();
@@ -240,7 +241,6 @@ void WebUIReadOnlyOmnibox::SetAdditionalText(
 void WebUIReadOnlyOmnibox::EnterKeywordModeForDefaultSearchProvider() {
   controller()->edit_model()->EnterKeywordModeForDefaultSearchProvider(
       metrics::OmniboxEventProto::KEYBOARD_SHORTCUT);
-  ResetBrowserVersion();
   RequestUpdateWebUI();
 }
 
@@ -281,7 +281,6 @@ void WebUIReadOnlyOmnibox::RevertAll() {
   if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
     popup_closer->CloseWithReason(omnibox::PopupCloseReason::kRevertAll);
   }
-  ResetBrowserVersion();
   RequestUpdateWebUI();
 }
 
@@ -332,7 +331,6 @@ void WebUIReadOnlyOmnibox::OnTemporaryTextMaybeChanged(
   SetAccessibilityLabel(display_text, match, false);
 
   // This will call RequestUpdateWebUI(), so we don't have to.
-  ResetBrowserVersion();
   SetWindowTextAndCaretPos(display_text, display_text.length(),
                            /*update_popup=*/false, notify_text_changed);
 }
@@ -657,6 +655,7 @@ WebUIReadOnlyOmnibox::OnTextInput(
 
   ui_version_ = text_input.ui_version;
   if (text_input.unelision) {
+    uint32_t saved_browser_version = browser_version_;
     // Let the edit model unelide as well to match what we did on the
     // WebUI side.
     bool unelide_ok = controller()->edit_model()->Unelide();
@@ -664,8 +663,11 @@ WebUIReadOnlyOmnibox::OnTextInput(
     // It should produce the same text (the 'formatted full URL').
     DCHECK_EQ(text_, text_input.text);
 
-    // We want the WebUI-side selection, however, not Unelide()'s
-    // SelectAll();
+    // Unelide() calls SetWindowTextAndCaretPos() and SelectAll(), which reset
+    // browser_version_ and selection_. Since this unelision was initiated by
+    // WebUI, restore the WebUI-side versions and selection.
+    browser_version_ = saved_browser_version;
+    ui_version_ = text_input.ui_version;
     selection_ = text_input.selection;
     TextChanged();
     RequestUpdateWebUI();

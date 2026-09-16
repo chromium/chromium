@@ -525,4 +525,38 @@ TEST_F(WebUIReadOnlyOmniboxTest, OnPointer) {
           .has_value());
 }
 
+TEST_F(WebUIReadOnlyOmniboxTest, SetUserTextBumpsBrowserVersion) {
+  location_bar_model()->set_url(GURL("https://www.example.org/"));
+  location_bar_model()->set_url_for_display(u"www.example.org");
+  omnibox_view_->Update();
+
+  auto mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_EQ(1u, mojo_state->browser_version);
+  EXPECT_EQ(0u, mojo_state->ui_version);
+
+  // Setting user text from the browser should bump browser_version and reset
+  // ui_version.
+  omnibox_view_->SetUserText(u"Typing in the Omnibox...");
+  mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_EQ(2u, mojo_state->browser_version);
+  EXPECT_EQ(0u, mojo_state->ui_version);
+  EXPECT_EQ(u"Typing in the Omnibox...", omnibox_view_->GetText());
+
+  // A racing unelision input with stale browser_version (e.g. triggered by a
+  // focus request in flight before SetUserText) should be ignored.
+  EXPECT_TRUE(
+      omnibox_view_
+          ->OnOmniboxAction(toolbar_ui_api::mojom::OmniboxAction::NewTextInput(
+              toolbar_ui_api::mojom::OmniboxActionTextInput::New(
+                  /*text=*/u"https://www.example.org/",
+                  /*inline_completion=*/u"",
+                  /*browser_version=*/1, /*ui_version=*/1, /*unelision=*/true,
+                  gfx::Range(0, 24))))
+          .has_value());
+  EXPECT_FALSE(update_propagator_.TakeState());
+  EXPECT_EQ(u"Typing in the Omnibox...", omnibox_view_->GetText());
+}
+
 }  // namespace
