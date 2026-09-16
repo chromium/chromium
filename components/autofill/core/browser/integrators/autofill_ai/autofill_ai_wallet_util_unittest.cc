@@ -327,5 +327,78 @@ TEST_F(AutofillAiWalletUtilsTest, IsEligibleForWalletNotice) {
       EntityType(EntityTypeName::kFlightReservation), kServerWallet));
 }
 
+struct IsValidWalletManagementUrlTestCase {
+  std::string_view url;
+  bool is_valid;
+};
+
+void PrintTo(const IsValidWalletManagementUrlTestCase& test_case,
+             std::ostream* os) {
+  *os << "{url: \"" << test_case.url
+      << "\", is_valid: " << (test_case.is_valid ? "true" : "false") << "}";
+}
+
+class IsValidWalletManagementUrlTest
+    : public ::testing::TestWithParam<IsValidWalletManagementUrlTestCase> {};
+
+TEST_P(IsValidWalletManagementUrlTest, Validation) {
+  const IsValidWalletManagementUrlTestCase& test_case = GetParam();
+  EXPECT_EQ(IsValidWalletManagementUrl(test_case.url), test_case.is_valid);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AutofillAiWalletUtilsTest,
+    IsValidWalletManagementUrlTest,
+    ::testing::Values(
+        // Valid URLs:
+        IsValidWalletManagementUrlTestCase{
+            .url = "https://wallet.google.com/synthetic_pass?id=fake123",
+            .is_valid = true},
+        IsValidWalletManagementUrlTestCase{
+            .url = "https://wallet.google.com/wallet/passes",
+            .is_valid = true},
+        IsValidWalletManagementUrlTestCase{
+            .url = "https://wallet.google.com/settings/manage?item=xyz",
+            .is_valid = true},
+        IsValidWalletManagementUrlTestCase{.url = "https://wallet.google.com/",
+                                           .is_valid = true},
+        IsValidWalletManagementUrlTestCase{.url = "https://wallet.google.com",
+                                           .is_valid = true},
+        IsValidWalletManagementUrlTestCase{
+            .url = "https://sub.wallet.google.com/synthetic_pass",
+            .is_valid = true},
+        IsValidWalletManagementUrlTestCase{
+            .url = "https://example.google.com/synthetic_pass",
+            .is_valid = true},
+        IsValidWalletManagementUrlTestCase{.url = "https://google.com/wallet",
+                                           .is_valid = true},
+        IsValidWalletManagementUrlTestCase{
+            .url = "https://wallet.google.co.uk/synthetic_pass",
+            .is_valid = true},
+        // Invalid URLs:
+        IsValidWalletManagementUrlTestCase{.url = "", .is_valid = false},
+        IsValidWalletManagementUrlTestCase{.url = "not_a_url",
+                                           .is_valid = false},
+        IsValidWalletManagementUrlTestCase{
+            // Must be HTTPS.
+            .url = "http://wallet.google.com/synthetic_pass",
+            .is_valid = false},
+        IsValidWalletManagementUrlTestCase{
+            .url = "https://fakegoogle.com/synthetic_pass",
+            .is_valid = false},
+        IsValidWalletManagementUrlTestCase{
+            .url = "https://wallet.google.com.evil.com/synthetic_pass",
+            .is_valid = false},
+        IsValidWalletManagementUrlTestCase{
+            .url = "https://wallet.google.com:8080/synthetic_pass",
+            .is_valid = false},
+        IsValidWalletManagementUrlTestCase{
+            .url = "https://wallet.google.com:8443/synthetic_pass",
+            .is_valid = false},
+        IsValidWalletManagementUrlTestCase{.url = "javascript:alert(1)",
+                                           .is_valid = false},
+        IsValidWalletManagementUrlTestCase{.url = "data:text/html,test",
+                                           .is_valid = false}));
+
 }  // namespace
 }  // namespace autofill

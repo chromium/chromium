@@ -19,10 +19,13 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/google/core/common/google_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace autofill {
 
@@ -154,6 +157,14 @@ std::string GetWalletManagementURL(const EntityInstance& entity) {
                                       /*use_plus=*/false));
   }
   NOTREACHED();
+}
+
+bool IsValidWalletManagementUrl(std::string_view url_string) {
+  GURL url(url_string);
+  return url.SchemeIs(url::kHttpsScheme) &&
+         google_util::IsGoogleDomainUrl(
+             url, google_util::ALLOW_SUBDOMAIN,
+             google_util::DISALLOW_NON_STANDARD_PORTS);
 }
 
 consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
