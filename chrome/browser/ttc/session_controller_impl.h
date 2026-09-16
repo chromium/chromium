@@ -13,6 +13,10 @@
 #include "chrome/browser/ttc/session_controller.h"
 #include "chrome/browser/ttc/session_view_delegate.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace ttc {
 
 class Conversation;
@@ -34,6 +38,10 @@ class SessionControllerImpl : public SessionController,
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
 
  private:
+  // Returns the WebContents that the session is currently focused on and
+  // observing.
+  content::WebContents* GetObservedWebContents();
+
   // Invoked by `page_context_monitor_` when the monitored page changes.
   void OnPageContextChanged();
 

@@ -44,13 +44,15 @@ source_set("impl") {
     "//chrome/browser/ttc/app/public",
     "//chrome/browser/ttc/core",
     "//components/keyed_service/core",
+    "//components/tabs:public",
     "//content/public/browser",
   ]
-  if (!is_android) {
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/tab_model" ]
+  } else {
     deps += [
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//components/tabs:public",
       "//url",
     ]
   }
