@@ -61,6 +61,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -77,14 +78,15 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -129,6 +131,7 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
+import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.TransportState;
 import org.chromium.components.sync.UserSelectableType;
@@ -154,7 +157,7 @@ import java.util.Set;
 /** Tests for ManageSyncSettings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
+@Batch(Batch.PER_CLASS)
 // Avoids UserActionableError.NEEDS_UPM_BACKEND_UPGRADE for most tests. Specific tests can still
 // trigger the error by overriding getUserActionableError()
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
@@ -262,6 +265,27 @@ public class ManageSyncSettingsTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mFakeExtensionUiBackendRule.setEnabled(false));
 
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
+    }
+
+    @After
+    public void tearDown() {
+        if (mSettingsTestRule.getActivity() != null) {
+            ApplicationTestUtils.finishActivity(mSettingsTestRule.getActivity());
+        }
+        if (mSettingsSearchTestRule.getActivity() != null) {
+            ApplicationTestUtils.finishActivity(mSettingsSearchTestRule.getActivity());
+        }
+        if (mSyncTestRule.getPrimaryAccount() != null) {
+            mSyncTestRule.signOut();
+        }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (ProfileManager.isInitialized()) {
+                        PrefService prefService =
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
+                        prefService.clearPref(SyncPrefNames.SYNC_MANAGED);
+                    }
+                });
     }
 
     @Test
@@ -379,6 +403,7 @@ public class ManageSyncSettingsTest {
             sdk_equals = 29,
             supported_abis_includes = "x86_64",
             message = "crbug.com/444011887")
+    @RequiresRestart("Sets enterprise policies SyncTypesListDisabled")
     public void testSignInWithManagedDataTypes() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
@@ -456,6 +481,10 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"Sync"})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/545268511
+    @RequiresRestart(
+            "Signs in with a second account. SigninManagerImpl only observes the"
+                    + " AccountManagerFacade installed for the first test of a batched process, so"
+                    + " ACCOUNT2 is never seeded into the native AccountTrackerService")
     public void testHistoryOptInDoNotCarryOverFromOneUserToAnother() {
         mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.ACCOUNT1);
 
@@ -469,6 +498,9 @@ public class ManageSyncSettingsTest {
         Assert.assertTrue(historyAndTabsToggle.isChecked());
 
         mSyncTestRule.signOut();
+        if (mSettingsTestRule.getActivity() != null) {
+            ApplicationTestUtils.finishActivity(mSettingsTestRule.getActivity());
+        }
 
         // Add a different account, and open the sync settings to check that history opt-in did not
         // carry over from one user to another.
@@ -487,6 +519,7 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"Sync"})
     // Regression test for crbug.com/539883315 - removing account should not cause a crash.
+    @RequiresRestart("Alters fake account manager facade by removing primary account")
     public void testCentralAccountCardPreferenceWhenAccountRemovedNoCrash() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         startManageSyncPreferences();
@@ -686,11 +719,24 @@ public class ManageSyncSettingsTest {
         setText(confirmPassphrase, "foo");
         clickButton(okButton);
         Assert.assertFalse(pcdf.isResumed());
+
+        // The sync engine applies the passphrase asynchronously and only then writes the
+        // encryption bootstrap token. tearDown() signs out immediately after this test, and
+        // SyncUserSettingsImpl::SetEncryptionBootstrapToken CHECKs that a Gaia ID is still present
+        // unless local sync is enabled. Unbatched, the test process was torn down before the late
+        // write landed, so the CHECK was never reached; batched, it aborts the shared process
+        // partway through the next test. Wait for the passphrase to take effect so that the token
+        // is written while the account is still signed in.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        SyncTestUtil.getSyncServiceForLastUsedProfile().getPassphraseType()
+                                == PassphraseType.CUSTOM_PASSPHRASE);
     }
 
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @RequiresRestart("Child accounts require fresh process for account seeding and signin")
     public void testPaymentIntegrationDisabledForChildUser() {
         // mSyncTestRule.setUpChildAccountAndEnableSyncForTesting();
         mSyncTestRule.getSigninTestRule().addChildTestAccountThenWaitForSignin();
@@ -811,6 +857,7 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
+    @RequiresRestart("Special account sign-in requires fresh process for policy enforcement")
     public void testSigninSettingsTopAvatarWithNoName() throws Exception {
         mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.TEST_ACCOUNT_NO_NAME);
         final ManageSyncSettings fragment = startManageSyncPreferences();
@@ -827,6 +874,7 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
+    @RequiresRestart("Child accounts require fresh process for account seeding and signin")
     public void testSigninSettingsTopAvatarWithNonDisplayableEmail() throws Exception {
         SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         var childAccount = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL;
@@ -847,6 +895,7 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
+    @RequiresRestart("Child accounts require fresh process for account seeding and signin")
     public void testSigninSettingsTopAvatarWithNonDisplayableEmailAndNoName() throws Exception {
         SigninTestRule signinTestRule = mSyncTestRule.getSigninTestRule();
         var childAccount = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME;
@@ -1453,6 +1502,7 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
+    @RequiresRestart("Sets SYNC_MANAGED preference to true")
     public void testSyncDisabledByPolicy() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         SyncService syncService = mSyncTestRule.getSyncService();
