@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <optional>
-#include <variant>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -186,11 +185,6 @@ void PasswordManualFallbackFlow::RunFlow(
     return;
   }
   RunFlowImpl(bounds, text_direction);
-}
-
-std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
-PasswordManualFallbackFlow::GetDriver_DoNotUse() {
-  return password_manager_driver_.get();
 }
 
 void PasswordManualFallbackFlow::OnSuggestionsShown(

@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -74,8 +73,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   static bool IsAutofillAndFirstLayerSuggestionId(SuggestionType item_id);
 
   // AutofillSuggestionDelegate implementation.
-  std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
-  GetDriver_DoNotUse() override;
   void OnSuggestionsShown(base::span<const Suggestion> suggestions,
                           const SuggestionUiMetadata& metadata) override;
   void OnSuggestionsHidden(SuggestionHidingReason reason) override;

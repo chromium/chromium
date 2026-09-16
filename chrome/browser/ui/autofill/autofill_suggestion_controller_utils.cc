@@ -4,13 +4,10 @@
 
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 
-#include <string>
-#include <variant>
 #include <vector>
 
 #include "base/notreached.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -19,7 +16,6 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -279,32 +275,6 @@ bool ShouldResetIdleBarrier(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kGlic:
       return true;
   }
-}
-
-content::RenderFrameHost* GetRenderFrameHost_DoNotUse(
-    AutofillSuggestionDelegate& delegate) {
-  return std::visit(
-      absl::Overload{
-          [](AutofillDriver* driver) {
-            return static_cast<ContentAutofillDriver*>(driver)
-                ->render_frame_host();
-          },
-          [](password_manager::PasswordManagerDriver* driver) {
-            return static_cast<password_manager::ContentPasswordManagerDriver*>(
-                       driver)
-                ->render_frame_host();
-          }},
-      delegate.GetDriver_DoNotUse());
-}
-
-bool IsAncestorOf(content::RenderFrameHost* ancestor,
-                  content::RenderFrameHost* descendant) {
-  for (auto* rfh = descendant; rfh; rfh = rfh->GetParent()) {
-    if (rfh == ancestor) {
-      return true;
-    }
-  }
-  return false;
 }
 
 bool IsPointerLocked(content::WebContents* web_contents) {

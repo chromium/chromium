@@ -1010,11 +1010,6 @@ BASE_FEATURE(kAutofillServerExperimentalSignatures,
 // signatures: go/autofill-signatures-more-data.
 BASE_FEATURE(kAutofillServerUploadMoreData, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Kill switch: If enabled, the focus check in AutofillPopupControllerImpl and
-// AutofillKeyboardAccessoryControllerImpl is simplified.
-// TODO(crbug.com/530190112): Clean up after September 1, 2026.
-BASE_FEATURE(kAutofillSimplifyFocusCheck, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, fetch sms otp from gmscore and upload votes for sms otp.
 // TODO(crbug.com/453999673): Clean up when launched.
 BASE_FEATURE(kAutofillSmsOtpCrowdsourcingFetchFromGmscore,

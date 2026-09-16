@@ -13,7 +13,6 @@
 #include <string>
 #include <string_view>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -661,11 +660,6 @@ void AutofillExternalDelegate::OnAutofillAvailabilityEvent(
   // accessibility objects live in both the renderer and browser processes.
   manager_->driver().RendererShouldSetSuggestionAvailability(
       last_query_.field_id, suggestion_availability);
-}
-
-std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
-AutofillExternalDelegate::GetDriver_DoNotUse() {
-  return &manager_->driver();
 }
 
 void AutofillExternalDelegate::OnSuggestionsShown(

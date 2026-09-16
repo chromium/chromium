@@ -21,6 +21,20 @@
 
 namespace autofill {
 
+namespace {
+
+bool IsAncestorOf(content::RenderFrameHost* ancestor,
+                  content::RenderFrameHost* descendant) {
+  for (auto* rfh = descendant; rfh; rfh = rfh->GetParent()) {
+    if (rfh == ancestor) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 TouchToFillControllerBase::TouchToFillControllerBase() = default;
 TouchToFillControllerBase::~TouchToFillControllerBase() = default;
 

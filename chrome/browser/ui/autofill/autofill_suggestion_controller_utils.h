@@ -12,13 +12,11 @@
 #include "components/autofill/core/common/aliases.h"
 
 namespace content {
-class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
 namespace autofill {
 
-class AutofillSuggestionDelegate;
 struct SelectOption;
 struct Suggestion;
 
@@ -54,16 +52,6 @@ bool ShouldApplyDeactivatedStyle(const Suggestion& suggestion);
 // clicks is normally restarted. Returns whether `trigger_source` restarts this
 // lockout.
 bool ShouldResetIdleBarrier(AutofillSuggestionTriggerSource trigger_source);
-
-// Will be removed together with kAutofillSimplifyFocusCheck.
-// Returns the `RenderFrameHost` corresponding to an
-// `AutofillSuggestionDelegate`.
-content::RenderFrameHost* GetRenderFrameHost_DoNotUse(
-    AutofillSuggestionDelegate& delegate);
-
-// Returns true if `ancestor` is an `ancestor` of `descendant`.
-bool IsAncestorOf(content::RenderFrameHost* ancestor,
-                  content::RenderFrameHost* descendant);
 
 // Returns whether the pointer is locked in `web_contents`.
 bool IsPointerLocked(content::WebContents* web_contents);

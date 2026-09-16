@@ -341,14 +341,6 @@ bool OmniboxAutofillDelegate::IsSearching() const {
   return false;
 }
 
-std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
-OmniboxAutofillDelegate::GetDriver_DoNotUse() {
-  if (trigger_autofill_manager_) {
-    return &trigger_autofill_manager_->driver();
-  }
-  return static_cast<AutofillDriver*>(nullptr);
-}
-
 void OmniboxAutofillDelegate::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
     const SuggestionUiMetadata& metadata) {

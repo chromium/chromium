@@ -725,25 +725,8 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     return;
   }
 
-  content::RenderFrameHost* rfh = nullptr;
-  if (base::FeatureList::IsEnabled(features::kAutofillSimplifyFocusCheck)) {
-    rfh = FindRenderFrameHostByToken(*web_contents_,
-                                     controller_common_.anchor_frame_token);
-  } else {
-    // The focused frame may be different from the one the controller is
-    // anchored to. This happens with race conditions: while Autofill parsed the
-    // form, the focus may have moved to another frame.
-    // We support the case where the focused frame is a descendant of the
-    // `delegate_`'s frame. We observe the focused frame's RenderFrameDeleted()
-    // event.
-    rfh = web_contents_->GetFocusedFrame();
-    content::RenderFrameHost* anchor_rfh = FindRenderFrameHostByToken(
-        *web_contents_, controller_common_.anchor_frame_token);
-    if (!rfh || !delegate_ || !IsAncestorOf(anchor_rfh, rfh)) {
-      rfh = nullptr;
-    }
-  }
-
+  content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
+      *web_contents_, controller_common_.anchor_frame_token);
   if (!rfh) {
     Hide(SuggestionHidingReason::kNoFrameHasFocus);
     return;

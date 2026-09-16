@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -79,8 +78,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
       const override;
 
   // AutofillSuggestionDelegate implementation.
-  std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
-  GetDriver_DoNotUse() override;
   void OnSuggestionsShown(base::span<const autofill::Suggestion> suggestions,
                           const SuggestionUiMetadata& metadata) override;
   void OnSuggestionsHidden(autofill::SuggestionHidingReason reason) override;

@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_SUGGESTION_DELEGATE_H_
 
 #include <string>
-#include <variant>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -16,13 +15,7 @@
 #include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
 #include "components/autofill/core/common/unique_ids.h"
 
-namespace password_manager {
-class PasswordManagerDriver;
-}
-
 namespace autofill {
-
-class AutofillDriver;
 
 // An interface for interaction with AutofillSuggestionController. It is notified
 // of suggestion-related events by the controller.
@@ -96,11 +89,6 @@ class AutofillSuggestionDelegate {
 
   // Returns true if a search is currently in progress.
   virtual bool IsSearching() const = 0;
-
-  // Will be removed together with kAutofillSimplifyFocusCheck.
-  virtual std::variant<AutofillDriver*,
-                       password_manager::PasswordManagerDriver*>
-  GetDriver_DoNotUse() = 0;
 
   // Called when Autofill `suggestions` are shown.
   // `metadata` contains metadata about the popup container context (e.g.

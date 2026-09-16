@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -262,11 +261,6 @@ PasswordAutofillManager::GetWebauthnSignInWithAnotherDeviceSuggestion() const {
 std::optional<autofill::Suggestion>
 PasswordAutofillManager::GetWebauthnInlineQrCodeSuggestion() const {
   return suggestion_generator_.GetWebauthnInlineQrCodeSuggestion();
-}
-
-std::variant<autofill::AutofillDriver*, PasswordManagerDriver*>
-PasswordAutofillManager::GetDriver_DoNotUse() {
-  return password_manager_driver_.get();
 }
 
 void PasswordAutofillManager::OnSuggestionsShown(

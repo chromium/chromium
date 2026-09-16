@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_SUGGESTION_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_SUGGESTION_DELEGATE_H_
 
-#include <variant>
-
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
@@ -21,11 +19,6 @@ class MockAutofillSuggestionDelegate : public AutofillSuggestionDelegate {
   MockAutofillSuggestionDelegate();
   ~MockAutofillSuggestionDelegate() override;
 
-  MOCK_METHOD(
-      (std::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>),
-      GetDriver_DoNotUse,
-      (),
-      (override));
   MOCK_METHOD(void,
               OnSuggestionsShown,
               (base::span<const Suggestion>, const SuggestionUiMetadata&),
