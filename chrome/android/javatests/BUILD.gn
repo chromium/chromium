@@ -1722,6 +1722,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.webapps") {
   deps = [
     ":chrome_test_java_helper",
     "//chrome/browser/open_in_app/android:java",
+    "//chrome/browser/ui/android/hats:factory_java",
     "//components/webapps/browser/android:webapps_jni_headers_java",
   ]
 }

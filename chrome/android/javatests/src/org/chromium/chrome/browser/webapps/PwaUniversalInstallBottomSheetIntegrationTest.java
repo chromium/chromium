@@ -29,21 +29,23 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -56,14 +58,16 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Test the showing of the PWA Universal Install Bottom Sheet dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "Fails because of SurveyClientFactory assert")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PwaUniversalInstallBottomSheetIntegrationTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public final FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
+
+    @Mock private SurveyClientFactory mSurveyClientFactory;
 
     private static final String HISTOGRAM_DIALOG_TYPE =
             "WebApk.UniversalInstall.DialogShownForAppType";
@@ -88,6 +92,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
+        SurveyClientFactory.setInstanceForTesting(mSurveyClientFactory);
         PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetchingForTesting = true;
 
         mPage = mActivityTestRule.startOnBlankPage();
@@ -102,6 +107,17 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @After
     public void tearDown() {
         PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetchingForTesting = false;
+        PwaUniversalInstallBottomSheetCoordinator.sShowBeforeAppTypeKnownForTesting = false;
+        if (mBottomSheetController != null) {
+            runOnUiThreadBlocking(
+                    () -> {
+                        if (mBottomSheetController.getCurrentSheetContent() != null) {
+                            mBottomSheetController.hideContent(
+                                    mBottomSheetController.getCurrentSheetContent(),
+                                    /* animate= */ false);
+                        }
+                    });
+        }
     }
 
     private void onInstallCalled() {
