@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -328,6 +329,16 @@ ReadAnythingContentsWrapper ReadAnythingController::GetOrCreateWebUIWrapper(
 
     ReadAnythingControllerGlue::CreateForWebContents(
         web_ui_wrapper_->web_contents(), this);
+    // A single WebUIContentsWrapper is reused across both presentations, so
+    // the embedding context is set once here, at the point of creation,
+    // rather than in each host view. `ReadAnythingImmersiveWebView` never set
+    // it, while `ReadAnythingSidePanelWebView` inherits the call from
+    // `SidePanelWebUIView`, so the context depended on which presentation
+    // happened to create the wrapper first. `SidePanelWebUIView` still makes
+    // the same call when Reading Mode is shown in the side panel; because the
+    // tab is unchanged, that call is an early-return no-op (see
+    // `EmbeddingTabTracker::SetTabInterface`).
+    webui::SetTabInterface(web_ui_wrapper_->web_contents(), tab_);
     find_in_page::FindTabHelper::CreateForWebContents(
         web_ui_wrapper_->web_contents());
   }

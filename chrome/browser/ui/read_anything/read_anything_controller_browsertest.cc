@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/find_result_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -3099,4 +3100,80 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // Verify focus has return to the main page.
   EXPECT_TRUE(base::test::RunUntil([&]() { return IsFocusOnMainPage(); }));
+}
+
+// Reading Mode creates a single WebUIContentsWrapper from whichever
+// presentation opens first, so both creation orders are covered here.
+// `OpenedInImmersiveFirst` is the case that regressed: without setting the
+// embedding context at creation it fails with a null tab and browser window.
+// `OpenedInSidePanelFirst` guards the path that `SidePanelWebUIView` already
+// handles, confirming the extra call does not disturb it.
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       EmbeddingContextSet_OpenedInImmersiveFirst) {
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  tabs::TabInterface* tab = tab_strip_model->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = SidePanelUI::From(browser());
+
+  // 1. Open in immersive mode and verify context.
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+  content::WebContents* irm_contents = GetImmersiveWebContents();
+  ASSERT_TRUE(irm_contents);
+  EXPECT_EQ(webui::GetTabInterface(irm_contents), tab);
+  EXPECT_EQ(webui::GetBrowserWindowInterface(irm_contents),
+            tab->GetBrowserWindowInterface());
+
+  // 2. Toggle to side panel and verify context remains valid.
+  controller->TogglePresentation(/*is_user_initiated=*/true);
+  AssertOverlayVisibility(/*visible=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  content::WebContents* side_panel_contents = GetSidePanelWebContents();
+  ASSERT_TRUE(side_panel_contents);
+  EXPECT_EQ(webui::GetTabInterface(side_panel_contents), tab);
+  EXPECT_EQ(webui::GetBrowserWindowInterface(side_panel_contents),
+            tab->GetBrowserWindowInterface());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       EmbeddingContextSet_OpenedInSidePanelFirst) {
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  tabs::TabInterface* tab = tab_strip_model->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+  auto* side_panel_ui = SidePanelUI::From(browser());
+
+  // 1. Open in the side panel and verify context.
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  content::WebContents* side_panel_contents = GetSidePanelWebContents();
+  ASSERT_TRUE(side_panel_contents);
+  EXPECT_EQ(webui::GetTabInterface(side_panel_contents), tab);
+  EXPECT_EQ(webui::GetBrowserWindowInterface(side_panel_contents),
+            tab->GetBrowserWindowInterface());
+
+  // 2. Toggle to immersive mode and verify context remains valid. The same
+  // WebContents is reused, so the context set at creation must survive the
+  // handoff between host views.
+  controller->TogglePresentation(/*is_user_initiated=*/true);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+  content::WebContents* irm_contents = GetImmersiveWebContents();
+  ASSERT_TRUE(irm_contents);
+  EXPECT_EQ(irm_contents, side_panel_contents);
+  EXPECT_EQ(webui::GetTabInterface(irm_contents), tab);
+  EXPECT_EQ(webui::GetBrowserWindowInterface(irm_contents),
+            tab->GetBrowserWindowInterface());
 }
