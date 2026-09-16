@@ -3304,6 +3304,9 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
 // The real test copies the file and verifies restore.
 class SessionRestoreWithIncompleteFileTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(crbug.com/479420496): Add support for encrypted files before full
+    // launch of encrypted sessions.
+    feature_list_.InitAndDisableFeature(sessions::kEncryptSessionStorage);
     command_line->AppendSwitch(switches::kRestoreLastSession);
   }
   bool SetUpUserDataDirectory() override {
@@ -3342,6 +3345,9 @@ class SessionRestoreWithIncompleteFileTest : public InProcessBrowserTest {
     }
     return true;
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreWithIncompleteFileTest,
