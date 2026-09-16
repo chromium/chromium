@@ -99,7 +99,15 @@ constexpr int kMinHeaderFooterPageHeight = 100;
 // Margin ratios for header and footer margins. Expressed as a fraction of the
 // vertical height of the page.
 constexpr float kHeaderMarginRatio = 0.10f;
-constexpr float kFooterMarginRatio = 0.95f;
+// Text that seems like a page number gets more leniency in how far up the page
+// it can go, whereas text that doesn't seem like page numbers has a smaller
+// allowable range on the page.
+constexpr float kPageNumberFooterMarginRatio = 0.90f;
+constexpr float kNonPageNumberFooterMarginRatio = 0.95f;
+
+// Largest width, as a fraction of the page width, allowed for text in the
+// margins to be considered a page number.
+constexpr float kMaxPageNumberWidthRatio = 0.30f;
 
 // Tolerance used when comparing font sizes, so that sizes that differ only by
 // floating point imprecision compare as equal.
@@ -109,6 +117,17 @@ enum class HeaderFooterRole {
   kNone,
   kHeader,
   kFooter,
+};
+
+// How closely a text run resembles a page number. Note that this does not
+// handle Roman numerals.
+enum class PageNumberKind {
+  // Does not look like a page number.
+  kNone,
+  // Narrow text containing at least one digit, e.g. "Page 3 of 10".
+  kNarrowWithDigit,
+  // Digits only, e.g. "42".
+  kPureNumber,
 };
 
 // Returns whether `heading_level` is in bounds, i.e. whether it corresponds to
@@ -265,17 +284,69 @@ bool IsAllUppercase(base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
 
 bool ContainsAlphanumeric(std::string_view text) {
   for (size_t i = 0; i < text.size(); ++i) {
-    base_icu::UChar32 code_point;
     // `ReadUnicodeCharacter()` advances `i` to the last byte of the code point
     // it decoded, so the loop's `++i` lands on the start of the next code
     // point. It advances `i` even when it fails, so malformed input is skipped
     // rather than decoded again.
+    base_icu::UChar32 code_point;
     if (base::ReadUnicodeCharacter(text, &i, &code_point) &&
         u_isalnum(code_point)) {
       return true;
     }
   }
   return false;
+}
+
+bool IsUnicodeDigit(std::string_view text, size_t* i) {
+  base_icu::UChar32 code_point;
+  // `ReadUnicodeCharacter()` advances `i` to the last byte of the code point
+  // it decoded, so the loop's `++i` lands on the start of the next code
+  // point. It advances `i` even when it fails, so malformed input is skipped
+  // rather than decoded again.
+  return base::ReadUnicodeCharacter(text, i, &code_point) &&
+         u_isdigit(code_point);
+}
+
+// Returns how `text` qualifies as a page number. Leading and trailing
+// whitespace is ignored.
+PageNumberKind ClassifyPageNumber(std::string_view text,
+                                  float run_width,
+                                  float max_page_number_width) {
+  const std::string_view trimmed =
+      base::TrimWhitespaceASCII(text, base::TRIM_ALL);
+  if (trimmed.empty()) {
+    return PageNumberKind::kNone;
+  }
+
+  // Decode once, collecting both facts the classification needs: whether any
+  // digit is present, and whether anything other than digits is.
+  bool has_digit = false;
+  bool has_non_digit = false;
+  for (size_t i = 0; i < trimmed.size(); ++i) {
+    if (IsUnicodeDigit(trimmed, &i)) {
+      has_digit = true;
+    } else {
+      has_non_digit = true;
+    }
+    // Both answers are known once one of each has been seen.
+    if (has_digit && has_non_digit) {
+      break;
+    }
+  }
+
+  if (!has_digit) {
+    return PageNumberKind::kNone;
+  }
+  if (!has_non_digit) {
+    return PageNumberKind::kPureNumber;
+  }
+
+  // Narrow text relative to the page width containing at least one digit.
+  // Width is measured rather than character count because the rendered
+  // footprint of a page number is roughly the same in any language, while the
+  // number of characters needed to express it is not.
+  bool is_narrow = run_width > 0.0f && run_width <= max_page_number_width;
+  return is_narrow ? PageNumberKind::kNarrowWithDigit : PageNumberKind::kNone;
 }
 
 // Returns whether a font name indicates a bold, semi-bold, black, or heavy
@@ -461,8 +532,13 @@ HeuristicPageProperties ComputeHeuristicPageProperties(
 
   HeuristicPageProperties page_properties;
   page_properties.page_height = page_bounds.height();
+  page_properties.max_page_number_width =
+      page_bounds.width() * kMaxPageNumberWidthRatio;
   page_properties.top_margin = page_bounds.height() * kHeaderMarginRatio;
-  page_properties.bottom_margin = page_bounds.height() * kFooterMarginRatio;
+  page_properties.bottom_page_number_margin =
+      page_bounds.height() * kPageNumberFooterMarginRatio;
+  page_properties.bottom_non_page_number_margin =
+      page_bounds.height() * kNonPageNumberFooterMarginRatio;
   ComputeFontSizes(std::move(font_sizes),
                    &page_properties.heading_font_size_threshold,
                    &page_properties.median_font_size,
@@ -548,12 +624,20 @@ std::string GetTrimmedText(
 // Returns the header or footer role that `current_run` qualifies for, or
 // `kNone` otherwise. A run must sit inside the top or bottom margin band,
 // contain at least one alphanumeric character, and be rendered smaller than the
-// page's median font size, since running headers, page numbers, and copyright
-// notices are often set smaller than body text.
+// page's median font size, since running headers and copyright notices are
+// often set smaller than body text. Page numbers are exempt from the font size
+// rule and are allowed a taller bottom margin band, because they are commonly
+// set at body text size and placed higher up the page.
+//
+// `out_page_number_kind` receives how the run reads as a page number, so that
+// callers can order this against heading classification without classifying the
+// run's text a second time.
 HeaderFooterRole GetHeaderFooterRole(
     const chrome_pdf::AccessibilityTextRunInfo& current_run,
     base::span<const chrome_pdf::AccessibilityCharInfo> current_run_chars,
-    const HeuristicPageProperties& page_properties) {
+    const HeuristicPageProperties& page_properties,
+    PageNumberKind* out_page_number_kind) {
+  *out_page_number_kind = PageNumberKind::kNone;
   if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
       page_properties.page_height < kMinHeaderFooterPageHeight) {
     return HeaderFooterRole::kNone;
@@ -571,26 +655,46 @@ HeaderFooterRole GetHeaderFooterRole(
   bool is_in_top_margin =
       current_run.bounds.bottom() <= page_properties.top_margin &&
       current_run.bounds.bottom() > 0.0f;
+
+  PageNumberKind page_number_kind =
+      ClassifyPageNumber(run_text, current_run.bounds.width(),
+                         page_properties.max_page_number_width);
+  *out_page_number_kind = page_number_kind;
+  bool is_page_number = page_number_kind != PageNumberKind::kNone;
+  float bottom_margin = is_page_number
+                            ? page_properties.bottom_page_number_margin
+                            : page_properties.bottom_non_page_number_margin;
   bool is_in_bottom_margin =
-      current_run.bounds.y() >= page_properties.bottom_margin &&
+      current_run.bounds.y() >= bottom_margin &&
       current_run.bounds.y() < page_properties.page_height;
   if (!is_in_top_margin && !is_in_bottom_margin) {
     return HeaderFooterRole::kNone;
   }
 
-  if (page_properties.median_font_size > 0) {
-    if (current_run.style.font_size > page_properties.median_font_size) {
-      return HeaderFooterRole::kNone;
-    }
+  // Headers and footers are not usually larger than body text. Checked first so
+  // a section heading's numeral (the "1" of "1 Introduction", which PDFium
+  // splits into its own run) is not read as a page number below.
+  bool has_median_font_size = page_properties.median_font_size > 0;
+  if (has_median_font_size &&
+      current_run.style.font_size > page_properties.median_font_size) {
+    return HeaderFooterRole::kNone;
+  }
 
-    // Header and footer text (such as running headers or copyright notices)
-    // is often styled smaller than body text. Text rendered at the body text
-    // size (the median) in the margin is typically body content that extends
-    // into the margin band.
+  // A bare number in a margin is a page number. Returns early because page
+  // numbers are often set at body text size, which the rule below rejects.
+  if (page_number_kind == PageNumberKind::kPureNumber) {
+    return is_in_top_margin ? HeaderFooterRole::kHeader
+                            : HeaderFooterRole::kFooter;
+  }
+
+  if (has_median_font_size) {
+    // Headers and footers (running heads, copyright notices) are usually set
+    // smaller than body text, so text at body size here is more likely body
+    // content spilling into the margin. Page numbers are exempt.
     bool is_strictly_smaller =
         current_run.style.font_size <
         (page_properties.median_font_size - kFontSizeEpsilon);
-    if (!is_strictly_smaller) {
+    if (!is_strictly_smaller && !is_page_number) {
       return HeaderFooterRole::kNone;
     }
   }
@@ -1037,53 +1141,68 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     return block_node;
   }
 
-  float font_size = current_run.style.font_size;
-  if (page_properties.heading_font_size_threshold > 0 &&
-      font_size > page_properties.heading_font_size_threshold) {
-    int heading_level = kDefaultHeadingLevel;
-    if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
-      int heuristic_heading_level = GetHeadingLevelFromSize(
-          page_properties.heading_font_size_mapping, font_size);
-      if (IsValidHeadingLevel(heuristic_heading_level)) {
-        heading_level = heuristic_heading_level;
-      }
-    }
-    PromoteNodeToHeading(block_node, heading_level);
-    *out_heading_classifier = HeadingClassifier::kFontSize;
-    return block_node;
+  // Resolving the header and footer role up front also reports whether the run
+  // reads as a page number, which decides the ordering below.
+  std::optional<ax::mojom::Role> header_footer_ax_role;
+  PageNumberKind page_number_kind = PageNumberKind::kNone;
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    header_footer_ax_role = GetAXRoleForHeaderFooterRole(GetHeaderFooterRole(
+        current_run, current_run_chars, page_properties, &page_number_kind));
   }
 
-  // Use other styling information to classify headings for text that is smaller
-  // than the heading_font_size_threshold.
-  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
-    HeadingClassifier classifier = GetHeadingClassifier(
-        current_run, next_run, current_run_chars, page_properties);
+  // A bare digit in a margin is normally a page number, so skip heading
+  // classification to keep a bold or prominent page number from being promoted
+  // to a heading.
+  bool is_page_number_in_margin =
+      page_number_kind == PageNumberKind::kPureNumber &&
+      header_footer_ax_role.has_value();
 
-    if (classifier != HeadingClassifier::kNone) {
-      int heading_level = kLargestStyledHeadingLevel;
-      int heuristic_heading_level = GetHeadingLevelFromSize(
-          page_properties.heading_font_size_mapping, font_size);
-      if (IsValidHeadingLevel(heuristic_heading_level)) {
-        heading_level = heuristic_heading_level;
+  if (!is_page_number_in_margin) {
+    float font_size = current_run.style.font_size;
+    if (page_properties.heading_font_size_threshold > 0 &&
+        font_size > page_properties.heading_font_size_threshold) {
+      int heading_level = kDefaultHeadingLevel;
+      if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+        int heuristic_heading_level = GetHeadingLevelFromSize(
+            page_properties.heading_font_size_mapping, font_size);
+        if (IsValidHeadingLevel(heuristic_heading_level)) {
+          heading_level = heuristic_heading_level;
+        }
       }
       PromoteNodeToHeading(block_node, heading_level);
-      *out_heading_classifier = classifier;
+      *out_heading_classifier = HeadingClassifier::kFontSize;
       return block_node;
     }
 
-    // Check for remaining headers and footers after heading classification.
-    // This ensures real headings in the margins (e.g. section headings at the
-    // top of a page or paper titles) are preserved as headings, while
-    // non-heading text in margins is classified as headers or footers.
-    std::optional<ax::mojom::Role> header_footer_ax_role =
-        GetAXRoleForHeaderFooterRole(GetHeaderFooterRole(
-            current_run, current_run_chars, page_properties));
-    if (header_footer_ax_role.has_value()) {
-      block_node->role = header_footer_ax_role.value();
-      return block_node;
+    // Use other styling information to classify headings for text that is
+    // smaller than the heading_font_size_threshold.
+    if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+      HeadingClassifier classifier = GetHeadingClassifier(
+          current_run, next_run, current_run_chars, page_properties);
+
+      if (classifier != HeadingClassifier::kNone) {
+        int heading_level = kLargestStyledHeadingLevel;
+        int heuristic_heading_level = GetHeadingLevelFromSize(
+            page_properties.heading_font_size_mapping, font_size);
+        if (IsValidHeadingLevel(heuristic_heading_level)) {
+          heading_level = heuristic_heading_level;
+        }
+        PromoteNodeToHeading(block_node, heading_level);
+        *out_heading_classifier = classifier;
+        return block_node;
+      }
     }
   }
 
+  // Reached by page numbers that skipped heading classification and by runs it
+  // declined. Real headings in the margins (e.g. section headings at the top of
+  // a page or paper titles) have returned above as headings, leaving only
+  // non-heading margin text to become a header or footer.
+  if (header_footer_ax_role.has_value()) {
+    // Only ever set above when the flag is enabled.
+    CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+    block_node->role = header_footer_ax_role.value();
+  }
   return block_node;
 }
 
