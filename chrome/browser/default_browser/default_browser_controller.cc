@@ -23,7 +23,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
-#include "default_browser_setter.h"
 
 namespace default_browser {
 
@@ -53,9 +52,8 @@ std::string SetterTypeToString(DefaultBrowserSetterType setter_type) {
       return "ShellIntegration";
     case DefaultBrowserSetterType::kVisualGuide:
       return "VisualGuide";
-    default:
-      NOTREACHED();
   }
+  NOTREACHED();
 }
 
 std::string UiEntrypointTypeToString(
@@ -73,9 +71,8 @@ std::string UiEntrypointTypeToString(
       return "ModalDialogWithSettingsIllustration";
     case DefaultBrowserEntrypointType::kModalDialogWithoutSettingsIllustration:
       return "ModalDialogWithoutSettingsIllustration";
-    default:
-      NOTREACHED();
   }
+  NOTREACHED();
 }
 
 DefaultBrowserController::DefaultBrowserController(
