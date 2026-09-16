@@ -117,6 +117,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
 
   // Focus the location bar / omnibox.
   chrome::FocusLocationBar(browser());
+  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
@@ -335,6 +336,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, OmniboxFocusStealing) {
 
   // Focus the location bar / omnibox.
   chrome::FocusLocationBar(browser());
+  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
