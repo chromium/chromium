@@ -401,7 +401,7 @@ std::optional<ExternalImageSource> GetExternalImageSourceFrom(
                                                      exception_state);
 }
 
-bool CopyStaticImagBitmapToWGPUTexture(
+bool CopyStaticImageBitmapToWGPUTexture(
     const scoped_refptr<DawnControlClientHolder>& dawn_control_client,
     const wgpu::Device& device,
     StaticBitmapImage* image,

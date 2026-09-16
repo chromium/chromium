@@ -428,7 +428,7 @@ void GPUQueue::copyExternalImageToTexture(
     return;
   }
 
-  if (!CopyStaticImagBitmapToWGPUTexture(
+  if (!CopyStaticImageBitmapToWGPUTexture(
           GetDawnControlClient(), device_->GetHandle(), source->image.get(),
           origin_in_external_image, dawn_copy_size, dawn_destination,
           destination->premultipliedAlpha(), color_space, copyImage->flipY())) {
@@ -639,7 +639,7 @@ void GPUQueue::DrawElementImageToTextureInternal(
   dawn_copy_size.height = std::min(
       dawn_destination.texture.GetHeight(),
       base::ClampedNumeric(image->Size().height()).Cast<uint32_t>().RawValue());
-  if (!CopyStaticImagBitmapToWGPUTexture(
+  if (!CopyStaticImageBitmapToWGPUTexture(
           GetDawnControlClient(), device_->GetHandle(), image.get(),
           wgpu::Origin2D(), dawn_copy_size, dawn_destination,
           destination->premultipliedAlpha(), color_space,

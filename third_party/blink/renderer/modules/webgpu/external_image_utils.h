@@ -65,7 +65,7 @@ std::optional<ExternalImageSource> GetExternalImageSourceFrom(
     ExceptionState& exception_state);
 
 // Helper method to copy ExternalImages to wgpu::Textures
-bool CopyStaticImagBitmapToWGPUTexture(
+bool CopyStaticImageBitmapToWGPUTexture(
     const scoped_refptr<DawnControlClientHolder>& dawn_control_client,
     const wgpu::Device& device,
     StaticBitmapImage* image,
