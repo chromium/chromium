@@ -188,7 +188,6 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void testCreateNewWindowIntent_incognito_addsIncognitoIntentExtra() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         Activity activity = createMockActivity();
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
@@ -248,95 +247,6 @@ public class MultiWindowUtilsUnitTest {
 
         assertNotNull(intent);
         assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
-    }
-
-    @Test
-    @Config(sdk = 32)
-    @EnableFeatures(ChromeFeatureList.INCOGNITO_AS_WINDOW_FULL_SCREEN)
-    public void
-            testCreateNewWindowIntent_differentMode_incognitoAsWindowDisabled_opensAdjacently() {
-        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
-        Activity activity = createMockActivity();
-        when(activity.isInMultiWindowMode()).thenReturn(false);
-
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(
-                        activity,
-                        /* isIncognito= */ true,
-                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
-
-        assertNotNull(intent);
-        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
-        assertFalse(
-                intent.getBooleanExtra(
-                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, /* defaultValue= */ true));
-        assertTrue(
-                MultiWindowUtils.shouldOpenInAdjacentWindow(
-                        activity, /* isTargetIncognito= */ false));
-        assertTrue(
-                MultiWindowUtils.shouldOpenInAdjacentWindow(
-                        activity, /* isTargetIncognito= */ true));
-    }
-
-    @Test
-    @Config(sdk = 32)
-    @EnableFeatures(ChromeFeatureList.INCOGNITO_AS_WINDOW_FULL_SCREEN)
-    public void
-            testCreateNewWindowIntent_differentMode_incognitoFullScreenEnabled_opensFullScreen() {
-        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        Activity activity = createMockActivity();
-        when(activity.isInMultiWindowMode()).thenReturn(false);
-
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(
-                        activity,
-                        /* isIncognito= */ true,
-                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
-
-        assertNotNull(intent);
-        assertEquals(0, intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-        assertFalse(
-                MultiWindowUtils.shouldOpenInAdjacentWindow(
-                        activity, /* isTargetIncognito= */ true));
-    }
-
-    @Test
-    @Config(sdk = 32)
-    @DisableFeatures(ChromeFeatureList.INCOGNITO_AS_WINDOW_FULL_SCREEN)
-    public void
-            testCreateNewWindowIntent_differentMode_incognitoFullScreenDisabled_opensAdjacently() {
-        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
-        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        Activity activity = createMockActivity();
-        when(activity.isInMultiWindowMode()).thenReturn(false);
-
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(
-                        activity,
-                        /* isIncognito= */ true,
-                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
-
-        assertNotNull(intent);
-        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
-        assertTrue(
-                MultiWindowUtils.shouldOpenInAdjacentWindow(
-                        activity, /* isTargetIncognito= */ true));
-    }
-
-    @Test
-    public void testShouldOpenInAdjacentWindow_sameMode_opensAdjacently() {
-        ChromeTabbedActivity activity = createMockActivity();
-        when(activity.isIncognitoWindow()).thenReturn(false);
-        assertTrue(
-                MultiWindowUtils.shouldOpenInAdjacentWindow(
-                        activity, /* isTargetIncognito= */ false));
-
-        when(activity.isIncognitoWindow()).thenReturn(true);
-        assertTrue(
-                MultiWindowUtils.shouldOpenInAdjacentWindow(
-                        activity, /* isTargetIncognito= */ true));
     }
 
     @Test

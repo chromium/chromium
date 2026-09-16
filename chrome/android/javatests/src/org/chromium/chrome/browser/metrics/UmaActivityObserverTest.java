@@ -79,6 +79,7 @@ public class UmaActivityObserverTest {
 
     @Test
     @LargeTest
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     public void testMultiWindowMetrics() throws Exception {
         WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
 

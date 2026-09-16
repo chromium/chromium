@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.app.appmenu;
 
 import androidx.test.filters.LargeTest;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +20,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -57,17 +55,6 @@ public class MultiWindowAppMenuTest {
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
-    @Before
-    public void setUp() {
-        // Before the RobustWindowManagementExperimental ramp-down these tests ran with a
-        // full-screen new-window default, supplied implicitly by the
-        // SplitscreenVersusFullScreenForNewWindows fieldtrial testing config. Public Transit view
-        // conditions are not yet reliable for a window opened in split-screen, so keep the old
-        // behavior here.
-        // TODO(crbug.com/561698573): Remove once Public Transit supports split-screen.
-        MultiWindowUtils.setOpenAdjacentlyForTesting(false);
-    }
 
     @Test
     @LargeTest
