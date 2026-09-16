@@ -229,11 +229,10 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     if (GetParam().no_webview) {
       enabled_features.push_back(features::kGlicNoWebview);
       enabled_features.push_back(pwc::mojom::features::kPrivilegedWebContents);
+    } else {
+      disabled_features.push_back(features::kGlicNoWebview);
     }
-    if (!enabled_features.empty() || !disabled_features.empty()) {
-      test_param_features_.InitWithFeatures(enabled_features,
-                                            disabled_features);
-    }
+    test_param_features_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   static std::string PrintTestVariant(

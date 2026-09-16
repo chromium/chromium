@@ -194,9 +194,12 @@ void MaybeMigrateGlicLocalStorage(content::BrowserContext* browser_context) {
 
   content::StoragePartition* source_partition =
       browser_context->GetStoragePartition(
-          GetGlicStoragePartitionConfig(browser_context));
+          GetGlicStoragePartitionConfig(browser_context),
+          /*can_create=*/false);
   if (!source_partition) {
     // No glic partition, nothing to copy.
+    profile->GetPrefs()->SetBoolean(
+        prefs::kGlicLocalStorageCopiedToMainPartition, true);
     return;
   }
 

@@ -165,9 +165,20 @@ TEST_F(GlicLocalStorageMigrationTest, NoOpIfPrefAlreadySet) {
   EXPECT_FALSE(bard_val.has_value());
 }
 
+TEST_F(GlicLocalStorageMigrationTest, NoGlicPartitionSetsPref) {
+  EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(
+      prefs::kGlicLocalStorageCopiedToMainPartition));
+
+  MaybeMigrateGlicLocalStorage(&profile_);
+  EXPECT_TRUE(profile_.GetPrefs()->GetBoolean(
+      prefs::kGlicLocalStorageCopiedToMainPartition));
+}
+
 TEST_F(GlicLocalStorageMigrationTest, EmptyGlicPartitionSetsPref) {
   EXPECT_FALSE(profile_.GetPrefs()->GetBoolean(
       prefs::kGlicLocalStorageCopiedToMainPartition));
+
+  GetGlicPartition();
 
   MaybeMigrateGlicLocalStorage(&profile_);
   EXPECT_TRUE(base::test::RunUntil([&]() {
