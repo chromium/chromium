@@ -17476,6 +17476,9 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   switch (status) {
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
     case base::TERMINATION_STATUS_PROCESS_CRASHED:
+#if BUILDFLAG(IS_WIN)
+    case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
+#endif
       if (is_oom) {
         reason = "oom";
       } else if (is_unresponsive) {
