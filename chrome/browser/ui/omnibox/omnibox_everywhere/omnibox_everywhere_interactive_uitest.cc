@@ -271,7 +271,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, ShowAndCloseWidget) {
   ASSERT_TRUE(delegate);
   EXPECT_TRUE(delegate->CanActivate());
   EXPECT_FALSE(delegate->CanMaximize());
-  EXPECT_FALSE(delegate->CanMinimize());
+  EXPECT_EQ(!omnibox_everywhere::prefs::IsEphemeralModelEnabled(),
+            delegate->CanMinimize());
   EXPECT_FALSE(delegate->CanResize());
 
   // Close (hide) the widget.

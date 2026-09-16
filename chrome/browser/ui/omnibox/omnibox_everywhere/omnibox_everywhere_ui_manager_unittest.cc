@@ -55,6 +55,7 @@
 
 #if BUILDFLAG(IS_WIN)
 // clang-format off
+#include <windows.h>
 #include <shlobj.h>  // Must be before propkey.
 // clang-format on
 
@@ -2323,6 +2324,169 @@ TEST_F(OmniboxEverywhereUIManagerTest, WindowPropertiesPersistentMode) {
   std::wstring relaunch_command = pv_relaunch.get().pwszVal;
   EXPECT_NE(relaunch_command.find(L"chrome_proxy.exe"), std::wstring::npos);
   EXPECT_NE(relaunch_command.find(L"--omnibox-everywhere"), std::wstring::npos);
+
+  // Verify WS_MINIMIZEBOX is present on the window style.
+  EXPECT_NE(0, ::GetWindowLong(hwnd, GWL_STYLE) & WS_MINIMIZEBOX);
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       SysCommandMinimizeMinimizesInPersistentMode) {
+  ASSERT_TRUE(g_browser_process);
+  ASSERT_TRUE(g_browser_process->local_state());
+  g_browser_process->local_state()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_TRUE(ui_manager->IsActive());
+  EXPECT_FALSE(widget->IsMinimized());
+
+  HWND hwnd = views::HWNDForWidget(widget);
+  ASSERT_NE(hwnd, nullptr);
+
+  // In persistent mode nothing intercepts the system command, so the window
+  // minimizes natively.
+  ::SendMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+  EXPECT_TRUE(::IsIconic(hwnd));
+  EXPECT_TRUE(widget->IsMinimized());
+  EXPECT_FALSE(ui_manager->IsActive());
+  EXPECT_FALSE(ui_manager->IsVisible());
+
+  // Showing/reactivating restores the widget.
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_FALSE(widget->IsMinimized());
+  EXPECT_TRUE(ui_manager->IsVisible());
+  EXPECT_TRUE(ui_manager->IsActive());
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       ShowWindowMinimizeClosesWidgetInEphemeralMode) {
+  ASSERT_TRUE(g_browser_process);
+  ASSERT_TRUE(g_browser_process->local_state());
+  g_browser_process->local_state()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  HWND hwnd = views::HWNDForWidget(widget);
+  ASSERT_NE(hwnd, nullptr);
+  EXPECT_TRUE(ui_manager->IsVisible());
+
+  // Exercise a minimize source that bypasses WM_SYSCOMMAND entirely (e.g.
+  // Win+D, Aero Shake, or external ShowWindow) to verify
+  // OnWidgetShowStateChanged covers non-SC_MINIMIZE paths.
+  ::ShowWindow(hwnd, SW_MINIMIZE);
+  EXPECT_FALSE(ui_manager->IsVisible());
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       SysCommandMinimizeAllowedWhileModalDialogOpen) {
+  ASSERT_TRUE(g_browser_process);
+  ASSERT_TRUE(g_browser_process->local_state());
+  g_browser_process->local_state()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, false);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  HWND hwnd = views::HWNDForWidget(widget);
+  ASSERT_NE(hwnd, nullptr);
+  ASSERT_FALSE(::IsIconic(hwnd));
+
+  ui_manager->OnDrivePickerOpened();
+  ASSERT_TRUE(ui_manager->HasOpenModalDialog());
+
+  // Native minimization is allowed while a modal dialog is open so the user
+  // can minimize the window via the taskbar or window controls without the
+  // widget or delegate being destroyed.
+  constexpr WPARAM kReservedSysCommandBits = 0x0002;
+  ::SendMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE | kReservedSysCommandBits, 0);
+  EXPECT_TRUE(::IsIconic(hwnd));
+  EXPECT_TRUE(widget->IsMinimized());
+  EXPECT_FALSE(ui_manager->IsVisible());
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(ui_manager->widget_delegate());
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_FALSE(::IsIconic(hwnd));
+  EXPECT_FALSE(widget->IsMinimized());
+  EXPECT_TRUE(ui_manager->IsVisible());
+
+  ui_manager->OnDrivePickerClosed();
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MinimizeDoesNotCloseEphemeralWidgetWhileModalDialogOpen) {
+  ASSERT_TRUE(g_browser_process);
+  ASSERT_TRUE(g_browser_process->local_state());
+  g_browser_process->local_state()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  ASSERT_TRUE(widget->IsVisible());
+
+  ui_manager->OnDrivePickerOpened();
+  ASSERT_TRUE(ui_manager->HasOpenModalDialog());
+
+  // In ephemeral mode, minimizing while a modal dialog is open must allow
+  // native minimization rather than calling Close() (which runs
+  // CleanUpWidget() and destroys the widget and delegate owning the dialog).
+  widget->Minimize();
+  EXPECT_TRUE(widget->IsMinimized());
+  EXPECT_FALSE(ui_manager->IsVisible());
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(ui_manager->widget_delegate());
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::test::WaitForWidgetActive(widget, true);
+  EXPECT_FALSE(widget->IsMinimized());
+  EXPECT_TRUE(ui_manager->IsVisible());
+
+  // Once the modal closes, minimizing in ephemeral mode really closes the
+  // widget.
+  ui_manager->OnDrivePickerClosed();
+  ASSERT_FALSE(ui_manager->HasOpenModalDialog());
+  ui_manager->widget()->Minimize();
+  EXPECT_FALSE(ui_manager->IsVisible());
+  EXPECT_FALSE(widget->IsVisible());
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, MinimizeClosesWidgetInEphemeralMode) {
+  ASSERT_TRUE(g_browser_process);
+  ASSERT_TRUE(g_browser_process->local_state());
+  g_browser_process->local_state()->SetBoolean(
+      omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // In ephemeral mode, minimizing (from any source) closes/hides the widget on
+  // all platforms.
+  widget->Minimize();
+  EXPECT_FALSE(ui_manager->IsVisible());
 
   ui_manager->Shutdown();
 }
