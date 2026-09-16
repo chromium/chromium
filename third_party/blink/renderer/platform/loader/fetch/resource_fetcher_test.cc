@@ -33,6 +33,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1073,6 +1074,176 @@ TEST_P(ResourceFetcherTest, Revalidate304) {
   fetcher->StopFetching();
 
   EXPECT_NE(resource, new_resource);
+}
+
+TEST_P(ResourceFetcherTest, LinkPreload304MatchClearsUnusedPreload) {
+  ScopedSpeculationMeasurementForTest enable_speculation_measurement(true);
+  base::HistogramTester histogram_tester;
+  auto* fetcher = CreateFetcher();
+
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterMockedURLLoad(url);
+
+  // Link preload request
+  FetchParameters fetch_params_preload =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  fetch_params_preload.SetLinkPreload(true);
+  Resource* preload_resource =
+      MockResource::Fetch(fetch_params_preload, fetcher, nullptr);
+  ASSERT_TRUE(preload_resource);
+  EXPECT_TRUE(preload_resource->IsLinkPreload());
+  EXPECT_TRUE(preload_resource->IsUnusedPreload());
+  EXPECT_TRUE(fetcher->ContainsAsPreload(preload_resource));
+
+  // Response returns 304 without body
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(304);
+  preload_resource->ResponseReceived(response);
+  preload_resource->FinishForTest();
+
+  // Subsequent actual request matches the preload URL
+  FetchParameters fetch_params =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  Resource* new_resource = MockResource::Fetch(fetch_params, fetcher, nullptr);
+
+  // The 304 preload resource cannot be reused, so a new Resource is fetched.
+  EXPECT_NE(preload_resource, new_resource);
+  // But preload_resource should be removed from preloads_ and not considered
+  // unused.
+  EXPECT_FALSE(fetcher->ContainsAsPreload(preload_resource));
+  EXPECT_FALSE(preload_resource->IsUnusedPreload());
+
+  const auto& preload_records = fetcher->GetPreloadRecords();
+  auto it = preload_records.find(url);
+  ASSERT_TRUE(it != preload_records.end());
+  EXPECT_TRUE(it->value.used_time.has_value());
+
+  fetcher->ScheduleWarnUnusedPreloads(base::DoNothing());
+  static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
+      ->RunUntilIdle();
+  histogram_tester.ExpectTotalCount("Renderer.Preload.UnusedResource", 0);
+  histogram_tester.ExpectTotalCount("Renderer.Preload.UnusedResource2", 0);
+  histogram_tester.ExpectTotalCount(
+      "Renderer.Preload.UnusedResource2.LinkPreload", 0);
+  histogram_tester.ExpectTotalCount("Renderer.Preload.UnusedResourceCount", 0);
+}
+
+TEST_P(ResourceFetcherTest, LinkPreload304NeverReferencedWarnsUnused) {
+  ScopedSpeculationMeasurementForTest enable_speculation_measurement(true);
+  base::HistogramTester histogram_tester;
+  auto* fetcher = CreateFetcher();
+
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterMockedURLLoad(url);
+
+  // Link preload request receives 304 response
+  FetchParameters fetch_params_preload =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  fetch_params_preload.SetLinkPreload(true);
+  Resource* preload_resource =
+      MockResource::Fetch(fetch_params_preload, fetcher, nullptr);
+  ASSERT_TRUE(preload_resource);
+  EXPECT_TRUE(preload_resource->IsLinkPreload());
+  EXPECT_TRUE(preload_resource->IsUnusedPreload());
+  EXPECT_TRUE(fetcher->ContainsAsPreload(preload_resource));
+
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(304);
+  preload_resource->ResponseReceived(response);
+  preload_resource->FinishForTest();
+
+  // The preload is never referenced by any subsequent request.
+  EXPECT_TRUE(fetcher->ContainsAsPreload(preload_resource));
+  EXPECT_TRUE(preload_resource->IsUnusedPreload());
+
+  const auto& preload_records = fetcher->GetPreloadRecords();
+  auto it = preload_records.find(url);
+  ASSERT_TRUE(it != preload_records.end());
+  EXPECT_FALSE(it->value.used_time.has_value());
+
+  fetcher->ScheduleWarnUnusedPreloads(base::DoNothing());
+  static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
+      ->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "Renderer.Preload.UnusedResource",
+      static_cast<int>(preload_resource->GetType()), 1);
+  histogram_tester.ExpectBucketCount("Renderer.Preload.UnusedResource2",
+                                     preload_resource->GetType(), 1);
+  histogram_tester.ExpectBucketCount(
+      "Renderer.Preload.UnusedResource2.LinkPreload",
+      preload_resource->GetType(), 1);
+  histogram_tester.ExpectBucketCount("Renderer.Preload.UnusedResourceCount", 1,
+                                     1);
+  histogram_tester.ExpectTotalCount("Renderer.Preload.UnusedResource", 1);
+  histogram_tester.ExpectTotalCount("Renderer.Preload.UnusedResource2", 1);
+  histogram_tester.ExpectTotalCount(
+      "Renderer.Preload.UnusedResource2.LinkPreload", 1);
+  histogram_tester.ExpectTotalCount("Renderer.Preload.UnusedResourceCount", 1);
+}
+
+TEST_P(ResourceFetcherTest,
+       LinkPreload304WithParameterMismatchDoesNotClearPreload) {
+  ScopedSpeculationMeasurementForTest enable_speculation_measurement(true);
+  base::HistogramTester histogram_tester;
+  auto* fetcher = CreateFetcher();
+
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterMockedURLLoad(url);
+
+  // Link preload request with credentials mode omit
+  FetchParameters fetch_params_preload =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  fetch_params_preload.SetLinkPreload(true);
+  fetch_params_preload.MutableResourceRequest().SetCredentialsMode(
+      network::mojom::CredentialsMode::kOmit);
+  Resource* preload_resource =
+      MockResource::Fetch(fetch_params_preload, fetcher, nullptr);
+  ASSERT_TRUE(preload_resource);
+  EXPECT_TRUE(preload_resource->IsLinkPreload());
+  EXPECT_TRUE(preload_resource->IsUnusedPreload());
+  EXPECT_TRUE(fetcher->ContainsAsPreload(preload_resource));
+
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(304);
+  preload_resource->ResponseReceived(response);
+  preload_resource->FinishForTest();
+
+  // Subsequent actual request with credentials mode include (mismatched)
+  FetchParameters fetch_params =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  fetch_params.MutableResourceRequest().SetCredentialsMode(
+      network::mojom::CredentialsMode::kInclude);
+  Resource* new_resource = MockResource::Fetch(fetch_params, fetcher, nullptr);
+
+  EXPECT_NE(preload_resource, new_resource);
+  // Because parameters mismatched, preload_resource should NOT be cleared from
+  // preloads_ and should remain unused.
+  EXPECT_TRUE(fetcher->ContainsAsPreload(preload_resource));
+  EXPECT_TRUE(preload_resource->IsUnusedPreload());
+
+  const auto& preload_records = fetcher->GetPreloadRecords();
+  auto it = preload_records.find(url);
+  ASSERT_TRUE(it != preload_records.end());
+  EXPECT_FALSE(it->value.used_time.has_value());
+
+  fetcher->ScheduleWarnUnusedPreloads(base::DoNothing());
+  static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
+      ->RunUntilIdle();
+  histogram_tester.ExpectBucketCount(
+      "Renderer.Preload.UnusedResource",
+      static_cast<int>(preload_resource->GetType()), 1);
+  histogram_tester.ExpectBucketCount("Renderer.Preload.UnusedResource2",
+                                     preload_resource->GetType(), 1);
+  histogram_tester.ExpectBucketCount(
+      "Renderer.Preload.UnusedResource2.LinkPreload",
+      preload_resource->GetType(), 1);
+  histogram_tester.ExpectBucketCount("Renderer.Preload.UnusedResourceCount", 1,
+                                     1);
+  histogram_tester.ExpectTotalCount("Renderer.Preload.UnusedResource", 1);
+  histogram_tester.ExpectTotalCount("Renderer.Preload.UnusedResource2", 1);
+  histogram_tester.ExpectTotalCount(
+      "Renderer.Preload.UnusedResource2.LinkPreload", 1);
+  histogram_tester.ExpectTotalCount("Renderer.Preload.UnusedResourceCount", 1);
 }
 
 TEST_P(ResourceFetcherTest, LinkPreloadResourceMultipleFetchersAndMove) {

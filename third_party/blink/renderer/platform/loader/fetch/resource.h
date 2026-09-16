@@ -171,6 +171,10 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
     // Match fails because it's a cross-world service worker resource request.
     kCrossWorldServiceWorkerResourceMismatch,
+
+    // Match fails because the response status code is 304 (Not Modified)
+    // without a body, but all other request parameters matched.
+    k304NotModified,
   };
 
   Resource(const Resource&) = delete;

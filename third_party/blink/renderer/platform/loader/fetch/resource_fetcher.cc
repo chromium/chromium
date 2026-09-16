@@ -1910,20 +1910,28 @@ Resource* ResourceFetcher::MatchPreload(
   }
 
   const Resource::MatchStatus match_status = resource->CanReuse(params);
-  if (match_status != Resource::MatchStatus::kOk) {
+  if (match_status != Resource::MatchStatus::kOk &&
+      match_status != Resource::MatchStatus::k304NotModified) {
     PrintPreloadMismatch(resource, match_status);
     return nullptr;
   }
 
   resource->MatchPreload(params);
   preloads_.erase(it);
-  matched_preloads_.push_back(resource);
 
-  auto record_it = preload_records_.find(resource->Url());
-  if (record_it != preload_records_.end()) {
-    record_it->value.used_time = base::TimeTicks::Now();
+  if (RuntimeEnabledFeatures::SpeculationMeasurementEnabled(
+          context_->GetFeatureContext())) {
+    auto record_it = preload_records_.find(resource->Url());
+    if (record_it != preload_records_.end()) {
+      record_it->value.used_time = base::TimeTicks::Now();
+    }
   }
 
+  if (match_status == Resource::MatchStatus::k304NotModified) {
+    return nullptr;
+  }
+
+  matched_preloads_.push_back(resource);
   return resource;
 }
 
@@ -1940,6 +1948,7 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
 
   switch (status) {
     case Resource::MatchStatus::kOk:
+    case Resource::MatchStatus::k304NotModified:
       NOTREACHED();
     case Resource::MatchStatus::kUnknownFailure:
       builder.Append("due to an unknown reason.");
