@@ -118,7 +118,7 @@ source_set("impl") {
     "//components/permissions",
     "//components/permissions:permissions_common",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
-    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safety_check",

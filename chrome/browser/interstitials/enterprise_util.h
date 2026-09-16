@@ -9,7 +9,7 @@
 #include "components/safe_browsing/buildflags.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #endif
 

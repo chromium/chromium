@@ -14,7 +14,7 @@ source_set("interstitials") {
 
   public_deps = [
     "//chrome/browser/safe_browsing",
-    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:sb_protocol_manager_util",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
     "//components/security_interstitials/content:security_interstitial_page",

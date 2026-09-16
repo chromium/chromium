@@ -54,7 +54,7 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"

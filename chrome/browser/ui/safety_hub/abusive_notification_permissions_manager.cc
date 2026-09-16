@@ -26,7 +26,7 @@
 #include "components/permissions/notifications_engagement_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"

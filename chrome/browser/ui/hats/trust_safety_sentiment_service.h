@@ -18,7 +18,7 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"

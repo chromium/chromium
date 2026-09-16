@@ -15,7 +15,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 

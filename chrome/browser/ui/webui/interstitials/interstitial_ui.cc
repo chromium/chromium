@@ -38,7 +38,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/security_interstitials/content/bad_clock_blocking_page.h"
 #include "components/security_interstitials/content/blocked_interception_blocking_page.h"
 #include "components/security_interstitials/content/https_only_mode_blocking_page.h"
