@@ -86,6 +86,12 @@ gfx::RectF Lift(ContentAutofillDriver& source, gfx::RectF r) {
     return r;
   }
 
+  // Intersect the coordinates with the view's bounds. This is to make it hard
+  // for a malicious frame to position an Autofill popup over a field from
+  // different frame (provided the attacker's and the victim's frames do not
+  // share the same local root).
+  r.InclusiveIntersect(gfx::RectF(view->GetViewBounds().size()));
+
   // We transform all corners to handle CSS `transform: scale(...)` correctly
   // (crbug.com/562177779).
   return gfx::QuadF(view->TransformPointToRootCoordSpaceF(r.origin()),
