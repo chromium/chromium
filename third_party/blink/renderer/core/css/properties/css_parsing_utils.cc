@@ -1003,6 +1003,9 @@ CSSParamValuePair* ConsumeParam(CSSParserTokenStream& stream,
     if (!data) {
       return nullptr;
     }
+    if (data->NeedsVariableResolution()) {
+      return nullptr;
+    }
     value = MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
 
     guard.Release();

@@ -81,6 +81,7 @@ class ComputedGridTrackList;
 class CSSToLengthConversionData;
 class Font;
 class FontBuilder;
+class LinkParameterList;
 class OffsetPathOperation;
 class RotateTransformOperation;
 class ScaleTransformOperation;
@@ -257,6 +258,8 @@ class StyleBuilderConverter {
   static Length ConvertLengthMaxSizing(StyleResolverState&, const CSSValue&);
   static TabSize ConvertLengthOrTabSpaces(StyleResolverState&, const CSSValue&);
   static Length ConvertLineHeight(StyleResolverState&, const CSSValue&);
+  static LinkParameterList* ConvertLinkParameters(StyleResolverState&,
+                                                  const CSSValue&);
   static float ConvertNumberOrPercentage(StyleResolverState&, const CSSValue&);
   static Length ConvertPathLength(StyleResolverState&, const CSSValue&);
   static int ConvertInteger(StyleResolverState&, const CSSValue&);

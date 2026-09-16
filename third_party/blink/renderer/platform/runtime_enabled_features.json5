@@ -1794,6 +1794,11 @@
       status: "experimental",
     },
     {
+      // https://chromestatus.com/feature/5095153430822912
+      name: "CSSLinkParametersProperty",
+      status: "experimental",
+    },
+    {
       // Implements `counter-increment` and `counter-set` for the non-<li>
       // elements and the reversed ordered lists.
       //

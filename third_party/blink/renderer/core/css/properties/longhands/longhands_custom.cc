@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/memory/values_equivalent.h"
 #include "base/numerics/clamped_math.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/css_layout_function_value.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_param_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
@@ -34,10 +37,12 @@
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_symbols_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
@@ -72,6 +77,7 @@
 #include "third_party/blink/renderer/core/style/coord_box_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
+#include "third_party/blink/renderer/core/style/link_parameter_list.h"
 #include "third_party/blink/renderer/core/style/paint_order_array.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
@@ -92,6 +98,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/quotes_data.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 // Implementations of methods in Longhand subclasses that aren't generated.
 
@@ -6611,6 +6618,39 @@ const CSSValue* LineHeight::CSSValueFromComputedStyleInternal(
     return ComputedStyleUtils::ComputedValueForLineHeight(style);
   }
   return ComputedStyleUtils::ValueForLineHeight(style);
+}
+
+const CSSValue* LinkParameters::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context) const {
+  if (const CSSValue* value =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
+    return value;
+  }
+  return css_parsing_utils::ConsumeLinkParameters(stream, context,
+                                                  local_context);
+}
+
+const CSSValue* LinkParameters::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  const LinkParameterList* params = style.LinkParameters();
+  if (!params) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (const LinkParameterList::Parameter& parameter : params->Parameters()) {
+    CSSCustomIdentValue* name =
+        MakeGarbageCollected<CSSCustomIdentValue>(parameter.Name());
+    CSSUnparsedDeclarationValue* value =
+        MakeGarbageCollected<CSSUnparsedDeclarationValue>(parameter.Value());
+    list->Append(*MakeGarbageCollected<CSSParamValuePair>(*name, *value));
+  }
+  return list;
 }
 
 const CSSValue* ListStyleImage::CSSValueFromComputedStyleInternal(

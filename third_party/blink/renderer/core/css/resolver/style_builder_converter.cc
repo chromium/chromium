@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_palette_mix_value.h"
+#include "third_party/blink/renderer/core/css/css_param_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -68,6 +69,7 @@
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_superellipse_value.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_unresolved_color_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -88,6 +90,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/coord_box_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/link_parameter_list.h"
 #include "third_party/blink/renderer/core/style/offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
@@ -2567,6 +2570,26 @@ scoped_refptr<QuotesData> StyleBuilderConverter::ConvertQuotes(
   }
   DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kAuto);
   return nullptr;
+}
+
+LinkParameterList* StyleBuilderConverter::ConvertLinkParameters(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    CHECK_EQ(ident->GetValueID(), CSSValueID::kNone);
+    return nullptr;
+  }
+  const auto& list = To<CSSValueList>(value);
+  LinkParameterList::ParameterVector params;
+  params.ReserveInitialCapacity(list.length());
+  for (const Member<const CSSValue>& item : list) {
+    const auto& pair = To<CSSParamValuePair>(*item);
+    // Link parameter names are global in the linked resource, so the embedding
+    // document's tree scope does not apply.
+    params.emplace_back(ConvertCustomIdentUnscoped(state, pair.Name()),
+                        pair.Value().VariableDataValue());
+  }
+  return MakeGarbageCollected<LinkParameterList>(std::move(params));
 }
 
 LengthSize StyleBuilderConverter::ConvertRadius(const StyleResolverState& state,

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/link_parameter_list.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -652,6 +653,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
                          b.LineClampInternalBlockEllipsis());
     case CSSPropertyID::kLineHeight:
       return ValueEquals(a.LineHeight(), b.LineHeight());
+    case CSSPropertyID::kLinkParameters:
+      return base::ValuesEquivalent(a.LinkParameters(), b.LinkParameters());
     case CSSPropertyID::kTabSize:
       return ValueEquals(a.GetTabSize(), b.GetTabSize());
     case CSSPropertyID::kListStyleImage:

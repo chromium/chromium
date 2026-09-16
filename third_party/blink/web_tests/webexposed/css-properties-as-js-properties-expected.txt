@@ -325,6 +325,7 @@ lineBreak
 lineClamp
 lineGapOverride
 lineHeight
+linkParameters
 listStyle
 listStyleImage
 listStylePosition
