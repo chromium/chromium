@@ -332,8 +332,8 @@ TEST_F(SmartCardPermissionContextTest,
   ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 
   one_time_tracker->NotifyBackgroundTimerExpired(
-      origin_1,
-      OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout);
+      OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout,
+      origin_1);
 
   // The ephemeral permission should have been revoked.
   EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));

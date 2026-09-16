@@ -46,6 +46,7 @@ class OneTimePermissionsTracker : public KeyedService {
   base::WeakPtr<OneTimePermissionsTracker> GetWeakPtr();
 
   std::unique_ptr<Condition> NewActivePage(const url::Origin& origin);
+  std::unique_ptr<Condition> NewForegroundPage(const url::Origin& origin);
 
   // Handles primary page changes to `origin` and pages of `origin` being
   // undiscarded.
@@ -61,10 +62,8 @@ class OneTimePermissionsTracker : public KeyedService {
   // Removes observer implementing `OneTimePermissionsTrackerObserver`.
   void RemoveObserver(OneTimePermissionsTrackerObserver* observer);
 
-  // Handles a WebContents visibility changes to `HIDDEN`.
+  // Handles visibility changes.
   void WebContentsBackgrounded(const url::Origin& origin);
-
-  // Handles a WebContents visibility changes to `OCCLUDED` or `VISIBLE`
   void WebContentsUnbackgrounded(const url::Origin& origin);
 
   // Handles changes in video capturing state.
@@ -95,9 +94,9 @@ class OneTimePermissionsTracker : public KeyedService {
 
  protected:
   void NotifyBackgroundTimerExpired(
-      const url::Origin& origin,
       const OneTimePermissionsTrackerObserver::BackgroundExpiryType&
-          expiry_type);
+          expiry_type,
+      const url::Origin& origin);
 
  private:
   // Struct to hold the state of an origin
@@ -122,19 +121,6 @@ class OneTimePermissionsTracker : public KeyedService {
     // for this origin.
     std::set<ContentSettingsType> used_content_settings_set;
 
-    // One shot timer for expiring permissions that are temporarily disabled by
-    // backgrounding. This is intentionally not merged with
-    // `content_setting_specific_expiration_timer_map`, which is used by
-    // permissions that aren't disabled by backgrounding.
-    std::unique_ptr<base::OneShotTimer> background_expiration_timer =
-        std::make_unique<base::OneShotTimer>();
-
-    // One shot timer for expiring permissions that are temporarily disabled by
-    // backgrounding. This timer is only used in the File System Access
-    // Persistent Permissions implementation to detect tab backgrounding events.
-    std::unique_ptr<base::OneShotTimer> background_expiration_long_timer =
-        std::make_unique<base::OneShotTimer>();
-
     // One shot timer for user-media one-time permissions for this origin.
     std::map<ContentSettingsType, std::unique_ptr<base::OneShotTimer>>
         content_setting_specific_expiration_timer_map;
@@ -144,8 +130,6 @@ class OneTimePermissionsTracker : public KeyedService {
   void RemoveContentSettingUsedFromOrigin(const url::Origin& origin,
                                           ContentSettingsType content_setting);
 
-  void StartBackgroundExpirationTimersAndHandleMediaState(
-      const url::Origin& origin);
   void HandleUserMediaState(const url::Origin& origin,
                             ContentSettingsType content_setting);
 
@@ -156,14 +140,16 @@ class OneTimePermissionsTracker : public KeyedService {
   void NotifyCapturingVideoExpired(const url::Origin& origin);
   void NotifyCapturingAudioExpired(const url::Origin& origin);
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
   base::ObserverList<OneTimePermissionsTrackerObserver> observer_list_;
 
   std::map<url::Origin, OriginTrackEntry> origin_tracker_;
 
   std::unique_ptr<OneTimePermissionsConditionTracker::Factory>
       active_page_tracker_factory_;
+  std::unique_ptr<OneTimePermissionsConditionTracker::Factory>
+      short_background_page_tracker_factory_;
+  std::unique_ptr<OneTimePermissionsConditionTracker::Factory>
+      long_background_page_tracker_factory_;
 
   base::WeakPtrFactory<OneTimePermissionsTracker> weak_factory_{this};
 };

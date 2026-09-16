@@ -12,13 +12,13 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/permissions/one_time_permissions_condition_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/visibility.h"
 #include "url/gurl.h"
@@ -27,39 +27,53 @@ namespace {
 
 class ActivePageCondition : public OneTimePermissionsTracker::Condition {
  public:
-  ActivePageCondition(scoped_refptr<OneTimePermissionsConditionTracker>
-                          internal_active_page_tracker,
-                      scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : internal_active_page_tracker_(std::move(internal_active_page_tracker)),
-        task_runner_(std::move(task_runner)) {
-    CHECK(task_runner_);
-  }
-  ~ActivePageCondition() override {
-    // Post a task so that the internal_active_page_tracker_ is destroyed
-    // asynchronously. That ensures that, in the case of a same-origin
-    // navigation, the active page tracker for the new page is created before
-    // the one for the old page is destroyed, and the one-time permission is not
-    // expired.
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::DoNothingWithBoundArgs(std::move(internal_active_page_tracker_)));
+  explicit ActivePageCondition(scoped_refptr<OneTimePermissionsConditionTracker>
+                                   internal_active_page_tracker)
+      : internal_active_page_tracker_(std::move(internal_active_page_tracker)) {
   }
 
  private:
   scoped_refptr<OneTimePermissionsConditionTracker>
       internal_active_page_tracker_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+};
+
+class ForegroundPageCondition : public OneTimePermissionsTracker::Condition {
+ public:
+  ForegroundPageCondition(
+      scoped_refptr<OneTimePermissionsConditionTracker> short_condition_tracker,
+      scoped_refptr<OneTimePermissionsConditionTracker> long_condition_tracker)
+      : short_condition_tracker_(std::move(short_condition_tracker)),
+        long_condition_tracker_(std::move(long_condition_tracker)) {}
+
+ private:
+  scoped_refptr<OneTimePermissionsConditionTracker> short_condition_tracker_;
+  scoped_refptr<OneTimePermissionsConditionTracker> long_condition_tracker_;
 };
 
 }  // namespace
 
-OneTimePermissionsTracker::OneTimePermissionsTracker()
-    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
+OneTimePermissionsTracker::OneTimePermissionsTracker() {
   active_page_tracker_factory_ =
       std::make_unique<OneTimePermissionsConditionTracker::Factory>(
           base::BindRepeating(
               &OneTimePermissionsTracker::NotifyLastPageFromOriginClosed,
-              weak_factory_.GetWeakPtr()));
+              weak_factory_.GetWeakPtr()),
+          base::Seconds(0));
+  short_background_page_tracker_factory_ = std::make_unique<
+      OneTimePermissionsConditionTracker::Factory>(
+      base::BindRepeating(
+          &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
+          weak_factory_.GetWeakPtr(),
+          OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout),
+      permissions::kOneTimePermissionTimeout);
+  long_background_page_tracker_factory_ =
+      std::make_unique<OneTimePermissionsConditionTracker::Factory>(
+          base::BindRepeating(
+              &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
+              weak_factory_.GetWeakPtr(),
+              OneTimePermissionsTrackerObserver::BackgroundExpiryType::
+                  kLongTimeout),
+          permissions::kOneTimePermissionMaximumLifetime);
 }
 
 OneTimePermissionsTracker::~OneTimePermissionsTracker() = default;
@@ -72,7 +86,14 @@ OneTimePermissionsTracker::GetWeakPtr() {
 std::unique_ptr<OneTimePermissionsTracker::Condition>
 OneTimePermissionsTracker::NewActivePage(const url::Origin& origin) {
   return std::make_unique<ActivePageCondition>(
-      active_page_tracker_factory_->New(origin), task_runner_);
+      active_page_tracker_factory_->New(origin));
+}
+
+std::unique_ptr<OneTimePermissionsTracker::Condition>
+OneTimePermissionsTracker::NewForegroundPage(const url::Origin& origin) {
+  return std::make_unique<ForegroundPageCondition>(
+      short_background_page_tracker_factory_->New(origin),
+      long_background_page_tracker_factory_->New(origin));
 }
 
 OneTimePermissionsTracker::OriginTrackEntry::OriginTrackEntry() = default;
@@ -84,6 +105,9 @@ void OneTimePermissionsTracker::Shutdown() {
     observer.OnShutdown();
   }
   observer_list_.Clear();
+  active_page_tracker_factory_.reset();
+  short_background_page_tracker_factory_.reset();
+  long_background_page_tracker_factory_.reset();
 }
 
 void OneTimePermissionsTracker::AddObserver(
@@ -96,31 +120,6 @@ void OneTimePermissionsTracker::RemoveObserver(
   observer_list_.RemoveObserver(observer);
 }
 
-void OneTimePermissionsTracker::
-    StartBackgroundExpirationTimersAndHandleMediaState(
-        const url::Origin& origin) {
-  if (!origin_tracker_[origin].background_expiration_timer->IsRunning()) {
-    origin_tracker_[origin].background_expiration_timer->Start(
-        FROM_HERE, permissions::kOneTimePermissionTimeout,
-        base::BindOnce(
-            &OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
-            weak_factory_.GetWeakPtr(), origin,
-            OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout));
-  }
-
-  if (!origin_tracker_[origin].background_expiration_long_timer->IsRunning()) {
-    origin_tracker_[origin].background_expiration_long_timer->Start(
-        FROM_HERE, permissions::kOneTimePermissionMaximumLifetime,
-        base::BindOnce(&OneTimePermissionsTracker::NotifyBackgroundTimerExpired,
-                       weak_factory_.GetWeakPtr(), origin,
-                       OneTimePermissionsTrackerObserver::BackgroundExpiryType::
-                           kLongTimeout));
-  }
-
-  HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_CAMERA);
-  HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_MIC);
-}
-
 void OneTimePermissionsTracker::WebContentsBackgrounded(
     const url::Origin& origin) {
   // For some reason using `origin_tracker_[origin].background_tab_counter++;`
@@ -131,27 +130,19 @@ void OneTimePermissionsTracker::WebContentsBackgrounded(
   origin_tracker_[origin].background_tab_counter += 1;
 
   if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
-    StartBackgroundExpirationTimersAndHandleMediaState(origin);
-
-  } else {
-    origin_tracker_[origin].background_expiration_timer->Stop();
-    origin_tracker_[origin].background_expiration_long_timer->Stop();
+    HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_CAMERA);
+    HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_MIC);
   }
 }
 
 void OneTimePermissionsTracker::WebContentsUnbackgrounded(
     const url::Origin& origin) {
   origin_tracker_[origin].background_tab_counter--;
-  // Since the tab has been unbackgrounded, the timers should be reset
-  origin_tracker_[origin].background_expiration_timer->Stop();
-  origin_tracker_[origin].background_expiration_long_timer->Stop();
 }
 
 void OneTimePermissionsTracker::WebContentsLoadedOrigin(
     const url::Origin& origin) {
   origin_tracker_[origin].undiscarded_tab_counter++;
-  origin_tracker_[origin].background_expiration_timer->Stop();
-  origin_tracker_[origin].background_expiration_long_timer->Stop();
 }
 
 void OneTimePermissionsTracker::WebContentsUnloadedOrigin(
@@ -159,7 +150,8 @@ void OneTimePermissionsTracker::WebContentsUnloadedOrigin(
   origin_tracker_[origin].undiscarded_tab_counter--;
   DCHECK(!(origin_tracker_[origin].undiscarded_tab_counter < 0));
   if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
-    StartBackgroundExpirationTimersAndHandleMediaState(origin);
+    HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_CAMERA);
+    HandleUserMediaState(origin, ContentSettingsType::MEDIASTREAM_MIC);
   }
 }
 
@@ -259,12 +251,8 @@ void OneTimePermissionsTracker::CleanupStateForExpiredContentSetting(
   }
 
   for (const auto& origin : affected_origins) {
-    if (type == permissions::PermissionUtil::GetGeolocationType()) {
-      origin_tracker_[origin].background_expiration_timer->Stop();
-    } else {
-      origin_tracker_[origin]
-          .content_setting_specific_expiration_timer_map.erase(type);
-    }
+    origin_tracker_[origin].content_setting_specific_expiration_timer_map.erase(
+        type);
 
     origin_tracker_[origin].content_setting_specific_counter_map.erase(type);
     origin_tracker_[origin].used_content_settings_set.erase(type);
@@ -275,13 +263,6 @@ void OneTimePermissionsTracker::FireRunningTimersForTesting() {
   // The loops in this method require manual 'forward-looking' iteration because
   // the methods executing upon timer expiration might erase elements from the
   // map that is being iterated over.
-  for (auto i = origin_tracker_.begin(), e = origin_tracker_.end(); i != e;) {
-    auto origin_entry = i++;
-    if (origin_entry->second.background_expiration_timer->IsRunning()) {
-      origin_entry->second.background_expiration_timer->FireNow();
-    }
-  }
-
   for (auto i_outer = origin_tracker_.begin(), e_outer = origin_tracker_.end();
        i_outer != e_outer;) {
     auto origin_entry = i_outer++;
@@ -302,8 +283,12 @@ void OneTimePermissionsTracker::FireRunningTimersForTesting() {
 
 void OneTimePermissionsTracker::SetTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  CHECK(task_runner);
-  task_runner_ = std::move(task_runner);
+  active_page_tracker_factory_->SetTaskRunnerForTesting(  // IN-TEST
+      task_runner);
+  short_background_page_tracker_factory_->SetTaskRunnerForTesting(  // IN-TEST
+      task_runner);
+  long_background_page_tracker_factory_->SetTaskRunnerForTesting(  // IN-TEST
+      task_runner);
 }
 
 void OneTimePermissionsTracker::NotifyLastPageFromOriginClosed(
@@ -314,19 +299,10 @@ void OneTimePermissionsTracker::NotifyLastPageFromOriginClosed(
 }
 
 void OneTimePermissionsTracker::NotifyBackgroundTimerExpired(
-    const url::Origin& origin,
-    const OneTimePermissionsTrackerObserver::BackgroundExpiryType&
-        expiry_type) {
+    const OneTimePermissionsTrackerObserver::BackgroundExpiryType& expiry_type,
+    const url::Origin& origin) {
   for (auto& observer : observer_list_) {
     observer.OnAllTabsInBackgroundTimerExpired(origin, expiry_type);
-  }
-  switch (expiry_type) {
-    case OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout:
-      origin_tracker_[origin].background_expiration_timer->Stop();
-      return;
-    case OneTimePermissionsTrackerObserver::BackgroundExpiryType::kLongTimeout:
-      origin_tracker_[origin].background_expiration_long_timer->Stop();
-      return;
   }
 }
 

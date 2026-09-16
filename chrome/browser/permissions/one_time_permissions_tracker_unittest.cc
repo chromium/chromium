@@ -135,7 +135,9 @@ TEST_F(OneTimePermissionsTrackerTest, NotifyAfterShortTimeout) {
            "cpt62davrxj4yzauslsummydorzgy2kcnhbayaziceuqlzhaue7qaaic/"));
   OneTimePermissionsTrackerObserverForTesting observer;
   tracker()->AddObserver(&observer);
+  auto fg_tracker = tracker()->NewForegroundPage(origin);
   tracker()->WebContentsLoadedOrigin(origin);
+  fg_tracker.reset();
   tracker()->WebContentsBackgrounded(origin);
 
   ASSERT_EQ(observer.NotifiedCountShortTimeout(), 0u);
@@ -153,7 +155,9 @@ TEST_F(OneTimePermissionsTrackerTest, DoNotNotifyBeforeShortTimeout) {
            "cpt62davrxj4yzauslsummydorzgy2kcnhbayaziceuqlzhaue7qaaic/"));
   OneTimePermissionsTrackerObserverForTesting observer;
   tracker()->AddObserver(&observer);
+  auto fg_tracker = tracker()->NewForegroundPage(origin);
   tracker()->WebContentsLoadedOrigin(origin);
+  fg_tracker.reset();
   tracker()->WebContentsBackgrounded(origin);
 
   ASSERT_EQ(observer.NotifiedCountShortTimeout(), 0u);
@@ -170,7 +174,9 @@ TEST_F(OneTimePermissionsTrackerTest, ShortTimerResetOnUnbackgrounded) {
            "cpt62davrxj4yzauslsummydorzgy2kcnhbayaziceuqlzhaue7qaaic/"));
   OneTimePermissionsTrackerObserverForTesting observer;
   tracker()->AddObserver(&observer);
+  auto fg_tracker = tracker()->NewForegroundPage(origin);
   tracker()->WebContentsLoadedOrigin(origin);
+  fg_tracker.reset();
   tracker()->WebContentsBackgrounded(origin);
 
   ASSERT_EQ(observer.NotifiedCountShortTimeout(), 0u);
@@ -180,7 +186,9 @@ TEST_F(OneTimePermissionsTrackerTest, ShortTimerResetOnUnbackgrounded) {
   ASSERT_EQ(observer.NotifiedCountShortTimeout(), 0u);
 
   // Unbackground and background the page to simulate usage.
+  fg_tracker = tracker()->NewForegroundPage(origin);
   tracker()->WebContentsUnbackgrounded(origin);
+  fg_tracker.reset();
   tracker()->WebContentsBackgrounded(origin);
 
   // Fast forward time by less than the timeout.
@@ -201,7 +209,9 @@ TEST_F(OneTimePermissionsTrackerTest, NotifyAfterLongTimeout) {
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   OneTimePermissionsTrackerObserverForTesting observer;
   tracker()->AddObserver(&observer);
+  auto fg_tracker = tracker()->NewForegroundPage(origin);
   tracker()->WebContentsLoadedOrigin(origin);
+  fg_tracker.reset();
   tracker()->WebContentsBackgrounded(origin);
 
   ASSERT_EQ(observer.NotifiedCountLongTimeout(), 0u);
@@ -224,7 +234,9 @@ TEST_F(OneTimePermissionsTrackerTest, DoNotNotifyBeforeLongTimeout) {
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   OneTimePermissionsTrackerObserverForTesting observer;
   tracker()->AddObserver(&observer);
+  auto fg_tracker = tracker()->NewForegroundPage(origin);
   tracker()->WebContentsLoadedOrigin(origin);
+  fg_tracker.reset();
   tracker()->WebContentsBackgrounded(origin);
 
   ASSERT_EQ(observer.NotifiedCountLongTimeout(), 0u);
@@ -246,7 +258,9 @@ TEST_F(OneTimePermissionsTrackerTest, LongTimerResetOnUnbackgrounded) {
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   OneTimePermissionsTrackerObserverForTesting observer;
   tracker()->AddObserver(&observer);
+  auto fg_tracker = tracker()->NewForegroundPage(origin);
   tracker()->WebContentsLoadedOrigin(origin);
+  fg_tracker.reset();
   tracker()->WebContentsBackgrounded(origin);
 
   ASSERT_EQ(observer.NotifiedCountLongTimeout(), 0u);
@@ -256,7 +270,9 @@ TEST_F(OneTimePermissionsTrackerTest, LongTimerResetOnUnbackgrounded) {
   ASSERT_EQ(observer.NotifiedCountLongTimeout(), 0u);
 
   // Unbackground and background the page to simulate usage.
+  fg_tracker = tracker()->NewForegroundPage(origin);
   tracker()->WebContentsUnbackgrounded(origin);
+  fg_tracker.reset();
   tracker()->WebContentsBackgrounded(origin);
 
   // Fast forward time by less than the timeout.
@@ -361,6 +377,34 @@ TEST_F(OneTimePermissionsTrackerTest, PageTrackerMediaCapture) {
   task_environment()->FastForwardBy(permissions::kOneTimePermissionTimeout +
                                     base::Seconds(1));
   EXPECT_EQ(observer.NotifiedCountCapturingVideoExpired(), 1u);
+  EXPECT_EQ(observer.LastNotifiedOrigin(), origin);
+
+  factory_tracker->RemoveObserver(&observer);
+}
+
+TEST_F(OneTimePermissionsTrackerTest, PageTrackerPageCreatedInBackground) {
+  web_contents()->WasHidden();
+  OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+
+  const GURL origin_url("https://example.com");
+  const url::Origin origin = url::Origin::Create(origin_url);
+
+  OneTimePermissionsTrackerObserverForTesting observer;
+  auto* factory_tracker =
+      OneTimePermissionsTrackerFactory::GetForBrowserContext(profile());
+  factory_tracker->AddObserver(&observer);
+
+  NavigateAndCommit(origin_url);
+
+  EXPECT_EQ(observer.NotifiedCountShortTimeout(), 0u);
+  // Fast forward time by less than the timeout.
+  task_environment()->FastForwardBy(permissions::kOneTimePermissionTimeout -
+                                    base::Seconds(1));
+  EXPECT_EQ(observer.NotifiedCountShortTimeout(), 0u);
+
+  // Fast forward time by more than the timeout.
+  task_environment()->FastForwardBy(base::Seconds(2));
+  EXPECT_EQ(observer.NotifiedCountShortTimeout(), 1u);
   EXPECT_EQ(observer.LastNotifiedOrigin(), origin);
 
   factory_tracker->RemoveObserver(&observer);

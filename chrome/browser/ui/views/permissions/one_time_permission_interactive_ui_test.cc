@@ -6,6 +6,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -39,6 +40,7 @@
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -125,6 +127,14 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    OneTimePermissionsTrackerFactory::GetForBrowserContext(
+        browser()->GetProfile())
+        ->SetTaskRunnerForTesting(
+            base::SequencedTaskRunner::GetCurrentDefault());
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   BrowserWindowInterface* current_browser() { return current_browser_; }
@@ -261,6 +271,9 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
       current_browser_ = nullptr;
 
   base::HistogramTester histograms_;
+
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_ =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
 
  private:
   // The render frame host where JS calls will be executed.
@@ -458,6 +471,10 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
                        GeolocationIsRevokedAfterFiveMinutesInBackground) {
+  auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
+      browser()->GetProfile());
+  tracker->SetTaskRunnerForTesting(task_runner_);
+
   ASSERT_NO_FATAL_FAILURE(
       Initialize(INITIALIZATION_DEFAULT, GetGeolocationGurl()));
 
@@ -469,12 +486,8 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   ASSERT_NO_FATAL_FAILURE(
       Initialize(INITIALIZATION_NEWTAB, GetDifferentOriginUrl()));
 
-  // Fire running timers. This means, that all one time permission expiration
-  // timers that are running at this point in time will fire their callbacks and
-  // are stopped.
-  OneTimePermissionsTrackerFactory::GetForBrowserContext(
-      browser()->GetTabStripModel()->GetWebContentsAt(0)->GetBrowserContext())
-      ->FireRunningTimersForTesting();
+  // Fast forward time to expire the permissions in the background.
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
 
   // Go to previous tab.
   browser()->GetTabStripModel()->ActivateTabAt(0);
@@ -490,6 +503,9 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   OtpEventExpectBucketCount(
       ContentSettingsType::GEOLOCATION,
       permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
+
+  tracker->SetTaskRunnerForTesting(
+      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,

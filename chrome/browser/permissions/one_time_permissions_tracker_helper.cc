@@ -56,6 +56,8 @@ class OneTimePermissionsPageTracker
   url::Origin origin_;
   base::WeakPtr<OneTimePermissionsTracker> tracker_;
   std::unique_ptr<OneTimePermissionsTracker::Condition> active_page_tracker_;
+  std::unique_ptr<OneTimePermissionsTracker::Condition>
+      foreground_page_tracker_;
   bool is_backgrounded_ = false;
   bool is_capturing_video_ = false;
   bool is_capturing_audio_ = false;
@@ -77,6 +79,11 @@ OneTimePermissionsPageTracker::OneTimePermissionsPageTracker(
             ->GetVisibility() == content::Visibility::HIDDEN) {
       is_backgrounded_ = true;
       tracker_->WebContentsBackgrounded(origin_);
+
+      // Make sure we track this page being in background.
+      tracker_->NewForegroundPage(origin_);
+    } else {
+      foreground_page_tracker_ = tracker_->NewForegroundPage(origin_);
     }
   }
 }
@@ -114,8 +121,10 @@ void OneTimePermissionsPageTracker::OnVisibilityChanged(
   }
   is_backgrounded_ = is_hidden;
   if (is_backgrounded_) {
+    foreground_page_tracker_.reset();
     tracker_->WebContentsBackgrounded(origin_);
   } else {
+    foreground_page_tracker_ = tracker_->NewForegroundPage(origin_);
     tracker_->WebContentsUnbackgrounded(origin_);
   }
 }
