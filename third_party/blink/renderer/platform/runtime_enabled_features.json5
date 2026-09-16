@@ -4301,7 +4301,7 @@
     {
       // NavigationState class and the :navigation-source CSS pseudo-class.
       name: "NavigationSourcePseudoClass",
-      status: "experimental",
+      status: "stable",
       implied_by: ["RouteMatching"],
     },
     {
