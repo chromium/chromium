@@ -2544,7 +2544,7 @@ TEST_F(EventHandlerSimTest, SmallCustomCursorIntersectsViewport) {
 
   Compositor().BeginFrame();
 
-  // Move the cursor so no part of it intersects the viewport.
+  // Move the cursor so no part of it intersects the viewport boundary.
   {
     WebMouseEvent mouse_move_event(
         WebMouseEvent::Type::kMouseMove, gfx::PointF(25, 25),
@@ -2558,9 +2558,23 @@ TEST_F(EventHandlerSimTest, SmallCustomCursorIntersectsViewport) {
     EXPECT_EQ(ui::mojom::blink::CursorType::kCustom, cursor.type());
   }
 
-  // Now, move the cursor so that it intersects the visual viewport. The cursor
-  // should not be removed because it is below
-  // kMaximumCursorSizeWithoutFallback.
+  // Move the cursor exactly on the boundary so it is still contained within
+  // the visual viewport.
+  {
+    WebMouseEvent mouse_move_event(
+        WebMouseEvent::Type::kMouseMove, gfx::PointF(24, 24),
+        gfx::PointF(24, 24), WebPointerProperties::Button::kNoButton, 0, 0,
+        WebInputEvent::GetStaticTimeStampForTests());
+    GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+        mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+
+    const ui::Cursor& cursor =
+        GetDocument().GetFrame()->GetChromeClient().LastSetCursorForTesting();
+    EXPECT_EQ(ui::mojom::blink::CursorType::kCustom, cursor.type());
+  }
+
+  // Now, move the cursor so that it intersects the visual viewport boundary.
+  // The cursor should be removed and fall back to the default pointer.
   {
     WebMouseEvent mouse_move_event(
         WebMouseEvent::Type::kMouseMove, gfx::PointF(23, 23),
@@ -2571,7 +2585,82 @@ TEST_F(EventHandlerSimTest, SmallCustomCursorIntersectsViewport) {
 
     const ui::Cursor& cursor =
         GetDocument().GetFrame()->GetChromeClient().LastSetCursorForTesting();
+    EXPECT_EQ(ui::mojom::blink::CursorType::kPointer, cursor.type());
+  }
+}
+
+TEST_F(EventHandlerSimTest, CustomCursor32x32IntersectsViewport) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  SimSubresourceRequest cursor_request("https://example.com/32x32.svg",
+                                       "image/svg+xml");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+        <!DOCTYPE html>
+        <style>
+        div {
+          width: 300px;
+          height: 100px;
+          cursor: url('32x32.svg') 32 32, auto;
+        }
+        </style>
+        <div>foo</div>
+      )HTML");
+
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  cursor_request.Complete(R"SVG(
+    <svg xmlns="http://www.w3.org/2000/svg" width="32px" height="32px">
+      <rect width="32" height="32" fill="red"/>
+    </svg>
+  )SVG");
+
+  Compositor().BeginFrame();
+
+  // Move the cursor so it is fully contained within the visual viewport.
+  {
+    WebMouseEvent mouse_move_event(
+        WebMouseEvent::Type::kMouseMove, gfx::PointF(32, 32),
+        gfx::PointF(32, 32), WebPointerProperties::Button::kNoButton, 0, 0,
+        WebInputEvent::GetStaticTimeStampForTests());
+    GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+        mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+
+    const ui::Cursor& cursor =
+        GetDocument().GetFrame()->GetChromeClient().LastSetCursorForTesting();
     EXPECT_EQ(ui::mojom::blink::CursorType::kCustom, cursor.type());
+  }
+
+  // Move the cursor so that its top-left corner is at (0, 0) in the visual
+  // viewport. Hotspot 32 32 is clamped to (31, 31), so at Point(31, 31),
+  // the cursor rect starts at (0, 0) and is fully contained.
+  {
+    WebMouseEvent mouse_move_event(
+        WebMouseEvent::Type::kMouseMove, gfx::PointF(31, 31),
+        gfx::PointF(31, 31), WebPointerProperties::Button::kNoButton, 0, 0,
+        WebInputEvent::GetStaticTimeStampForTests());
+    GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+        mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+
+    const ui::Cursor& cursor =
+        GetDocument().GetFrame()->GetChromeClient().LastSetCursorForTesting();
+    EXPECT_EQ(ui::mojom::blink::CursorType::kCustom, cursor.type());
+  }
+
+  // Move the cursor so that it extends beyond the visual viewport boundary.
+  // The cursor should be removed and fall back to the default pointer.
+  {
+    WebMouseEvent mouse_move_event(
+        WebMouseEvent::Type::kMouseMove, gfx::PointF(30, 30),
+        gfx::PointF(30, 30), WebPointerProperties::Button::kNoButton, 0, 0,
+        WebInputEvent::GetStaticTimeStampForTests());
+    GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+        mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+
+    const ui::Cursor& cursor =
+        GetDocument().GetFrame()->GetChromeClient().LastSetCursorForTesting();
+    EXPECT_EQ(ui::mojom::blink::CursorType::kPointer, cursor.type());
   }
 }
 

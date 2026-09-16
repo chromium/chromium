@@ -29,7 +29,7 @@ function runTests() {
 
             // Make sure the node is visible and move the mouse over top of it.
             document.documentElement.scrollTop = node.offsetTop - 50;
-            eventSender.mouseMoveTo(node.offsetLeft + 3, node.offsetTop - document.documentElement.scrollTop + 3);
+            eventSender.mouseMoveTo(node.offsetLeft + 50, node.offsetTop - document.documentElement.scrollTop + 3);
 
             // Get details of the current mouse cursor.
             // Note that we could return structured data which we then validate, but that's a lot more

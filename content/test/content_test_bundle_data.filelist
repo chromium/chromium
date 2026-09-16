@@ -9466,6 +9466,7 @@ data/site_isolation/xml.octet-stream
 data/site_isolation/xml.octet-stream.mock-http-headers
 data/site_isolation/xml.txt
 data/site_per_process_main.html
+data/small-cursor.html
 data/speech/web_speech_recognition.html
 data/stale-script.js
 data/stale-script.js.mock-http-headers

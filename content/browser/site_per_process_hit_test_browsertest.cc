@@ -4513,6 +4513,81 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   }
 }
 
+// Ensure small custom cursors are not allowed to intersect the root visual
+// viewport.
+IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
+                       SmallCursorRemovedInOffsetOOPIF) {
+  GURL url(R"(data:text/html,
+    <iframe id='iframe'
+            style ='position:absolute; top: -10px'
+            width=1000px height=1000px>
+    </iframe>)");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // The small-cursor.html document has a custom cursor that is 32x32 with a
+  // hotspot on the bottom right corner.
+  NavigateIframeToURL(web_contents(), "iframe",
+                      embedded_test_server()->GetURL("/small-cursor.html"));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+
+  FrameTreeNode* child_node = root->child_at(0);
+  EXPECT_NE(web_contents()->GetSiteInstance(),
+            child_node->current_frame_host()->GetSiteInstance());
+
+  WaitForHitTestData(child_node->current_frame_host());
+
+  RenderWidgetHostViewBase* root_view = static_cast<RenderWidgetHostViewBase*>(
+      root->current_frame_host()->GetRenderWidgetHost()->GetView());
+  RenderWidgetHostImpl* rwh_child =
+      root->child_at(0)->current_frame_host()->GetRenderWidgetHost();
+  RenderWidgetHostViewBase* child_view =
+      static_cast<RenderWidgetHostViewBase*>(rwh_child->GetView());
+
+  auto* router = web_contents()->GetInputEventRouter();
+  RenderWidgetHostMouseEventMonitor child_monitor(
+      child_view->GetRenderWidgetHost());
+  RenderWidgetHostMouseEventMonitor root_monitor(
+      root_view->GetRenderWidgetHost());
+
+  // A cursor with enough room in the root view to fully display without
+  // intersecting native UI should be shown.
+  {
+    blink::WebMouseEvent mouse_event(
+        blink::WebInputEvent::Type::kMouseMove,
+        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    SetWebEventPositions(&mouse_event, gfx::Point(300, 300), root_view);
+    auto set_cursor_interceptor =
+        std::make_unique<SetCursorInterceptor>(rwh_child);
+    RouteMouseEventAndWaitUntilDispatch(router, root_view, child_view,
+                                        &mouse_event);
+    set_cursor_interceptor->Wait();
+    EXPECT_TRUE(set_cursor_interceptor->cursor().has_value());
+    EXPECT_EQ(32, set_cursor_interceptor->cursor()->custom_bitmap().width());
+    EXPECT_EQ(32, set_cursor_interceptor->cursor()->custom_bitmap().height());
+  }
+  // A cursor without enough room to be fully enclosed within the root view
+  // should not be shown, even if the iframe is at an offset. The default cursor
+  // should be shown instead.
+  {
+    blink::WebMouseEvent mouse_event(
+        blink::WebInputEvent::Type::kMouseMove,
+        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    SetWebEventPositions(&mouse_event, gfx::Point(300, 20), root_view);
+    auto set_cursor_interceptor =
+        std::make_unique<SetCursorInterceptor>(rwh_child);
+    RouteMouseEventAndWaitUntilDispatch(router, root_view, child_view,
+                                        &mouse_event);
+    // We should see a new cursor come in that replaces the custom one.
+    set_cursor_interceptor->Wait();
+    EXPECT_TRUE(set_cursor_interceptor->cursor().has_value());
+    EXPECT_EQ(ui::mojom::CursorType::kPointer,
+              set_cursor_interceptor->cursor()->type());
+  }
+}
+
 // Regression test for https://crbug.com/1454515. An OOPIF
 // scrolled away from the main document should not allow
 // large cursors to intersect browser UI.
