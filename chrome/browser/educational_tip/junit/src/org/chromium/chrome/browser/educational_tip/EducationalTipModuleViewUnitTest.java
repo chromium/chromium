@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -68,7 +67,6 @@ public class EducationalTipModuleViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetContentTitleAndDescription() {
         String testTitle1 = "This is a test title";
         String testTitle2 = "Here is another test title";
@@ -92,7 +90,6 @@ public class EducationalTipModuleViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateContentTitleAndDescriptionMaxLines() {
         Assert.assertTrue(mModuleView.getIsTitleSingleLineForTesting());
 
@@ -119,7 +116,6 @@ public class EducationalTipModuleViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnLayoutChangeListener() {
         mModuleView.setContentTitleViewForTesting(mMockContentTitleView);
         mModuleView.setContentTitleViewOnLayoutChangeListener();
@@ -134,14 +130,12 @@ public class EducationalTipModuleViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetCompleted_True() {
         mModuleView.setCompleted(true);
         verifySetCompleted();
     }
 
     @Test
-    @SmallTest
     public void testSetCompleted_False() {
         // Call setCompleted(true) first to change from default
         mModuleView.setCompleted(true);
@@ -154,7 +148,6 @@ public class EducationalTipModuleViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetUseTransparentIconBackground() {
         ImageView imageView = mModuleView.findViewById(R.id.educational_tip_module_content_image);
         Drawable background = imageView.getBackground();

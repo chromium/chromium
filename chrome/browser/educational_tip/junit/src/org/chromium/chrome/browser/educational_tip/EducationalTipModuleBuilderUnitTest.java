@@ -18,7 +18,6 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -107,7 +106,6 @@ public class EducationalTipModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateView_CelebratoryPromoUsesCustomLayout() {
         EducationalTipModuleBuilder celebratoryBuilder =
                 new EducationalTipModuleBuilder(
@@ -117,7 +115,6 @@ public class EducationalTipModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateView_RegularPromoUsesStandardLayout() {
         EducationalTipModuleBuilder regularBuilder =
                 new EducationalTipModuleBuilder(ModuleType.QUICK_DELETE_PROMO, mActionDelegate);
@@ -126,7 +123,6 @@ public class EducationalTipModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
     public void testBuildEducationalTipModule_Eligible() {
         assertTrue(mModuleBuilder.build(mModuleDelegate, mBuildCallback));
@@ -134,7 +130,6 @@ public class EducationalTipModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER,
     })
@@ -147,7 +142,6 @@ public class EducationalTipModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
     public void testCreateInputContext() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
@@ -180,7 +174,6 @@ public class EducationalTipModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsEligible_SetupList_StrictlyFollowsManager() {
         // Mock Setup List module.
         int setupListModule = ModuleType.SIGN_IN_PROMO;
@@ -199,7 +192,6 @@ public class EducationalTipModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsEligible_RegularTip_RequiresProfile() {
         // Mock regular Educational Tip module.
         int regularTipModule = ModuleType.QUICK_DELETE_PROMO;
@@ -218,7 +210,6 @@ public class EducationalTipModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
     public void testBuild_SetupList_BypassesGlobalKillSwitch() {
         int setupListModule = ModuleType.DEFAULT_BROWSER_PROMO;
@@ -233,7 +224,6 @@ public class EducationalTipModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetManualRank_ReturnsRankForSetupListModuleWhenActive() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
         when(mSetupListManager.getManualRank(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO)).thenReturn(0);
@@ -277,7 +267,6 @@ public class EducationalTipModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetManualRank_ReturnsEmptyForNonSetupListModuleWhenActive() {
         when(mSetupListManager.isSetupListActive()).thenReturn(true);
 
@@ -287,7 +276,6 @@ public class EducationalTipModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetManualRank_ReturnsEmptyWhenSetupListInactive() {
         EducationalTipModuleBuilder builder =
                 new EducationalTipModuleBuilder(

@@ -15,8 +15,6 @@ import android.os.Build;
 import android.view.Window;
 import android.view.WindowManager;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,7 +51,6 @@ public class IncognitoCustomTabSnapshotControllerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
     public void testSecureFlagsAdded() {
         mParams.flags = 0;
@@ -67,7 +64,6 @@ public class IncognitoCustomTabSnapshotControllerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
     public void testSecureFlagsRemoved() {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;

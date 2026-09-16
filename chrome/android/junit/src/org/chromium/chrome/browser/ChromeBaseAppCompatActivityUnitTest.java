@@ -20,8 +20,6 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 
-import androidx.test.filters.MediumTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -82,7 +80,6 @@ public class ChromeBaseAppCompatActivityUnitTest {
 
     // Verifies that Clank's internal scaling works.
     @Test
-    @MediumTest
     public void testApplyOverridesForAutomotive_onAutomotiveDevice_scaleUpUi() {
         DisplayUtil.setCarmaPhase1Version2ComplianceForTesting(true);
         DisplayUtil.setIsDisplayCompatAppForTesting(false);
@@ -120,7 +117,6 @@ public class ChromeBaseAppCompatActivityUnitTest {
     }
 
     @Test
-    @MediumTest
     public void testApplyOverridesForAutomotive_onNonAutomotiveDevice_noUiScaleUp() {
         Configuration config = new Configuration();
         config.densityDpi = MOCK_REAL_DISPLAY_DENSITY_DPI;
@@ -149,7 +145,6 @@ public class ChromeBaseAppCompatActivityUnitTest {
     }
 
     @Test
-    @MediumTest
     public void testApplyOverridesForXr_onXrDevice_uiScalesUp() {
         Configuration config = new Configuration();
         config.densityDpi = MOCK_REAL_DISPLAY_DENSITY_DPI;
@@ -186,7 +181,6 @@ public class ChromeBaseAppCompatActivityUnitTest {
     }
 
     @Test
-    @MediumTest
     public void testApplyOverridesForXr_onNonXrDevice_noUiScaleUp() {
         Configuration config = new Configuration();
         config.densityDpi = MOCK_REAL_DISPLAY_DENSITY_DPI;

@@ -11,8 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,7 +33,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Unit test for {@link AutofillVcnEnrollBottomSheetLifecycle}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SmallTest
 public final class AutofillVcnEnrollBottomSheetLifecycleTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

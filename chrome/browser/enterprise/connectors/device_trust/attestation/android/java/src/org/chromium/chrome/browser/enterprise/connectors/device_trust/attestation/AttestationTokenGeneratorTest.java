@@ -11,8 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +28,6 @@ public class AttestationTokenGeneratorTest {
     @Mock private AttestationTokenGeneratorDelegate mMockDelegate;
 
     @Test
-    @SmallTest
     public void testDefaultDelegate_generateToken() {
         var defaultDelegate = new AttestationTokenGeneratorDefaultDelegate();
         byte[] contentBinding = new byte[] {1, 2, 3, 4};
@@ -50,7 +47,6 @@ public class AttestationTokenGeneratorTest {
     }
 
     @Test
-    @SmallTest
     public void testDefaultDelegate_preWarmCache() {
         // preWarmCache on default delegate should be a no-op and not throw.
         var defaultDelegate = new AttestationTokenGeneratorDefaultDelegate();
@@ -61,7 +57,6 @@ public class AttestationTokenGeneratorTest {
     }
 
     @Test
-    @SmallTest
     public void testCustomDelegate_generateToken() {
         byte[] contentBinding = new byte[] {5, 6, 7, 8};
         byte[] expectedToken = new byte[] {9, 10, 11, 12};
@@ -80,7 +75,6 @@ public class AttestationTokenGeneratorTest {
     }
 
     @Test
-    @SmallTest
     public void testCustomDelegate_preWarmCache() {
         AttestationTokenGenerator.setDelegateForTesting(mMockDelegate);
 
@@ -90,7 +84,6 @@ public class AttestationTokenGeneratorTest {
     }
 
     @Test
-    @SmallTest
     public void testAttestationTokenResult_success() {
         byte[] token = new byte[] {1, 2, 3};
         AttestationTokenResult result = new AttestationTokenResult(token, null);
@@ -100,7 +93,6 @@ public class AttestationTokenGeneratorTest {
     }
 
     @Test
-    @SmallTest
     public void testAttestationTokenResult_failure() {
         AttestationTokenResult result = new AttestationTokenResult(null, "Error generating token");
 

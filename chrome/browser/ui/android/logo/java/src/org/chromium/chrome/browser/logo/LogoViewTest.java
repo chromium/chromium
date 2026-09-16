@@ -21,7 +21,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -194,7 +193,6 @@ public class LogoViewTest {
     }
 
     @Test
-    @MediumTest
     public void testDoodleAnimation() {
         // Test default google logo drawable.
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();

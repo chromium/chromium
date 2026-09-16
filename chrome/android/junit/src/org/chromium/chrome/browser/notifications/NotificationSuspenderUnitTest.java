@@ -13,8 +13,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Looper;
 
-import androidx.test.filters.SmallTest;
-
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
@@ -118,7 +116,6 @@ public class NotificationSuspenderUnitTest {
      * Verifies that testSuspendNotificationsFromDomain correctly identifies the notifications
      * originating from HTTP/HTTPS versions of the specified domain.
      */
-    @SmallTest
     @Test
     public void testSuspendNotificationsFromDomains_DomainsAreCorrectlyFiltered() {
         populateTestNotifications();
@@ -151,7 +148,6 @@ public class NotificationSuspenderUnitTest {
      * Verifies that testSuspendNotificationsFromDomain correctly identifies the notifications
      * originating from multiple domains specified.
      */
-    @SmallTest
     @Test
     public void testSuspendNotificationsFromDomains_MultipleDomains() {
         populateTestNotifications();
@@ -188,7 +184,6 @@ public class NotificationSuspenderUnitTest {
      * Verifies that storeNotificationResourcesFromOrigins correctly identifies the notifications
      * originating from the given schemeful origins.
      */
-    @SmallTest
     @Test
     public void testStoreNotificationResourcesFromOrigins_MultipleOrigins() {
         populateTestNotifications();
@@ -242,7 +237,6 @@ public class NotificationSuspenderUnitTest {
      * Verifies that storeNotificationResources correctly captures the icon / badge / image; even
      * for a notification that is not presently active.
      */
-    @SmallTest
     @Test
     public void testStoreNotificationResources() {
         NotificationBuilderBase builder = new StandardNotificationBuilder(getContext());
@@ -286,7 +280,6 @@ public class NotificationSuspenderUnitTest {
      * Verifies that unsuspendNotificationsFromDomain triggers restoring notifications from the
      * correct origins.
      */
-    @SmallTest
     @Test
     public void testUnsuspendNotificationsFromDomains() {
         mNotificationSuspender.unsuspendNotificationsFromDomains(
@@ -308,7 +301,6 @@ public class NotificationSuspenderUnitTest {
      * Verifies that testUnsuspendNotificationsFromOrigins triggers restoring notifications from the
      * correct origins.
      */
-    @SmallTest
     @Test
     public void testUnsuspendNotificationsFromOrigins() {
         mNotificationSuspender.unsuspendNotificationsFromOrigins(
@@ -334,7 +326,6 @@ public class NotificationSuspenderUnitTest {
      * Verifies that storeNotificationResourcesFromOrigins correctly ignores notifications with
      * invalid IDs and does not crash.
      */
-    @SmallTest
     @Test
     public void testStoreNotificationResourcesFromOrigins_InvalidIdsAreIgnored() {
         for (String notificationId :

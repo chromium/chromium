@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -109,7 +108,6 @@ public class VerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_PinnedGridTarget_DoesNotDraw() {
         DropTargetResult pinnedResult =
                 new DropTargetResult(
@@ -132,7 +130,6 @@ public class VerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_SingleTab_LTR_InsertBefore() {
         View childView = createChildView(12, 100, 288, 132);
         RecyclerView.ViewHolder vh = new RecyclerView.ViewHolder(childView) {};
@@ -176,7 +173,6 @@ public class VerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_SingleTab_LTR_InsertAfter() {
         View childView = createChildView(12, 100, 288, 132);
         RecyclerView.ViewHolder vh = new RecyclerView.ViewHolder(childView) {};
@@ -217,7 +213,6 @@ public class VerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_ChildTabInGroup_LTR_IndentsStart() {
         View childView = createChildView(12 + mNestingMargin, 150, 288, 182);
         RecyclerView.ViewHolder vh = new RecyclerView.ViewHolder(childView) {};
@@ -252,7 +247,6 @@ public class VerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_ChildTabInGroup_RTL_IndentsEnd() {
         LocalizationUtils.setRtlForTesting(true);
 
@@ -289,7 +283,6 @@ public class VerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_GroupBoundary_LTR_DrawsFullWidth() {
         View headerView = createChildView(12, 100, 288, 132);
         RecyclerView.ViewHolder vh = new RecyclerView.ViewHolder(headerView) {};
@@ -324,7 +317,6 @@ public class VerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_ZeroPinnedState_DrawsAtTopOfRecyclerView() {
         DropTargetResult result =
                 new DropTargetResult(
@@ -362,7 +354,6 @@ public class VerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_FallbackToAnchorBounds_WhenViewHolderUnattached() {
         DropTargetResult result =
                 new DropTargetResult(
@@ -400,7 +391,6 @@ public class VerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_ZeroNormalTabsState_DoesNotDraw() {
         DropTargetResult result =
                 new DropTargetResult(

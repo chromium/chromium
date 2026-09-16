@@ -22,7 +22,6 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -69,7 +68,6 @@ public class HomeModulesRecyclerViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_OneItermPerScreen() {
         int itemPerScreen = 1;
         int startMarginPx = 0;
@@ -95,7 +93,6 @@ public class HomeModulesRecyclerViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_MultipleItemsPerScreen() {
         int itemPerScreen = 2;
         int startMarginPx = 0;
@@ -124,7 +121,6 @@ public class HomeModulesRecyclerViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddFocusables() {
         int itemPerScreen = 1;
         int startMarginPx = 0;
@@ -141,7 +137,6 @@ public class HomeModulesRecyclerViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFocusSearch() {
         int itemPerScreen = 1;
         int startMarginPx = 0;
@@ -170,7 +165,6 @@ public class HomeModulesRecyclerViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetMaxHeight() {
         int itemPerScreen = 1;
         int startMarginPx = 0;
@@ -193,7 +187,6 @@ public class HomeModulesRecyclerViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateHeight_OneChild() {
         int itemPerScreen = 1;
         int startMarginPx = 0;
@@ -224,7 +217,6 @@ public class HomeModulesRecyclerViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateHeight_TwoChildren() {
         int itemPerScreen = 1;
         int startMarginPx = 0;

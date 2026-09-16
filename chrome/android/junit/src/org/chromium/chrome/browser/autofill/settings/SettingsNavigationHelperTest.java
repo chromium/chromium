@@ -15,8 +15,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import android.content.Context;
 import android.os.Bundle;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,7 +62,6 @@ public class SettingsNavigationHelperTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testRecordsActionThenLaunchesHomeOfTransactionsSettings() {
         assertTrue(SettingsNavigationHelper.showAutofillAndPasswordsSettings(mMockContext));
@@ -80,7 +77,6 @@ public class SettingsNavigationHelperTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testDoesntLaunchOrRecordHomeOfTransactionsSettingsWithoutFlag() {
         assertFalse(SettingsNavigationHelper.showAutofillAndPasswordsSettings(mMockContext));
@@ -89,7 +85,6 @@ public class SettingsNavigationHelperTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordsActionThenLaunchesPaymentsSettings() {
         assertTrue(SettingsNavigationHelper.showAutofillCreditCardSettings(mMockContext));
         assertTrue(mActionTester.getActions().contains("AutofillCreditCardsViewed"));
@@ -98,7 +93,6 @@ public class SettingsNavigationHelperTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordsActionThenLaunchesAddressesSettings() {
         assertTrue(SettingsNavigationHelper.showAutofillProfileSettings(mMockContext));
         assertTrue(mActionTester.getActions().contains("AutofillAddressesViewed"));
@@ -107,7 +101,6 @@ public class SettingsNavigationHelperTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testDoesntLaunchOrRecordHomeOfTransactionsSettingsWithoutContext() {
         assertFalse(SettingsNavigationHelper.showAutofillAndPasswordsSettings(null));
@@ -116,7 +109,6 @@ public class SettingsNavigationHelperTest {
     }
 
     @Test
-    @SmallTest
     public void testDoesntLaunchOrRecordPaymentsSettingsWithoutContext() {
         assertFalse(SettingsNavigationHelper.showAutofillCreditCardSettings(null));
         assertFalse(mActionTester.getActions().contains("AutofillCreditCardsViewed"));
@@ -124,7 +116,6 @@ public class SettingsNavigationHelperTest {
     }
 
     @Test
-    @SmallTest
     public void testDoesntLaunchOrRecordAddressesSettingsWithoutContext() {
         assertFalse(SettingsNavigationHelper.showAutofillProfileSettings(null));
         assertFalse(mActionTester.getActions().contains("AutofillAddressesViewed"));
@@ -132,7 +123,6 @@ public class SettingsNavigationHelperTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testShowAutofillPersonalContextSettingsLaunchesPersonalContextWhenHoTOn() {
         assertTrue(
@@ -147,7 +137,6 @@ public class SettingsNavigationHelperTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testShowAutofillPersonalContextSettingsLaunchesAutofillSettingsWhenHoTOff() {
         assertTrue(

@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -69,7 +68,6 @@ public class AutofillErrorDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testBasic() throws Exception {
         showErrorDialog();
         Assert.assertNotNull(mModalDialogManager.getShownDialogModel());
@@ -81,7 +79,6 @@ public class AutofillErrorDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissedCalledOnButtonClick() throws Exception {
         showErrorDialog();
 
@@ -91,7 +88,6 @@ public class AutofillErrorDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testTitleView() throws Exception {
         showErrorDialog();
 

@@ -15,9 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.MediumTest;
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -173,7 +170,6 @@ public class IncognitoReauthControllerImplTest {
      * not been backgrounded yet.
      */
     @Test
-    @MediumTest
     public void testIncognitoTabsCreated_BeforeBackground_DoesNotShowReauth() {
         // Pretend there's one incognito tab.
         doReturn(1).when(mIncognitoTabModelMock).getCount();
@@ -190,7 +186,6 @@ public class IncognitoReauthControllerImplTest {
      * foreground.
      */
     @Test
-    @MediumTest
     public void testIncognitoTabsCreated_BeforeForeground_ShowsReauth() {
         // Pretend there's one incognito tab.
         doReturn(1).when(mIncognitoTabModelMock).getCount();
@@ -207,7 +202,6 @@ public class IncognitoReauthControllerImplTest {
     }
 
     @Test
-    @MediumTest
     public void testRegularTabModel_DoesNotShowReauth() {
         switchToRegularTabModel();
         mIncognitoReauthController.onTaskVisibilityChanged(TASK_ID, false);
@@ -219,7 +213,6 @@ public class IncognitoReauthControllerImplTest {
     }
 
     @Test
-    @MediumTest
     public void testIncognitoTabsExisting_AndChromeForegroundedWithRegularTabs_DoesNotShowReauth() {
         doReturn(1).when(mIncognitoTabModelMock).getCount();
         doReturn(false).when(mTabModelSelectorMock).isIncognitoBrandedModelSelected();
@@ -232,7 +225,6 @@ public class IncognitoReauthControllerImplTest {
     }
 
     @Test
-    @MediumTest
     public void testWhenTabModelChangesToRegularFromIncognito_HidesReauth() {
         // Pretend there's one incognito tab.
         doReturn(1).when(mIncognitoTabModelMock).getCount();
@@ -260,7 +252,6 @@ public class IncognitoReauthControllerImplTest {
     }
 
     @Test
-    @MediumTest
     public void testIncognitoTabsRestore_ShowsReauth() {
         // Pretend there's one incognito tab.
         doReturn(1).when(mIncognitoTabModelMock).getCount();
@@ -275,7 +266,6 @@ public class IncognitoReauthControllerImplTest {
     }
 
     @Test
-    @MediumTest
     public void testTabSwitcherCustomViewManagerSupplied_ShowsReauth() {
         doReturn(true).when(mLayoutStateProviderMock).isLayoutVisible(LayoutType.HUB);
         doReturn(1).when(mIncognitoTabModelMock).getCount();
@@ -292,7 +282,6 @@ public class IncognitoReauthControllerImplTest {
     }
 
     @Test
-    @MediumTest
     public void testTabSwitcherCustomViewManagerMissing_DoesNotShowsReauth() {
         doReturn(false)
                 .when(mIncognitoReauthCoordinatorFactoryMock)
@@ -311,7 +300,6 @@ public class IncognitoReauthControllerImplTest {
     }
 
     @Test
-    @MediumTest
     public void testIncognitoTabsFromLauncherShortcut_DoesNotShowReauth() {
         // Pretend there's one incognito tab.
         doReturn(1).when(mIncognitoTabModelMock).getCount();
@@ -326,7 +314,6 @@ public class IncognitoReauthControllerImplTest {
     }
 
     @Test
-    @MediumTest
     public void testNewIncognitoSession_AfterClosingIncognitoTabs_DoesNotShowReauth() {
         // Pretend there's one incognito tab.
         doReturn(1).when(mIncognitoTabModelMock).getCount();
@@ -362,7 +349,6 @@ public class IncognitoReauthControllerImplTest {
     }
 
     @Test
-    @SmallTest
     public void testAddIncognitoReauthCallback_IsHookedWithMainCallback() {
         doNothing().when(mIncognitoReauthCallbackMock).onIncognitoReauthSuccess();
         mIncognitoReauthController.addIncognitoReauthCallback(mIncognitoReauthCallbackMock);
@@ -373,7 +359,6 @@ public class IncognitoReauthControllerImplTest {
     }
 
     @Test
-    @SmallTest
     public void testRemoveIncognitoReauthCallback_IsUnHookedWithMainCallback() {
         doNothing().when(mIncognitoReauthCallbackMock).onIncognitoReauthSuccess();
         mIncognitoReauthController.addIncognitoReauthCallback(mIncognitoReauthCallbackMock);
@@ -390,7 +375,6 @@ public class IncognitoReauthControllerImplTest {
     }
 
     @Test
-    @SmallTest
     public void testLayoutStateChange_HidesOrShowsReauthScreen() {
         doReturn(1).when(mIncognitoTabModelMock).getCount();
         switchToIncognitoTabModel();

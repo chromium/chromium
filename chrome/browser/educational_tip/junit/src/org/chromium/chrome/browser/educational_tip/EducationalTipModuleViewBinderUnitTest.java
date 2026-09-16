@@ -21,8 +21,6 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -73,7 +71,6 @@ public final class EducationalTipModuleViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetModuleContentTitle() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -90,7 +87,6 @@ public final class EducationalTipModuleViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetModuleContentDescription() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -109,7 +105,6 @@ public final class EducationalTipModuleViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetModuleContentImage() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -121,7 +116,6 @@ public final class EducationalTipModuleViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetModuleContentCompletedImage() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -132,7 +126,6 @@ public final class EducationalTipModuleViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testMarkCompleted() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -142,7 +135,6 @@ public final class EducationalTipModuleViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetUseTransparentIconBackground() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -152,7 +144,6 @@ public final class EducationalTipModuleViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetModuleButtonOnClickListener() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(

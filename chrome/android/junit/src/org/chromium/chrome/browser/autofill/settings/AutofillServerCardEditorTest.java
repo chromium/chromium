@@ -35,7 +35,6 @@ import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
-import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -245,7 +244,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void virtualCardEnrolled_virtualCardRemoveButtonShown() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
 
@@ -259,7 +257,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void virtualCardUnenrolledAndEligible_virtualCardAddButtonShown() {
         initEditor(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
 
@@ -273,7 +270,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void virtualCardUnenrolledAndNotEligible_virtualCardLayoutNotShown() {
         initEditor(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_NOT_ELIGIBLE_CARD);
 
@@ -282,7 +278,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void
             virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_enrollmentSuccessful() {
         initEditor(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
@@ -398,7 +393,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void
             virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_enrollmentFailure() {
         initEditor(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
@@ -476,7 +470,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollRejected() {
         initEditor(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
 
@@ -550,7 +543,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void
             virtualCardUnenrolledAndEligible_virtualCardAddButtonClicked_enrollAccepted_editorExited() {
         initEditor(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD);
@@ -620,7 +612,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void virtualCardEnrolled_virtualCardRemoveButtonClicked_dialogShown() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
 
@@ -643,7 +634,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void virtualCardEnrolled_virtualCardRemoveButtonClicked_unenrollCancelled() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
 
@@ -690,7 +680,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void
             virtualCardEnrolled_virtualCardRemoveButtonClicked_unenrollAccepted_unenrollmentSuccessful() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
@@ -763,7 +752,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void
             virtualCardEnrolled_virtualCardRemoveButtonClicked_unenrollAccepted_unenrollmentFailure() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
@@ -821,7 +809,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void virtualCardEnrolled_virtualCardRemoveButtonClicked_unenrollAccepted_editorExited() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
 
@@ -878,7 +865,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testAutofillPaymentMethodsDelegateLifecycleEvents() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
 
@@ -892,7 +878,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testCustomUrlForServerCardEditPage() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);
 
@@ -916,7 +901,6 @@ public class AutofillServerCardEditorTest {
     }
 
     @Test
-    @MediumTest
     @CommandLineFlags.Add({ChromeSwitches.USE_SANDBOX_WALLET_ENVIRONMENT})
     public void testCustomUrlForServerCardEditPage_sandboxEnabled() {
         initEditor(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD);

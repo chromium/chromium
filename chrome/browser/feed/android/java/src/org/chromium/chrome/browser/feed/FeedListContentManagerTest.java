@@ -21,8 +21,6 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import androidx.test.filters.SmallTest;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,7 +80,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testFindContentPositionByKey() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -97,7 +94,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testAddContents() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -123,7 +119,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testRemoveContents() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -150,7 +145,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testUpdateContents() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -169,7 +163,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testMoveContent() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -199,7 +192,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testGetViewData() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("foo");
         View v2 = new View(mContext);
@@ -234,7 +226,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testGetViewDataCreatesEnclosingViewOnce() {
         View v = new View(mContext);
         FeedListContentManager.FeedContent c = createNativeViewContent(v);
@@ -254,7 +245,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testGetContextValuesReturnsLoggingParameters() {
         addContents(
                 0,
@@ -273,7 +263,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testGetContextValues_SetHandlersAfterAddingContent() {
         addContents(
                 0,
@@ -289,7 +278,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testGetContextValues_SetHandlersBeforeAddingContent() {
         mManager.setHandlers(Map.of("HKEY1", "someHandler"));
         addContents(
@@ -305,7 +293,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         mManager.setHandlers(Map.of("HKEY1", "someHandler"));
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
@@ -322,7 +309,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testGetNativeViewAfterMove() {
         View v1 = new View(mContext);
         FeedListContentManager.FeedContent c1 = createNativeViewContent(v1);
@@ -344,7 +330,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testReplaceRange_Empty() {
         boolean changed =
                 mManager.replaceRange(
@@ -356,7 +341,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testReplaceRange_twoWhileEmpty() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -370,7 +354,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testReplaceRange_twoInMiddle() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -393,7 +376,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testReplaceRange_twoAtEnd() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -416,7 +398,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testReplaceRange_twoAtStart() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -439,7 +420,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testReplaceRange_moveFirstToLast() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -458,7 +438,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testReplaceRange_reverseOrder() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -477,7 +456,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testReplaceRange_removeAll() {
         FeedListContentManager.FeedContent c1 = createExternalViewContent("a");
         FeedListContentManager.FeedContent c2 = createExternalViewContent("b");
@@ -496,7 +474,6 @@ public class FeedListContentManagerTest implements ListContentManagerObserver {
     }
 
     @Test
-    @SmallTest
     public void testReplaceRange_complexUpdate() {
         FeedListContentManager.FeedContent a = createExternalViewContent("a");
         FeedListContentManager.FeedContent b = createExternalViewContent("b");

@@ -15,7 +15,6 @@ import static org.chromium.chrome.browser.suggestions.UrlSimilarityScorer.EXACT;
 import static org.chromium.chrome.browser.suggestions.UrlSimilarityScorer.MISMATCHED;
 
 import androidx.annotation.Nullable;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -55,7 +54,6 @@ public class UrlSimilarityScorerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Test
-    @SmallTest
     public void testCanonicalizeHost() {
         assertEquals("example.com", UrlSimilarityScorer.canonicalizeHost("example.com"));
         assertEquals("example.com", UrlSimilarityScorer.canonicalizeHost("www.example.com"));
@@ -72,7 +70,6 @@ public class UrlSimilarityScorerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEnsureSlashSentinel() {
         assertEquals("/", UrlSimilarityScorer.ensureSlashSentinel(""));
         assertEquals("/foo/", UrlSimilarityScorer.ensureSlashSentinel("foo"));
@@ -91,7 +88,6 @@ public class UrlSimilarityScorerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetPathAncestorDepth() {
         StringStringToInteger f =
                 (String ancestorPath, String path) ->
@@ -177,7 +173,6 @@ public class UrlSimilarityScorerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSimilarityStrict() {
         GURL testUrl = new GURL("https://example.com");
         UrlSimilarityScorer scorer = makeExactMatchScorer(testUrl);
@@ -198,7 +193,6 @@ public class UrlSimilarityScorerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSimilarityIntermediate() {
         GURL testUrl = new GURL("https://example.com");
         UrlSimilarityScorer scorer = makeLaxSchemeHostRefScorer(testUrl);
@@ -219,7 +213,6 @@ public class UrlSimilarityScorerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSimilarityLax_KeyUrlRoot() {
         GURL testUrl = new GURL("https://example.com");
         UrlSimilarityScorer scorer = makeLaxSchemeHostRefQueryPathScorer(testUrl);
@@ -247,7 +240,6 @@ public class UrlSimilarityScorerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSimilarityLax_KeyUrlDirectory() {
         GURL testUrl = new GURL("https://m.example.com/path/?query=1#ref");
         UrlSimilarityScorer scorer = makeLaxSchemeHostRefQueryPathScorer(testUrl);
@@ -294,7 +286,6 @@ public class UrlSimilarityScorerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSimilarityLax_KeyUrlFile() {
         GURL testUrl = new GURL("http://touch.example.com:1234/path?query=1#ref");
         UrlSimilarityScorer scorer = makeLaxSchemeHostRefQueryPathScorer(testUrl);
@@ -341,7 +332,6 @@ public class UrlSimilarityScorerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFindTabWithMostSimilarUrl() {
         int bad = TabList.INVALID_TAB_INDEX;
 
@@ -419,7 +409,6 @@ public class UrlSimilarityScorerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetHistogramStrictnessSuffix() {
         GURL url = new GURL("https://www.example.com");
         Boolean4ToString f =

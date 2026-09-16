@@ -16,8 +16,6 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -84,7 +82,6 @@ public final class SearchEngineChoiceNotificationTest {
     }
 
     @Test
-    @SmallTest
     public void receiveSearchEngineChoiceRequest() {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         assertFalse(prefs.contains(ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_REQUESTED_TIMESTAMP));
@@ -101,7 +98,6 @@ public final class SearchEngineChoiceNotificationTest {
     }
 
     @Test
-    @SmallTest
     public void handleSearchEngineChoice_ignoredWhenNotRequested() {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         assertFalse(prefs.contains(ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PRESENTED_VERSION));
@@ -120,7 +116,6 @@ public final class SearchEngineChoiceNotificationTest {
     }
 
     @Test
-    @SmallTest
     public void handleSearchEngineChoice_ignoredWhenDefaultSearchManaged() {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchManaged();
         SearchEngineChoiceNotification.receiveSearchEngineChoiceRequest();
@@ -141,7 +136,6 @@ public final class SearchEngineChoiceNotificationTest {
     }
 
     @Test
-    @SmallTest
     public void handleSearchEngineChoice_performedFirstTime() {
         SearchEngineChoiceNotification.receiveSearchEngineChoiceRequest();
         SearchEngineChoiceNotification.handleSearchEngineChoice(mContext, mSnackbarManager);
@@ -169,7 +163,6 @@ public final class SearchEngineChoiceNotificationTest {
     }
 
     @Test
-    @SmallTest
     public void handleSearchEngineChoice_ignoredOnSubsequentCalls() {
         SearchEngineChoiceNotification.receiveSearchEngineChoiceRequest();
         SearchEngineChoiceNotification.handleSearchEngineChoice(mContext, mSnackbarManager);
@@ -193,7 +186,6 @@ public final class SearchEngineChoiceNotificationTest {
     }
 
     @Test
-    @SmallTest
     public void snackbarClicked() {
         SearchEngineChoiceNotification.receiveSearchEngineChoiceRequest();
 
@@ -213,7 +205,6 @@ public final class SearchEngineChoiceNotificationTest {
     }
 
     @Test
-    @SmallTest
     public void reportSearchEngineChanged_whenNoChange() {
         SearchEngineChoiceNotification.receiveSearchEngineChoiceRequest();
         SearchEngineChoiceNotification.handleSearchEngineChoice(mContext, mSnackbarManager);
@@ -241,7 +232,6 @@ public final class SearchEngineChoiceNotificationTest {
     }
 
     @Test
-    @SmallTest
     public void reportSearchEngineChanged_whenNoChangeOnFirstVisitToSettings() {
         SearchEngineChoiceNotification.receiveSearchEngineChoiceRequest();
         SearchEngineChoiceNotification.handleSearchEngineChoice(mContext, mSnackbarManager);
@@ -273,7 +263,6 @@ public final class SearchEngineChoiceNotificationTest {
     }
 
     @Test
-    @SmallTest
     public void reportSearchEngineChanged_onlyFirstTime() {
         SearchEngineChoiceNotification.receiveSearchEngineChoiceRequest();
         SearchEngineChoiceNotification.handleSearchEngineChoice(mContext, mSnackbarManager);

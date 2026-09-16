@@ -12,7 +12,6 @@ import android.app.Activity;
 import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,7 +45,6 @@ public final class WhatsNewBottomSheetContentTest {
     }
 
     @Test
-    @MediumTest
     public void testBasics() {
         View testView = new View(mActivity);
 

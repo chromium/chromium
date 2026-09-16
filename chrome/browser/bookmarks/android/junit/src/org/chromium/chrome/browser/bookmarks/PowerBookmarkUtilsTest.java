@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +21,6 @@ import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 public class PowerBookmarkUtilsTest {
 
     @Test
-    @SmallTest
     public void testCreateCommerceSubscriptionForPowerBookmarkMeta() {
         ShoppingSpecifics specifics =
                 ShoppingSpecifics.newBuilder()
@@ -48,7 +45,6 @@ public class PowerBookmarkUtilsTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateCommerceSubscriptionForShoppingSpecifics() {
         ShoppingSpecifics specifics =
                 ShoppingSpecifics.newBuilder()

@@ -11,8 +11,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,7 +47,6 @@ public class MediaCaptureUtilsTest {
     }
 
     @Test
-    @SmallTest
     public void testBringTabToFront_WithTestingCallback() {
         MediaCaptureUtils.setBringTabToFrontCallbackForTesting(mTestingCallback);
         MediaCaptureUtils.bringTabToFront(mContext, mTab);
@@ -58,7 +55,6 @@ public class MediaCaptureUtilsTest {
     }
 
     @Test
-    @SmallTest
     public void testBringTabToFront_NullActivity() {
         doReturn(mWindowAndroid).when(mTab).getWindowAndroidChecked();
         doReturn(new WeakReference<Activity>(null)).when(mWindowAndroid).getActivity();
@@ -69,7 +65,6 @@ public class MediaCaptureUtilsTest {
     }
 
     @Test
-    @SmallTest
     public void testBringTabToFront_ValidActivity() {
         Activity activity = Robolectric.buildActivity(Activity.class).get();
         doReturn(mWindowAndroid).when(mTab).getWindowAndroidChecked();
@@ -82,7 +77,6 @@ public class MediaCaptureUtilsTest {
     }
 
     @Test
-    @SmallTest
     public void testBringTabToFront_MultiWindowInstance() {
         Activity activity = Robolectric.buildActivity(Activity.class).get();
         doReturn(mWindowAndroid).when(mTab).getWindowAndroidChecked();

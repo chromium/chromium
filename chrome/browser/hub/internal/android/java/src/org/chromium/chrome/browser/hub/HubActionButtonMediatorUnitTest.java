@@ -14,8 +14,6 @@ import static org.chromium.chrome.browser.hub.HubActionButtonProperties.ACTION_B
 import static org.chromium.chrome.browser.hub.HubActionButtonProperties.ACTION_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,7 +69,6 @@ public class HubActionButtonMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         mMediator = new HubActionButtonMediator(mModel, mPaneManager);
         assertTrue(mFocusedPaneSupplier.hasObservers());
@@ -81,7 +78,6 @@ public class HubActionButtonMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testWithActionButtonData() {
         mMediator = new HubActionButtonMediator(mModel, mPaneManager);
         mFocusedPaneSupplier.set(mTabSwitcherPane);
@@ -90,7 +86,6 @@ public class HubActionButtonMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testActionButtonDataChange() {
         mMediator = new HubActionButtonMediator(mModel, mPaneManager);
 
@@ -107,7 +102,6 @@ public class HubActionButtonMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPaneSwitching() {
         mMediator = new HubActionButtonMediator(mModel, mPaneManager);
 
@@ -127,7 +121,6 @@ public class HubActionButtonMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testActionButtonVisibilityChange() {
         mMediator = new HubActionButtonMediator(mModel, mPaneManager);
 

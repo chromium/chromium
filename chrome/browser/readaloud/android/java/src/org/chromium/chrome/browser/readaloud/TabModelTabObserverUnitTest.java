@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,7 +49,6 @@ public class TabModelTabObserverUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSelectingTabAddsObservers() {
         assertEquals(1, mTabModel.getCount());
 
@@ -62,7 +59,6 @@ public class TabModelTabObserverUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroyRemovesObservers() {
         assertEquals(1, mTabModel.getCount());
         mTabModelTabObserver.destroy();

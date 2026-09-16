@@ -15,8 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,7 +68,6 @@ public class PaneManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFocusChangesPane() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -109,7 +106,6 @@ public class PaneManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFocusUnregisteredPane() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -135,7 +131,6 @@ public class PaneManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFocusUnsuppliedPane() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -162,7 +157,6 @@ public class PaneManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPaneSuppliedLazily() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -181,7 +175,6 @@ public class PaneManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPaneNotDestroyedIfNotSupplied() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -197,7 +190,6 @@ public class PaneManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRepeatFocusIgnored() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -224,7 +216,6 @@ public class PaneManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testChangeHubVisibilityNoFocusedPane() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -252,7 +243,6 @@ public class PaneManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testChangeHubVisibilityWithFocusedPane() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -300,7 +290,6 @@ public class PaneManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetPaneById() {
         final AtomicBoolean called = new AtomicBoolean();
         LazyOneshotSupplierImpl<Pane> supplier =

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.util;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +14,6 @@ import org.chromium.base.test.util.Feature;
 @RunWith(BaseRobolectricTestRunner.class)
 public class HashUtilTest {
     @Test
-    @SmallTest
     @Feature({"Sync", "Omaha"})
     public void testMd5HashGivesCorrectString() {
         Assert.assertEquals(

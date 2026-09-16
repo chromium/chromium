@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.util;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,7 +31,6 @@ public class BrowserUiUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordTabSwitcherButtonClicked_Exit_Ntp() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder().expectNoRecords("NewTabPage.Module.Click").build();
@@ -46,7 +43,6 @@ public class BrowserUiUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordTabSwitcherButtonClicked_Exit_NonNtp() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder().expectNoRecords("NewTabPage.Module.Click").build();
@@ -59,7 +55,6 @@ public class BrowserUiUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordTabSwitcherButtonClicked_Enter_Ntp() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -76,7 +71,6 @@ public class BrowserUiUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordTabSwitcherButtonClicked_Enter_NonNtp() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder().expectNoRecords("NewTabPage.Module.Click").build();

@@ -13,8 +13,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
-import androidx.test.filters.SmallTest;
-
 import com.airbnb.lottie.LottieAnimationView;
 
 import org.junit.Rule;
@@ -38,7 +36,6 @@ public class FullscreenSigninViewBinderTest {
     @Mock private LottieAnimationView mAnimationView;
 
     @Test
-    @SmallTest
     public void testCreateModel_animationInitiallyHidden() {
         when(mView.getAnimationView()).thenReturn(mAnimationView);
         PropertyModel model =
@@ -58,7 +55,6 @@ public class FullscreenSigninViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testBindShowAnimation_visible() {
         when(mView.getAnimationView()).thenReturn(mAnimationView);
         PropertyModel model =
@@ -70,7 +66,6 @@ public class FullscreenSigninViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testBindShowAnimation_gone() {
         when(mView.getAnimationView()).thenReturn(mAnimationView);
         PropertyModel model =
@@ -82,7 +77,6 @@ public class FullscreenSigninViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testBindProfilePicture() {
         Drawable drawable = mock(Drawable.class);
         ImageView iconView = mock(ImageView.class);

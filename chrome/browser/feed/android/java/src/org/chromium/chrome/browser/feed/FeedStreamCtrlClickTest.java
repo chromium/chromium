@@ -20,7 +20,6 @@ import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -145,7 +144,6 @@ public class FeedStreamCtrlClickTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenUrlSameTab_withCtrlClick() {
         // Simulate Ctrl down touch event
         long downTime = SystemClock.uptimeMillis();
@@ -176,7 +174,6 @@ public class FeedStreamCtrlClickTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenUrlSameTab_withoutCtrlClick() {
         // Simulate normal touch event
         long downTime = SystemClock.uptimeMillis();
@@ -207,7 +204,6 @@ public class FeedStreamCtrlClickTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenUrlSameTab_withShiftClick() {
         // Simulate Shift down touch event
         long downTime = SystemClock.uptimeMillis();
@@ -238,7 +234,6 @@ public class FeedStreamCtrlClickTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenUrlSameTab_withCtrlShiftClick() {
         // Simulate Ctrl+Shift down touch event
         long downTime = SystemClock.uptimeMillis();

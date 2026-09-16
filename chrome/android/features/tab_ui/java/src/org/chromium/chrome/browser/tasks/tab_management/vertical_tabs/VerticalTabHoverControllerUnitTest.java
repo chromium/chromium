@@ -24,8 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -216,7 +214,6 @@ public class VerticalTabHoverControllerUnitTest {
     // =========================================================================================
 
     @Test
-    @SmallTest
     public void testShowAndHide() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
 
@@ -238,7 +235,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSelectedTab_DoNotShowHoverCard() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_1);
 
@@ -253,7 +249,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testContextMenuShowing_DoNotShowHoverCard() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         VerticalTabHoverController controller =
@@ -279,7 +274,6 @@ public class VerticalTabHoverControllerUnitTest {
     // =========================================================================================
 
     @Test
-    @SmallTest
     public void testGetHoverCardDelay() {
         // Collapsed rail width (76dp) -> 300ms
         when(mContainerView.getWidth())
@@ -292,7 +286,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDelayedShow() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
 
@@ -311,7 +304,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testExitBeforeDelay_CancelsShow() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
 
@@ -333,7 +325,6 @@ public class VerticalTabHoverControllerUnitTest {
     // =========================================================================================
 
     @Test
-    @SmallTest
     public void testScrubbing_ShowsImmediately() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         when(mTabHoverCardView.isShown()).thenReturn(true);
@@ -358,7 +349,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testScrubbing_EnterBeforeExit_HidesBeforeShowingTab2() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         when(mTabHoverCardView.isShown()).thenReturn(true);
@@ -394,7 +384,6 @@ public class VerticalTabHoverControllerUnitTest {
     // =========================================================================================
 
     @Test
-    @SmallTest
     public void testKeyboardFocus_ShowsImmediately() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         when(mTabView1.hasFocus()).thenReturn(true);
@@ -410,7 +399,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testKeyboardFocus_FocusLost_HidesHoverCard() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         when(mTabView1.hasFocus()).thenReturn(true);
@@ -432,7 +420,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testKeyboardFocus_SelectedTab_DoNotShowHoverCard() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_1);
         when(mTabView1.hasFocus()).thenReturn(true);
@@ -451,7 +438,6 @@ public class VerticalTabHoverControllerUnitTest {
     // =========================================================================================
 
     @Test
-    @SmallTest
     public void testCardHeightChange_RepositionsHoverCard() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         when(mTabHoverCardView.isShown()).thenReturn(true);
@@ -479,7 +465,6 @@ public class VerticalTabHoverControllerUnitTest {
     // =========================================================================================
 
     @Test
-    @SmallTest
     public void testGetHoverCardPosition_RegularTab_Collapsed() {
         when(mContainerView.getWidth()).thenReturn(COLLAPSED_CONTAINER_WIDTH_PX);
 
@@ -500,7 +485,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetHoverCardPosition_RegularTab_Expanded() {
         when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
 
@@ -521,7 +505,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetHoverCardPosition_ExceedsRootHeight_AlignsWithWindowBottom() {
         when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
         // Position the tab view near the bottom of the window so that the hover card extends
@@ -560,7 +543,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetHoverCardPosition_RegularTab_VerySmallWindow_ClampsToTop() {
         when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
         // Window height 180, tab at Y = 50:
@@ -598,7 +580,6 @@ public class VerticalTabHoverControllerUnitTest {
     // =========================================================================================
 
     @Test
-    @SmallTest
     public void testGetHoverCardPosition_PinnedTab_Collapsed() {
         when(mContainerView.getWidth()).thenReturn(COLLAPSED_CONTAINER_WIDTH_PX);
 
@@ -619,7 +600,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetHoverCardPosition_PinnedTab_Expanded() {
         float[] position =
                 VerticalTabHoverController.getHoverCardPosition(
@@ -638,7 +618,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetHoverCardPosition_PinnedTab_Expanded_NotEnoughSpaceBelow_ShowsOnRight() {
         when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
         // Window height 270:
@@ -673,7 +652,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void
             testGetHoverCardPosition_PinnedTab_Expanded_ExceedsRootHeight_AlignsWithWindowBottom() {
         when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
@@ -718,7 +696,6 @@ public class VerticalTabHoverControllerUnitTest {
     // =========================================================================================
 
     @Test
-    @SmallTest
     public void testTabGroup_ShowAndHide() {
         TabHoverListener listener = mController.getTabHoverListener();
         assertNotNull(listener);
@@ -738,7 +715,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_EmptyGroup_DoesNotShowHoverCard() {
         Token emptyGroupId = new Token(99L, 99L);
         when(mTabModel.getTabsInGroup(emptyGroupId)).thenReturn(List.of());
@@ -754,7 +730,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_NullGroupId_ResolvesAndShows() {
         when(mTabModel.getTabById(GROUP_HEADER_TAB_ID_1)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(GROUP_ID_1);
@@ -783,7 +758,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_DelayedShow() {
         TabHoverListener listener = mController.getTabHoverListener();
 
@@ -802,7 +776,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_ExitBeforeDelay_CancelsShow() {
         TabHoverListener listener = mController.getTabHoverListener();
 
@@ -820,7 +793,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_Scrubbing_ShowsImmediately() {
         when(mTabGroupHoverCardView.isShown()).thenReturn(true);
 
@@ -849,7 +821,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testScrubbing_FromTabToGroup_ShowsImmediately() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         when(mTabHoverCardView.isShown()).thenReturn(true);
@@ -875,7 +846,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testScrubbing_FromGroupToTab_ShowsImmediately() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         when(mTabGroupHoverCardView.isShown()).thenReturn(true);
@@ -899,7 +869,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_Scrubbing_EnterBeforeExit_DoesNotHideGroup2() {
         when(mTabGroupHoverCardView.isShown()).thenReturn(true);
 
@@ -929,7 +898,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_ContextMenuShowing_DoNotShow() {
         VerticalTabHoverController controller =
                 new VerticalTabHoverController(
@@ -951,7 +919,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_KeyboardFocus_ShowsImmediately() {
         when(mGroupHeaderView.hasFocus()).thenReturn(true);
 
@@ -968,7 +935,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_HoverActiveTab_HidesGroupHoverCardImmediately() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_1);
         when(mTabGroupHoverCardView.isShown()).thenReturn(true);
@@ -988,7 +954,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_ExitWithOnlyGroupId_HidesCard() {
         when(mTabGroupHoverCardView.isShown()).thenReturn(true);
 
@@ -1006,7 +971,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy_CleansUpBothCards() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
 
@@ -1026,7 +990,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHideHoverCard_ExecutesTagHoverExitListener() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         Runnable mockHoverExit = mock(Runnable.class);
@@ -1041,7 +1004,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testContextMenuShowing_SuppressesHoverCard() {
         boolean[] isContextMenuShowing = new boolean[] {true};
         VerticalTabHoverController controller =
@@ -1062,7 +1024,6 @@ public class VerticalTabHoverControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testScrolling_SuppressesHoverCard() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
         when(mRecyclerView.getScrollState())

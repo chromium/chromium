@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -133,7 +132,6 @@ public class BookmarkBarItemsLayoutManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testItemsOverflowChangeCallback() {
         // Bind observer and verify initial event propagation.
         verify(mItemsOverflowSupplierObserver, never()).onResult(any());
@@ -173,13 +171,11 @@ public class BookmarkBarItemsLayoutManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testLayout() {
         testLayout(/* isLayoutRtl= */ false);
     }
 
     @Test
-    @SmallTest
     public void testLayoutInRtl() {
         testLayout(/* isLayoutRtl= */ true);
     }
@@ -235,7 +231,6 @@ public class BookmarkBarItemsLayoutManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testMaxWidth() {
         // Set up items of widths less than, equal to, and greater than constraints.
         final var itemHeight = 10;
@@ -267,7 +262,6 @@ public class BookmarkBarItemsLayoutManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testNonScrollability() {
         assertFalse(mLayoutManager.canScrollHorizontally());
         assertFalse(mLayoutManager.canScrollVertically());

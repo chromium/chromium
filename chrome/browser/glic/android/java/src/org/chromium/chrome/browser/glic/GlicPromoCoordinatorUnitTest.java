@@ -11,8 +11,6 @@ import static org.mockito.Mockito.verify;
 
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,7 +59,6 @@ public class GlicPromoCoordinatorUnitTest {
         mBottomSheetContent = mGlicPromoCoordinator.getBottomSheetContentForTesting();
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet() {
         mGlicPromoCoordinator.showBottomSheet();

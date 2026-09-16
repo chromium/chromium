@@ -13,8 +13,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Intent;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +41,6 @@ public class WindowAndroidIntentLauncherUnitTest {
     @Mock private Callback<PaymentAppError> mErrorCallback;
     @Mock private IntentCallback mIntentCallback;
 
-    @SmallTest
     @Test
     public void testCannotLaunchPaymentAppForDestroyedWebContents() throws Exception {
         var launcher = new WindowAndroidIntentLauncher(mWebContents);
@@ -63,7 +60,6 @@ public class WindowAndroidIntentLauncherUnitTest {
                                                         "Unable to invoke the payment app.")));
     }
 
-    @SmallTest
     @Test
     public void testCannotLaunchPaymentAppForNullTopLevelNativeWindow() throws Exception {
         var launcher = new WindowAndroidIntentLauncher(mWebContents);
@@ -84,7 +80,6 @@ public class WindowAndroidIntentLauncherUnitTest {
                                                         "Unable to invoke the payment app.")));
     }
 
-    @SmallTest
     @Test
     public void testErrorCallbackWhenCannotLaunchIntent() throws Exception {
         var launcher = new WindowAndroidIntentLauncher(mWebContents);
@@ -105,7 +100,6 @@ public class WindowAndroidIntentLauncherUnitTest {
                                                         "Unable to invoke the payment app.")));
     }
 
-    @SmallTest
     @Test
     public void testErrorCallbackWhenPrivateActivity() throws Exception {
         var launcher = new WindowAndroidIntentLauncher(mWebContents);
@@ -129,7 +123,6 @@ public class WindowAndroidIntentLauncherUnitTest {
                                                             + " PAY activity.")));
     }
 
-    @SmallTest
     @Test
     public void testNoErrorCallbackOnSuccessfulIntentLaunch() throws Exception {
         var launcher = new WindowAndroidIntentLauncher(mWebContents);

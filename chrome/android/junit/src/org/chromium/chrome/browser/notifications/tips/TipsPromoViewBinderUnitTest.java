@@ -14,7 +14,6 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -80,7 +79,6 @@ public class TipsPromoViewBinderUnitTest {
         mActivity = activity;
     }
 
-    @SmallTest
     @Test
     public void testFeatureTipPromoData() {
         FeatureTipPromoData promoData =
@@ -99,7 +97,6 @@ public class TipsPromoViewBinderUnitTest {
         assertEquals(DETAILS_TITLE, mDetailsTitleView.getText());
     }
 
-    @SmallTest
     @Test
     public void testDetailsButtonClickListener() throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -115,7 +112,6 @@ public class TipsPromoViewBinderUnitTest {
         callbackHelper.waitForOnly();
     }
 
-    @SmallTest
     @Test
     public void testSettingsButtonClickListener() throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
@@ -134,7 +130,6 @@ public class TipsPromoViewBinderUnitTest {
         callbackHelper.waitForNext();
     }
 
-    @SmallTest
     @Test
     public void testBackButtonClickListener() throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();

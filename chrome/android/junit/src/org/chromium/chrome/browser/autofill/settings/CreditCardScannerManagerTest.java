@@ -15,8 +15,6 @@ import static org.chromium.chrome.browser.autofill.settings.CreditCardScannerMan
 import static org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.SCAN_CARD_CLICKED_USER_ACTION;
 import static org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.SCAN_CARD_RESULT_HISTOGRAM;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -68,7 +66,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onCreate() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
 
@@ -82,7 +79,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onCreateWithScanDisabled() {
         when(mScanner.canScan()).thenReturn(false);
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
@@ -95,7 +91,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onScan() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
 
@@ -109,7 +104,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onLogScanResultWithScanDisabled() {
         when(mScanner.canScan()).thenReturn(false);
         HistogramWatcher scanCardResultHistogram =
@@ -122,7 +116,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onLogScanResultWithScanEnabled() {
         for (@ScanResult int result = 0; result < ScanResult.COUNT; result++) {
             CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
@@ -139,7 +132,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onLogScanResultMultipleTimes() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
         HistogramWatcher scanCardResultHistogram =
@@ -158,7 +150,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onFieldEditWithScanDisabled() {
         when(mScanner.canScan()).thenReturn(false);
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
@@ -172,7 +163,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onFieldEditToUnscannedField() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
         manager.setScanResultForTesting(ScanResult.SCANNED_WITHOUT_ADDITIONAL_USER_EDITS);
@@ -185,7 +175,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onFieldEditToScannedField() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
         manager.setScanResultForTesting(ScanResult.SCANNED_WITHOUT_ADDITIONAL_USER_EDITS);
@@ -200,7 +189,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onFormClosedWithScanResultScanned() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
         HistogramWatcher scanCardResultHistogram =
@@ -216,7 +204,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onFormClosedWithScanResultIgnored() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
         HistogramWatcher scanCardResultHistogram =
@@ -228,7 +215,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onFormClosedWhileAlreadyLogged() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
         // Only the `SCANNED_WITHOUT_ADDITIONAL_USER_EDITS` should be logged and
@@ -249,7 +235,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onScanCancelled() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
 
@@ -261,7 +246,6 @@ public class CreditCardScannerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void onScanCompleted() {
         CreditCardScannerManager manager = new CreditCardScannerManager(mDelegate);
 

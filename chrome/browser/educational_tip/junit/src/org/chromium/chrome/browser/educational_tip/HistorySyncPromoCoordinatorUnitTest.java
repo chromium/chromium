@@ -11,8 +11,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -89,7 +87,6 @@ public class HistorySyncPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCardImage_SetupList() {
         when(mSetupListManager.isSetupListModule(ModuleType.HISTORY_SYNC_PROMO)).thenReturn(true);
         assertEquals(
@@ -98,7 +95,6 @@ public class HistorySyncPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCardImage_Default() {
         when(mSetupListManager.isSetupListModule(ModuleType.HISTORY_SYNC_PROMO)).thenReturn(false);
         assertEquals(
@@ -106,7 +102,6 @@ public class HistorySyncPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSyncStateChanged_SetupList_MarksCompleteOnly() {
         when(mSetupListManager.isSetupListModule(ModuleType.HISTORY_SYNC_PROMO)).thenReturn(true);
         when(mSyncService.getSelectedTypes())
@@ -122,7 +117,6 @@ public class HistorySyncPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSyncStateChanged_Default_RemovesModule() {
         when(mSetupListManager.isSetupListModule(ModuleType.HISTORY_SYNC_PROMO)).thenReturn(false);
         when(mSyncService.getSelectedTypes())
@@ -138,7 +132,6 @@ public class HistorySyncPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCardRemovedOnSignout() {
         mHistorySyncPromoCoordinator.onPrimaryAccountChanged(
                 new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.CLEARED));
@@ -147,7 +140,6 @@ public class HistorySyncPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCardRemovedOnWhenHistorySyncUpdated() {
         when(mSyncService.getSelectedTypes())
                 .thenReturn(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
@@ -158,7 +150,6 @@ public class HistorySyncPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCardNotRemovedOnWhenOtherSyncTypeUpdated() {
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
 
@@ -168,7 +159,6 @@ public class HistorySyncPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({
         SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
@@ -182,7 +172,6 @@ public class HistorySyncPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnCardClicked() {
         mHistorySyncPromoCoordinator.onCardClicked();
 

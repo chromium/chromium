@@ -13,8 +13,6 @@ import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,7 +63,6 @@ public class NtpCardsCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddsAndRemovesObserver() {
         verify(mHomeModulesConfigManager).addListener(mListener.capture());
 
@@ -74,7 +71,6 @@ public class NtpCardsCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testObserverRespondsToSignal() {
         verify(mHomeModulesConfigManager).addListener(mListener.capture());
 
@@ -88,13 +84,11 @@ public class NtpCardsCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testConstructor() {
         assertNotNull(mCoordinator.getMediatorForTesting());
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         NtpCardsMediator mediator = mock(NtpCardsMediator.class);
         mCoordinator.setMediatorForTesting(mediator);
@@ -104,7 +98,6 @@ public class NtpCardsCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnAllCardsConfigChanged() {
         NtpCardsMediator mediator = mock(NtpCardsMediator.class);
         mCoordinator.setMediatorForTesting(mediator);
@@ -117,7 +110,6 @@ public class NtpCardsCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testToggleVisibility() {
         View view = mCoordinator.getViewForTesting();
         assertEquals(View.VISIBLE, view.findViewById(R.id.cards_switch_button).getVisibility());

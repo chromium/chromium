@@ -44,7 +44,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
 import org.junit.Assert;
@@ -272,7 +271,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testRemove_SingleItem() throws Exception {
         final HistoryItemView itemView = (HistoryItemView) getItemView(2);
 
@@ -288,7 +286,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testSparkVisibility() {
         // Use a timestamp older than the ones in setUp() to ensure they appear after Item 1 and 2.
         long timestamp = mItem2.getTimestamp() - 1000;
@@ -348,7 +345,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testRemove_AllItems() throws Exception {
         toggleItemSelection(2);
         toggleItemSelection(3);
@@ -366,14 +362,12 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testPrivacyDisclaimers_SignedOut() {
         // The user is signed out by default.
         Assert.assertEquals(1, mAdapter.getFirstGroupForTests().size());
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
     @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testPrivacyDisclaimers_SignedOut_Ash() {
@@ -382,7 +376,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testPrivacyDisclaimers_SignedIn() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
@@ -392,7 +385,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testPrivacyDisclaimers_SignedInSynced() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
@@ -402,7 +394,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testPrivacyDisclaimers_SignedInSyncedAndOtherForms() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
@@ -412,7 +403,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenItem() throws Exception {
         clickItem(2);
         assertThat(
@@ -421,7 +411,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenSelectedItems() throws Exception {
         toggleItemSelection(2);
         toggleItemSelection(3);
@@ -436,7 +425,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenItemIntent() {
         Intent intent =
                 mHistoryManager
@@ -466,7 +454,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testOnHistoryDeleted() throws Exception {
         toggleItemSelection(2);
 
@@ -480,7 +467,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testReload() {
         Assert.assertEquals(4, mAdapter.getItemCount());
 
@@ -494,7 +480,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testSupervisedUser() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         final HistoryItemView item = (HistoryItemView) getItemView(2);
@@ -543,7 +528,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testToolbarShadow() throws Exception {
         View toolbarShadow = mHistoryManager.getSelectableListLayout().getToolbarShadowForTests();
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
@@ -558,7 +542,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testSearchView() throws Exception {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         View toolbarShadow = mHistoryManager.getSelectableListLayout().getToolbarShadowForTests();
@@ -596,7 +579,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testSetQuery() {
         HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         View toolbarSearchView = toolbar.getSearchViewForTests();
@@ -615,7 +597,6 @@ public class HistoryUiTest {
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
     @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Test
-    @SmallTest
     public void testSearch_AppFilterChipVisible() {
         mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
         DateDividedAdapter.ItemGroup headerGroup = mAdapter.getFirstGroupForTests();
@@ -629,7 +610,6 @@ public class HistoryUiTest {
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
     @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Test
-    @SmallTest
     public void testSearch_AppFilterChipEnabledWithNonEmptyAppResult() throws Exception {
         Assert.assertTrue(mHistoryProvider.isQueryAppsTriggered());
         mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
@@ -664,7 +644,6 @@ public class HistoryUiTest {
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
     @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Test
-    @SmallTest
     public void testSearch_AppFilterSheet() {
         mContentManager.setPackageManagerForTesting(mPackageManager);
         mContentManager.setAppFilterSheetForTesting(mAppFilterSheet);
@@ -707,7 +686,6 @@ public class HistoryUiTest {
     @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
     @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Test
-    @SmallTest
     public void testAppInfoCache() throws Exception {
         var appInfoCache = mContentManager.getAppInfoCache();
         appInfoCache.setPackageManagerForTesting(mPackageManager);
@@ -739,7 +717,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testSearchViewDismissedByBackPress() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         View toolbarShadow = mHistoryManager.getSelectableListLayout().getToolbarShadowForTests();
@@ -770,7 +747,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testToggleInfoMenuItem() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         final MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
@@ -809,7 +785,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testInfoIcon_OtherFormsOfBrowsingData() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         final MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
@@ -835,7 +810,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testInfoHeaderInSearchMode() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         final MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
@@ -865,7 +839,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     @Config(qualifiers = "sw600dp")
     public void testInfoHeaderInSearchModeOnLFFDevice() {
         DeviceInput.setSupportsKeyboardForTesting(true);
@@ -907,7 +880,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testSearch_NotFound() {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
 
@@ -925,7 +897,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testAppSpecificToolbar() throws Exception {
         final String appId = "org.chromium.app.AwesomeApp";
         when(mPackageManager.getApplicationInfo(eq(appId), anyInt())).thenReturn(mPackageAppInfo);
@@ -967,7 +938,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testAppSpecificToolbarHeaderStateNotPersisted() throws Exception {
         final String appId = "org.chromium.app.AwesomeApp";
         when(mPackageManager.getApplicationInfo(eq(appId), anyInt())).thenReturn(mPackageAppInfo);
@@ -1002,7 +972,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testInvisibleHeader() {
         Assert.assertTrue(mAdapter.hasListHeader());
 
@@ -1016,7 +985,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testCopyLink() {
         final ClipboardManager clipboardManager =
                 (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -1041,7 +1009,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollToLoadEnabled() {
         // Reduce the height available to the recycler view to less than it needs so that scrolling
         // has an effect.
@@ -1074,7 +1041,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollToLoadDisabled() throws Exception {
         mHistoryProvider.setPaging(PAGE_INCREMENT);
         HistoryContentManager.setScrollToLoadDisabledForTesting(true);
@@ -1119,7 +1085,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     public void testBackPress_clearsSelection() {
         BackPressHandler testHandler =
                 new BackPressHandler() {
@@ -1146,7 +1111,6 @@ public class HistoryUiTest {
     }
 
     @Test
-    @SmallTest
     @Config(qualifiers = "sw600dp") // Simulate a tablet screen width.
     public void testBackPress_onTabletInSearch_clearsText() {
         // Arrange 1: Re-initialize HistoryManager in a tablet-with-keyboard configuration.

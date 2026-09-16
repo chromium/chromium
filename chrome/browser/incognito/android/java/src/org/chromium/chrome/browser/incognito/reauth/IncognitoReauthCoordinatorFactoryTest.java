@@ -20,7 +20,6 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -142,7 +141,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
     }
 
     @Test
-    @SmallTest
     public void testSeeOtherTabsRunnable_IsInvokedCorrectly_LayoutNotVisible() {
         Runnable seeOtherTabsRunnable =
                 mIncognitoReauthCoordinatorFactory.getSeeOtherTabsRunnable();
@@ -167,9 +165,9 @@ public class IncognitoReauthCoordinatorFactoryTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
-    public void testSeeOtherTabsRunnable_IsInvokedCorrectly_LayoutNotVisible_disabledOnDesktop_doesNotShowHub() {
+    public void
+            testSeeOtherTabsRunnable_IsInvokedCorrectly_LayoutNotVisible_disabledOnDesktop_doesNotShowHub() {
         if (!mIsTabbedActivity) return;
 
         DeviceInfo.setIsDesktopForTesting(true);
@@ -186,7 +184,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
     }
 
     @Test
-    @SmallTest
     public void testSeeOtherTabsRunnable_IsInvokedCorrectly_LayoutVisible() {
         Runnable seeOtherTabsRunnable =
                 mIncognitoReauthCoordinatorFactory.getSeeOtherTabsRunnable();
@@ -211,7 +208,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
     }
 
     @Test
-    @SmallTest
     public void testSeeOtherTabsRunnable_IsInvokedCorrectly_LayoutVisible_DelayedHubInit() {
         if (!mIsTabbedActivity) return;
 
@@ -247,7 +243,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
     }
 
     @Test
-    @SmallTest
     public void testCloseAllIncognitoTabsRunnable_IsInvokedCorrectly() {
         Runnable closeAllIncognitoTabsRunnable =
                 mIncognitoReauthCoordinatorFactory.getCloseAllIncognitoTabsRunnable();
@@ -258,7 +253,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
     }
 
     @Test
-    @SmallTest
     public void testBackPressRunnable_IsInvokedCorrectly_LayoutNotVisible() {
         Runnable backPressRunnable = mIncognitoReauthCoordinatorFactory.getBackPressRunnable();
         // Does the same thing as see other tabs runnable.
@@ -282,7 +276,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
     }
 
     @Test
-    @SmallTest
     public void testBackPressRunnable_IsInvokedCorrectly_LayoutVisible() {
         Runnable backPressRunnable = mIncognitoReauthCoordinatorFactory.getBackPressRunnable();
         // Does the same thing as see other tabs runnable.
@@ -307,7 +300,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateIncognitoReauthCoordinator_ForFullScreen_ReturnsFullScreenCoordinator() {
         IncognitoReauthCoordinator coordinator =
                 mIncognitoReauthCoordinatorFactory.createIncognitoReauthCoordinator(
@@ -320,7 +312,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
     }
 
     @Test
-    @SmallTest
     public void
             testCreateIncognitoReauthCoordinator_ForTabSwitcher_ReturnsTabSwitcherCoordinator_ExceptForCct() {
         if (mIsTabbedActivity) {
@@ -349,7 +340,6 @@ public class IncognitoReauthCoordinatorFactoryTest {
     }
 
     @Test
-    @SmallTest
     public void testAreDependenciesReadyFor() {
         if (mIsTabbedActivity) {
             // The TabSwitcherCustomViewManager is set.

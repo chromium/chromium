@@ -23,8 +23,6 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -109,7 +107,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollCaptureSearch() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
@@ -135,7 +132,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollCaptureStart_CaptureInProgress() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
@@ -151,7 +147,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollCaptureStart_GenerationErrorOrder() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
@@ -168,7 +163,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollCaptureStart_CompositorReady_EmptySize() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
@@ -185,7 +179,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollCaptureStart_Success() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
@@ -207,7 +200,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollCaptureStart_NonZeroYOffset() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
@@ -225,7 +217,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollCaptureStart_GenerationError() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
@@ -249,7 +240,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollCaptureStart_InsufficientMemory() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
@@ -273,7 +263,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollCaptureSearch_MemoryPressure() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
@@ -292,7 +281,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.LONG_SCREENSHOTS_NO_MEMORY_CHECK)
     @DisableFeatures(ChromeFeatureList.LONG_SCREENSHOTS_LENIENT_MEMORY_CHECK)
     public void testScrollCaptureSearch_MemoryPressure_NoMemoryCheck() {
@@ -318,7 +306,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollCaptureRequest_NullContentArea() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
@@ -332,7 +319,6 @@ public class ScrollCaptureCallbackDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollCaptureRequest() {
         ScrollCaptureCallbackDelegate scrollCaptureCallback =
                 (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;

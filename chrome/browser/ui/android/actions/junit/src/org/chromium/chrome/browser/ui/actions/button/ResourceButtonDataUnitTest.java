@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNotNull;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.ui.actions.R;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ResourceButtonDataUnitTest {
     @Test
-    @SmallTest
     public void testResolveTextAndIconAndContentDescription() {
         Context context = ApplicationProvider.getApplicationContext();
         DisplayButtonData buttonData =
@@ -37,7 +35,6 @@ public class ResourceButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHashCode() {
         DisplayButtonData buttonData1 =
                 new ResourceButtonData(
@@ -55,7 +52,6 @@ public class ResourceButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEquals() {
         DisplayButtonData buttonData =
                 new ResourceButtonData(

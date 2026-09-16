@@ -27,7 +27,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.Preference;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -115,7 +114,6 @@ public class AddressBarSettingsFragmentUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBottomButtonHighlight() {
         launchFragmentWithArgs(
                 AddressBarSettingsFragment.createArguments(HighlightedOption.BOTTOM_TOOLBAR));
@@ -166,7 +164,6 @@ public class AddressBarSettingsFragmentUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTopAndThenSelectBottom() {
         mSharedPreferencesManager.writeInt(
                 ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, ToolbarPositionAndSource.TOP_SETTINGS);
@@ -198,7 +195,6 @@ public class AddressBarSettingsFragmentUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBottomAndThenSelectTop() {
         mSharedPreferencesManager.writeInt(
                 ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
@@ -223,7 +219,6 @@ public class AddressBarSettingsFragmentUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBottomAndThenSelectTop_localPrefNotInitialized() {
         LocalStatePrefs.setNativePrefsLoadedForTesting(false);
         mSharedPreferencesManager.writeInt(
@@ -248,7 +243,6 @@ public class AddressBarSettingsFragmentUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testComputeToolbarPositionAndSource_prefsDontAgree() {
         // ChromeSharedPref says TOP
         mSharedPreferencesManager.writeInt(
@@ -273,7 +267,6 @@ public class AddressBarSettingsFragmentUnitTest {
     }
 
     @Test
-    @SmallTest
     @Config(sdk = Build.VERSION_CODES.R)
     public void testFoldable() {
         ShadowPackageManager shadowPackageManager =

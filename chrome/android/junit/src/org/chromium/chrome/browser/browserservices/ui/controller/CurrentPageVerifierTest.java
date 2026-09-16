@@ -12,8 +12,6 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.os.Looper;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -80,7 +78,6 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
-    @SmallTest
     public void verifiesOriginOfInitialPage() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -88,7 +85,6 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
-    @SmallTest
     public void statusIsPending_UntilVerificationFinished() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -96,7 +92,6 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
-    @SmallTest
     public void statusIsSuccess_WhenVerificationSucceeds() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -105,7 +100,6 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
-    @SmallTest
     public void statusIsFail_WhenVerificationFails() {
         setInitialUrl(UNTRUSTED_PAGE);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -114,7 +108,6 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
-    @SmallTest
     public void verifies_WhenNavigatingToOtherTrustedOrigin() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -125,7 +118,6 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
-    @SmallTest
     public void doesntUpdateState_IfVerificationFinishedAfterLeavingOrigin() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();
@@ -136,7 +128,6 @@ public class CurrentPageVerifierTest {
     }
 
     @Test
-    @SmallTest
     public void reverifiesOrigin_WhenReturningToIt_IfFirstVerificationDidntFinishInTime() {
         setInitialUrl(TRUSTED_ORIGIN_PAGE1);
         mCurrentPageVerifier.onFinishNativeInitialization();

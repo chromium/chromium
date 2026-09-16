@@ -19,7 +19,6 @@ import android.widget.FrameLayout;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import androidx.test.filters.SmallTest;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.slider.Slider;
@@ -82,7 +81,6 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInitialState() {
         // Verify that the initial state of the view is correct.
         assertTrue(
@@ -95,7 +93,6 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testThemeButtons() {
         when(mDistilledPagePrefs.getTheme())
                 .thenReturn(Theme.LIGHT, Theme.LIGHT, Theme.DARK, Theme.SEPIA);
@@ -139,7 +136,6 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFontFamilyButtons() {
         when(mDistilledPagePrefs.getFontFamily())
                 .thenReturn(
@@ -197,7 +193,6 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         DomDistillerFeatures.READER_MODE_DISTILL_IN_APP,
         DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS
@@ -208,7 +203,6 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(DomDistillerFeatures.READER_MODE_SUPPORT_NEW_FONTS)
     public void testAdditionalFontFamilyButtonsVisibility_NewFontsDisabled() {
         assertEquals(
@@ -216,14 +210,12 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @SmallTest
     @Config(qualifiers = "sw320dp")
     public void testFontScalingSliderPhone() {
         verifyFontScalingSlider(1.75f, 175);
     }
 
     @Test
-    @SmallTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Config(qualifiers = "sw600dp")
     public void testFontScalingSliderTablet() {
@@ -275,7 +267,6 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
     public void testToggleLinksButton_Enabled() {
         View toggleLinksButton = mReaderModePrefsView.findViewById(R.id.toggle_links_button);
@@ -306,7 +297,6 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(DomDistillerFeatures.READER_MODE_TOGGLE_LINKS)
     public void testToggleLinksButton_Disabled() {
         View toggleLinksButton = mReaderModePrefsView.findViewById(R.id.toggle_links_button);
@@ -314,7 +304,6 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testThemeButtonsAccessibility() {
         // Test container
         View themeContainer = mReaderModePrefsView.findViewById(R.id.theme_container);
@@ -351,7 +340,6 @@ public class ReaderModePrefsViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFontFamilyButtonsAccessibility() {
         // Test container
         View fontFamilyButtonContainer =

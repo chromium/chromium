@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.hub;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +24,6 @@ public class HubShowPaneHelperUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetNextPaneIdWithDefaultValue() {
         assertNull(mHubShowPaneHelper.getNextPaneIdForTesting());
 
@@ -37,7 +34,6 @@ public class HubShowPaneHelperUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetNextPaneId() {
         assertNull(mHubShowPaneHelper.getNextPaneIdForTesting());
         mHubShowPaneHelper.setPaneToShow(PaneId.TAB_GROUPS);
@@ -49,7 +45,6 @@ public class HubShowPaneHelperUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testConsumeNextPaneId() {
         mHubShowPaneHelper.setPaneToShow(PaneId.TAB_GROUPS);
 

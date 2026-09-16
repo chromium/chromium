@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.policy;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +19,6 @@ public class CloudManagementSharedPreferencesTest {
     private static final String CLIENT_ID = "fake-client-id";
 
     @Test
-    @SmallTest
     public void testSaveDmToken() {
         CloudManagementSharedPreferences.saveDmToken(DM_TOKEN);
         Assert.assertEquals(
@@ -31,7 +28,6 @@ public class CloudManagementSharedPreferencesTest {
     }
 
     @Test
-    @SmallTest
     public void testDeleteDmToken() {
         CloudManagementSharedPreferences.saveDmToken(DM_TOKEN);
         Assert.assertEquals(
@@ -46,7 +42,6 @@ public class CloudManagementSharedPreferencesTest {
     }
 
     @Test
-    @SmallTest
     public void testDeleteEmptyDmToken() {
         CloudManagementSharedPreferences.deleteDmToken();
         Assert.assertEquals(
@@ -56,7 +51,6 @@ public class CloudManagementSharedPreferencesTest {
     }
 
     @Test
-    @SmallTest
     public void testReadDmToken() {
         Assert.assertEquals("", CloudManagementSharedPreferences.readDmToken());
 
@@ -66,7 +60,6 @@ public class CloudManagementSharedPreferencesTest {
     }
 
     @Test
-    @SmallTest
     public void testSaveClientId() {
         CloudManagementSharedPreferences.saveClientId(CLIENT_ID);
         Assert.assertEquals(
@@ -76,7 +69,6 @@ public class CloudManagementSharedPreferencesTest {
     }
 
     @Test
-    @SmallTest
     public void testReadClientId() {
         Assert.assertEquals("", CloudManagementSharedPreferences.readClientId());
 

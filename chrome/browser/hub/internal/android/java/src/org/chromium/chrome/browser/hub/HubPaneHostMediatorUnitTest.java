@@ -18,8 +18,6 @@ import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CON
 
 import android.view.ViewGroup;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -77,7 +75,6 @@ public class HubPaneHostMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         mPaneSupplier.set(mPane);
         HubPaneHostMediator mediator =
@@ -96,7 +93,6 @@ public class HubPaneHostMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRootView() {
         new HubPaneHostMediator(
                 mModel,
@@ -110,7 +106,6 @@ public class HubPaneHostMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSlideAnimationDirection_NewPaneToTheRight() {
         // ORDER: PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER
         new HubPaneHostMediator(
@@ -128,7 +123,6 @@ public class HubPaneHostMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSlideAnimationDirection_NewPaneToTheLeft() {
         // ORDER: PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER
         new HubPaneHostMediator(
@@ -146,7 +140,6 @@ public class HubPaneHostMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSlideAnimationDirection_multiplePaneChanges() {
         // ORDER: PaneId.TAB_SWITCHER, PaneId.INCOGNITO_TAB_SWITCHER
         new HubPaneHostMediator(
@@ -167,7 +160,6 @@ public class HubPaneHostMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRootView_paneAlreadySet() {
         mPaneSupplier.set(mPane);
 

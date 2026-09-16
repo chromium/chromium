@@ -17,7 +17,6 @@ import android.graphics.Canvas;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -85,7 +84,6 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDidChangeTabGroupColor_InvalidatesRecyclerView() {
         Token groupId = new Token(1L, 2L);
 
@@ -100,7 +98,6 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_HeaderScrolledOffScreen_StartsFromFirstVisibleChildTop() {
         Token groupId = new Token(1L, 2L);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
@@ -137,7 +134,6 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_ScrambledChildren_SortsAndDrawsCorrectly() {
         Token groupId = new Token(1L, 2L);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
@@ -170,13 +166,11 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_WithGroupExpanding_ConnectsToSibling() {
         testOnDraw_WithGroupExpandingOrCollapsing_ConnectsToSibling(/* isCollapsing= */ false);
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_WithGroupCollapsing_ConnectsToSibling() {
         testOnDraw_WithGroupExpandingOrCollapsing_ConnectsToSibling(/* isCollapsing= */ true);
     }
@@ -223,7 +217,6 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_CollapsedGroup_SkipsDrawing() {
         Token groupId = new Token(1L, 2L);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
@@ -239,7 +232,6 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_GroupDragging_TranslatesSpine() {
         Token groupId = new Token(1L, 2L);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
@@ -272,7 +264,6 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_SingleChildDragging_PromotedToGroupDragging() {
         Token groupId = new Token(1L, 2L);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
@@ -305,7 +296,6 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_ChildDraggingInternally_LocksSpine() {
         Token groupId = new Token(1L, 2L);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
@@ -337,7 +327,6 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_DragOtherTabs_DoesNotAnimate() {
         Token groupId = new Token(1L, 2L);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);
@@ -381,7 +370,6 @@ public class VerticalTabGroupSpineDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDraw_LastGroupOnScreen_AnimatesWithAlpha() {
         Token groupId = new Token(1L, 2L);
         when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(0);

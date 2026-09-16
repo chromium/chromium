@@ -93,7 +93,6 @@ robolectric_library("junit") {
     "//components/sync_device_info:sync_device_info_java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:espresso_java",
-    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

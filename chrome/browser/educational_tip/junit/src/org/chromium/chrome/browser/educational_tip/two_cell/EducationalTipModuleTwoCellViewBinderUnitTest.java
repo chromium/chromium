@@ -19,8 +19,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -73,7 +71,6 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetModuleTitle() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -89,7 +86,6 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetItem1() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -121,7 +117,6 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetItem2() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -153,7 +148,6 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetItem1Icon() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -164,7 +158,6 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetItem1CompletedIcon() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -175,7 +168,6 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetItem1MarkCompleted() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -185,7 +177,6 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetItem2Icon() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -196,7 +187,6 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetItem2CompletedIcon() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -207,7 +197,6 @@ public final class EducationalTipModuleTwoCellViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetItem2MarkCompleted() {
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(

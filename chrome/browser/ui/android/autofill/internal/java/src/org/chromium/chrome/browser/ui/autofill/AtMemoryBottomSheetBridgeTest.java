@@ -13,7 +13,6 @@ import android.content.Context;
 import android.view.ContextThemeWrapper;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,7 +69,6 @@ public class AtMemoryBottomSheetBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDismissedNotCalledAfterDestroy() {
         mBridge.destroy();
 
@@ -80,7 +78,6 @@ public class AtMemoryBottomSheetBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateAutofillSuggestionWithPayload() {
         AtMemoryPayload payload = new AtMemoryPayload("Passport");
         AutofillSuggestion suggestion =

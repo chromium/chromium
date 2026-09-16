@@ -22,8 +22,6 @@ import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.widget.FrameLayout;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -83,7 +81,6 @@ public class ShrinkExpandImageViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testReset() {
         mRootView.addView(mShrinkExpandImageView);
         ShadowLooper.runUiThreadTasks();
@@ -110,7 +107,6 @@ public class ShrinkExpandImageViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testResetKeepingBitmap() {
         mRootView.addView(mShrinkExpandImageView);
         ShadowLooper.runUiThreadTasks();
@@ -137,7 +133,6 @@ public class ShrinkExpandImageViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetBitmap() {
         mRootView.addView(mShrinkExpandImageView);
         ShadowLooper.runUiThreadTasks();
@@ -164,7 +159,6 @@ public class ShrinkExpandImageViewUnitTest {
 
     /** These tests are mirrored from {@link RunOnNextLayoutDelegateUnitTest}. */
     @Test
-    @SmallTest
     public void testRunsImmediatelyIfNotWaitingForLayout() {
         mRootView.addView(mShrinkExpandImageView);
         ShadowLooper.runUiThreadTasks();
@@ -180,7 +174,6 @@ public class ShrinkExpandImageViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRunsOnNextLayout() {
         mRootView.addView(mShrinkExpandImageView);
         ShadowLooper.runUiThreadTasks();
@@ -203,7 +196,6 @@ public class ShrinkExpandImageViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRunsWithoutALayout() {
         mRootView.addView(mShrinkExpandImageView);
         ShadowLooper.runUiThreadTasks();
@@ -227,7 +219,6 @@ public class ShrinkExpandImageViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDelayedIfLayoutHasZeroDimension() {
         mRootView.addView(mShrinkExpandImageView);
         ShadowLooper.runUiThreadTasks();
@@ -250,7 +241,6 @@ public class ShrinkExpandImageViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testForceRunnablesToRun() {
         mRootView.addView(mShrinkExpandImageView);
         ShadowLooper.runUiThreadTasks();
@@ -272,7 +262,6 @@ public class ShrinkExpandImageViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAvoidsReentrantCalls() {
         mRootView.addView(mShrinkExpandImageView);
         ShadowLooper.runUiThreadTasks();
@@ -301,7 +290,6 @@ public class ShrinkExpandImageViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testImageBitmapDensityOnAutomotive() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
 

@@ -10,8 +10,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -83,7 +81,6 @@ public class KeyboardFocusRowManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetKeyboardFocusRow_verticalTabs() {
         when(mVerticalTabsSideUiCoordinator.containsKeyboardFocus()).thenReturn(true);
         assertEquals(
@@ -92,7 +89,6 @@ public class KeyboardFocusRowManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetKeyboardFocusRow_tabStrip() {
         when(mStripLayoutHelperManager.containsKeyboardFocus()).thenReturn(true);
         assertEquals(
@@ -101,7 +97,6 @@ public class KeyboardFocusRowManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSwitchKeyboardFocusRow_withVerticalTabs() {
         when(mSideUiStateProvider.isSideUiShowing(SideUiId.VERTICAL_TABS)).thenReturn(true);
 
@@ -127,7 +122,6 @@ public class KeyboardFocusRowManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSwitchKeyboardFocusRow_horizontalTabStripNotVisible_whenVerticalTabsShowing() {
         when(mSideUiStateProvider.isSideUiShowing(SideUiId.VERTICAL_TABS)).thenReturn(true);
         mStripVisibilityStateSupplier.set(StripVisibilityState.OBSCURED);
@@ -142,7 +136,6 @@ public class KeyboardFocusRowManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSwitchKeyboardFocusRowBackward_withVerticalTabs() {
         when(mSideUiStateProvider.isSideUiShowing(SideUiId.VERTICAL_TABS)).thenReturn(true);
 
@@ -164,7 +157,6 @@ public class KeyboardFocusRowManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetKeyboardFocusRow_message() {
         when(mMessageContainerCoordinator.containsKeyboardFocus()).thenReturn(true);
         assertEquals(
@@ -172,7 +164,6 @@ public class KeyboardFocusRowManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSwitchKeyboardFocusRow_withMessage() {
         when(mMessageContainerCoordinator.isVisible()).thenReturn(true);
 
@@ -189,7 +180,6 @@ public class KeyboardFocusRowManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSwitchKeyboardFocusRowBackward_withMessage() {
         when(mMessageContainerCoordinator.isVisible()).thenReturn(true);
 

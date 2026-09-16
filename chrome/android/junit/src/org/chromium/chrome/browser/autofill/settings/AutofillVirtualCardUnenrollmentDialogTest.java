@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.text.SpannableString;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,7 +60,6 @@ public class AutofillVirtualCardUnenrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     public void dialogShown() {
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
         // The callback should not have been called yet.
@@ -69,7 +67,6 @@ public class AutofillVirtualCardUnenrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     public void positiveButtonPressed() {
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
         mModalDialogManager.clickPositiveButton();
@@ -79,7 +76,6 @@ public class AutofillVirtualCardUnenrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     public void negativeButtonPressed() {
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
         mModalDialogManager.clickNegativeButton();
@@ -89,7 +85,6 @@ public class AutofillVirtualCardUnenrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     public void learnMoreTextClicked() {
         // Create activity and its shadow to see if CustomTabActivity is launched.
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();

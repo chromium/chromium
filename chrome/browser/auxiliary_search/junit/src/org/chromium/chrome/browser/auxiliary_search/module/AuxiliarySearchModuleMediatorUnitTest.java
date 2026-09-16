@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -90,7 +89,6 @@ public class AuxiliarySearchModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule_DefaultOptIn_FirstButton() {
         when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
         assertTrue(mFactory.isSettingDefaultEnabledByOs());
@@ -107,7 +105,6 @@ public class AuxiliarySearchModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule_DefaultOptIn_SecondButton() {
         when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
         assertTrue(mFactory.isSettingDefaultEnabledByOs());
@@ -125,7 +122,6 @@ public class AuxiliarySearchModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule_DefaultOptOut_FirstButton() {
         when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(false);
         assertFalse(mFactory.isSettingDefaultEnabledByOs());
@@ -141,7 +137,6 @@ public class AuxiliarySearchModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule_DefaultOptOut_SecondButton() {
         when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(false);
         assertFalse(mFactory.isSettingDefaultEnabledByOs());
@@ -163,7 +158,6 @@ public class AuxiliarySearchModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule() {
         createMediator();
 
@@ -182,14 +176,12 @@ public class AuxiliarySearchModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetModuleType() {
         createMediator();
         assertEquals(ModuleType.AUXILIARY_SEARCH, mMediator.getModuleType());
     }
 
     @Test
-    @SmallTest
     public void testHideModule() {
         createMediator();
         mMediator.hideModule();
@@ -314,7 +306,6 @@ public class AuxiliarySearchModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION})
     public void testShowModule_BrowsingDataDonation_FirstButton() {
         when(mHooks.isBrowsingDataDonationSupported()).thenReturn(true);
@@ -332,7 +323,6 @@ public class AuxiliarySearchModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION})
     public void testShowModule_BrowsingDataDonation_SecondButton() {
         when(mHooks.isBrowsingDataDonationSupported()).thenReturn(true);

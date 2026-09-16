@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -88,7 +87,6 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     public void dialogShown() {
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
         // The callback should not have been called yet.
@@ -96,7 +94,6 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     public void positiveButtonPressed() {
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
         mModalDialogManager.clickPositiveButton();
@@ -106,7 +103,6 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     public void negativeButtonPressed() {
         assertThat(mModalDialogManager.getShownDialogModel()).isNotNull();
         mModalDialogManager.clickNegativeButton();
@@ -116,7 +112,6 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     public void learnMoreTextClicked() {
         // Create activity.
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
@@ -156,7 +151,6 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     public void googleLegalMessageClicked() {
         // Create activity.
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
@@ -196,7 +190,6 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     public void issuerLegalMessageClicked() {
         // Create activity.
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
@@ -235,7 +228,6 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2})
     public void dialogTitle() {
         // Create activity.
@@ -260,7 +252,6 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2})
     public void dialogTitle_WalletBrandingV2Disabled() {
         // Create activity.
@@ -291,7 +282,6 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2})
     public void dialogSubtitle() {
         // Create activity.
@@ -335,7 +325,6 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2})
     public void dialogSubtitle_WalletBrandingV2Disabled() {
         // Create activity.

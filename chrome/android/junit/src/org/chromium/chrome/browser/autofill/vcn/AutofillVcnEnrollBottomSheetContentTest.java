@@ -13,8 +13,6 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.ScrollView;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +25,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Unit test for {@link AutofillVcnEnrollBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SmallTest
 public final class AutofillVcnEnrollBottomSheetContentTest {
     private static final String PROPERTY_ROBOLECTRIC_USE_REAL_SCROLLING =
             "robolectric.useRealScrolling";

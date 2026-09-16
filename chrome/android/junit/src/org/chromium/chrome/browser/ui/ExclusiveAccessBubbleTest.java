@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,7 +31,6 @@ public class ExclusiveAccessBubbleTest {
     }
 
     @Test
-    @SmallTest
     public void testBubbleShowAndHide() {
         ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
 
@@ -48,7 +45,6 @@ public class ExclusiveAccessBubbleTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateWithSameText() {
         ExclusiveAccessBubble bubble = ExclusiveAccessBubble.create(mExclusiveAccessContext);
 

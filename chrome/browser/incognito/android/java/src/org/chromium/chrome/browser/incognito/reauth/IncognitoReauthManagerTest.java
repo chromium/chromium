@@ -10,8 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.MediumTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,7 +42,6 @@ public class IncognitoReauthManagerTest {
     }
 
     @Test
-    @MediumTest
     public void
             testIncognitoReauthManager_WhenCantUseAuthentication_FiresCallbackWithNotPossible() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
@@ -57,7 +54,6 @@ public class IncognitoReauthManagerTest {
     }
 
     @Test
-    @MediumTest
     public void testIncognitoReauthManager_WhenFeatureDisabled_FiresCallbackWithNotPossible() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(false);
         when(mReauthenticatorBridgeMock.getBiometricAvailabilityStatus())
@@ -69,7 +65,6 @@ public class IncognitoReauthManagerTest {
     }
 
     @Test
-    @MediumTest
     public void
             testIncognitoReauthManager_WhenReauthenticationSucceeded_FiresCallbackWithSuccess() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
@@ -90,7 +85,6 @@ public class IncognitoReauthManagerTest {
     }
 
     @Test
-    @MediumTest
     public void testIncognitoReauthManager_WhenReauthenticationFailed_FiresCallbackWithFailed() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         when(mReauthenticatorBridgeMock.getBiometricAvailabilityStatus())

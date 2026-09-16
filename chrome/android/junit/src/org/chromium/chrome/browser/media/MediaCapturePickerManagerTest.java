@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -74,7 +73,6 @@ public class MediaCapturePickerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testShowDialog_NullWindowAndroid() {
         doReturn(null).when(mWebContents).getTopLevelNativeWindow();
 
@@ -90,7 +88,6 @@ public class MediaCapturePickerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testShowDialog_NullContext() {
         doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
         doReturn(new WeakReference<Context>(null)).when(mWindowAndroid).getActivity();
@@ -108,7 +105,6 @@ public class MediaCapturePickerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testShowDialog() {
         doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
         doReturn(new WeakReference<Context>(mContext)).when(mWindowAndroid).getContext();
@@ -117,7 +113,6 @@ public class MediaCapturePickerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordResultAndPreShowFailure() {
         var resultWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -136,7 +131,6 @@ public class MediaCapturePickerManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testBringTabToFront() {
         MediaCapturePickerManager.setBringTabToFrontCallbackForTesting(mTestingCallback);
         MediaCapturePickerManager.bringTabToFront(mContext, mTab);

@@ -26,7 +26,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -109,7 +108,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void userAccepted() {
         mPrompt.show();
         assertNotNull(mModalDialogManager.getShownDialogModel());
@@ -123,7 +121,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void userEdited() {
         mPrompt.show();
         assertNotNull(mModalDialogManager.getShownDialogModel());
@@ -143,7 +140,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void userDeclined() {
         mPrompt.show();
         assertNotNull(mModalDialogManager.getShownDialogModel());
@@ -157,7 +153,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void promptDismissed() {
         HistogramWatcher histogram =
                 HistogramWatcher.newSingleRecordWatcher(ENTITY_EDITOR_OPENED_HISTOGRAM, false);
@@ -173,7 +168,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void showAfterDismiss() {
         mPrompt.show();
         assertNotNull(mModalDialogManager.getShownDialogModel());
@@ -188,7 +182,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PASS_BRANDING_2026)
     public void dialogStrings() {
         mPrompt.setDialogDetails(
@@ -213,7 +206,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PASS_BRANDING_2026)
     public void dialogStrings_branding2026Enabled() {
         mPrompt.setDialogDetails(
@@ -231,7 +223,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void localSourceNotice() {
         mPrompt.setSourceNotice("Entity will be saved locally", /* insertManageInfoLink= */ false);
         mPrompt.show();
@@ -242,7 +233,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void emptyWalletNotice() {
         mPrompt.setSourceNotice("", /* insertManageInfoLink= */ true);
         mPrompt.show();
@@ -253,7 +243,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void walletNotice() {
         String walletTitle =
                 RuntimeEnvironment.application.getString(R.string.autofill_google_wallet_title);
@@ -286,7 +275,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void publicPassesNotice_default_viewIsGone() {
         mPrompt.show();
 
@@ -297,7 +285,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void publicPassNotice_empty_viewIsGone() {
         mPrompt.setPublicPassesNotice(Collections.emptyList());
         mPrompt.show();
@@ -309,7 +296,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void publicPassesNotice_nonEmpty_viewIsVisible() {
         LegalMessageLine line =
                 new LegalMessageLine(
@@ -331,7 +317,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void noEntityAttributeUpdateDetails() {
         mPrompt.setEntityUpdateDetails(Collections.emptyList(), /* isUpdatePrompt= */ false);
         mPrompt.show();
@@ -342,7 +327,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void entityAttributeUpdateDetailsInSavePrompt() {
         final EntityAttributeUpdateDetails passportNumber =
                 new EntityAttributeUpdateDetails(
@@ -400,7 +384,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void entityAttributeUpdateDetailsInUpdatePrompt() {
         final EntityAttributeUpdateDetails passportNumber =
                 new EntityAttributeUpdateDetails(
@@ -458,7 +441,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_EDIT_ENTITIES_FROM_SAVE_UPDATE_PROMPT)
     public void editButtonNotVisibleWhenFeatureDisabled() {
         // The metric should not be logged when the feature is disabled.
@@ -500,7 +482,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void clickEditButton() {
         HistogramWatcher histogram =
                 HistogramWatcher.newSingleRecordWatcher(ENTITY_EDITOR_OPENED_HISTOGRAM, true);
@@ -541,7 +522,6 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     }
 
     @Test
-    @SmallTest
     public void openEditorTwice() {
         final EntityAttributeUpdateDetails passportNumber =
                 new EntityAttributeUpdateDetails(

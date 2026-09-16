@@ -34,7 +34,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -153,7 +152,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreate_phones() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
@@ -164,7 +162,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreate_tablets() {
         setupAndVerifyTablets();
         assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
@@ -193,7 +190,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHide() {
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
         verify(mRecyclerView).setAdapter(notNull());
@@ -206,7 +202,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         setupAndVerifyTablets();
         assertTrue(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
@@ -227,7 +222,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnModuleConfigChanged() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
@@ -256,7 +250,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
     public void testOnModuleConfigChangedForEducationalTipModules() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
@@ -359,7 +352,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRemoveModuleAndDisable() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
@@ -370,7 +362,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testProfileNotReady() {
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
         Callback<Boolean> callback = MockitoHelper.mockCallback();
@@ -382,7 +373,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordMagicStackScroll_Scrolled() {
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
         mCoordinator.setMediatorForTesting(mMediator);
@@ -399,7 +389,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordMagicStackScroll_NotScrolled() {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
@@ -412,7 +401,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnModuleChangedCallback() {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
@@ -438,7 +426,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnViewCreated() {
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
         mCoordinator.setMediatorForTesting(mMediator);
@@ -452,7 +439,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnModuleClicked() {
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
         mCoordinator.setMediatorForTesting(mMediator);
@@ -463,7 +449,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnLongClick() {
         HomeModulesContextMenuManager homeModulesContextMenuManager = mock();
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
@@ -486,7 +471,6 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAllCardsConfigChanged() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
@@ -502,14 +486,12 @@ public class HomeModulesCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAuroraPaddingStyle_Default() {
         testAuroraPaddingStyleImpl(
                 PaddingStyle.DEFAULT, INITIAL_TOP_MARGIN, /* expectChange= */ false);
     }
 
     @Test
-    @SmallTest
     public void testAuroraPaddingStyle_NonDefault() {
         testAuroraPaddingStyleImpl(PaddingStyle.SMALL, SMALL_TOP_MARGIN, /* expectChange= */ true);
     }

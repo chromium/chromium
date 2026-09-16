@@ -11,7 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,7 +46,6 @@ public class OtpVerificationDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testOnConfirm_callsNative() {
         mOtpVerificationDialogBridge.onConfirm("123456");
 
@@ -55,7 +53,6 @@ public class OtpVerificationDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testOnNewOtpRequested_callsNative() {
         mOtpVerificationDialogBridge.onNewOtpRequested();
 
@@ -63,7 +60,6 @@ public class OtpVerificationDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDialogDismissed_callsNativeAndClearsPointer() {
         mOtpVerificationDialogBridge.onDialogDismissed();
 
@@ -80,7 +76,6 @@ public class OtpVerificationDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testNativeCallsDoNotOccurAfterDismissed() {
         mOtpVerificationDialogBridge.onDialogDismissed();
 

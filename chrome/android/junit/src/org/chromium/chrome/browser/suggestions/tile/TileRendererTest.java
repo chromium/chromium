@@ -16,8 +16,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -126,7 +124,6 @@ public class TileRendererTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildTestView_Modern_noDecoration() {
         buildTileView(TileStyle.MODERN, TITLE_LINES);
         // Expect no callbacks: we don't have any icon to offer there.
@@ -135,7 +132,6 @@ public class TileRendererTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildTileView_ModernCondensed_noDecoration() {
         buildTileView(TileStyle.MODERN_CONDENSED, TITLE_LINES);
         // Expect no callbacks: we don't have any icon to offer there.
@@ -144,7 +140,6 @@ public class TileRendererTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildTileView_ModernCondensed_fallbackColor() {
         buildTileView(TileStyle.MODERN_CONDENSED, TITLE_LINES);
         // Expect no callbacks: we don't have any icon to offer there.
@@ -166,7 +161,6 @@ public class TileRendererTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildTileView_ModernCondensed_favicon() {
         buildTileView(TileStyle.MODERN_CONDENSED, TITLE_LINES);
         // Expect no callbacks: we don't have any icon to offer there.
@@ -187,7 +181,6 @@ public class TileRendererTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildTestView_ModernSearch() {
         doReturn(true)
                 .when(mMockTemplateUrlService)
@@ -208,14 +201,12 @@ public class TileRendererTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildTileView_TopSites_ContentDescription() {
         SuggestionsTileView tileView = buildTileView(TileStyle.MODERN, TITLE_LINES);
         Assert.assertEquals("Example: www.example.com", tileView.getContentDescription());
     }
 
     @Test
-    @SmallTest
     public void testBuildTileView_CustomLinks_ContentDescription() {
         mTileSource = TileSource.CUSTOM_LINKS;
         SuggestionsTileView tileView = buildTileView(TileStyle.MODERN, TITLE_LINES);
@@ -224,7 +215,6 @@ public class TileRendererTest {
     }
 
     @Test
-    @SmallTest
     public void testTileTitle_multiLineSearch() {
         doReturn(true)
                 .when(mMockTemplateUrlService)
@@ -234,7 +224,6 @@ public class TileRendererTest {
     }
 
     @Test
-    @SmallTest
     public void testTileTitle_multiLineURL() {
         doReturn(false)
                 .when(mMockTemplateUrlService)
@@ -244,7 +233,6 @@ public class TileRendererTest {
     }
 
     @Test
-    @SmallTest
     public void testTileTitle_singleLineSearch() {
         doReturn(true)
                 .when(mMockTemplateUrlService)
@@ -254,7 +242,6 @@ public class TileRendererTest {
     }
 
     @Test
-    @SmallTest
     public void testTileTitle_singleLineURL() {
         doReturn(false)
                 .when(mMockTemplateUrlService)

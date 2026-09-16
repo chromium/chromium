@@ -13,7 +13,6 @@ import android.os.Bundle;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -83,7 +82,6 @@ public class SafeBrowsingSettingsFragmentUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEnhancedProtectionHighlight() {
         launchFragmentWithArgs(
                 SafeBrowsingSettingsFragment.createArguments(

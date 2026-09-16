@@ -11,7 +11,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -80,7 +79,6 @@ public class AuthenticatorSelectionDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissDialog() throws Exception {
         Assert.assertNotNull(mModalDialogManager.getShownDialogModel());
 
@@ -91,7 +89,6 @@ public class AuthenticatorSelectionDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissTwice() throws Exception {
         mAuthenticatorSelectionDialogBridge.dismiss();
         mAuthenticatorSelectionDialogBridge.dismiss();
@@ -101,7 +98,6 @@ public class AuthenticatorSelectionDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDismissedTwice() {
         mAuthenticatorSelectionDialogBridge.dismiss();
         mAuthenticatorSelectionDialogBridge.onDialogDismissed();
@@ -111,7 +107,6 @@ public class AuthenticatorSelectionDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void onOptionSelectedNotCalledAfterOnDismissed() {
         mAuthenticatorSelectionDialogBridge.onDialogDismissed();
         mAuthenticatorSelectionDialogBridge.onOptionSelected(OPTION_1.getIdentifier());
@@ -121,7 +116,6 @@ public class AuthenticatorSelectionDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissedCalledOnPositiveButtonClick() throws Exception {
         mModalDialogManager.clickPositiveButton();
 
@@ -131,7 +125,6 @@ public class AuthenticatorSelectionDialogBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissedCalledOnNegativeButtonClick() throws Exception {
         mModalDialogManager.clickNegativeButton();
 

@@ -29,7 +29,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -172,7 +171,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testValidIbanValueEnablesSaveButton() {
         initFragment(/* useDefaultIban= */ true);
 
@@ -182,7 +180,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testInvalidIbanValueDoesNotEnableSaveButton() {
         initFragment(/* useDefaultIban= */ true);
 
@@ -192,7 +189,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testEditIban_whenIbanIsNotEdited_keepsSaveButtonDisabled() {
         initFragment(/* useDefaultIban= */ true);
 
@@ -204,7 +200,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testEditIban_whenIbanValueIsEditedFromValidToInvalid_disablesSaveButton() {
         initFragment(/* useDefaultIban= */ true);
 
@@ -215,7 +210,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testEditIban_whenIbanValueIsEditedToAnotherValidValue_enablesSaveButton() {
         initFragment(/* useDefaultIban= */ true);
 
@@ -226,7 +220,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testEditIban_whenIbanNicknameIsEdited_enablesSaveButton() {
         initFragment(/* useDefaultIban= */ true);
 
@@ -236,7 +229,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void deleteIbanConfirmationDialog_deleteEntryCanceled_dialogDismissed() {
         initFragment(/* useDefaultIban= */ true);
         FakeModalDialogManager fakeModalDialogManager =
@@ -255,7 +247,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void deleteIbanConfirmationDialog_deleteEntryConfirmed_dialogDismissedAndEntryDeleted() {
         initFragment(/* useDefaultIban= */ true);
         FakeModalDialogManager fakeModalDialogManager =
@@ -274,14 +265,12 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testHelpButtonShown() {
         initFragment(/* useDefaultIban= */ true);
         onView(withId(R.id.help_menu_id)).check(matches(isDisplayed()));
     }
 
     @Test
-    @MediumTest
     public void testRecordHistogram_whenNewIbanIsAddedWithNickname() {
         // Default IBAN is not initialized.
         initFragment(/* useDefaultIban= */ false);
@@ -300,7 +289,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testRecordHistogram_whenNewIbanIsAddedWithoutNickname() {
         // Default IBAN is not initialized.
         initFragment(/* useDefaultIban= */ false);
@@ -319,7 +307,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testRecordHistogram_whenIbanIsDeleted() {
         initFragment(/* useDefaultIban= */ true);
 
@@ -338,7 +325,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testRecordHistogram_whenEditorIsClosedAfterEditingIbanNickname() {
         initFragment(/* useDefaultIban= */ true);
 
@@ -354,7 +340,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testRecordHistogram_whenEditorIsClosedAfterEditingIbanValue() {
         initFragment(/* useDefaultIban= */ true);
 
@@ -370,7 +355,6 @@ public class AutofillLocalIbanEditorTest {
     }
 
     @Test
-    @MediumTest
     public void testRecordHistogram_whenEditorIsClosedWithoutEditingIban() {
         initFragment(/* useDefaultIban= */ true);
 

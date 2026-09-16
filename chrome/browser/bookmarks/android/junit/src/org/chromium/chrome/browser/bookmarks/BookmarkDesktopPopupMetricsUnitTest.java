@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -18,7 +16,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkDesktopPopupMetrics.Bookmar
 public class BookmarkDesktopPopupMetricsUnitTest {
 
     @Test
-    @SmallTest
     public void testRecordOutcome_Add_Saved() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -34,7 +31,6 @@ public class BookmarkDesktopPopupMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_Add_Removed() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -50,7 +46,6 @@ public class BookmarkDesktopPopupMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_Add_EditDialogOpened() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -66,7 +61,6 @@ public class BookmarkDesktopPopupMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_Edit_Saved() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -82,7 +76,6 @@ public class BookmarkDesktopPopupMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_Edit_Dismissed() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()

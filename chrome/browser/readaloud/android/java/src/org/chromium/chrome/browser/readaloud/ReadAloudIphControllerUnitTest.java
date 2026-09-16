@@ -16,8 +16,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -96,7 +94,6 @@ public class ReadAloudIphControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void maybeShowReadAloudAppMenuIph() {
         mController.maybeShowReadAloudAppMenuIph();
         verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());
@@ -111,7 +108,6 @@ public class ReadAloudIphControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void maybeShowReadAloudAppMenuIph_withAi() {
       doReturn(PlaybackMode.OVERVIEW).when(mReadAloudController).getModeToPlay(mTab);
 
@@ -128,7 +124,6 @@ public class ReadAloudIphControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void maybeShowReadAloudAppMenuIph_false() {
         doReturn(PlaybackMode.UNSPECIFIED).when(mReadAloudController).getModeToPlay(mTab);
 
@@ -137,7 +132,6 @@ public class ReadAloudIphControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void maybeShowReadAloudAppMenuIph_invalid() {
         // invalid tab URL
         mTab.setGurlOverrideForTesting(new GURL("http://0x100.0/"));
@@ -159,7 +153,6 @@ public class ReadAloudIphControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void maybeShowReadAloudAppMenuIph_noTextBubble_disabledHighlight() {
         mController.setShowAppMenuTextBubble(false);
         mController.maybeShowReadAloudAppMenuIph();
@@ -173,7 +166,6 @@ public class ReadAloudIphControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT})
     public void maybeShowReadAloudAppMenuIph_noTextBubble_enabledHighlight() {
         mController.setShowAppMenuTextBubble(false);

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.translate;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,7 +39,6 @@ public final class AutoTranslateSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateWithNullWindowAndroid() {
         Mockito.doReturn(null).when(mWebContents).getTopLevelNativeWindow();
         Assert.assertNull(
@@ -49,7 +46,6 @@ public final class AutoTranslateSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateWithNullActivityWeakReference() {
         Mockito.doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
         Mockito.doReturn(null).when(mWindowAndroid).getActivity();
@@ -58,7 +54,6 @@ public final class AutoTranslateSnackbarControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateWithNullSnackbarManager() {
         Activity activity = Mockito.mock(Activity.class);
 

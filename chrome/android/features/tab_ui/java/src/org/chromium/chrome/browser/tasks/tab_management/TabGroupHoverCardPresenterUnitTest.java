@@ -14,8 +14,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,7 +77,6 @@ public class TabGroupHoverCardPresenterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBindData_customTitle() {
         List<Tab> tabs = List.of(mTab1, mTab2);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
@@ -100,7 +97,6 @@ public class TabGroupHoverCardPresenterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBindData_fallbackTitle() {
         List<Tab> tabs = List.of(mTab1, mTab2, mTab3);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
@@ -118,7 +114,6 @@ public class TabGroupHoverCardPresenterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBindData_childTabsLimitAndExcessCounter() {
         List<Tab> tabs = List.of(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
@@ -139,7 +134,6 @@ public class TabGroupHoverCardPresenterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBindData_emptyGroupReturnsFalse() {
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
 
@@ -147,7 +141,6 @@ public class TabGroupHoverCardPresenterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBindData_nullGroupId_resolvesFromHeaderTabId() {
         when(mTabModel.getTabById(HEADER_TAB_ID)).thenReturn(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
@@ -165,14 +158,12 @@ public class TabGroupHoverCardPresenterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBindData_nullGroupIdAndInvalidHeaderId_returnsFalse() {
         assertFalse(
                 mPresenter.bindData(mHoverCardView, Tab.INVALID_TAB_ID, /* tabGroupId= */ null));
     }
 
     @Test
-    @SmallTest
     public void testBindData_incognito() {
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
@@ -189,7 +180,6 @@ public class TabGroupHoverCardPresenterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBindData_filtersClosingAndDestroyedTabs() {
         when(mTab2.isClosing()).thenReturn(true);
         when(mTab3.isDestroyed()).thenReturn(true);
@@ -211,7 +201,6 @@ public class TabGroupHoverCardPresenterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBindData_allTabsClosingOrDestroyed_returnsFalse() {
         when(mTab1.isClosing()).thenReturn(true);
         when(mTab2.isDestroyed()).thenReturn(true);

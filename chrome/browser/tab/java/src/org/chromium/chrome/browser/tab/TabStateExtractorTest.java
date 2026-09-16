@@ -11,8 +11,6 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,7 +54,6 @@ public class TabStateExtractorTest {
     }
 
     @Test
-    @SmallTest
     public void testGetWebContentsState_notPending() {
         doReturn(null).when(mTabMock).getWebContentsState();
         doReturn(null).when(mTabMock).getPendingLoadParams();
@@ -73,7 +70,6 @@ public class TabStateExtractorTest {
     }
 
     @Test
-    @SmallTest
     public void testGetWebContentsState_pending() {
         LoadUrlParams loadUrlParams = new LoadUrlParams(URL);
         loadUrlParams.setReferrer(new Referrer(REFERRER_URL, REFERRER_POLICY));
@@ -101,7 +97,6 @@ public class TabStateExtractorTest {
     }
 
     @Test
-    @SmallTest
     public void testGetWebContentsState_frozen() {
         WebContentsState webContentsState =
                 new WebContentsState(mByteBuffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
@@ -117,7 +112,6 @@ public class TabStateExtractorTest {
     }
 
     @Test
-    @SmallTest
     public void testGetWebContentsState_null() {
         doReturn(null).when(mTabMock).getWebContentsState();
         doReturn(null).when(mTabMock).getWebContents();
@@ -129,7 +123,6 @@ public class TabStateExtractorTest {
     }
 
     @Test
-    @SmallTest
     public void testGetWebContentsState_pendingWithWebContents() {
         ByteBuffer newByteBuffer = ByteBuffer.allocateDirect(2);
         doReturn(null).when(mTabMock).getWebContentsState();

@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,7 +50,6 @@ public class AutofillDeleteSavedCvcsConfirmationDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testDialogIsShown() {
         mDialog.show();
 
@@ -60,7 +58,6 @@ public class AutofillDeleteSavedCvcsConfirmationDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testDialogShowsTitleMessageAndButtonLabels() {
         mDialog.show();
 
@@ -98,7 +95,6 @@ public class AutofillDeleteSavedCvcsConfirmationDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testDeleteButton_whenPressed_closesDialogAndCallbackReceivesTrue() {
         mDialog.show();
 
@@ -109,7 +105,6 @@ public class AutofillDeleteSavedCvcsConfirmationDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testCancelButton_whenPressed_closesDialogAndCallbackReceivesFalse() {
         mDialog.show();
 

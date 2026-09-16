@@ -11,8 +11,6 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,7 +39,6 @@ public class TaskManagerActivityTest {
     }
 
     @Test
-    @SmallTest
     public void testLifecycle() {
         ActivityController<TaskManagerActivity> controller =
                 Robolectric.buildActivity(TaskManagerActivity.class);

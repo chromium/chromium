@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,7 +37,6 @@ public class ActionRegistryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateActionAndGet() {
         mActionRegistry.register(ActionId.HOME_BUTTON, mModel1);
         mActionRegistry.register(ActionId.TAB_SWITCHER, mModel2);
@@ -49,7 +46,6 @@ public class ActionRegistryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUnregister() {
         mActionRegistry.register(ActionId.HOME_BUTTON, mModel1);
         mActionRegistry.unregister(ActionId.HOME_BUTTON);
@@ -58,13 +54,11 @@ public class ActionRegistryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGet_UnregisteredAction() {
         assertNull(mActionRegistry.get(ActionId.HOME_BUTTON).get());
     }
 
     @Test
-    @SmallTest
     public void testObserverNotifiedOnUpdate() {
         mActionRegistry.get(ActionId.HOME_BUTTON).addSyncObserver(mModelObserver);
 

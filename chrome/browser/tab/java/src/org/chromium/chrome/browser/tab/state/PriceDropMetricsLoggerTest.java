@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.tab.state;
 
 import static org.mockito.Mockito.doReturn;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,7 +36,6 @@ public class PriceDropMetricsLoggerTest {
         mPriceDropMetricsLogger = new PriceDropMetricsLogger(mShoppingPersistedTabData);
     }
 
-    @SmallTest
     @Test
     public void testTabUsageStatus() {
         Assert.assertEquals(
@@ -58,7 +55,6 @@ public class PriceDropMetricsLoggerTest {
                 PriceDropMetricsLogger.getTabUsageStatus(TimeUnit.HOURS.toMillis(12)));
     }
 
-    @SmallTest
     @Test
     public void testMetricsStaleTabNavigation() {
         var histograms =
@@ -75,7 +71,6 @@ public class PriceDropMetricsLoggerTest {
         histograms.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testMetrics2StaleTabEnterTabSwitcher() {
         var histograms =
@@ -91,7 +86,6 @@ public class PriceDropMetricsLoggerTest {
         histograms.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testMetricsActiveTabNavigationComplete() {
         var histograms =
@@ -108,7 +102,6 @@ public class PriceDropMetricsLoggerTest {
         histograms.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testMetricsActiveTabEnterTabSwitcher() {
         var histograms =
@@ -125,7 +118,6 @@ public class PriceDropMetricsLoggerTest {
         histograms.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testMetricsPriceNoPriceDrop() {
         var histograms =
@@ -142,7 +134,6 @@ public class PriceDropMetricsLoggerTest {
         histograms.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testEmptyPriceDropResponse() {
         doReturn(null).when(mShoppingPersistedTabData).getMainOfferId();

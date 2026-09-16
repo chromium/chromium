@@ -19,7 +19,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -88,7 +87,6 @@ public class HubLayoutScrimControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowAndHide() {
         assertFalse(mScrimManager.isShowingScrim());
         mScrimController.startShowingScrim();
@@ -113,7 +111,6 @@ public class HubLayoutScrimControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowForceAnimationToFinish() {
         mIsIncognitoSupplier.set(true);
         assertFalse(mScrimManager.isShowingScrim());

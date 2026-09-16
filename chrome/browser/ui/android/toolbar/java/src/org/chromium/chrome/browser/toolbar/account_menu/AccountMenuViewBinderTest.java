@@ -18,8 +18,6 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,7 +63,6 @@ public class AccountMenuViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testBindTitle() {
         mModel.set(MenuItemProperties.TITLE_ID, R.string.menu_passwords_and_autofill);
         assertEquals(
@@ -74,14 +71,12 @@ public class AccountMenuViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testBindStartIcon() {
         mModel.set(MenuItemProperties.START_ICON_ID, R.drawable.ic_password_manager_24dp);
         assertNotNull(mItemView.getCompoundDrawablesRelative()[0]);
     }
 
     @Test
-    @SmallTest
     public void testBindClickListener() {
         mModel.set(MenuItemProperties.CLICK_LISTENER, mClickListener);
         mItemView.performClick();
@@ -89,7 +84,6 @@ public class AccountMenuViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testBindManageGoogleAccount() {
         mModel.set(MenuItemProperties.TITLE_ID, R.string.manage_your_google_account);
         mModel.set(MenuItemProperties.START_ICON_ID, R.drawable.ic_google_services_24dp);
@@ -100,7 +94,6 @@ public class AccountMenuViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testBindPromoCard_onSigninClickListener() {
         View promoView =
                 LayoutInflater.from(mActivity).inflate(R.layout.account_menu_promo_card, null);
@@ -117,7 +110,6 @@ public class AccountMenuViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testBindIdentityCard() {
         View cardView =
                 bindIdentityCard(
@@ -133,7 +125,6 @@ public class AccountMenuViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testBindIdentityCard_emptyFullName_fallsBackToEmail() {
         View cardView =
                 bindIdentityCard(
@@ -148,7 +139,6 @@ public class AccountMenuViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testBindIdentityCard_nonDisplayableEmail() {
         View cardView =
                 bindIdentityCard(
@@ -161,7 +151,6 @@ public class AccountMenuViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testBindIdentityCard_nonDisplayableEmailAndEmptyFullName() {
         View cardView =
                 bindIdentityCard(

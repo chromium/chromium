@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -65,7 +64,6 @@ public class CrossDeviceListCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetView() {
         assertNotNull(mCoordinator.getView());
     }

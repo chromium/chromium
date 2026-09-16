@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.util.SizeF;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -100,7 +99,6 @@ public class QuickActionSearchWidgetProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testAppWidgetInstallationCreatesWidgets() {
         mIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         updateReportedWidgetSizes(mOptionsWidgetA, new SizeF(80, 80), new SizeF(400, 40));
@@ -122,7 +120,6 @@ public class QuickActionSearchWidgetProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testAppWidgetResizeUpdatesWidgets() {
         updateReportedWidgetSizes(mOptionsWidgetA, new SizeF(80, 80), new SizeF(400, 40));
         updateReportedWidgetSizes(mOptionsWidgetB, new SizeF(30, 10), new SizeF(100, 30));
@@ -166,7 +163,6 @@ public class QuickActionSearchWidgetProviderTest {
     }
 
     @Test
-    @SmallTest
     @Config(sdk = Build.VERSION_CODES.S)
     public void testCreateWidgetsFromFallbackValues_missingSizes() {
         updateReportedWidgetSizes(mOptionsWidgetA, new SizeF(80, 80), new SizeF(400, 40));
@@ -181,7 +177,6 @@ public class QuickActionSearchWidgetProviderTest {
     }
 
     @Test
-    @SmallTest
     @Config(sdk = Build.VERSION_CODES.S)
     public void testCreateWidgetFromFallbackValues_emptySizes() {
         updateReportedWidgetSizes(mOptionsWidgetA, new SizeF(80, 80), new SizeF(400, 40));
@@ -199,7 +194,6 @@ public class QuickActionSearchWidgetProviderTest {
     }
 
     @Test
-    @SmallTest
     @Config(sdk = Build.VERSION_CODES.S)
     public void testCreateWidgetFromSizeSpecs() {
         updateReportedWidgetSizes(mOptionsWidgetA, new SizeF(80, 80), new SizeF(400, 40));
@@ -215,7 +209,6 @@ public class QuickActionSearchWidgetProviderTest {
     }
 
     @Test
-    @SmallTest
     @Config(sdk = Build.VERSION_CODES.R)
     public void testCreateWidgetFromLegacyMeasurements() {
         updateReportedWidgetSizes(mOptionsWidgetA, new SizeF(80, 80), new SizeF(400, 40));
@@ -235,7 +228,6 @@ public class QuickActionSearchWidgetProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testSearchWidgetDimensions() {
         Resources res = mContext.getResources();
         float density = res.getDisplayMetrics().density;

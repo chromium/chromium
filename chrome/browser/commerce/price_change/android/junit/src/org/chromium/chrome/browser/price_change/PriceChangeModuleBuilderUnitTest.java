@@ -14,8 +14,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,7 +77,6 @@ public class PriceChangeModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildModule_NotEligible() {
         doReturn(false).when(mCommerceFeatureUtilsJniMock).isPriceAnnotationsEnabled(anyLong());
         assertFalse(PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mProfile));
@@ -89,7 +86,6 @@ public class PriceChangeModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildModule_NotEligibleWithoutProfileProvider() {
         mModuleBuilder =
                 new PriceChangeModuleBuilder(
@@ -100,14 +96,12 @@ public class PriceChangeModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBuildModule_NotEligibleWithoutProfile() {
         when(mProfileProvider.getOriginalProfile()).thenReturn(null);
         assertFalse(mModuleBuilder.isEligible());
     }
 
     @Test
-    @SmallTest
     public void testBuildModule_Eligible() {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(true);

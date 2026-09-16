@@ -15,8 +15,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -132,7 +130,6 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testToggleHubVisibility() {
         mHubVisibilitySupplier.set(true);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -148,7 +145,6 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSamePane_NoTabChange() {
         mHubVisibilitySupplier.set(true);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -160,7 +156,6 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSamePane_ChangedTabs_WithGroup() {
         Tab regularTab1 = mRegularTabModel.getTabAt(REGULAR_TAB_1_INDEX);
         when(mRegularTabModel.isTabInTabGroup(regularTab1)).thenReturn(true);
@@ -173,7 +168,6 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSamePane_ChangedTabs_WithoutGroup() {
         mHubVisibilitySupplier.set(true);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -184,7 +178,6 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testNewPane_NoSwitch() {
         mHubVisibilitySupplier.set(true);
         changePanes();
@@ -196,7 +189,6 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testNewPane_ChangedTabs_WithGroup() {
         Tab incognitoTab1 = mIncognitoTabModel.getTabAt(INCOGNITO_TAB_1_INDEX);
         when(mIncognitoTabModel.isTabInTabGroup(incognitoTab1)).thenReturn(true);
@@ -211,7 +203,6 @@ public class HubTabSwitcherMetricsRecorderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testNewPane_ChangedTabs_WithoutGroup() {
         mHubVisibilitySupplier.set(true);
         changePanes();

@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import androidx.annotation.DrawableRes;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,7 +46,6 @@ public class SetupListCompletableUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCompletionState_NotSetupListModule() {
         when(mSetupListManager.isSetupListModule(anyInt())).thenReturn(false);
 
@@ -58,7 +56,6 @@ public class SetupListCompletableUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCompletionState_SetupListModule_Completable_NotComplete() {
         when(mSetupListManager.isSetupListModule(TEST_MODULE_TYPE)).thenReturn(true);
         when(mMockCompletableProvider.isComplete()).thenReturn(false);
@@ -72,7 +69,6 @@ public class SetupListCompletableUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCompletionState_SetupListModule_Completable_IsComplete() {
         when(mSetupListManager.isSetupListModule(TEST_MODULE_TYPE)).thenReturn(true);
         when(mMockCompletableProvider.isComplete()).thenReturn(true);
@@ -86,7 +82,6 @@ public class SetupListCompletableUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetCompletionState_AwaitingAnimation() {
         when(mSetupListManager.isSetupListModule(TEST_MODULE_TYPE)).thenReturn(true);
         when(mSetupListManager.isModuleAwaitingCompletionAnimation(TEST_MODULE_TYPE))

@@ -27,7 +27,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.State;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -92,13 +91,11 @@ public class CirclePagerIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testNoScrolling_Phone() {
         testNoScrollingImpl(/* isTablet= */ false);
     }
 
     @Test
-    @SmallTest
     public void testNoScrolling_Tablet() {
         testNoScrollingImpl(/* isTablet= */ true);
     }
@@ -142,7 +139,6 @@ public class CirclePagerIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollTheRecyclerView_Phone() {
         mDecoration = create(/* isTablet= */ false);
         assertTrue(mDecoration.getIsLTRForTesting());
@@ -216,7 +212,6 @@ public class CirclePagerIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollTheRecyclerView_Tablet() {
         mDecoration = create(/* isTablet= */ true);
         mDecoration.setItemPerScreenForTesting(2);
@@ -289,7 +284,6 @@ public class CirclePagerIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetItemOffsets_Phone() {
         mDecoration = create(/* isTablet= */ false);
 
@@ -306,7 +300,6 @@ public class CirclePagerIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetItemOffsets_DoNotShowPageIndicator() {
         mDecoration = create(/* isTablet= */ true);
 
@@ -338,7 +331,6 @@ public class CirclePagerIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetItemOffsets_ShowPageIndicator() {
         mDecoration = create(/* isTablet= */ true);
 
@@ -367,7 +359,6 @@ public class CirclePagerIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetItemPerScreen() {
         // Sets the tablet as a wide screen.
         DisplayStyle displayStyle =
@@ -381,7 +372,6 @@ public class CirclePagerIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testNoScrolling_RTL() {
         Locale.setDefault(new Locale("ar"));
         mDecoration = create(/* isTablet= */ false);
@@ -417,7 +407,6 @@ public class CirclePagerIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollTheRecyclerView_RTL() {
         Locale.setDefault(new Locale("ar"));
         mDecoration = create(/* isTablet= */ false);

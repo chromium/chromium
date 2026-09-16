@@ -19,8 +19,6 @@ import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,7 +80,6 @@ public class HubBottomToolbarViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testVisibilityToggle() {
         // Initial state should be GONE
         assertEquals(GONE, mBottomToolbarView.getVisibility());
@@ -97,7 +94,6 @@ public class HubBottomToolbarViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testColorScheme() {
         int defaultColor = HubColors.getHubBottomToolbarColor(mActivity, HubColorScheme.DEFAULT);
         int incognitoColor =
@@ -112,7 +108,6 @@ public class HubBottomToolbarViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testColorMixer() {
         verify(mHubColorMixer).registerBlend(mBlendCaptor.capture());
         HubViewColorBlend blend = mBlendCaptor.getValue();

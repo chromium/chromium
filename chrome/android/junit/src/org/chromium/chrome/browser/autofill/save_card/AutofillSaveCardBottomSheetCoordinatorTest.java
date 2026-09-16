@@ -20,7 +20,6 @@ import android.net.Uri;
 
 import androidx.annotation.DrawableRes;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,7 +47,6 @@ import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link AutofillSaveCardBottomSheetCoordinator} */
-@SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ANDROID_SAVE_CARD_NON_BLOCKING_DIALOG)
 public final class AutofillSaveCardBottomSheetCoordinatorTest {

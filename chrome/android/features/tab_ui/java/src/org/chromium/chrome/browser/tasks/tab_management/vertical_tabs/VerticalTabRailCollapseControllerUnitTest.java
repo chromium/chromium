@@ -11,8 +11,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,7 +50,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInitialState() {
         assertEquals(RailCollapseState.EXPANDED, mController.getRailCollapseStateByUser());
         assertEquals(
@@ -61,7 +58,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInitialState_RestoredFromSharedPreferences() {
         VerticalTabUtils.setRailCollapsedInSharedPref(true);
         VerticalTabRailCollapseController controller =
@@ -72,7 +68,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDispatchRailCollapseStateUpdateSupplierValue() {
         assertEquals(
                 RailCollapseState.EXPANDED, (int) mController.getRailCollapseStateSupplier().get());
@@ -88,14 +83,12 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDispatchRailCollapseState_Update_CallsCallback() {
         mController.dispatchRailCollapseStateUpdate(RailCollapseState.COLLAPSED);
         verify(mMockFallbackCallback).onResult(RailCollapseState.COLLAPSED);
     }
 
     @Test
-    @SmallTest
     public void testGetEffectiveRailCollapseState_NarrowVsWide() {
         mController.setRailCollapseStateByUser(RailCollapseState.EXPANDED);
         assertEquals(
@@ -115,7 +108,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testToggleCollapseState_PersistsToSharedPreferences() {
         mController.toggleCollapseState();
         assertTrue(VerticalTabUtils.isRailCollapsedFromSharedPref());
@@ -125,7 +117,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testToggleCollapseState_WithListener() {
         mController.setRailCollapseListener(mMockListener);
 
@@ -141,7 +132,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testToggleCollapseState_WithoutListener_Fallback() {
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Android.VerticalTabs.RailCollapsed", true);
@@ -152,7 +142,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testToggleCollapseState_Disabled() {
         mController.setRailCollapseListener(mMockListener);
         mController.setCollapseButtonEnabled(false);
@@ -164,7 +153,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testExpandOrCollapseOnHover_ValidTransitions() {
         mController.setRailCollapseListener(mMockListener);
         mController.setRailCollapseStateByUser(RailCollapseState.COLLAPSED);
@@ -185,7 +173,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testExpandOrCollapseOnHover_InvalidTransitions() {
         mController.setRailCollapseListener(mMockListener);
         mController.setRailCollapseStateByUser(RailCollapseState.EXPANDED);
@@ -196,7 +183,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRequestRailCollapseStateChange_NoOpIfSameState() {
         mController.setRailCollapseListener(mMockListener);
         mController.requestRailCollapseStateChangeByUser(
@@ -207,7 +193,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRequestRailCollapseStateChange_UpdateStateByUser() {
         mController.setRailCollapseListener(mMockListener);
         mController.requestRailCollapseStateChangeByUser(
@@ -235,7 +220,6 @@ public class VerticalTabRailCollapseControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsExpanded() {
         assertTrue(VerticalTabRailCollapseController.isExpanded(RailCollapseState.EXPANDED));
         assertTrue(

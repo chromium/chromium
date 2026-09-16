@@ -17,8 +17,6 @@ import android.app.Activity;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,7 +40,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link EmailVerificationBottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SmallTest
 public final class EmailVerificationBottomSheetCoordinatorTest {
     private static final String TEST_TITLE = "Verify this email automatically?";
     private static final String TEST_DESCRIPTION =

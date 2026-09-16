@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import androidx.annotation.Nullable;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,7 +32,6 @@ public class NotificationSharedPrefManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testSerialization() {
         ActiveNotification versioned = new ActiveNotification(100, 50, "guid25");
         Assert.assertEquals(
@@ -45,7 +43,6 @@ public class NotificationSharedPrefManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testActiveNotificationCreation() {
         ActiveNotification versioned = new ActiveNotification(100, 50, "guid25");
         Assert.assertEquals(100, versioned.version);
@@ -59,7 +56,6 @@ public class NotificationSharedPrefManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testDeserialization() {
         assertNotificationEquals(100, 50, "guid25", deserialize("100_50_guid25"));
 
@@ -86,7 +82,6 @@ public class NotificationSharedPrefManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testNextNotificationId() {
         int id = NotificationSharedPrefManager.getNextNotificationId();
         Assert.assertEquals(0, id);
@@ -99,7 +94,6 @@ public class NotificationSharedPrefManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testMaxNotificationId() {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeInt(
@@ -119,7 +113,6 @@ public class NotificationSharedPrefManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testAddAndFindActiveNotification() {
         ActiveNotification notification = new ActiveNotification(100, 50, "guid25");
         NotificationSharedPrefManager.addActiveNotification(notification);
@@ -128,7 +121,6 @@ public class NotificationSharedPrefManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testRemoveActiveNotification() {
         Assert.assertFalse(NotificationSharedPrefManager.removeActiveNotification("guid25"));
 

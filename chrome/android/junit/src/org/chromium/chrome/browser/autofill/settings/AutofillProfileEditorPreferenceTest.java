@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,6 @@ public class AutofillProfileEditorPreferenceTest {
     }
 
     @Test
-    @SmallTest
     public void testIconSpaceReservedDefaultFalse() {
         AutofillProfileEditorPreference preference = new AutofillProfileEditorPreference(mContext);
         assertFalse(preference.isIconSpaceReserved());

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.educational_tip;
 
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,7 +38,6 @@ public class QuickDeletePromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testClickTabGroupPromoCard() {
         mQuickDeletePromoCoordinator.onCardClicked();
         verify(mActionDelegate).openAndHighlightQuickDeleteMenuItem();

@@ -24,7 +24,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -75,7 +74,6 @@ public class BookmarkBarPopupTest {
     }
 
     @Test
-    @SmallTest
     public void testSetupEmptyView() {
         ViewGroup contentParent = new LinearLayout(mActivity);
         ListView menuList = new ListView(mActivity);
@@ -105,7 +103,6 @@ public class BookmarkBarPopupTest {
     }
 
     @Test
-    @SmallTest
     public void testConfigurePopupWindowSize_measuredWidthLessThanMax() {
         mPopup.setPopupWindowForTesting(mAnchoredPopupWindow);
         setupMockListMenuWithContent();
@@ -127,7 +124,6 @@ public class BookmarkBarPopupTest {
     }
 
     @Test
-    @SmallTest
     public void testConfigurePopupWindowSize_measuredWidthGreaterThanMax() {
         mPopup.setPopupWindowForTesting(mAnchoredPopupWindow);
         setupMockListMenuWithContent();
@@ -149,7 +145,6 @@ public class BookmarkBarPopupTest {
     }
 
     @Test
-    @SmallTest
     public void testConfigurePopupWindowSize_measuredLessThanMin() {
         mPopup.setPopupWindowForTesting(mAnchoredPopupWindow);
         setupMockListMenuWithContent();
@@ -184,7 +179,6 @@ public class BookmarkBarPopupTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_usesTransparentBackground() {
         View rootView = new View(mActivity);
         when(mAnchorView.getRootView()).thenReturn(rootView);
@@ -220,7 +214,6 @@ public class BookmarkBarPopupTest {
     }
 
     @Test
-    @SmallTest
     public void testShowAtOffset_usesTransparentBackground() {
         View rootView = new View(mActivity);
         when(mAnchorView.getRootView()).thenReturn(rootView);
@@ -257,7 +250,6 @@ public class BookmarkBarPopupTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_initializesFlyoutController() {
         View rootView = new View(mActivity);
         when(mAnchorView.getRootView()).thenReturn(rootView);
@@ -277,7 +269,6 @@ public class BookmarkBarPopupTest {
     }
 
     @Test
-    @SmallTest
     public void testFlyoutHandler_getPopupRectAndDismiss() {
         mPopup.dismissPopup(mAnchoredPopupWindow);
         verify(mAnchoredPopupWindow).dismiss();

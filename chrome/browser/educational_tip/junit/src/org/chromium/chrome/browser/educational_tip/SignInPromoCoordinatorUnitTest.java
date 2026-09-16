@@ -12,8 +12,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,7 +68,6 @@ public class SignInPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({
         SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
@@ -84,7 +81,6 @@ public class SignInPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnCardClicked() {
         mSignInPromoCoordinator.onCardClicked();
 
@@ -95,14 +91,12 @@ public class SignInPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsComplete_Completed() {
         when(mSetupListManager.isModuleCompleted(ModuleType.SIGN_IN_PROMO)).thenReturn(true);
         assertTrue(mSignInPromoCoordinator.isComplete());
     }
 
     @Test
-    @SmallTest
     public void testIsComplete_NotCompleted() {
         when(mSetupListManager.isModuleCompleted(ModuleType.SIGN_IN_PROMO)).thenReturn(false);
         assertFalse(mSignInPromoCoordinator.isComplete());

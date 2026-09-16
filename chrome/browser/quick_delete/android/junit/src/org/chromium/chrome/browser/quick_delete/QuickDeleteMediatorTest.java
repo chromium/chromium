@@ -13,8 +13,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -66,7 +64,6 @@ public class QuickDeleteMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testQuickDeleteMediatorInit_InvokesChanges() {
         setSignedInStatus(true);
 
@@ -93,7 +90,6 @@ public class QuickDeleteMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testQuickDeleteMediatorInit_InvokesChanges_NonNullArchivedTabs() {
         setSignedInStatus(true);
 

@@ -12,8 +12,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,7 +61,6 @@ public class TabSwitcherIncognitoReauthCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testShowMethod_Invokes_RequestView_And_DisableNewTabButton() {
         mTabSwitcherIncognitoReauthCoordinator.mIgnoreViewAndModelCreationForTesting = true;
         mTabSwitcherIncognitoReauthCoordinator.setIncognitoReauthViewForTesting(
@@ -81,7 +78,6 @@ public class TabSwitcherIncognitoReauthCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testHideMethod_Invokes_ReleaseView_And_EnablesNewTabButton() {
         mTabSwitcherIncognitoReauthCoordinator.setModelChangeProcessorForTesting(
                 mPropertyModelChangeProcessorMock);

@@ -23,7 +23,6 @@ import android.view.View;
 import android.widget.PopupWindow;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -90,7 +89,6 @@ public class BookmarkBarPopupCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testShowFolderItemsPopup_usesTransparentBackground() {
         View rootView = new View(mActivity);
         when(mBookmarkBarView.getRootView()).thenReturn(rootView);
@@ -106,7 +104,6 @@ public class BookmarkBarPopupCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testShowFolderItemsPopup_setsSelectedState() {
         View rootView = new View(mActivity);
         when(mBookmarkBarView.getRootView()).thenReturn(rootView);
@@ -132,7 +129,6 @@ public class BookmarkBarPopupCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testDismiss_dismissesBothPopups() {
         AnchoredPopupWindow folderPopup = mock(AnchoredPopupWindow.class);
@@ -146,7 +142,6 @@ public class BookmarkBarPopupCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testShowContextMenuPopup_setsSelectedStateOnSubitem() {
         View rootView = new View(mActivity);
@@ -178,7 +173,6 @@ public class BookmarkBarPopupCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_CONTEXT_MENU)
     public void testShowContextMenuPopup_doesNotSetSelectedStateOnBookmarkBar() {
         View rootView = new View(mActivity);

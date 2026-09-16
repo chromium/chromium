@@ -17,7 +17,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,13 +81,11 @@ public class StartupSigninStateCheckControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testRegistersObserver() {
         verify(mActivityLifecycleDispatcher).register(mController);
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.VERIFY_STARTUP_SIGNIN_STATE)
     public void testFeatureDisabled_doesNothing() {
         mController.onFinishNativeInitialization();
@@ -97,7 +94,6 @@ public class StartupSigninStateCheckControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testNotSignedIn_doesNothing() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(null);
 
@@ -107,7 +103,6 @@ public class StartupSigninStateCheckControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testAlreadyConsented_doesNothing() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.MANAGED_ACCOUNT);
         when(mSigninManager.getUserAcceptedAccountManagement()).thenReturn(true);
@@ -118,7 +113,6 @@ public class StartupSigninStateCheckControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testUnconsentedManagedAccount_showsDialogAndAccepts() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.MANAGED_ACCOUNT);
         when(mSigninManager.getUserAcceptedAccountManagement()).thenReturn(false);
@@ -149,7 +143,6 @@ public class StartupSigninStateCheckControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testUnconsentedManagedAccount_showsDialogAndCancels() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.MANAGED_ACCOUNT);
         when(mSigninManager.getUserAcceptedAccountManagement()).thenReturn(false);
@@ -181,7 +174,6 @@ public class StartupSigninStateCheckControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testUnmanagedAccount_doesNothing() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
         when(mSigninManager.getUserAcceptedAccountManagement()).thenReturn(false);

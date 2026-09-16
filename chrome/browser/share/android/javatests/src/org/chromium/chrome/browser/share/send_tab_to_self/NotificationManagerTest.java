@@ -17,8 +17,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -78,7 +76,6 @@ public class NotificationManagerTest {
         BaseNotificationManagerProxyFactory.setInstanceForTesting(null);
     }
 
-
     private static Intent createTapIntent(
             String guid, String url, byte @Nullable [] pageContextBytes) {
         Intent intent = new Intent(NotificationManager.NOTIFICATION_ACTION_TAP);
@@ -103,7 +100,6 @@ public class NotificationManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testNotificationTap() {
         Intent intent = createTapIntent();
 
@@ -132,7 +128,6 @@ public class NotificationManagerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testNotificationTapWithSpecializedHandler() {
         String guid = "test_guid";
@@ -184,7 +179,6 @@ public class NotificationManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testNotificationTapWithSpecializedHandlerButFeatureDisabled() {
         String guid = "test_guid";
         String url = "https://www.example.com/app/path";
@@ -235,7 +229,6 @@ public class NotificationManagerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testOpenInNativeAppIfPossibleWithSpecializedHandler() {
         String url = "https://www.example.com/app/path";
@@ -279,7 +272,6 @@ public class NotificationManagerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testOpenInNativeAppIfPossibleNoSpecializedHandler() {
         String url = "https://www.example.com/app/path";
@@ -302,7 +294,6 @@ public class NotificationManagerTest {
      * extra to the launcher intent when form field propagation is enabled.
      */
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
     public void testNotificationTap_WithPageContext_FeatureEnabled() {
         byte[] pageContextBytes = new byte[] {1, 2, 3, 4};
@@ -327,7 +318,6 @@ public class NotificationManagerTest {
      * when form field propagation is disabled.
      */
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
     public void testNotificationTap_WithPageContext_FeatureDisabled() {
         byte[] pageContextBytes = new byte[] {1, 2, 3, 4};
@@ -351,7 +341,6 @@ public class NotificationManagerTest {
      * extra.
      */
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
     public void testNotificationTap_WithoutPageContext() {
         Intent intent = createTapIntent();
@@ -381,7 +370,6 @@ public class NotificationManagerTest {
      * intent carries the serialized page context extra when form field propagation is enabled.
      */
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_FORM_FIELDS)
     public void testShowNotificationWithPageContext() {
         byte[] pageContextBytes = new byte[] {1, 2, 3};
@@ -417,7 +405,6 @@ public class NotificationManagerTest {
      * context extra when no page context is provided.
      */
     @Test
-    @SmallTest
     public void testShowNotificationWithoutPageContext() {
         boolean shown =
                 NotificationManager.showNotification(
@@ -446,7 +433,6 @@ public class NotificationManagerTest {
      * NotificationStatus metric.
      */
     @Test
-    @SmallTest
     public void testNotificationStatusMetricsOnShowDismissAndTimeout() {
         NotificationManager.showNotification(
                 GUID, URL, "title", "device", 100000000L, BroadcastReceiver.class, null, null);
@@ -464,7 +450,6 @@ public class NotificationManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testShowNotification_OpensInTab_ContextTextContainsHost() {
         boolean shown =
                 NotificationManager.showNotification(
@@ -489,7 +474,6 @@ public class NotificationManagerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testShowNotification_OpensInNativeApp_ContextTextContainsAppName() {
         String url = "https://www.example.com/app/path";

@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,7 +35,6 @@ public class AuxiliarySearchConfigManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddAndRemoveListener() {
         assertEquals(0, mConfigManager.getObserverListSizeForTesting());
 

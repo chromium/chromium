@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.educational_tip;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,7 +40,6 @@ public class TabGroupSyncPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testClickTabGroupPromoCard() {
         mTabGroupSyncPromoCoordinator.onCardClicked();
         verify(mActionDelegate).openHubPane(eq(PaneId.TAB_GROUPS));

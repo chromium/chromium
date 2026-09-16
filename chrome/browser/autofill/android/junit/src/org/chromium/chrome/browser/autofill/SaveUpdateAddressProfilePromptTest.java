@@ -18,8 +18,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -111,14 +109,12 @@ public class SaveUpdateAddressProfilePromptTest {
     }
 
     @Test
-    @SmallTest
     public void dialogShown() {
         createAndShowPrompt(SaveUpdateAddressProfilePromptMode.SAVE_NEW_PROFILE);
         assertNotNull(mModalDialogManager.getShownDialogModel());
     }
 
     @Test
-    @SmallTest
     public void positiveButtonPressed() {
         createAndShowPrompt(SaveUpdateAddressProfilePromptMode.SAVE_NEW_PROFILE);
         assertNotNull(mModalDialogManager.getShownDialogModel());
@@ -131,7 +127,6 @@ public class SaveUpdateAddressProfilePromptTest {
     }
 
     @Test
-    @SmallTest
     public void negativeButtonPressed() {
         createAndShowPrompt(SaveUpdateAddressProfilePromptMode.SAVE_NEW_PROFILE);
 
@@ -145,7 +140,6 @@ public class SaveUpdateAddressProfilePromptTest {
     }
 
     @Test
-    @SmallTest
     public void dialogDismissed() {
         createAndShowPrompt(SaveUpdateAddressProfilePromptMode.SAVE_NEW_PROFILE);
         assertNotNull(mModalDialogManager.getShownDialogModel());
@@ -158,7 +152,6 @@ public class SaveUpdateAddressProfilePromptTest {
     }
 
     @Test
-    @SmallTest
     public void dialogStrings() {
         createAndShowPrompt(SaveUpdateAddressProfilePromptMode.SAVE_NEW_PROFILE);
 
@@ -175,7 +168,6 @@ public class SaveUpdateAddressProfilePromptTest {
     }
 
     @Test
-    @SmallTest
     public void dialogStrings_RecordTypeNotice() {
         createAndShowPrompt(SaveUpdateAddressProfilePromptMode.MIGRATE_PROFILE);
         View dialog = mPrompt.getDialogViewForTesting();
@@ -203,7 +195,6 @@ public class SaveUpdateAddressProfilePromptTest {
     }
 
     @Test
-    @SmallTest
     public void dialogStrings_SaveAddress() {
         createAndShowPrompt(SaveUpdateAddressProfilePromptMode.SAVE_NEW_PROFILE);
 
@@ -216,7 +207,6 @@ public class SaveUpdateAddressProfilePromptTest {
     }
 
     @Test
-    @SmallTest
     public void dialogStrings_UpdateAddress() {
         createAndShowPrompt(SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE);
 
@@ -229,7 +219,6 @@ public class SaveUpdateAddressProfilePromptTest {
     }
 
     @Test
-    @SmallTest
     public void showHeaders() {
         createAndShowPrompt(SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE);
 
@@ -247,7 +236,6 @@ public class SaveUpdateAddressProfilePromptTest {
     }
 
     @Test
-    @SmallTest
     public void clickEditButton() {
         createAndShowPrompt(SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE);
         View dialog = mPrompt.getDialogViewForTesting();

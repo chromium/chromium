@@ -15,8 +15,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,7 +70,6 @@ public final class ImageServiceBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFetchImageUrlFor() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -128,7 +125,6 @@ public final class ImageServiceBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         mImageServiceBridge.destroy();
         verify(mImageServiceBridgeJni).destroy(anyLong());
@@ -136,7 +132,6 @@ public final class ImageServiceBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testClear() {
         mImageServiceBridge.fetchImageUrlFor(/* isAccountData= */ true, PAGE_URL, mUrlCallback);
 

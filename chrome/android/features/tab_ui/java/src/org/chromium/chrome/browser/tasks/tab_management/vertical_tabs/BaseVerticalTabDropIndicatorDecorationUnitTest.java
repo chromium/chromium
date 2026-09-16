@@ -23,7 +23,6 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -134,7 +133,6 @@ public class BaseVerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLifecycle_SetGetClear() {
         assertNull(mDecoration.getDropTargetResult());
 
@@ -147,7 +145,6 @@ public class BaseVerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_NullTarget_NoOp() {
         mDecoration.setDropTargetResult(null);
         mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
@@ -156,7 +153,6 @@ public class BaseVerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_ShouldDrawFalse_NoOp() {
         DropTargetResult result = createTestDropTargetResult(null);
         mDecoration.setDropTargetResult(result);
@@ -168,7 +164,6 @@ public class BaseVerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_CalculateBoundsFalse_NoOp() {
         DropTargetResult result = createTestDropTargetResult(null);
         mDecoration.setDropTargetResult(result);
@@ -181,7 +176,6 @@ public class BaseVerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_RendersRoundRectWithPrimaryColor() {
         DropTargetResult result = createTestDropTargetResult(null);
         mDecoration.setDropTargetResult(result);
@@ -215,7 +209,6 @@ public class BaseVerticalTabDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetAttachedTargetView() {
         DropTargetResult resultNullVh = createTestDropTargetResult(null);
         assertNull(mDecoration.callGetAttachedTargetView(resultNullVh, mRecyclerView));

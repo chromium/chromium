@@ -22,7 +22,6 @@ import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -332,7 +331,6 @@ public class AppLaunchDrawBlockerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShouldBlockDrawForIncognitoRestore_AddsOnPreDrawListener() {
         when(mIncognitoRestoreAppLaunchDrawBlockerMock.shouldBlockDraw()).thenReturn(true);
         mInflationObserver.onPostInflationStartup();
@@ -342,7 +340,6 @@ public class AppLaunchDrawBlockerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShouldNotBlockDrawForIncognitoRestore_DoesNotAddOnPreDrawListener() {
         when(mIncognitoRestoreAppLaunchDrawBlockerMock.shouldBlockDraw()).thenReturn(false);
         mInflationObserver.onPostInflationStartup();
@@ -352,7 +349,6 @@ public class AppLaunchDrawBlockerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnPreDrawListenerRemoved_WhenNoLongerNeedToBlockDrawForIncognitoRestore() {
         when(mIncognitoRestoreAppLaunchDrawBlockerMock.shouldBlockDraw()).thenReturn(true);
         mInflationObserver.onPostInflationStartup();
@@ -373,7 +369,6 @@ public class AppLaunchDrawBlockerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBlockDrawOnRecreation() {
         ChromeSharedPreferences.getInstance()
                 .writeInt(

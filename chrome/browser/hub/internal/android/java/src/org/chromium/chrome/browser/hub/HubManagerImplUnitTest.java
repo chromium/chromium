@@ -25,8 +25,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -170,7 +168,6 @@ public class HubManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testSnackbarBottomMargin_WithBottomToolbar() {
         ChromeFeatureList.sAndroidBottomBarShowBottomBarOnGts.setForTesting(true);
@@ -216,7 +213,6 @@ public class HubManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testSnackbarBottomMargin_WithoutBottomToolbar() {
         ChromeFeatureList.sAndroidBottomBarShowBottomBarOnGts.setForTesting(false);
@@ -258,7 +254,6 @@ public class HubManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHubControllerWithBottomBarHostManager() {
         ChromeFeatureList.sAndroidBottomBarShowBottomBarOnGts.setForTesting(true);
 
@@ -300,7 +295,6 @@ public class HubManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreatesPaneManager() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -336,7 +330,6 @@ public class HubManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHubController() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -408,7 +401,6 @@ public class HubManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBackNavigation() {
         PaneListBuilder builder = new PaneListBuilder(new DefaultPaneOrderController());
         HubManagerImpl hubManager =
@@ -444,7 +436,6 @@ public class HubManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testConsumeTouchEvents() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -491,7 +482,6 @@ public class HubManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testStatusIndicatorHeight() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -545,7 +535,6 @@ public class HubManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAppHeaderHeight() {
         PaneListBuilder builder =
                 new PaneListBuilder(new DefaultPaneOrderController())
@@ -595,7 +584,6 @@ public class HubManagerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSelectTabAndHideHub() {
         PaneListBuilder builder = new PaneListBuilder(new DefaultPaneOrderController());
         HubManagerImpl hubManager =

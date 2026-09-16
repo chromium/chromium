@@ -17,7 +17,6 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -99,7 +98,6 @@ public class TileGroupDelegateImplUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
     public void testOpenMostVisitedItem_DisableReselect() {
         GURL url = NON_SEARCH_URL;
@@ -112,7 +110,6 @@ public class TileGroupDelegateImplUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
     public void testOpenMostVisitedItem_EnableReselectSearchUrl() {
         GURL url = SEARCH_URL;
@@ -126,7 +123,6 @@ public class TileGroupDelegateImplUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
     public void testOpenMostVisitedItem_EnableReselectTriggered() {
         GURL url = NON_SEARCH_URL;
@@ -141,7 +137,6 @@ public class TileGroupDelegateImplUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
     public void testOpenMostVisitedItem_EnableReselectFallback() {
         GURL url = NON_SEARCH_URL;
@@ -155,7 +150,6 @@ public class TileGroupDelegateImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRemoveMostVisitedItem_ShowsSnackbar() {
         mTileGroupDelegateImpl.removeMostVisitedItem(makeTile("Foo", NON_SEARCH_URL, 0));
 
@@ -168,7 +162,6 @@ public class TileGroupDelegateImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowTileUnpinSnackbar() {
         // Unlike `removeMostVisitedItem()`, `deleteCustomLink()` relies on the caller to show a
         // snackbar. This test is therefore limited to verifying the snackbar logic via

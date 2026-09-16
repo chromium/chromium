@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -142,7 +141,6 @@ public class PageInfoPermissionsControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSummaryStringIsCorrectForPermissions() {
         assertEquals(
                 mTestName,

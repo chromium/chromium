@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.subscriptions;
 
 import static org.mockito.Mockito.doReturn;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,7 +46,6 @@ public class CommerceSubscriptionsServiceFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFactoryMethod() {
         CommerceSubscriptionsServiceFactory factory =
                 CommerceSubscriptionsServiceFactory.getInstance();

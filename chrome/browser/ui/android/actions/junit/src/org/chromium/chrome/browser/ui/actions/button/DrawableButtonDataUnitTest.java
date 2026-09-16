@@ -15,7 +15,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +26,6 @@ import org.chromium.chrome.browser.ui.actions.R;
 @RunWith(BaseRobolectricTestRunner.class)
 public class DrawableButtonDataUnitTest {
     @Test
-    @SmallTest
     public void testResolveTextAndIconAndContentDescription() {
         Context context = ApplicationProvider.getApplicationContext();
         Drawable drawable = createBitmapDrawable();
@@ -40,7 +38,6 @@ public class DrawableButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHashCode() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData buttonData1 =
@@ -55,7 +52,6 @@ public class DrawableButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEquals() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData buttonData =

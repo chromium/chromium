@@ -18,7 +18,6 @@ import android.content.Context;
 import android.view.View.OnClickListener;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -139,7 +138,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({
         SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
@@ -165,7 +163,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
@@ -186,7 +183,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testSigninNotAllowed_omitsPromoCard() {
         doReturn(false).when(mSigninManager).isSigninAllowed();
         mMediator.updateMenuItems();
@@ -199,7 +195,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testAutofillItemClick_dismissesAndOpensAutofillSettings() {
         assertEquals(4, mModelList.size());
         ListItem item = mModelList.get(1);
@@ -221,7 +216,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testAccountSettingsItemClick_dismissesAndOpensAccountSettings() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
@@ -247,7 +241,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenIncognitoItemClick_dismissesAndOpensNewIncognitoWindow() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         mMediator.updateMenuItems();
@@ -278,7 +271,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenIncognitoItemClick_dismissesAndOpensNewIncognitoTab() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
         mMediator.updateMenuItems();
@@ -297,7 +289,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenIncognitoDisabled_omitsIncognitoItemAndDivider() {
         IncognitoUtils.setEnabledForTesting(false);
         mMediator.updateMenuItems();
@@ -311,7 +302,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testSignedIn_showsIdentityCard() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
@@ -328,7 +318,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testProfileDataUpdated_updatesIdentityCard() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
@@ -361,7 +350,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testObserverRegistrationAndTeardown() {
         verify(mSigninManager).addSignInStateObserver(mMediator);
 
@@ -370,7 +358,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testSignInStateObservers_updateMenuItems() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
@@ -392,7 +379,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testManageGoogleAccountItemClick_opensMyAccount() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
@@ -415,7 +401,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testSignedOut_doesNotDisplayManageGoogleAccountItem() {
         // The FakeIdentityManager from `mAccountManagerTestRule` has no primary account by default.
         mMediator.updateMenuItems();
@@ -430,7 +415,6 @@ public class AccountMenuMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testIncognitoProfile_doesNotDisplayManageGoogleAccountItem() {
         doReturn(true).when(mProfile).isOffTheRecord();
 

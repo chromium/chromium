@@ -32,8 +32,6 @@ import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.Window;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -125,7 +123,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testCustomization_newTab() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
@@ -147,7 +144,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testDynamicAction_readerModeFallbackToNewTab() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
@@ -183,7 +179,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testCustomization_share() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
@@ -204,7 +199,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testCustomization_voice() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(
@@ -225,7 +219,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testCustomization_prefChangeTriggersButtonChange() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
@@ -257,7 +250,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testLongPress() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
@@ -308,7 +300,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testShowDynamicAction() {
         Activity activity = Robolectric.setupActivity(Activity.class);
 
@@ -368,7 +359,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testShowDynamicAction_suppressedByCurrentButton() {
         Activity activity = Robolectric.setupActivity(Activity.class);
 
@@ -434,7 +424,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonOnLargeScreens() {
         // Screen is wide enough to fit the button, it should appear.
         mConfiguration.screenWidthDp = 450;
@@ -461,7 +450,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonNotShownOnSmallScreens() {
         // Screen too narrow, button shouldn't appear.
         mConfiguration.screenWidthDp = 320;
@@ -488,7 +476,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonVisibilityChangeOnConfigurationChange() {
         // Screen too narrow, button shouldn't appear.
         mConfiguration.screenWidthDp = 320;
@@ -524,7 +511,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonVisibilityChangeOnLayoutChange() {
         // Screen too narrow, button shouldn't appear.
         mConfiguration.screenWidthDp = 320;
@@ -561,7 +547,6 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testConfigurationChangeIgnoredWhenNativeNotReady() {
         AdaptiveToolbarPrefs.saveToolbarSettingsToggleState(true);
         AdaptiveToolbarStatePredictor.setSegmentationResultsForTesting(

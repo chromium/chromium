@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.layouts.animation;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +20,6 @@ public class CompositorAnimationHandlerTest {
     private CompositorAnimationHandler mAnimations;
 
     @Test
-    @SmallTest
     public void testConcurrentAnimationsFinishSeparately() {
         mAnimations = new CompositorAnimationHandler(CallbackUtils.emptyRunnable());
 

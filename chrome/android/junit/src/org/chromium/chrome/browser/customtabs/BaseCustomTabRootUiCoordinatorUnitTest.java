@@ -20,7 +20,6 @@ import android.text.format.DateUtils;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -291,7 +290,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     }
 
     @Test
-    @MediumTest
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR)
     public void testGoogleBottomBarEnabled_cctGoogleBottomBarTrue() throws Exception {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -311,7 +309,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     }
 
     @Test
-    @MediumTest
     @DisableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR)
     public void testGoogleBottomBarEnabled_cctGoogleBottomBarFalse() throws Exception {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
@@ -326,7 +323,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     }
 
     @Test
-    @MediumTest
     @DisableFeatures({
         SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
@@ -338,7 +334,6 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     }
 
     @Test
-    @MediumTest
     @EnableFeatures({
         SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT

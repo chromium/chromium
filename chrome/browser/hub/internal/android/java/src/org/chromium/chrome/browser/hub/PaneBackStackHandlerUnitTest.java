@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -87,7 +85,6 @@ public class PaneBackStackHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testReset() {
         mBackStackHandler = new PaneBackStackHandler(mPaneManager);
         assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));
@@ -123,7 +120,6 @@ public class PaneBackStackHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBackStack() {
         mBackStackHandler = new PaneBackStackHandler(mPaneManager);
         assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));
@@ -155,7 +151,6 @@ public class PaneBackStackHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRepeatedlyFocusSamePane() {
         mBackStackHandler = new PaneBackStackHandler(mPaneManager);
         assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));
@@ -188,7 +183,6 @@ public class PaneBackStackHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDeduplicatedOldEntries() {
         mBackStackHandler = new PaneBackStackHandler(mPaneManager);
         assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));
@@ -217,7 +211,6 @@ public class PaneBackStackHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSkipOnFailToFocus() {
         mBackStackHandler = new PaneBackStackHandler(mPaneManager);
         assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));
@@ -268,7 +261,6 @@ public class PaneBackStackHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCompletelyFailToFocus() {
         mBackStackHandler = new PaneBackStackHandler(mPaneManager);
         assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));
@@ -304,7 +296,6 @@ public class PaneBackStackHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBackStackIsIgnoredByEscape() {
         mBackStackHandler = new PaneBackStackHandler(mPaneManager);
         assertTrue(hasObservers(mPaneManager.getFocusedPaneSupplier()));

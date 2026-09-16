@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import android.app.Activity;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,7 +53,6 @@ public class BookmarkManagerOpenerTest {
     }
 
     @Test
-    @SmallTest
     public void testReopeningBookmarkManagerRecordsMetric() {
         BookmarkUtils.setLastUsedUrl("https://test.com");
         UserActionTester userActionTester = new UserActionTester();

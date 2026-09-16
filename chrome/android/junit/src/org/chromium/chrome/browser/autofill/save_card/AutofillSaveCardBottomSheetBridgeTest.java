@@ -12,8 +12,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,7 +39,6 @@ import org.chromium.ui.base.WindowAndroid;
 import java.util.Collections;
 
 /** Unit tests for {@link AutofillSaveCardBottomSheetBridge}. */
-@SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutofillSaveCardBottomSheetBridgeTest {
     private static final long NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE = 0xb00fb00fL;

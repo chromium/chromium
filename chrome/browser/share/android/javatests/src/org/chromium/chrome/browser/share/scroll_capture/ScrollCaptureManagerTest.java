@@ -10,8 +10,6 @@ import static org.mockito.Mockito.when;
 
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,7 +50,6 @@ public class ScrollCaptureManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testObserveTab() {
         Tab tab = mock(Tab.class);
         InOrder inOrder = Mockito.inOrder(mTab, tab, mScrollCaptureManagerDelegateMock);
@@ -71,7 +68,6 @@ public class ScrollCaptureManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testContentChange() {
         View view = mock(View.class);
         View anotherView = mock(View.class);
@@ -100,7 +96,6 @@ public class ScrollCaptureManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         View view = mock(View.class);
         InOrder inOrder = Mockito.inOrder(mTab, mScrollCaptureManagerDelegateMock);

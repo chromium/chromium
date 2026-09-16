@@ -18,8 +18,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -102,7 +100,6 @@ public class IncognitoTabbedSnapshotControllerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
     public void testSecureFlagsUnModified_ForIncognito_WhenAlreadyPresent() {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
@@ -120,7 +117,6 @@ public class IncognitoTabbedSnapshotControllerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
     public void testSecureFlagsAdded_ForIncognito_WhenNotAlreadyPresent() {
         mParams.flags = 0;
@@ -138,7 +134,6 @@ public class IncognitoTabbedSnapshotControllerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
     public void testFlagSecureCleared_ForIncognito_WhenIncognitoScreenshotEnabled() {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
@@ -155,7 +150,6 @@ public class IncognitoTabbedSnapshotControllerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
     public void testFlagSecureCleared_AfterSwitchingToNonIncognito_WithScreenshotDisabled() {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
@@ -173,7 +167,6 @@ public class IncognitoTabbedSnapshotControllerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
     public void testFlagSecureCleared_AfterSwitchingToNonIncognito_ScreenshotEnabled() {
         mParams.flags = WindowManager.LayoutParams.FLAG_SECURE;
@@ -191,7 +184,6 @@ public class IncognitoTabbedSnapshotControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testIsShowingIncognito_CurrentModelRegular_ReturnsFalse() {
         // Regular mode
         when(mTabModelSelectorMock.getCurrentModel()).thenReturn(mTabModelMock);
@@ -201,7 +193,6 @@ public class IncognitoTabbedSnapshotControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testIsShowingIncognito_CurrentModelIncognito_ReturnsTrue() {
         when(mTabModelSelectorMock.getCurrentModel()).thenReturn(mTabModelMock);
         when(mTabModelMock.isIncognito()).thenReturn(true);
@@ -212,7 +203,6 @@ public class IncognitoTabbedSnapshotControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDestroy_PerformsCleanUp() {
         mDestroyObserver.onDestroy();
         verify(mLayoutManagerMock, times(1)).removeObserver(mFilterLayoutStateObserver);

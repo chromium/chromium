@@ -16,8 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Spinner;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,7 +80,6 @@ public class QuickDeleteDialogDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testObserverFired_OnSpinnerChanges() {
         new QuickDeleteDialogDelegate(
                         mActivity,
@@ -110,7 +107,6 @@ public class QuickDeleteDialogDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCancelQuickDelete() {
         new QuickDeleteDialogDelegate(
                         mActivity,
@@ -127,7 +123,6 @@ public class QuickDeleteDialogDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testConfirmQuickDelete() {
         new QuickDeleteDialogDelegate(
                         mActivity,
@@ -144,7 +139,6 @@ public class QuickDeleteDialogDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSearchHistoryDisambiguation_SearchHistoryLink() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -176,7 +170,6 @@ public class QuickDeleteDialogDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSearchHistoryDisambiguation_OtherActivityLink() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -61,7 +60,6 @@ public class IncognitoReauthDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testPropertyModelAttributes_CorrectlySet() {
         PropertyModel model = mIncognitoReauthDialog.getModalDialogPropertyModelForTesting();
         assertEquals(
@@ -78,7 +76,6 @@ public class IncognitoReauthDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testShowIncognitoReauthDialog_Invokes_ModalDiaogManager() {
         PropertyModel model = mIncognitoReauthDialog.getModalDialogPropertyModelForTesting();
         doNothing()
@@ -98,7 +95,6 @@ public class IncognitoReauthDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testdismissIncognitoReauthDialog_InvokesModalDiaogManager() {
         PropertyModel model = mIncognitoReauthDialog.getModalDialogPropertyModelForTesting();
         doNothing()

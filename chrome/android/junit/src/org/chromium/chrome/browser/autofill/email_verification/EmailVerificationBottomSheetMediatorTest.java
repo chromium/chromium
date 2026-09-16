@@ -15,8 +15,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,7 +34,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link EmailVerificationBottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SmallTest
 public final class EmailVerificationBottomSheetMediatorTest {
     private static final String TEST_TITLE = "Verify this email automatically?";
     private static final String TEST_DESCRIPTION =

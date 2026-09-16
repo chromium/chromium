@@ -18,7 +18,6 @@ import android.view.ContextThemeWrapper;
 import androidx.annotation.ColorInt;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -256,7 +255,6 @@ public class StripLayoutTabTest {
     }
 
     @Test
-    @SmallTest
     public void testAnchorRect() {
         int folioFootLengthPx =
                 Math.round(

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.uid;
 
 import static org.mockito.Mockito.doReturn;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +29,6 @@ public class SettingsSecureBasedIdentificationGeneratorTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"ChromeToMobile", "Omaha"})
     public void testAndroidIdSuccessWithSalt() {
         String androidId = "42";
@@ -41,7 +38,6 @@ public class SettingsSecureBasedIdentificationGeneratorTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"ChromeToMobile", "Omaha"})
     public void testAndroidIdSuccessWithoutSalt() {
         String androidId = "42";
@@ -50,7 +46,6 @@ public class SettingsSecureBasedIdentificationGeneratorTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"ChromeToMobile", "Omaha"})
     public void testAndroidIdFailureWithSalt() {
         String androidId = null;
@@ -60,7 +55,6 @@ public class SettingsSecureBasedIdentificationGeneratorTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"ChromeToMobile", "Omaha"})
     public void testAndroidIdFailureWithoutSalt() {
         String androidId = null;

@@ -13,8 +13,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -57,14 +55,12 @@ public class ReadLaterIphControllerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void onCopyContextMenuItemClicked() {
         mController.onCopyContextMenuItemClicked();
         verify(mUserEducationHelper).requestShowIph(any());
     }
 
     @Test
-    @SmallTest
     public void showColdStartIph() {
         mController.showColdStartIph();
         verify(mUserEducationHelper).requestShowIph(mIphCommandCaptor.capture());

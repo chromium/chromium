@@ -18,7 +18,6 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -194,7 +193,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     // ---------------------------------------------------------------------------------------------
 
     @Test
-    @SmallTest
     public void testSingleTab_OverStandaloneTab_TopHalf_InsertsBefore() {
         Tab tab10 = createMockTab(10, /* isPinned= */ false);
         when(mTabModel.indexOf(tab10)).thenReturn(0);
@@ -232,7 +230,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSingleTab_OverStandaloneTab_BottomHalf_InsertsAfter() {
         Tab tab10 = createMockTab(10, /* isPinned= */ false);
         when(mTabModel.indexOf(tab10)).thenReturn(0);
@@ -272,7 +269,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     // ---------------------------------------------------------------------------------------------
 
     @Test
-    @SmallTest
     public void testSingleTab_OverExpandedGroup_Header_TopHalf_SnapsAboveGroupAsStandaloneTab() {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
@@ -337,7 +333,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSingleTab_OverExpandedGroup_Header_BottomHalf_InsertsAsFirstChild() {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
@@ -402,7 +397,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSingleTab_OverExpandedGroup_ChildTab_TopHalf_InsertsBeforeChild() {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
@@ -464,7 +458,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void
             testSingleTab_OverExpandedGroup_LastChild_UpperBottomHalf_InsertsAfterChildInGroup() {
         Token groupId = new Token(1L, 2L);
@@ -528,7 +521,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void
             testSingleTab_OverExpandedGroup_LastChild_LowerBottomHalf_SnapsBelowGroupAsStandaloneTab() {
         Token groupId = new Token(1L, 2L);
@@ -592,7 +584,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSingleTab_OverExpandedGroup_BelowLastChild_SnapsBelowGroupAsStandaloneTab() {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
@@ -654,7 +645,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSingleTab_OverExpandedGroup_IntermediateChildTab_DropTargetPositions() {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
@@ -743,7 +733,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     // ---------------------------------------------------------------------------------------------
 
     @Test
-    @SmallTest
     public void testSingleTab_OverCollapsedGroup_TopHalf_SnapsAbove_NoMerge() {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
@@ -785,7 +774,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSingleTab_OverCollapsedGroup_BottomHalf_SnapsBelow_NoMerge() {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
@@ -831,7 +819,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     // ---------------------------------------------------------------------------------------------
 
     @Test
-    @SmallTest
     public void testTabGroup_OverTabGroup_CloserToTop_SnapsBeforeGroupHeader() {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
@@ -896,7 +883,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_OverTabGroup_CloserToBottom_SnapsAfterLastChild() {
         Token groupId = new Token(1L, 2L);
         Tab tab20 = createMockTab(20, /* isPinned= */ false);
@@ -965,7 +951,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     // ---------------------------------------------------------------------------------------------
 
     @Test
-    @SmallTest
     public void testTabGroup_OverStandaloneTab_TopHalf_InsertsBefore() {
         Tab tab10 = createMockTab(10, /* isPinned= */ false);
         when(mTabModel.indexOf(tab10)).thenReturn(0);
@@ -998,7 +983,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_OverStandaloneTab_BottomHalf_InsertsAfter() {
         Tab tab10 = createMockTab(10, /* isPinned= */ false);
         when(mTabModel.indexOf(tab10)).thenReturn(0);
@@ -1035,7 +1019,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     // ---------------------------------------------------------------------------------------------
 
     @Test
-    @SmallTest
     public void testPinnedTab_InPinnedGrid_SlotCalculation_LeftHalf_InsertsBefore() {
         Tab tab1 = createMockTab(1, /* isPinned= */ true);
         Tab tab2 = createMockTab(2, /* isPinned= */ true);
@@ -1083,7 +1066,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPinnedTab_InPinnedGrid_SlotCalculation_RightHalf_InsertsAfter() {
         Tab tab1 = createMockTab(1, /* isPinned= */ true);
         Tab tab2 = createMockTab(2, /* isPinned= */ true);
@@ -1131,7 +1113,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPinnedTab_InPinnedGrid_SlotCalculation_LastTab_RightHalf_InsertsAtEnd() {
         Tab tab1 = createMockTab(1, /* isPinned= */ true);
         Tab tab2 = createMockTab(2, /* isPinned= */ true);
@@ -1183,7 +1164,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     // ---------------------------------------------------------------------------------------------
 
     @Test
-    @SmallTest
     public void testPinnedTab_InZeroPinnedTabWindow_TargetsZeroState() {
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
 
@@ -1209,7 +1189,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     // ---------------------------------------------------------------------------------------------
 
     @Test
-    @SmallTest
     public void testRegularTab_OverPinnedGrid_Rejects() {
         when(mTabModel.getCount()).thenReturn(4);
         when(mTabModel.getPinnedTabsCount()).thenReturn(2);
@@ -1227,7 +1206,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_OverPinnedGrid_Rejects() {
         when(mTabModel.getCount()).thenReturn(4);
         when(mTabModel.getPinnedTabsCount()).thenReturn(2);
@@ -1245,7 +1223,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRegularTab_OverPinnedGrid_ZeroNormalTabs_ReturnsEmptyMainListDropTarget() {
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getPinnedTabsCount()).thenReturn(2);
@@ -1271,7 +1248,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_OverPinnedGrid_ZeroNormalTabs_ReturnsEmptyMainListDropTarget() {
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getPinnedTabsCount()).thenReturn(2);
@@ -1297,7 +1273,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPinnedTab_OverRegularList_WhenPinnedTabsExist_Rejects() {
         when(mTabModel.getPinnedTabsCount()).thenReturn(2);
 
@@ -1313,7 +1288,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testClear_ResetsLastDropTargetResult() {
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
 
@@ -1333,7 +1307,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCalculateDropTarget_WithChromeTabDropData() {
         Tab tab = createMockTab(5, /* isPinned= */ false);
         ChromeTabDropDataAndroid dropData =
@@ -1369,7 +1342,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCalculateDropTarget_WithChromeTabGroupDropData() {
         Token groupId = new Token(1L, 2L);
         Tab tab = createMockTab(5, /* isPinned= */ false);
@@ -1410,7 +1382,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testPinnedTab_InPinnedGrid_Rtl_SlotCalculation() {
         LocalizationUtils.setRtlForTesting(true);
 
@@ -1472,7 +1443,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEmptyDestinationWindow_ReturnsFirstNonPinnedTabIndex() {
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getPinnedTabsCount()).thenReturn(2);
@@ -1524,7 +1494,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestinationWindow_ZeroPinnedAndZeroNormalTabs_ReturnsFlagsFalse() {
         when(mTabModel.getCount()).thenReturn(0);
         when(mTabModel.getPinnedTabsCount()).thenReturn(0);
@@ -1550,7 +1519,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEmptyViewHierarchy_NonEmptyTabModel_ZeroNormalTabsIsFalse() {
         when(mTabModel.getCount()).thenReturn(4);
         when(mTabModel.getPinnedTabsCount()).thenReturn(1);
@@ -1575,7 +1543,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRegularTab_OverMainList_ZeroNormalTabs_WithPinnedItemsInModelList() {
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getPinnedTabsCount()).thenReturn(2);
@@ -1612,7 +1579,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabGroup_OverMainList_ZeroNormalTabs_WithPinnedItemsInModelList() {
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getPinnedTabsCount()).thenReturn(2);
@@ -1649,7 +1615,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testMainList_GapHover_FindChildViewUnderNull_ClosestChildFallbackActivates() {
         Tab tab1 = createMockTab(10, /* isPinned= */ false);
         Tab tab2 = createMockTab(11, /* isPinned= */ false);
@@ -1715,7 +1680,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSingleTab_OverStandaloneTab_UnresolvableTab_FallbackScansPrecedingGroup() {
         Token groupId = new Token(1L, 2L);
         Tab groupTab0 = createMockTab(20, /* isPinned= */ false);
@@ -1769,7 +1733,6 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSingleTab_OverStandaloneTab_UnresolvableTab_FallbackScansFollowingTab() {
         createMockTab(10, /* isPinned= */ false);
         createMockTab(20, /* isPinned= */ false);

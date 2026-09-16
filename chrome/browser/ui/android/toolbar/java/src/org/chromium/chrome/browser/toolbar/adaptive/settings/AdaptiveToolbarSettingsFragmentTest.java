@@ -21,7 +21,6 @@ import android.view.View;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -101,7 +100,6 @@ public class AdaptiveToolbarSettingsFragmentTest {
     }
 
     @Test
-    @SmallTest
     public void testSelectShortcuts() {
         FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
         scenario.onFragment(
@@ -209,7 +207,6 @@ public class AdaptiveToolbarSettingsFragmentTest {
     }
 
     @Test
-    @SmallTest
     public void testReadAloudOption_Enabled() {
         FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
         scenario.onFragment(
@@ -239,7 +236,6 @@ public class AdaptiveToolbarSettingsFragmentTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC)
     public void testGlicOption_Enabled() {
         FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
@@ -269,7 +265,6 @@ public class AdaptiveToolbarSettingsFragmentTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR, ChromeFeatureList.GLIC})
     public void testOptionsHiddenWithBottomBar() {
         FragmentScenario<AdaptiveToolbarSettingsFragment> scenario = buildFragmentScenario();
@@ -292,7 +287,6 @@ public class AdaptiveToolbarSettingsFragmentTest {
     }
 
     @Test
-    @SmallTest
     public void testTranslateOption_Disabled() {
         // Disable translate.
         doReturn(true).when(mPrefService).isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED);

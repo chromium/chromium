@@ -65,7 +65,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -169,14 +168,12 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetBackgroundSizeOne() {
         int resId = getBackground(1, 0);
         assertEquals(R.drawable.ntp_customization_bottom_sheet_list_item_background_single, resId);
     }
 
     @Test
-    @SmallTest
     public void testGetBackgroundSizeTwo() {
         int resId = getBackground(2, 0);
         assertEquals(R.drawable.ntp_customization_bottom_sheet_list_item_background_top, resId);
@@ -186,7 +183,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetBackgroundSizeThree() {
         int resId = getBackground(3, 0);
         assertEquals(R.drawable.ntp_customization_bottom_sheet_list_item_background_top, resId);
@@ -199,7 +195,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetBackgroundLargeSize() {
         int listSize = 10;
         int resId = getBackground(listSize, 0);
@@ -1695,7 +1690,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testCreateNtpCustomizationButton_greyBackground() {
         when(mConfigManager.getBackgroundType()).thenReturn(IMAGE_FROM_DISK);
@@ -1724,7 +1718,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testCreateNtpCustomizationButton_defaultBackground() {
         when(mConfigManager.getBackgroundType()).thenReturn(DEFAULT);

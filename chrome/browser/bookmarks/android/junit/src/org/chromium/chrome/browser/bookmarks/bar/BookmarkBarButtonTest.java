@@ -21,7 +21,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,7 +63,6 @@ public class BookmarkBarButtonTest {
     }
 
     @Test
-    @SmallTest
     public void testOnGenericMotionEvent_MiddleClick() {
         // Initial press to set the button state.
         MotionEvent pressEvent = Mockito.mock(MotionEvent.class);
@@ -87,7 +85,6 @@ public class BookmarkBarButtonTest {
     }
 
     @Test
-    @SmallTest
     public void testOnGenericMotionEvent_RightClick() {
         // Initial press to set the button state.
         MotionEvent pressEvent = Mockito.mock(MotionEvent.class);
@@ -110,7 +107,6 @@ public class BookmarkBarButtonTest {
     }
 
     @Test
-    @SmallTest
     public void testOnGenericMotionEvent_NotMiddleClick() {
         MotionEvent event = Mockito.mock(MotionEvent.class);
         when(event.getSource()).thenReturn(InputDevice.SOURCE_MOUSE);
@@ -124,7 +120,6 @@ public class BookmarkBarButtonTest {
     }
 
     @Test
-    @SmallTest
     public void testOnTouchEvent_MiddleClickConsumedAndCleared() {
         MotionEvent downEvent = Mockito.mock(MotionEvent.class);
         when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_TERTIARY);
@@ -143,7 +138,6 @@ public class BookmarkBarButtonTest {
     }
 
     @Test
-    @SmallTest
     public void testOnClick_FiresForPrimaryClick() {
         // First simulate a primary click down in onTouchEvent to set state.
         MotionEvent downEvent = Mockito.mock(MotionEvent.class);
@@ -167,7 +161,6 @@ public class BookmarkBarButtonTest {
     }
 
     @Test
-    @SmallTest
     public void testOnLongClick_FiresLongClickListener() {
         View.OnLongClickListener longClickListener = Mockito.mock(View.OnLongClickListener.class);
         when(longClickListener.onLongClick(mButton)).thenReturn(true);
@@ -179,7 +172,6 @@ public class BookmarkBarButtonTest {
     }
 
     @Test
-    @SmallTest
     public void testOnTouchEvent_RightClickConsumedAndCleared() {
         MotionEvent downEvent = Mockito.mock(MotionEvent.class);
         when(downEvent.getButtonState()).thenReturn(MotionEvent.BUTTON_SECONDARY);
@@ -197,7 +189,6 @@ public class BookmarkBarButtonTest {
     }
 
     @Test
-    @SmallTest
     public void testGetLastClickPoint() {
         MotionEvent event = Mockito.mock(MotionEvent.class);
         when(event.getX()).thenReturn(123f);
@@ -212,7 +203,6 @@ public class BookmarkBarButtonTest {
     }
 
     @Test
-    @SmallTest
     public void testDoubleTrigger_OnlyFiresOnce() {
         // Down event (touch)
         MotionEvent downEvent = Mockito.mock(MotionEvent.class);
@@ -249,7 +239,6 @@ public class BookmarkBarButtonTest {
     }
 
     @Test
-    @SmallTest
     public void testLongClickListenerProperty() {
         when(mLongClickListener.onLongClick(mButton)).thenReturn(true);
 

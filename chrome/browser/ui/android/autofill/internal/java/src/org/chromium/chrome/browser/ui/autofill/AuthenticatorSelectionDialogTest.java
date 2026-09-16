@@ -22,7 +22,6 @@ import android.widget.TextView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -102,7 +101,6 @@ public class AuthenticatorSelectionDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testSingleAuthenticatorOption() throws Exception {
         ArrayList<AuthenticatorOption> options = new ArrayList<>();
         options.add(OPTION_1);
@@ -133,7 +131,6 @@ public class AuthenticatorSelectionDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testDialogDismissed() {
         ArrayList<AuthenticatorOption> options = new ArrayList<>();
         options.add(OPTION_1);
@@ -146,7 +143,6 @@ public class AuthenticatorSelectionDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testMultipleAuthenticatorOption_noActionBeforeProceeding() throws Exception {
         ArrayList<AuthenticatorOption> options = new ArrayList<>();
         options.add(OPTION_1);
@@ -179,7 +175,6 @@ public class AuthenticatorSelectionDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testMultipleAuthenticatorOption_changeToSmsOtpChallengeOption() throws Exception {
         PropertyModel model = createAndShowModelForChangeSelectedOptionTest();
 
@@ -203,7 +198,6 @@ public class AuthenticatorSelectionDialogTest {
     }
 
     @Test
-    @SmallTest
     public void
             testMultipleAuthenticatorOption_changeToSmsOtpChallengeOption_clickOnViewToSelectChallengeOption()
                     throws Exception {
@@ -229,7 +223,6 @@ public class AuthenticatorSelectionDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testMultipleAuthenticatorOption_changeToCvcChallengeOption() throws Exception {
         PropertyModel model = createAndShowModelForChangeSelectedOptionTest();
 
@@ -253,7 +246,6 @@ public class AuthenticatorSelectionDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testMultipleAuthenticatorOption_changeToEmailOtpChallengeOption() throws Exception {
         PropertyModel model = createAndShowModelForChangeSelectedOptionTest();
 
@@ -277,7 +269,6 @@ public class AuthenticatorSelectionDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testSingleAuthenticatorOption_titleView() throws Exception {
         ArrayList<AuthenticatorOption> options = new ArrayList<>();
         options.add(OPTION_1);
@@ -309,7 +300,6 @@ public class AuthenticatorSelectionDialogTest {
     }
 
     @Test
-    @SmallTest
     public void testMultipleAuthenticatorOption_titleView() throws Exception {
         ArrayList<AuthenticatorOption> options = new ArrayList<>();
         options.add(OPTION_1);

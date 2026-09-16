@@ -24,8 +24,6 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -93,13 +91,11 @@ public class TipsOptInCoordinatorUnitTest {
         mBottomSheetContent = mTipsOptInCoordinator.getBottomSheetContentForTesting();
     }
 
-    @SmallTest
     @Test
     public void testDestroy() {
         mBottomSheetContent.destroy();
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet() {
         HistogramWatcher histogramWatcher =

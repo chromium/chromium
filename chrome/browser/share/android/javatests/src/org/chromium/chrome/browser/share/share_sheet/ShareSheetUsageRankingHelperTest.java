@@ -15,8 +15,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -103,7 +101,6 @@ public class ShareSheetUsageRankingHelperTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateThirdPartyPropertyModelsFromUsageRanking() throws TimeoutException {
         List<String> targets = new ArrayList<>();
         targets.add("$more");
@@ -137,7 +134,6 @@ public class ShareSheetUsageRankingHelperTest {
     }
 
     @Test
-    @SmallTest
     public void testClickMoreRemovesCallback() throws TimeoutException {
         List<String> targets = new ArrayList<>();
         targets.add("$more");
@@ -175,7 +171,6 @@ public class ShareSheetUsageRankingHelperTest {
     }
 
     @Test
-    @SmallTest
     public void testFilteringRemovesCtsShims() {
         List<ResolveInfo> infos =
                 List.of(

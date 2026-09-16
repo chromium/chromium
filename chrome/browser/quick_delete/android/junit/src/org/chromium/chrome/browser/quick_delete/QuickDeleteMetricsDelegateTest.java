@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.quick_delete;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -91,7 +89,6 @@ public class QuickDeleteMetricsDelegateTest {
     }
 
     @Test
-    @SmallTest
     @UseMethodParameter(MethodParams.class)
     public void testRecordHistogram(
             @QuickDeleteMetricsDelegate.QuickDeleteAction int quickDeleteAction) {
@@ -105,7 +102,6 @@ public class QuickDeleteMetricsDelegateTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordDeleteBrowsingDataActionHistogram() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

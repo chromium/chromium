@@ -10,8 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
-import androidx.test.filters.SmallTest;
-
 import com.google.common.collect.Sets;
 
 import org.junit.Test;
@@ -46,7 +44,6 @@ public class ChromePreferenceKeysTest {
      * Adding the same key to [keys in use] will break this test to warn the developer.
      */
     @Test
-    @SmallTest
     public void testKeysAreNotReused() {
         assumeTrue(BuildConfig.ENABLE_ASSERTS);
         // Build sets of all keys combined between registries and check for any intersections
@@ -153,7 +150,6 @@ public class ChromePreferenceKeysTest {
     // Below are tests to ensure that testKeysAreNotReused() works.
 
     @Test
-    @SmallTest
     public void testReuseCheck_emptyLists() {
         doTestKeysAreNotReused(
                 Collections.emptyList(),
@@ -164,7 +160,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testReuseCheck_duplicateKey_used() {
         doTestKeysAreNotReused(
                 Arrays.asList("UsedKey1", "UsedKey1"),
@@ -175,7 +170,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testReuseCheck_duplicateKey_legacy() {
         doTestKeysAreNotReused(
                 Collections.emptyList(),
@@ -186,7 +180,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testReuseCheck_duplicateKey_deprecated() {
         doTestKeysAreNotReused(
                 Collections.emptyList(),
@@ -197,7 +190,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test
-    @SmallTest
     public void testReuseCheck_noIntersection() {
         doTestKeysAreNotReused(
                 Arrays.asList("UsedKey1", "UsedKey2"),
@@ -210,7 +202,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testReuseCheck_intersectionUsedAndLegacy() {
         doTestKeysAreNotReused(
                 Arrays.asList("ReusedKey", "UsedKey1"),
@@ -221,7 +212,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testReuseCheck_intersectionUsedAndDeprecated() {
         doTestKeysAreNotReused(
                 Arrays.asList("UsedKey1", "ReusedKey"),
@@ -232,7 +222,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testReuseCheck_intersectionLegacyAndDeprecated() {
         doTestKeysAreNotReused(
                 Collections.emptyList(),
@@ -243,7 +232,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testReuseCheck_intersectionUsedLegacyFormat_prefix() {
         doTestKeysAreNotReused(
                 Arrays.asList("UsedKey1"),
@@ -254,7 +242,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testReuseCheck_intersectionDeprecatedLegacyFormat_prefix() {
         doTestKeysAreNotReused(
                 Arrays.asList("UsedKey1"),
@@ -266,7 +253,6 @@ public class ChromePreferenceKeysTest {
 
     /** Test that the keys in use (not legacy) conform to the format: "Chrome.[Feature].[Key]" */
     @Test
-    @SmallTest
     public void testKeysConformToFormat() {
         doTestKeysConformToFormat(ChromePreferenceKeys.getKeysInUse());
     }
@@ -276,7 +262,6 @@ public class ChromePreferenceKeysTest {
      * ChromePreferenceKeys#getKeysInUse()}.
      */
     @Test
-    @SmallTest
     public void testLegacyKeysDoNotConformToFormat() {
         doTestKeysDoNotConformToFormat(LegacyChromePreferenceKeys.getKeysInUse());
     }
@@ -324,14 +309,12 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test
-    @SmallTest
     public void testFormatCheck_correct() {
         doTestKeysConformToFormat(
                 Arrays.asList(TestFormatConstantsClass.NEW1, TestFormatConstantsClass.NEW2));
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testFormatCheck_invalidFormat() {
         doTestKeysConformToFormat(
                 Arrays.asList(
@@ -341,7 +324,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testFormatCheck_brokenPrefix() {
         doTestKeysConformToFormat(
                 Arrays.asList(
@@ -349,7 +331,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testFormatCheck_missingFeature() {
         doTestKeysConformToFormat(
                 Arrays.asList(
@@ -357,7 +338,6 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testFormatCheck_lowercaseKey() {
         doTestKeysConformToFormat(
                 Arrays.asList(
@@ -365,27 +345,23 @@ public class ChromePreferenceKeysTest {
     }
 
     @Test
-    @SmallTest
     public void testFormatCheck_prefixCorrect() {
         doTestKeysConformToFormat(Arrays.asList(TestFormatConstantsClass.PREFIX.pattern()));
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testFormatCheck_prefixExtraLevel() {
         doTestKeysConformToFormat(
                 Arrays.asList(TestFormatConstantsClass.PREFIX_EXTRA_LEVEL.pattern()));
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testFormatCheck_prefixMissingLevel() {
         doTestKeysConformToFormat(
                 Arrays.asList(TestFormatConstantsClass.PREFIX_MISSING_LEVEL.pattern()));
     }
 
     @Test
-    @SmallTest
     public void testCustomTabsAlwaysOpenInBrowserKey() {
         assertTrue(
                 ChromePreferenceKeys.getKeysInUse()

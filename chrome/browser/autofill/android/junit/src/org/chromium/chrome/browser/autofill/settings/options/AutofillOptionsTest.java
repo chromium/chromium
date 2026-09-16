@@ -42,7 +42,6 @@ import androidx.fragment.app.testing.FragmentScenario;
 import androidx.lifecycle.Lifecycle.Event;
 import androidx.lifecycle.LifecycleRegistry;
 import androidx.preference.PreferenceViewHolder;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -203,7 +202,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void constructedWithPrefAsDefaultForOption() {
         mShadowAutofillManager.setAutofillServiceComponentName(EXAMPLE_SERVICE_PACKAGE);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
@@ -220,7 +218,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void optionDisabledForAwgUpdatesOnResume() {
         mShadowAutofillManager.setAutofillServiceComponentName(AWG_PACKAGE);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
@@ -249,7 +246,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void optionDisabledByPolicy() {
         mShadowAutofillManager.setAutofillServiceComponentName(EXAMPLE_SERVICE_PACKAGE);
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
@@ -270,7 +266,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void optionEnabledToSwitchOffAwg() {
         mShadowAutofillManager.setAutofillServiceComponentName(AWG_PACKAGE);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
@@ -289,7 +284,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void toggledOptionRecordedInHistogram() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -322,7 +316,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void updateSettingsFromPrefOnViewCreated() {
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
@@ -335,7 +328,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void toggledOptionSetsPrefAndRestarts() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -359,7 +351,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void toggledOptionResetsWithoutConfirmation() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -384,7 +375,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void toggledOptionResetsWhenDismissed() {
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
@@ -405,7 +395,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void setPrefTogglesOptionOnResume() {
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_PLATFORM_AUTOFILL);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
@@ -425,7 +414,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void suppliesTitleWhenAutofillAiDisabled() {
         AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
@@ -434,7 +422,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED)
     public void suppliesTitle() {
@@ -444,7 +431,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE
@@ -461,7 +447,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_ONLINE_MODEL_TOGGLE_NEW_TITLE)
     public void testAutofillAiTitle_OldTitle() {
@@ -476,7 +461,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void setsPref() {
         // Update on initial binding. Shouldn't trigger dialogs or restart.
         AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
@@ -499,7 +483,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testOptInDescriptionWithAutofillAiEnabled() {
         AutofillOptionsCoordinator.createFor(mFragment, this::assertModalNotUsed, Assert::fail);
@@ -510,7 +493,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void injectedHelpTriggersAutofillHelp() {
         AutofillHelpMenuProvider menuProvider = new AutofillHelpMenuProvider(mFragment);
 
@@ -533,7 +515,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void passedReferrerRecordedInHistogram() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -547,7 +528,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void toggledOptionStoresPackageNamePref() {
         mShadowAutofillManager.setAutofillServiceComponentName(EXAMPLE_SERVICE_PACKAGE);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
@@ -569,7 +549,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     public void toggledOptionResetsPackageNamePref() {
         mShadowAutofillManager.setAutofillServiceComponentName(EXAMPLE_SERVICE_PACKAGE);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_THIRD_PARTY_PASSWORD_MANAGERS_ALLOWED);
@@ -590,7 +569,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -603,7 +581,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -618,7 +595,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -633,7 +609,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -662,7 +637,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiToggleOffWhenIneligibleEvenIfOptedIn() {
         doReturn(false).when(mMockEntityDataManager).isEligibleToAutofillAi();
@@ -675,7 +649,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -700,7 +673,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiToggleHiddenWhenFeatureDisabled() {
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
@@ -710,7 +682,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiToggleHiddenWhenDeepLinkOpened() {
         mScenario =
@@ -742,7 +713,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -770,7 +740,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -808,7 +777,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -846,7 +814,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED)
     public void testAutofillAiReauthToggleHiddenWhenFeatureDisabled() {
@@ -857,7 +824,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED)
     public void testAutofillAiReauthToggleHiddenWhenAutofillAiFeatureDisabled() {
@@ -868,7 +834,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiManagedByPolicy_Disabled() {
         doReturn(true).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
@@ -883,7 +848,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiManagedByPolicy_PersonalDataManagerManagedAndDisabled() {
         doReturn(false).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
@@ -900,7 +864,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiNotManagedByPolicy_PersonalDataManagerManagedButEnabled() {
         doReturn(false).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
@@ -917,7 +880,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiNotManagedByPolicy() {
         doReturn(false).when(mMockEntityDataManager).getIsAutofillAiDisabledByEnterprisePolicy();
@@ -932,7 +894,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiEnterpriseDisclaimerVisible() {
         doReturn(false).when(mMockEntityDataManager).getIsAutofillAiAllowedByEnterprisePolicy();
@@ -958,7 +919,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiEnterpriseDisclaimerHidden() {
         doReturn(true).when(mMockEntityDataManager).getIsAutofillAiAllowedByEnterprisePolicy();
@@ -980,7 +940,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_USE_PRIVATE_AI)
     public void testAutofillAiStrings_PrivateAiDisabled() {
@@ -1032,7 +991,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_USE_PRIVATE_AI
@@ -1087,7 +1045,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiToggleDisabledWhenUsingThirdPartyProvider() {
         doReturn(true).when(mMockEntityDataManager).isEligibleToAutofillAi();
@@ -1174,7 +1131,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -1191,7 +1147,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -1221,7 +1176,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -1251,7 +1205,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED
@@ -1279,7 +1232,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
@@ -1308,7 +1260,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testSearchIndexWhenPersonalContextNotVisible() {
@@ -1333,7 +1284,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
@@ -1348,7 +1298,6 @@ public class AutofillOptionsTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID

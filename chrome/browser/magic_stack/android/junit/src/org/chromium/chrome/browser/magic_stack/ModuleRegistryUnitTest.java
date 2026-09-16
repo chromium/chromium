@@ -17,8 +17,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getEducationalTipModuleList;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -77,7 +75,6 @@ public class ModuleRegistryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBuild() {
         mModuleRegistry.registerModule(REGISTERED_MODULE_TYPE, mModuleProviderBuilder);
 
@@ -90,7 +87,6 @@ public class ModuleRegistryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRegisterAdapter() {
         mModuleRegistry.registerModule(REGISTERED_MODULE_TYPE, mModuleProviderBuilder);
 
@@ -101,7 +97,6 @@ public class ModuleRegistryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         mModuleRegistry.registerModule(REGISTERED_MODULE_TYPE, mModuleProviderBuilder);
         mModuleRegistry.destroy();
@@ -110,7 +105,6 @@ public class ModuleRegistryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnPauseWithNative() {
         mModuleRegistry.registerModule(REGISTERED_MODULE_TYPE, mModuleProviderBuilder);
 

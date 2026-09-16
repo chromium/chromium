@@ -34,7 +34,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -106,7 +105,6 @@ public class TaskManagerCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testTaskProperties() {
         PropertyModel task =
                 new PropertyModel.Builder(mTaskModelKeys)
@@ -146,7 +144,6 @@ public class TaskManagerCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testSelectedRowColor() {
         mTasksModel.add(
                 new ListItem(
@@ -176,14 +173,12 @@ public class TaskManagerCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testHeaderDividers() {
         assertEquals(LinearLayout.SHOW_DIVIDER_MIDDLE, mHeaderView.getShowDividers());
         assertNotNull(mHeaderView.getDividerDrawable());
     }
 
     @Test
-    @SmallTest
     public void testSortIndicator() {
         TextView taskNameHeader = mHeaderView.findViewById(R.id.task_name);
         String defaultText = taskNameHeader.getText().toString();
@@ -195,7 +190,6 @@ public class TaskManagerCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testOnCreateContextMenu() {
         mHeaderModel.set(COLUMNS, new PropertyKey[] {TASK_NAME, CPU});
 
@@ -216,7 +210,6 @@ public class TaskManagerCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testCategoryChips_click() {
         ChipView tabsChip = mActivity.findViewById(R.id.category_chip_tabs);
         ChipView browserChip = mActivity.findViewById(R.id.category_chip_browser);
@@ -237,7 +230,6 @@ public class TaskManagerCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testCategoryChips_selectionChange() {
         ChipView tabsChip = mActivity.findViewById(R.id.category_chip_tabs);
         ChipView browserChip = mActivity.findViewById(R.id.category_chip_browser);

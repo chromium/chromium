@@ -11,8 +11,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -866,7 +864,6 @@ public class UndoRefocusHelperTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         // Act
         mUndoRefocusHelper.destroy();

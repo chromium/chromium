@@ -14,8 +14,6 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -71,7 +69,6 @@ public class SuggestionsNavigationDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testNavigateToSuggestionUrl() {
         // WindowOpenDisposition.CURRENT_TAB:
         mSuggestionsNavigationDelegate.navigateToSuggestionUrl(
@@ -119,7 +116,6 @@ public class SuggestionsNavigationDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testMaybeSelectTabWithUrl_NoMatch() {
         TabModel tabModel =
                 createTabModelFromList(Arrays.asList(JUnitTestGURLs.URL_1, JUnitTestGURLs.URL_2));
@@ -142,7 +138,6 @@ public class SuggestionsNavigationDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testMaybeSelectTabWithUrl_Match() {
         TabModel tabModel =
                 createTabModelFromList(Arrays.asList(JUnitTestGURLs.URL_1, JUnitTestGURLs.URL_2));

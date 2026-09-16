@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -16,7 +14,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 @RunWith(BaseRobolectricTestRunner.class)
 public class ParentApprovalMetricsTest {
     @Test
-    @SmallTest
     public void recordWebOutcomeMetrics() {
         final String histogramName = "FamilyLinkUser.LocalApprovalOutcome.Web";
 
@@ -48,7 +45,6 @@ public class ParentApprovalMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void recordWebParentAuthenticationErrorMetrics() {
         final String histogramName =
                 "Android.FamilyLinkUser.LocalApprovalParentAuthenticationError.Web";
@@ -72,7 +68,6 @@ public class ParentApprovalMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void recordExtensionOutcomeMetrics() {
         final String histogramName = "FamilyLinkUser.LocalApprovalOutcome.Extension";
 
@@ -104,7 +99,6 @@ public class ParentApprovalMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void recordExtensionParentAuthenticationErrorMetrics() {
         final String histogramName =
                 "Android.FamilyLinkUser.LocalApprovalParentAuthenticationError.Extension";

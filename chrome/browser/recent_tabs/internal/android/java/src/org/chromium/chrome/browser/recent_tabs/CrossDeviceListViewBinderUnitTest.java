@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.ListView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,7 +61,6 @@ public class CrossDeviceListViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEmptyStateVisible() {
         mModel.set(EMPTY_STATE_VISIBLE, true);
         assertEquals(View.VISIBLE, mEmptyStateContainer.getVisibility());

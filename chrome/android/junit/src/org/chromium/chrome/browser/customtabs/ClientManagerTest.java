@@ -22,7 +22,6 @@ import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.PostMessageServiceConnection;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -126,7 +125,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testNoSessionNoWarmup() {
         Assert.assertEquals(
                 ClientManager.CalledWarmup.NO_SESSION_NO_WARMUP,
@@ -134,7 +132,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testNoSessionWarmup() {
         mClientManager.recordUidHasCalledWarmup(mUid);
         Assert.assertEquals(
@@ -142,7 +139,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testInvalidSessionNoWarmup() {
         Assert.assertEquals(
                 ClientManager.CalledWarmup.NO_SESSION_NO_WARMUP,
@@ -150,7 +146,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testInvalidSessionWarmup() {
         mClientManager.recordUidHasCalledWarmup(mUid);
         Assert.assertEquals(
@@ -159,7 +154,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testValidSessionNoWarmup() {
         mClientManager.newSession(
                 mSession,
@@ -175,7 +169,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testValidSessionOtherWarmup() {
         mClientManager.recordUidHasCalledWarmup(mUid + 1);
         mClientManager.newSession(
@@ -192,7 +185,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testValidSessionWarmup() {
         mClientManager.recordUidHasCalledWarmup(mUid);
         mClientManager.newSession(
@@ -208,7 +200,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testValidSessionWarmupSeveralCalls() {
         mClientManager.recordUidHasCalledWarmup(mUid);
         mClientManager.newSession(
@@ -238,7 +229,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testPredictionOutcomeSuccess() {
         Assert.assertTrue(
                 mClientManager.newSession(
@@ -257,7 +247,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testPredictionOutcomeNoPrediction() {
         Assert.assertTrue(
                 mClientManager.newSession(
@@ -275,7 +264,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testPredictionOutcomeBadPrediction() {
         Assert.assertTrue(
                 mClientManager.newSession(
@@ -294,7 +282,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testPredictionOutcomeIgnoreFragment() {
         Assert.assertTrue(
                 mClientManager.newSession(
@@ -314,7 +301,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testPostMessageOriginVerification() {
         final ClientManager cm = mClientManager;
 
@@ -359,7 +345,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testPostMessageOriginDifferentRelations() {
         final ClientManager cm = mClientManager;
         PostMessageServiceConnection serviceConnection =
@@ -405,7 +390,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testFirstLowConfidencePredictionIsNotThrottled() {
         Assert.assertTrue(
                 mClientManager.newSession(
@@ -442,7 +426,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testMayLaunchUrlAccounting() {
         String name = "CustomTabs.MayLaunchUrlType";
         Assert.assertTrue(
@@ -507,7 +490,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testPostMessageWithTargetOrigin() {
         final ClientManager cm = mClientManager;
 
@@ -546,7 +528,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testLogConnectionClosedCTForeground() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
         SysUtils.setIsCurrentlyLowMemoryForTesting(false);
@@ -574,7 +555,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testLogConnectionClosedCTForegroundKeepAlive() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
         SysUtils.setIsCurrentlyLowMemoryForTesting(false);
@@ -609,7 +589,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testLogConnectionClosedCTBackground() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
         SysUtils.setIsCurrentlyLowMemoryForTesting(false);
@@ -637,7 +616,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testLogConnectionClosedCTBackgroundKeepAlive() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
         SysUtils.setIsCurrentlyLowMemoryForTesting(false);
@@ -672,7 +650,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testLogConnectionClosedLowMemoryCTForeground() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
         SysUtils.setIsCurrentlyLowMemoryForTesting(true);
@@ -701,7 +678,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testLogConnectionClosedLowMemoryCTForegroundKeepAlive() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
         SysUtils.setIsCurrentlyLowMemoryForTesting(true);
@@ -736,7 +712,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testLogConnectionClosedLowMemoryCTBackground() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
         SysUtils.setIsCurrentlyLowMemoryForTesting(true);
@@ -765,7 +740,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testLogConnectionClosedLowMemoryCTBackgroundKeepAlive() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
         SysUtils.setIsCurrentlyLowMemoryForTesting(true);
@@ -800,7 +774,6 @@ public class ClientManagerTest {
     }
 
     @Test
-    @SmallTest
     public void testLogConnectionClosedCleanupCalledTwiceLogsOnce() {
         String histogramName = "CustomTabs.SessionDisconnectStatus";
         SysUtils.setIsCurrentlyLowMemoryForTesting(false);

@@ -24,8 +24,6 @@ import android.graphics.Bitmap;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -141,7 +139,6 @@ public class PriceChangeModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule_ServiceNotInitialized() {
         MockTab tab1 = new MockTab(456, mProfile);
         MockTab tab2 = new MockTab(789, mProfile);
@@ -166,7 +163,6 @@ public class PriceChangeModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule_ServiceInitialized() {
         showModuleWithInitializedService();
 
@@ -224,7 +220,6 @@ public class PriceChangeModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule_UseDefaultFavicon() {
         showModuleWithInitializedService();
 
@@ -245,7 +240,6 @@ public class PriceChangeModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule_NoData() {
         doReturn(true).when(mService).isInitialized();
 
@@ -260,7 +254,6 @@ public class PriceChangeModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule_TabStateNotInitialized() {
         doReturn(false).when(mTabModelSelector).isTabStateInitialized();
 
@@ -271,13 +264,11 @@ public class PriceChangeModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetModuleType() {
         assertEquals(ModuleType.PRICE_CHANGE, mMediator.getModuleType());
     }
 
     @Test
-    @SmallTest
     public void testPriceAnnotationSettingChange() {
         // Enabling the price annotation won't trigger any change.
         mSharedPreferenceManager.writeBoolean(PriceTrackingUtilities.TRACK_PRICES_ON_TABS, true);
@@ -293,7 +284,6 @@ public class PriceChangeModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         mMediator.destroy();
 
@@ -303,7 +293,6 @@ public class PriceChangeModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule_NullTab() {
         doReturn(true).when(mService).isInitialized();
 
@@ -320,7 +309,6 @@ public class PriceChangeModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule_TabFromOtherModel() {
         doReturn(true).when(mService).isInitialized();
 
@@ -340,7 +328,6 @@ public class PriceChangeModuleMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnTabStateInitialized() {
         MockTab tab1 = new MockTab(456, mProfile);
         MockTab tab2 = new MockTab(789, mProfile);

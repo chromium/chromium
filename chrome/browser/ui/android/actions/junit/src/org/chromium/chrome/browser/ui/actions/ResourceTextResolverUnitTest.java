@@ -14,8 +14,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.res.Resources;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,14 +49,12 @@ public class ResourceTextResolverUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testResolveString() {
         ResourceTextResolver resolver = new ResourceTextResolver(STRING_RES_ID);
         assertEquals(STRING_VALUE, resolver.resolve(mContext));
     }
 
     @Test
-    @SmallTest
     public void testResolvePluralString() {
         int[] counts = {0, 1, 2, 5, 10, 100};
 
@@ -76,7 +72,6 @@ public class ResourceTextResolverUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testResolveNull_returnsEmptyString() {
         ResourceTextResolver resolver = new ResourceTextResolver(Resources.ID_NULL);
         assertEquals("", resolver.resolve(mContext));

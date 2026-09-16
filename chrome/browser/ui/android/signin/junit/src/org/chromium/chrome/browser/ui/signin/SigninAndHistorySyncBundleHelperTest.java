@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 import android.os.Bundle;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,7 +22,6 @@ import org.chromium.google_apis.gaia.GaiaId;
 public class SigninAndHistorySyncBundleHelperTest {
 
     @Test
-    @SmallTest
     public void testPutAndGetFullscreenSigninAndHistorySyncConfig() {
         final FullscreenSigninAndHistorySyncConfig initialConfig =
                 FullscreenSigninAndHistorySyncConfig.builderForSwitchAccountFlow(
@@ -47,7 +44,6 @@ public class SigninAndHistorySyncBundleHelperTest {
     }
 
     @Test
-    @SmallTest
     public void testPutAndGetBottomSheetSigninAndHistorySyncConfig() {
         final BottomSheetSigninAndHistorySyncConfig initialConfig =
                 new BottomSheetSigninAndHistorySyncConfig.Builder(

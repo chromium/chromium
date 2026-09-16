@@ -28,7 +28,6 @@ import android.widget.TextView;
 
 import androidx.core.graphics.Insets;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -93,7 +92,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsShown() {
         mModel.set(DocumentPictureInPictureHeaderProperties.IS_SHOWN, true);
         assertEquals(View.VISIBLE, mHeaderView.getVisibility());
@@ -103,7 +101,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBackgroundColor() {
         int color = Color.RED;
         mModel.set(DocumentPictureInPictureHeaderProperties.BACKGROUND_COLOR, color);
@@ -114,7 +111,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTintColorList() {
         ColorStateList tint = ColorStateList.valueOf(Color.RED);
         mModel.set(DocumentPictureInPictureHeaderProperties.TINT_COLOR_LIST, tint);
@@ -124,7 +120,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHeaderHeight() {
         int height = 123;
         mModel.set(DocumentPictureInPictureHeaderProperties.HEADER_HEIGHT, height);
@@ -133,7 +128,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHeaderSpacing() {
         int left = 10;
         int top = 20;
@@ -149,7 +143,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testNonDraggableAreas() {
         List<Rect> rects = new ArrayList<>();
         rects.add(new Rect(0, 0, 10, 10));
@@ -159,7 +152,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBackToTabClickListener() {
         View.OnClickListener listener = ViewUtils.emptyClickListener();
         mModel.set(
@@ -168,7 +160,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsBackToTabShown() {
         mModel.set(DocumentPictureInPictureHeaderProperties.IS_BACK_TO_TAB_SHOWN, true);
         verify(mBackToTabButton).setVisibility(View.VISIBLE);
@@ -178,7 +169,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSecurityIcon() {
         int iconRes = 123;
         mModel.set(DocumentPictureInPictureHeaderProperties.SECURITY_ICON, iconRes);
@@ -186,7 +176,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSecurityIconClickListener() {
         View.OnClickListener listener = ViewUtils.emptyClickListener();
         mModel.set(
@@ -195,7 +184,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUrlHost() {
         String host = JUnitTestGURLs.EXAMPLE_URL.getHost();
         mModel.set(DocumentPictureInPictureHeaderProperties.URL_STRING, host);
@@ -204,7 +192,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBrandedColorScheme() {
         mModel.set(
                 DocumentPictureInPictureHeaderProperties.BRANDED_COLOR_SCHEME,
@@ -213,7 +200,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUrlEllipsizeBehavior() {
         mModel.set(
                 DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR,
@@ -227,7 +213,6 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testComponentSize() {
         int size = 42;
         mModel.set(DocumentPictureInPictureHeaderProperties.COMPONENT_SIZE, size);

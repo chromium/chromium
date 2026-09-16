@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,7 +34,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testReportReaderModePrefsOpened() {
         ReaderModeMetrics.reportReaderModePrefsOpened();
         Assert.assertEquals(
@@ -45,7 +42,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testReportReaderModePrefsFontFamilyChanged() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -59,7 +55,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testReportReaderModePrefsFontScalingChanged() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -72,7 +67,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordAnyPageSignalWithinTimeout() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -84,7 +78,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordDistillablePageSignalWithinTimeout() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -96,7 +89,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordTimeToProvideResultToAccumulator() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -107,7 +99,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordReaderModeEntryPoint_Regular() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -120,7 +111,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordReaderModeEntryPoint_CCT() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -132,7 +122,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordReaderModeEntryPoint_Incognito() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -145,7 +134,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordReaderModeEntryPoint_IncognitoCCT() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -158,7 +146,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOnStartedReaderMode() {
         ReaderModeMetrics.recordOnStartedReaderMode();
         Assert.assertEquals(
@@ -166,7 +153,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOnStoppedReaderMode() {
         ReaderModeMetrics.recordOnStoppedReaderMode();
         Assert.assertEquals(
@@ -174,7 +160,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordReaderModeViewDuration() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
@@ -185,7 +170,6 @@ public class ReaderModeMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testReportReaderModePrefsThemeChanged() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()

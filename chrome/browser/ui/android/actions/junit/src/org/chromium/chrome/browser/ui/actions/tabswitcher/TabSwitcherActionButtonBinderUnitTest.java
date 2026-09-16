@@ -9,8 +9,6 @@ import static org.mockito.Mockito.verify;
 
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,21 +44,18 @@ public class TabSwitcherActionButtonBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabCount() {
         mModel.set(TabSwitcherActionProperties.TAB_COUNT, 5);
         verify(mView).setTabCount(5, false);
     }
 
     @Test
-    @SmallTest
     public void testIsIncognito() {
         mModel.set(TabSwitcherActionProperties.IS_INCOGNITO, true);
         verify(mView).setTabCount(0, true);
     }
 
     @Test
-    @SmallTest
     public void testTabCountAndIncognito() {
         mModel.set(TabSwitcherActionProperties.TAB_COUNT, 5);
         mModel.set(TabSwitcherActionProperties.IS_INCOGNITO, true);
@@ -68,7 +63,6 @@ public class TabSwitcherActionButtonBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHasNotificationDot() {
         mModel.set(TabSwitcherActionProperties.HAS_NOTIFICATION_DOT, true);
         verify(mView).setNotificationDotVisible(true);
@@ -78,14 +72,12 @@ public class TabSwitcherActionButtonBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowTabSwitcherTrigger() {
         mModel.set(TabSwitcherActionProperties.SHOW_TAB_SWITCHER_TRIGGER, null);
         verify(mView).endRippleAnimation();
     }
 
     @Test
-    @SmallTest
     public void testShowTabSwitcherTrigger_MultipleTimes() {
         mModel.set(TabSwitcherActionProperties.SHOW_TAB_SWITCHER_TRIGGER, null);
         mModel.set(TabSwitcherActionProperties.SHOW_TAB_SWITCHER_TRIGGER, null);
@@ -94,7 +86,6 @@ public class TabSwitcherActionButtonBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFallbackToActionButtonBinder() {
         mModel.set(ActionProperties.CONTENT_DESCRIPTION_RESOLVER, context -> "Tab Switcher");
         verify(mView).setContentDescription("Tab Switcher");

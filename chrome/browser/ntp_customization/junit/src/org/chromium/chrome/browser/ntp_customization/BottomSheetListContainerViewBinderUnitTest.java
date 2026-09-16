@@ -17,8 +17,6 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 
 import android.content.Context;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +46,6 @@ public class BottomSheetListContainerViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBind() {
         PropertyModelChangeProcessor.create(
                 mPropertyModel,

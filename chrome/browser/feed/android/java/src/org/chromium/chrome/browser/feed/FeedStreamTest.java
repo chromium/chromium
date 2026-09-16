@@ -27,7 +27,6 @@ import android.widget.FrameLayout;
 
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import com.google.protobuf.ByteString;
 
@@ -245,7 +244,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testBindUnbind_shouldPlaceSpacerTrue() {
         createHeaderContent(1);
         bindToView();
@@ -265,7 +263,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testUnbindBind_shouldPlaceSpacerTrue() {
         createHeaderContent(2);
         bindToView();
@@ -364,7 +361,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testAddSlicesOnStreamUpdated() {
         bindToView();
         // Add 3 new slices at first.
@@ -399,7 +395,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testAddNewSlicesWithSameIds() {
         bindToView();
         // Add 2 new slices at first.
@@ -493,7 +488,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenUrlSameTab() {
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
@@ -512,7 +506,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testLogLaunchFinishedOnOpenSuggestionUrl() {
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
@@ -523,7 +516,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testLogLaunchFinishedOnOpenSuggestionUrlNewTab() {
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
@@ -536,7 +528,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testLogLaunchFinishedOnOpenUrlNewTab() {
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
@@ -548,7 +539,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testLogLaunchFinishedOnOpenSuggestionUrlIncognito() {
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
@@ -559,7 +549,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenUrlInNewTab() {
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
@@ -579,7 +568,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenUrlNewTabInGroup() {
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
@@ -599,7 +587,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenUrlIncognitoTab() {
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
@@ -618,7 +605,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testShowBottomSheet() {
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
@@ -630,7 +616,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissBottomSheet() {
         bindToView();
         FeedStream.FeedSurfaceActionsHandler handler =
@@ -643,7 +628,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testAddToReadingList() {
         bindToView();
         String title = "title";
@@ -667,7 +651,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testShowSnackbar() {
         bindToView();
         FeedStream.FeedActionsHandlerImpl handler =
@@ -680,7 +663,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testShowSnackbarOnAction() {
         bindToView();
         FeedStream.FeedActionsHandlerImpl handler =
@@ -704,7 +686,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testShowSnackbarOnDismissNoAction() {
         bindToView();
         FeedStream.FeedActionsHandlerImpl handler =
@@ -728,7 +709,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testTriggerRefreshDismissesSnackbars() {
         bindToView();
         FeedStream.FeedActionsHandlerImpl handler =
@@ -747,7 +727,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testShare() {
         mFeedStream.setShareWrapperForTest(mShareHelper);
 
@@ -763,7 +742,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testLoadMoreOnDismissal() {
         bindToView();
         final int itemCount = 10;
@@ -787,7 +765,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollIsReportedOnUnbind() {
         bindToView();
 
@@ -801,7 +778,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testShowPlaceholder() {
         createHeaderContent(1);
         bindToView();
@@ -825,7 +801,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.FEED_LOADING_PLACEHOLDER)
     public void testShowSpinner_PlaceholderDisabled() {
         createHeaderContent(1);
@@ -850,7 +825,6 @@ public class FeedStreamTest {
     }
 
     @Test
-    @SmallTest
     public void testTriggerManualRefresh() {
         bindToView();
         FeedStream.FeedActionsHandlerImpl handler =

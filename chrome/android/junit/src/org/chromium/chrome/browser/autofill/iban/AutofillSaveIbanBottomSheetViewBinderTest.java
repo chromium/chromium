@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -60,13 +59,11 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollView() {
         assertEquals(R.id.autofill_save_iban_scroll_view, mView.mScrollView.getId());
     }
 
     @Test
-    @SmallTest
     public void testLogoIcon() {
         assertEquals(R.id.autofill_save_iban_google_pay_icon, mView.mLogoIcon.getId());
         assertThat(mView.mLogoIcon.getDrawable(), nullValue());
@@ -78,7 +75,6 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testTitle() {
         verifyPropertyBoundToTextView(
                 mView.mContentView.findViewById(R.id.autofill_save_iban_title_text),
@@ -86,7 +82,6 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testDescription() {
         verifyPropertyBoundToTextView(
                 mView.mContentView.findViewById(R.id.autofill_save_iban_description_text),
@@ -94,7 +89,6 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testIbanValue() {
         verifyPropertyBoundToTextView(
                 mView.mContentView.findViewById(R.id.autofill_save_iban_value),
@@ -102,7 +96,6 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testAcceptButton() {
         verifyPropertyBoundToTextView(
                 mView.mContentView.findViewById(R.id.autofill_save_iban_confirm_button),
@@ -110,7 +103,6 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testCancelButton() {
         verifyPropertyBoundToTextView(
                 mView.mContentView.findViewById(R.id.autofill_save_iban_cancel_button),
@@ -118,7 +110,6 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testLegalMessage() {
         // Test empty legal message.
         bind(

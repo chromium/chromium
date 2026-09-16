@@ -16,8 +16,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.bookmarks.bar.BookmarkBarItemsProvider.ObservationId.ACCOUNT;
 import static org.chromium.chrome.browser.bookmarks.bar.BookmarkBarItemsProvider.ObservationId.LOCAL;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -149,7 +147,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testConstructor() {
         final int startIndex = mAccountFolderItems.size();
         createProvider(/* resetObserver= */ false);
@@ -159,7 +156,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testConstructorWithEmptyAccountFolder() {
         mAccountFolderItems = Collections.emptyList();
         createProvider(/* resetObserver= */ false);
@@ -168,7 +164,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testConstructorWithEmptyAccountAndLocalFolders() {
         mAccountFolderItems = Collections.emptyList();
         mLocalFolderItems = Collections.emptyList();
@@ -177,7 +172,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testConstructorWithEmptyLocalFolder() {
         mLocalFolderItems = Collections.emptyList();
         createProvider(/* resetObserver= */ false);
@@ -186,7 +180,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testConstructorWithNullAccountFolder() {
         when(mModel.getAccountDesktopFolderId()).thenReturn(null);
         createProvider(/* resetObserver= */ false);
@@ -195,7 +188,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         final var modelObserver = mModelObserver;
         mProvider.destroy();
@@ -206,7 +198,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroyWithNullAccountFolder() {
         when(mModel.getAccountDesktopFolderId()).thenReturn(null);
         createProvider(/* resetObserver= */ true);
@@ -219,7 +210,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testOnBookmarkModelChanged() {
         mModelObserver.bookmarkModelChanged();
         verifyNoMoreInteractions(mAccountFolderObservation);
@@ -228,7 +218,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testOnBookmarkModelChangedToAddAccountFolder() {
         when(mModel.getAccountDesktopFolderId()).thenReturn(null);
         createProvider(/* resetObserver= */ true);
@@ -244,7 +233,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testOnBookmarkModelChangedToRemoveAccountFolder() {
         // Simulate removal of the account folder.
         when(mModel.getAccountDesktopFolderId()).thenReturn(null);
@@ -258,7 +246,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testOnBookmarkItemAddedToAccountFolder() {
         final int index = 10;
         mAccountFolderObserver.onBookmarkItemAdded(ACCOUNT, mNewItem1, index);
@@ -267,7 +254,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemAddedToLocalFolder() {
         final int index = 10;
@@ -278,7 +264,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testOnBookmarkItemMovedWithinAccountFolder() {
         final int index = 10;
         final int oldIndex = 27;
@@ -288,7 +273,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemMovedWithinLocalFolder() {
         final int index = 10;
@@ -300,7 +284,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testOnBookmarkItemRemovedFromAccountFolder() {
         final int index = 10;
         mAccountFolderObserver.onBookmarkItemRemoved(ACCOUNT, index);
@@ -309,7 +292,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemRemovedFromLocalFolder() {
         final int index = 10;
@@ -320,7 +302,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testOnBookmarkItemUpdatedWithinAccountFolder() {
         final int index = 10;
         mAccountFolderObserver.onBookmarkItemUpdated(ACCOUNT, mAccountFolderItem1, 10);
@@ -329,7 +310,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemUpdatedWithinLocalFolder() {
         final int index = 10;
@@ -340,7 +320,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testOnBookmarkItemsChangedToEmptyAccountFolder() {
         mAccountFolderObserver.onBookmarkItemsChanged(ACCOUNT, Collections.emptyList());
         verify(mObserver).onBookmarkItemsRemoved(ACCOUNT, 0, mAccountFolderItems.size());
@@ -348,7 +327,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedToEmptyLocalFolder() {
         final int startIndex = mAccountFolderItems.size();
@@ -358,7 +336,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testOnBookmarkItemsChangedToPopulateAccountFolder() {
         final var accountFolderItems = mAccountFolderItems;
         mAccountFolderItems = Collections.emptyList();
@@ -371,7 +348,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedToPopulateLocalFolder() {
         final int startIndex = mAccountFolderItems.size();
@@ -386,7 +362,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testOnBookmarkItemsChangedToSwapAccountFolder() {
         final int oldSize = mAccountFolderItems.size();
         mAccountFolderItems = List.of(mNewItem1, mNewItem2);
@@ -397,7 +372,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedToSwapLocalFolder() {
         final int startIndex = mAccountFolderItems.size();
@@ -410,7 +384,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedWithIdenticalAccountFolderItems() {
         mAccountFolderObserver.onBookmarkItemsChanged(ACCOUNT, mAccountFolderItems);
@@ -418,7 +391,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedWithIdenticalLocalFolderItems() {
         mLocalFolderObserver.onBookmarkItemsChanged(LOCAL, mLocalFolderItems);
@@ -426,7 +398,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedToUpdateSingleItemInAccountFolder() {
         BookmarkId id1 = new BookmarkId(1, 0);
@@ -445,7 +416,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedToInsertSingleItemInAccountFolder() {
         BookmarkId id1 = new BookmarkId(1, 0);
@@ -462,7 +432,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedToDeleteSingleItemInAccountFolder() {
         BookmarkId id1 = new BookmarkId(1, 0);
@@ -476,7 +445,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedToReorderItemsInAccountFolder() {
         BookmarkId id1 = new BookmarkId(1, 0);
@@ -491,7 +459,6 @@ public class BookmarkBarItemsProviderTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnBookmarkItemsChangedToReorderMultipleItemsInAccountFolder() {
         BookmarkId id1 = new BookmarkId(1, 0);

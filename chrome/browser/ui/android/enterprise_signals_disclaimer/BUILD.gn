@@ -138,7 +138,6 @@ robolectric_library("junit") {
     "//testing/android/junit:junit_test_support",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
-    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

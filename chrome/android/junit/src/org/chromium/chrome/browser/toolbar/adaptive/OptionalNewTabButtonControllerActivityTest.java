@@ -15,7 +15,6 @@ import android.content.res.Resources;
 import android.util.Pair;
 
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -119,7 +118,6 @@ public class OptionalNewTabButtonControllerActivityTest {
     }
 
     @Test
-    @MediumTest
     @Config(qualifiers = "w390dp-h820dp-land")
     public void testAlwaysShownOnPhone() {
         mActivityScenario.onActivity(
@@ -133,7 +131,6 @@ public class OptionalNewTabButtonControllerActivityTest {
     }
 
     @Test
-    @MediumTest
     @Config(qualifiers = "w600dp-h820dp")
     public void testNeverShownOnTablet() {
         mActivityScenario.onActivity(
@@ -148,7 +145,6 @@ public class OptionalNewTabButtonControllerActivityTest {
     }
 
     @Test
-    @MediumTest
     @Config(qualifiers = "w400dp-h600dp")
     public void testNightMode() {
         mActivityScenario.onActivity(
@@ -164,7 +160,6 @@ public class OptionalNewTabButtonControllerActivityTest {
     }
 
     @Test
-    @MediumTest
     @Config(qualifiers = "w400dp-h600dp")
     public void testNtp() {
         mActivityScenario.onActivity(

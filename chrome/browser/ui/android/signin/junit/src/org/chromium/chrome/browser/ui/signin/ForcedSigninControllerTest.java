@@ -14,8 +14,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -76,13 +74,11 @@ public class ForcedSigninControllerTest {
     }
 
     @Test
-    @SmallTest
     public void testRegistersActivityLifecycleObserver() {
         verify(mActivityLifecycleDispatcher).register(mController);
     }
 
     @Test
-    @SmallTest
     public void testDestroyUnregistersActivityLifecycleObserver() {
         mController.destroy();
 
@@ -90,7 +86,6 @@ public class ForcedSigninControllerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     public void testOnResumeWithNative_triggersPromoWhenForcedSigninRequired() {
         when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);
@@ -104,7 +99,6 @@ public class ForcedSigninControllerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     public void testOnResumeWithNative_doesNotTriggerWhenSignedIn() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -118,7 +112,6 @@ public class ForcedSigninControllerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     public void testOnResumeWithNative_doesNotTriggerWhenFeatureDisabled() {
         when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);
@@ -130,7 +123,6 @@ public class ForcedSigninControllerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     public void testOnResumeWithNative_doesNotTriggerWhenPrefDisabled() {
         when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(false);
@@ -142,7 +134,6 @@ public class ForcedSigninControllerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     public void testOnPrimaryAccountCleared_TriggersPromo() {
         when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);
@@ -157,7 +148,6 @@ public class ForcedSigninControllerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
     public void testOnPrimaryAccountSet_doesNotTriggerPromo() {
         when(mLocalPrefsServiceMock.getBoolean(Pref.FORCE_BROWSER_SIGNIN)).thenReturn(true);

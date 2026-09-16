@@ -44,8 +44,6 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -317,7 +315,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testBackgroundColor() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(NEW_LOCAL_PASSPORT);
@@ -332,7 +329,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testBackgroundColorWhenAutofillAiDisabled() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
@@ -348,7 +344,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testOpenHelpAndFeedback() {
         showEditorDialog(LOCAL_PASSPORT);
 
@@ -363,7 +358,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testValidateOnShow() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(NEW_LOCAL_PASSPORT);
@@ -373,7 +367,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testShowEditorDialogForNewEntity() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(NEW_LOCAL_PASSPORT);
@@ -384,7 +377,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testShowEditorDialogForNewWalletEntity() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(NEW_WALLET_PASSPORT);
@@ -398,7 +390,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testShowEditorDialogForExistingEntity() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(LOCAL_PASSPORT);
@@ -409,7 +400,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testClickCancelButton() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(LOCAL_PASSPORT);
@@ -418,7 +408,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testDeleteLocalEntity() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(LOCAL_PASSPORT);
@@ -477,7 +466,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testDeleteWalletEntity() {
         showEditorDialog(WALLET_PASSPORT);
 
@@ -486,7 +474,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testDeleteNewEntity() {
         EntityInstance newPassport =
                 new EntityInstance.Builder(PASSPORT_TYPE)
@@ -500,7 +487,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testEditorFields() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(LOCAL_PASSPORT);
@@ -510,7 +496,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testLocalEntitySourceNotice() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(LOCAL_PASSPORT);
@@ -523,7 +508,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testWalletEntitySourceNotice() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
         showEditorDialog(WALLET_PASSPORT);
@@ -544,7 +528,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testWalletEntitySourceNotice_ClickLink() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
         showEditorDialog(WALLET_PASSPORT);
@@ -557,7 +540,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testPrivateWalletEntitySourceNotice_ClickLink() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(mAccountInfo);
         showEditorDialog(PRIVATE_WALLET_PASSPORT);
@@ -570,7 +552,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR)
     public void testCommitChanges() {
         EntityInstance entity =
@@ -623,7 +604,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR)
     public void testCommitChangesWithInvalidDate() {
         EntityInstance entity =
@@ -689,7 +669,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR)
     public void testCommitChangesWithWhitespaces() {
         EntityInstance entity =
@@ -764,7 +743,6 @@ public class EntityEditorModuleTest {
 
     /** Test that the entity editor works correctly if the date fields are required. */
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR)
     public void testCommitChangesWithDatesRequired() {
         EntityType passportType =
@@ -851,7 +829,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     public void testCommitChangesWithTwoRequiredFields() {
         EntityInstance localVehicle =
                 new EntityInstance.Builder(sVehicleType)
@@ -911,7 +888,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR)
     public void testCommitChangesWithThreeRequiredFields() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
@@ -987,7 +963,6 @@ public class EntityEditorModuleTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_USE_MATERIAL_DATE_PICKER_IN_ENTITY_EDITOR)
     public void testCommitChangesWithNoRequiredFields() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");

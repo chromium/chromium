@@ -15,8 +15,6 @@ import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,7 +66,6 @@ public class HubLayoutAnimationRunnerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRunWithImmediateAnimator_NoListeners() {
         HubLayoutAnimator animator =
                 new HubLayoutAnimator(
@@ -101,7 +98,6 @@ public class HubLayoutAnimationRunnerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRunWithAsyncAnimator_AnimatorListenerOnly() {
         mRunner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
         assertEquals(AnimationState.WAITING_FOR_ANIMATOR, mRunner.getAnimationState());
@@ -126,7 +122,6 @@ public class HubLayoutAnimationRunnerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRunOnTimeout_TwoListeners() {
         doRunnable(() -> mAnimatorSupplier.set(mAnimator))
                 .when(mAnimatorProvider)
@@ -159,7 +154,6 @@ public class HubLayoutAnimationRunnerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testForceAnimationToFinish() {
         mRunner.addListener(mListener);
 
@@ -186,7 +180,6 @@ public class HubLayoutAnimationRunnerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testForceAnimationToFinishWithPostedOnAnimationReadyNoWaitForTask() {
         mRunner.addListener(mListener);
 
@@ -210,7 +203,6 @@ public class HubLayoutAnimationRunnerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testForceAnimationToFinishWithNoAnimationSupplied() {
         doRunnable(() -> mAnimatorSupplier.set(mAnimator))
                 .when(mAnimatorProvider)
@@ -239,7 +231,6 @@ public class HubLayoutAnimationRunnerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testForceAnimationToFinishWithoutRunWithTimeout() {
         mRunner.addListener(mListener);
 

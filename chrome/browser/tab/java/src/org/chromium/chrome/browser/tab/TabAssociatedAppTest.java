@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.tab;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,7 +44,6 @@ public class TabAssociatedAppTest {
     }
 
     @Test
-    @SmallTest
     public void testDisassociatesOnInputEvent() {
         TabAssociatedApp tabAssociatedApp = TabAssociatedApp.from(mTab);
         tabAssociatedApp.setAppId(APP_ID);
@@ -58,7 +55,6 @@ public class TabAssociatedAppTest {
     }
 
     @Test
-    @SmallTest
     public void testDisassociatesOnOmniboxPageLoad() {
         TabAssociatedApp tabAssociatedApp = TabAssociatedApp.from(mTab);
         mTabObserverCaptor.getValue().onInitialized(mTab, APP_ID);
@@ -75,7 +71,6 @@ public class TabAssociatedAppTest {
     }
 
     @Test
-    @SmallTest
     public void testDoesNotDisassociateOnNormalPageLoad() {
         TabAssociatedApp tabAssociatedApp = TabAssociatedApp.from(mTab);
         mTabObserverCaptor.getValue().onInitialized(mTab, APP_ID);

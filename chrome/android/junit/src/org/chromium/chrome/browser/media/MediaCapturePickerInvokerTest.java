@@ -16,7 +16,6 @@ import android.content.Intent;
 import androidx.activity.result.ActivityResult;
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -126,7 +125,6 @@ public class MediaCapturePickerInvokerTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_cancel() {
         mPickerDelegate.setIntent(new Intent());
         MediaCapturePickerInvoker.show(mActivity, mediaCaptureParams(), mDelegate);
@@ -139,7 +137,6 @@ public class MediaCapturePickerInvokerTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_tabWithAudio() {
         Tab tab = mock(Tab.class);
         doReturn(mTabWebContents).when(tab).getWebContents();
@@ -157,7 +154,6 @@ public class MediaCapturePickerInvokerTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_tabWithoutAudio() {
         Tab tab = mock(Tab.class);
         doReturn(mTabWebContents).when(tab).getWebContents();
@@ -175,7 +171,6 @@ public class MediaCapturePickerInvokerTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_window() {
         mPickerDelegate.setIntent(new Intent());
         Params params = mediaCaptureParams();
@@ -189,7 +184,6 @@ public class MediaCapturePickerInvokerTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_screen() {
         mPickerDelegate.setIntent(new Intent());
         Params params = mediaCaptureParams();

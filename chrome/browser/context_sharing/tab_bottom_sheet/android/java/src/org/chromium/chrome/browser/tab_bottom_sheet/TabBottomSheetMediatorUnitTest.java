@@ -15,7 +15,6 @@ import android.view.MotionEvent;
 import android.view.ViewParent;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -67,7 +66,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnSheetStateChanged_Full() {
         mMediator.onSheetStateChanged(BottomSheetController.SheetState.FULL);
         assertEquals(BottomSheetController.SheetState.FULL, mMediator.getSheetStateForTesting());
@@ -76,7 +74,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnSheetStateChanged_Peek() {
         mMediator.onSheetStateChanged(BottomSheetController.SheetState.PEEK);
         assertEquals(BottomSheetController.SheetState.PEEK, mMediator.getSheetStateForTesting());
@@ -85,7 +82,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnSheetStateChanged_Half() {
         mMediator.onSheetStateChanged(BottomSheetController.SheetState.HALF);
         assertEquals(BottomSheetController.SheetState.HALF, mMediator.getSheetStateForTesting());
@@ -94,7 +90,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateCrossFadeAlpha_AtPeek() {
         int peekHeight = 100;
 
@@ -106,7 +101,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateCrossFadeAlpha_Transition_FirstHalf() {
         int peekHeight = 100;
         float offsetPx = 125f; // Quarter way
@@ -119,7 +113,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateCrossFadeAlpha_Transition_Midpoint() {
         int peekHeight = 100;
         float offsetPx = 150f; // Midpoint
@@ -132,7 +125,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateCrossFadeAlpha_Transition_SecondHalf() {
         int peekHeight = 100;
         float offsetPx = 175f; // Three-quarters way
@@ -145,7 +137,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateCrossFadeAlpha_AtDoublePeek() {
         int peekHeight = 100;
         float offsetPx = 200f;
@@ -158,7 +149,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateCrossFadeAlpha_PeekHeightZero() {
         mMediator.setPeekHeight(0);
         mMediator.updateCrossFadeAlpha(100);
@@ -168,7 +158,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateCrossFadeAlpha_BelowPeek() {
         int peekHeight = 100;
         float offsetPx = 50f;
@@ -181,7 +170,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateCrossFadeAlpha_AboveDoublePeek() {
         int peekHeight = 100;
         float offsetPx = 250f;
@@ -194,7 +182,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsSheetHeightSufficient_Sufficient() {
         float density = DisplayAndroid.getNonMultiDisplay(mContext).getDipScale();
         int sufficientPx = (int) Math.ceil(240 * density);
@@ -202,7 +189,6 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsSheetHeightSufficient_Insufficient() {
         float density = DisplayAndroid.getNonMultiDisplay(mContext).getDipScale();
         int insufficientPx = (int) (239 * density);
@@ -311,14 +297,12 @@ public class TabBottomSheetMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetToFlexibleHeight() {
         mMediator.setToFlexibleHeight();
         verify(mWebViewResizingHelper).setToFlexibleHeight();
     }
 
     @Test
-    @SmallTest
     public void testSetToFixedHeight() {
         mMediator.setToFixedHeight(MAX_OFFSET);
         verify(mWebViewResizingHelper).setToFixedHeight(MAX_OFFSET);

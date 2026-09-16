@@ -14,7 +14,6 @@ import android.content.Intent;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Test;
@@ -45,7 +44,6 @@ public class LaunchesWithColorSchemeTest {
     }
 
     @Test
-    @SmallTest
     public void testLaunchCustomTabWithColorSchemeDark() {
         mActivityScenario =
                 ActivityScenario.launch(
@@ -64,7 +62,6 @@ public class LaunchesWithColorSchemeTest {
     }
 
     @Test
-    @SmallTest
     public void testLaunchCustomTabWithColorSchemeLight() {
         mActivityScenario =
                 ActivityScenario.launch(

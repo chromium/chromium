@@ -10,8 +10,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -58,14 +56,12 @@ public class PaneTransitionHelperUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testProcessTransition() {
         mPaneTransitionHelper.processTransition(PaneId.TAB_SWITCHER, LoadHint.HOT);
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.HOT));
     }
 
     @Test
-    @SmallTest
     public void testProcessAlreadyQueuedTransition() {
         mPaneTransitionHelper.queueTransition(PaneId.TAB_SWITCHER, LoadHint.COLD);
         mPaneTransitionHelper.processTransition(PaneId.TAB_SWITCHER, LoadHint.WARM);
@@ -76,7 +72,6 @@ public class PaneTransitionHelperUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRemoveQueuedTransition() {
         mPaneTransitionHelper.queueTransition(PaneId.TAB_SWITCHER, LoadHint.HOT);
         mPaneTransitionHelper.removeTransition(PaneId.TAB_SWITCHER);
@@ -85,7 +80,6 @@ public class PaneTransitionHelperUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testQueueRepeatedly() {
         mPaneTransitionHelper.queueTransition(PaneId.TAB_SWITCHER, LoadHint.HOT);
         mPaneTransitionHelper.queueTransition(PaneId.TAB_SWITCHER, LoadHint.HOT);
@@ -95,7 +89,6 @@ public class PaneTransitionHelperUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testQueueTransitions() {
         mPaneTransitionHelper.queueTransition(PaneId.TAB_SWITCHER, LoadHint.HOT);
         mPaneTransitionHelper.queueTransition(PaneId.INCOGNITO_TAB_SWITCHER, LoadHint.WARM);
@@ -121,7 +114,6 @@ public class PaneTransitionHelperUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testQueueTransitionsAndDestroy() {
         mPaneTransitionHelper.queueTransition(PaneId.TAB_SWITCHER, LoadHint.HOT);
         mPaneTransitionHelper.queueTransition(PaneId.INCOGNITO_TAB_SWITCHER, LoadHint.WARM);

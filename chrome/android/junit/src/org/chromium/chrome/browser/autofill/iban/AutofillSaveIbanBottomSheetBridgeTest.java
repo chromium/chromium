@@ -12,8 +12,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,7 +40,6 @@ import java.util.Collections;
 
 /** Unit tests for {@link AutofillSaveIbanBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SmallTest
 public final class AutofillSaveIbanBottomSheetBridgeTest {
     private static final long MOCK_POINTER = 0xb00fb00f;
     private static final String USER_PROVIDED_NICKNAME = "My Doctor's IBAN";

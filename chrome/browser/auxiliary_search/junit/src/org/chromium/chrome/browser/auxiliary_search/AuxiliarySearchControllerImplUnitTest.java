@@ -21,8 +21,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -335,7 +333,6 @@ public class AuxiliarySearchControllerImplUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE})
     public void testOnNonSensitiveDataAvailable_AuxiliarySearchDataEntry() {
         long now = TimeUtils.uptimeMillis();

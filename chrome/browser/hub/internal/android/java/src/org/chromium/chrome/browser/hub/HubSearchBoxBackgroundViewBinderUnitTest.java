@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.core.content.ContextCompat;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -58,7 +57,6 @@ public class HubSearchBoxBackgroundViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSearchBoxBackground_toggleVisibility() {
         mModel.set(SHOW_BACKGROUND, true);
         assertEquals(View.VISIBLE, mSearchBoxBackgroundView.getVisibility());
@@ -68,7 +66,6 @@ public class HubSearchBoxBackgroundViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSearchBoxBackground_checkColorScheme() {
         mModel.set(COLOR_SCHEME, HubColorScheme.DEFAULT);
         assertEquals(

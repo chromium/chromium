@@ -12,7 +12,6 @@ import android.animation.AnimatorSet;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,7 +60,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnVisibilityChanged_notStarted_notVisible() {
         doReturn(false).when(mAnimatorSet).isStarted();
         mLayout.mVisible = false;
@@ -74,7 +72,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnVisibilityChanged_notStarted_visible() {
         doReturn(false).when(mAnimatorSet).isStarted();
         mLayout.mVisible = true;
@@ -87,7 +84,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnVisibilityChanged_started_notVisible() {
         doReturn(true).when(mAnimatorSet).isStarted();
         mLayout.mVisible = false;
@@ -100,7 +96,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnVisibilityChanged_started_visible() {
         doReturn(true).when(mAnimatorSet).isStarted();
         mLayout.mVisible = true;
@@ -113,7 +108,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnAttachedToWindow_notStarted_notVisible() {
         doReturn(false).when(mAnimatorSet).isStarted();
         mLayout.mVisible = false;
@@ -126,7 +120,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnAttachedToWindow_notStarted_visible() {
         doReturn(false).when(mAnimatorSet).isStarted();
         mLayout.mVisible = true;
@@ -139,7 +132,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnAttachedToWindow_started_notVisible() {
         doReturn(true).when(mAnimatorSet).isStarted();
         mLayout.mVisible = false;
@@ -153,7 +145,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnAttachedToWindow_started_visible() {
         doReturn(true).when(mAnimatorSet).isStarted();
         mLayout.mVisible = true;
@@ -166,7 +157,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDetachedFromWindow_notStarted_notVisible() {
         doReturn(false).when(mAnimatorSet).isStarted();
         mLayout.mVisible = false;
@@ -179,7 +169,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDetachedFromWindow_notStarted_visible() {
         doReturn(false).when(mAnimatorSet).isStarted();
         mLayout.mVisible = true;
@@ -192,7 +181,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDetachedFromWindow_started_notVisible() {
         doReturn(true).when(mAnimatorSet).isStarted();
         mLayout.mVisible = false;
@@ -205,7 +193,6 @@ public class FeedPlaceholderLayoutTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDetachedFromWindow_started_visible() {
         doReturn(true).when(mAnimatorSet).isStarted();
         mLayout.mVisible = true;

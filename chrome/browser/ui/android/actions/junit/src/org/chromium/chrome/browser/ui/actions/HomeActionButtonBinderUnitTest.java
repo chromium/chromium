@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.ui.actions;
 
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,21 +39,18 @@ public class HomeActionButtonBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLongPressMenuDelegate() {
         mModel.set(HomeActionProperties.LONG_PRESS_MENU_DELEGATE, mDelegate);
         verify(mView).setDelegate(mDelegate, false);
     }
 
     @Test
-    @SmallTest
     public void testClickWithMetaCallback() {
         mModel.set(HomeActionProperties.CLICK_WITH_META_CALLBACK, mClickCallback);
         verify(mView).setClickCallback(mClickCallback);
     }
 
     @Test
-    @SmallTest
     public void testFallbackToActionButtonBinder() {
         mModel.set(ActionProperties.ICON_ID, 123);
         verify(mView).setImageResource(123);

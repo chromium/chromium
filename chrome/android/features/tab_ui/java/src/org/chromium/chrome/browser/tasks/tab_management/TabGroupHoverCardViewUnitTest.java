@@ -14,8 +14,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,7 +48,6 @@ public class TabGroupHoverCardViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_setsAllFieldsAndPositions() {
         List<String> childTitles = List.of("• Tab 1", "• Tab 2");
 
@@ -78,7 +75,6 @@ public class TabGroupHoverCardViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_excessCountVisibleWhenPositive() {
         List<String> childTitles = List.of("• Tab 1", "• Tab 2", "• Tab 3", "• Tab 4", "• Tab 5");
 
@@ -93,7 +89,6 @@ public class TabGroupHoverCardViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_incognitoColorsApplied() {
         mHoverCardView.bindData(
                 "Incognito Group",
@@ -117,7 +112,6 @@ public class TabGroupHoverCardViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_childTabsCappedAtMaxPreviewTabs() {
         List<String> manyTabs = List.of("• T1", "• T2", "• T3", "• T4", "• T5", "• T6", "• T7");
         mHoverCardView.bindData(
@@ -132,7 +126,6 @@ public class TabGroupHoverCardViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHide() {
         List<String> childTitles = List.of("• Tab 1");
 
@@ -147,14 +140,12 @@ public class TabGroupHoverCardViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         mHoverCardView.destroy();
         assertFalse(mHoverCardView.isShown());
     }
 
     @Test
-    @SmallTest
     public void testOnMeasure_respectsMinAndMaxWidth() {
         int expectedMaxWidth = TabHoverCardView.getHoverCardWidthPx(mActivity);
         int minContentWidth =

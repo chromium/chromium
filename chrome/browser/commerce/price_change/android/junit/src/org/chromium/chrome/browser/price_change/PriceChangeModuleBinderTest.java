@@ -16,8 +16,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -72,7 +70,6 @@ public class PriceChangeModuleBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testSetModuleTitle() {
         TextView moduleTitleView = mView.findViewById(R.id.header_text);
         assertEquals("", moduleTitleView.getText());
@@ -83,7 +80,6 @@ public class PriceChangeModuleBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testSetProductTitle() {
         TextView productTitleView = mView.findViewById(R.id.product_title);
         assertEquals("", productTitleView.getText());
@@ -94,7 +90,6 @@ public class PriceChangeModuleBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testSetFavicon() {
         ImageView faviconView = mView.findViewById(R.id.favicon_image);
         assertNull(faviconView.getDrawable());
@@ -105,7 +100,6 @@ public class PriceChangeModuleBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testSetCurrentPrice() {
         TextView currentPriceView = mView.findViewById(R.id.current_price);
         assertEquals("", currentPriceView.getText());
@@ -116,7 +110,6 @@ public class PriceChangeModuleBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testSetPreviousPrice() {
         TextView previousPriceView = mView.findViewById(R.id.previous_price);
         assertEquals("", previousPriceView.getText());
@@ -127,7 +120,6 @@ public class PriceChangeModuleBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testSetDomainString() {
         TextView domainView = mView.findViewById(R.id.price_drop_domain);
         assertEquals("", domainView.getText());
@@ -138,7 +130,6 @@ public class PriceChangeModuleBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testSetProductImage() {
         ImageView productImageView = mView.findViewById(R.id.product_image);
         assertNull(productImageView.getDrawable());
@@ -149,7 +140,6 @@ public class PriceChangeModuleBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testSetOnClickListener() {
         AtomicBoolean buttonClicked = new AtomicBoolean();
         buttonClicked.set(false);
@@ -165,7 +155,6 @@ public class PriceChangeModuleBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testSetModuleAccessibilityLabel() {
         String accessibilityLabel = "label";
         assertNull(mView.getContentDescription());

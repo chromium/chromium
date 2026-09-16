@@ -19,8 +19,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.view.WindowManager;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -485,7 +483,6 @@ public class ActorTaskHelperTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testBackgroundActuation_BaseFeatureDisabled_AlwaysReturnsFalse() {
         setNotificationsEnabled(true);
@@ -497,7 +494,6 @@ public class ActorTaskHelperTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testBackgroundActuation_RequireNotificationsDefault_WithNotificationsEnabled() {
         setNotificationsEnabled(true);
@@ -505,7 +501,6 @@ public class ActorTaskHelperTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testBackgroundActuation_RequireNotificationsDefault_WithNotificationsDisabled() {
         setNotificationsEnabled(false);
@@ -513,7 +508,6 @@ public class ActorTaskHelperTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.GLIC_BACKGROUND_ACTUATION + ":require_notifications/false"})
     public void testBackgroundActuation_RequireNotificationsFalse_WithNotificationsDisabled() {
         setNotificationsEnabled(false);
@@ -521,7 +515,6 @@ public class ActorTaskHelperTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.GLIC_BACKGROUND_ACTUATION + ":require_notifications/false"})
     public void testBackgroundActuation_RequireNotificationsFalse_WithNotificationsEnabled() {
         setNotificationsEnabled(true);

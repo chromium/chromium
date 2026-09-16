@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,7 +68,6 @@ public class TabUsageTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnStop_RecordsHistogram_NoInitialTabs() {
         // Arrange
         mTabUsageTracker.onResumeWithNative();
@@ -96,7 +93,6 @@ public class TabUsageTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnStop_RecordsHistogram_HasInitialTabs() {
         // Arrange
         Tab tab1 = getMockedTab(1);
@@ -123,7 +119,6 @@ public class TabUsageTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnStop_RecordsHistogram_NoInitialPinnedTabs() {
         // Arrange
         mTabUsageTracker.onResumeWithNative();
@@ -157,7 +152,6 @@ public class TabUsageTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnStop_RecordsHistogram_HasInitialPinnedTabs() {
         // Arrange
         Tab tab1 = getMockedTab(1, true);
@@ -194,7 +188,6 @@ public class TabUsageTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnStop_RecordsHistogram_NoPinnedTabsUsed() {
         // Arrange
         Tab tab1 = getMockedTab(1, false);
@@ -231,7 +224,6 @@ public class TabUsageTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnStop_CalledBeforeOnResume_DoesNotRecordHistogram() {
         mTabUsageTracker.onStopWithNative();
 
@@ -242,7 +234,6 @@ public class TabUsageTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDestroy() {
         mTabUsageTracker.onDestroy();
 

@@ -13,8 +13,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.provider.Settings;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -25,7 +23,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SigninUtilsTest {
     @Test
-    @SmallTest
     public void testOpenSettingsForAllAccounts() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
 

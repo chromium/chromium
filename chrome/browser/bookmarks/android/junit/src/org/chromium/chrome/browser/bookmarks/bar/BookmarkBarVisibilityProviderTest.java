@@ -21,7 +21,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
-import androidx.test.filters.SmallTest;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -126,7 +125,6 @@ public class BookmarkBarVisibilityProviderTest {
     // ---------------------------------------------------------------------------------------------
 
     @Test
-    @SmallTest
     public void testConstructAndDestroy() {
         // Case: Construct w/ feature disallowed and setting disabled.
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
@@ -186,7 +184,6 @@ public class BookmarkBarVisibilityProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testConfigurationChange() {
         // Set up.
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
@@ -212,7 +209,6 @@ public class BookmarkBarVisibilityProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testPrefChange() {
         // Set up.
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
@@ -238,7 +234,6 @@ public class BookmarkBarVisibilityProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testProfileChange() {
         // Set up.
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
@@ -258,7 +253,6 @@ public class BookmarkBarVisibilityProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testXrSpaceModeChange() {
         // Set up.
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
@@ -295,7 +289,6 @@ public class BookmarkBarVisibilityProviderTest {
     // ---------------------------------------------------------------------------------------------
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testConstructAndDestroy_TriState() {
         // Case: Construct w/ feature disallowed and state ALWAYS_HIDE.
@@ -388,7 +381,6 @@ public class BookmarkBarVisibilityProviderTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testConfigurationChange_TriState() {
         // Set up.
@@ -418,7 +410,6 @@ public class BookmarkBarVisibilityProviderTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testPrefChange_TriState_Desktop() {
         // Set up.
@@ -459,7 +450,6 @@ public class BookmarkBarVisibilityProviderTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testPrefChange_TriState_Tablet() {
         // Set up tablet context.
@@ -509,7 +499,6 @@ public class BookmarkBarVisibilityProviderTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testProfileChange_TriState() {
         // Set up.
@@ -538,7 +527,6 @@ public class BookmarkBarVisibilityProviderTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testXrSpaceModeChange_TriState() {
         // Set up.

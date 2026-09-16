@@ -10,8 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,7 +52,6 @@ public class IncognitoReauthMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testOnUnlockIncognitoButtonClicked_StartsReauthenticationFlow() {
         mIncognitoReauthMediator.onUnlockIncognitoButtonClicked();
 
@@ -63,7 +60,6 @@ public class IncognitoReauthMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testOnUnlockIncognitoButtonClicked_MultipleClicks_FiresFlowEachTime() {
         mIncognitoReauthMediator.onUnlockIncognitoButtonClicked();
         mIncognitoReauthMediator.onUnlockIncognitoButtonClicked();
@@ -74,7 +70,6 @@ public class IncognitoReauthMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testOnSeeOtherTabsButtonClicked_RunsShowTabSwitcherRunnable() {
         mIncognitoReauthMediator.onSeeOtherTabsButtonClicked();
 
@@ -83,7 +78,6 @@ public class IncognitoReauthMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testOnSeeOtherTabsButtonClicked_MultipleClicks_RunsRunnableEachTime() {
         mIncognitoReauthMediator.onSeeOtherTabsButtonClicked();
         mIncognitoReauthMediator.onSeeOtherTabsButtonClicked();
@@ -93,7 +87,6 @@ public class IncognitoReauthMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testReauthCallback_Success() {
         doAnswer(
                         invocation -> {
@@ -112,7 +105,6 @@ public class IncognitoReauthMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testReauthCallback_Failure() {
         doAnswer(
                         invocation -> {
@@ -131,7 +123,6 @@ public class IncognitoReauthMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testReauthCallback_NotPossible() {
         doAnswer(
                         invocation -> {
@@ -150,7 +141,6 @@ public class IncognitoReauthMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testPropertyModel_UnlockIncognitoClicked_InvokesMediator() {
         PropertyModel model =
                 new PropertyModel.Builder(IncognitoReauthProperties.ALL_KEYS)
@@ -169,7 +159,6 @@ public class IncognitoReauthMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testPropertyModel_SeeOtherTabsClicked_InvokesMediator() {
         PropertyModel model =
                 new PropertyModel.Builder(IncognitoReauthProperties.ALL_KEYS)

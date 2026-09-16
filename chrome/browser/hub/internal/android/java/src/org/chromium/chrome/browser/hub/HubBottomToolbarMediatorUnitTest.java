@@ -12,8 +12,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.hub.HubBottomToolbarProperties.BOTTOM_TOOLBAR_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubBottomToolbarProperties.COLOR_SCHEME;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,7 +57,6 @@ public class HubBottomToolbarMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testMediatorWithDelegate() {
         HubBottomToolbarMediator mediator = new HubBottomToolbarMediator(mModel, mDelegate);
 
@@ -73,7 +70,6 @@ public class HubBottomToolbarMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testVisibilityChanges() {
         HubBottomToolbarMediator mediator = new HubBottomToolbarMediator(mModel, mDelegate);
 
@@ -92,7 +88,6 @@ public class HubBottomToolbarMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCurrentTabSupplier_WhenNotHiding_DoesNotUpdateColorScheme() {
         SettableNullableObservableSupplier<Tab> currentTabSupplier =
                 ObservableSuppliers.createNullable();
@@ -117,7 +112,6 @@ public class HubBottomToolbarMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCurrentTabSupplier_WhenHiding_UpdatesColorScheme() {
         SettableNullableObservableSupplier<Tab> currentTabSupplier =
                 ObservableSuppliers.createNullable();
@@ -146,7 +140,6 @@ public class HubBottomToolbarMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCurrentTabSupplier_WhenHidingWithNullTab_DefaultsToDefaultColorScheme() {
         SettableNullableObservableSupplier<Tab> currentTabSupplier =
                 ObservableSuppliers.createNullable();
@@ -171,7 +164,6 @@ public class HubBottomToolbarMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsHidingStateChange_UpdatesColorScheme() {
         SettableNullableObservableSupplier<Tab> currentTabSupplier =
                 ObservableSuppliers.createNullable();

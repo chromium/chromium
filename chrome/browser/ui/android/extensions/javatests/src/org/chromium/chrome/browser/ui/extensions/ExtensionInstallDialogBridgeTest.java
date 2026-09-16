@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -90,7 +89,6 @@ public class ExtensionInstallDialogBridgeTest {
 
     /** Tests that the basic dialog only contains the title and buttons */
     @Test
-    @SmallTest
     public void testBasicDialog() throws Exception {
         buildAndShowDialog();
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
@@ -122,7 +120,6 @@ public class ExtensionInstallDialogBridgeTest {
      * permissions are added
      */
     @Test
-    @SmallTest
     public void testDialogWithPermissions() throws Exception {
         String[] permissionsText = {"Permission #1", "Permission #2"};
         String[] permissionsDetails = {"", "Details #1"};
@@ -220,7 +217,6 @@ public class ExtensionInstallDialogBridgeTest {
      * passed to the native onDialogAccepted method.
      */
     @Test
-    @SmallTest
     public void testDialogWithJustificationAndAcceptsText() throws Exception {
         mExtensionInstallDialogBridge.withJustification(
                 JUSTIFICATION_HEADING, JUSTIFICATION_PLACEHOLDER);
@@ -256,7 +252,6 @@ public class ExtensionInstallDialogBridgeTest {
      * exceeds the maximum allowed length.
      */
     @Test
-    @SmallTest
     public void testPositiveButtonDisabledWhenJustificationTextIsTooLong() throws Exception {
         mExtensionInstallDialogBridge.withJustification(
                 JUSTIFICATION_HEADING, JUSTIFICATION_PLACEHOLDER);
@@ -302,7 +297,6 @@ public class ExtensionInstallDialogBridgeTest {
      * after the native pointer is cleared.
      */
     @Test
-    @SmallTest
     public void testStoreLinkClick() throws Exception {
         String storeLinkText = "Open in Chrome Web Store";
         String storeUrl = "https://chrome.google.com/webstore/detail/";
@@ -338,7 +332,6 @@ public class ExtensionInstallDialogBridgeTest {
 
     /** Tests that onDismiss does not call native methods after the native pointer is cleared. */
     @Test
-    @SmallTest
     public void testOnDismissAfterPointerCleared() {
         // 1. Clear the pointer manually.
         mExtensionInstallDialogBridge.clearNativePtr();
@@ -353,7 +346,6 @@ public class ExtensionInstallDialogBridgeTest {
 
     /** Tests that tapjacking protections are correctly applied to the dialog model. */
     @Test
-    @SmallTest
     public void testTapjackingProtections() {
         buildAndShowDialog();
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
@@ -373,7 +365,6 @@ public class ExtensionInstallDialogBridgeTest {
      * destroy() callbacks.
      */
     @Test
-    @SmallTest
     public void testOnAcceptButtonClicked() throws Exception {
         buildAndShowDialog();
 
@@ -390,7 +381,6 @@ public class ExtensionInstallDialogBridgeTest {
      * destroy() callbacks.
      */
     @Test
-    @SmallTest
     public void testOnCancelButtonClicked() throws Exception {
         buildAndShowDialog();
 
@@ -405,7 +395,6 @@ public class ExtensionInstallDialogBridgeTest {
      * onDialogDismissed() and destroy() callbacks.
      */
     @Test
-    @SmallTest
     public void testOnDialogDismissed() throws Exception {
         buildAndShowDialog();
 

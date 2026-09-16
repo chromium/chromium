@@ -12,8 +12,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -86,7 +84,6 @@ public class DevicePickerBottomSheetContentTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testOnItemClick() {
         DevicePickerBottomSheetContent content =

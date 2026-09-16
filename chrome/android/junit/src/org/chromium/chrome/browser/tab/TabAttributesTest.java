@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +43,6 @@ public class TabAttributesTest {
     }
 
     @Test
-    @SmallTest
     public void testBasicGetAndSetOperation() {
         // |get| for an uninitialized attribute returns null.
         assertNull(TabAttributes.from(mTab).get(ATTR1));
@@ -63,7 +60,6 @@ public class TabAttributesTest {
     }
 
     @Test
-    @SmallTest
     public void testGetWithDefaultReturnsNullForAttributeExplicitlySetToNull() {
         TestObject defaultValue = new TestObject();
 
@@ -77,7 +73,6 @@ public class TabAttributesTest {
     }
 
     @Test
-    @SmallTest
     public void testNumEntriesMatchesKeys() {
         int keyCount = 0;
         for (Field field : TabAttributeKeys.class.getDeclaredFields()) {

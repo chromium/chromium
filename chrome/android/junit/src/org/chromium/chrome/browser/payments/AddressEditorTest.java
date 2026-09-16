@@ -44,8 +44,6 @@ import static org.chromium.chrome.browser.autofill.editors.common.text_field.Tex
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
@@ -351,7 +349,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateDefaultFields() {
         setUpAddressUiComponents(new ArrayList<>(), /* countryCode= */ "US");
         doAnswer(
@@ -417,7 +414,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateAdminAreaDropdown() {
         // Configure only admin area field to keep the test focused.
         setUpAddressUiComponents(
@@ -473,7 +469,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateShownFields_NewAddressProfile() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
@@ -493,7 +488,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateShownFields_ExistingAddressProfile() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
@@ -513,7 +507,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void showEditPrompt_ChangeCountry_FieldsSetChanges() {
         setUpAddressUiComponents(
                 List.of(
@@ -592,7 +585,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void showEditPrompt_AlterAddressProfile_Cancel() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
@@ -625,7 +617,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void showEditPrompt_AlterAddressProfile_CommitChanges() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
@@ -666,7 +657,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void showEditPrompt_AlterAddressProfile_CommitChanges_InvisibleFieldsNotReset() {
         // Make all fields optional to avoid setting them manually.
         when(mAutofillProfileBridgeJni.getRequiredFields(anyString())).thenReturn(new int[0]);
@@ -713,7 +703,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void showEditPrompt_NewAddressProfile_NoInitialValidation() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
@@ -733,7 +722,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void showEditPrompt_NewAddressProfile_FieldsAreValidatedAfterSave() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
@@ -756,7 +744,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void showEditPrompt_AccountAddressProfile_FieldsAreImmediatelyValidated() {
         AutofillProfile profile = new AutofillProfile(sProfile);
         profile.setInfo(FieldType.ADDRESS_HOME_STATE, "");
@@ -784,7 +771,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void showEditPrompt_AccountAddressProfile_FieldsAreValidatedAfterSave() {
         AutofillProfile profile = new AutofillProfile(sProfile);
         profile.setInfo(FieldType.ADDRESS_HOME_STATE, "");
@@ -816,7 +802,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void showEditPrompt_AccountAddressProfile_EmptyFieldsAreValidatedAfterSave() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(

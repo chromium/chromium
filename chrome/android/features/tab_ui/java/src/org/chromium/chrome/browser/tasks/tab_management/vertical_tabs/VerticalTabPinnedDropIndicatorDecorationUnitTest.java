@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -109,7 +108,6 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_MainListTarget_DoesNotDraw() {
         DropTargetResult mainListResult =
                 new DropTargetResult(
@@ -132,7 +130,6 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_ZeroPinnedState_DoesNotDraw() {
         DropTargetResult zeroPinnedResult =
                 new DropTargetResult(
@@ -155,7 +152,6 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_InsertBefore_LTR_DrawsVerticalBarToLeftOfItem() {
         View childView = createChildView(100, 20, 142, 52);
         RecyclerView.ViewHolder vh = new RecyclerView.ViewHolder(childView) {};
@@ -199,7 +195,6 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_InsertAfter_LTR_DrawsVerticalBarToRightOfItem() {
         View childView = createChildView(100, 20, 142, 52);
         RecyclerView.ViewHolder vh = new RecyclerView.ViewHolder(childView) {};
@@ -240,7 +235,6 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_InsertBefore_RTL_DrawsVerticalBarToRightOfItem() {
         LocalizationUtils.setRtlForTesting(true);
 
@@ -283,7 +277,6 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_InsertAfter_RTL_DrawsVerticalBarToLeftOfItem() {
         LocalizationUtils.setRtlForTesting(true);
 
@@ -326,7 +319,6 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_FallbackToAnchorBounds_WhenViewHolderUnattached() {
         DropTargetResult result =
                 new DropTargetResult(
@@ -367,7 +359,6 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDrawOver_ZeroNormalTabsState_DrawsHorizontalBarAtBottomOfPinnedGrid() {
         DropTargetResult result =
                 new DropTargetResult(

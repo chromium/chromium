@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +32,6 @@ public class BookmarkEditMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_BookmarkItem_Saved() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -48,7 +45,6 @@ public class BookmarkEditMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_BookmarkItem_Deleted() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -62,7 +58,6 @@ public class BookmarkEditMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_BookmarkItem_Closed() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -76,7 +71,6 @@ public class BookmarkEditMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_BookmarkItem_Dismissed() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -91,7 +85,6 @@ public class BookmarkEditMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_BookmarkFolder_Saved() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -105,7 +98,6 @@ public class BookmarkEditMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_BookmarkFolder_Deleted() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -120,7 +112,6 @@ public class BookmarkEditMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_BookmarkFolder_Closed() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -134,7 +125,6 @@ public class BookmarkEditMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_BookmarkFolder_Dismissed() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -149,7 +139,6 @@ public class BookmarkEditMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordFolderPickerOpened() {
         BookmarkEditMetrics.recordFolderPickerOpened();
         assertTrue(mUserActionTester.getActions().contains("BookmarkEdit.FolderPickerOpened"));

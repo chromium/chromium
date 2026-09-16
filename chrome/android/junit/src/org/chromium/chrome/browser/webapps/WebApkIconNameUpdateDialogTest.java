@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -283,7 +282,6 @@ public class WebApkIconNameUpdateDialogTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapps"})
     public void testCombinations() throws Throwable {
         Bitmap blue = generateTestBitmap(Color.BLUE);
@@ -381,7 +379,6 @@ public class WebApkIconNameUpdateDialogTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapps"})
     public void testReportAbuse() throws Throwable {
         // Make sure the dialog shows the right values.
@@ -392,7 +389,6 @@ public class WebApkIconNameUpdateDialogTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapps"})
     public void testDialogInputProtection() {
         DialogParams dialogParams = DialogParams.createDefault();

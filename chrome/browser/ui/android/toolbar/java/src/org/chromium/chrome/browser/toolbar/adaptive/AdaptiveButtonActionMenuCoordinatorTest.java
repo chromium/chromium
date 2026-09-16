@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,7 +41,6 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateOnLongClickListener() {
         var coordinator = new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ true);
         View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);
@@ -65,7 +63,6 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateOnLongClickListener_clickHandlerIsNotModified() {
         var coordinator = new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ true);
         View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);
@@ -90,7 +87,6 @@ public class AdaptiveButtonActionMenuCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateOnLongClickListener_showsToast() {
         var coordinator = spy(new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ false));
         View.OnLongClickListener listener = coordinator.createOnLongClickListener(mCallback);

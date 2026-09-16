@@ -11,7 +11,6 @@ import android.content.Context;
 import android.view.ContextThemeWrapper;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,7 +55,6 @@ public class AuxiliarySearchModuleCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION})
     public void testGetModuleContextMenuHideText_Default() {
         assertEquals(
@@ -65,7 +63,6 @@ public class AuxiliarySearchModuleCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION})
     public void testGetModuleContextMenuHideText_BrowsingDataDonation() {
         when(mHooks.isBrowsingDataDonationSupported()).thenReturn(true);
@@ -76,7 +73,6 @@ public class AuxiliarySearchModuleCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION})
     public void testGetModuleContextMenuHideText_BrowsingDataDonationNotSupported() {
         when(mHooks.isBrowsingDataDonationSupported()).thenReturn(false);

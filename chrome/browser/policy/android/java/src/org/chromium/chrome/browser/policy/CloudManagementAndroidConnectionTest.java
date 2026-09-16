@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.policy;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +36,6 @@ public final class CloudManagementAndroidConnectionTest {
     }
 
     @Test
-    @SmallTest
     public void testGetClientId_Generated() {
         Assert.assertEquals("", CloudManagementSharedPreferences.readClientId());
 
@@ -49,7 +46,6 @@ public final class CloudManagementAndroidConnectionTest {
     }
 
     @Test
-    @SmallTest
     public void testGetClientId_ReadFromSharedPreferences() {
         CloudManagementSharedPreferences.saveClientId(SAVED_CLIENT_ID);
 

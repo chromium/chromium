@@ -14,8 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,7 +31,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit test for {@link AutofillVcnEnrollBottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SmallTest
 public final class AutofillVcnEnrollBottomSheetMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

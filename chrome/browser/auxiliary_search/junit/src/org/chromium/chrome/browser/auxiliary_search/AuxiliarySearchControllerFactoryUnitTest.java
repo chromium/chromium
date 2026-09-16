@@ -14,8 +14,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build.VERSION_CODES;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,7 +69,6 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsEnabled() {
         ServiceLoaderUtil.setInstanceForTesting(AuxiliarySearchHooks.class, null);
         assertFalse(mFactory.isEnabled());
@@ -85,7 +82,6 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     @Config(sdk = VERSION_CODES.S)
     public void testCreateAuxiliarySearchController() {
         when(mHooks.isEnabled()).thenReturn(false);
@@ -112,7 +108,6 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsMultiDataTypeEnabledOnDevice() {
         when(mHooks.isMultiDataTypeEnabledOnDevice()).thenReturn(false);
         assertFalse(mFactory.isMultiDataTypeEnabledOnDevice());
@@ -122,7 +117,6 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsSettingDefaultEnabledByOs() {
         when(mHooks.isEnabled()).thenReturn(false);
         when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
@@ -134,7 +128,6 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetIsTablet() {
         mFactory.resetIsTabletForTesting();
         mFactory.setIsTablet(false);
@@ -149,7 +142,6 @@ public class AuxiliarySearchControllerFactoryUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSupportedPackageName() {
         String packageName = "name";
         when(mHooks.getSupportedPackageName()).thenReturn(packageName);

@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,7 +33,6 @@ public class PlatformUtilTest {
     }
 
     @Test
-    @SmallTest
     public void testShowItemInFolder() {
         PlatformUtil.showItemInFolder(EXTENSION_CONTENT_URI_STRING);
 

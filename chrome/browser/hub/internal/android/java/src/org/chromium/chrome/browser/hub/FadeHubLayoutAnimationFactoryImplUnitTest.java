@@ -15,8 +15,6 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -72,7 +70,6 @@ public class FadeHubLayoutAnimationFactoryImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFadeIn() {
         HubLayoutAnimatorProvider animatorProvider =
                 FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
@@ -112,7 +109,6 @@ public class FadeHubLayoutAnimationFactoryImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testFadeOut() {
         HubLayoutAnimatorProvider animatorProvider =
                 FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(

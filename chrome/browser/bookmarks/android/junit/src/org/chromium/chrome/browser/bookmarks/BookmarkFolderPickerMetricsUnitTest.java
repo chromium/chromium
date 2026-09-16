@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +32,6 @@ public class BookmarkFolderPickerMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_Moved() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -48,7 +45,6 @@ public class BookmarkFolderPickerMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_Closed() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -63,7 +59,6 @@ public class BookmarkFolderPickerMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOutcome_Dismissed() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -78,7 +73,6 @@ public class BookmarkFolderPickerMetricsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordCreateNewFolderOpened() {
         BookmarkFolderPickerMetrics.recordCreateNewFolderOpened();
         assertTrue(

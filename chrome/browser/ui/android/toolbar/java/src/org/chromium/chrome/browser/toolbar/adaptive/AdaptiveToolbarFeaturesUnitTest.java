@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -65,7 +64,6 @@ public class AdaptiveToolbarFeaturesUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC)
     @DisableFeatures({
         ChromeFeatureList.ANDROID_BOTTOM_BAR,
@@ -78,7 +76,6 @@ public class AdaptiveToolbarFeaturesUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.ANDROID_BOTTOM_BAR})
     @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testGetDefaultButtonVariant_BottomBarEnabled_GlicEnabled() {
@@ -88,7 +85,6 @@ public class AdaptiveToolbarFeaturesUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsTranslateEnabled_ManagedAndDisabled() {
         when(mPrefService.isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(true);
         when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
@@ -96,7 +92,6 @@ public class AdaptiveToolbarFeaturesUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsTranslateEnabled_UserModifiedAndDisabled() {
         when(mPrefService.isManagedPreference(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
         when(mPrefService.getBoolean(Pref.OFFER_TRANSLATE_ENABLED)).thenReturn(false);
@@ -104,7 +99,6 @@ public class AdaptiveToolbarFeaturesUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC)
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsGlicEnabledForAdaptiveToolbar_EnabledOnPhone() {
@@ -112,7 +106,6 @@ public class AdaptiveToolbarFeaturesUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsGlicEnabledForAdaptiveToolbar_EnabledOnPhone_SidePanelEnabled() {
@@ -120,7 +113,6 @@ public class AdaptiveToolbarFeaturesUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC)
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     @Config(qualifiers = "sw600dp")
@@ -129,7 +121,6 @@ public class AdaptiveToolbarFeaturesUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC)
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     @Config(qualifiers = "sw600dp")
@@ -139,7 +130,6 @@ public class AdaptiveToolbarFeaturesUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.GLIC)
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testIsGlicEnabledForAdaptiveToolbar_FoldableFoldedEnabled() {
@@ -148,7 +138,6 @@ public class AdaptiveToolbarFeaturesUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.ANDROID_BOTTOM_BAR})
     public void testIsGlicEnabledForAdaptiveToolbar_BottomBarEnabled() {
         assertFalse(AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(mContext, mProfile));

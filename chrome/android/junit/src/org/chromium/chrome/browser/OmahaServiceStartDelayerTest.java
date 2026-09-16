@@ -12,7 +12,6 @@ import android.content.Context;
 import android.os.PowerManager;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -89,7 +88,6 @@ public class OmahaServiceStartDelayerTest {
 
     /** Check if the runnable is posted and run while the screen is on. */
     @Test
-    @MediumTest
     @Feature({"Omaha"})
     public void testRunnableRunsWithScreenOn() {
         startSession();
@@ -178,9 +176,10 @@ public class OmahaServiceStartDelayerTest {
         verify(mRunnable, times(0)).run();
     }
 
-    /** Verify that the runnable is only executed once even if the public API contract is not upheld. */
+    /**
+     * Verify that the runnable is only executed once even if the public API contract is not upheld.
+     */
     @Test
-    @MediumTest
     @Feature({"Omaha"})
     public void testRunnableIsOnlyExecutedOnce() {
         startSession();

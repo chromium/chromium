@@ -29,7 +29,6 @@ import android.view.Window;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -104,7 +103,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testIsItemVisible_JustEnoughnViewport() {
         mockViewDimensions(mChildA, 10, 10);
         mockGetChildVisibleRect(mChildA, 0, 0, 10, 7);
@@ -112,7 +110,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testIsItemVisible_NotEnoughnViewport() {
         mockViewDimensions(mChildA, 10, 10);
         mockGetChildVisibleRect(mChildA, 0, 0, 10, 6);
@@ -120,7 +117,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testIsItemVisible_ZeroAreaInViewport() {
         mockViewDimensions(mChildA, 10, 10);
         mockGetChildVisibleRect(mChildA, 0, 0, 0, 0);
@@ -128,7 +124,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testIsItemVisible_getChildVisibleRectReturnsFalse() {
         mockViewDimensions(mChildA, 10, 10);
         mockGetChildVisibleRectIsEmpty(mChildA);
@@ -136,7 +131,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testIsItemVisible_ZeroArea() {
         mockViewDimensions(mChildA, 0, 0);
         mockGetChildVisibleRect(mChildA, 0, 0, 0, 0);
@@ -144,7 +138,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testGetChildVisibleRectCalledWithChildRect() {
         mockViewDimensions(mChildA, 10, 10);
         mTracker.isViewVisible(mChildA, 0.66f);
@@ -152,7 +145,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testIsItemCoveringViewport_JustEnough() {
         mockViewDimensions(mChildA, 100, 100);
         mockGetChildVisibleRect(mChildA, 0, 0, 100, 26);
@@ -161,7 +153,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testIsViewCoveringViewport_NotEnough() {
         mockViewDimensions(mChildA, 100, 100);
         mockGetChildVisibleRect(mChildA, 0, 0, 100, 24);
@@ -170,7 +161,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testIsContentCoveringViewport_ZeroArea() {
         mockViewDimensions(mChildA, 0, 0);
         mockGetChildVisibleRect(mChildA, 0, 0, 0, 0);
@@ -179,7 +169,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testIsContentCoveringViewport_NoViewport() {
         mockViewDimensions(mChildA, 100, 100);
         mockGetChildVisibleRect(mChildA, 0, 0, 100, 26);
@@ -188,7 +177,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnPreDraw_BothVisibleAreReportedExactlyOnce() {
         mContentManager.addContents(
                 0,
@@ -215,7 +203,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnPreDraw_AfterClearReportsAgain() {
         mContentManager.addContents(
                 0,
@@ -242,7 +229,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnPreDraw_IgnoresNonContentViews() {
         mContentManager.addContents(
                 0,
@@ -270,7 +256,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnPreDraw_OnlyOneVisible() {
         mContentManager.addContents(
                 0,
@@ -293,7 +278,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testOnPreDraw_EmptyRecyclerView() {
         mContentManager.addContents(
                 0,
@@ -309,7 +293,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         doReturn(true).when(mViewTreeObserver).isAlive();
         mTracker.destroy();
@@ -323,7 +306,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testWatchForFirstVisible() {
         mContentManager.addContents(
                 0,
@@ -405,7 +387,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testReportContentVisibleTime_visibleAndCovering() {
         mContentManager.addContents(
                 0,
@@ -453,7 +434,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testReportContentVisibleTime_testSmallCardsCoveringEnough() {
         mContentManager.addContents(
                 0,
@@ -481,7 +461,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testReportContentVisibleTime_testBigCardCoveringEnough() {
         mContentManager.addContents(
                 0,
@@ -505,7 +484,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testReportContentVisibleTime_testBigCardExposedEnough() {
         mContentManager.addContents(
                 0,
@@ -529,7 +507,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testReportContentVisibleTime_testReportTimeOnUnbind() {
         mContentManager.addContents(
                 0,
@@ -553,7 +530,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testReportViewFirstVisibleAndRendered() {
         mContentManager.addContents(
                 0,
@@ -577,7 +553,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testReportLoadMoreIndicatorVisible() {
         mContentManager.addContents(
                 0,
@@ -619,7 +594,6 @@ public class FeedSliceViewTrackerTest {
     }
 
     @Test
-    @SmallTest
     public void testReportLoadMoreAwayFromIndicator() {
         mContentManager.addContents(
                 0,

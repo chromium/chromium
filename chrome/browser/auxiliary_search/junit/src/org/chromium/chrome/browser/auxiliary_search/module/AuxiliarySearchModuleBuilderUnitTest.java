@@ -15,7 +15,6 @@ import android.content.Context;
 import android.view.ContextThemeWrapper;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -76,7 +75,6 @@ public class AuxiliarySearchModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIsEnabled() {
         assertTrue(mFactory.isEnabled());
         assertTrue(mBuilder.isEligible());
@@ -95,7 +93,6 @@ public class AuxiliarySearchModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE})
     public void testIsDisabled() {
         assertFalse(ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE));
@@ -105,14 +102,12 @@ public class AuxiliarySearchModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBuild() {
         assertTrue(mBuilder.build(mModuleDelegate, mOnModuleBuiltCallback));
         verify(mOnModuleBuiltCallback).onResult(any(AuxiliarySearchModuleCoordinator.class));
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE})
     public void testCreateInputContext() {
         InputContext inputContext = mBuilder.createInputContext();
@@ -120,14 +115,12 @@ public class AuxiliarySearchModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateInputContext_Enabled() {
         InputContext inputContext = mBuilder.createInputContext();
         assertEquals(1f, inputContext.getEntryValue("auxiliary_search_available").floatValue, 0.01);
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION})
     public void testIsEligible_BrowsingDataDonation() {
         when(mHooks.isEnabled()).thenReturn(false);
@@ -147,7 +140,6 @@ public class AuxiliarySearchModuleBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.AUXILIARY_SEARCH_HISTORY_DONATION})
     public void testCreateInputContext_BrowsingDataDonation() {
         when(mHooks.isBrowsingDataDonationSupported()).thenReturn(true);

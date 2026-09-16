@@ -29,7 +29,6 @@ import android.view.Display;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -267,7 +266,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
     public void testNewIntentInitiator() throws Exception {
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -283,21 +281,18 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testGoogleChromeScheme() {
         processUrls(new String[] {"googlechrome://navigate?url=https://www.google.com"}, true);
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testGoogleChromeScheme_Invalid() {
         processUrls(new String[] {"googlechrome://navigate?url=javascript:alert(1)"}, false);
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testAcceptedUrls() {
         processUrls(ACCEPTED_NON_HTTP_AND_HTTPS_URLS, true);
@@ -305,14 +300,12 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testRejectedUrls() {
         processUrls(REJECTED_INTENT_URLS, false);
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testAcceptedGoogleChromeSchemeNavigateUrls() {
         String[] expectedAccepts = new String[VALID_HTTP_AND_HTTPS_URLS.length];
@@ -326,7 +319,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testRejectedGoogleChromeSchemeNavigateUrls() {
         // Test all of the rejected URLs after prepending googlechrome://navigate?url.
@@ -341,7 +333,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testRejectedGoogleChromeSchemeUrls() {
         List<String> failedTests = new ArrayList<>();
@@ -356,7 +347,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-Appbase"})
     public void testUrlFromIntent_WebappUrl() {
         Intent webappLauncherActivityIntent =
@@ -374,7 +364,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testNullUrlIntent() {
         mIntent.setData(null);
@@ -384,7 +373,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testReferrerUrl_customTabIntentWithSession() {
         Context context = ApplicationProvider.getApplicationContext();
@@ -400,7 +388,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testGeneratedReferrer() {
         Context context = ApplicationProvider.getApplicationContext();
@@ -410,7 +397,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testmaybeAddAdditionalContentHeaders() {
         String contentUrl = "content://com.example.org/document/1";
@@ -457,7 +443,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testIsIntentForMhtmlFileOrContent() {
         checkIntentForMhtmlFileOrContent(INTENT_URLS_AND_TYPES_FOR_MHTML, true);
@@ -465,7 +450,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCreateTrustedOpenNewTabIntent() {
         Context context = ApplicationProvider.getApplicationContext();
@@ -482,7 +466,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testCreateTrustedOpenNewWindowIntent() {
         Context context = ApplicationProvider.getApplicationContext();
@@ -501,7 +484,6 @@ public class IntentHandlerRobolectricTest {
 
     /** Test that IntentHandler#shouldIgnoreIntent() returns false for Webapp launch intents. */
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testShouldIgnoreIntentWebapp() {
         Intent webappLauncherActivityIntent =
@@ -524,7 +506,6 @@ public class IntentHandlerRobolectricTest {
      * Intents.
      */
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testShouldIgnoreIncognitoIntent() {
         Intent intent = new Intent(GOOGLE_URL);
@@ -537,7 +518,6 @@ public class IntentHandlerRobolectricTest {
      * Intents if they come from Chrome.
      */
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testShouldIgnoreIncognitoIntent_trusted() {
         Context context = ApplicationProvider.getApplicationContext();
@@ -551,7 +531,6 @@ public class IntentHandlerRobolectricTest {
      * Test that IntentHandler#shouldIgnoreIntent() returns false for Incognito Custom Tab Intents.
      */
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testShouldIgnoreIncognitoIntent_customTab() {
         Intent intent = new Intent(GOOGLE_URL);
@@ -560,7 +539,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testIgnoreUnauthenticatedBringToFront() {
         int tabId = 1;
         Intent intent =
@@ -573,7 +551,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testRewriteFromHistoryIntent() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("about:blank"));
@@ -601,7 +578,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetUrlFromShareIntent() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
@@ -613,7 +589,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testGetAllUrlsFromShareIntent() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
@@ -629,7 +604,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testNewIntentInitiatorFromNewTabUrl() {
         int tabId = 1;
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -651,7 +625,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testScreenOffNoContext() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
@@ -667,7 +640,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testScreenOffOneDisplay() {
         ActivityController<Activity> controller =
                 Robolectric.buildActivity(
@@ -692,7 +664,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testScreenOffTwoDisplays() {
         int extDisplayId = ShadowDisplayManager.addDisplay("");
         ActivityController<Activity> controller =
@@ -721,7 +692,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.BLOCK_INTENTS_WHILE_LOCKED)
     public void testPhoneLocked() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -738,7 +708,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testChromeInternalUrlsAllowedFromSelf() {
         Context context = ApplicationProvider.getApplicationContext();
@@ -761,7 +730,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testChromeInternalUrlsBlockedForUntrustedSources() {
         Intent untrustedIntent = new Intent(Intent.ACTION_VIEW);
@@ -782,7 +750,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testContentPdfUrlAllowedForExternalSources() {
         Mockito.doReturn(true).when(mExternalIntentUrlCheckerNativeMock).validateUrl(any());
@@ -792,7 +759,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testChromeFileProviderBlockedForUntrustedIntent() {
         Intent untrustedIntent = new Intent(Intent.ACTION_VIEW);
@@ -803,7 +769,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testChromeInternalUrlsAllowedForWhitelistedUrls() {
         Intent untrustedIntent = new Intent(Intent.ACTION_VIEW);
@@ -817,7 +782,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testRefererUrl_signedExtraReferrer() {
         Context context = ApplicationProvider.getApplicationContext();
@@ -835,7 +799,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Android-AppBase"})
     public void testDetermineExternalIntentSource() {
         Activity activity = Mockito.mock(Activity.class);
@@ -856,7 +819,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollToTextFragment_Trusted() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
@@ -869,7 +831,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollToTextFragment_Untrusted() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(GOOGLE_URL));
@@ -880,7 +841,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION)
     public void testScrollToTextFragment_FeatureDisabled() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -894,7 +854,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testShouldIgnoreIntent_TabGroupMetadata() {
         // Trusted source should be allowed.
         Intent trustedIntent =
@@ -917,7 +876,6 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
-    @SmallTest
     public void testShouldIgnoreIntent_MultiTabMetadata() {
         // Trusted source should be allowed.
         Intent trustedIntent =

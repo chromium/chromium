@@ -64,7 +64,6 @@ robolectric_library("junit") {
     ":util_java",
     "//base:base_junit_test_support",
     "//chrome/browser/preferences:java",
-    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
 }

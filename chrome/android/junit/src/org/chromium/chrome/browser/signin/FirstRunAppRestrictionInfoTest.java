@@ -10,8 +10,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.UserManager;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,13 +45,11 @@ public class FirstRunAppRestrictionInfoTest {
     }
 
     @Test
-    @SmallTest
     public void testInitWithRestriction() {
         testInitImpl(true);
     }
 
     @Test
-    @SmallTest
     public void testInitWithoutRestriction() {
         testInitImpl(false);
     }
@@ -70,7 +66,6 @@ public class FirstRunAppRestrictionInfoTest {
     }
 
     @Test
-    @SmallTest
     public void testQueuedCallback() {
         Mockito.when(mMockBundle.isEmpty()).thenReturn(false);
 
@@ -105,7 +100,6 @@ public class FirstRunAppRestrictionInfoTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         final PayloadCallbackHelper<Boolean> appResCallbackHelper = new PayloadCallbackHelper<>();
 
@@ -117,7 +111,6 @@ public class FirstRunAppRestrictionInfoTest {
     }
 
     @Test
-    @SmallTest
     @CommandLineFlags.Add({PolicySwitches.CHROME_POLICY})
     public void testCommandLine() {
         final PayloadCallbackHelper<Boolean> appResCallbackHelper = new PayloadCallbackHelper<>();

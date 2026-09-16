@@ -9,8 +9,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,7 +60,6 @@ public class DisplayCutoutTabHelperTest {
     }
 
     @Test
-    @SmallTest
     public void testEdgeToEdgeTokenRebindsAfterActivityReparenting() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
         DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
@@ -85,7 +82,6 @@ public class DisplayCutoutTabHelperTest {
     }
 
     @Test
-    @SmallTest
     public void testEdgeToEdgeTokenReleasedWhenReparentedToNonCustomTabActivity() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
         DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =

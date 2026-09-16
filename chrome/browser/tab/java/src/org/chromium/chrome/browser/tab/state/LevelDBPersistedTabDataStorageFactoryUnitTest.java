@@ -9,8 +9,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,7 +44,6 @@ public class LevelDBPersistedTabDataStorageFactoryUnitTest {
         LevelDBPersistedDataStorage.setSkipNativeAssertionsForTesting(true);
     }
 
-    @SmallTest
     @Test
     public void testFactoryMethod() {
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();
@@ -60,7 +57,6 @@ public class LevelDBPersistedTabDataStorageFactoryUnitTest {
         Assert.assertNotEquals(profile1Storage, profile2Storage);
     }
 
-    @SmallTest
     @Test
     public void testStorageDestroyedWhenProfileDestroyed() {
         LevelDBPersistedTabDataStorageFactory factory = new LevelDBPersistedTabDataStorageFactory();

@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -87,7 +86,6 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowModule() {
         List<Integer> rankedModules =
                 Arrays.asList(
@@ -137,7 +135,6 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBottomSheetObserver_AddedAndRemoved() {
         mCoordinator =
                 new EducationalTipModuleTwoCellCoordinator(
@@ -148,7 +145,6 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnClick_ReportsContainerType() {
         List<Integer> rankedModules =
                 Arrays.asList(
@@ -174,7 +170,6 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnClick_MarksItemComplete() {
         List<Integer> rankedModules =
                 Arrays.asList(
@@ -201,7 +196,6 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetModuleType() {
         mCoordinator =
                 new EducationalTipModuleTwoCellCoordinator(
@@ -210,7 +204,6 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateModule_TriggersAnimation() {
         List<Integer> rankedModules =
                 Arrays.asList(

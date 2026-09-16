@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -30,7 +28,6 @@ public class BottomSheetSigninAndHistorySyncConfigTest {
     private static final String HISTORY_SYNC_SUBTITLE = "History Sync Subtitle";
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testSeamlessSigninWithMissingAccountId_throwsAssertion() {
         new BottomSheetSigninAndHistorySyncConfig.Builder(
                         BOTTOM_SHEET_STRINGS,
@@ -44,7 +41,6 @@ public class BottomSheetSigninAndHistorySyncConfigTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testSeamlessSigninWithoutSnackbarEnabled_throwsAssertion() {
         new BottomSheetSigninAndHistorySyncConfig.Builder(
                         BOTTOM_SHEET_STRINGS,
@@ -58,7 +54,6 @@ public class BottomSheetSigninAndHistorySyncConfigTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testDefaultAccountPickerWithSnackbarEnabledButFeatureDisabled_throwsAssertion() {
         new BottomSheetSigninAndHistorySyncConfig.Builder(

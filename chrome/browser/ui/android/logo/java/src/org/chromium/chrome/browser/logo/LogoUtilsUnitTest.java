@@ -10,8 +10,6 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.view.ViewGroup.MarginLayoutParams;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,7 +41,6 @@ public class LogoUtilsUnitTest {
 
     @SuppressWarnings("DirectInvocationOnMock")
     @Test
-    @SmallTest
     public void testSetLogoViewLayoutParamsForDoodle() {
         MarginLayoutParams layoutParams = new MarginLayoutParams(0, 0);
         when(mLogoView.getLayoutParams()).thenReturn(layoutParams);
@@ -71,7 +68,6 @@ public class LogoUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetTotalLogoHeight() {
         MarginLayoutParams layoutParams = new MarginLayoutParams(100, 200);
         layoutParams.topMargin = 10;
@@ -83,13 +79,11 @@ public class LogoUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetTopMarginForLogo_phone() {
         testGetTopMarginForLogoImpl();
     }
 
     @Test
-    @SmallTest
     @Config(qualifiers = "sw600dp")
     public void testGetTopMarginForLogo_tablet() {
         Resources resources = mResources;
@@ -134,13 +128,11 @@ public class LogoUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetTopMarginForDoodle_phone() {
         testGetTopMarginForDoodleImpl();
     }
 
     @Test
-    @SmallTest
     @Config(qualifiers = "sw600dp")
     public void testGetTopMarginForDoodle_tablet() {
         Resources resources = mResources;

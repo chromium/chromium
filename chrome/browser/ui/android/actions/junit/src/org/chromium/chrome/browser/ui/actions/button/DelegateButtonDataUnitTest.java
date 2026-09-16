@@ -19,7 +19,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,7 +42,6 @@ public class DelegateButtonDataUnitTest {
     @Mock private Drawable mExpectedDrawable;
 
     @Test
-    @SmallTest
     public void testDelegateButtonData_withCallbacks() {
         Context context = ApplicationProvider.getApplicationContext();
         String expectedText = "foo";
@@ -66,7 +64,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDelegateButtonData_noLongPressCallback() {
         FullButtonData buttonData =
                 new DelegateButtonData.Builder(mDisplayButtonData).setOnPress(mCallback).build();
@@ -76,7 +73,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonDataEquals_sameContentDifferentCallbacks() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData displayData1 =
@@ -120,7 +116,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonDataEquals_differentDisplayData() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData displayData =
@@ -138,7 +133,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonDataEquals_differentIsEnabled() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData displayData =
@@ -153,7 +147,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonDataEquals_differentToggledState() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData displayData =
@@ -168,7 +161,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonDataEquals_nullObject() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData displayData =
@@ -181,7 +173,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonDataEquals_differentObjectType() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData displayData =
@@ -194,7 +185,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonDataEquals_differentButtonState_sameIsEnabled() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData displayData =
@@ -214,7 +204,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonDataEquals_sameObject() {
         Drawable drawable = createBitmapDrawable();
         DisplayButtonData displayData =
@@ -227,7 +216,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testButtonState() {
         DelegateButtonData buttonData =
                 new DelegateButtonData.Builder(mDisplayButtonData).setOnPress(mCallback).build();
@@ -257,7 +245,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnPress_triggersCallback() {
         View view = new View(ApplicationProvider.getApplicationContext());
         FullButtonData buttonData =
@@ -269,7 +256,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnLongPress_triggersCallback() {
         View view = new View(ApplicationProvider.getApplicationContext());
         FullButtonData buttonData =
@@ -283,7 +269,6 @@ public class DelegateButtonDataUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testToggledState() {
         DelegateButtonData buttonData = new DelegateButtonData.Builder(mDisplayButtonData).build();
 

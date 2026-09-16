@@ -15,8 +15,6 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,7 +68,6 @@ public class NtpCardsBottomSheetViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBindAllCardsSwitchListener() {
         mPropertyModel.set(
                 NtpCustomizationViewProperties.ALL_NTP_CARDS_SWITCH_ON_CHECKED_CHANGE_LISTENER,
@@ -80,7 +77,6 @@ public class NtpCardsBottomSheetViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBindAreCardSwitchesEnabled() {
         mPropertyModel.set(NtpCustomizationViewProperties.ARE_CARD_SWITCHES_ENABLED, false);
         verify(mAllCardsSwitch).setChecked(false);

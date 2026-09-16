@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.language;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,7 +38,6 @@ public class LanguageBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testIsTopULPBaseLanguage() {
         mFakeLanguageBridge.setULPLanguages(Arrays.asList("pt-BR", "en-US"));
 

@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,14 +35,12 @@ public class SmsFetcherMessageHandlerTest {
     }
 
     @Test
-    @SmallTest
     public void testSanitizeOneTimeCodeForDisplay_normalCode() {
         assertEquals("123456", SmsFetcherMessageHandler.sanitizeOneTimeCodeForDisplay("123456"));
         assertEquals("ABC-123", SmsFetcherMessageHandler.sanitizeOneTimeCodeForDisplay("ABC-123"));
     }
 
     @Test
-    @SmallTest
     public void testSanitizeOneTimeCodeForDisplay_nullOrEmpty() {
         assertEquals("", SmsFetcherMessageHandler.sanitizeOneTimeCodeForDisplay(null));
         assertEquals("", SmsFetcherMessageHandler.sanitizeOneTimeCodeForDisplay(""));
@@ -51,7 +48,6 @@ public class SmsFetcherMessageHandlerTest {
     }
 
     @Test
-    @SmallTest
     public void testSanitizeOneTimeCodeForDisplay_stripsBiDiControls() {
         // U+202E (RLO - Right-to-Left Override)
         assertEquals(
@@ -62,7 +58,6 @@ public class SmsFetcherMessageHandlerTest {
     }
 
     @Test
-    @SmallTest
     public void testSanitizeOneTimeCodeForDisplay_stripsControlCharacters() {
         assertEquals(
                 "123456",
@@ -70,7 +65,6 @@ public class SmsFetcherMessageHandlerTest {
     }
 
     @Test
-    @SmallTest
     public void testSanitizeOneTimeCodeForDisplay_collapsesWhitespaceAndNBSP() {
         // Non-breaking spaces (U+00A0)
         assertEquals(
@@ -89,7 +83,6 @@ public class SmsFetcherMessageHandlerTest {
     }
 
     @Test
-    @SmallTest
     public void testSanitizeOneTimeCodeForDisplay_truncatesExcessiveLength() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 40; i++) {
@@ -107,7 +100,6 @@ public class SmsFetcherMessageHandlerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)
     public void testGetNotificationTitle_defaultFormat() {
         String title =
@@ -122,7 +114,6 @@ public class SmsFetcherMessageHandlerTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)
     public void testGetNotificationTitle_simpleStringFormat() {
         String title =
@@ -135,7 +126,6 @@ public class SmsFetcherMessageHandlerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)
     public void testGetNotificationText_defaultFormat() {
         String text =
@@ -145,7 +135,6 @@ public class SmsFetcherMessageHandlerTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)
     public void testGetNotificationText_embeddedFrame() {
         String text =

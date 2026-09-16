@@ -14,8 +14,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,7 +38,6 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link EmailVerificationBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SmallTest
 public final class EmailVerificationBottomSheetBridgeTest {
     private static final long MOCK_POINTER = 0xb00fb00f;
     private static final String TEST_TITLE = "Verify this email automatically?";

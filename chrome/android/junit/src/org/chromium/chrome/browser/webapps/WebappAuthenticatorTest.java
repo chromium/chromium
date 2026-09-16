@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +15,6 @@ import org.chromium.base.test.util.Feature;
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebappAuthenticatorTest {
     @Test
-    @SmallTest
     @Feature({"Webapps"})
     public void testAuthentication() {
         String url = "http://www.example.org/hello.html";
@@ -30,7 +27,6 @@ public class WebappAuthenticatorTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapps"})
     public void testAuthenticationWithIcon() {
         String url = "http://www.example.org/hello.html";
@@ -75,7 +71,6 @@ public class WebappAuthenticatorTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Webapps"})
     public void testAuthenticationFieldBoundaries() {
         String url = "https://www.example.org/app/";

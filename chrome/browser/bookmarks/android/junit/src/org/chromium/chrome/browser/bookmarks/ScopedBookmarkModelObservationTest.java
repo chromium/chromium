@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import androidx.annotation.NonNull;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -103,7 +102,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testConstructor() {
         createObservation(/* resetObserver= */ false);
         verify(mObserver).onBookmarkItemsChanged(mObservationId, mFolderItems);
@@ -111,7 +109,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkAllUserNodesRemoved() {
         mUnderlyingObserver.bookmarkAllUserNodesRemoved();
         verify(mObserver).onBookmarkItemsChanged(mObservationId, Collections.emptyList());
@@ -119,7 +116,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkModelChanged() {
         mUnderlyingObserver.bookmarkModelChanged();
         verify(mObserver).onBookmarkItemsChanged(mObservationId, mFolderItems);
@@ -127,7 +123,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeAddedToObservedFolder() {
         final int index = 10;
         when(mModel.getChildAt(mFolderId, index)).thenReturn(mItemId);
@@ -137,7 +132,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeAddedToUnobservedFolder() {
         final int index = 10;
         mUnderlyingObserver.bookmarkNodeAdded(mUnobservedFolder, index, /* addedByUser= */ false);
@@ -145,7 +139,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeChangedWithinObservedFolder() {
         final int index = getIds(mFolderItems).indexOf(mItemId);
         mUnderlyingObserver.bookmarkNodeChanged(mItem);
@@ -154,14 +147,12 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeChangedWithinUnobservedFolder() {
         mUnderlyingObserver.bookmarkNodeChanged(mUnobservedItem);
         verifyNoMoreInteractions(mObserver);
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeChildrenReorderedWithinObservedFolder() {
         mUnderlyingObserver.bookmarkNodeChildrenReordered(mFolder);
         verify(mObserver).onBookmarkItemsChanged(mObservationId, mFolderItems);
@@ -169,14 +160,12 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeChildrenReorderedWithinUnobservedFolder() {
         mUnderlyingObserver.bookmarkNodeChildrenReordered(mUnobservedFolder);
         verifyNoMoreInteractions(mObserver);
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeMovedFromObservedFolder() {
         final int index = 10;
         final int oldIndex = 27;
@@ -186,7 +175,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeMovedToObservedFolder() {
         final int index = 10;
         final int oldIndex = 27;
@@ -197,7 +185,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeMovedWithinObservedFolder() {
         final int index = 10;
         final int oldIndex = 27;
@@ -207,7 +194,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeMovedWithinUnobservedFolder() {
         final int index = 10;
         final int oldIndex = 27;
@@ -217,7 +203,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeRemovedFromObservedFolder() {
         final int index = 10;
         mUnderlyingObserver.bookmarkNodeRemoved(mFolder, index, mItem);
@@ -226,7 +211,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testBookmarkNodeRemovedFromUnobservedFolder() {
         final int index = 10;
         mUnderlyingObserver.bookmarkNodeRemoved(mUnobservedFolder, index, mUnobservedItem);
@@ -234,7 +218,6 @@ public class ScopedBookmarkModelObservationTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         mObservation.destroy();
         verify(mModel).removeObserver(mObservation);

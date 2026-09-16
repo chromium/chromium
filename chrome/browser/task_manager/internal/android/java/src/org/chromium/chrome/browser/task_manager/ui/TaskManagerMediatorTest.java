@@ -22,8 +22,6 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 
 import android.graphics.Bitmap;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -84,7 +82,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testBasicAttributes() {
         mObserver.onTaskAdded(1);
 
@@ -95,7 +92,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testIcon() {
         when(mBridge.getIcon(1)).thenReturn(mBitmap);
 
@@ -105,7 +101,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testTasksAreSorted() {
         when(mBridge.getMemoryFootprintUsage(1)).thenReturn(1_000_000L);
         when(mBridge.getMemoryFootprintUsage(2)).thenReturn(2_000_000L);
@@ -136,7 +131,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testCycleSortOrder() {
         when(mBridge.getMemoryFootprintUsage(1)).thenReturn(1_000_000L);
         when(mBridge.getMemoryFootprintUsage(2)).thenReturn(2_000_000L);
@@ -162,7 +156,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testCycleSortOrderAscending() {
         when(mBridge.getTitle(1)).thenReturn("A");
         when(mBridge.getTitle(2)).thenReturn("C");
@@ -192,7 +185,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testTasksRefreshed() {
         when(mBridge.getMemoryFootprintUsage(1)).thenReturn(1_000_000L);
         mObserver.onTaskAdded(1);
@@ -204,7 +196,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testTaskToBeRemoved() {
         when(mBridge.getMemoryFootprintUsage(1)).thenReturn(1_000_000L);
         when(mBridge.getMemoryFootprintUsage(2)).thenReturn(2_000_000L);
@@ -217,7 +208,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testTaskSelectionChange() {
         when(mBridge.isTaskKillable(1)).thenReturn(true);
         when(mBridge.isTaskKillable(2)).thenReturn(true);
@@ -243,7 +233,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testOnHasKillableSelectedTaskChanged() {
         when(mBridge.isTaskKillable(1)).thenReturn(true);
         when(mBridge.isTaskKillable(2)).thenReturn(false);
@@ -261,7 +250,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testToggleColumnFiltering() {
         assertTrue(mMediator.toggleColumnFiltering(TASK_NAME));
 
@@ -275,7 +263,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testCategoryFiltering() {
         when(mBridge.getTitle(1)).thenReturn("Tab: Google");
         when(mBridge.getType(1)).thenReturn(TaskType.RENDERER);
@@ -312,7 +299,6 @@ public class TaskManagerMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testSearchQueryFiltering() {
         when(mBridge.getTitle(1)).thenReturn("Tab: Wikipedia");
         when(mBridge.getProcessId(1)).thenReturn(1001L);

@@ -10,8 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import androidx.test.filters.SmallTest;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -33,7 +31,6 @@ public class PaneListBuilderUnitTest {
     @Mock private LazyOneshotSupplier<Pane> mMockSupplier;
 
     @Test
-    @SmallTest
     public void testRegisterNoPanes() {
         var panes = new PaneListBuilder(new DefaultPaneOrderController()).build();
 
@@ -41,7 +38,6 @@ public class PaneListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRegisterAllWithDefaultOrder() {
         PaneOrderController orderController = new DefaultPaneOrderController();
         PaneListBuilder builder = new PaneListBuilder(orderController);
@@ -54,7 +50,6 @@ public class PaneListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRegisterAllWithReverseDefaultOrder() {
         PaneOrderController orderController = createReverseDefaultOrderController();
         PaneListBuilder builder = new PaneListBuilder(orderController);
@@ -67,7 +62,6 @@ public class PaneListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRegisterSubsetOfPanesInPaneOrderController() {
         PaneOrderController orderController = createReverseDefaultOrderController();
 
@@ -83,7 +77,6 @@ public class PaneListBuilderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAlreadyBuiltThrowsException() {
         PaneOrderController orderController = new DefaultPaneOrderController();
         PaneListBuilder builder = new PaneListBuilder(orderController);

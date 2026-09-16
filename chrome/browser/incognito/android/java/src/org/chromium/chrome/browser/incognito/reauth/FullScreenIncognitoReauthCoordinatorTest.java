@@ -14,7 +14,6 @@ import android.content.Context;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -80,14 +79,12 @@ public class FullScreenIncognitoReauthCoordinatorTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testNullMenuButtonDelegate_ForFullScreen_ThrowsAssertionError() {
         when(mIncognitoReauthMenuDelegateMock.getListMenuDelegate()).thenReturn(null);
         mFullScreenIncognitoReauthCoordinator.show();
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testDialogAlreadyCreated_DuringShow_ThrowsAssertionError() {
         mFullScreenIncognitoReauthCoordinator.setIncognitoReauthDialogForTesting(
                 mIncognitoReauthDialogMock);
@@ -96,14 +93,12 @@ public class FullScreenIncognitoReauthCoordinatorTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testHide_BeforeDialogCreation_ThrowsAssertionError() {
         mFullScreenIncognitoReauthCoordinator.hide(
                 DialogDismissalCause.DIALOG_INTERACTION_DEFERRED);
     }
 
     @Test
-    @SmallTest
     public void testShow_Invoke_InternalDialogMethod() {
         when(mIncognitoReauthMenuDelegateMock.getListMenuDelegate())
                 .thenReturn(mIncognitoReauthListMenuDelegateMock);
@@ -118,7 +113,6 @@ public class FullScreenIncognitoReauthCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void testHide_Invoke_InternalDialogMethod() {
         mFullScreenIncognitoReauthCoordinator.setIncognitoReauthDialogForTesting(
                 mIncognitoReauthDialogMock);

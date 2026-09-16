@@ -19,8 +19,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -142,7 +140,6 @@ public final class ShareSheetCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void disableFirstPartyFeatures() {
         mShareSheetCoordinator.disableFirstPartyFeaturesForTesting();
 
@@ -156,7 +153,6 @@ public final class ShareSheetCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void showShareSheet_avoidThirdPartyShareOptionsOnAutomotive() {
         mShadowPackageManager.setSystemFeature(
                 PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ true);
@@ -174,7 +170,6 @@ public final class ShareSheetCoordinatorTest {
     }
 
     @Test
-    @SmallTest
     public void showShareSheet_createThirdPartyShareOptions() {
         mShadowPackageManager.setSystemFeature(
                 PackageManager.FEATURE_AUTOMOTIVE, /* supported= */ false);

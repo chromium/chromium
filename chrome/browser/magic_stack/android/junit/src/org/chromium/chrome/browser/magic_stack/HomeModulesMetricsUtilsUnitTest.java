@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -18,7 +16,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 @RunWith(BaseRobolectricTestRunner.class)
 public class HomeModulesMetricsUtilsUnitTest {
     @Test
-    @SmallTest
     public void testRecordModuleShown() {
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         int modulePosition = 2;
@@ -48,7 +45,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordContextMenuShown() {
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         String histogramName = "MagicStack.Clank.NewTabPage.ContextMenu.ShownV2";
@@ -59,7 +55,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordContextMenuRemoveModule() {
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         String histogramName = "MagicStack.Clank.NewTabPage.ContextMenu.RemoveModuleV2";
@@ -70,7 +65,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordContextMenuCustomizeSettings() {
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         String histogramName = "MagicStack.Clank.NewTabPage.ContextMenu.OpenCustomizeSettings";
@@ -81,7 +75,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordFetchDataDuration() {
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         int duration = 100;
@@ -95,7 +88,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordFetchDataTimeoutDuration() {
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         int duration = 100;
@@ -110,7 +102,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordFetchDataTimeoutType() {
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         String histogramName = "MagicStack.Clank.NewTabPage.Module.FetchDataTimeoutTypeV2";
@@ -121,7 +112,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordFetchDataFailedDuration() {
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         int duration = 100;
@@ -136,7 +126,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordFirstModuleShowDuration() {
         int duration = 100;
         String histogramName = "MagicStack.Clank.NewTabPage.Module.FirstModuleShownDurationMs";
@@ -148,7 +137,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordProfileReadyDelay() {
         int duration = 100;
         String histogramName = "MagicStack.Clank.NewTabPage.Module.ProfileReadyDelayMs";
@@ -160,7 +148,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordSegmentationFetchRankingDuration() {
         int duration = 100;
         String histogramName =
@@ -173,7 +160,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordModuleClicked() {
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         int modulePosition = 2;
@@ -209,7 +195,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordHomeModulesScrollState() {
         boolean isScrollable = true;
         boolean isScrolled = true;
@@ -221,7 +206,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordModuleToggledInConfiguration() {
         @ModuleType int moduleType = ModuleType.PRICE_CHANGE;
         boolean isEnabled = true;
@@ -240,7 +224,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordModuleBuiltPosition() {
         @ModuleType int moduleType = ModuleType.SINGLE_TAB;
         int modulePosition = 2;
@@ -262,7 +245,6 @@ public class HomeModulesMetricsUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordModuleImpressionCountBeforeInteraction() {
         @ModuleType int moduleType = ModuleType.TAB_GROUP_PROMO;
         int impressionCount = 2;

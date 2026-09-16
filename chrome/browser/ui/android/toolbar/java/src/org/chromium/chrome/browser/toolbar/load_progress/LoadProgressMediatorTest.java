@@ -13,8 +13,6 @@ import static org.mockito.Mockito.when;
 
 import android.os.Looper;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -77,7 +75,6 @@ public class LoadProgressMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void loadRegularPage() {
         initMediator();
         assertEquals(
@@ -109,7 +106,6 @@ public class LoadProgressMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void switchToLoadingTab() {
         initMediator();
         doReturn(true).when(mTab2).isLoading();
@@ -123,7 +119,6 @@ public class LoadProgressMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void switchToLoadedTab() {
         initMediator();
         NavigationHandle navigation =
@@ -148,7 +143,6 @@ public class LoadProgressMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void loadNativePage() {
         initMediator();
         doReturn(0.1f).when(mTab).getProgress();
@@ -176,7 +170,6 @@ public class LoadProgressMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void switchToTabWithNativePage() {
         initMediator();
         NavigationHandle navigation =
@@ -206,7 +199,6 @@ public class LoadProgressMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void pageCrashes() {
         initMediator();
 
@@ -235,7 +227,6 @@ public class LoadProgressMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void loadingTabProgressUpdateStartsProgressBar() {
         initMediator();
         doReturn(true).when(mTab).isLoading();
@@ -251,7 +242,6 @@ public class LoadProgressMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void nonLoadingTabProgressUpdateDoesNotStartProgressBar() {
         initMediator();
         assertEquals(
@@ -266,7 +256,6 @@ public class LoadProgressMediatorTest {
     }
 
     @Test
-    @SmallTest
     public void testSameDocumentLoad_afterFinishedLoading() {
         initMediator();
         GURL gurl = URL_1;

@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -95,7 +94,6 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2})
     public void testCreateInputContext_DefaultBrowserPromoCard() {
         InputContext inputContext =
@@ -191,7 +189,6 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateInputContext_TabGroupPromoCard_TabGroupExists() {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabModelSelector.isReparentingInProgress()).thenReturn(false);
@@ -220,7 +217,6 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateInputContext_TabGroupPromoCard_NumberOfTabs() {
         InputContext inputContext;
 
@@ -275,7 +271,6 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreateInputContext_TabGroupSyncPromoCard() {
         when(mMockTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
 
@@ -307,7 +302,6 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testCreateInputContext_NtpThemePromoCard() {
         when(mActionDelegate.supportCustomizedNtpTheme()).thenReturn(true);

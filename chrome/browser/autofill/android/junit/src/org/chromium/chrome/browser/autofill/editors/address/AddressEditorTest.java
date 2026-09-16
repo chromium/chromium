@@ -53,7 +53,6 @@ import android.annotation.StringRes;
 import android.app.Activity;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -484,7 +483,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateCustomDoneButtonText() {
         setUpAddressUiComponents(new ArrayList<>());
         setupEditorForNewProfile();
@@ -498,7 +496,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateUiStrings_NewAddressProfile() {
         setUpAddressUiComponents(new ArrayList<>());
         setupEditorForNewProfile();
@@ -518,7 +515,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateUiStrings_NewAddressProfile_EligibleForAddressAccountStorage() {
         setUpAddressUiComponents(new ArrayList<>());
         when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
@@ -541,7 +537,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateUiStrings_LocalOrSyncAddressProfile_AddressSyncDisabled() {
         setUpAddressUiComponents(new ArrayList<>());
         setupEditorForExistingProfile(
@@ -562,7 +557,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateUiStrings_LocalOrSyncAddressProfile_AddressSyncEnabled() {
         setUpAddressUiComponents(new ArrayList<>());
         when(mSyncService.getSelectedTypes())
@@ -586,7 +580,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateUiStrings_UpdateLocalOrSyncAddressProfile_AddressSyncDisabled() {
         setUpAddressUiComponents(new ArrayList<>());
         mAddressEditor =
@@ -614,7 +607,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateUiStrings_UpdateLocalOrSyncAddressProfile_AddressSyncEnabled() {
         setUpAddressUiComponents(new ArrayList<>());
         when(mSyncService.getSelectedTypes())
@@ -645,7 +637,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateUiStrings_LocalAddressProfile_MigrationToAccount() {
         setUpAddressUiComponents(new ArrayList<>());
         setupEditorForExistingProfile(
@@ -668,7 +659,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateUiStrings_SyncAddressProfile_MigrationToAccount() {
         setUpAddressUiComponents(new ArrayList<>());
         when(mSyncService.getSelectedTypes())
@@ -693,7 +683,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateUiStrings_AccountAddressProfile_SaveInAccountFlow() {
         setUpAddressUiComponents(new ArrayList<>());
         setupEditorForExistingProfile(
@@ -716,7 +705,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateUiStrings_AccountAddressProfile_UpdateAccountProfileFlow() {
         setUpAddressUiComponents(new ArrayList<>());
         setupEditorForExistingProfile(
@@ -739,7 +727,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateDefaultFields() {
         setUpAddressUiComponents(new ArrayList<>());
         setupEditorForExistingProfile(
@@ -758,7 +745,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateShownItems_NewAddressProfile() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         setupEditorForNewProfile();
@@ -772,7 +758,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateShownItems_NewAddressProfile_EligibleForAddressAccountStorage() {
         when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
@@ -795,7 +780,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateShownItems_LocalOrSyncAddressProfile_SaveLocally() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         setupEditorForExistingProfile(
@@ -810,7 +794,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateShownItems_LocalOrSyncAddressProfile_UpdateLocally() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         setupEditorForExistingProfile(
@@ -825,7 +808,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateShownItems_LocalOrSyncAddressProfile_MigrationToAccount() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         setupEditorForExistingProfile(
@@ -847,7 +829,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateShownItems_AccountProfile_SaveInAccountFlow() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         setupEditorForExistingProfile(
@@ -869,7 +850,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void validateShownItems_AccountProfile_UpdateAlreadySaved() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         setupEditorForExistingProfile(
@@ -891,7 +871,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_ChangeCountry_FieldsSetChanges() {
         setUpAddressUiComponents(
                 List.of(
@@ -959,7 +938,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_NewAddressProfile_EligibleForAddressAccountStorage() {
         when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
@@ -987,7 +965,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_AlterAddressProfile_Cancel() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         setupEditorForExistingProfile(
@@ -1010,7 +987,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_AlterAddressProfile_CommitChanges() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         setupEditorForExistingProfile(
@@ -1041,7 +1017,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_AlterAddressProfile_CommitChanges_InvisibleFieldsNotReset() {
         // Whitelist only full name, admin area and locality.
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS.subList(0, 3));
@@ -1077,7 +1052,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_NewAddressProfile_NoInitialValidation() {
         when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
@@ -1089,7 +1063,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_NewAddressProfile_FieldsAreValidatedAfterSave() {
         when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
@@ -1103,7 +1076,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_AccountAddressProfile_FieldsAreImmediatelyValidated() {
         AutofillProfile accountProfile = new AutofillProfile(sAccountProfile);
         accountProfile.setInfo(FieldType.NAME_FULL, "");
@@ -1119,7 +1091,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_AccountAddressProfile_FieldsAreValidatedAfterSave() {
         AutofillProfile accountProfile = new AutofillProfile(sAccountProfile);
         accountProfile.setInfo(FieldType.NAME_FULL, "");
@@ -1138,7 +1109,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_AccountAddressProfile_EmptyFieldsAreValidatedAfterSave() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
 
@@ -1163,7 +1133,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_HomeAddressProfile_showsReadOnlyUIAndExternalLink() {
         AutofillProfile homeProfile = new AutofillProfile(sHomeProfile);
         setupEditorForExistingProfile(
@@ -1210,7 +1179,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_HomeAddressProfile_setsDeleteConfirmationStrings() {
         AutofillProfile homeProfile = new AutofillProfile(sHomeProfile);
         setupEditorForExistingProfile(
@@ -1237,7 +1205,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_HomeAddressProfile_clickingExternalLinkNotifiesDelegate() {
         AutofillProfile homeProfile = new AutofillProfile(sHomeProfile);
         setupEditorForExistingProfile(
@@ -1262,7 +1229,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_AccountNameEmailProfile_showsReadOnlyUIAndExternalLink() {
         AutofillProfile accountNameEmailProfile = new AutofillProfile(sAccountNameEmailProfile);
         setupEditorForExistingProfile(
@@ -1309,7 +1275,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_AccountNameEmailProfile_setsDeleteConfirmationStrings() {
         AutofillProfile accountNameEmailProfile = new AutofillProfile(sAccountNameEmailProfile);
         setupEditorForExistingProfile(
@@ -1338,7 +1303,6 @@ public class AddressEditorTest {
     }
 
     @Test
-    @SmallTest
     public void edit_AccountNameEmailProfile_clickingExternalLinkNotifiesDelegate() {
         AutofillProfile accountNameEmailProfile = new AutofillProfile(sAccountNameEmailProfile);
         setupEditorForExistingProfile(

@@ -17,8 +17,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -136,7 +134,6 @@ public class HubProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHubProvider() {
         PaneListBuilder builder = mHubProvider.getPaneListBuilder();
 
@@ -192,7 +189,6 @@ public class HubProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHubProviderDestroyBeforeOnAvailable() {
         PaneListBuilder builder = mHubProvider.getPaneListBuilder();
 
@@ -223,7 +219,6 @@ public class HubProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHubProviderDestroyBeforeCreation() {
         PaneListBuilder builder = mHubProvider.getPaneListBuilder();
 

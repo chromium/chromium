@@ -15,8 +15,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,13 +61,11 @@ public final class AuxiliarySearchBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void getForProfileTest() {
         verify(mMockAuxiliarySearchBridgeJni).getForProfile(mProfile);
     }
 
     @Test
-    @SmallTest
     public void tesGetNonSensitiveTabs_NoNative() {
         when(mProfile.isOffTheRecord()).thenReturn(true);
         mBridge = new AuxiliarySearchBridge(mProfile);
@@ -89,7 +85,6 @@ public final class AuxiliarySearchBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddDataEntry() {
         List<AuxiliarySearchDataEntry> entryList = createEntryList();
 
@@ -101,7 +96,6 @@ public final class AuxiliarySearchBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnDataReady() {
         List<AuxiliarySearchDataEntry> entryList = new ArrayList<>();
         Callback<List<AuxiliarySearchDataEntry>> callback = MockitoHelper.mockCallback();
@@ -111,7 +105,6 @@ public final class AuxiliarySearchBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetNonSensitiveHistoryData() {
         Callback<List<AuxiliarySearchDataEntry>> callback = MockitoHelper.mockCallback();
         ThreadUtils.runOnUiThreadBlocking(() -> mBridge.getNonSensitiveHistoryData(callback));
@@ -121,7 +114,6 @@ public final class AuxiliarySearchBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void tesGetNonSensitiveHistoryData_NoNative() {
         when(mProfile.isOffTheRecord()).thenReturn(true);
         mBridge = new AuxiliarySearchBridge(mProfile);

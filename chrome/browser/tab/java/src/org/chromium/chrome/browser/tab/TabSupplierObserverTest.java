@@ -9,8 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,7 +69,6 @@ public class TabSupplierObserverTest {
 
     /** Test that the {@link TabSupplierObserver} switches between tabs as the tab changes. */
     @Test
-    @SmallTest
     @Feature({"TabSupplierObserver"})
     public void basicChangeTracking() {
         Tab startingTab = getCurrentTab();
@@ -99,7 +96,6 @@ public class TabSupplierObserverTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"TabSupplierObserver"})
     public void initialTrigger() {
         TestTabSupplierObserver tabSupplierObserver =

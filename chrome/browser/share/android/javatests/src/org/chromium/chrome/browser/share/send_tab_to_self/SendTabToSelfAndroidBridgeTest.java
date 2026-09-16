@@ -21,8 +21,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -137,7 +135,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testSendTabToDevice() {
         SendTabToSelfAndroidBridge.sendTabToDevice(
                 mProfile,
@@ -159,7 +156,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testMarkEntryOpened() {
         String guid = "guid";
         SendTabToSelfAndroidBridge.markEntryOpened(mProfile, guid);
@@ -167,7 +163,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissEntry() {
         String guid = "guid";
         SendTabToSelfAndroidBridge.dismissEntry(mProfile, guid);
@@ -175,7 +170,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testMarkEntryActivated() {
         String guid = "guid";
         SendTabToSelfAndroidBridge.markEntryActivated(
@@ -186,7 +180,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @SuppressWarnings("unchecked")
     public void testGetAllTargetDeviceInfos() {
         List<TargetDeviceInfo> expected =
@@ -216,14 +209,12 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testGetEntryPointDisplayReason() {
         SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, URL);
         verify(mNativeMock).getEntryPointDisplayReason(eq(mProfile), eq(URL));
     }
 
     @Test
-    @SmallTest
     public void testIsModelReady() {
         when(mNativeMock.isModelReady(eq(mProfile))).thenReturn(true);
         Assert.assertTrue(SendTabToSelfAndroidBridge.isModelReady(mProfile));
@@ -233,7 +224,6 @@ public class SendTabToSelfAndroidBridgeTest {
     // Tests that adding a target device list waiter invokes the native JNI method and returns the
     // native pointer.
     @Test
-    @SmallTest
     public void testAddTargetDeviceListWaiter() {
         Runnable runnable = mock(Runnable.class);
         when(mNativeMock.addTargetDeviceListWaiter(eq(mProfile), eq(URL), eq(runnable)))
@@ -247,7 +237,6 @@ public class SendTabToSelfAndroidBridgeTest {
     // Tests that removing a target device list waiter invokes the native JNI method with the
     // expected pointer.
     @Test
-    @SmallTest
     public void testRemoveTargetDeviceListWaiter() {
         long waiterPtr = 12345L;
         SendTabToSelfAndroidBridge.removeTargetDeviceListWaiter(waiterPtr);
@@ -255,7 +244,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_ShowsSuccessSnackbar() {
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
@@ -294,7 +282,6 @@ public class SendTabToSelfAndroidBridgeTest {
     // Tests that the post-send success snackbar shows the fallback message without an email when
     // the user's primary account email address is not available.
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_ShowsSuccessSnackbar_NoEmail() {
         when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(null);
@@ -334,7 +321,6 @@ public class SendTabToSelfAndroidBridgeTest {
     // Tests that the post-send success snackbar shows the fallback message without an email when
     // the user's primary account email address cannot be displayed (e.g. supervised child account).
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_ShowsSuccessSnackbar_NonDisplayableEmail() {
         // Supervised child accounts are not allowed to display email addresses in the UI.
@@ -374,7 +360,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_ShowsSuccessSnackbar_Throttled() {
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
@@ -411,7 +396,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_ShowsSnackbarFromActivity_WhenWebContentsNull() {
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
@@ -463,7 +447,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_ShowsFailureSnackbar_OnFailure() {
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
@@ -503,7 +486,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_ShowsNoInternetSnackbar_OnNoInternetConnection() {
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
@@ -545,7 +527,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_ShowsNoInternetSnackbar_OnCommitTimeout() {
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
@@ -585,7 +566,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_PostSendToastFeatureDisabled() {
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
@@ -618,7 +598,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testAttachTabLabel() {
         UserDataHost userDataHost = new UserDataHost();
         Tab tab = mock(Tab.class);
@@ -632,7 +611,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     // Tests that the message banner (which is shown tabs are auto-opened in the background) is
     // shown correctly and that the primary action callback is triggered correctly.
     public void testShowMessageBanner() {
@@ -679,7 +657,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
     public void testShowMessageBanner_ClickActionNullSelector_disabledOnDesktop_doesNotShowHub() {
         DeviceInfo.setIsDesktopForTesting(true);
@@ -717,7 +694,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testShowMessageBanner_ClickActionSingleTab_OpensTab() {
         // Trigger message banner display.
@@ -776,7 +752,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testShowMessageBanner_ClickActionMultipleTabs_OpensNewestTab() {
         // Trigger message banner display.
         SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 2, GURL.emptyGURL());
@@ -859,7 +834,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_RECORD_SNACKBAR_ACTIVATION)
     public void testShowMessageBanner_ClickAction_RecordSnackbarActivationDisabled() {
         SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 2, GURL.emptyGURL());
@@ -933,7 +907,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     public void testShowMessageBanner_ClickActionNoMatchingTabs_DoesNothing() {
         SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1, new GURL(URL));
 
@@ -971,7 +944,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID)
     public void testShowMessageBanner_InOverviewMode_DoesNotShow() {
         when(mTabbedActivity.isInOverviewMode()).thenReturn(true);
@@ -984,7 +956,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID)
     public void testLabelObservers() {
         Tab tab = mock(Tab.class);
@@ -1004,7 +975,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID)
     public void testLabelObservers_FeatureDisabled() {
         Tab tab = mock(Tab.class);
@@ -1024,7 +994,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_ShowsToast_WhenSnackbarManagerUnavailable() {
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
@@ -1059,7 +1028,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_POST_SEND_TOAST)
     public void testSendTabToDevice_ShowsToast_OnFailure_WhenSnackbarManagerUnavailable() {
         ArgumentCaptor<SendTabToSelfAndroidBridge.CommitConfirmationCallback>
@@ -1092,7 +1060,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testShowMessageBanner_ClickAction_OpensNativeAppWhenAvailable() {
         String url = "https://www.example.com/app/path";
@@ -1178,7 +1145,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void
             testShowMessageBanner_ClickActionMultipleTabs_WithMatchingApp_OpensTabAndShowsSecondaryBanner() {
@@ -1295,7 +1261,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void
             testShowMessageBanner_ClickActionMultipleTabs_WithoutMatchingApp_OpensTabAndShowsNoBanner() {
@@ -1368,7 +1333,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testShowOpenInAppMessageBanner() {
         String url = "https://www.example.com/app/path";
@@ -1434,7 +1398,6 @@ public class SendTabToSelfAndroidBridgeTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_OPEN_NATIVE_APP)
     public void testShowOpenInAppMessageBanner_NoMatchingApp_DoesNotShowBanner() {
         String url = "https://www.example.com/no-app";

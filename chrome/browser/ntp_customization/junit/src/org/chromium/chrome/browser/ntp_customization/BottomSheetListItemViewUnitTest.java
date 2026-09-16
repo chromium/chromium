@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,7 +40,6 @@ public class BottomSheetListItemViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetTitle() {
         String text = "New tab page cards";
         mListView.setTitle(text);
@@ -50,7 +48,6 @@ public class BottomSheetListItemViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetSubtitle() {
         // Verifies when the subtitle is null, the visibility of the subtitle view is set to GONE.
         TextViewWithLeading subtitleView = mListView.findViewById(R.id.subtitle);
@@ -64,7 +61,6 @@ public class BottomSheetListItemViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetNullTrailingIcon() {
         // Verifies when the resId given is null, the visibility of the icon is set to View.GONE.
         ImageView iconView = mListView.findViewById(R.id.trailing_icon);
@@ -73,7 +69,6 @@ public class BottomSheetListItemViewUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetNonNullTrailingIcon() {
         // Verifies when the resId given is not null, the visibility of the icon is not View.GONE.
         ImageView iconView = mListView.findViewById(R.id.trailing_icon);

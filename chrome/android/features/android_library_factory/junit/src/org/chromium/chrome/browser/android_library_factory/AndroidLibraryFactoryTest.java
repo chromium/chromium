@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.android_library_factory;
 
 import static org.junit.Assert.assertNotNull;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -20,7 +18,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AndroidLibraryFactoryTest {
     @Test
-    @SmallTest
     public void testAll() {
         assertNotNull(new Factory1().packagePrivateMethod());
         assertNotNull(new Factory2().packagePrivateMethod());

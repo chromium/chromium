@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import android.graphics.Color;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -80,7 +79,6 @@ public class PinnedTabStripViewBinderTest {
     }
 
     @Test
-    @SmallTest
     public void testSetBackgroundColor() {
         mPropertyModel.set(PinnedTabStripProperties.BACKGROUND_COLOR, Color.RED);
         verify(mRecyclerView).setBackgroundColor(Color.RED);

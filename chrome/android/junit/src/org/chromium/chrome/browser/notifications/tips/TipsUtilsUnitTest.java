@@ -11,8 +11,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,7 +44,6 @@ public class TipsUtilsUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
     }
 
-    @SmallTest
     @Test
     public void testGetFeatureTipPromoDataForType_EnhancedSafeBrowsing() {
         FeatureTipPromoData promoData =
@@ -77,7 +74,6 @@ public class TipsUtilsUnitTest {
                 promoData.detailPageTitle);
     }
 
-    @SmallTest
     @Test
     public void testGetFeatureTipPromoDataForType_QuickDelete() {
         FeatureTipPromoData promoData =
@@ -108,7 +104,6 @@ public class TipsUtilsUnitTest {
                 promoData.detailPageTitle);
     }
 
-    @SmallTest
     @Test
     public void testGetFeatureTipPromoDataForType_GoogleLens() {
         FeatureTipPromoData promoData =
@@ -139,7 +134,6 @@ public class TipsUtilsUnitTest {
                 promoData.detailPageTitle);
     }
 
-    @SmallTest
     @Test
     public void testGetFeatureTipPromoDataForType_BottomOmnibox() {
         FeatureTipPromoData promoData =
@@ -170,7 +164,6 @@ public class TipsUtilsUnitTest {
                 promoData.detailPageTitle);
     }
 
-    @SmallTest
     @Test
     public void testGetFeatureTipPromoDataForType_PasswordAutofill() {
         FeatureTipPromoData promoData =
@@ -201,7 +194,6 @@ public class TipsUtilsUnitTest {
                 promoData.detailPageTitle);
     }
 
-    @SmallTest
     @Test
     public void testGetFeatureTipPromoDataForType_Signin() {
         FeatureTipPromoData promoData =
@@ -229,7 +221,6 @@ public class TipsUtilsUnitTest {
         assertEquals(mActivity.getString(R.string.sign_in_to_chrome), promoData.detailPageTitle);
     }
 
-    @SmallTest
     @Test
     public void testGetFeatureTipPromoDataForType_Signin_UserAlreadySignedIn() {
         FeatureTipPromoData promoData =
@@ -243,7 +234,6 @@ public class TipsUtilsUnitTest {
                 promoData.mainPageTitle);
     }
 
-    @SmallTest
     @Test
     public void testGetFeatureTipPromoDataForType_CreateTabGroups() {
         FeatureTipPromoData promoData =
@@ -274,7 +264,6 @@ public class TipsUtilsUnitTest {
                 promoData.detailPageTitle);
     }
 
-    @SmallTest
     @Test
     public void testGetFeatureTipPromoDataForType_CustomizeMVT() {
         FeatureTipPromoData promoData =
@@ -305,7 +294,6 @@ public class TipsUtilsUnitTest {
                 promoData.detailPageTitle);
     }
 
-    @SmallTest
     @Test
     public void testGetFeatureTipPromoDataForType_RecentTabs() {
         FeatureTipPromoData promoData =
@@ -337,7 +325,6 @@ public class TipsUtilsUnitTest {
                 promoData.detailPageTitle);
     }
 
-    @SmallTest
     @Test
     public void testGetDetailStepBackground_SingleStep() {
         assertEquals(
@@ -345,7 +332,6 @@ public class TipsUtilsUnitTest {
                 TipsUtils.getDetailStepBackground(/* stepIndex= */ 0, /* stepCount= */ 1));
     }
 
-    @SmallTest
     @Test
     public void testGetDetailStepBackground_FirstStep() {
         assertEquals(
@@ -353,7 +339,6 @@ public class TipsUtilsUnitTest {
                 TipsUtils.getDetailStepBackground(/* stepIndex= */ 0, /* stepCount= */ 3));
     }
 
-    @SmallTest
     @Test
     public void testGetDetailStepBackground_LastStep() {
         assertEquals(
@@ -361,7 +346,6 @@ public class TipsUtilsUnitTest {
                 TipsUtils.getDetailStepBackground(/* stepIndex= */ 2, /* stepCount= */ 3));
     }
 
-    @SmallTest
     @Test
     public void testGetDetailStepBackground_MiddleStep() {
         assertEquals(
@@ -369,7 +353,6 @@ public class TipsUtilsUnitTest {
                 TipsUtils.getDetailStepBackground(/* stepIndex= */ 1, /* stepCount= */ 3));
     }
 
-    @SmallTest
     @Test
     public void testShouldShowTipsOptInPromo_AllConditionsMet() {
         assertTrue(
@@ -380,7 +363,6 @@ public class TipsUtilsUnitTest {
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
     }
 
-    @SmallTest
     @Test
     public void testShouldShowTipsOptInPromo_NotificationsEnabled() {
         assertFalse(
@@ -391,7 +373,6 @@ public class TipsUtilsUnitTest {
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
     }
 
-    @SmallTest
     @Test
     public void testShouldShowTipsOptInPromo_AlreadyAccepted() {
         when(mSharedPreferences.readBoolean(
@@ -406,7 +387,6 @@ public class TipsUtilsUnitTest {
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
     }
 
-    @SmallTest
     @Test
     public void testShouldShowTipsOptInPromo_MaxCountReached() {
         when(mSharedPreferences.readInt(
@@ -421,7 +401,6 @@ public class TipsUtilsUnitTest {
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
     }
 
-    @SmallTest
     @Test
     public void testShouldShowTipsOptInPromo_CooldownNotPassed() {
         when(mSharedPreferences.readLong(
@@ -440,7 +419,6 @@ public class TipsUtilsUnitTest {
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
     }
 
-    @SmallTest
     @Test
     public void testShouldShowTipsOptInPromo_TimeSinceBackgroundedTooShort() {
         assertFalse(
@@ -451,7 +429,6 @@ public class TipsUtilsUnitTest {
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO - 1)));
     }
 
-    @SmallTest
     @Test
     public void testIsSupportedDeviceType() {
         assertTrue(TipsUtils.isSupportedDeviceType());

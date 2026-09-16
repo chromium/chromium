@@ -8,8 +8,6 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,7 +35,6 @@ public class FeedUmaTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordFeedBottomSheetItemsClicked() {
         // Verifies that the histogram is logged correctly when the feed is turned on and off.
         String articlesListVisibleHistogramName =

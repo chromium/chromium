@@ -13,7 +13,6 @@ import android.graphics.Color;
 
 import androidx.annotation.Px;
 import androidx.core.content.ContextCompat;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +33,6 @@ public class AutofillImageFetcherUtilsTest {
     }
 
     @Test
-    @SmallTest
     public void testGetPixAccountImageUrlWithParams() {
         GURL url = new GURL("https://www.example.com/icon");
         @Px
@@ -47,7 +45,6 @@ public class AutofillImageFetcherUtilsTest {
     }
 
     @Test
-    @SmallTest
     public void testTreatPixAccountImage_testAllEnhancementsApplied() {
         @Px
         int logoSize = AutofillImageFetcherUtils.getPixelSize(R.dimen.square_card_icon_side_length);
@@ -81,7 +78,6 @@ public class AutofillImageFetcherUtilsTest {
     }
 
     @Test
-    @SmallTest
     public void testTreatPixAccountImage_testOutputImageDimensionsAreConstant() {
         @Px int iconWidth = AutofillImageFetcherUtils.getPixelSize(R.dimen.large_card_icon_width);
         @Px int iconHeight = AutofillImageFetcherUtils.getPixelSize(R.dimen.large_card_icon_height);

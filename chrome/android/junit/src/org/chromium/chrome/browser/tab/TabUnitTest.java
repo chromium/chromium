@@ -39,7 +39,6 @@ import android.view.autofill.AutofillValue;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -157,7 +156,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnAddedToTabModel_SendsDidInsertUpdate() {
         TabImplJni.setInstanceForTesting(mNativeMock);
         mTab.setNativePtrForTesting(1);
@@ -167,7 +165,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSendsDidActivateUpdate() {
         TabImplJni.setInstanceForTesting(mNativeMock);
         mTab.setNativePtrForTesting(1);
@@ -178,7 +175,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSendsWillDeactivateUpdate() {
         TabImplJni.setInstanceForTesting(mNativeMock);
         mTab.setNativePtrForTesting(1);
@@ -193,7 +189,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetRootIdWithChange() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
@@ -215,7 +210,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetRootIdWithoutChange() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
@@ -238,7 +232,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetTabGroupIdWithChange() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
@@ -276,7 +269,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetTabGroupIdWithoutChange() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
@@ -299,7 +291,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetTabHasSensitiveContentWithChange() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
@@ -319,7 +310,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetTabHasSensitiveContentWithoutChange() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
@@ -340,7 +330,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetIsPinnedWithChange() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
@@ -360,7 +349,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetIsPinnedWithoutChange() {
         TabStateAttributesRegistry.createAttributesForTab(
                 mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
@@ -381,7 +369,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.PDF_REUSE_FRAGMENT})
     public void testFreezeDetachedNativePage() {
         TabImplJni.setInstanceForTesting(mNativeMock);
@@ -436,7 +423,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.PDF_REUSE_FRAGMENT})
     public void testUpdateAttachment_reattachHiddenFreezesWhenViewHasNoParent() {
         TabImplJni.setInstanceForTesting(mNativeMock);
@@ -509,7 +495,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.PDF_REUSE_FRAGMENT})
     public void testUpdateAttachment_reattachHiddenReloadsWhenViewHasParent() {
         TabImplJni.setInstanceForTesting(mNativeMock);
@@ -607,7 +592,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testMaybeLoadNativePage_nullOrEmptyUrl() {
         mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
         assertFalse(
@@ -617,7 +601,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAutofillUnavailableWithoutPref() {
         when(mPrefs.getBoolean(TabImpl.AUTOFILL_PREF_USES_VIRTUAL_STRUCTURE)).thenReturn(false);
         assertFalse(mTab.providesAutofillStructure());
@@ -631,7 +614,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAutofillRequestsHandledByProvider() {
         when(mPrefs.getBoolean(TabImpl.AUTOFILL_PREF_USES_VIRTUAL_STRUCTURE)).thenReturn(true);
         when(mProfile.isNativeInitialized()).thenReturn(true);
@@ -650,7 +632,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         AndroidAutofillFeatures.ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME,
         ChromeFeatureList.ANDROID_AUTOFILL_PREF_OBSERVER
@@ -709,7 +690,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({
         AndroidAutofillFeatures.ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME,
         ChromeFeatureList.ANDROID_AUTOFILL_PREF_OBSERVER
@@ -757,7 +737,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_AUTOFILL_PREF_OBSERVER)
     public void testAutofillPrefObserver_disabled_doesNotRegisterObserver() {
         when(mProfile.isNativeInitialized()).thenReturn(true);
@@ -775,14 +754,12 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDefaultInvalidTimestamp() {
         Tab tab = new TabImpl(1, mProfile, TabLaunchType.FROM_LINK);
         assertThat(tab.getTimestampMillis(), equalTo(TabImpl.INVALID_TIMESTAMP));
     }
 
     @Test
-    @SmallTest
     public void testUpdateThemeColor_themingAllowed() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(mWebContents))
                 .thenReturn(ConnectionSecurityLevel.NONE);
@@ -809,7 +786,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testUpdateThemeColor_themingNotAllowed() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(mWebContents))
                 .thenReturn(ConnectionSecurityLevel.NONE);
@@ -844,7 +820,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDidChangeVisibleSecurityState_themingNotAllowed() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(mWebContents))
                 .thenReturn(ConnectionSecurityLevel.NONE);
@@ -883,7 +858,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.ABORT_NAVIGATIONS_FROM_TAB_CLOSURES})
     public void testDestroy_SendsWillDetachUpdate() {
         TabImplJni.setInstanceForTesting(mNativeMock);
@@ -904,7 +878,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.GLIC_BACKGROUND_ACTUATION})
     public void testStopOffscreenRendering_DestroyedWindow_PassesNullToWebContents() {
         TabImplJni.setInstanceForTesting(mNativeMock);
@@ -931,7 +904,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures({ChromeFeatureList.GLIC_BACKGROUND_ACTUATION})
     public void testStopOffscreenRendering_ValidWindow_PassesWindowToWebContents() {
         TabImplJni.setInstanceForTesting(mNativeMock);
@@ -958,7 +930,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @Config(qualifiers = "sw600dp")
     @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_URL, ChromeFeatureList.SETTINGS_IN_TAB})
     public void testOnUpdateUrl_IncognitoProfile_Settings_CallsStartSettings() {
@@ -986,7 +957,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @Config(qualifiers = "sw600dp")
     @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_URL, ChromeFeatureList.SETTINGS_IN_TAB})
     public void testOnUpdateUrl_RegularProfile_Settings_DoesNotCallStartSettings() {
@@ -1011,7 +981,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShow_unfreezesFrozenNativePageWhenAlreadyShown() {
         TabImplJni.setInstanceForTesting(mNativeMock);
         doReturn(mActivity).when(mWeakReferenceContext).get();
@@ -1087,7 +1056,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLoadUrl_BeforeUnloadCallback_Cancelled() {
         mTab.setNativePtrForTesting(1);
         BeforeUnloadCallback callback =
@@ -1104,7 +1072,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testLoadUrl_BeforeUnloadCallback_Proceeded() {
         mTab.setNativePtrForTesting(1);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
@@ -1127,7 +1094,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGoBack_BeforeUnloadCallback_Cancelled() {
         when(mNavigationController.canGoBack()).thenReturn(true);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
@@ -1145,7 +1111,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGoBack_BeforeUnloadCallback_Proceeded() {
         when(mNavigationController.canGoBack()).thenReturn(true);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
@@ -1163,7 +1128,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGoBack_CannotGoBack_BeforeUnloadNotTriggered() {
         when(mNavigationController.canGoBack()).thenReturn(false);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
@@ -1178,7 +1142,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGoForward_BeforeUnloadCallback_Cancelled() {
         when(mNavigationController.canGoForward()).thenReturn(true);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
@@ -1196,7 +1159,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGoForward_BeforeUnloadCallback_Proceeded() {
         when(mNavigationController.canGoForward()).thenReturn(true);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
@@ -1214,7 +1176,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGoForward_CannotGoForward_BeforeUnloadNotTriggered() {
         when(mNavigationController.canGoForward()).thenReturn(false);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
@@ -1229,7 +1190,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @EnableFeatures(ChromeFeatureList.ANDROID_HANDLE_PDF_IN_IFRAME)
     public void testHandleDidFinishNavigation_PdfBlobUrl_RedownloadTriggered() {
         mTab.setNativePtrForTesting(1);
@@ -1246,7 +1206,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHandleDidFinishNavigation_PdfViewerPath_RedownloadTriggered() {
         mTab.setNativePtrForTesting(1);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
@@ -1264,7 +1223,6 @@ public class TabUnitTest {
     }
 
     @Test
-    @SmallTest
     @DisableFeatures({
         ChromeFeatureList.ANDROID_HANDLE_PDF_IN_IFRAME,
         ChromeFeatureList.ANDROID_SETTINGS_URL

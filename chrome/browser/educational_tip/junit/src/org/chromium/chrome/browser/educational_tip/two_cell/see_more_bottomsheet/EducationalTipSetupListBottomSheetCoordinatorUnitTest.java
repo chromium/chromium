@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bott
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -78,7 +77,6 @@ public class EducationalTipSetupListBottomSheetCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowBottomSheet() {
         EducationalTipSetupListBottomSheetCoordinator
                 educationalTipSetupListBottomSheetCoordinator =
@@ -103,7 +101,6 @@ public class EducationalTipSetupListBottomSheetCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissBottomSheet() {
         EducationalTipSetupListBottomSheetCoordinator
                 educationalTipSetupListBottomSheetCoordinator =

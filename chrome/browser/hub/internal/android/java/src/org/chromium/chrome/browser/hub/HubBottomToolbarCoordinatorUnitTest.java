@@ -19,8 +19,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -85,7 +83,6 @@ public class HubBottomToolbarCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         HubBottomToolbarDelegate emptyDelegate = spy(new EmptyHubBottomToolbarDelegate());
         HubBottomToolbarCoordinator coordinator =
@@ -103,7 +100,6 @@ public class HubBottomToolbarCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testInitializeBottomToolbarView() {
         HubBottomToolbarDelegate emptyDelegate = spy(new EmptyHubBottomToolbarDelegate());
         HubBottomToolbarCoordinator coordinator =
@@ -178,7 +174,6 @@ public class HubBottomToolbarCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCurrentTabSupplier_WhenNotHiding_DoesNotUpdateColorScheme() {
         HubBottomToolbarDelegate emptyDelegate = spy(new EmptyHubBottomToolbarDelegate());
         SettableNullableObservableSupplier<Tab> currentTabSupplier =
@@ -223,7 +218,6 @@ public class HubBottomToolbarCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCurrentTabSupplier_WhenHiding_UpdatesColorScheme() {
         HubBottomToolbarDelegate emptyDelegate = spy(new EmptyHubBottomToolbarDelegate());
         SettableNullableObservableSupplier<Tab> currentTabSupplier =
@@ -267,7 +261,6 @@ public class HubBottomToolbarCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testHubExit_ColorMixerRemainsSetUntilDestroy() {
         HubBottomToolbarDelegate emptyDelegate = spy(new EmptyHubBottomToolbarDelegate());
         SettableNullableObservableSupplier<Tab> currentTabSupplier =

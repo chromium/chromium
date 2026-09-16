@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.educational_tip;
 
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,7 +35,6 @@ public class NtpThemePromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testClickNtpThemePromoCard() {
         mNtpThemePromoCoordinator.onCardClicked();
         verify(mActionDelegate).openNtpThemeCustomizationBottomSheet();

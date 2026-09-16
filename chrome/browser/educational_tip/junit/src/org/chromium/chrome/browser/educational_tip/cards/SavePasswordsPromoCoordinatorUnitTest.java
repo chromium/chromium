@@ -10,8 +10,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -63,7 +61,6 @@ public class SavePasswordsPromoCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSavePasswordsPromoCardBottomSheet() {
         mSavePasswordsPromoCoordinator.onCardClicked();
 

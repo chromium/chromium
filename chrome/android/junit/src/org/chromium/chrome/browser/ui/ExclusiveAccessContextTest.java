@@ -8,8 +8,6 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,7 +47,6 @@ public class ExclusiveAccessContextTest {
     }
 
     @Test
-    @SmallTest
     public void testTouchDownNotifiesNative() {
         long nativePtr = 123L;
         ActivityTabProvider activityTabProvider = new ActivityTabProvider();
@@ -64,7 +61,6 @@ public class ExclusiveAccessContextTest {
     }
 
     @Test
-    @SmallTest
     public void testGetsSnackbarManagerFromWindowAndroid() {
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
         SnackbarManagerProvider.attach(mWindowAndroid, mSnackbarManager);

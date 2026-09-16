@@ -23,7 +23,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,7 +81,6 @@ public class HomeModulesContextMenuManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDisplayMenu() {
         View view =
                 LayoutInflater.from(mContext).inflate(R.layout.educational_tip_module_layout, null);
@@ -101,7 +99,6 @@ public class HomeModulesContextMenuManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetListMenuContent() {
         // Obtains the first and second list views created by mManager.getListMenu().
         View listItemView1 =
@@ -119,7 +116,6 @@ public class HomeModulesContextMenuManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetListMenuDelegation() {
         // Verifies the magic stack module is removed, the action is recorded in the histogram and
         // the popup window is dismissed at the end of the clicking the first option.
@@ -154,14 +150,12 @@ public class HomeModulesContextMenuManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDismissPopupWindow() {
         mManager.dismissPopupWindow();
         verify(mPopupWindow).dismiss();
     }
 
     @Test
-    @SmallTest
     public void testShowContextMenu() {
         mManager.showContextMenu(mMenu, mView);
 
@@ -180,7 +174,6 @@ public class HomeModulesContextMenuManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowContextMenuWithShortMenuItem() {
         int leftPadding = 10;
         int rightPadding = 8;
@@ -195,7 +188,6 @@ public class HomeModulesContextMenuManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowContextMenuWithLongMenuItem() {
         int viewWidth = 100;
         BasicListMenu menu = setMenuData(10, 8, 100, viewWidth);
@@ -207,7 +199,6 @@ public class HomeModulesContextMenuManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShouldShowItem() {
         // Verifies that the "more settings" and "hide" menu items are default shown for all
         // modules.
@@ -225,7 +216,6 @@ public class HomeModulesContextMenuManagerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetAnchorRectangle() {
         int width = 440;
         int height = 897;

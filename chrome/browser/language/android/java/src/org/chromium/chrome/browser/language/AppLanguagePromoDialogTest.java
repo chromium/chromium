@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.language;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -79,7 +77,6 @@ public class AppLanguagePromoDialogTest {
 
     // Test getTopLanguagesHelper
     @Test
-    @SmallTest
     public void testGetTopLanguagesHelper() {
         // Current override language is mFollowSystem, System Language is en-US
         LinkedHashSet<LanguageItem> topLanguages =
@@ -170,7 +167,6 @@ public class AppLanguagePromoDialogTest {
 
     // Test getPotentialUiLanguage
     @Test
-    @SmallTest
     public void testGetPotentialUiLanguage() {
         LinkedHashSet<String> uiLanguages =
                 new LinkedHashSet<>(Arrays.asList("af", "en-US", "en-GB", "es", "es-419"));
@@ -188,7 +184,6 @@ public class AppLanguagePromoDialogTest {
 
     // Test LanguageItemAdapter getItemCount
     @Test
-    @SmallTest
     public void testLanguageItemAdapterGetItemCount() {
         LanguageItemAdapter adapter =
                 makeLanguageItemAdapter(
@@ -209,7 +204,6 @@ public class AppLanguagePromoDialogTest {
 
     // Test LanguageItemAdapter getLanguageItemAt
     @Test
-    @SmallTest
     public void testLanguageItemAdapterGetLanguageItemAt() {
         LanguageItemAdapter adapter =
                 makeLanguageItemAdapter(
@@ -225,7 +219,6 @@ public class AppLanguagePromoDialogTest {
 
     // Test LanguageItemAdapter getPositionForLanguageItem
     @Test
-    @SmallTest
     public void testLanguageItemAdapterGetPositionForLanguageItem() {
         LanguageItemAdapter adapter =
                 makeLanguageItemAdapter(
@@ -241,7 +234,6 @@ public class AppLanguagePromoDialogTest {
 
     // Test LanguageItemAdapter getItemViewType
     @Test
-    @SmallTest
     public void testLanguageItemAdapterGetItemViewType() {
         LanguageItemAdapter adapter =
                 makeLanguageItemAdapter(
@@ -268,7 +260,6 @@ public class AppLanguagePromoDialogTest {
 
     // Test LanguageItemAdapter setSelectedLanguage
     @Test
-    @SmallTest
     public void testLanguageItemAdapterSetSelectedLanguage() {
         LanguageItemAdapter adapter =
                 makeLanguageItemAdapter(
@@ -289,7 +280,6 @@ public class AppLanguagePromoDialogTest {
 
     // Test shouldShowPrompt conditions
     @Test
-    @SmallTest
     public void testShouldShowPrompt() {
         final boolean online = true;
 

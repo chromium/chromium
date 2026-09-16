@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNull;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +30,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     private final String mLaptopStr = mContext.getString(R.string.signin_device_type_laptop);
 
     @Test
-    @SmallTest
     public void testGetSubtitleForDefaultFlow_emptyPreferredDataTypes_returnsNull() {
         assertNull(
                 AccountPreviewPreferenceStringUtils.getSubtitleForDefaultFlow(
@@ -39,7 +37,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForDefaultFlow_unsupportedDataType_returnsNull() {
         assertNull(
                 AccountPreviewPreferenceStringUtils.getSubtitleForDefaultFlow(
@@ -49,7 +46,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForDefaultFlow_unsupportedFirstDataType_fallsThroughToSupported() {
         assertEquals(
                 mContext.getString(
@@ -65,7 +61,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForDefaultFlow_bookmarks_withDevice() {
         assertEquals(
                 mContext.getString(
@@ -96,7 +91,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForDefaultFlow_bookmarks_withoutDevice() {
         assertEquals(
                 mContext.getString(
@@ -110,7 +104,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForDefaultFlow_passwords_withDevice() {
         assertEquals(
                 mContext.getString(
@@ -123,7 +116,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForDefaultFlow_passwords_withoutDevice() {
         assertEquals(
                 mContext.getString(
@@ -137,7 +129,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForDefaultFlow_autofill_withDevice() {
         assertEquals(
                 mContext.getString(
@@ -150,7 +141,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForDefaultFlow_autofill_withoutDevice() {
         assertEquals(
                 mContext.getString(
@@ -164,7 +154,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForDefaultFlow_walletMetadata_withDevice() {
         assertEquals(
                 mContext.getString(
@@ -179,7 +168,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForDefaultFlow_walletMetadata_withoutDevice() {
         assertEquals(
                 mContext.getString(
@@ -193,7 +181,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForWebSignin_emptyPreferredDataTypes_returnsNull() {
         assertNull(
                 AccountPreviewPreferenceStringUtils.getSubtitleForWebSignin(
@@ -201,7 +188,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForWebSignin_unsupportedDataType_returnsNull() {
         assertNull(
                 AccountPreviewPreferenceStringUtils.getSubtitleForWebSignin(
@@ -211,7 +197,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForWebSignin_unsupportedFirstDataType_fallsThroughToSupported() {
         assertEquals(
                 mContext.getString(
@@ -227,7 +212,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForWebSignin_bookmarks_withDevice() {
         assertEquals(
                 mContext.getString(
@@ -258,7 +242,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForWebSignin_bookmarks_withoutDevice() {
         assertEquals(
                 mContext.getString(
@@ -272,7 +255,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForWebSignin_passwords_withDevice() {
         assertEquals(
                 mContext.getString(
@@ -285,7 +267,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForWebSignin_passwords_withoutDevice() {
         assertEquals(
                 mContext.getString(
@@ -299,7 +280,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForWebSignin_autofill_withDevice() {
         assertEquals(
                 mContext.getString(
@@ -312,7 +292,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForWebSignin_autofill_withoutDevice() {
         assertEquals(
                 mContext.getString(
@@ -326,7 +305,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForWebSignin_walletMetadata_withDevice() {
         assertEquals(
                 mContext.getString(
@@ -341,7 +319,6 @@ public class AccountPreviewPreferenceStringUtilsUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetSubtitleForWebSignin_walletMetadata_withoutDevice() {
         assertEquals(
                 mContext.getString(

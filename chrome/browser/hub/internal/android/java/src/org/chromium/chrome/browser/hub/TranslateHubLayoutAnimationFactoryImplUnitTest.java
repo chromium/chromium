@@ -17,8 +17,6 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -76,7 +74,6 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTranslateUp() {
         HubLayoutAnimatorProvider animatorProvider =
                 TranslateHubLayoutAnimationFactory.createTranslateUpAnimatorProvider(
@@ -119,7 +116,6 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTranslateDown() {
         // Ensure the view is visible for hide.
         mHubContainerView.setVisibility(View.VISIBLE);

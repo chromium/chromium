@@ -18,7 +18,6 @@ import android.content.res.Resources;
 import android.view.ContextThemeWrapper;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -85,7 +84,6 @@ public class DesktopPopupHeaderMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCreation() {
         verify(mDesktopWindowStateManager).addObserver(mMediator);
         assertEquals(
@@ -94,14 +92,12 @@ public class DesktopPopupHeaderMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         mMediator.destroy();
         verify(mDesktopWindowStateManager).removeObserver(mMediator);
     }
 
     @Test
-    @SmallTest
     public void testStateChanged_NotInDesktopWindow() {
         // Setup state: Not in desktop window.
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
@@ -112,7 +108,6 @@ public class DesktopPopupHeaderMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testStateChanged_InDesktopWindow_WideAndTallEnough() {
         // Setup state: In desktop, wide enough for title.
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
@@ -140,7 +135,6 @@ public class DesktopPopupHeaderMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testStateChanged_InDesktopWindow_NotWideEnough() {
         // Setup state: In desktop, NOT wide enough for title.
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
@@ -155,7 +149,6 @@ public class DesktopPopupHeaderMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testStateChanged_InDesktopWindow_NotTallEnough() {
         // Setup state: In desktop, app header too short.
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
@@ -171,7 +164,6 @@ public class DesktopPopupHeaderMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testStateChanged_Dedupe() {
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
 
@@ -185,7 +177,6 @@ public class DesktopPopupHeaderMediatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTabTitleUpdate() {
         String title = "My Tab Title";
         doReturn(title).when(mTab).getTitle();

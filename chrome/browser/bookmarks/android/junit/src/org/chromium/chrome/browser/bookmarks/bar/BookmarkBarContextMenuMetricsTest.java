@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.bookmarks.bar;
 
 import static org.junit.Assert.assertEquals;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -21,7 +19,6 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarContextMenuMetrics.B
 public class BookmarkBarContextMenuMetricsTest {
 
     @Test
-    @SmallTest
     public void testGetEntrypointString() {
         assertEquals(
                 "EmptySpace",
@@ -46,7 +43,6 @@ public class BookmarkBarContextMenuMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testGetGestureString() {
         assertEquals(
                 "RightClick",
@@ -59,7 +55,6 @@ public class BookmarkBarContextMenuMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordOpened() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -77,7 +72,6 @@ public class BookmarkBarContextMenuMetricsTest {
     }
 
     @Test
-    @SmallTest
     public void testRecordAction() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()

@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,7 +47,6 @@ public class EntityEditorViewTest {
     }
 
     @Test
-    @SmallTest
     public void editorTitle() {
         createEditorView();
 
@@ -59,7 +57,6 @@ public class EntityEditorViewTest {
     }
 
     @Test
-    @SmallTest
     public void clickDoneButton() {
         createEditorView();
 
@@ -72,7 +69,6 @@ public class EntityEditorViewTest {
     }
 
     @Test
-    @SmallTest
     public void clickCancelButton() {
         createEditorView();
 

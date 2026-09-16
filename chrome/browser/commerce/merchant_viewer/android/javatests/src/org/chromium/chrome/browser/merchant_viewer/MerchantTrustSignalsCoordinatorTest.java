@@ -20,8 +20,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -203,7 +201,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mMockMerchantTrustStorageFactory, times(1)).destroy();
     }
 
-    @SmallTest
     @Test
     public void testFetchTrustSiganl_WithoutScheduledMessage() {
         setMockTrustSignalsData(null);
@@ -216,7 +213,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getDataForUrl(eq(mMockProfile), eq(mMockGurl), MockitoHelper.anyCallback());
     }
 
-    @SmallTest
     @Test
     public void testFetchTrustSiganl_WithScheduledMessage() {
         setMockTrustSignalsData(null);
@@ -233,7 +229,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getDataForUrl(eq(mMockProfile), eq(mMockGurl), MockitoHelper.anyCallback());
     }
 
-    @SmallTest
     @Test
     public void testFetchTrustSiganl_WithScheduledMessage_ForSameUrl() {
         setMockTrustSignalsData(null);
@@ -250,7 +245,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getDataForUrl(eq(mMockProfile), eq(mMockGurl), MockitoHelper.anyCallback());
     }
 
-    @SmallTest
     @Test
     public void testFetchTrustSiganl_WithScheduledMessage_ForDifferentHost() {
         setMockTrustSignalsData(null);
@@ -267,7 +261,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getDataForUrl(eq(mMockProfile), eq(mMockGurl), MockitoHelper.anyCallback());
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_ShouldNotExpediteMessage() {
         mCoordinator.maybeDisplayMessage(mDummyMerchantTrustSignals, mMessageContext, false);
@@ -277,7 +270,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(true, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_ShouldExpediteMessage() {
         mCoordinator.maybeDisplayMessage(mDummyMerchantTrustSignals, mMessageContext, true);
@@ -287,7 +279,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(true, true);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_LastEventWithinTimeWindow() {
         FeatureOverrides.overrideParam(
@@ -304,7 +295,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(false, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_NoPreviousEvent() {
         setMockTrustSignalsEventData(FAKE_HOST, null);
@@ -315,7 +305,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(true, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_NoMerchantTrustData() {
         mCoordinator.maybeDisplayMessage(null, mMessageContext, false);
@@ -325,7 +314,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(false, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_WithInvalidStorage() {
         doReturn(null).when(mMockMerchantTrustStorageFactory).getForLastUsedProfile();
@@ -336,7 +324,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(false, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_WithInvalidNavigationHandler() {
         doReturn(null).when(mMockNavigationHandle).getUrl();
@@ -347,7 +334,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(false, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_WithSiteEngagementAboveThreshold() {
         FeatureOverrides.newBuilder()
@@ -370,7 +356,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(false, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_WithSiteEngagementBelowThreshold() {
         FeatureOverrides.newBuilder()
@@ -393,7 +378,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(true, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_AlreadyReachedMaxAllowedNumber() {
         doReturn(true).when(mCoordinator).hasReachedMaxAllowedMessageNumberInGivenTime();
@@ -404,7 +388,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(false, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_OnNonSecureWebsite() {
         doReturn(false).when(mCoordinator).isOnSecureWebsite(any(WebContents.class));
@@ -415,7 +398,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(false, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_MessageDisabledForAllMerchants() {
         FeatureOverrides.overrideParam(
@@ -429,7 +411,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(false, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_MessageDisabledForThisMerchant() {
         MerchantInfo merchantInfo = new MerchantInfo(4.5f, 100, null, false, 0f, false, true);
@@ -440,7 +421,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(false, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_MerchantRatingBelowThreshold() {
         MerchantInfo merchantInfo = new MerchantInfo(3.5f, 100, null, false, 0f, false, false);
@@ -451,7 +431,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(false, false);
     }
 
-    @SmallTest
     @Test
     public void testMaybeDisplayMessage_NonPersonalizedFamiliarityScoreAboveThreshold() {
         MerchantInfo merchantInfo = new MerchantInfo(4.5f, 100, null, false, 0.9f, false, false);
@@ -462,7 +441,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verifySchedulingMessage(false, false);
     }
 
-    @SmallTest
     @Test
     public void testOnMessageEnqueued() {
         mCoordinator.onMessageEnqueued(null);
@@ -475,7 +453,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mMockMerchantTrustStorage, times(1)).save(any(MerchantTrustSignalsEvent.class));
     }
 
-    @SmallTest
     @Test
     public void testOnMessageDismissed_Timer() {
         mCoordinator.onMessageDismissed(DismissReason.TIMER, FAKE_URL);
@@ -483,7 +460,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mCoordinator, times(1)).maybeShowStoreIcon(eq(FAKE_URL), eq(true));
     }
 
-    @SmallTest
     @Test
     public void testOnMessageDismissed_Gesture() {
         mCoordinator.onMessageDismissed(DismissReason.GESTURE, FAKE_URL);
@@ -491,7 +467,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mCoordinator, times(1)).maybeShowStoreIcon(eq(FAKE_URL), eq(false));
     }
 
-    @SmallTest
     @Test
     public void testOnMessagePrimaryAction() {
         mCoordinator.onMessagePrimaryAction(mDummyMerchantTrustSignals, FAKE_URL);
@@ -506,7 +481,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mCoordinator, times(1)).maybeShowStoreIcon(eq(FAKE_URL), eq(true));
     }
 
-    @SmallTest
     @Test
     public void testOnStoreInfoClicked() {
         TrackerFactory.setTrackerForTests(mMockTracker);
@@ -524,7 +498,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mCoordinator, times(0)).maybeShowStoreIcon(any(), anyBoolean());
     }
 
-    @SmallTest
     @Test
     public void testOnlyAbleToShowThreeMessagesInGivenTime() {
         FeatureOverrides.newBuilder()
@@ -563,7 +536,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         Assert.assertTrue(mCoordinator.hasReachedMaxAllowedMessageNumberInGivenTime());
     }
 
-    @SmallTest
     @Test
     public void testMaybeShowStoreIcon() {
         mCoordinator.setOmniboxIconController(mMockIconController);

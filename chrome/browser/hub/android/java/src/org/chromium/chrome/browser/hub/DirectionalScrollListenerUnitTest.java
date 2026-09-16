@@ -9,7 +9,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,7 +38,6 @@ public class DirectionalScrollListenerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnScrollDown() {
         mListener.onScrolled(mRecyclerView, 0, 20);
         verify(mOnScrollDown, times(1)).run();
@@ -47,7 +45,6 @@ public class DirectionalScrollListenerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testOnScrollUp() {
         mListener.onScrolled(mRecyclerView, 0, -20);
         verify(mOnScrollUp, times(1)).run();
@@ -55,7 +52,6 @@ public class DirectionalScrollListenerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testScrollThresholdNotMet() {
         mListener.onScrolled(mRecyclerView, 0, 1);
         verify(mOnScrollUp, never()).run();
@@ -67,7 +63,6 @@ public class DirectionalScrollListenerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testThrottling() {
         mListener.onScrolled(mRecyclerView, 0, 20);
         verify(mOnScrollDown, times(1)).run();
@@ -88,7 +83,6 @@ public class DirectionalScrollListenerUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDifferentThresholds() {
         int scrollUpThreshold = 10;
         int scrollDownThreshold = 20;

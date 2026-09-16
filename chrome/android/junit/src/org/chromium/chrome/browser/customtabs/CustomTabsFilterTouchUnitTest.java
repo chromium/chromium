@@ -8,7 +8,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,7 +47,6 @@ public class CustomTabsFilterTouchUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShouldPreventTouch() {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
         assertFalse("Events should be accepted.", mActivity.shouldPreventTouch());

@@ -21,8 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -116,13 +114,11 @@ public class TipsPromoCoordinatorUnitTest {
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
     }
 
-    @SmallTest
     @Test
     public void testDestroy() {
         mBottomSheetContent.destroy();
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet_EnhancedSafeBrowsing() {
         HistogramWatcher histogramWatcher =
@@ -173,7 +169,6 @@ public class TipsPromoCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet_QuickDelete() {
         HistogramWatcher histogramWatcher =
@@ -220,7 +215,6 @@ public class TipsPromoCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet_GoogleLens() {
         HistogramWatcher histogramWatcher =
@@ -271,7 +265,6 @@ public class TipsPromoCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet_BottomOmnibox() {
         HistogramWatcher histogramWatcher =
@@ -319,7 +312,6 @@ public class TipsPromoCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet_PasswordAutofill() {
         HistogramWatcher histogramWatcher =
@@ -366,7 +358,6 @@ public class TipsPromoCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet_Signin() {
         HistogramWatcher histogramWatcher =
@@ -414,7 +405,6 @@ public class TipsPromoCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet_Signin_UserAlreadySignedIn() {
         when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
@@ -434,7 +424,6 @@ public class TipsPromoCoordinatorUnitTest {
         verify(mBottomSheetController).hideContent(any(), eq(true));
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet_CreateTabGroups() {
         HistogramWatcher histogramWatcher =
@@ -482,7 +471,6 @@ public class TipsPromoCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet_CustomizeMVT() {
         HistogramWatcher histogramWatcher =
@@ -529,7 +517,6 @@ public class TipsPromoCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
-    @SmallTest
     @Test
     public void testShowBottomSheet_RecentTabs() {
         HistogramWatcher histogramWatcher =

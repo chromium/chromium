@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.RadioGroup;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +58,6 @@ public class TabGroupColorPickerCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAccessibilityDelegate() {
         AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain();
         mContainerView

@@ -9,8 +9,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +32,6 @@ public class UuidBasedUniqueIdentificationGeneratorTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Sync"})
     public void testGenerationAndRestorationOfUuid() {
         String preferenceKey = "some_preference_key";
@@ -58,7 +55,6 @@ public class UuidBasedUniqueIdentificationGeneratorTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"Sync"})
     public void testTwoDifferentGeneratorsShouldUseDifferentPreferences() {
         String preferenceKey1 = "some_preference_key";
