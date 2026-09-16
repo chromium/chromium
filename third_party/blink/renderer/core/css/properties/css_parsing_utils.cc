@@ -2303,7 +2303,6 @@ CSSValue* ConsumeContrastColorFunction(
     const CSSParserContext& context,
     CSSParserLocalContext& local_context,
     const ColorParserContext& color_parser_context) {
-  CHECK(RuntimeEnabledFeatures::CSSContrastColorEnabled());
   DCHECK_EQ(stream.Peek().FunctionId(), CSSValueID::kContrastColor);
 
   CSSParserTokenStream::RestoringBlockGuard guard(stream);
@@ -2406,8 +2405,7 @@ CSSValue* ConsumeColor(CSSParserTokenStream& stream,
                                      color_parser_context);
   }
 
-  if (RuntimeEnabledFeatures::CSSContrastColorEnabled() &&
-      stream.Peek().FunctionId() == CSSValueID::kContrastColor) {
+  if (stream.Peek().FunctionId() == CSSValueID::kContrastColor) {
     return ConsumeContrastColorFunction(stream, context, local_context,
                                         color_parser_context);
   }

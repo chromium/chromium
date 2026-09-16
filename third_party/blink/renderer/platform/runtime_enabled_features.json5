@@ -1643,11 +1643,6 @@
       status: "stable",
     },
     {
-      // https://drafts.csswg.org/css-color-5/#contrast-color
-      name: "CSSContrastColor",
-      status: "stable",
-    },
-    {
       // https://drafts.csswg.org/css-borders-4/#corner-shaping
       name: "CSSCornersShorthand",
       status: "experimental",
