@@ -6,8 +6,6 @@
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/session_manager/core/session.h"
