@@ -358,7 +358,10 @@ export function getHtml(this: GlicInternalsAppElement) {
               .value="${this.invokeInvocationSource_.toString()}"
               @change="${this.onInvokeInvocationSourceChange_}">
             ${this.getInvocationSourceOptions_().map(option => html`
-              <option value="${option.value}">${option.name}</option>
+              <option value="${option.value}"
+                  ?selected="${option.value === this.invokeInvocationSource_}">
+                ${option.name}
+              </option>
             `)}
           </select>
           ${this.invokeInvocationSource_ ===
@@ -395,7 +398,11 @@ export function getHtml(this: GlicInternalsAppElement) {
               .value="${this.invokeFreCompletionWaitMode_.toString()}"
               @change="${this.onInvokeFreCompletionWaitModeChange_}">
             ${this.freCompletionWaitModeEnumValues_.map(item => html`
-              <option value="${item.value}">${item.name}</option>
+              <option value="${item.value}"
+                  ?selected="${
+                      item.value === this.invokeFreCompletionWaitMode_}">
+                ${item.name}
+              </option>
             `)}
           </select>
           <label for="invokeFeatureModeSelect">Feature Mode</label>
@@ -403,7 +410,10 @@ export function getHtml(this: GlicInternalsAppElement) {
               .value="${this.invokeFeatureMode_.toString()}"
               @change="${this.onInvokeFeatureModeChange_}">
             ${this.featureModeEnumValues_.map(item => html`
-              <option value="${item.value}">${item.name}</option>
+              <option value="${item.value}"
+                  ?selected="${item.value === this.invokeFeatureMode_}">
+                ${item.name}
+              </option>
             `)}
           </select>
           <label for="invokeActuationTargetSelect">Actuation Target</label>
@@ -411,7 +421,10 @@ export function getHtml(this: GlicInternalsAppElement) {
               .value="${this.invokeActuationTarget_.toString()}"
               @change="${this.onInvokeActuationTargetChange_}">
             ${this.actuationTargetEnumValues_.map(item => html`
-              <option value="${item.value}">${item.name}</option>
+              <option value="${item.value}"
+                  ?selected="${item.value === this.invokeActuationTarget_}">
+                ${item.name}
+              </option>
             `)}
           </select>
 

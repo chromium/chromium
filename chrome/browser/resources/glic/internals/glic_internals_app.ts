@@ -16,6 +16,14 @@ import type {BrowserProxy, InternalsDataPayload, TriggerInvokeFromInternalsOptio
 import {getCss} from './glic_internals_app.css.js';
 import {getHtml} from './glic_internals_app.html.js';
 
+function getEnumEntries<E extends Record<string, unknown>>(enumObj: E):
+    Array<{name: string, value: number}> {
+  return Object.entries(enumObj)
+      .filter(
+          ([key]) =>
+              isNaN(Number(key)) && key !== 'MIN_VALUE' && key !== 'MAX_VALUE')
+      .map(([name, value]) => ({name, value: Number(value)}));
+}
 
 export class GlicInternalsAppElement extends CrLitElement {
   static get is() {
@@ -108,20 +116,12 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor selectedTabIndex_: number = 0;
   protected accessor tabNames_: string[] = ['General', 'Debug Controls'];
   protected accessor featureModeEnumValues_:
-      Array<{name: string, value: number}> =
-          Object.entries(FeatureMode)
-              .filter(([key]) => isNaN(Number(key)))
-              .map(([name, value]) => ({name, value: value as number}));
+      Array<{name: string, value: number}> = getEnumEntries(FeatureMode);
   protected accessor actuationTargetEnumValues_:
-      Array<{name: string, value: number}> =
-          Object.entries(ActuationTarget)
-              .filter(([key]) => isNaN(Number(key)))
-              .map(([name, value]) => ({name, value: value as number}));
+      Array<{name: string, value: number}> = getEnumEntries(ActuationTarget);
   protected accessor freCompletionWaitModeEnumValues_:
       Array<{name: string, value: number}> =
-          Object.entries(FreCompletionWaitMode)
-              .filter(([key]) => isNaN(Number(key)))
-              .map(([name, value]) => ({name, value: value as number}));
+          getEnumEntries(FreCompletionWaitMode);
 
 
 
@@ -533,10 +533,9 @@ export class GlicInternalsAppElement extends CrLitElement {
     ];
   }
 
-  protected getInvocationSourceOptions_() {
-    return Object.entries(InvocationSource)
-        .filter(([_, value]) => typeof value === 'number')
-        .map(([key, value]) => ({name: key, value: value}));
+  protected getInvocationSourceOptions_():
+      Array<{name: string, value: number}> {
+    return getEnumEntries(InvocationSource);
   }
 
   protected onInvokePromptInput_(e: Event) {
