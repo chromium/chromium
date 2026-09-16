@@ -121,7 +121,11 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
             return;
         }
 
-        reset();
+        if (mPhase != DragPhase.NONE) {
+            cancelActiveSession();
+        } else {
+            reset();
+        }
         mPhase = DragPhase.PREPARE;
         mTileDragSession =
                 new TileDragSession(
@@ -248,7 +252,8 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
         // it finalizes and commits any pending Swap Flow changes before clearing session variables.
         // For forced cancellations (e.g. on external database updates), use cancelActiveSession()
         // instead.
-        if (mTileDragSession != null) {
+        if (mPhase != DragPhase.NONE) {
+            assert mTileDragSession != null;
             mMvTilesLayout.requestDisallowInterceptTouchEvent(false);
         }
         finalizePendingChange();
@@ -262,7 +267,8 @@ class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate
 
     @Override
     public void cancelActiveSession() {
-        if (mTileDragSession != null) {
+        if (mPhase != DragPhase.NONE) {
+            assert mTileDragSession != null;
             mMvTilesLayout.requestDisallowInterceptTouchEvent(false);
             Runnable cancelVisuals = mTileDragSession.finish(/* accept= */ false);
             if (cancelVisuals != null) {
