@@ -5,7 +5,7 @@
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 
 #import "components/safe_browsing/core/browser/db/database_manager.h"
-#import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#import "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "ios/components/security_interstitials/safe_browsing/ios_unsafe_resource_util.h"

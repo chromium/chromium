@@ -7,7 +7,7 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/grit/components_resources.h"
-#import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#import "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #import "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"

@@ -11,7 +11,7 @@
 #import "base/no_destructor.h"
 #import "build/branding_buildflags.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#import "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #import "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #import "ios/web_view/internal/app/application_context.h"

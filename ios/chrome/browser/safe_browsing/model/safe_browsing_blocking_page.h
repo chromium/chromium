@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #include "ios/components/security_interstitials/ios_security_interstitial_page.h"
