@@ -60,7 +60,7 @@
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/origin_gating/core/actor_container_config_slot.h"
+#include "components/origin_gating/core/task_policy_config_slot.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
@@ -775,20 +775,20 @@ void ActorKeyedService::PerformActions(
     JournalDetailsBuilder builder;
     if (!task->GetExecutionEngine()
              .GetOriginGatingChecker()
-             .actor_container_config_slot()
+             .task_policy_config_slot()
              .has_value()) {
-      origin_gating::ActorContainerConfig config = ConvertAgentContainerConfig(
+      origin_gating::TaskPolicyConfig config = ConvertAgentContainerConfig(
           task_metadata.agent_container_config().value());
       builder.Add("status", "assigned")
           .Add("active config", config.ToDebugValue());
       task->GetExecutionEngine()
           .GetOriginGatingChecker()
-          .actor_container_config_slot()
+          .task_policy_config_slot()
           .Assign(std::move(config));
     } else {
       builder.Add("status", "ignored config");
     }
-    GetJournal().Log(GURL(), task_id, "ActorContainerConfigSlot::Assign",
+    GetJournal().Log(GURL(), task_id, "TaskPolicyConfigSlot::Assign",
                      std::move(builder).Build());
   }
 

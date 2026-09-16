@@ -30,7 +30,7 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/origin_gating/core/actor_container_config.h"
+#include "components/origin_gating/core/task_policy_config.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/actor_login/password_change_from_checkup_actor_login_service.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -179,22 +179,22 @@ std::optional<GlicPasswordChangeActuator::TaskResult> ParseTaskResult(
   return std::nullopt;
 }
 
-origin_gating::ActorContainerConfig BuildPasswordChangeContainerConfig(
+origin_gating::TaskPolicyConfig BuildPasswordChangeContainerConfig(
     const std::set<net::SchemefulSite>& allowed_origins) {
-  origin_gating::ActorContainerConfig::LocationRules rules;
+  origin_gating::TaskPolicyConfig::LocationRules rules;
 
-  origin_gating::ActorContainerConfig::Rule rule(
+  origin_gating::TaskPolicyConfig::Rule rule(
       /*navigation_sources=*/{},
       /*resources=*/
-      {origin_gating::ActorContainerConfig::Rule::Resource::kSession},
+      {origin_gating::TaskPolicyConfig::Rule::Resource::kSession},
       /*capabilities=*/
-      {origin_gating::ActorContainerConfig::Rule::Capability::kAll});
+      {origin_gating::TaskPolicyConfig::Rule::Capability::kAll});
 
   for (const auto& origin : allowed_origins) {
-    rules.emplace(origin_gating::ActorContainerConfig::Location(origin), rule);
+    rules.emplace(origin_gating::TaskPolicyConfig::Location(origin), rule);
   }
 
-  return origin_gating::ActorContainerConfig(std::move(rules));
+  return origin_gating::TaskPolicyConfig(std::move(rules));
 }
 
 }  // namespace
@@ -413,11 +413,11 @@ void GlicPasswordChangeActuator::OnActorTaskStateChanged(
       std::make_unique<actor_login::PasswordChangeFromCheckupActorLoginService>(
           password_manager::CloneStoredCredential(credential_)));
 
-  // TODO(crbug.com/559497033): Inject ActorContainerConfig through API when
+  // TODO(crbug.com/559497033): Inject TaskPolicyConfig through API when
   // it's ready
   CHECK(!task.GetExecutionEngine()
              .GetOriginGatingChecker()
-             .actor_container_config_slot()
+             .task_policy_config_slot()
              .has_value());
   std::set<net::SchemefulSite> allowed_origins;
   allowed_origins.emplace(credential_.url);
@@ -427,7 +427,7 @@ void GlicPasswordChangeActuator::OnActorTaskStateChanged(
 
   task.GetExecutionEngine()
       .GetOriginGatingChecker()
-      .actor_container_config_slot()
+      .task_policy_config_slot()
       .Assign(BuildPasswordChangeContainerConfig(allowed_origins));
 
   if (auto logger = GetLoggerIfAvailable(originator_.get())) {

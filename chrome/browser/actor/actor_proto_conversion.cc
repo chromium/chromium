@@ -62,7 +62,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/origin_gating/core/actor_container_config.h"
+#include "components/origin_gating/core/task_policy_config.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_context.h"
@@ -1049,19 +1049,19 @@ base::expected<url::Origin, std::string_view> ConvertOrigin(
       {protocol, url::kStandardSchemeSeparator, origin.host(), port})));
 }
 
-base::expected<origin_gating::ActorContainerConfig::Location, std::string_view>
+base::expected<origin_gating::TaskPolicyConfig::Location, std::string_view>
 ConvertLocation(const optimization_guide::proto::Location& location) {
   switch (location.identifier_oneof_case()) {
     case optimization_guide::proto::Location::kWildcard:
-      return origin_gating::ActorContainerConfig::Location(
-          origin_gating::ActorContainerConfig::Wildcard());
+      return origin_gating::TaskPolicyConfig::Location(
+          origin_gating::TaskPolicyConfig::Wildcard());
     case optimization_guide::proto::Location::kSite: {
       ASSIGN_OR_RETURN(net::SchemefulSite site, ConvertSite(location.site()));
-      return origin_gating::ActorContainerConfig::Location(std::move(site));
+      return origin_gating::TaskPolicyConfig::Location(std::move(site));
     }
     case optimization_guide::proto::Location::kOrigin: {
       ASSIGN_OR_RETURN(url::Origin origin, ConvertOrigin(location.origin()));
-      return origin_gating::ActorContainerConfig::Location(std::move(origin));
+      return origin_gating::TaskPolicyConfig::Location(std::move(origin));
     }
     case optimization_guide::proto::Location::IDENTIFIER_ONEOF_NOT_SET:
       return base::unexpected("Location missing value");
@@ -1070,41 +1070,41 @@ ConvertLocation(const optimization_guide::proto::Location& location) {
   }
 }
 
-base::expected<origin_gating::ActorContainerConfig::Rule, std::string_view>
+base::expected<origin_gating::TaskPolicyConfig::Rule, std::string_view>
 ConvertRule(const optimization_guide::proto::LocationRule& location_rule) {
-  std::vector<origin_gating::ActorContainerConfig::Location> navigation_sources;
+  std::vector<origin_gating::TaskPolicyConfig::Location> navigation_sources;
   for (const auto& nav_source : location_rule.navigation_sources()) {
     if (!nav_source.has_source()) {
       return base::unexpected("NavigationSource has no source location set");
     }
-    ASSIGN_OR_RETURN(origin_gating::ActorContainerConfig::Location source,
+    ASSIGN_OR_RETURN(origin_gating::TaskPolicyConfig::Location source,
                      ConvertLocation(nav_source.source()));
     navigation_sources.emplace_back(source);
   }
-  origin_gating::ActorContainerConfig::Rule::ResourceSet resources;
+  origin_gating::TaskPolicyConfig::Rule::ResourceSet resources;
   for (const auto& resource : location_rule.metadata().accessible_resources()) {
     switch (resource) {
       case optimization_guide::proto::RuleMetadata::RESOURCE_SESSION:
         resources.Put(
-            origin_gating::ActorContainerConfig::Rule::Resource::kSession);
+            origin_gating::TaskPolicyConfig::Rule::Resource::kSession);
         break;
       case optimization_guide::proto::RuleMetadata::RESOURCE_UNKNOWN:
         break;
     }
   }
-  origin_gating::ActorContainerConfig::Rule::CapabilitySet capabilities;
+  origin_gating::TaskPolicyConfig::Rule::CapabilitySet capabilities;
   for (const auto& capability : location_rule.metadata().capabilities()) {
     switch (capability) {
       case optimization_guide::proto::RuleMetadata::CAPABILITY_ALL:
         capabilities.Put(
-            origin_gating::ActorContainerConfig::Rule::Capability::kAll);
+            origin_gating::TaskPolicyConfig::Rule::Capability::kAll);
         break;
       case optimization_guide::proto::RuleMetadata::CAPABILITY_UNKNOWN:
         break;
     }
   }
-  return origin_gating::ActorContainerConfig::Rule(
-      std::move(navigation_sources), resources, capabilities);
+  return origin_gating::TaskPolicyConfig::Rule(std::move(navigation_sources),
+                                               resources, capabilities);
 }
 
 apc::TabObservation::TabObservationResult ToTabObservationResult(
@@ -1606,24 +1606,23 @@ CreateActorJournalFetchPageProgressListener(
                                                                  task_id);
 }
 
-origin_gating::ActorContainerConfig ConvertAgentContainerConfig(
+origin_gating::TaskPolicyConfig ConvertAgentContainerConfig(
     const optimization_guide::proto::AgentContainerConfig& config) {
-  origin_gating::ActorContainerConfig::LocationRules location_rules;
+  origin_gating::TaskPolicyConfig::LocationRules location_rules;
   for (const auto& rule_proto : config.location_rules()) {
-    base::expected<origin_gating::ActorContainerConfig::Location,
-                   std::string_view>
+    base::expected<origin_gating::TaskPolicyConfig::Location, std::string_view>
         destination_result = ConvertLocation(rule_proto.location());
     if (!destination_result.has_value()) {
       VLOG(1) << destination_result.error();
       continue;
     }
-    base::expected<origin_gating::ActorContainerConfig::Rule, std::string_view>
+    base::expected<origin_gating::TaskPolicyConfig::Rule, std::string_view>
         rule = ConvertRule(rule_proto);
     if (!rule.has_value()) {
       VLOG(1) << rule.error();
       continue;
     }
-    const origin_gating::ActorContainerConfig::Location& destination =
+    const origin_gating::TaskPolicyConfig::Location& destination =
         destination_result.value();
     auto [_, inserted] =
         location_rules.insert_or_assign(destination, std::move(rule.value()));
@@ -1631,7 +1630,7 @@ origin_gating::ActorContainerConfig ConvertAgentContainerConfig(
       VLOG(1) << "Duplicate rule for " << destination.ToDebugString();
     }
   }
-  return origin_gating::ActorContainerConfig(std::move(location_rules));
+  return origin_gating::TaskPolicyConfig(std::move(location_rules));
 }
 
 std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForTab(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/origin_gating/core/actor_container_config.h"
+#include "components/origin_gating/core/task_policy_config.h"
 
 #include <algorithm>
 #include <string>
@@ -24,53 +24,51 @@ namespace origin_gating {
 namespace {
 
 std::string_view ActuationCapabilityToString(
-    ActorContainerConfig::Rule::Capability capability) {
+    TaskPolicyConfig::Rule::Capability capability) {
   switch (capability) {
-    case ActorContainerConfig::Rule::Capability::kAll:
+    case TaskPolicyConfig::Rule::Capability::kAll:
       return "CAPABILITY_ALL";
   }
 }
 
-std::string_view AgentResourceToString(
-    ActorContainerConfig::Rule::Resource resource) {
+std::string_view ResourceToString(TaskPolicyConfig::Rule::Resource resource) {
   switch (resource) {
-    case ActorContainerConfig::Rule::Resource::kSession:
+    case TaskPolicyConfig::Rule::Resource::kSession:
       return "RESOURCE_SESSION";
   }
 }
 
 }  // namespace
 
-ActorContainerConfig::ActorContainerConfig() = default;
+TaskPolicyConfig::TaskPolicyConfig() = default;
 
-ActorContainerConfig::ActorContainerConfig(const ActorContainerConfig&) =
-    default;
+TaskPolicyConfig::TaskPolicyConfig(const TaskPolicyConfig&) = default;
 
-ActorContainerConfig::ActorContainerConfig(ActorContainerConfig&&) = default;
+TaskPolicyConfig::TaskPolicyConfig(TaskPolicyConfig&&) = default;
 
-ActorContainerConfig::~ActorContainerConfig() = default;
+TaskPolicyConfig::~TaskPolicyConfig() = default;
 
-ActorContainerConfig::ActorContainerConfig(LocationRules location_rules)
+TaskPolicyConfig::TaskPolicyConfig(LocationRules location_rules)
     : location_rules_(std::move(location_rules)) {}
 
-ActorContainerConfig::Location::Location(Wildcard) : data_(Wildcard()) {}
+TaskPolicyConfig::Location::Location(Wildcard) : data_(Wildcard()) {}
 
-ActorContainerConfig::Location::Location(net::SchemefulSite site)
+TaskPolicyConfig::Location::Location(net::SchemefulSite site)
     : data_(std::move(site)) {}
 
-ActorContainerConfig::Location::Location(url::Origin origin)
+TaskPolicyConfig::Location::Location(url::Origin origin)
     : data_(std::move(origin)) {}
 
-ActorContainerConfig::Location::Location(const Location&) = default;
-ActorContainerConfig::Location::Location(Location&&) = default;
-ActorContainerConfig::Location& ActorContainerConfig::Location::operator=(
+TaskPolicyConfig::Location::Location(const Location&) = default;
+TaskPolicyConfig::Location::Location(Location&&) = default;
+TaskPolicyConfig::Location& TaskPolicyConfig::Location::operator=(
     const Location&) = default;
-ActorContainerConfig::Location& ActorContainerConfig::Location::operator=(
-    Location&&) = default;
+TaskPolicyConfig::Location& TaskPolicyConfig::Location::operator=(Location&&) =
+    default;
 
-ActorContainerConfig::Location::~Location() = default;
+TaskPolicyConfig::Location::~Location() = default;
 
-bool ActorContainerConfig::Location::Matches(const url::Origin& origin) const {
+bool TaskPolicyConfig::Location::Matches(const url::Origin& origin) const {
   return std::visit(absl::Overload([](const Wildcard&) { return true; },
                                    [&](const net::SchemefulSite& site) {
                                      return site.IsSameSiteWith(origin);
@@ -81,7 +79,7 @@ bool ActorContainerConfig::Location::Matches(const url::Origin& origin) const {
                     data_);
 }
 
-std::string ActorContainerConfig::Location::ToDebugString() const {
+std::string TaskPolicyConfig::Location::ToDebugString() const {
   return std::visit(
       absl::Overload(
           [](const Wildcard&) -> std::string { return "Wildcard"; },
@@ -94,28 +92,27 @@ std::string ActorContainerConfig::Location::ToDebugString() const {
       data_);
 }
 
-ActorContainerConfig::Rule::Rule() = default;
+TaskPolicyConfig::Rule::Rule() = default;
 
-ActorContainerConfig::Rule::Rule(const Rule&) = default;
+TaskPolicyConfig::Rule::Rule(const Rule&) = default;
 
-ActorContainerConfig::Rule::Rule(Rule&&) = default;
+TaskPolicyConfig::Rule::Rule(Rule&&) = default;
 
-ActorContainerConfig::Rule& ActorContainerConfig::Rule::operator=(const Rule&) =
+TaskPolicyConfig::Rule& TaskPolicyConfig::Rule::operator=(const Rule&) =
     default;
 
-ActorContainerConfig::Rule& ActorContainerConfig::Rule::operator=(Rule&&) =
-    default;
+TaskPolicyConfig::Rule& TaskPolicyConfig::Rule::operator=(Rule&&) = default;
 
-ActorContainerConfig::Rule::Rule(std::vector<Location> navigation_sources,
-                                 ResourceSet resources,
-                                 CapabilitySet capabilities)
+TaskPolicyConfig::Rule::Rule(std::vector<Location> navigation_sources,
+                             ResourceSet resources,
+                             CapabilitySet capabilities)
     : navigation_sources_(std::move(navigation_sources)),
       resources_(std::move(resources)),
       capabilities_(std::move(capabilities)) {}
 
-ActorContainerConfig::Rule::~Rule() = default;
+TaskPolicyConfig::Rule::~Rule() = default;
 
-bool ActorContainerConfig::Rule::MatchesNavigationSource(
+bool TaskPolicyConfig::Rule::MatchesNavigationSource(
     const url::Origin& source_origin) const {
   return navigation_sources_.empty() ||
          std::ranges::any_of(navigation_sources_, [&](const auto& source) {
@@ -123,12 +120,12 @@ bool ActorContainerConfig::Rule::MatchesNavigationSource(
          });
 }
 
-bool ActorContainerConfig::Rule::CanNavigate() const {
+bool TaskPolicyConfig::Rule::CanNavigate() const {
   return capabilities_.Has(Capability::kAll) &&
          resources_.Has(Resource::kSession);
 }
 
-base::Value ActorContainerConfig::Rule::ToDebugValue() const {
+base::Value TaskPolicyConfig::Rule::ToDebugValue() const {
   base::ListValue sources;
   for (const auto& source : navigation_sources_) {
     sources.Append(source.ToDebugString());
@@ -141,7 +138,7 @@ base::Value ActorContainerConfig::Rule::ToDebugValue() const {
 
   base::ListValue resources;
   for (auto resource : resources_) {
-    resources.Append(AgentResourceToString(resource));
+    resources.Append(ResourceToString(resource));
   }
 
   return base::Value(base::DictValue()
@@ -150,7 +147,7 @@ base::Value ActorContainerConfig::Rule::ToDebugValue() const {
                          .Set("accessible_resources", std::move(resources)));
 }
 
-bool ActorContainerConfig::IsNavigationAllowed(
+bool TaskPolicyConfig::IsNavigationAllowed(
     const url::Origin& source,
     const url::Origin& destination) const {
   if (const auto* rule =
@@ -171,7 +168,7 @@ bool ActorContainerConfig::IsNavigationAllowed(
   return false;
 }
 
-bool ActorContainerConfig::IsActuationAllowed(
+bool TaskPolicyConfig::IsActuationAllowed(
     const url::Origin& location_origin) const {
   if (const auto* rule =
           base::FindOrNull(location_rules_, Location(location_origin))) {
@@ -188,7 +185,7 @@ bool ActorContainerConfig::IsActuationAllowed(
   return false;
 }
 
-base::Value ActorContainerConfig::ToDebugValue() const {
+base::Value TaskPolicyConfig::ToDebugValue() const {
   base::DictValue rules;
   for (const auto& [location, rule] : location_rules_) {
     rules.Set(location.ToDebugString(), rule.ToDebugValue());

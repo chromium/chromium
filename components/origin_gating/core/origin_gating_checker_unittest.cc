@@ -14,9 +14,9 @@
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/origin_gating/core/actor_container_config.h"
-#include "components/origin_gating/core/actor_container_config_slot.h"
 #include "components/origin_gating/core/origin_gating_configuration.h"
+#include "components/origin_gating/core/task_policy_config.h"
+#include "components/origin_gating/core/task_policy_config_slot.h"
 #include "components/origin_gating/core/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -701,11 +701,11 @@ TEST_F(OriginGatingCheckerTest,
 }
 
 TEST_F(OriginGatingCheckerTest,
-       BuiltInPredicate_ActorContainerConfig_NoConfigFallsBack) {
+       BuiltInPredicate_TaskPolicyConfig_NoConfigFallsBack) {
   OriginGatingChecker checker(
       delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
-          {{DecisionSource::kActorContainerConfig, GateableEventSet::All()}},
+          {{DecisionSource::kTaskPolicyConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
 
   GURL source("https://example.com");
@@ -724,20 +724,20 @@ TEST_F(OriginGatingCheckerTest,
 }
 
 TEST_F(OriginGatingCheckerTest,
-       BuiltInPredicate_ActorContainerConfig_NavigationAllowed) {
+       BuiltInPredicate_TaskPolicyConfig_NavigationAllowed) {
   OriginGatingChecker checker(
       delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
-          {{DecisionSource::kActorContainerConfig, GateableEventSet::All()}},
+          {{DecisionSource::kTaskPolicyConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
 
   // Configure the slot on the checker.
-  checker.actor_container_config_slot().Assign(ActorContainerConfig({{
-      {ActorContainerConfig::Location(ActorContainerConfig::Wildcard()),
-       ActorContainerConfig::Rule(
+  checker.task_policy_config_slot().Assign(TaskPolicyConfig({{
+      {TaskPolicyConfig::Location(TaskPolicyConfig::Wildcard()),
+       TaskPolicyConfig::Rule(
            /*navigation_sources=*/{},
-           /*resources=*/{ActorContainerConfig::Rule::Resource::kSession},
-           /*capabilities=*/{ActorContainerConfig::Rule::Capability::kAll})},
+           /*resources=*/{TaskPolicyConfig::Rule::Resource::kSession},
+           /*capabilities=*/{TaskPolicyConfig::Rule::Capability::kAll})},
   }}));
 
   GURL source("https://example.com");
@@ -753,19 +753,19 @@ TEST_F(OriginGatingCheckerTest,
       checker, nullptr, source, destination);
 
   EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kActorContainerConfig);
+  EXPECT_EQ(decision.attribution, DecisionSource::kTaskPolicyConfig);
 }
 
 TEST_F(OriginGatingCheckerTest,
-       BuiltInPredicate_ActorContainerConfig_NavigationBlocked) {
+       BuiltInPredicate_TaskPolicyConfig_NavigationBlocked) {
   OriginGatingChecker checker(
       delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
-          {{DecisionSource::kActorContainerConfig, GateableEventSet::All()}},
+          {{DecisionSource::kTaskPolicyConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
 
   // Set an empty config which blocks all navigations.
-  checker.actor_container_config_slot().Assign(ActorContainerConfig());
+  checker.task_policy_config_slot().Assign(TaskPolicyConfig());
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -778,24 +778,24 @@ TEST_F(OriginGatingCheckerTest,
       checker, nullptr, source, destination);
 
   EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kActorContainerConfig);
+  EXPECT_EQ(decision.attribution, DecisionSource::kTaskPolicyConfig);
 }
 
 TEST_F(OriginGatingCheckerTest,
-       BuiltInPredicate_ActorContainerConfig_PageActionAllowed) {
+       BuiltInPredicate_TaskPolicyConfig_PageActionAllowed) {
   OriginGatingChecker checker(
       delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
-          {{DecisionSource::kActorContainerConfig, GateableEventSet::All()}},
+          {{DecisionSource::kTaskPolicyConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
 
   // Configure the slot to allow actuation.
-  checker.actor_container_config_slot().Assign(ActorContainerConfig({{
-      {ActorContainerConfig::Location(ActorContainerConfig::Wildcard()),
-       ActorContainerConfig::Rule(
+  checker.task_policy_config_slot().Assign(TaskPolicyConfig({{
+      {TaskPolicyConfig::Location(TaskPolicyConfig::Wildcard()),
+       TaskPolicyConfig::Rule(
            /*navigation_sources=*/{},
-           /*resources=*/{ActorContainerConfig::Rule::Resource::kSession},
-           /*capabilities=*/{ActorContainerConfig::Rule::Capability::kAll})},
+           /*resources=*/{TaskPolicyConfig::Rule::Resource::kSession},
+           /*capabilities=*/{TaskPolicyConfig::Rule::Capability::kAll})},
   }}));
 
   GURL source("https://example.com");
@@ -813,19 +813,19 @@ TEST_F(OriginGatingCheckerTest,
 
   GatingDecision decision = future.Get<1>();
   EXPECT_TRUE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kActorContainerConfig);
+  EXPECT_EQ(decision.attribution, DecisionSource::kTaskPolicyConfig);
 }
 
 TEST_F(OriginGatingCheckerTest,
-       BuiltInPredicate_ActorContainerConfig_PageActionBlocked) {
+       BuiltInPredicate_TaskPolicyConfig_PageActionBlocked) {
   OriginGatingChecker checker(
       delegate_.GetWeakPtr(),
       OriginGatingConfiguration(
-          {{DecisionSource::kActorContainerConfig, GateableEventSet::All()}},
+          {{DecisionSource::kTaskPolicyConfig, GateableEventSet::All()}},
           /*use_site_keyed_cache=*/false));
 
   // Set an empty config which blocks all actuations.
-  checker.actor_container_config_slot().Assign(ActorContainerConfig());
+  checker.task_policy_config_slot().Assign(TaskPolicyConfig());
 
   GURL source("https://example.com");
   GURL destination("https://foo.com");
@@ -841,7 +841,7 @@ TEST_F(OriginGatingCheckerTest,
 
   GatingDecision decision = future.Get<1>();
   EXPECT_FALSE(decision.is_allowed);
-  EXPECT_EQ(decision.attribution, DecisionSource::kActorContainerConfig);
+  EXPECT_EQ(decision.attribution, DecisionSource::kTaskPolicyConfig);
 }
 
 TEST_F(OriginGatingCheckerTest, BuiltInPredicate_EnterprisePolicy_Allowed) {

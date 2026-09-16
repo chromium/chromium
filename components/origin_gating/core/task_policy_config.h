@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ORIGIN_GATING_CORE_ACTOR_CONTAINER_CONFIG_H_
-#define COMPONENTS_ORIGIN_GATING_CORE_ACTOR_CONTAINER_CONFIG_H_
+#ifndef COMPONENTS_ORIGIN_GATING_CORE_TASK_POLICY_CONFIG_H_
+#define COMPONENTS_ORIGIN_GATING_CORE_TASK_POLICY_CONFIG_H_
 
 #include <optional>
 #include <string>
@@ -21,42 +21,42 @@ class Value;
 
 namespace origin_gating {
 
-// ActorContainerConfig manages client-side security boundaries for the
-// actor codebase based on location rules.
+// TaskPolicyConfig manages client-side security boundaries based on location
+// rules.
 //
 // An empty set of location rules acts as a global blocklist: any attempt to
 // navigate to or actuate on a location that has no matching location rule
 // will be disallowed.
 //
-// Location rules may include a wildcard Location to allow the agent to visit
-// any site (with a given set of resources and capabilities).
-class ActorContainerConfig {
+// Location rules may include a wildcard Location to allow visiting any site
+// (with a given set of resources and capabilities).
+class TaskPolicyConfig {
  public:
   class Location;
   class Rule;
 
   using LocationRules = base::flat_map<Location, Rule>;
 
-  // Constructs an empty ActorContainerConfig (block-all configuration).
-  ActorContainerConfig();
-  ActorContainerConfig(const ActorContainerConfig&);
-  ActorContainerConfig(ActorContainerConfig&&);
-  ActorContainerConfig& operator=(const ActorContainerConfig& other) = delete;
-  ActorContainerConfig& operator=(ActorContainerConfig&& other) = delete;
-  ~ActorContainerConfig();
+  // Constructs an empty TaskPolicyConfig (block-all configuration).
+  TaskPolicyConfig();
+  TaskPolicyConfig(const TaskPolicyConfig&);
+  TaskPolicyConfig(TaskPolicyConfig&&);
+  TaskPolicyConfig& operator=(const TaskPolicyConfig& other) = delete;
+  TaskPolicyConfig& operator=(TaskPolicyConfig&& other) = delete;
+  ~TaskPolicyConfig();
 
-  // Constructs an ActorContainerConfig mapping locations to security rules.
+  // Constructs a TaskPolicyConfig mapping locations to security rules.
   // An empty `location_rules` map acts as a global blocklist, disallowing all
   // navigations and actuations. A wildcard Location entry can be provided to
   // allow access to all sites with specified resources and capabilities.
-  explicit ActorContainerConfig(LocationRules location_rules);
+  explicit TaskPolicyConfig(LocationRules location_rules);
 
   // Indicates whether or not navigation from `source` to `destination` is
   // allowed according to this config.
   bool IsNavigationAllowed(const url::Origin& source,
                            const url::Origin& destination) const;
 
-  // Indicates whether or not the actor can actuate when the browser is
+  // Indicates whether or not actuation is allowed when the browser is
   // navigated to `location_origin`.
   bool IsActuationAllowed(const url::Origin& location_origin) const;
 
@@ -91,24 +91,24 @@ class ActorContainerConfig {
     std::variant<Wildcard, net::SchemefulSite, url::Origin> data_;
   };
 
-  // A rule governing how a web location may or may not be used by the agent.
+  // A rule governing how a web location may or may not be used.
   class Rule {
    public:
-    // The set of resources that the agent may access when visiting or actuating
-    // on a matching location. May be empty if no resources are accessible.
+    // The set of resources that may be accessed when visiting or actuating on a
+    // matching location. May be empty if no resources are accessible.
     enum class Resource {
-      // The agent may use the user's existing session.
+      // The user's existing session may be used.
       kSession,
       kMin = kSession,
       kMax = kSession
     };
 
-    // How the agent may interact with a matching location. An empty set of
-    // capabilities means no capabilities are allowed and the agent is blocked
-    // from interacting with the location.
+    // How a matching location may be interacted with. An empty set of
+    // capabilities means no capabilities are allowed and interaction is
+    // blocked.
     enum class Capability {
-      // The agent may navigate to and interact with the page, as well as
-      // execute tools on it.
+      // May navigate to and interact with the page, as well as execute tools
+      // on it.
       kAll,
       kMin = kAll,
       kMax = kAll
@@ -151,10 +151,10 @@ class ActorContainerConfig {
  private:
   LocationRules location_rules_;
 
-  friend bool operator==(const ActorContainerConfig&,
-                         const ActorContainerConfig&) = default;
+  friend bool operator==(const TaskPolicyConfig&,
+                         const TaskPolicyConfig&) = default;
 };
 
 }  // namespace origin_gating
 
-#endif  // COMPONENTS_ORIGIN_GATING_CORE_ACTOR_CONTAINER_CONFIG_H_
+#endif  // COMPONENTS_ORIGIN_GATING_CORE_TASK_POLICY_CONFIG_H_

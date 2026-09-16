@@ -515,7 +515,7 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
       switch (decision.attribution.Source()) {
         case DecisionSource::kAllowSameOrigin:
           return ExecutionEngine::GatingDecision::kAllowSameOrigin;
-        case DecisionSource::kActorContainerConfig:
+        case DecisionSource::kTaskPolicyConfig:
           return decision.is_allowed
                      ? ExecutionEngine::GatingDecision::kAllowByContainerConfig
                      : ExecutionEngine::GatingDecision::kBlockByContainerConfig;
@@ -578,7 +578,7 @@ MayActOnUrlBlockReason MapGatingDecisionToBlockReason(
           return ProfileIOData::IsHandledURL(url)
                      ? MayActOnUrlBlockReason::kWrongScheme
                      : MayActOnUrlBlockReason::kExternalProtocol;
-        case DecisionSource::kActorContainerConfig:
+        case DecisionSource::kTaskPolicyConfig:
           return MayActOnUrlBlockReason::kBlockedByContainerConfig;
         case DecisionSource::kNoVerdict:
           // `OnNoVerdict` allows navigation requests to proceed, and only
@@ -760,7 +760,7 @@ ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine>,
                                                        task_->GetProfile()),
                                    ActorCustomPredicate::kLookalikeUrl),
                    kRequestsAndPageActions},
-                  {DecisionSource::kActorContainerConfig,
+                  {DecisionSource::kTaskPolicyConfig,
                    {GateableEvent::kNavigationResponse,
                     GateableEvent::kPageAction}},
                   {CreateSafetyListPredicate(),

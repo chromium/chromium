@@ -245,9 +245,9 @@ std::optional<Decision> OriginGatingChecker::EvaluateSinglePredicate(
       return EvaluateRequireHttpsOrLocalhost(input.destination);
     case DecisionSource::kRequireHttpsOrHttp:
       return EvaluateRequireHttpsOrHttp(input.destination);
-    case DecisionSource::kActorContainerConfig:
-      return EvaluateActorContainerConfig(input.event, input.source_origin,
-                                          input.destination_origin);
+    case DecisionSource::kTaskPolicyConfig:
+      return EvaluateTaskPolicyConfig(input.event, input.source_origin,
+                                      input.destination_origin);
     case DecisionSource::kNoVerdict:
       // This is an internal/fallback decision source and is not an
       // executable predicate. OriginGatingConfiguration's
@@ -386,14 +386,14 @@ Decision OriginGatingChecker::IsCachedWithUserConfirmation(
                                                     : Decision::kNoDecision;
 }
 
-Decision OriginGatingChecker::EvaluateActorContainerConfig(
+Decision OriginGatingChecker::EvaluateTaskPolicyConfig(
     GateableEvent event,
     const url::Origin& source,
     const url::Origin& destination) const {
-  if (!actor_container_config_slot_.has_value()) {
+  if (!task_policy_config_slot_.has_value()) {
     return Decision::kNoDecision;
   }
-  const ActorContainerConfig& config = actor_container_config_slot_.value();
+  const TaskPolicyConfig& config = task_policy_config_slot_.value();
   if (event == GateableEvent::kPageAction) {
     return config.IsActuationAllowed(destination) ? Decision::kAllowed
                                                   : Decision::kBlocked;

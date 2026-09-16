@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/origin_gating/core/actor_container_config.h"
+#include "components/origin_gating/core/task_policy_config.h"
 
 #include <optional>
 #include <string>
@@ -21,11 +21,11 @@ namespace origin_gating {
 
 namespace {
 
-using Location = ActorContainerConfig::Location;
-using Rule = ActorContainerConfig::Rule;
+using Location = TaskPolicyConfig::Location;
+using Rule = TaskPolicyConfig::Rule;
 
 Location WildcardLocation() {
-  return Location(ActorContainerConfig::Wildcard());
+  return Location(TaskPolicyConfig::Wildcard());
 }
 
 Location SiteLocation(const GURL& url) {
@@ -44,9 +44,9 @@ Rule CreateRule(std::vector<Location> navigation_sources = {},
 
 }  // namespace
 
-class ActorContainerConfigTest : public testing::Test {
+class TaskPolicyConfigTest : public testing::Test {
  public:
-  ~ActorContainerConfigTest() override = default;
+  ~TaskPolicyConfigTest() override = default;
 
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://a.example.com"));
@@ -69,8 +69,8 @@ class ActorContainerConfigTest : public testing::Test {
       url::Origin::Create(GURL("wss://b.foo.com"));
 };
 
-TEST_F(ActorContainerConfigTest, EmptyConfigBlocksAll) {
-  ActorContainerConfig config;
+TEST_F(TaskPolicyConfigTest, EmptyConfigBlocksAll) {
+  TaskPolicyConfig config;
 
   // Same-site.
   EXPECT_FALSE(config.IsActuationAllowed(kExampleOrigin));
@@ -96,8 +96,8 @@ TEST_F(ActorContainerConfigTest, EmptyConfigBlocksAll) {
   EXPECT_FALSE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, NoCapabilities) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, NoCapabilities) {
+  TaskPolicyConfig config({
       {WildcardLocation(), CreateRule({}, {Rule::Resource::kSession}, {})},
   });
 
@@ -125,8 +125,8 @@ TEST_F(ActorContainerConfigTest, NoCapabilities) {
   EXPECT_FALSE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, Wildcard_ActuationCapabilityAll) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, Wildcard_ActuationCapabilityAll) {
+  TaskPolicyConfig config({
       {WildcardLocation(),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
   });
@@ -155,8 +155,8 @@ TEST_F(ActorContainerConfigTest, Wildcard_ActuationCapabilityAll) {
   EXPECT_TRUE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, Wildcard_WithSource) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, Wildcard_WithSource) {
+  TaskPolicyConfig config({
       {WildcardLocation(),
        CreateRule({Location(kExampleOrigin)}, {Rule::Resource::kSession},
                   {Rule::Capability::kAll})},
@@ -186,8 +186,8 @@ TEST_F(ActorContainerConfigTest, Wildcard_WithSource) {
   EXPECT_FALSE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, Site_NoCapabilities) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, Site_NoCapabilities) {
+  TaskPolicyConfig config({
       {Location(net::SchemefulSite(kExampleOrigin)),
        CreateRule({}, {Rule::Resource::kSession}, {})},
   });
@@ -216,8 +216,8 @@ TEST_F(ActorContainerConfigTest, Site_NoCapabilities) {
   EXPECT_FALSE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, Site_ActuationCapabilityAll) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, Site_ActuationCapabilityAll) {
+  TaskPolicyConfig config({
       {Location(net::SchemefulSite(kExampleOrigin)),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
   });
@@ -246,8 +246,8 @@ TEST_F(ActorContainerConfigTest, Site_ActuationCapabilityAll) {
   EXPECT_TRUE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, InsecureSite_ActuationCapabilityAll) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, InsecureSite_ActuationCapabilityAll) {
+  TaskPolicyConfig config({
       {Location(net::SchemefulSite(kExampleInsecureOrigin)),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
   });
@@ -276,8 +276,8 @@ TEST_F(ActorContainerConfigTest, InsecureSite_ActuationCapabilityAll) {
   EXPECT_FALSE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, Site_WithSource) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, Site_WithSource) {
+  TaskPolicyConfig config({
       {Location(net::SchemefulSite(kExampleOrigin)),
        CreateRule({Location(kExampleOrigin)}, {Rule::Resource::kSession},
                   {Rule::Capability::kAll})},
@@ -307,8 +307,8 @@ TEST_F(ActorContainerConfigTest, Site_WithSource) {
   EXPECT_FALSE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, Origin_NoCapabilities) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, Origin_NoCapabilities) {
+  TaskPolicyConfig config({
       {Location(kExampleOrigin),
        CreateRule({}, {Rule::Resource::kSession}, {})},
   });
@@ -337,8 +337,8 @@ TEST_F(ActorContainerConfigTest, Origin_NoCapabilities) {
   EXPECT_FALSE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, Origin_ActuationCapabilityAll) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, Origin_ActuationCapabilityAll) {
+  TaskPolicyConfig config({
       {Location(kExampleOrigin),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
   });
@@ -367,8 +367,8 @@ TEST_F(ActorContainerConfigTest, Origin_ActuationCapabilityAll) {
   EXPECT_TRUE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, InsecureOrigin_ActuationCapabilityAll) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, InsecureOrigin_ActuationCapabilityAll) {
+  TaskPolicyConfig config({
       {Location(kExampleInsecureOrigin),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
   });
@@ -397,9 +397,8 @@ TEST_F(ActorContainerConfigTest, InsecureOrigin_ActuationCapabilityAll) {
   EXPECT_FALSE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest,
-       OriginWithExplicitPort_ActuationCapabilityAll) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, OriginWithExplicitPort_ActuationCapabilityAll) {
+  TaskPolicyConfig config({
       {Location(url::Origin::Create(GURL("https://a.example.com:443"))),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
   });
@@ -428,8 +427,8 @@ TEST_F(ActorContainerConfigTest,
   EXPECT_TRUE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, Origin_WithSource) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, Origin_WithSource) {
+  TaskPolicyConfig config({
       {Location(kExampleOrigin),
        CreateRule({Location(kExampleOrigin)}, {Rule::Resource::kSession},
                   {Rule::Capability::kAll})},
@@ -459,8 +458,8 @@ TEST_F(ActorContainerConfigTest, Origin_WithSource) {
   EXPECT_FALSE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, WildcardAndBlockedSite) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, WildcardAndBlockedSite) {
+  TaskPolicyConfig config({
       {SiteLocation(GURL("https://example.com")),
        CreateRule({}, {Rule::Resource::kSession}, {})},
       {WildcardLocation(),
@@ -491,8 +490,8 @@ TEST_F(ActorContainerConfigTest, WildcardAndBlockedSite) {
   EXPECT_FALSE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, BlockedWildcardAndAllowedSite) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, BlockedWildcardAndAllowedSite) {
+  TaskPolicyConfig config({
       {WildcardLocation(), CreateRule({}, {Rule::Resource::kSession}, {})},
       {SiteLocation(GURL("https://example.com")),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
@@ -522,8 +521,8 @@ TEST_F(ActorContainerConfigTest, BlockedWildcardAndAllowedSite) {
   EXPECT_TRUE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, SiteAndBlockedOrigin) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, SiteAndBlockedOrigin) {
+  TaskPolicyConfig config({
       {SiteLocation(GURL("https://example.com")),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
       {OriginLocation(GURL("https://b.example.com")),
@@ -554,8 +553,8 @@ TEST_F(ActorContainerConfigTest, SiteAndBlockedOrigin) {
   EXPECT_TRUE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, BlockedSiteAndOrigin) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, BlockedSiteAndOrigin) {
+  TaskPolicyConfig config({
       {SiteLocation(GURL("https://example.com")),
        CreateRule({}, {Rule::Resource::kSession}, {})},
       {Location(kExampleOrigin),
@@ -586,8 +585,8 @@ TEST_F(ActorContainerConfigTest, BlockedSiteAndOrigin) {
   EXPECT_TRUE(config.IsNavigationAllowed(kCrossSiteOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, NoCapability) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, NoCapability) {
+  TaskPolicyConfig config({
       {SiteLocation(GURL("https://example.com")),
        CreateRule({}, {Rule::Resource::kSession}, {})},
   });
@@ -596,8 +595,8 @@ TEST_F(ActorContainerConfigTest, NoCapability) {
   EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, MultipleCapabilityAll) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, MultipleCapabilityAll) {
+  TaskPolicyConfig config({
       {SiteLocation(GURL("https://example.com")),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
   });
@@ -606,8 +605,8 @@ TEST_F(ActorContainerConfigTest, MultipleCapabilityAll) {
   EXPECT_TRUE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, NoResources) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, NoResources) {
+  TaskPolicyConfig config({
       {SiteLocation(GURL("https://example.com")),
        CreateRule({}, {}, {Rule::Capability::kAll})},
   });
@@ -616,8 +615,8 @@ TEST_F(ActorContainerConfigTest, NoResources) {
   EXPECT_FALSE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, MultipleResourceSessions) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, MultipleResourceSessions) {
+  TaskPolicyConfig config({
       {SiteLocation(GURL("https://example.com")),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
   });
@@ -626,8 +625,8 @@ TEST_F(ActorContainerConfigTest, MultipleResourceSessions) {
   EXPECT_TRUE(config.IsNavigationAllowed(kExampleOrigin, kExampleOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, WsOrigin) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, WsOrigin) {
+  TaskPolicyConfig config({
       {Location(kWsOrigin),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
   });
@@ -651,8 +650,8 @@ TEST_F(ActorContainerConfigTest, WsOrigin) {
   EXPECT_FALSE(config.IsNavigationAllowed(kWsOrigin, kCrossSiteWsOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, WssOrigin) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, WssOrigin) {
+  TaskPolicyConfig config({
       {Location(kWssOrigin),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
   });
@@ -676,14 +675,14 @@ TEST_F(ActorContainerConfigTest, WssOrigin) {
   EXPECT_FALSE(config.IsNavigationAllowed(kWssOrigin, kCrossSiteWssOrigin));
 }
 
-TEST_F(ActorContainerConfigTest, ToDebugStringEmpty) {
-  ActorContainerConfig config;
+TEST_F(TaskPolicyConfigTest, ToDebugStringEmpty) {
+  TaskPolicyConfig config;
 
   EXPECT_THAT(config.ToDebugValue(), base::test::IsJson(R"({"rules": {}})"));
 }
 
-TEST_F(ActorContainerConfigTest, ToDebugStringWildcard) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, ToDebugStringWildcard) {
+  TaskPolicyConfig config({
       {WildcardLocation(),
        CreateRule({}, {Rule::Resource::kSession}, {Rule::Capability::kAll})},
   });
@@ -699,8 +698,8 @@ TEST_F(ActorContainerConfigTest, ToDebugStringWildcard) {
     })json"));
 }
 
-TEST_F(ActorContainerConfigTest, ToDebugStringSiteWithNavigationSource) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, ToDebugStringSiteWithNavigationSource) {
+  TaskPolicyConfig config({
       {SiteLocation(GURL("https://example.com")),
        CreateRule({OriginLocation(GURL("https://a.example.com"))},
                   {Rule::Resource::kSession}, {Rule::Capability::kAll})},
@@ -717,8 +716,8 @@ TEST_F(ActorContainerConfigTest, ToDebugStringSiteWithNavigationSource) {
   })json"));
 }
 
-TEST_F(ActorContainerConfigTest, ToDebugStringMultipleRules) {
-  ActorContainerConfig config({
+TEST_F(TaskPolicyConfigTest, ToDebugStringMultipleRules) {
+  TaskPolicyConfig config({
       {SiteLocation(GURL("https://example.com")),
        CreateRule({OriginLocation(GURL("https://a.example.com"))},
                   {Rule::Resource::kSession}, {Rule::Capability::kAll})},

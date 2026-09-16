@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/origin_gating/core/actor_container_config_slot.h"
+#include "components/origin_gating/core/task_policy_config_slot.h"
 
 #include <utility>
 
 #include "base/types/optional_ref.h"
-#include "components/origin_gating/core/actor_container_config.h"
+#include "components/origin_gating/core/task_policy_config.h"
 
 namespace origin_gating {
 
-ActorContainerConfigSlot::ActorContainerConfigSlot() = default;
-ActorContainerConfigSlot::~ActorContainerConfigSlot() = default;
+TaskPolicyConfigSlot::TaskPolicyConfigSlot() = default;
+TaskPolicyConfigSlot::~TaskPolicyConfigSlot() = default;
 
-void ActorContainerConfigSlot::Assign(ActorContainerConfig config) {
+void TaskPolicyConfigSlot::Assign(TaskPolicyConfig config) {
   if (config_.has_value()) {
     return;
   }
