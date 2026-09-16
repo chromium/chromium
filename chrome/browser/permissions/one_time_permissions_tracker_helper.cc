@@ -10,6 +10,7 @@
 #include "chrome/browser/permissions/one_time_permissions_condition_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/visibility.h"
@@ -34,10 +35,16 @@ class OneTimePermissionsPageTracker
     : public content::PageUserData<OneTimePermissionsPageTracker> {
  public:
   static void MaybeCreateForPage(content::Page& page) {
-    if (ShouldIgnoreOrigin(page.GetMainDocument().GetLastCommittedOrigin())) {
+    // TODO(crbug.com/40226169): We should really use origins instead. Revisit
+    // this when we fix the GURL vs Origin problem in
+    // GetLastCommittedOriginAsURL.
+    url::Origin origin = url::Origin::Create(
+        permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+            &page.GetMainDocument()));
+    if (ShouldIgnoreOrigin(origin)) {
       return;
     }
-    CreateForPage(page);
+    CreateForPage(page, origin);
   }
 
   ~OneTimePermissionsPageTracker() override;
@@ -47,7 +54,7 @@ class OneTimePermissionsPageTracker
   void OnIsCapturingAudioChanged(bool is_capturing_audio);
 
  private:
-  explicit OneTimePermissionsPageTracker(content::Page& page);
+  OneTimePermissionsPageTracker(content::Page& page, url::Origin origin);
 
   friend PageUserData;
   PAGE_USER_DATA_KEY_DECL();
@@ -66,9 +73,9 @@ class OneTimePermissionsPageTracker
 PAGE_USER_DATA_KEY_IMPL(OneTimePermissionsPageTracker);
 
 OneTimePermissionsPageTracker::OneTimePermissionsPageTracker(
-    content::Page& page)
-    : PageUserData(page),
-      origin_(page.GetMainDocument().GetLastCommittedOrigin()) {
+    content::Page& page,
+    url::Origin origin)
+    : PageUserData(page), origin_(std::move(origin)) {
   auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
       page.GetMainDocument().GetBrowserContext());
   if (!tracker) {

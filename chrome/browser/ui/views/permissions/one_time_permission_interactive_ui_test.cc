@@ -33,9 +33,12 @@
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/content_setting_permission_context_base.h"
@@ -47,6 +50,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
@@ -775,4 +779,125 @@ IN_PROC_BROWSER_TEST_P(OneTimePermissionExpiryEnforcementUmaInteractiveUiTest,
       active_expiry_is_active ? 1 : 0);
 
   hcsm->SetClockForTesting(base::DefaultClock::GetInstance());
+}
+
+IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
+                       SandboxedOneTimeGrantRevokedOnTabClose) {
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+  GURL root_url = embedded_test_server()->GetURL("/");
+
+  const content_settings::PermissionSettingsInfo* permission_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          permissions::PermissionUtil::GetGeolocationType());
+  EXPECT_TRUE(
+      permission_info->delegate().IsUndecided(hcsm->GetPermissionSetting(
+          root_url, root_url,
+          permissions::PermissionUtil::GetGeolocationType())));
+
+  ASSERT_NO_FATAL_FAILURE(Initialize(
+      INITIALIZATION_DEFAULT,
+      embedded_test_server()->GetURL("/set-header-with-file/chrome/test/data/"
+                                     "geolocation/simple.html?Content-Security-"
+                                     "Policy: sandbox allow-scripts")));
+  EXPECT_TRUE(current_browser()
+                  ->tab_strip_model()
+                  ->GetActiveWebContents()
+                  ->GetPrimaryMainFrame()
+                  ->GetLastCommittedOrigin()
+                  .opaque());
+
+  WatchPositionAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE,
+      /*expect_prompt=*/true);
+
+  EXPECT_TRUE(permission_info->delegate().IsAnyPermissionAllowed(
+      hcsm->GetPermissionSetting(
+          root_url, root_url,
+          permissions::PermissionUtil::GetGeolocationType())));
+
+  ASSERT_NO_FATAL_FAILURE(
+      Initialize(INITIALIZATION_NEWTAB, GetDifferentOriginUrl()));
+
+  content::WebContentsDestroyedWatcher destroyed_watcher(
+      current_browser()->tab_strip_model()->GetWebContentsAt(0));
+  current_browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+  destroyed_watcher.Wait();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return permission_info->delegate().IsUndecided(hcsm->GetPermissionSetting(
+        root_url, root_url, permissions::PermissionUtil::GetGeolocationType()));
+  }));
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::ALL_TABS_CLOSED_OR_DISCARDED, 1);
+
+  ASSERT_NO_FATAL_FAILURE(
+      Initialize(INITIALIZATION_DEFAULT, GetGeolocationGurl()));
+  WatchPositionAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE,
+      /*expect_prompt=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
+                       SandboxedOneTimeGrantRevokedInBackground) {
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+  GURL root_url = embedded_test_server()->GetURL("/");
+
+  const content_settings::PermissionSettingsInfo* permission_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          permissions::PermissionUtil::GetGeolocationType());
+  EXPECT_TRUE(
+      permission_info->delegate().IsUndecided(hcsm->GetPermissionSetting(
+          root_url, root_url,
+          permissions::PermissionUtil::GetGeolocationType())));
+
+  ASSERT_NO_FATAL_FAILURE(Initialize(
+      INITIALIZATION_DEFAULT,
+      embedded_test_server()->GetURL("/set-header-with-file/chrome/test/data/"
+                                     "geolocation/simple.html?Content-Security-"
+                                     "Policy: sandbox allow-scripts")));
+  EXPECT_TRUE(current_browser()
+                  ->tab_strip_model()
+                  ->GetActiveWebContents()
+                  ->GetPrimaryMainFrame()
+                  ->GetLastCommittedOrigin()
+                  .opaque());
+
+  WatchPositionAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE,
+      /*expect_prompt=*/true);
+
+  EXPECT_TRUE(permission_info->delegate().IsAnyPermissionAllowed(
+      hcsm->GetPermissionSetting(
+          root_url, root_url,
+          permissions::PermissionUtil::GetGeolocationType())));
+
+  ASSERT_NO_FATAL_FAILURE(
+      Initialize(INITIALIZATION_NEWTAB, GetDifferentOriginUrl()));
+
+  // Fast forward time to expire the permissions in the background.
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return permission_info->delegate().IsUndecided(hcsm->GetPermissionSetting(
+        root_url, root_url, permissions::PermissionUtil::GetGeolocationType()));
+  }));
+
+  current_browser()->tab_strip_model()->ActivateTabAt(0);
+
+  WatchPositionAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE,
+      /*expect_prompt=*/true);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::GRANTED_ONE_TIME, 2);
+
+  OtpEventExpectBucketCount(
+      ContentSettingsType::GEOLOCATION,
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
 }
