@@ -420,6 +420,47 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
             PermissionsManager::UserSiteAccess::kOnClick);
 }
 
+// Tests that the extensions menu view model fails to update site access if the
+// origin changes.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       UpdateSiteAccess_FailsIfOriginChanges) {
+  // Add extension that requests host permissions and withheld site access.
+  scoped_refptr<const extensions::Extension> extension =
+      AddExtensionWithHostPermission("Extension", "*://example.com/*");
+  extensions::ScriptingPermissionsModifier modifier(profile(), extension);
+  modifier.SetWithholdHostPermissions(true);
+
+  // Navigate to a site the extension requested access to.
+  const GURL urlA =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), urlA));
+  content::WebContents* web_contents = GetActiveWebContents();
+  auto originA = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
+  // Verify site interaction and site access are withheld.
+  EXPECT_EQ(permissions_helper()->GetSiteInteraction(*extension, web_contents),
+            SitePermissionsHelper::SiteInteraction::kWithheld);
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(
+                *extension, web_contents->GetLastCommittedURL()),
+            PermissionsManager::UserSiteAccess::kOnClick);
+
+  // Simulate navigation to another site before user clicks.
+  const GURL urlB = embedded_test_server()->GetURL("other.com", "/simple.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), urlB));
+
+  // Try to update site access using the previous origin.
+  menu_model()->UpdateSiteAccess(extension->id(), originA,
+                                 PermissionsManager::UserSiteAccess::kOnSite);
+
+  // Verify that site access was NOT granted because the origin changed.
+  EXPECT_EQ(permissions_helper()->GetSiteInteraction(*extension, web_contents),
+            SitePermissionsHelper::SiteInteraction::kNone);
+
+  // And site access for example.com should still be kOnClick (withheld).
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(*extension, urlA),
+            PermissionsManager::UserSiteAccess::kOnClick);
+}
+
 // Tests that the extensions menu view model correctly revokes site access to an
 // extension that requests hosts permissions and access is currently granted.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,

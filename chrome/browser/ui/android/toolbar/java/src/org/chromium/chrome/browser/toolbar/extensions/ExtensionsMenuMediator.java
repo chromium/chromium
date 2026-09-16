@@ -182,30 +182,31 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     }
 
     /**
-     * Called when the native extensions menu model has changed. This method checks which page is
-     * currently visible and pulls the relevant data from native to update the UI.
+     * Called when the native extensions menu model has changed. This method navigates back to the
+     * main page if the site permissions page is open and pulls the relevant data from native to
+     * update the UI.
      */
     @Override
     public void onModelChanged() {
-        if (getCurrentPage() == ExtensionsMenuProperties.Page.MAIN) {
-            int optionalSection = mMenuBridge.getOptionalSection();
-            mMainPageModel.set(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE, optionalSection);
-
-            if (optionalSection == ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS) {
-                mMainPageModel.set(
-                        ExtensionsMenuProperties.HOST_ACCESS_REQUESTS,
-                        mMenuBridge.getHostAccessRequests());
-            } else {
-                mMainPageModel.set(
-                        ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, new ArrayList<>());
-            }
-
-            updateMenuEntries();
-        } else if (getCurrentPage() == ExtensionsMenuProperties.Page.SITE_PERMISSIONS) {
-            String extensionId =
-                    mSitePermissionsPageModel.get(SitePermissionsPageProperties.EXTENSION_ID);
-            updateSitePermissionsPage(extensionId);
+        if (getCurrentPage() == ExtensionsMenuProperties.Page.SITE_PERMISSIONS) {
+            // If the site permissions page is open, navigate back to the main page to
+            // ensure settings are not applied to an unexpected origin.
+            mMainPageModel.set(
+                    ExtensionsMenuProperties.CURRENT_PAGE, ExtensionsMenuProperties.Page.MAIN);
         }
+
+        int optionalSection = mMenuBridge.getOptionalSection();
+        mMainPageModel.set(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE, optionalSection);
+
+        if (optionalSection == ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS) {
+            mMainPageModel.set(
+                    ExtensionsMenuProperties.HOST_ACCESS_REQUESTS,
+                    mMenuBridge.getHostAccessRequests());
+        } else {
+            mMainPageModel.set(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, new ArrayList<>());
+        }
+
+        updateMenuEntries();
     }
 
     @Override
@@ -265,10 +266,9 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             return;
         }
 
-        // Return to the main page when extension is removed and had the site permissions page
-        // opened.
-        mMainPageModel.set(
-                ExtensionsMenuProperties.CURRENT_PAGE, ExtensionsMenuProperties.Page.MAIN);
+        // Return to the main page and refresh the menu entries when an extension with the site
+        // permissions page opened is removed.
+        onModelChanged();
     }
 
     @Override
@@ -433,12 +433,12 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     private void onSitePermissionsButtonClicked(String extensionId) {
         mSitePermissionsPageModel.set(SitePermissionsPageProperties.EXTENSION_ID, extensionId);
 
-        updateSitePermissionsPage(extensionId);
-
-        // Set current page to site permissions page.
-        mMainPageModel.set(
-                ExtensionsMenuProperties.CURRENT_PAGE,
-                ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
+        if (updateSitePermissionsPage(extensionId)) {
+            // Set current page to site permissions page.
+            mMainPageModel.set(
+                    ExtensionsMenuProperties.CURRENT_PAGE,
+                    ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
+        }
     }
 
     private void openUrlFromMenu(String url) {
@@ -541,14 +541,16 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
      * Updates the site permissions page for the given extension.
      *
      * @param extensionId The ID of the extension to show permissions for.
+     * @return Whether the site permissions page was successfully updated.
      */
-    private void updateSitePermissionsPage(String extensionId) {
+    private boolean updateSitePermissionsPage(String extensionId) {
         ExtensionsMenuTypes.ExtensionSitePermissionsState sitePermissionsState =
                 mMenuBridge.getExtensionSitePermissionsState(extensionId);
         if (sitePermissionsState == null) {
             mMainPageModel.set(
                     ExtensionsMenuProperties.CURRENT_PAGE, ExtensionsMenuProperties.Page.MAIN);
-            return;
+            onModelChanged();
+            return false;
         }
 
         mSitePermissionsPageModel.set(
@@ -577,6 +579,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                 SitePermissionsPageProperties.SHOW_REQUESTS_TOGGLE_CLICK_LISTENER,
                 (buttonView, isChecked) ->
                         mMenuBridge.onShowRequestsTogglePressed(extensionId, isChecked));
+        return true;
     }
 
     /** Updates the zero state visibility. */

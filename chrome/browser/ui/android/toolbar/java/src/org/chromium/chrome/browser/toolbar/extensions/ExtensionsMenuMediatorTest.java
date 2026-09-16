@@ -1510,6 +1510,161 @@ public class ExtensionsMenuMediatorTest {
     }
 
     /**
+     * Tests that when model change occurs (e.g., page navigation) while the site permissions page
+     * is opened, the mediator navigates back to the main page.
+     */
+    @Test
+    public void testOnModelChanged_WhenSitePermissionsPageOpened_NavigatesToMainPage() {
+        // Mock that the site permissions page is visible for extension "id_a".
+        when(mMenuPropertyModel.get(ExtensionsMenuProperties.CURRENT_PAGE))
+                .thenReturn(ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
+        when(mSitePermissionsPropertyModel.get(SitePermissionsPageProperties.EXTENSION_ID))
+                .thenReturn("id_a");
+
+        when(mExtensionsMenuBridgeJniMock.getOptionalSection(anyLong()))
+                .thenReturn(ExtensionsMenuTypes.OptionalSectionType.NONE);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(new ArrayList<>());
+
+        mMenuMediator.onModelChanged();
+
+        // Verify that the menu navigated back to the main page.
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.CURRENT_PAGE, ExtensionsMenuProperties.Page.MAIN);
+
+        // Verify that the site permissions state is not queried or updated on model change.
+        verify(mExtensionsMenuBridgeJniMock, never())
+                .getExtensionSitePermissionsState(anyLong(), any());
+        verify(mSitePermissionsPropertyModel, never())
+                .set(eq(SitePermissionsPageProperties.ON_SITE_ACCESS_SELECTED_LISTENER), any());
+    }
+
+    /**
+     * Tests that when a page navigation occurs while viewing the site permissions page, the
+     * mediator returns to the main page and does not rebind the site access listener with the
+     * updated origin.
+     */
+    @Test
+    public void testSitePermissionsPage_NavigationRevertsToMainPageWithoutRebindingListener() {
+        final String originA = "https://example.com";
+        final String originB = "https://sample-site.org";
+
+        ExtensionsMenuTypes.ControlState enabledOff =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        "",
+                        "",
+                        "",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+        ExtensionsMenuTypes.ControlState enabledOn =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        "",
+                        "",
+                        "",
+                        /* isOn= */ true,
+                        /* icon= */ null);
+        ExtensionsMenuTypes.ExtensionSitePermissionsState stateA =
+                new ExtensionsMenuTypes.ExtensionSitePermissionsState(
+                        "Ext A", null, enabledOff, enabledOff, enabledOn, enabledOn, originA);
+        ExtensionsMenuTypes.ExtensionSitePermissionsState stateB =
+                new ExtensionsMenuTypes.ExtensionSitePermissionsState(
+                        "Ext A", null, enabledOff, enabledOff, enabledOn, enabledOn, originB);
+
+        when(mMenuPropertyModel.get(ExtensionsMenuProperties.CURRENT_PAGE))
+                .thenReturn(ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
+        when(mSitePermissionsPropertyModel.get(SitePermissionsPageProperties.EXTENSION_ID))
+                .thenReturn("id_a");
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+                .thenReturn(stateA, stateB);
+
+        // Trigger model change when site permissions page is open.
+        mMenuMediator.onModelChanged();
+
+        // Verify mediator transitions back to main page.
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.CURRENT_PAGE, ExtensionsMenuProperties.Page.MAIN);
+
+        // Verify listener was never set for originB on model changed.
+        verify(mSitePermissionsPropertyModel, never())
+                .set(eq(SitePermissionsPageProperties.ON_SITE_ACCESS_SELECTED_LISTENER), any());
+    }
+
+    /**
+     * Tests that clicking the site permissions button when permissions cannot be customized (e.g.,
+     * state is null) remains on the main page.
+     */
+    @Test
+    public void testSitePermissionsPage_WhenStateNull_RemainsOnMainPage() {
+        String extensionName = "Extension A";
+        Bitmap extensionIcon = ICON_RED;
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        entries.add(
+                ExtensionTestUtils.createMenuEntryWithHostPermissions(
+                        "id_a", extensionName, extensionIcon, /* isPinned= */ false));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+
+        // Mock null state for extension site permissions.
+        when(mExtensionsMenuBridgeJniMock.getExtensionSitePermissionsState(anyLong(), eq("id_a")))
+                .thenReturn(null);
+
+        // Open extensions menu.
+        mBridgeCaptor.getValue().onReady();
+        ListItem itemA = mActionModels.get(0);
+        View.OnClickListener listener =
+                itemA.model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_ON_CLICK);
+        listener.onClick(null);
+
+        // Verify page never transitions to SITE_PERMISSIONS.
+        verify(mMenuPropertyModel, never())
+                .set(
+                        ExtensionsMenuProperties.CURRENT_PAGE,
+                        ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
+    }
+
+    /**
+     * Tests that when an extension is removed while its site permissions page is open, the menu
+     * navigates back to the main page and refreshes the menu entries.
+     */
+    @Test
+    public void testOnActionRemoved_WhenSitePermissionsPageOpened_NavigatesToMainPage() {
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        entries.add(
+                ExtensionTestUtils.createSimpleMenuEntry(
+                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false));
+        entries.add(
+                ExtensionTestUtils.createSimpleMenuEntry(
+                        "id_b", "Extension B", ICON_BLUE, /* isPinned= */ false));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+
+        // Open extensions menu.
+        mBridgeCaptor.getValue().onReady();
+        clearInvocations(mMenuPropertyModel);
+
+        // Mock site permissions page open for "id_a".
+        when(mMenuPropertyModel.get(ExtensionsMenuProperties.CURRENT_PAGE))
+                .thenReturn(ExtensionsMenuProperties.Page.SITE_PERMISSIONS);
+        when(mSitePermissionsPropertyModel.get(SitePermissionsPageProperties.EXTENSION_ID))
+                .thenReturn("id_a");
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0)))
+                .thenReturn(entries.get(0));
+
+        // When id_a is removed from native side, only id_b remains in menu entries.
+        List<ExtensionsMenuTypes.MenuEntryState> remainingEntries = new ArrayList<>();
+        remainingEntries.add(entries.get(1));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(remainingEntries);
+
+        mBridgeCaptor.getValue().onActionRemoved(0);
+
+        // Verify navigation back to MAIN page.
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.CURRENT_PAGE, ExtensionsMenuProperties.Page.MAIN);
+        // Verify action models were reconstructed with remaining entries.
+        assertEquals(1, mActionModels.size());
+        assertItemAt(0, "Extension B", ICON_BLUE);
+    }
+
+    /**
      * Tests that an extension marked as enterprise (installed by policy) is correctly identified
      * and represented in the menu item property model.
      */
