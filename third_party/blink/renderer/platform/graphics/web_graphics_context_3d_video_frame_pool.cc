@@ -95,10 +95,12 @@ class Context
 
 WebGraphicsContext3DVideoFramePool::WebGraphicsContext3DVideoFramePool(
     base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
-        weak_context_provider)
+        weak_context_provider,
+    media::VideoPixelFormat output_format)
     : weak_context_provider_(weak_context_provider),
       pool_(media::RenderableMappableSharedImageVideoFramePool::Create(
-          std::make_unique<Context>(weak_context_provider))) {}
+          std::make_unique<Context>(weak_context_provider),
+          output_format)) {}
 
 WebGraphicsContext3DVideoFramePool::~WebGraphicsContext3DVideoFramePool() =
     default;

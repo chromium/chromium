@@ -135,6 +135,12 @@ bool IsPixelDataValid(viz::SharedImageFormat format,
   if (pixel_data.empty()) {
     return true;
   }
+
+  if (format.is_multi_plane()) {
+    LOG(ERROR) << "Initial data is not supported for multiplanar formats.";
+    return false;
+  }
+
   // If we have initial data to upload, ensure it is sized appropriately
 
   auto estimated_size = format.MaybeEstimatedSizeInBytes(size);

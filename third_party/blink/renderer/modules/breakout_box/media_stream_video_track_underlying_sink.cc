@@ -199,7 +199,7 @@ void MediaStreamVideoTrackUnderlyingSink::CreateAcceleratedFramePool() {
           IsGpuMemoryBufferReadbackFromTextureEnabled()) {
     accelerated_frame_pool_ =
         std::make_unique<WebGraphicsContext3DVideoFramePool>(
-            context_provider_wrapper);
+            context_provider_wrapper, media::PIXEL_FORMAT_NV12);
   } else {
     convert_to_nv12_gmb_failure_count_++;
   }

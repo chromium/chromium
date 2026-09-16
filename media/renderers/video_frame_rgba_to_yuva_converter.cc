@@ -5,11 +5,16 @@
 
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/logging.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "media/base/format_utils.h"
 #include "media/base/simple_sync_token_client.h"
 
 namespace media {
@@ -20,7 +25,9 @@ std::optional<gpu::SyncToken> CopyRGBATextureToVideoFrame(
     scoped_refptr<gpu::ClientSharedImage> src_shared_image,
     const gpu::SyncToken& acquire_sync_token,
     VideoFrame* dst_video_frame) {
-  DCHECK_EQ(dst_video_frame->format(), PIXEL_FORMAT_NV12);
+  const auto dst_shared_image_format =
+      VideoPixelFormatToSharedImageFormat(dst_video_frame->format());
+  CHECK(dst_shared_image_format && dst_shared_image_format->is_multi_plane());
   CHECK(dst_video_frame->HasSharedImage());
   auto* ri = provider->RasterInterface();
   DCHECK(ri);
@@ -30,11 +37,15 @@ std::optional<gpu::SyncToken> CopyRGBATextureToVideoFrame(
     return std::nullopt;
   }
 
-  // If RGB->YUV conversion is unsupported, the CopySharedImage calls will fail
-  // on the service side with no ability to detect failure on the client side.
-  // Check for support here and early out if it's unsupported.
-  if (!provider->ContextCapabilities().supports_rgb_to_yuv_conversion) {
-    DVLOG(1) << "RGB->YUV conversion not supported";
+  // Unsupported CopySharedImage calls fail asynchronously on the service side,
+  // so check that Skia can render into the destination planes before submitting
+  // the command.
+  auto* sii = provider->SharedImageInterface();
+  if (!sii ||
+      !std::ranges::contains(sii->GetCapabilities().skia_writable_yuv_formats,
+                             *dst_shared_image_format)) {
+    DVLOG(1) << "RGB->YUV conversion does not support "
+             << dst_shared_image_format->ToString();
     return std::nullopt;
   }
 

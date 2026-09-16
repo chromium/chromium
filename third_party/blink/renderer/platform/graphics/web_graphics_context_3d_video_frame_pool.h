@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "media/base/video_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
@@ -45,7 +46,8 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
  public:
   // This constructor is valid only on the main thread.
   explicit WebGraphicsContext3DVideoFramePool(
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper> weak_context_provider);
+      base::WeakPtr<WebGraphicsContext3DProviderWrapper> weak_context_provider,
+      media::VideoPixelFormat output_format);
   ~WebGraphicsContext3DVideoFramePool();
 
   gpu::raster::RasterInterface* GetRasterInterface() const;
@@ -56,10 +58,9 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
   // On success, this function will return the completion sync token for the
   // read operations on `src_shared_image` and will call the specified
   // FrameCallback with the resulting VideoFrame when the frame is ready. On
-  // failure this will return std::nullopt. The resulting VideoFrame will always
-  // be NV12. Note: If the YUV to RGB matrix of `dst_color_space` is not Rec601,
-  // then this function will use the matrix for Rec709 (it supports no other
-  // values). See https://crbug.com/skia/12545.
+  // failure this will return std::nullopt. The resulting VideoFrame uses the
+  // format supplied to the constructor. The RGB-to-YUV conversion matrix and
+  // range are derived from `dst_color_space`.
   std::optional<gpu::SyncToken> CopyRGBATextureToVideoFrame(
       const gfx::Size& src_size,
       scoped_refptr<gpu::ClientSharedImage> src_shared_image,

@@ -10,7 +10,9 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -38,7 +40,8 @@ StaticBitmapImageToVideoFrameCopier::GetAcceleratedVideoFramePool(
         context_provider) {
   if (accelerated_frame_pool_enabled_ && !accelerated_frame_pool_) {
     accelerated_frame_pool_ =
-        std::make_unique<WebGraphicsContext3DVideoFramePool>(context_provider);
+        std::make_unique<WebGraphicsContext3DVideoFramePool>(
+            context_provider, media::PIXEL_FORMAT_NV12);
   }
   return accelerated_frame_pool_.get();
 }
@@ -96,9 +99,10 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
 
   const bool supports_yuv_readback =
       context_provider.GetCapabilities().supports_yuv_readback;
-  // If supports_rgb_to_yuv_conversion is true, supports_yuv_readback must also
-  // be.
-  CHECK(!context_provider.GetCapabilities().supports_rgb_to_yuv_conversion ||
+  // If Skia can render into any YUV format, supports_yuv_readback must also be
+  // true.
+  auto* sii = context_provider.SharedImageInterface();
+  CHECK(!sii || sii->GetCapabilities().skia_writable_yuv_formats.empty() ||
         supports_yuv_readback);
 
   // Try async reading if image is texture backed.
@@ -110,7 +114,7 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
       if (!accelerated_frame_pool_) {
         accelerated_frame_pool_ =
             std::make_unique<WebGraphicsContext3DVideoFramePool>(
-                context_provider_wrapper);
+                context_provider_wrapper, media::PIXEL_FORMAT_NV12);
       }
       if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
               gfx::Size(image->width(), image->height()),

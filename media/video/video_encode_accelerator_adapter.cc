@@ -244,6 +244,13 @@ bool CanPassthroughGpuFrameFormat(
 
 }  // namespace
 
+// static
+VideoPixelFormat VideoEncodeAcceleratorAdapter::GetInputPixelFormat(
+    VideoCodecProfile profile,
+    const Options& options) {
+  return InputPixelFormat(profile, options, kDefaultPixelFormat);
+}
+
 class VideoEncodeAcceleratorAdapter::MappableSharedImageVideoFramePool
     : public base::RefCountedThreadSafe<MappableSharedImageVideoFramePool> {
  public:
@@ -558,8 +565,7 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   profile_ = profile;
   supported_rc_modes_ = supported_rc_modes;
   gpu_supported_pixel_formats_ = std::move(gpu_supported_pixel_formats);
-  input_pixel_format_ =
-      InputPixelFormat(profile_, options, kDefaultPixelFormat);
+  input_pixel_format_ = GetInputPixelFormat(profile_, options);
   // An empty list means no GPU formats were advertised, not that CPU conversion
   // is unsupported. Preserve the legacy fallback only when it matches
   // `input_pixel_format_`; otherwise it could bypass the required conversion.

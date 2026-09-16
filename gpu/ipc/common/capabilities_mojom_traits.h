@@ -60,9 +60,6 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::CapabilitiesDataView,
   static bool avoid_stencil_buffers(const gpu::Capabilities& cap) {
     return cap.avoid_stencil_buffers;
   }
-  static bool supports_rgb_to_yuv_conversion(const gpu::Capabilities& cap) {
-    return cap.supports_rgb_to_yuv_conversion;
-  }
   static bool supports_yuv_readback(const gpu::Capabilities& cap) {
     return cap.supports_yuv_readback;
   }

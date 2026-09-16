@@ -67,7 +67,7 @@ class MEDIA_EXPORT RenderableMappableSharedImageVideoFramePool {
 
   // Create a frame pool. The supplied `context` will live until all frames
   // created by the pool have been destroyed (so it may outlive the returned
-  // pool). Only NV12 and ARGB formats are supported.
+  // pool). ARGB, ABGR, RGBAF16, and biplanar YUV formats are supported.
   // |requires_cpu_access| determines whether linear CPU mappable buffers will
   // be used.
   static std::unique_ptr<RenderableMappableSharedImageVideoFramePool> Create(

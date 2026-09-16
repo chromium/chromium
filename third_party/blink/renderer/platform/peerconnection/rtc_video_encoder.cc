@@ -2375,7 +2375,8 @@ bool RTCVideoEncoder::Impl::MaybeConvertRGBAToNV12AndEncode(
           IsGpuMemoryBufferReadbackFromTextureEnabled()) {
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
       accelerated_frame_pool_ =
-          std::make_unique<WebGraphicsContext3DVideoFramePool>(wrapper);
+          std::make_unique<WebGraphicsContext3DVideoFramePool>(
+              wrapper, media::PIXEL_FORMAT_NV12);
       if (!accelerated_frame_pool_) {
         use_accelerated_pool_ = false;
       }

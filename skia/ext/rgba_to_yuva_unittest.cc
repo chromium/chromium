@@ -9,6 +9,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/core/SkSurface.h"
 
 namespace skia {
 namespace {
@@ -219,6 +220,44 @@ TEST(RGBAToYUVA, PlaneConfig) {
       }
     }
   }
+}
+
+// Opaque sRGB red through BT.2020 10-bit limited. Encoders read the 10 MSBs
+// of each unorm16 sample (`value >> 6`).
+TEST(RGBAToYUVATest, ConvertTo10Bit) {
+  SkBitmap src_bitmap;
+  src_bitmap.allocPixels(SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType,
+                                           kOpaque_SkAlphaType,
+                                           SkColorSpace::MakeSRGB()));
+  src_bitmap.erase(SkColors::kRed, src_bitmap.bounds());
+  const auto src_image = SkImages::RasterFromBitmap(src_bitmap);
+  const auto color_space = SkColorSpace::MakeSRGB();
+  const SkYUVAInfo yuva_info(
+      SkISize::Make(1, 1), SkYUVAInfo::PlaneConfig::kY_UV,
+      SkYUVAInfo::Subsampling::k444, kBT2020_10bit_Limited_SkYUVColorSpace);
+
+  uint16_t y = 0;
+  std::array<uint16_t, 2> uv = {};
+  std::array<SkPixmap, 2> pixmaps = {
+      SkPixmap(SkImageInfo::Make(1, 1, kR16_unorm_SkColorType,
+                                 kOpaque_SkAlphaType, color_space),
+               &y, sizeof(uint16_t)),
+      SkPixmap(SkImageInfo::Make(1, 1, kR16G16_unorm_SkColorType,
+                                 kOpaque_SkAlphaType, color_space),
+               uv.data(), 2 * sizeof(uint16_t)),
+  };
+  std::array<sk_sp<SkSurface>, 2> surfaces;
+  std::array<SkSurface*, 2> surface_ptrs;
+  for (size_t i = 0; i < surfaces.size(); ++i) {
+    surfaces[i] = SkSurfaces::WrapPixels(pixmaps[i]);
+    surface_ptrs[i] = surfaces[i].get();
+  }
+
+  BlitRGBAToYUVA(src_image.get(), surface_ptrs, yuva_info);
+
+  EXPECT_EQ(y >> 6, 294u);
+  EXPECT_EQ(uv[0] >> 6, 387u);
+  EXPECT_EQ(uv[1] >> 6, 960u);
 }
 
 TEST(RGBAToYUVATest, Basic) {

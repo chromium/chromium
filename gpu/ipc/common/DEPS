@@ -15,6 +15,9 @@ specific_include_rules = {
   "capabilities_mojom_traits.h": [
     "+services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h",
   ],
+  "shared_image_capabilities_mojom_traits.h": [
+    "+services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h",
+  ],
   "shared_image_metadata_mojom_traits.h": [
     "+services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h",
     "+skia/public/mojom/image_info_mojom_traits.h",

@@ -30,13 +30,16 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_test_config.h"
+#include "skia/ext/rgba_to_yuva.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/mac/io_surface.h"
@@ -60,6 +63,77 @@ struct IOSurfacePlaneInfo {
   int height;
   int bytes_per_row = 0;
 };
+
+// Mirrors GetSkiaWritableYUVFormats() in SharedImageFactory. Ganesh rejects
+// kR16_unorm and kR16G16_unorm, i.e. the 10-bit planes, on every backend, so
+// only Graphite can write to them.
+bool CanProduceSkSurfaceForAllPlanes(GrDirectContext* gr_context,
+                                     viz::SharedImageFormat format) {
+  if (!gr_context) {
+    return true;
+  }
+  for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+    if (!gr_context->colorTypeSupportedAsSurface(
+            viz::ToClosestSkColorType(format, plane))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void BlitRGBToYUVA(viz::SharedImageFormat format,
+                   const gfx::Size& size,
+                   SkiaImageRepresentation::ScopedWriteAccess* write_access) {
+  SkBitmap src_bitmap;
+  src_bitmap.allocPixels(SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType,
+                                           kOpaque_SkAlphaType,
+                                           SkColorSpace::MakeSRGB()));
+  src_bitmap.erase(SkColors::kRed, src_bitmap.bounds());
+  const auto src_image = SkImages::RasterFromBitmap(src_bitmap);
+
+  const int bit_depth = format.MultiplanarBitDepth();
+  const SkYUVAInfo gpu_yuva_info(
+      gfx::SizeToSkISize(size), ToSkYUVAPlaneConfig(format),
+      ToSkYUVASubsampling(format),
+      bit_depth == 10 ? kBT2020_10bit_Limited_SkYUVColorSpace
+                      : kBT2020_8bit_Limited_SkYUVColorSpace);
+  std::array<SkSurface*, SkYUVAInfo::kMaxPlanes> gpu_surfaces = {};
+  for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
+    gpu_surfaces[plane] = write_access->surface(plane);
+  }
+  skia::BlitRGBAToYUVA(src_image.get(), gpu_surfaces, gpu_yuva_info);
+}
+
+void Verify10BitYUVAData(IOSurfaceRef io_surface) {
+  ASSERT_EQ(IOSurfaceLock(io_surface, kIOSurfaceLockReadOnly, nullptr),
+            KERN_SUCCESS);
+
+  // Opaque red in BT.2020 10-bit limited range. Encoders read the 10 MSBs of
+  // each unorm16 sample (`value >> 6`).
+  constexpr uint16_t kExpectedY = 294u;
+  constexpr uint16_t kExpectedU = 387u;
+  constexpr uint16_t kExpectedV = 960u;
+
+  struct InterleavedUV {
+    uint16_t u;
+    uint16_t v;
+  };
+
+  const auto* y_plane = static_cast<const uint16_t*>(
+      IOSurfaceGetBaseAddressOfPlane(io_surface, 0));
+  const auto* uv_plane = static_cast<const InterleavedUV*>(
+      IOSurfaceGetBaseAddressOfPlane(io_surface, 1));
+  if (y_plane && uv_plane) {
+    EXPECT_EQ(*y_plane >> 6, kExpectedY);
+    EXPECT_EQ(uv_plane->u >> 6, kExpectedU);
+    EXPECT_EQ(uv_plane->v >> 6, kExpectedV);
+  } else {
+    ADD_FAILURE() << "IOSurface plane is not CPU-accessible";
+  }
+
+  EXPECT_EQ(IOSurfaceUnlock(io_surface, kIOSurfaceLockReadOnly, nullptr),
+            KERN_SUCCESS);
+}
 
 gfx::ScopedIOSurface CreateIOSurfaceWithPlanes(
     gfx::Size size,
@@ -887,6 +961,41 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
         format == viz::SinglePlaneFormat::kBGRA_1010102) {
       GTEST_SKIP();
     }
+#if BUILDFLAG(SKIA_USE_DAWN)
+    if (gr_context_type == GrContextType::kGraphiteDawn &&
+        format.is_multi_plane()) {
+      auto* dawn_context_provider = context_state_->dawn_context_provider();
+      bool format_supported = dawn_context_provider->SupportsFeature(
+          wgpu::FeatureName::MultiPlanarRenderTargets);
+      if (format == viz::MultiPlaneFormat::kNV12) {
+        format_supported &= dawn_context_provider->SupportsFeature(
+            wgpu::FeatureName::DawnMultiPlanarFormats);
+      } else if (format == viz::MultiPlaneFormat::kNV16) {
+        format_supported &= dawn_context_provider->SupportsFeature(
+            wgpu::FeatureName::MultiPlanarFormatNv16);
+      } else if (format == viz::MultiPlaneFormat::kNV24) {
+        format_supported &= dawn_context_provider->SupportsFeature(
+            wgpu::FeatureName::MultiPlanarFormatNv24);
+      } else if (format == viz::MultiPlaneFormat::kP010) {
+        format_supported &= dawn_context_provider->SupportsFeature(
+            wgpu::FeatureName::MultiPlanarFormatP010);
+      } else if (format == viz::MultiPlaneFormat::kP210) {
+        format_supported &= dawn_context_provider->SupportsFeature(
+            wgpu::FeatureName::MultiPlanarFormatP210);
+      } else if (format == viz::MultiPlaneFormat::kP410) {
+        format_supported &= dawn_context_provider->SupportsFeature(
+            wgpu::FeatureName::MultiPlanarFormatP410);
+      }
+      if (format.channel_format() ==
+          viz::SharedImageFormat::ChannelFormat::k10) {
+        format_supported &= dawn_context_provider->SupportsFeature(
+            wgpu::FeatureName::Unorm16TextureFormats);
+      }
+      if (!format_supported) {
+        GTEST_SKIP();
+      }
+    }
+#endif
 
     auto* feature_info = context_state_->feature_info();
     // NV12 and P010 are always supported on Apple.
@@ -1036,9 +1145,12 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
 #endif
   }
 
-  if (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
-      format == viz::MultiPlaneFormat::kP010) {
-    // Producing SkSurface for these formats fails for some reason.
+  if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+    // Producing SkSurface for BGRA_1010102 is unsupported. See
+    // GrRecordingContext::colorTypeSupportedAsSurface() for unsupported types.
+    return;
+  }
+  if (!CanProduceSkSurfaceForAllPlanes(context_state_->gr_context(), format)) {
     return;
   }
 
@@ -1053,7 +1165,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
   // Finally, validate a SkiaImageRepresentation.
   auto skia_representation = shared_image_representation_factory_.ProduceSkia(
       mailbox, context_state_.get());
-  EXPECT_TRUE(skia_representation);
+  ASSERT_TRUE(skia_representation);
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
   std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
@@ -1061,6 +1173,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
   scoped_write_access = skia_representation->BeginScopedWriteAccess(
       &begin_semaphores, &end_semaphores,
       SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  ASSERT_TRUE(scoped_write_access);
   for (auto i = 0; i < format.NumberOfPlanes(); i++) {
     auto* surface = scoped_write_access->surface(i);
     EXPECT_TRUE(surface);
@@ -1285,8 +1398,9 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataWrongSize) {
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT};
-  std::vector<uint8_t> initial_data_small(256 * 128 * 4);
-  std::vector<uint8_t> initial_data_large(256 * 512 * 4);
+  const size_t expected_size = format.EstimatedSizeInBytes(size);
+  std::vector<uint8_t> initial_data_small(expected_size / 2);
+  std::vector<uint8_t> initial_data_large(expected_size * 2);
   auto backing = backing_factory_->CreateSharedImage(
       mailbox,
       {format, size, color_space, surface_origin, alpha_type, usage,
@@ -1312,7 +1426,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest,
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT};
-  std::vector<uint8_t> initial_data(256 * 256 * 4);
+  std::vector<uint8_t> initial_data(format.EstimatedSizeInBytes(size));
   auto backing = backing_factory_->CreateSharedImage(
       mailbox,
       {format, size, color_space, surface_origin, alpha_type, usage,
@@ -1660,13 +1774,13 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
 
   scoped_read_access.reset();
 
-  // Producing SkSurface for BGRA_1010102 or P010 fails as Skia uses A16, RG16
-  // formats as read-only for now. See
-  // GrRecordingContext::colorTypeSupportedAsSurface() for all unsupported
-  // types.
+  // Producing SkSurface for BGRA_1010102 is unsupported. See
+  // GrRecordingContext::colorTypeSupportedAsSurface() for unsupported types.
   // TODO(crbug.com/40266937): Check supported formats for graphite and update.
-  if (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
-      format == viz::MultiPlaneFormat::kP010) {
+  if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+    return;
+  }
+  if (!CanProduceSkSurfaceForAllPlanes(context_state_->gr_context(), format)) {
     return;
   }
 
@@ -1683,6 +1797,7 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
   scoped_write_access = skia_representation->BeginScopedWriteAccess(
       &begin_semaphores, &end_semaphores,
       SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  ASSERT_TRUE(scoped_write_access);
   for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
     auto* surface = scoped_write_access->surface(plane);
     EXPECT_TRUE(surface);
@@ -1694,6 +1809,72 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
   skia_representation.reset();
 
   shared_image.reset();
+}
+
+TEST_P(IOSurfaceImageBackingFactoryGMBTest, BlitRGBToYUVAWritesExpectedPixels) {
+  auto format = get_format();
+  if (!format.is_multi_plane()) {
+    GTEST_SKIP();
+  }
+  auto gr_context_type = get_gr_context_type();
+  if (gr_context_type == GrContextType::kGL &&
+      format.channel_format() == viz::SharedImageFormat::ChannelFormat::k10) {
+    // The 10-bit planes use kR16_unorm/kR16G16_unorm, which Ganesh rejects in
+    // GrRecordingContext::colorTypeSupportedAsSurface() even though GrGLCaps
+    // reports R16/RG16 as renderable.
+    GTEST_SKIP();
+  }
+  // TODO(crbug.com/40643093): Enable once multi-planar rendering lands for Dawn
+  // Vulkan-Swiftshader.
+  if (gr_context_type == GrContextType::kGraphiteDawn &&
+      GetDawnBackendType() == wgpu::BackendType::Vulkan) {
+    GTEST_SKIP();
+  }
+
+  gfx::Size size(256, 256);
+  SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_SCANOUT,
+                               SHARED_IMAGE_USAGE_DISPLAY_READ,
+                               SHARED_IMAGE_USAGE_DISPLAY_WRITE};
+  if (gr_context_type == GrContextType::kGL) {
+    usage.PutAll({SHARED_IMAGE_USAGE_GLES2_READ});
+  } else if constexpr (BUILDFLAG(SKIA_USE_DAWN)) {
+    usage.PutAll({SHARED_IMAGE_USAGE_WEBGPU_READ});
+  }
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+
+  auto shared_image = CreateSharedImage(size, format, usage, color_space);
+  ASSERT_TRUE(shared_image);
+  auto mailbox = shared_image->mailbox();
+
+  auto skia_representation = shared_image_representation_factory_.ProduceSkia(
+      mailbox, context_state_.get());
+  ASSERT_TRUE(skia_representation);
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  auto scoped_write_access = skia_representation->BeginScopedWriteAccess(
+      &begin_semaphores, &end_semaphores,
+      SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  ASSERT_TRUE(scoped_write_access);
+
+  BlitRGBToYUVA(format, size, scoped_write_access.get());
+  const bool needs_graphite_submit =
+      scoped_write_access->NeedGraphiteContextSubmit();
+  EXPECT_TRUE(context_state_->FlushWriteAccess(scoped_write_access.get()));
+  context_state_->SubmitIfNecessary(std::move(end_semaphores),
+                                    needs_graphite_submit);
+  scoped_write_access.reset();
+  skia_representation.reset();
+
+  if (format.channel_format() != viz::SharedImageFormat::ChannelFormat::k10) {
+    return;
+  }
+  auto overlay_representation =
+      shared_image_representation_factory_.ProduceOverlay(mailbox);
+  ASSERT_TRUE(overlay_representation);
+  auto scoped_overlay_access = overlay_representation->BeginScopedReadAccess();
+  ASSERT_TRUE(scoped_overlay_access);
+  Verify10BitYUVAData(scoped_overlay_access->GetIOSurface().get());
 }
 
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -2006,14 +2187,22 @@ const auto kScanoutFormats =
                       viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kBGRA_1010102,
                       viz::MultiPlaneFormat::kNV12,
-                      viz::MultiPlaneFormat::kP010);
+                      viz::MultiPlaneFormat::kNV16,
+                      viz::MultiPlaneFormat::kNV24,
+                      viz::MultiPlaneFormat::kP010,
+                      viz::MultiPlaneFormat::kP210,
+                      viz::MultiPlaneFormat::kP410);
 
 const auto kGMBFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kBGRA_1010102,
                       viz::MultiPlaneFormat::kNV12,
-                      viz::MultiPlaneFormat::kP010);
+                      viz::MultiPlaneFormat::kNV16,
+                      viz::MultiPlaneFormat::kNV24,
+                      viz::MultiPlaneFormat::kP010,
+                      viz::MultiPlaneFormat::kP210,
+                      viz::MultiPlaneFormat::kP410);
 
 std::string TestBackendTypeParamToString(
     const testing::TestParamInfo<wgpu::BackendType>& param_info) {

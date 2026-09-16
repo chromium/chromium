@@ -21,6 +21,9 @@ bool StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
   out->supports_r16_shared_images = data.supports_r16_shared_images();
   out->supports_ycbcr_nv12_sampling = data.supports_ycbcr_nv12_sampling();
   out->supports_ycbcr_p010_sampling = data.supports_ycbcr_p010_sampling();
+  if (!data.ReadSkiaWritableYuvFormats(&out->skia_writable_yuv_formats)) {
+    return false;
+  }
   out->is_r16f_supported = data.is_r16f_supported();
   out->disable_webgpu_shared_images = data.disable_webgpu_shared_images();
   out->disable_one_component_textures = data.disable_one_component_textures();

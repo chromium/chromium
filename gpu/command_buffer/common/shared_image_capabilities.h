@@ -7,7 +7,10 @@
 
 #include <stdint.h>
 
+#include <vector>
+
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
 namespace gpu {
@@ -29,6 +32,12 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT SharedImageCapabilities {
   bool supports_r16_shared_images = false;
   bool supports_ycbcr_nv12_sampling = false;
   bool supports_ycbcr_p010_sampling = false;
+
+  // Biplanar YUV formats whose planes the active Skia backend can wrap as an
+  // SkSurface, i.e. that RASTER_WRITE can render into. Being listed here says
+  // nothing about whether a backing can be allocated.
+  std::vector<viz::SharedImageFormat> skia_writable_yuv_formats;
+
   bool is_r16f_supported = false;
   bool disable_webgpu_shared_images = false;
   bool disable_one_component_textures = false;

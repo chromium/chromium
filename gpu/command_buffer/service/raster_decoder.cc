@@ -1198,15 +1198,9 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
               wgpu::FeatureName::MultiPlanarRenderTargets);
     }
 #endif
-    caps.supports_rgb_to_yuv_conversion = supports_multiplanar_rendering;
     caps.supports_yuv_readback = supports_multiplanar_rendering;
   } else {
-    caps.supports_rgb_to_yuv_conversion = true;
     caps.supports_yuv_readback = true;
-  }
-
-  if (feature_info()->workarounds().disable_rgb_to_yuv_conversion) {
-    caps.supports_rgb_to_yuv_conversion = false;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

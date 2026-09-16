@@ -6,7 +6,9 @@
 
 #include <inttypes.h>
 
+#include <array>
 #include <memory>
+#include <vector>
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -99,6 +101,10 @@
 #include "gpu/command_buffer/service/shared_image/dawn_image_backing_factory.h"
 #endif  // BUILDFLAG(USE_DAWN)
 
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -138,6 +144,81 @@ const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
 #endif
   }
   NOTREACHED();
+}
+
+// Biplanar YUV formats that RGB-to-YUV conversion can render into, given a
+// Skia backend that can wrap their planes as SkSurfaces.
+constexpr auto kBiplanarYUVFormats = std::to_array({
+    viz::MultiPlaneFormat::kNV12,
+    viz::MultiPlaneFormat::kNV16,
+    viz::MultiPlaneFormat::kNV24,
+    viz::MultiPlaneFormat::kP010,
+    viz::MultiPlaneFormat::kP210,
+    viz::MultiPlaneFormat::kP410,
+});
+
+std::vector<viz::SharedImageFormat> GetSkiaWritableYUVFormats(
+    SharedContextState* context_state) {
+  std::vector<viz::SharedImageFormat> formats;
+  if (!context_state) {
+    return formats;
+  }
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+  if (context_state->IsGraphiteDawn()) {
+    auto* dawn_context_provider = context_state->dawn_context_provider();
+    // Rendering into any multiplanar texture requires this feature.
+    if (!dawn_context_provider->SupportsFeature(
+            wgpu::FeatureName::MultiPlanarRenderTargets)) {
+      return formats;
+    }
+    // The Px10 formats hold their 10 bits in unorm16 planes.
+    const bool supports_unorm16 = dawn_context_provider->SupportsFeature(
+        wgpu::FeatureName::Unorm16TextureFormats);
+    auto add_format_if_supported = [&](wgpu::FeatureName feature,
+                                       viz::SharedImageFormat format) {
+      if (dawn_context_provider->SupportsFeature(feature)) {
+        formats.push_back(format);
+      }
+    };
+    add_format_if_supported(wgpu::FeatureName::DawnMultiPlanarFormats,
+                            viz::MultiPlaneFormat::kNV12);
+    add_format_if_supported(wgpu::FeatureName::MultiPlanarFormatNv16,
+                            viz::MultiPlaneFormat::kNV16);
+    add_format_if_supported(wgpu::FeatureName::MultiPlanarFormatNv24,
+                            viz::MultiPlaneFormat::kNV24);
+    if (supports_unorm16) {
+      add_format_if_supported(wgpu::FeatureName::MultiPlanarFormatP010,
+                              viz::MultiPlaneFormat::kP010);
+      add_format_if_supported(wgpu::FeatureName::MultiPlanarFormatP210,
+                              viz::MultiPlaneFormat::kP210);
+      add_format_if_supported(wgpu::FeatureName::MultiPlanarFormatP410,
+                              viz::MultiPlaneFormat::kP410);
+    }
+    return formats;
+  }
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
+
+  if (auto* gr_context = context_state->gr_context()) {
+    // Mirrors the check in skgpu::ganesh::Device::Make(), which every
+    // SkSurfaces::WrapBackendTexture() call in the Skia representations goes
+    // through. It rejects kR16_unorm and kR16G16_unorm regardless of GrCaps,
+    // so the 10-bit formats end up Graphite-only.
+    for (const auto format : kBiplanarYUVFormats) {
+      bool renderable = true;
+      for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+        if (!gr_context->colorTypeSupportedAsSurface(
+                viz::ToClosestSkColorType(format, plane))) {
+          renderable = false;
+          break;
+        }
+      }
+      if (renderable) {
+        formats.push_back(format);
+      }
+    }
+  }
+  return formats;
 }
 
 gfx::GpuMemoryBufferType GetNativeBufferType() {
@@ -858,6 +939,13 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
         shared_image_manager_->SupportsNV12TextureSampling();
     shared_image_caps.supports_ycbcr_p010_sampling =
         shared_image_manager_->SupportsP010TextureSampling();
+  }
+
+  // RGB-to-YUV conversion is the only client that renders into these formats,
+  // so the workaround that disables it leaves the list empty.
+  if (!workarounds_.disable_rgb_to_yuv_conversion) {
+    shared_image_caps.skia_writable_yuv_formats =
+        GetSkiaWritableYUVFormats(context_state_.get());
   }
   if (!context_state_) {
     shared_image_caps.is_r16f_supported = false;

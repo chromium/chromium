@@ -63,6 +63,9 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   // A way to force a certain way of submitting frames to VEA.
   void SetInputBufferPreferenceForTesting(InputBufferKind type);
 
+  static VideoPixelFormat GetInputPixelFormat(VideoCodecProfile profile,
+                                              const Options& options);
+
   // VideoEncoder implementation.
   void Initialize(VideoCodecProfile profile,
                   const Options& options,

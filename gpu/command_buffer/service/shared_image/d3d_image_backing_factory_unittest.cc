@@ -2299,6 +2299,46 @@ TEST_P(D3DImageBackingFactoryTest, CanCreateScanoutBacking) {
           gfx::GpuMemoryBufferType::EMPTY_BUFFER, GrContextType ::kGL, {}));
 }
 
+TEST_P(D3DImageBackingFactoryTest, CreateP010Backing) {
+  if (context_state_->IsGraphiteDawnD3D12()) {
+    GTEST_SKIP() << "The factory has no D3D11 device to create textures with.";
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+  ASSERT_TRUE(d3d11_device);
+
+  constexpr UINT kRequiredUsage = D3D11_FORMAT_SUPPORT_TEXTURE2D |
+                                  D3D11_FORMAT_SUPPORT_SHADER_SAMPLE |
+                                  D3D11_FORMAT_SUPPORT_RENDER_TARGET;
+  UINT format_support = 0;
+  if (FAILED(d3d11_device->CheckFormatSupport(DXGI_FORMAT_P010,
+                                              &format_support)) ||
+      (format_support & kRequiredUsage) != kRequiredUsage) {
+    GTEST_SKIP() << "D3D device does not support P010";
+  }
+
+  constexpr gfx::Size size(32, 32);
+  constexpr auto format = viz::MultiPlaneFormat::kP010;
+  constexpr gpu::SharedImageUsageSet usage =
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_CPU_UPLOAD;
+
+  EXPECT_TRUE(shared_image_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false,
+      gfx::GpuMemoryBufferType::EMPTY_BUFFER, context_state_->gr_context_type(),
+      {}));
+
+  auto backing = shared_image_factory_->CreateSharedImage(
+      gpu::Mailbox::Generate(),
+      {format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+       kPremul_SkAlphaType, usage, "TestLabel"},
+      kNullSurfaceHandle, /*is_thread_safe=*/false);
+  ASSERT_NE(backing, nullptr);
+  EXPECT_EQ(backing->format(), format);
+  EXPECT_EQ(backing->size(), size);
+}
+
 TEST_P(D3DImageBackingFactoryTest, CanProduceDCompTextureOverlay) {
   if (!gl::DirectCompositionTextureSupported()) {
     GTEST_SKIP() << "IDCompositionTexture not supported";

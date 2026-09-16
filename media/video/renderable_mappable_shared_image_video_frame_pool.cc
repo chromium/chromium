@@ -173,13 +173,21 @@ gfx::Size GetCodedSizeForVideoPixelFormat(VideoPixelFormat format,
     case PIXEL_FORMAT_RGBAF16:
       return visible_size;
     case PIXEL_FORMAT_NV12:
-      // Align number of rows to 2, because it's required by YUV_420_BIPLANAR
-      // buffer allocation code.
-      // Align buffer stride to 4, because our SharedImage shared memory backing
-      // code requires it, since it sometimes treats Y-planes are 4 bytes per
-      // pixel textures.
+      // 4:2:0 needs even coded size. Also round width up to 4. That 4-wide
+      // stride used to be required because SharedImage SHMEM treated the Y
+      // plane as a 4-byte-per-pixel texture; multiplanar SI no longer does
+      // (row bytes are width * bytes-per-channel). Keep the historical
+      // padding: CopySharedImage still scales the RGB source to the full coded
+      // size, so shrinking it would change the output of existing NV12
+      // capture/convert callers.
       return {cc::MathUtil::CheckedRoundUp(visible_size.width(), 4),
               cc::MathUtil::CheckedRoundUp(visible_size.height(), 2)};
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_NV24:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
+      return VideoFrame::DetermineAlignedSize(format, visible_size);
     default:
       NOTREACHED();
   }
@@ -188,9 +196,12 @@ gfx::Size GetCodedSizeForVideoPixelFormat(VideoPixelFormat format,
 bool FrameResources::Initialize(VideoPixelFormat format,
                                 const gfx::ColorSpace& color_space,
                                 bool requires_cpu_access) {
-  // Currently only support ARGB, ABGR and NV12.
+  // Only formats supported as renderable, mappable SharedImages belong here.
   CHECK(format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_ABGR ||
-        format == PIXEL_FORMAT_NV12 || format == PIXEL_FORMAT_RGBAF16)
+        format == PIXEL_FORMAT_RGBAF16 || format == PIXEL_FORMAT_NV12 ||
+        format == PIXEL_FORMAT_NV16 || format == PIXEL_FORMAT_NV24 ||
+        format == PIXEL_FORMAT_P010LE || format == PIXEL_FORMAT_P210LE ||
+        format == PIXEL_FORMAT_P410LE)
       << format;
 
   auto* context = pool_->GetContext();

@@ -33,6 +33,11 @@ namespace {
 gfx::ColorSpace GetColorSpaceForPixelFormat(media::VideoPixelFormat format) {
   switch (format) {
     case media::PIXEL_FORMAT_NV12:
+    case media::PIXEL_FORMAT_NV16:
+    case media::PIXEL_FORMAT_NV24:
+    case media::PIXEL_FORMAT_P010LE:
+    case media::PIXEL_FORMAT_P210LE:
+    case media::PIXEL_FORMAT_P410LE:
       return gfx::ColorSpace::CreateREC709();
     case media::PIXEL_FORMAT_ARGB:
     case media::PIXEL_FORMAT_ABGR:
@@ -95,22 +100,10 @@ class RenderableMappableSharedImageVideoFramePoolTest
 
  protected:
   void VerifySharedImageCreation(FakeContext* context) {
-    viz::SharedImageFormat si_format;
-    switch (format_) {
-      case PIXEL_FORMAT_NV12:
-        si_format = viz::MultiPlaneFormat::kNV12;
-        break;
-      case PIXEL_FORMAT_ARGB:
-        si_format = viz::SinglePlaneFormat::kBGRA_8888;
-        break;
-      case PIXEL_FORMAT_ABGR:
-        si_format = viz::SinglePlaneFormat::kRGBA_8888;
-        break;
-      default:
-        NOTREACHED();
-    }
+    const auto si_format = VideoPixelFormatToSharedImageFormat(format_);
+    ASSERT_TRUE(si_format);
     EXPECT_CALL(*context,
-                DoCreateMappableSharedImage(_, _, si_format, _, _, _));
+                DoCreateMappableSharedImage(_, _, *si_format, _, _, _));
   }
 
   VideoPixelFormat format_;
@@ -453,6 +446,11 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     RenderableMappableSharedImageVideoFramePoolTest,
     testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_NV12,
+                    media::VideoPixelFormat::PIXEL_FORMAT_NV16,
+                    media::VideoPixelFormat::PIXEL_FORMAT_NV24,
+                    media::VideoPixelFormat::PIXEL_FORMAT_P010LE,
+                    media::VideoPixelFormat::PIXEL_FORMAT_P210LE,
+                    media::VideoPixelFormat::PIXEL_FORMAT_P410LE,
                     media::VideoPixelFormat::PIXEL_FORMAT_ARGB,
                     media::VideoPixelFormat::PIXEL_FORMAT_ABGR));
 

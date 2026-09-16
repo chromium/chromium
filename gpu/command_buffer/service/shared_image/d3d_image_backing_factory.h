@@ -159,11 +159,15 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   // using Graphite.
   Microsoft::WRL::ComPtr<ID3D11Device> angle_d3d11_device_;
 
-  // Stores the maximum size dimension supported by an nv12 texture.
-  int max_nv12_dim_supported_ = 0;
+  // Maximum 2D texture dimension for the D3D feature level. Used for
+  // multi-planar formats (NV12, P010).
+  int max_2d_texture_dim_supported_ = 0;
 
   // Stores whether NV12 format is supported by the D3D device.
   bool d3d11_supports_nv12_;
+
+  // Stores whether P010 format is supported by the D3D device.
+  bool d3d11_supports_p010_;
 
   // Capabilities needed for getting the correct GL format for creating GL
   // textures.

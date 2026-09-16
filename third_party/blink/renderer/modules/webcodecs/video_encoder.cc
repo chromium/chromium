@@ -22,7 +22,10 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "media/base/async_destroy_video_encoder.h"
+#include "media/base/format_utils.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
 #include "media/base/media_util.h"
@@ -597,13 +600,44 @@ VideoEncoderConfig* CopyConfig(
 
 bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format,
                                    bool force_opaque) {
-  // GMB readback only works with NV12, so only opaque buffers can be used.
+  // Accelerated YUV readback cannot preserve alpha.
   return (format == media::PIXEL_FORMAT_XBGR ||
           format == media::PIXEL_FORMAT_XRGB ||
+          format == media::PIXEL_FORMAT_XB30 ||
+          format == media::PIXEL_FORMAT_XR30 ||
           (force_opaque && (format == media::PIXEL_FORMAT_ABGR ||
-                            format == media::PIXEL_FORMAT_ARGB))) &&
+                            format == media::PIXEL_FORMAT_ARGB ||
+                            format == media::PIXEL_FORMAT_RGBAF16))) &&
          WebGraphicsContext3DVideoFramePool::
              IsGpuMemoryBufferReadbackFromTextureEnabled();
+}
+
+bool IsAcceleratedReadbackFormat(media::VideoPixelFormat format) {
+  switch (format) {
+    case media::PIXEL_FORMAT_NV12:
+    case media::PIXEL_FORMAT_NV16:
+    case media::PIXEL_FORMAT_NV24:
+    case media::PIXEL_FORMAT_P010LE:
+    case media::PIXEL_FORMAT_P210LE:
+    case media::PIXEL_FORMAT_P410LE:
+      return true;
+    default:
+      return false;
+  }
+}
+
+// Accelerated readback renders the RGB source into the destination planes, so
+// the active Skia backend has to support them as render targets.
+bool CanSkiaWriteToReadbackFormat(media::VideoPixelFormat format) {
+  auto wrapper = SharedGpuContext::ContextProviderWrapper();
+  if (!wrapper) {
+    return false;
+  }
+  auto* sii = wrapper->ContextProvider().SharedImageInterface();
+  const auto si_format = media::VideoPixelFormatToSharedImageFormat(format);
+  return sii && si_format &&
+         std::ranges::contains(sii->GetCapabilities().skia_writable_yuv_formats,
+                               *si_format);
 }
 
 EncoderType GetRequiredEncoderType(media::VideoCodecProfile profile,
@@ -964,6 +998,9 @@ bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
          original_config.profile == new_config.profile &&
          original_config.level == new_config.level &&
          original_config.hw_pref == new_config.hw_pref &&
+         original_config.options.subsampling ==
+             new_config.options.subsampling &&
+         original_config.options.bit_depth == new_config.options.bit_depth &&
          original_config.options.avc.produce_annexb ==
              new_config.options.avc.produce_annexb &&
          original_config.options.hevc.produce_annexb ==
@@ -1025,16 +1062,33 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
   // implemented, |force_opaque| must be set based on the
   // VideoEncoderConfig.
   //
-  // TODO(crbug.com/1116564): If we ever support high bit depth read back, this
-  // path should do something different based on options.bit_depth.
+  media::VideoPixelFormat readback_format = media::PIXEL_FORMAT_NV12;
+  bool is_accelerated_readback_format =
+      active_config_->options.subsampling.value_or(
+          media::VideoChromaSampling::k420) ==
+          media::VideoChromaSampling::k420 &&
+      active_config_->options.bit_depth.value_or(8) == 8;
+  // Explicit GPU input formats are reported by VEA-backed encoders, including
+  // OS software implementations. Bundled software encoders leave this list
+  // empty and retain the legacy NV12 readback above.
+  if (!encoder_info_.gpu_supported_pixel_formats.empty()) {
+    readback_format = media::VideoEncodeAcceleratorAdapter::GetInputPixelFormat(
+        active_config_->profile, active_config_->options);
+    is_accelerated_readback_format =
+        IsAcceleratedReadbackFormat(readback_format) &&
+        std::ranges::contains(encoder_info_.gpu_supported_pixel_formats,
+                              readback_format);
+  }
+
   const bool can_use_gmb =
-      active_config_->options.subsampling != media::VideoChromaSampling::k444 &&
-      !disable_accelerated_frame_pool_ &&
-      CanUseGpuMemoryBufferReadback(frame->format(), /*force_opaque=*/true);
+      is_accelerated_readback_format && !disable_accelerated_frame_pool_ &&
+      CanUseGpuMemoryBufferReadback(frame->format(), /*force_opaque=*/true) &&
+      CanSkiaWriteToReadbackFormat(readback_format);
   if (can_use_gmb && !accelerated_frame_pool_) {
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
       accelerated_frame_pool_ =
-          std::make_unique<WebGraphicsContext3DVideoFramePool>(wrapper);
+          std::make_unique<WebGraphicsContext3DVideoFramePool>(wrapper,
+                                                               readback_format);
     }
   }
 
@@ -1379,6 +1433,9 @@ void VideoEncoder::ProcessConfigure(Request* request) {
   blocking_request_in_progress_ = request;
 
   active_config_ = request->config;
+  accelerated_frame_pool_.reset();
+  disable_accelerated_frame_pool_ = false;
+  encoder_info_.gpu_supported_pixel_formats.clear();
   String js_error_message;
   if (!VerifyCodecSupport(active_config_, &js_error_message)) {
     QueueHandleError(MakeGarbageCollected<DOMException>(
