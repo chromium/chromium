@@ -322,8 +322,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   // This method should be called only when both providers are null.
   void RecreateResourceProvider();
 
-  void FlushIfRecordingLimitExceeded();
-
   void WakeUpFromHibernation();
 
   void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder);

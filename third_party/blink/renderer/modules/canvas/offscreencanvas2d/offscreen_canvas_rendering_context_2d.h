@@ -107,8 +107,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
 
-  void FlushIfRecordingLimitExceeded();
-
   // FlushForImageObserver implementation
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 

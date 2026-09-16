@@ -577,21 +577,6 @@ void CanvasRenderingContext2D::WillDraw(
   }
 }
 
-void CanvasRenderingContext2D::FlushIfRecordingLimitExceeded() {
-  if (Host()->IsPrinting() && clear_frame()) {
-    return;
-  }
-  const MemoryManagedPaintRecorder* recorder = Recorder();
-  if (!recorder) {
-    return;
-  }
-  if (recorder->ReleasableOpBytesUsed() > max_recorded_op_bytes() ||
-      recorder->ReleasableImageBytesUsed() > max_pinned_image_bytes())
-      [[unlikely]] {
-    FlushCanvas(FlushReason::kOther);
-  }
-}
-
 std::optional<cc::PaintRecord> CanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
   if (!canvas()) {

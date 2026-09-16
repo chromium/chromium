@@ -472,21 +472,6 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
   }
 }
 
-void OffscreenCanvasRenderingContext2D::FlushIfRecordingLimitExceeded() {
-  if (Host()->IsPrinting() && clear_frame()) {
-    return;
-  }
-  const MemoryManagedPaintRecorder* recorder = Recorder();
-  if (!recorder) {
-    return;
-  }
-  if (recorder->ReleasableOpBytesUsed() > max_recorded_op_bytes() ||
-      recorder->ReleasableImageBytesUsed() > max_pinned_image_bytes())
-      [[unlikely]] {
-    FlushCanvas(FlushReason::kOther);
-  }
-}
-
 sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
   return GetState().GetFilterForOffscreenCanvas(Host()->Size(), this);
 }

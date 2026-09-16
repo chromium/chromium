@@ -148,6 +148,8 @@ class MODULES_EXPORT BaseRenderingContext2D
   virtual bool CanCreateResourceProvider() = 0;
   virtual bool InitializeResourceProvider() = 0;
 
+  std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override = 0;
+
   String lang() const;
   void setLang(const String&);
 
@@ -291,6 +293,8 @@ class MODULES_EXPORT BaseRenderingContext2D
       Canvas2DResourceProvider* shared_image_provider,
       Canvas2DBitmapProvider* bitmap_provider,
       FlushReason reason);
+
+  void FlushIfRecordingLimitExceeded();
 
   explicit BaseRenderingContext2D(
       CanvasRenderingContextHost* canvas,
