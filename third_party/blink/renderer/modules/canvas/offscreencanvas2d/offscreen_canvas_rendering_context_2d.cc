@@ -480,7 +480,6 @@ void OffscreenCanvasRenderingContext2D::ResetResourceProvider() {
   shared_image_provider_.reset();
   bitmap_provider_.reset();
   recorder_.reset();
-  UpdateRecordingLimits(/*is_graphite=*/false);
 }
 
 void OffscreenCanvasRenderingContext2D::Dispose() {

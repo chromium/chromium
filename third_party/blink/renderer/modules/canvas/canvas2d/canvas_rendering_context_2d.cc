@@ -1349,7 +1349,6 @@ void CanvasRenderingContext2D::ResetResourceProvider() {
   auto old_bitmap = std::move(bitmap_provider_);
   recorder_.reset();
   last_recording_ = std::nullopt;
-  UpdateRecordingLimits(/*is_graphite=*/false);
   if (canvas()) {
     canvas()->UpdateMemoryUsage();
   }

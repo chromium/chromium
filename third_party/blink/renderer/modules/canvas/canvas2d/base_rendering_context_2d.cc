@@ -153,7 +153,9 @@ BaseRenderingContext2D::BaseRenderingContext2D(
       color_params_(attrs.color_space,
                     attrs.hdr_metadata,
                     attrs.pixel_format,
-                    attrs.alpha) {
+                    attrs.alpha),
+      max_pinned_image_bytes_(
+          static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024) {
   UpdateRecordingLimits(/*is_graphite=*/false);
 }
 
@@ -162,8 +164,6 @@ void BaseRenderingContext2D::UpdateRecordingLimits(bool is_graphite) {
       static_cast<size_t>(is_graphite ? features::kMaxRecordedOpGraphiteKB.Get()
                                       : features::kMaxRecordedOpKB.Get()) *
       1024;
-  max_pinned_image_bytes_ =
-      static_cast<size_t>(features::kMaxPinnedImageKB.Get()) * 1024;
 }
 
 void BaseRenderingContext2D::ResetInternal() {
