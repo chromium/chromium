@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -75,6 +76,28 @@ public class TabClosureParamsUnitTest {
     }
 
     @Test
+    public void testCloseTabParams_UnsupportedSetters() {
+        TabClosureParams.Builder builder = TabClosureParams.closeTab(mTab1);
+
+        assertThrows(AssertionError.class, () -> builder.hideTabGroups(true));
+        assertThrows(AssertionError.class, () -> builder.saveToTabRestoreService(false));
+    }
+
+    @Test
+    public void testCloseTabParams_UnsupportedSettersAcceptDefaults() {
+        TabClosureParams params =
+                TabClosureParams.closeTab(mTab1)
+                        .hideTabGroups(false)
+                        .saveToTabRestoreService(true)
+                        .build();
+
+        assertEquals(
+                "Writing the default of an unsupported field should change nothing",
+                TabClosureParams.closeTab(mTab1).build(),
+                params);
+    }
+
+    @Test
     public void testCloseTabsParams_Defaults() {
         List<Tab> tabs = List.of(mTab1, mTab2);
         TabClosureParams params = TabClosureParams.closeTabs(tabs).build();
@@ -112,6 +135,26 @@ public class TabClosureParamsUnitTest {
         assertEquals("Should be TabCloseType.MULTIPLE", TabCloseType.MULTIPLE, params.tabCloseType);
         assertEquals("Undo runnable should be set", mUndoRunnable, params.undoRunnable);
         assertFalse("Should not be a tab group", params.isTabGroup);
+    }
+
+    @Test
+    public void testCloseTabsParams_UnsupportedSetters() {
+        TabClosureParams.Builder builder = TabClosureParams.closeTabs(List.of(mTab1, mTab2));
+
+        assertThrows(AssertionError.class, () -> builder.recommendedNextTab(mTab2));
+        assertThrows(AssertionError.class, () -> builder.uponExit(true));
+    }
+
+    @Test
+    public void testCloseTabsParams_UnsupportedSettersAcceptDefaults() {
+        List<Tab> tabs = List.of(mTab1, mTab2);
+        TabClosureParams params =
+                TabClosureParams.closeTabs(tabs).recommendedNextTab(null).uponExit(false).build();
+
+        assertEquals(
+                "Writing the default of an unsupported field should change nothing",
+                TabClosureParams.closeTabs(tabs).build(),
+                params);
     }
 
     @Test
@@ -168,6 +211,13 @@ public class TabClosureParamsUnitTest {
         assertEquals("Should be TabCloseType.ALL", TabCloseType.ALL, params.tabCloseType);
         assertEquals("Undo runnable should be set", mUndoRunnable, params.undoRunnable);
         assertFalse("Should not be a tab group", params.isTabGroup);
+    }
+
+    @Test
+    public void testCloseAllTabsParams_UnsupportedSetters() {
+        TabClosureParams.Builder builder = TabClosureParams.closeAllTabs();
+
+        assertThrows(AssertionError.class, () -> builder.recommendedNextTab(mTab1));
     }
 
     @Test

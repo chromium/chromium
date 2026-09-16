@@ -87,7 +87,7 @@ public class TabUiUtils {
             Callback.runNullSafe(didCloseCallback, false);
             return;
         }
-        TabClosureParams.CloseTabsBuilder builder =
+        TabClosureParams.Builder builder =
                 TabClosureParams.forCloseTabGroup(tabModel, tab.getTabGroupId());
         if (builder == null) {
             Callback.runNullSafe(didCloseCallback, false);

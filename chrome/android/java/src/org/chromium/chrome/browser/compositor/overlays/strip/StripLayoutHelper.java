@@ -3596,7 +3596,7 @@ public class StripLayoutHelper
         }
 
         boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(motionEventButtonState);
-        TabClosureParams.CloseTabBuilder paramsBuilder =
+        TabClosureParams.Builder paramsBuilder =
                 TabClosureParams.closeTab(realTab)
                         .allowUndo(allowUndo)
                         .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP);
