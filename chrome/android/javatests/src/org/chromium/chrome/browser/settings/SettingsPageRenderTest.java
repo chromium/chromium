@@ -48,9 +48,8 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 public class SettingsPageRenderTest {
-    private static final int RENDER_TEST_REVISION = 2;
-    private static final String RENDER_TEST_DESCRIPTION =
-            "Removed help menu for tablet and desktop.";
+    private static final int RENDER_TEST_REVISION = 3;
+    private static final String RENDER_TEST_DESCRIPTION = "Added edge-to-edge padding.";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

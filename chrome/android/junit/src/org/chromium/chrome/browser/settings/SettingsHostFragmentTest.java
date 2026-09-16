@@ -672,6 +672,37 @@ public class SettingsHostFragmentTest {
         assertNull(SettingsHostFragment.get((Fragment) null));
     }
 
+    /**
+     * Tests that SettingsHostFragment.containsFragment(Fragment) returns true for fragments hosted
+     * by this SettingsHostFragment and false otherwise.
+     */
+    @Test
+    public void testContainsFragment() {
+        mSettingsHostFragment = new TestMultiColumnSettingsHostFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        mSettingsHostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        MultiColumnSettings multiColumnSettings =
+                (MultiColumnSettings) mSettingsHostFragment.getActiveFragment();
+        assertNotNull(multiColumnSettings);
+
+        SecondFakeSettingsFragment detailFragment = new SecondFakeSettingsFragment();
+        multiColumnSettings.showDetailFragment(
+                detailFragment, /* addToBackStack= */ false, /* tag= */ null);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+
+        assertTrue(mSettingsHostFragment.containsFragment(detailFragment));
+        assertTrue(mSettingsHostFragment.containsFragment(multiColumnSettings));
+        assertFalse(mSettingsHostFragment.containsFragment(new SecondFakeSettingsFragment()));
+        assertFalse(mSettingsHostFragment.containsFragment(null));
+    }
+
     @Test
     public void testSetDependencyProvider_whenNotAdded_defersRegistrationUntilAttached() {
         SettingsHostFragment fragment = new TestSettingsHostFragment();

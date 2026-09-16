@@ -397,6 +397,14 @@ public class SettingsHostFragment extends Fragment
         return isAdded();
     }
 
+    /**
+     * Returns the child FragmentManager if attached. Can be mocked in tests, unlike
+     * Fragment#getChildFragmentManager(), which is final.
+     */
+    @Nullable FragmentManager getHostFragmentManager() {
+        return isAdded() ? getChildFragmentManager() : null;
+    }
+
     /** Returns the currently active fragment hosted by this fragment. */
     public @Nullable Fragment getActiveFragment() {
         return getChildFragmentManager().findFragmentById(CONTAINER_ID);
@@ -410,6 +418,11 @@ public class SettingsHostFragment extends Fragment
             if (f == fragment) return true;
         }
         return false;
+    }
+
+    /** Returns whether the given fragment is hosted by this SettingsHostFragment. */
+    public boolean containsFragment(@Nullable Fragment fragment) {
+        return SettingsHostFragment.get(fragment) == this;
     }
 
     /**

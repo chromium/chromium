@@ -111,6 +111,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.settings"

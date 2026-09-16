@@ -1643,6 +1643,7 @@ if (is_android) {
       "//chrome/browser/safe_browsing/android:java",
       "//chrome/browser/settings:java",
       "//chrome/browser/settings:settings_in_tab_java",
+      "//chrome/browser/ui/android/edge_to_edge:factory_java",
       "//third_party/androidx:androidx_preference_preference_java",
       "//third_party/androidx:androidx_slidingpanelayout_slidingpanelayout_java",
     ]
