@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -60,6 +61,8 @@ enum ItemIdentifier {
                            action:@selector(handleCancelButton)];
   cancelButton.accessibilityIdentifier =
       kAtMemoryCloseButtonAccessibilityIdentifier;
+  cancelButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_AUTOFILL_AI_CLOSE_FIND_AND_FILL_ACCESSIBILITY_LABEL);
   self.navigationItem.rightBarButtonItem = cancelButton;
 
   [self loadModel];

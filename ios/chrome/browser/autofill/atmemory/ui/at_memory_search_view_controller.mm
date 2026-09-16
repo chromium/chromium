@@ -119,6 +119,8 @@ enum class ItemIdentifier {
                            action:@selector(handleCancelButton)];
   cancelButton.accessibilityIdentifier =
       kAtMemoryCloseButtonAccessibilityIdentifier;
+  cancelButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_AUTOFILL_AI_CLOSE_FIND_AND_FILL_ACCESSIBILITY_LABEL);
   self.navigationItem.rightBarButtonItem = cancelButton;
 
   self.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_FIND_AND_FILL_TITLE);
