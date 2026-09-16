@@ -145,6 +145,23 @@ BASE_DECLARE_FEATURE(kActorScriptToolTransientUserActivation);
 // Guards the new Actor Task invocation source completion metrics.
 BASE_DECLARE_FEATURE(kActorRecordInvocationSourceCompletionMetrics);
 
+// Page stability parameters for Actor.
+BASE_DECLARE_FEATURE(kActorPageStability);
+extern const base::FeatureParam<base::TimeDelta> kActorPageStabilityTimeout;
+extern const base::FeatureParam<base::TimeDelta> kActorPageStabilityMinWait;
+extern const base::FeatureParam<base::TimeDelta>
+    kActorPaintStabilityInitialPaintTimeout;
+extern const base::FeatureParam<base::TimeDelta>
+    kActorPaintStabilitySubsequentPaintTimeout;
+
+// Observation delay parameters for Actor.
+BASE_DECLARE_FEATURE(kActorObservationDelay);
+extern const base::FeatureParam<base::TimeDelta> kActorObservationDelayTimeout;
+extern const base::FeatureParam<base::TimeDelta> kActorObservationDelayLcp;
+extern const base::FeatureParam<base::TimeDelta>
+    kActorObservationDelayAutofillPredictionsTimeout;
+
+// Tool execution delay and timeout parameters for Actor.
 }  // namespace actor
 
 #endif  // COMPONENTS_ACTOR_CORE_ACTOR_FEATURES_H_

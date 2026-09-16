@@ -2438,9 +2438,10 @@ class ExecutionEngineOriginGatingSlowResponseBrowserTest
         /*enabled_features=*/
         {
             {features::kGlicActor,
-             {{features::kGlicActorPolicyControlExemption.name, "true"},
-              {features::kGlicActorPageStabilityTimeout.name, "300ms"},
-              {features::kActorObservationDelayTimeout.name, "1s"}}},
+             {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+            {kActorPageStability, {{kActorPageStabilityTimeout.name, "300ms"}}},
+            {kActorObservationDelay,
+             {{kActorObservationDelayTimeout.name, "1s"}}},
         },
         /*disabled_features=*/{});
   }

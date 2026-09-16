@@ -98,15 +98,15 @@ class ActorPageStabilityTimeoutTest : public ActorPageStabilityTestBase {
     // Make the paint timeouts high enough that the timeout applies, to
     // simulate not reaching paint stability.
     std::string paint_timeout = absl::StrFormat("%dms", kTimeoutInMs);
-    timeout_scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActor,
-        {{"glic-actor-page-stability-timeout", timeout},
-         // Do not use min wait.
-         {"glic-actor-page-stability-min-wait", "0ms"},
-         {::features::kActorPaintStabilityIntialPaintTimeout.name,
-          paint_timeout},
-         {::features::kActorPaintStabilitySubsequentPaintTimeout.name,
-          paint_timeout}});
+    timeout_scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicActor, {}},
+         {kActorPageStability,
+          {{kActorPageStabilityTimeout.name, timeout},
+           // Do not use min wait.
+           {kActorPageStabilityMinWait.name, "0ms"},
+           {kActorPaintStabilityInitialPaintTimeout.name, paint_timeout},
+           {kActorPaintStabilitySubsequentPaintTimeout.name, paint_timeout}}}},
+        {});
   }
   ActorPageStabilityTimeoutTest(const ActorPageStabilityTimeoutTest&) = delete;
   ActorPageStabilityTimeoutTest& operator=(
@@ -325,10 +325,12 @@ class ActorGeneralPageStabilityTest
       public ::testing::WithParamInterface<bool> {
  public:
   ActorGeneralPageStabilityTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        ::features::kGlicActor,
-        {// Effectively disable the timeout to prevent flakes.
-         {"glic-actor-page-stability-timeout", "30000ms"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{::features::kGlicActor, {}},
+         {kActorPageStability,
+          {// Effectively disable the timeout to prevent flakes.
+           {kActorPageStabilityTimeout.name, "30000ms"}}}},
+        {});
   }
 
   mojo::Remote<page_content_annotations::mojom::PageStabilityMonitor>
@@ -640,9 +642,10 @@ class ActorPageStabilityMinWaitTest
 
   ActorPageStabilityMinWaitTest() {
     std::string min_wait = absl::StrFormat("%dms", kMinWaitInMs);
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        ::features::kGlicActor,
-        {{"glic-actor-page-stability-min-wait", min_wait}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{::features::kGlicActor, {}},
+         {kActorPageStability, {{kActorPageStabilityMinWait.name, min_wait}}}},
+        {});
   }
 
   mojo::Remote<page_content_annotations::mojom::PageStabilityMonitor>

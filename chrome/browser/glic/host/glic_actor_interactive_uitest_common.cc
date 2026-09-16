@@ -31,6 +31,7 @@
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -89,11 +90,12 @@ GlicActorUiTest::GlicActorUiTest() {
       {// Increase timeout since tests are timing out with ASAN builds.
        {features::kGlicWebClientLoadTimes,
         {{features::kGlicMaxLoadingTimeMs.name, "30000"}}},
+       {features::kGlicActor,
+        {{features::kGlicActorPolicyControlExemption.name, "true"}}},
        // Decrease the timeout for observation delays to prevent test timeouts
        // on slow builders.
-       {features::kGlicActor,
-        {{features::kGlicActorPolicyControlExemption.name, "true"},
-         {"actor-observation-delay-timeout", "3s"}}},
+       {actor::kActorObservationDelay,
+        {{actor::kActorObservationDelayTimeout.name, "3s"}}},
        {features::kGlicActorToctouValidation, {}},
        {optimization_guide::features::
             kAnnotatedPageContentWithActionableElements,

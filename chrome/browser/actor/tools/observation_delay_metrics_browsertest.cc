@@ -30,12 +30,14 @@ using State = ::actor::ObservationDelayController::State;
 class ObservationDelayMetricsTest : public ObservationDelayTest {
  public:
   ObservationDelayMetricsTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActor,
-        {// Effectively disable the timeout to prevent flakes.
-         {features::kGlicActorPageStabilityTimeout.name, "30s"},
-         // Disable LCP delay
-         {features::kActorObservationDelayLcp.name, "0ms"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kActorPageStability,
+          {// Effectively disable the timeout to prevent flakes.
+           {kActorPageStabilityTimeout.name, "30s"}}},
+         {kActorObservationDelay,
+          {// Disable LCP delay
+           {kActorObservationDelayLcp.name, "0ms"}}}},
+        {});
   }
   ObservationDelayMetricsTest(const ObservationDelayMetricsTest&) = delete;
   ObservationDelayMetricsTest& operator=(const ObservationDelayMetricsTest&) =
@@ -257,11 +259,12 @@ IN_PROC_BROWSER_TEST_P(ObservationDelayMetricsNavigateTest,
 class ObservationDelayMetricsLcpDelayTest : public ObservationDelayTest {
  public:
   ObservationDelayMetricsLcpDelayTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActor,
-        {// Effectively disable the timeout to prevent flakes.
-         {features::kGlicActorPageStabilityTimeout.name, "30s"},
-         {features::kActorObservationDelayLcp.name, "100ms"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kActorPageStability,
+          {// Effectively disable the timeout to prevent flakes.
+           {kActorPageStabilityTimeout.name, "30s"}}},
+         {kActorObservationDelay, {{kActorObservationDelayLcp.name, "100ms"}}}},
+        {});
   }
   ObservationDelayMetricsLcpDelayTest(
       const ObservationDelayMetricsLcpDelayTest&) = delete;

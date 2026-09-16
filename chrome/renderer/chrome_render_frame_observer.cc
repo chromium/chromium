@@ -38,6 +38,7 @@
 #include "chrome/renderer/loadtimes_bindings.h"
 #include "chrome/renderer/media/media_feeds.h"
 #include "chrome/renderer/process_state.h"
+#include "components/actor/core/actor_features.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/guest_view/renderer/slim_web_view/slim_web_view_bindings.h"
@@ -734,19 +735,19 @@ void ChromeRenderFrameObserver::CreatePageStabilityMonitor(
         monitor,
     const actor::TaskId& task_id,
     bool supports_paint_stability) {
-  page_stability_monitor_ = std::make_unique<
-      page_content_annotations::PageStabilityMonitor>(
-      *render_frame(), supports_paint_stability,
-      std::make_unique<actor::ChromePageStabilityMonitorDelegate>(
-          task_id, *actor_journal_,
-          actor::PageStabilityMonitorDelegate::Thresholds{
-              .timeout_delay = features::kGlicActorPageStabilityTimeout.Get(),
-              .min_wait = features::kGlicActorPageStabilityMinWait.Get(),
-              .initial_paint_timeout =
-                  features::kActorPaintStabilityIntialPaintTimeout.Get(),
-              .subsequent_paint_timeout =
-                  features::kActorPaintStabilitySubsequentPaintTimeout.Get(),
-          }));
+  page_stability_monitor_ =
+      std::make_unique<page_content_annotations::PageStabilityMonitor>(
+          *render_frame(), supports_paint_stability,
+          std::make_unique<actor::ChromePageStabilityMonitorDelegate>(
+              task_id, *actor_journal_,
+              actor::PageStabilityMonitorDelegate::Thresholds{
+                  .timeout_delay = actor::kActorPageStabilityTimeout.Get(),
+                  .min_wait = actor::kActorPageStabilityMinWait.Get(),
+                  .initial_paint_timeout =
+                      actor::kActorPaintStabilityInitialPaintTimeout.Get(),
+                  .subsequent_paint_timeout =
+                      actor::kActorPaintStabilitySubsequentPaintTimeout.Get(),
+              }));
   page_stability_monitor_->Bind(std::move(monitor));
 }
 
