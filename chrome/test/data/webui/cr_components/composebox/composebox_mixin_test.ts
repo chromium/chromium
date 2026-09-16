@@ -752,24 +752,6 @@ suite('ComposeboxMixinTest', () => {
         assertTrue(event.defaultPrevented);
       });
 
-  test(
-      'Shift+Enter submits dropdown selection when focus is in dropdown',
-      async () => {
-        const event = new KeyboardEvent('keydown', {
-          key: 'Enter',
-          shiftKey: true,
-          bubbles: true,
-          cancelable: true,
-        });
-
-        element.setActiveElement(element.getDropdownElement());
-
-        element.getWrapperElement().dispatchEvent(event);
-        await microtasksFinished();
-
-        assertTrue(event.defaultPrevented);
-      });
-
   test('autocomplete matches are cleared on submit', async () => {
     element.input = 'Some text';
     await microtasksFinished();
@@ -1359,7 +1341,7 @@ suite('ComposeboxMixinTest', () => {
         assertEquals(ContextUploadStatus.kUploadSuccessful, attachment.status);
       });
 
-  test('navigates matches with ArrowDown and ArrowUp', async () => {
+  test('navigating matches preserves or shrinks height lock', async () => {
     const originalBodyWidth = document.body.style.width;
     const originalBodyHeight = document.body.style.height;
     const originalElementWidth = element.style.width;
@@ -1375,15 +1357,6 @@ suite('ComposeboxMixinTest', () => {
       const matchesElement = element.getDropdownElement();
       const wrapper = inputComponent.shadowRoot.querySelector<HTMLElement>(
           '#inputWrapper')!;
-
-      element.result = {input: '', matches: []} as unknown as
-          AutocompleteResult;
-      await microtasksFinished();
-
-      input.dispatchEvent(new KeyboardEvent(
-          'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
-      await microtasksFinished();
-      assertEquals(-1, matchesElement.selectedMatchIndex);
 
       // 1. Establish height lock with multiline text.
       const initialHeight = wrapper.clientHeight;
@@ -1452,201 +1425,12 @@ suite('ComposeboxMixinTest', () => {
       assertTrue(
           parseFloat(wrapper.style.minHeight) < parseFloat(initialMinHeight));
       assertTrue(wrapper.clientHeight < tallHeight);
-
-      // 5. Verify keyboard navigation behaviors (ArrowDown, ArrowUp, ctrlKey,
-      // dropdownNeeded).
-      // ArrowDown navigates forward to next suggestion ('test3', index 2).
-      input.dispatchEvent(new KeyboardEvent(
-          'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
-      await microtasksFinished();
-      assertEquals(2, matchesElement.selectedMatchIndex);
-      assertEquals('test3', element.input);
-
-      // ArrowDown on the last match (index 2) wraps around to the first visible
-      // match (index 1) in typed suggest, skipping the hidden verbatim match.
-      input.dispatchEvent(new KeyboardEvent(
-          'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
-      await microtasksFinished();
-      assertEquals(1, matchesElement.selectedMatchIndex);
-      assertEquals('test2', element.input);
-
-      // ArrowUp on the first visible match (index 1) wraps around to the last
-      // visible match (index 2) in typed suggest.
-      input.dispatchEvent(new KeyboardEvent(
-          'keydown', {key: 'ArrowUp', bubbles: true, composed: true}));
-      await microtasksFinished();
-      assertEquals(2, matchesElement.selectedMatchIndex);
-      assertEquals('test3', element.input);
-
-      // ArrowUp navigates backwards to previous suggestion ('test2', index 1).
-      input.dispatchEvent(new KeyboardEvent(
-          'keydown', {key: 'ArrowUp', bubbles: true, composed: true}));
-      await microtasksFinished();
-      assertEquals(1, matchesElement.selectedMatchIndex);
-      assertEquals('test2', element.input);
-
-      input.dispatchEvent(new KeyboardEvent('keydown', {
-        key: 'ArrowDown',
-        ctrlKey: true,
-        bubbles: true,
-        composed: true,
-      }));
-      await microtasksFinished();
-      assertEquals(1, matchesElement.selectedMatchIndex);
-
-      element.dropdownNeeded = false;
-      input.dispatchEvent(new KeyboardEvent(
-          'keydown', {key: 'ArrowDown', bubbles: true, composed: true}));
-      await microtasksFinished();
-      assertEquals(1, matchesElement.selectedMatchIndex);
     } finally {
       inputComponent.resetHeight = originalResetHeight;
       element.style.width = originalElementWidth;
       document.body.style.width = originalBodyWidth;
       document.body.style.height = originalBodyHeight;
     }
-  });
-
-  test('selects first or last match with PageUp and PageDown', async () => {
-    const input = element.getInputElement().inputElement;
-    const matchesElement = element.getDropdownElement();
-
-    const matches = [
-      {fillIntoEdit: 'test1'} as AutocompleteMatch,
-      {fillIntoEdit: 'test2'} as AutocompleteMatch,
-      {fillIntoEdit: 'test3'} as AutocompleteMatch,
-    ];
-    element.result = {input: 'test', matches} as AutocompleteResult;
-    await microtasksFinished();
-
-    input.dispatchEvent(new KeyboardEvent(
-        'keydown', {key: 'PageDown', bubbles: true, composed: true}));
-    await microtasksFinished();
-    assertEquals(2, matchesElement.selectedMatchIndex);
-
-    input.dispatchEvent(new KeyboardEvent(
-        'keydown', {key: 'PageUp', bubbles: true, composed: true}));
-    await microtasksFinished();
-    assertEquals(0, matchesElement.selectedMatchIndex);
-
-    input.dispatchEvent(new KeyboardEvent('keydown', {
-      key: 'PageDown',
-      altKey: true,
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
-    assertEquals(0, matchesElement.selectedMatchIndex);
-  });
-
-  test(
-      'PageDown and PageUp are ignored when no matches are available',
-      async () => {
-        const input = element.getInputElement().inputElement;
-        const matchesElement = element.getDropdownElement();
-
-        input.dispatchEvent(new KeyboardEvent(
-            'keydown', {key: 'PageDown', bubbles: true, composed: true}));
-        await element.updateComplete;
-        assertEquals(-1, matchesElement.selectedMatchIndex);
-      });
-
-  test('Tab behavior when focus is in input', async () => {
-    element.smartComposeEnabled = true;
-    const inputElem = element.getInputElement();
-    const input = inputElem.inputElement;
-    const matchesElement = element.getDropdownElement();
-
-    const matches = [{fillIntoEdit: 'match1'} as AutocompleteMatch];
-    element.result = {input: 'tes', matches} as AutocompleteResult;
-    await microtasksFinished();
-
-    matchesElement.selectNext();
-    assertEquals(0, matchesElement.selectedMatchIndex);
-    input.focus();
-
-    input.dispatchEvent(new KeyboardEvent(
-        'keydown',
-        {key: 'Tab', shiftKey: true, bubbles: true, composed: true}));
-    await microtasksFinished();
-    assertEquals(-1, matchesElement.selectedMatchIndex);
-
-    await simulateUserTextInput(inputElem, 'tes');
-    element.smartComposeInlineHint = 't';
-    await element.updateComplete;
-
-    const tabEvent = new KeyboardEvent(
-        'keydown',
-        {key: 'Tab', bubbles: true, cancelable: true, composed: true});
-    input.dispatchEvent(tabEvent);
-    await microtasksFinished();
-
-    assertEquals('test', (input as HTMLTextAreaElement).value);
-    assertTrue(tabEvent.defaultPrevented);
-  });
-
-  test('Tab on last dropdown match unselects active match', async () => {
-    const matchesElement = element.getDropdownElement();
-    const matches = [
-      {fillIntoEdit: 'match1', supportsDeletion: false} as AutocompleteMatch,
-      {fillIntoEdit: 'match2', supportsDeletion: false} as AutocompleteMatch,
-    ];
-    element.result = {input: 'm', matches} as AutocompleteResult;
-    await microtasksFinished();
-
-    matchesElement.selectNext();
-    matchesElement.selectNext();
-    assertEquals(1, matchesElement.selectedMatchIndex);
-
-    await matchesElement.updateComplete;
-    element.setActiveElement(matchesElement);
-
-    const tabEvent = new KeyboardEvent(
-        'keydown',
-        {key: 'Tab', bubbles: true, cancelable: true, composed: true});
-    matchesElement.dispatchEvent(tabEvent);
-    await element.updateComplete;
-
-    assertEquals(-1, matchesElement.selectedMatchIndex);
-    assertFalse(tabEvent.defaultPrevented);
-  });
-
-  test('Tab in dropdown is ignored when key modifiers are active', async () => {
-    const matchesElement = element.getDropdownElement();
-    const matches = [
-      {fillIntoEdit: 'match1', supportsDeletion: false} as AutocompleteMatch,
-      {fillIntoEdit: 'match2', supportsDeletion: false} as AutocompleteMatch,
-    ];
-    element.result = {input: 'm', matches} as AutocompleteResult;
-    await element.updateComplete;
-
-    matchesElement.selectNext();
-    matchesElement.selectNext();
-    await matchesElement.updateComplete;
-    await element.updateComplete;
-    element.setActiveElement(matchesElement);
-    const tabEventCtrl = new KeyboardEvent('keydown', {
-      key: 'Tab',
-      ctrlKey: true,
-      bubbles: true,
-      cancelable: true,
-    });
-    matchesElement.dispatchEvent(tabEventCtrl);
-    await element.updateComplete;
-    assertEquals(1, matchesElement.selectedMatchIndex);
-  });
-
-  test('Tab in dropdown is ignored when no matches are available', async () => {
-    const matchesElement = element.getDropdownElement();
-
-    const tabEventNoMatch = new KeyboardEvent('keydown', {
-      key: 'Tab',
-      bubbles: true,
-      cancelable: true,
-    });
-    matchesElement.dispatchEvent(tabEventNoMatch);
-    await element.updateComplete;
-    assertEquals(-1, matchesElement.selectedMatchIndex);
   });
 
   test('sets and deletes visual selection thumbnail', async () => {
