@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("sqlite_encrypted_vfs") {
+  public = [ "sqlite_encrypted_vfs.h" ]
+
+  sources = [
+    "sqlite_encrypted_vfs.cc",
+    "sqlite_encrypted_vfs.h",
+  ]
+
+  deps = [ "//third_party/sqlite" ]
+
+  public_deps = [
+    "//base",
+    "//sql",
+  ]
+
+  defines = [ "IS_SQLITE_ENCRYPTED_VFS_IMPL" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "sqlite_encrypted_vfs_unittest.cc" ]
+
+  deps = [
+    ":sqlite_encrypted_vfs",
+    "//base",
+    "//base/test:test_support",
+    "//sql",
+    "//sql:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/sqlite",
+  ]
+}

@@ -354,6 +354,7 @@ test("components_unittests") {
     "//components/site_token_provider:unit_tests",
     "//components/skills:unit_tests",
     "//components/speech:unit_tests",
+    "//components/sqlite_encrypted_vfs:unit_tests",
     "//components/sqlite_proto:unit_tests",
     "//components/sqlite_vfs:unit_tests",
     "//components/ssl_errors:unit_tests",

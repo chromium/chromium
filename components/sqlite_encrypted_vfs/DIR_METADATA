@@ -1,0 +1,7 @@
+monorail: {
+  component: "Internals>LocalDataEncryption"
+}
+team_email: "chrome-counter-abuse-core@google.com"
+buganizer_public: {
+  component_id: 1456972
+}
