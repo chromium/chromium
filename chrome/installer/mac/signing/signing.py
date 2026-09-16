@@ -9,6 +9,7 @@ bundle that need to be signed, as well as providing utilities to sign them.
 import asyncio
 import os.path
 import re
+import subprocess
 
 from signing import commands, invoker, logger
 
