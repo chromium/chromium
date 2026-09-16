@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,6 +67,7 @@ using ::autofill::test::FormDataEq;
 using ::testing::AllOf;
 using ::testing::Each;
 using ::testing::ElementsAre;
+using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pointee;
@@ -2439,6 +2441,40 @@ TEST_F(FormStructureTestImpl, LogBuffer_FormSignatures) {
   EXPECT_THAT(json.value(), testing::HasSubstr("Form signature:"));
   EXPECT_THAT(json.value(), testing::HasSubstr("Form alternative signature:"));
   EXPECT_THAT(json.value(), testing::HasSubstr("Form structural signature:"));
+}
+
+// Tests that `FormStructure`'s `LogBuffer` operator (used for
+// chrome://autofill-internals/) includes field signatures, including host form
+// signature and host form structural signature.
+TEST_F(FormStructureTestImpl, LogBuffer_FieldSignatures) {
+  FormData form;
+  form.set_url(GURL("http://foo.com"));
+  FormFieldData field;
+  field.set_name(u"field1");
+  field.set_form_control_type(FormControlType::kInputText);
+  field.set_renderer_id(test::MakeFieldRendererId());
+  field.set_host_form_signature(FormSignature(123));
+  field.set_host_form_structural_signature(FormSignature(456));
+  test_api(form).Append(field);
+
+  FormStructure form_structure(form);
+  LogBuffer buffer;
+  buffer << form_structure;
+
+  std::optional<std::string> json = base::WriteJson(*buffer.RetrieveResult());
+  ASSERT_TRUE(json.has_value());
+  EXPECT_THAT(json.value(), HasSubstr("Host form signature:"));
+  EXPECT_THAT(
+      json.value(),
+      HasSubstr(base::StrCat(
+          {base::NumberToString(123), " - ",
+           base::NumberToString(HashFormSignature(FormSignature(123)))})));
+  EXPECT_THAT(json.value(), HasSubstr("Host form structural signature:"));
+  EXPECT_THAT(
+      json.value(),
+      HasSubstr(base::StrCat(
+          {base::NumberToString(456), " - ",
+           base::NumberToString(HashFormSignature(FormSignature(456)))})));
 }
 
 // The test below validates that the `MatchInfo` structure of `AutofillField` is

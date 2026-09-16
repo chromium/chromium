@@ -40,6 +40,8 @@ const std::vector<const char*> kOptions = {"Option1", "Option2", "Option3",
 void CreateTestFieldDataPredictions(const std::string& signature,
                                     FormFieldDataPredictions* field_predict) {
   field_predict->host_form_signature = "TestHostFormSignature";
+  field_predict->host_form_structural_signature =
+      "TestHostFormStructuralSignature";
   field_predict->signature = signature;
   field_predict->heuristic_type = "TestHeuristicType";
   field_predict->server_type = "TestServerType";

@@ -25,6 +25,7 @@ struct FormFieldDataPredictions {
                          const FormFieldDataPredictions&);
 
   std::string host_form_signature;
+  std::string host_form_structural_signature;
   std::string signature;
   std::string heuristic_type;
   std::string pwm_ml_type;

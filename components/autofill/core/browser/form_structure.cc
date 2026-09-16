@@ -291,6 +291,8 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
     FormFieldDataPredictions annotated_field;
     annotated_field.host_form_signature =
         base::NumberToString(field->host_form_signature().value());
+    annotated_field.host_form_structural_signature =
+        base::NumberToString(field->host_form_structural_signature().value());
     annotated_field.signature = field->FieldSignatureAsStr();
     annotated_field.heuristic_type =
         FieldTypeToStringView(field->heuristic_type());
@@ -639,12 +641,20 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                   {base::NumberToString(field->GetFieldSignature().value()),
                    " - ",
                    base::NumberToString(
-                       HashFieldSignature(field->GetFieldSignature())),
-                   ", host form signature: ",
-                   base::NumberToString(field->host_form_signature().value()),
+                       HashFieldSignature(field->GetFieldSignature()))});
+    buffer << "\n  Host form signature: "
+           << base::StrCat(
+                  {base::NumberToString(field->host_form_signature().value()),
                    " - ",
                    base::NumberToString(
                        HashFormSignature(field->host_form_signature()))});
+    buffer << "\n  Host form structural signature: "
+           << base::StrCat(
+                  {base::NumberToString(
+                       field->host_form_structural_signature().value()),
+                   " - ",
+                   base::NumberToString(HashFormSignature(
+                       field->host_form_structural_signature()))});
     buffer << "\n  Name: " << field->name();
 
     auto regex_heuristic_type =
@@ -767,12 +777,20 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                   {base::NumberToString(field->GetFieldSignature().value()),
                    " - ",
                    base::NumberToString(
-                       HashFieldSignature(field->GetFieldSignature())),
-                   ", host form signature: ",
-                   base::NumberToString(field->host_form_signature().value()),
+                       HashFieldSignature(field->GetFieldSignature()))});
+    buffer << Tr{} << "Host form signature:"
+           << base::StrCat(
+                  {base::NumberToString(field->host_form_signature().value()),
                    " - ",
                    base::NumberToString(
                        HashFormSignature(field->host_form_signature()))});
+    buffer << Tr{} << "Host form structural signature:"
+           << base::StrCat(
+                  {base::NumberToString(
+                       field->host_form_structural_signature().value()),
+                   " - ",
+                   base::NumberToString(HashFormSignature(
+                       field->host_form_structural_signature()))});
     buffer << Tr{} << "Name:" << name;
     buffer << Tr{} << "Placeholder:" << field->placeholder();
 
