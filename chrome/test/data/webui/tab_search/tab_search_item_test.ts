@@ -109,7 +109,7 @@ suite('TabSearchItemTest', () => {
     assertEquals(null, tabSearchItemCloseButton);
   });
 
-  test('GroupDetailsPresence', () => {
+  test('GroupDetailsPresence', async () => {
     const token = sampleToken(1n, 1n);
     const tab: Tab = createTab({
       active: true,
@@ -127,6 +127,7 @@ suite('TabSearchItemTest', () => {
     const tabData = new TabData(tab, TabItemType.OPEN_TAB, 'example');
     tabData.tabGroup = tabGroup;
     setupTest(tabData);
+    await microtasksFinished();
 
     const groupDotElement =
         tabSearchItem.shadowRoot.querySelector('#groupDot')!;

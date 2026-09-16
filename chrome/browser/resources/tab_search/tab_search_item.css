@@ -135,15 +135,9 @@ cr-icon-button {
   font-weight: bold;
 }
 
-#groupSvg {
-  flex-shrink: 0;
-  height: 8px;
-  margin-inline-end: 6px;
-  width: 8px;
-}
-
 #groupDot {
-  fill: var(--group-dot-color);
+  flex-shrink: 0;
+  margin-inline-end: 6px;
 }
 
 #mediaAlert[display = 'block'] {

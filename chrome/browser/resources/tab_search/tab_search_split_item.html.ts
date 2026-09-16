@@ -36,12 +36,10 @@ export function getHtml(this: TabSearchSplitItemElement) {
     ` : ''}
   </div>
   <div id="secondaryTextContainer">
-    <svg id="groupSvg" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg"
-        display="${this.data.tabGroup ? 'block' : 'none'}"
-        style="--group-dot-color: ${this.getGroupColor_()}">
-      <circle id="groupDot" cx="0" cy="0" r="4"></circle>
-    </svg>
-    ${this.domainTexts_.slice(0, 2).map((domainText, index: number) => html`
+    <tab-group-dot id="groupDot" ?hidden="${!this.data.tabGroup}"
+        .color="${this.data.tabGroup?.color ?? 0}">
+    </tab-group-dot>
+    ${this.domainTexts_.slice(0, 2).map((domainText, index) => html`
       ${index > 0 ? html`
         <div class="separator">•</div>
       ` : ''}

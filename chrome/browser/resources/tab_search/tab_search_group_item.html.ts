@@ -28,9 +28,8 @@ export function getHtml(this: TabSearchGroupItemElement) {
 <div class="text-container" aria-hidden="true">
   <div id="primaryText" title="${this.data.tabGroup.title}"></div>
   <div id="secondaryTextContainer">
-    <svg id="groupSvg" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg">
-      <circle id="groupDot" cx="0" cy="0" r="4"></circle>
-    </svg>
+    <tab-group-dot id="groupDot" .color="${this.data.tabGroup.color}">
+    </tab-group-dot>
     <div id="secondaryText">${this.tabCountText_()}</div>
     <div class="separator">•</div>
     <div id="timestamp">${this.data.tabGroup.lastActiveElapsedText}</div>

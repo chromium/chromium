@@ -6,16 +6,8 @@
  * #type=vars
  * #css_wrapper_metadata_end */
 
-/*
- * TODO(romanarora): Move to cr_elements folder when another component needs
- * to reference the file.
- */
-
 /* Matches colors specified in ThemeHelper::GetTabGroupColors. */
 html {
-  /* TODO(romanarora): Consider moving colors to shared_vars_css.html. Only
-   * adds colors not already present in shared_vars_css.html.
-   */
   --google-blue-300-rgb: 123, 170, 247;
   --google-blue-300: rgb(var(--google-blue-300-rgb));
   --google-cyan-300-rgb: 120, 217, 236; /* #78d9ec */

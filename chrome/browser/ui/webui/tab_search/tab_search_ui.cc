@@ -22,6 +22,8 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/tab_group_shared_resources.h"
+#include "chrome/grit/tab_group_shared_resources_map.h"
 #include "chrome/grit/tab_search_resources.h"
 #include "chrome/grit/tab_search_resources_map.h"
 #include "chrome/grit/tab_search_shared_resources.h"
@@ -132,6 +134,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source, kTabSearchResources,
                               IDR_TAB_SEARCH_TAB_SEARCH_HTML);
+  source->AddResourcePaths(kTabGroupSharedResources);
   source->AddResourcePaths(kTabSearchSharedResources);
 
   content::URLDataSource::Add(

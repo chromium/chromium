@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
+import '/tab_group_shared/tab_group_dot.js';
 
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {MouseHoverableMixinLit} from 'chrome://resources/cr_elements/mouse_hoverable_mixin_lit.js';
@@ -12,7 +13,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getDisplayHostnameForUrl, normalizeURL, SplitViewData, TabItemType} from './tab_data.js';
-import {getTabGroupColorVar} from './tab_group_color_helper.js';
 import type {Tab} from './tab_search.mojom-webui.js';
 import {SplitTabLayout} from './tab_search.mojom-webui.js';
 import {getCss} from './tab_search_split_item.css.js';
@@ -39,7 +39,6 @@ export class TabSearchSplitItemElement extends TabSearchSplitItemBase {
       data: {type: Object},
       buttonRipples_: {type: Boolean},
       closeButtonIcon: {type: String},
-      tabGroupColorRefresh_: {type: Boolean},
     };
   }
 
@@ -61,15 +60,6 @@ export class TabSearchSplitItemElement extends TabSearchSplitItemBase {
       loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
       'tab-search:close' :
       'tab-search:close-old';
-  protected accessor tabGroupColorRefresh_: boolean =
-      loadTimeData.getBoolean('useTabGroupColorRefresh');
-
-  protected getGroupColor_(): string {
-    return this.data.tabGroup ?
-        getTabGroupColorVar(
-            this.data.tabGroup.color, this.tabGroupColorRefresh_) :
-        '';
-  }
 
   protected getFaviconUrl_(url: string, index: number): string {
     const tab = this.data.tabs ? this.data.tabs[index] : null;

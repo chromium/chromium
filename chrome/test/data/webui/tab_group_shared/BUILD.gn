@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../build_webui_tests.gni")
+
+build_webui_tests("build") {
+  cc_test_files = [ "tab_group_shared_browsertest.cc" ]
+
+  files = [ "tab_group_dot_test.ts" ]
+
+  ts_path_mappings = [
+    "chrome://tab-search.top-chrome/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
+    "chrome://tab-search.top-chrome/tab_group_shared/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/tab_group_shared/tsc/*",
+            target_gen_dir),
+  ]
+
+  ts_deps = [
+    "//chrome/browser/resources/tab_group_shared:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}

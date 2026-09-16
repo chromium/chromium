@@ -4,6 +4,8 @@
 
 import './tab_group_shared_vars.css.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
+
 import {Color} from './tab_group_types.mojom-webui.js';
 
 const colorMap = new Map<Color, string>([
@@ -19,10 +21,7 @@ const colorMap = new Map<Color, string>([
 ]);
 
 export function colorName(color: Color): string {
-  if (!colorMap.has(color)) {
-    throw Error('Undefined color id');
-  }
-
+  assert(colorMap.has(color), 'Undefined color id');
   return colorMap.get(color)!;
 }
 

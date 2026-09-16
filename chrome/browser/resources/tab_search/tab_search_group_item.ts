@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/tab_group_shared/tab_group_dot.js';
+
 import {MouseHoverableMixinLit} from 'chrome://resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {TabGroupData} from './tab_data.js';
-import {getTabGroupColorVar} from './tab_group_color_helper.js';
 import {Color} from './tab_group_types.mojom-webui.js';
 import {getCss} from './tab_search_group_item.css.js';
 import {getHtml} from './tab_search_group_item.html.js';
@@ -38,7 +39,6 @@ export class TabSearchGroupItemElement extends TabSearchGroupItemBase {
   static override get properties() {
     return {
       data: {type: Object},
-      tabGroupColorRefresh_: {type: Boolean},
     };
   }
 
@@ -51,20 +51,6 @@ export class TabSearchGroupItemElement extends TabSearchGroupItemBase {
     lastActiveTime: {internalValue: 0n},
     lastActiveElapsedText: '',
   });
-
-  protected accessor tabGroupColorRefresh_: boolean =
-      loadTimeData.getBoolean('useTabGroupColorRefresh');
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    if (changedProperties.has('data')) {
-      this.style.setProperty(
-          '--group-dot-color',
-          getTabGroupColorVar(
-              this.data.tabGroup.color, this.tabGroupColorRefresh_));
-    }
-  }
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

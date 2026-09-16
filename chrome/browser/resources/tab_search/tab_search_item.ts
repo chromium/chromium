@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import '/strings.m.js';
+import '/tab_group_shared/tab_group_dot.js';
 
 import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {MouseHoverableMixinLit} from 'chrome://resources/cr_elements/mouse_hoverable_mixin_lit.js';
@@ -14,7 +15,6 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {normalizeURL, TabData, TabItemType} from './tab_data.js';
-import {getTabGroupColorVar} from './tab_group_color_helper.js';
 import type {Tab} from './tab_search.mojom-webui.js';
 import {getCss} from './tab_search_item.css.js';
 import {getHtml} from './tab_search_item.html.js';
@@ -69,7 +69,6 @@ export class TabSearchItemElement extends TabSearchItemBase {
     return {
       data: {type: Object},
       buttonRipples_: {type: Boolean},
-      tabGroupColorRefresh_: {type: Boolean},
       hideTimestamp: {type: Boolean},
       hideUrl: {type: Boolean},
       hideCloseButton: {type: Boolean},
@@ -102,8 +101,6 @@ export class TabSearchItemElement extends TabSearchItemBase {
       TabItemType.OPEN_TAB, '');
   protected accessor buttonRipples_: boolean =
       loadTimeData.getBoolean('useRipples');
-  protected accessor tabGroupColorRefresh_: boolean =
-      loadTimeData.getBoolean('useTabGroupColorRefresh');
   accessor hideTimestamp: boolean = false;
   accessor size: TabSearchItemSize = TabSearchItemSize.MEDIUM;
   accessor hideUrl: boolean = false;
@@ -118,17 +115,8 @@ export class TabSearchItemElement extends TabSearchItemBase {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('data')) {
-      if (this.data.tabGroup) {
-        this.style.setProperty(
-            '--group-dot-color',
-            getTabGroupColorVar(
-                this.data.tabGroup.color, this.tabGroupColorRefresh_));
-      }
-
-      if (changedProperties.has('size')) {
-        assert(Object.values(TabSearchItemSize).includes(this.size));
-      }
+    if (changedProperties.has('data') && changedProperties.has('size')) {
+      assert(Object.values(TabSearchItemSize).includes(this.size));
     }
   }
 

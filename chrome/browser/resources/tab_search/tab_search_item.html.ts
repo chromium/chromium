@@ -21,10 +21,9 @@ export function getHtml(this: TabSearchItemElement) {
   <div id="secondaryContainer">
     <!-- We do not leverage a dom-if element as the element highlighting logic
         may trigger before the stamping has taken place -->
-    <svg id="groupSvg" viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg"
-        display="${this.data.tabGroup ? 'block' : 'none'}">
-      <circle id="groupDot" cx="0" cy="0" r="4"></circle>
-    </svg>
+    <tab-group-dot id="groupDot" ?hidden="${!this.data.tabGroup}"
+        .color="${this.data.tabGroup?.color ?? 0}">
+    </tab-group-dot>
     ${this.data.tabGroup?.title ? html`
       <div id="groupTitle"></div>
       <div class="separator">•</div>
