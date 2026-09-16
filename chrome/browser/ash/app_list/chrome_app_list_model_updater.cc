@@ -999,17 +999,6 @@ void ChromeAppListModelUpdater::RequestPositionUpdate(
   }
 }
 
-void ChromeAppListModelUpdater::RequestDefaultPositionForModifiedOrder() {
-  const std::map<std::string, std::unique_ptr<ChromeAppListItem>>& items =
-      item_manager_->items();
-  for (const auto& id_item_pair : items) {
-    ChromeAppListItem* item = id_item_pair.second.get();
-    RequestPositionUpdate(id_item_pair.first,
-                          item->CalculateDefaultPositionForModifiedOrder(),
-                          ash::RequestPositionUpdateReason::kMoveItem);
-  }
-}
-
 std::string ChromeAppListModelUpdater::RequestFolderCreation(
     std::string merge_target_id,
     std::string item_to_merge_id) {

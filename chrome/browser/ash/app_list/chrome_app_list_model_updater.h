@@ -85,7 +85,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
                        const std::string& folder_id) override;
   void SetNotificationBadgeColor(const std::string& id,
                                  const SkColor color) override;
-  void RequestDefaultPositionForModifiedOrder() override;
 
   // Methods only used by ChromeSearchResult that talk to ash directly.
   void SetSearchResultMetadata(

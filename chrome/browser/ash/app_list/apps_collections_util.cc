@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/app_list/apps_collections_util.h"
 
-#include <optional>
+#include <map>
 #include <string>
 
 #include "ash/constants/web_app_id_constants.h"
@@ -12,12 +12,10 @@
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/webui/mall/app_id.h"
 #include "base/no_destructor.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 
@@ -113,123 +111,6 @@ AppCollectionMap GetAppCollectionsMap() {
   };
 }
 
-// TODO(anasalazar): Remove this when experiment is finished.
-// Gets built-in default app order for secondary experimental arm in apps
-// collections experiment.
-void GetSecondaryDefaultOrder(std::vector<std::string>* app_ids) {
-  // clang-format off
-  app_ids->insert(app_ids->end(), {
-    app_constants::kChromeAppId,
-    arc::kPlayStoreAppId,
-
-    extension_misc::kFilesManagerAppId,
-    file_manager::kFileManagerSwaAppId
-  });
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (chromeos::features::IsGeminiAppPreinstallEnabled()) {
-      app_ids->push_back(ash::kGeminiAppId);
-  }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-  app_ids->insert(app_ids->end(), {
-    ash::kCameraAppId,
-
-    ash::kInternalAppIdSettings,
-    ash::kSettingsAppId,
-    ash::kOsSettingsAppId,
-
-    arc::kGmailAppId,
-    extension_misc::kGmailAppId,
-    ash::kGmailAppId,
-
-    ash::kGoogleMeetAppId,
-
-    ash::kGoogleChatAppId,
-    ash::kOldGoogleChatAppId,
-
-    extension_misc::kGoogleDocsAppId,
-    ash::kGoogleDocsAppId,
-
-    extension_misc::kGoogleSlidesAppId,
-    ash::kGoogleSlidesAppId,
-
-    extension_misc::kGoogleSheetsAppId,
-    ash::kGoogleSheetsAppId,
-
-    extension_misc::kGoogleDriveAppId,
-    ash::kGoogleDriveAppId,
-
-    extension_misc::kGoogleKeepAppId,
-    ash::kGoogleKeepAppId,
-
-    arc::kGoogleCalendarAppId,
-    extension_misc::kCalendarAppId,
-    ash::kGoogleCalendarAppId,
-
-    ash::kMessagesAppId,
-
-    arc::kGooglePhotosAppId,
-    extension_misc::kGooglePhotosAppId,
-
-    ash::kMediaAppId,
-    ash::kCanvasAppId,
-
-    ash::kAdobeExpressAppId,
-
-    ash::kChromeUIUntrustedProjectorSwaAppId,
-    ash::kCursiveAppId,
-
-    arc::kYoutubeAppId,
-    extension_misc::kYoutubeAppId,
-    ash::kYoutubeAppId,
-
-    arc::kYoutubeMusicAppId,
-    ash::kYoutubeMusicAppId,
-    arc::kYoutubeMusicWebApkAppId,
-
-    arc::kPlayMoviesAppId,
-    extension_misc::kGooglePlayMoviesAppId,
-    arc::kGoogleTVAppId,
-
-    arc::kPlayMusicAppId,
-    extension_misc::kGooglePlayMusicAppId,
-
-    arc::kPlayBooksAppId,
-    extension_misc::kGooglePlayBooksAppId,
-    ash::kPlayBooksAppId,
-
-    arc::kGoogleMapsAppId,
-    ash::kGoogleMapsAppId,
-
-    ash::kHelpAppId,
-
-    ash::kMallSystemAppId,
-
-    ash::kCalculatorAppId,
-    extension_misc::kCalculatorAppId,
-    extension_misc::kTextEditorAppId,
-    ash::kPrintManagementAppId,
-    ash::kScanningAppId,
-    ash::kShortcutCustomizationAppId,
-    guest_os::kTerminalSystemAppId,
-
-    ash::kYoutubeTVAppId,
-    ash::kGoogleNewsAppId,
-    extensions::kWebStoreAppId,
-
-    arc::kLightRoomAppId,
-    arc::kInfinitePainterAppId,
-    ash::kShowtimeAppId,
-    extension_misc::kGooglePlusAppId,
-  });
-  // clang-format on
-
-  if (chromeos::features::IsCloudGamingDeviceEnabled()) {
-    app_ids->push_back(ash::kNvidiaGeForceNowAppId);
-  }
-}
-
 }  // namespace
 
 namespace apps_util {
@@ -242,24 +123,6 @@ ash::AppCollection GetCollectionIdForAppId(const std::string& app_id) {
   return app_collection_found != app_to_collection_map->end()
              ? app_collection_found->second
              : ash::AppCollection::kUnknown;
-}
-
-bool GetModifiedOrdinals(const extensions::ExtensionId& extension_id,
-                         syncer::StringOrdinal* app_launch_ordinal) {
-  // The following defines the default order of apps.
-  std::vector<std::string> app_ids;
-  GetSecondaryDefaultOrder(&app_ids);
-
-  syncer::StringOrdinal app_launch =
-      syncer::StringOrdinal::CreateInitialOrdinal();
-  for (auto id : app_ids) {
-    if (id == extension_id) {
-      *app_launch_ordinal = app_launch;
-      return true;
-    }
-    app_launch = app_launch.CreateAfter();
-  }
-  return false;
 }
 
 }  // namespace apps_util

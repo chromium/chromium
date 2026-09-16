@@ -10,7 +10,6 @@
 #include <optional>
 #include <vector>
 
-#include "ash/app_list/apps_collections_controller.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/chrome_switches.h"
 #include "ash/constants/web_app_id_constants.h"
@@ -985,19 +984,14 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, AppsVisibility) {
 
   // Fetch the correct histogram name.
   base::HistogramTester histogram_tester;
-  const std::string apps_collections_state =
-      ash::AppsCollectionsController::Get()
-          ->GetUserExperimentalArmAsHistogramSuffix();
   const std::string histogram_prefix =
       "Apps.AppListBubble.AppsPage.AppLaunchesByVisibility";
 
   histogram_tester.ExpectTotalCount(
-      base::StrCat({histogram_prefix, ".AboveTheFold", apps_collections_state}),
-      0);
+      base::StrCat({histogram_prefix, ".AboveTheFold"}), 0);
 
   histogram_tester.ExpectTotalCount(
-      base::StrCat({histogram_prefix, ".BelowTheFold", apps_collections_state}),
-      0);
+      base::StrCat({histogram_prefix, ".BelowTheFold"}), 0);
 
   // Activates web store as if it was activated below the fold.
   client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0,
@@ -1005,12 +999,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, AppsVisibility) {
                        /*is_above_the_fold=*/false);
 
   histogram_tester.ExpectTotalCount(
-      base::StrCat({histogram_prefix, ".AboveTheFold", apps_collections_state}),
-      0);
+      base::StrCat({histogram_prefix, ".AboveTheFold"}), 0);
 
   histogram_tester.ExpectTotalCount(
-      base::StrCat({histogram_prefix, ".BelowTheFold", apps_collections_state}),
-      1);
+      base::StrCat({histogram_prefix, ".BelowTheFold"}), 1);
 
   // Activates web store as if it was activated above the fold.
   client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0,
@@ -1018,12 +1010,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, AppsVisibility) {
                        /*is_above_the_fold=*/true);
 
   histogram_tester.ExpectTotalCount(
-      base::StrCat({histogram_prefix, ".AboveTheFold", apps_collections_state}),
-      1);
+      base::StrCat({histogram_prefix, ".AboveTheFold"}), 1);
 
   histogram_tester.ExpectTotalCount(
-      base::StrCat({histogram_prefix, ".BelowTheFold", apps_collections_state}),
-      1);
+      base::StrCat({histogram_prefix, ".BelowTheFold"}), 1);
 }
 
 // Browser Test for AppListClient that observes search result changes.
@@ -1264,69 +1254,6 @@ IN_PROC_BROWSER_TEST_F(
       0);
 }
 
-// Verifies that the duration between login and the first time apps collections
-// is shown by a new account is recorded correctly.
-class DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest
-    : public DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest {
- public:
-  DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest()
-      : DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest() {
-    feature_list_.InitWithFeatures({app_list_features::kAppsCollections}, {});
-  }
-  ~DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest()
-      override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest,
-    MetricRecordedOnNewAccount) {
-  base::HistogramTester tester;
-  ShowAppListAndVerify();
-  tester.ExpectTotalCount(
-      "Apps.TimeDurationBetweenNewUserSessionActivationAndAppsCollectionShown",
-      1);
-}
-
-// The duration between OOBE and the first launcher with apps collections
-// showing should not be recorded if the current user is pre-registered.
-IN_PROC_BROWSER_TEST_F(
-    DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest,
-    MetricNotRecordedOnRegisteredAccount) {
-  ash::UserAddingScreen::Get()->Start();
-
-  // Verify that the launcher usage state is recorded when switching accounts.
-  base::HistogramTester tester;
-  AddUser(registered_user_id_);
-
-  // Verify that the metric is not recorded.
-  ShowAppListAndVerify();
-  tester.ExpectTotalCount(
-      "Apps.TimeDurationBetweenNewUserSessionActivationAndAppsCollectionShown",
-      0);
-}
-
-// The duration between OOBE and the first launcher with apps collections
-// showing should not be recorded if a user signs in to a new account, switches
-// to another account then switches back to the new account.
-IN_PROC_BROWSER_TEST_F(
-    DurationBetweenSeesionActivationAndAppsCollectionsShowingBrowserTest,
-    MetricNotRecordedAfterUserSwitch) {
-  // Switch to a registered user account then switch back.
-  ash::UserAddingScreen::Get()->Start();
-  AddUser(registered_user_id_);
-  user_manager::UserManager::Get()->SwitchActiveUser(new_user_id_);
-
-  // Verify that the metric is not recorded.
-  base::HistogramTester tester;
-  ShowAppListAndVerify();
-  tester.ExpectTotalCount(
-      "Apps.TimeDurationBetweenNewUserSessionActivationAndAppsCollectionShown",
-      0);
-}
-
 class AppListClientNewUserTest : public InProcessBrowserTest,
                                  public testing::WithParamInterface<bool> {
  public:
@@ -1390,153 +1317,3 @@ IN_PROC_BROWSER_TEST_P(AppListClientNewUserTest, IsNewUser) {
   }));
 }
 
-// A suite for verifying the experimental arm for apps collections experiment
-// that modifies the order of apps.
-class AppListModifiedDefaultAppOrderTest
-    : public AppListClientImplBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  AppListModifiedDefaultAppOrderTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        app_list_features::kAppsCollections,
-        {{"is-counterfactual", "false"},
-         {"is-modified-order",
-          base::ToString(IsModifiedOrderExperimentalArm())}});
-  }
-  ~AppListModifiedDefaultAppOrderTest() override = default;
-
-  // AppListClientImplBrowserTest:
-  void SetUpOnMainThread() override {
-    AppListClientImplBrowserTest::SetUpOnMainThread();
-    user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
-    AppListClientImpl::GetInstance()->InitializeAsIfNewUserLoginForTest();
-  }
-
-  bool IsModifiedOrderExperimentalArm() { return GetParam(); }
-
-  void AddSyncedItem(std::string app_id, AppListModelUpdater* model_updater) {
-    app_list::AppListSyncableService* syncable_service =
-        app_list_syncable_service();
-    ASSERT_TRUE(syncable_service);
-
-    syncable_service->set_app_default_positioned_for_new_users_only_for_test(
-        app_id);
-    auto new_item = std::make_unique<ChromeAppListItem>(browser()->GetProfile(),
-                                                        app_id, model_updater);
-    new_item->SetChromeName(app_id);
-    syncable_service->AddItem(std::move(new_item));
-  }
-
-  ChromeAppListModelUpdater* GetChromeAppListModelUpdater() {
-    return static_cast<ChromeAppListModelUpdater*>(
-        app_list_syncable_service()->GetModelUpdater());
-  }
-
-  app_list::AppListSyncableService* app_list_syncable_service() {
-    return app_list::AppListSyncableServiceFactory::GetForProfile(profile());
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AppListModifiedDefaultAppOrderTest,
-                         ::testing::Bool());
-
-// Verify that the default order of apps is changed once the recalculation
-// happens for the first time in the modified order experimental arm of apps
-// collections.
-IN_PROC_BROWSER_TEST_P(AppListModifiedDefaultAppOrderTest,
-                       DefaultOrdinalsChangeAfterRecalculation) {
-  AppListClientImpl* client = AppListClientImpl::GetInstance();
-  ASSERT_TRUE(client);
-  client->UpdateProfile();
-  ChromeAppListModelUpdater* model_updater = GetChromeAppListModelUpdater();
-  ASSERT_TRUE(model_updater);
-  // Install some default apps by syncing.
-  // In the default app order, youtube appears before the camera app. For the
-  // apps collections experimental arm, camera appears first.
-  AddSyncedItem(ash::kCameraAppId, model_updater);
-  AddSyncedItem(extension_misc::kYoutubeAppId, model_updater);
-
-  ChromeAppListItem* camera_item = model_updater->FindItem(ash::kCameraAppId);
-  const syncer::StringOrdinal camera_ordinal = camera_item->position();
-
-  ChromeAppListItem* youtube_item =
-      model_updater->FindItem(extension_misc::kYoutubeAppId);
-  const syncer::StringOrdinal youtube_ordinal = youtube_item->position();
-
-  // Before calculating the experimental arm, the default apps should be ordered
-  // as default, with youtube having a lesser ordinal than camera.
-  EXPECT_TRUE(youtube_ordinal.LessThan(camera_ordinal));
-
-  // Trigger a recalculation of the experimental arm and apps position for
-  // testing simplicity. This is usually done on first sync.
-  client->MaybeRecalculateAppsGridDefaultOrder();
-  const syncer::StringOrdinal new_camera_ordinal = camera_item->position();
-  const syncer::StringOrdinal new_youtube_ordinal = youtube_item->position();
-
-  // After determining if the user belongs in the
-  // experimental arm or not, the default apps may change their ordinals if the
-  // user belongs in the experimental modified order. The order of youtube and
-  // camera is also changed so that now camera has a lesser ordinal than
-  // youtube.
-  EXPECT_EQ(camera_ordinal != new_camera_ordinal,
-            IsModifiedOrderExperimentalArm());
-  EXPECT_EQ(youtube_ordinal != new_youtube_ordinal,
-            IsModifiedOrderExperimentalArm());
-  EXPECT_EQ(new_camera_ordinal.LessThan(new_youtube_ordinal),
-            IsModifiedOrderExperimentalArm());
-}
-
-// Verify that the default order of apps is changed once the app list opens for
-// the first time in the modified order experimental arm of apps collections.
-IN_PROC_BROWSER_TEST_P(AppListModifiedDefaultAppOrderTest,
-                       DefaultOrdinalsNotChangeAfterReorder) {
-  AppListClientImpl* client = AppListClientImpl::GetInstance();
-  ASSERT_TRUE(client);
-  client->UpdateProfile();
-  ChromeAppListModelUpdater* model_updater = GetChromeAppListModelUpdater();
-  ASSERT_TRUE(model_updater);
-  // Install some default apps by syncing.
-  AddSyncedItem(ash::kCameraAppId, model_updater);
-  AddSyncedItem(extension_misc::kYoutubeAppId, model_updater);
-  AddSyncedItem(ash::kCalculatorAppId, model_updater);
-
-  ChromeAppListItem* camera_item = model_updater->FindItem(ash::kCameraAppId);
-  const syncer::StringOrdinal camera_ordinal = camera_item->position();
-
-  ChromeAppListItem* youtube_item =
-      model_updater->FindItem(extension_misc::kYoutubeAppId);
-  const syncer::StringOrdinal youtube_ordinal = youtube_item->position();
-
-  ChromeAppListItem* calculator_item =
-      model_updater->FindItem(ash::kCalculatorAppId);
-  syncer::StringOrdinal calculator_ordinal = calculator_item->position();
-
-  // Before calculating the experimental arm, the default apps should be ordered
-  // as default, with youtube having a lesser ordinal than camera, which have a
-  // lesser ordinal than calculator.
-  EXPECT_TRUE(youtube_ordinal.LessThan(camera_ordinal));
-  EXPECT_TRUE(camera_ordinal.LessThan(calculator_ordinal));
-
-  // Move the calculator before the camera
-  model_updater->RequestPositionUpdate(
-      ash::kCalculatorAppId, camera_ordinal.CreateBefore(),
-      ash::RequestPositionUpdateReason::kMoveItem);
-  calculator_ordinal = calculator_item->position();
-  EXPECT_TRUE(calculator_ordinal.LessThan(camera_ordinal));
-
-  // Trigger a recalculation of the experimental arm and apps position for
-  // testing simplicity. This is usually done on first sync.
-  client->MaybeRecalculateAppsGridDefaultOrder();
-  const syncer::StringOrdinal new_camera_ordinal = camera_item->position();
-  const syncer::StringOrdinal new_youtube_ordinal = youtube_item->position();
-  const syncer::StringOrdinal new_calculator_ordinal =
-      calculator_item->position();
-
-  // Because there was an app reorder, ordinals should not change.
-  EXPECT_EQ(camera_ordinal, new_camera_ordinal);
-  EXPECT_EQ(youtube_ordinal, new_youtube_ordinal);
-  EXPECT_EQ(calculator_ordinal, new_calculator_ordinal);
-}

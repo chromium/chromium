@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/apps_collections_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/gtest_prod_util.h"
@@ -175,9 +174,6 @@ class AppListClientImpl
   // Initializes as if a new user logged in for testing.
   void InitializeAsIfNewUserLoginForTest();
 
-  // Recalculate the default position of apps with a modified order.
-  void MaybeRecalculateAppsGridDefaultOrder();
-
  private:
   FRIEND_TEST_ALL_PREFIXES(AppListClientWithProfileTest, CheckDataRace);
 
@@ -209,7 +205,7 @@ class AppListClientImpl
   void SetUpSearchUI();
 
   // Records the metrics related to showing the app list.
-  void RecordViewShown(bool is_apps_collection_shown);
+  void RecordViewShown();
 
   // Records the browser window status + the opened search result type when
   // the result is opened from the search box.
@@ -223,10 +219,8 @@ class AppListClientImpl
   // Maybe record an activated item's visibility. An app item visibility refers
   // to above or below the fold of the launcher (i.e. is it is visible without
   // scrolling or switching the page).
-  void MaybeRecordActivatedItemVisibility(
-      const std::string& id,
-      ash::AppListLaunchedFrom launched_from,
-      bool is_app_above_the_fold);
+  void MaybeRecordActivatedItemVisibility(const std::string& id,
+                                          bool is_app_above_the_fold);
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<user_manager::UserManager> user_manager_;

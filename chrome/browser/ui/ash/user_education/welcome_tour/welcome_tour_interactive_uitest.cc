@@ -5,7 +5,6 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/web_app_id_constants.h"
-#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
@@ -48,7 +47,6 @@ using ::testing::Matches;
 using ::testing::Property;
 
 using TestVariantsParam = std::tuple<
-    /*is_apps_collections_enabled=*/bool,
     /*is_welcome_tour_v3_enabled=*/bool,
     /*is_welcome_tour_counterfactaully_enabled=*/bool>;
 
@@ -64,26 +62,20 @@ MATCHER_P(RootWindow, matcher, "") {
 
 // Helpers ---------------------------------------------------------------------
 
-bool IsAppsCollectionsEnabled(TestVariantsParam param) {
+bool IsWelcomeTourV3Enabled(TestVariantsParam param) {
   return std::get<0>(param);
 }
 
-bool IsWelcomeTourV3Enabled(TestVariantsParam param) {
-  return std::get<1>(param);
-}
-
 bool IsWelcomeTourCounterfactuallyEnabled(TestVariantsParam param) {
-  return std::get<2>(param);
+  return std::get<1>(param);
 }
 
 std::string GenerateTestSuffix(
     const testing::TestParamInfo<TestVariantsParam>& info) {
-  return base::StrCat(
-      {IsWelcomeTourV3Enabled(info.param) ? "V3" : "V1", "_",
-       IsWelcomeTourCounterfactuallyEnabled(info.param) ? "Counterfactual_"
-                                                        : "",
-       IsAppsCollectionsEnabled(info.param) ? "AppsCollectionsEnabled"
-                                            : "AppsCollectionsDisabled"});
+  return base::StrCat({IsWelcomeTourV3Enabled(info.param) ? "V3" : "V1",
+                       IsWelcomeTourCounterfactuallyEnabled(info.param)
+                           ? "_Counterfactual"
+                           : ""});
 }
 
 }  // namespace
@@ -107,8 +99,7 @@ class WelcomeTourInteractiveUiTest
           IsWelcomeTourV3Enabled() && !IsWelcomeTourCounterfactuallyEnabled()},
          {ash::features::kWelcomeTourCounterfactualArm,
           IsWelcomeTourCounterfactuallyEnabled()},
-         {ash::features::kWelcomeTourHoldbackArm, false},
-         {app_list_features::kAppsCollections, IsAppsCollectionsEnabled()}});
+         {ash::features::kWelcomeTourHoldbackArm, false}});
 
     // TODO(http://b/277091006): Remove after preventing app launches.
     // Prevent the browser from launching as it is not needed to fully exercise
@@ -121,9 +112,6 @@ class WelcomeTourInteractiveUiTest
   // InteractiveBrowserTest:
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
-
-    ash::AppsCollectionsController::Get()->ForceAppsCollectionsForTesting(
-        IsAppsCollectionsEnabled());
 
     // Install system apps.
     // NOTE: This test requires the "Help" and "Settings" apps to be installed.
@@ -138,12 +126,6 @@ class WelcomeTourInteractiveUiTest
     SetContextWidget(
         views::ElementTrackerViews::GetInstance()->GetWidgetForContext(
             ash::WelcomeTourController::Get()->GetInitialElementContext()));
-  }
-
-  // Returns whether the AppsCollections feature is enabled in the Welcome Tour
-  // given test parameterization.
-  bool IsAppsCollectionsEnabled() const {
-    return ::IsAppsCollectionsEnabled(GetParam());
   }
 
   // Returns whether the WelcomeTourV3 feature is enabled given test
@@ -307,7 +289,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     WelcomeTourInteractiveUiTest,
     testing::Combine(
-        /*is_apps_collections_enabled=*/testing::Bool(),
         /*is_welcome_tour_v3_enabled=*/testing::Bool(),
         /*is_welcome_tour_counterfactually_enabled=*/testing::Bool()),
     &GenerateTestSuffix);
