@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
 
-#include <optional>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -49,8 +49,20 @@ std::wstring GetDisplayName() {
       l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_NAME));
 }
 
+// TODO(crbug.com/562072483): Make the file name channel-aware; channels
+// currently share one Start Menu entry. Land before crbug.com/562073179.
 std::wstring GetShortcutName() {
   return base::StrCat({GetDisplayName(), L".lnk"});
+}
+
+// Returns an empty path if the Start Menu directory is unavailable.
+base::FilePath GetStartMenuShortcutPath() {
+  base::FilePath start_menu_dir;
+  if (!base::PathService::Get(base::DIR_START_MENU, &start_menu_dir) ||
+      start_menu_dir.empty()) {
+    return base::FilePath();
+  }
+  return start_menu_dir.Append(GetShortcutName());
 }
 
 }  // namespace
@@ -61,7 +73,7 @@ std::wstring GetAppUserModelId() {
       /*profile_path=*/base::FilePath());
 }
 
-void SetWindowProperties(HWND hwnd, bool is_ephemeral) {
+void SetWindowProperties(HWND hwnd, bool is_ephemeral, bool allow_pinning) {
   if (!hwnd) {
     return;
   }
@@ -69,6 +81,12 @@ void SetWindowProperties(HWND hwnd, bool is_ephemeral) {
     // Ephemeral widgets are hidden from the taskbar and should not be pinned.
     ui::win::PreventWindowFromPinning(hwnd);
     return;
+  }
+
+  // Must precede SetAppDetailsForWindow(): the Shell ignores PreventPinning
+  // once the AUMID is set.
+  if (!allow_pinning) {
+    ui::win::PreventWindowFromPinning(hwnd);
   }
 
   // In persistent mode, assign the dedicated AppUserModelId and relaunch
@@ -94,10 +112,14 @@ OmniboxEverywhereShortcutHelperWin::~OmniboxEverywhereShortcutHelperWin() =
     default;
 
 bool OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut() {
-  base::FilePath start_menu_dir;
-  if (!base::PathService::Get(base::DIR_START_MENU, &start_menu_dir) ||
-      start_menu_dir.empty()) {
+  const base::FilePath shortcut_path = GetStartMenuShortcutPath();
+  if (shortcut_path.empty()) {
     return false;
+  }
+  // TODO(crbug.com/562073179): Also rewrite the shortcut when its properties
+  // are stale, via base::win::ResolveShortcutProperties.
+  if (base::PathExists(shortcut_path)) {
+    return true;
   }
 
   base::FilePath chrome_proxy_path = GetChromeProxyPath();
@@ -113,8 +135,6 @@ bool OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut() {
   shortcut_properties.set_icon(GetChromeExePath(),
                                icon_resources::kOmniboxEverywhereIndex);
   shortcut_properties.set_description(GetDisplayName());
-
-  base::FilePath shortcut_path = start_menu_dir.Append(GetShortcutName());
 
   return base::win::CreateOrUpdateShortcutLink(
       shortcut_path, shortcut_properties,

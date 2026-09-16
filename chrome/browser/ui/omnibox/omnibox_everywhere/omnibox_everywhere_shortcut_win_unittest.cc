@@ -13,10 +13,10 @@
 #include <shellapi.h>
 #include <wrl/client.h>
 
-#include <optional>
 #include <string>
 
 #include "base/base_paths_win.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
@@ -40,6 +40,26 @@
 #include "ui/views/win/hwnd_util.h"
 
 namespace omnibox_everywhere {
+namespace {
+
+// Path at which the Start Menu shortcut is expected inside `start_menu_dir`.
+base::FilePath ShortcutPathIn(const base::FilePath& start_menu_dir) {
+  return start_menu_dir.Append(
+      base::StrCat({base::UTF16ToWide(
+                        l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_NAME)),
+                    L".lnk"}));
+}
+
+// Returns a COM STA sequence matching the one the controller uses in
+// production.
+base::SequenceBound<OmniboxEverywhereShortcutHelperWin> MakeBoundHelper() {
+  return base::SequenceBound<OmniboxEverywhereShortcutHelperWin>(
+      base::ThreadPool::CreateCOMSTATaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
+}
+
+}  // namespace
 
 class OmniboxEverywhereShortcutWinTest : public ChromeViewsTestBase {
  public:
@@ -62,10 +82,7 @@ TEST_F(OmniboxEverywhereShortcutWinTest, CreateStartMenuShortcut) {
   OmniboxEverywhereShortcutHelperWin helper;
   EXPECT_TRUE(helper.CreateStartMenuShortcut());
 
-  base::FilePath shortcut_path = start_menu_dir.GetPath().Append(
-      base::StrCat({base::UTF16ToWide(
-                        l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_NAME)),
-                    L".lnk"}));
+  base::FilePath shortcut_path = ShortcutPathIn(start_menu_dir.GetPath());
   EXPECT_TRUE(base::PathExists(shortcut_path));
 
   base::win::ShortcutProperties properties;
@@ -100,28 +117,24 @@ TEST_F(OmniboxEverywhereShortcutWinTest, SequenceBoundHelper) {
   base::ScopedPathOverride start_menu_override(base::DIR_START_MENU,
                                                start_menu_dir.GetPath());
 
-  base::SequenceBound<OmniboxEverywhereShortcutHelperWin> helper(
-      base::ThreadPool::CreateCOMSTATaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
+  base::SequenceBound<OmniboxEverywhereShortcutHelperWin> helper =
+      MakeBoundHelper();
 
   base::test::TestFuture<bool> future;
   helper.AsyncCall(&OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut)
       .Then(future.GetCallback());
   EXPECT_TRUE(future.Get());
 
-  base::FilePath shortcut_path = start_menu_dir.GetPath().Append(
-      base::StrCat({base::UTF16ToWide(
-                        l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_NAME)),
-                    L".lnk"}));
+  base::FilePath shortcut_path = ShortcutPathIn(start_menu_dir.GetPath());
   EXPECT_TRUE(base::PathExists(shortcut_path));
 }
 
 TEST_F(OmniboxEverywhereShortcutWinTest, SetWindowPropertiesNullHwndSafe) {
   // Verifies that calling SetWindowProperties with a null HWND
   // does not crash in either ephemeral or persistent mode.
-  SetWindowProperties(nullptr, /*is_ephemeral=*/true);
-  SetWindowProperties(nullptr, /*is_ephemeral=*/false);
+  SetWindowProperties(nullptr, /*is_ephemeral=*/true, /*allow_pinning=*/true);
+  SetWindowProperties(nullptr, /*is_ephemeral=*/false, /*allow_pinning=*/true);
+  SetWindowProperties(nullptr, /*is_ephemeral=*/false, /*allow_pinning=*/false);
 }
 
 TEST_F(OmniboxEverywhereShortcutWinTest, SetWindowPropertiesEphemeralMode) {
@@ -131,7 +144,9 @@ TEST_F(OmniboxEverywhereShortcutWinTest, SetWindowPropertiesEphemeralMode) {
   HWND hwnd = views::HWNDForWidget(widget.get());
   ASSERT_NE(hwnd, nullptr);
 
-  SetWindowProperties(hwnd, /*is_ephemeral=*/true);
+  // Ephemeral windows are hidden from the taskbar, so pinning is suppressed
+  // regardless of whether a Start Menu shortcut is available.
+  SetWindowProperties(hwnd, /*is_ephemeral=*/true, /*allow_pinning=*/true);
 
   Microsoft::WRL::ComPtr<IPropertyStore> pps;
   ASSERT_HRESULT_SUCCEEDED(
@@ -146,6 +161,61 @@ TEST_F(OmniboxEverywhereShortcutWinTest, SetWindowPropertiesEphemeralMode) {
   widget->CloseNow();
 }
 
+TEST_F(OmniboxEverywhereShortcutWinTest,
+       CreateStartMenuShortcutCreatesMissing) {
+  base::ScopedTempDir start_menu_dir;
+  ASSERT_TRUE(start_menu_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride start_menu_override(base::DIR_START_MENU,
+                                               start_menu_dir.GetPath());
+
+  base::FilePath shortcut_path = ShortcutPathIn(start_menu_dir.GetPath());
+  ASSERT_FALSE(base::PathExists(shortcut_path));
+
+  base::SequenceBound<OmniboxEverywhereShortcutHelperWin> helper =
+      MakeBoundHelper();
+  base::test::TestFuture<bool> future;
+  helper.AsyncCall(&OmniboxEverywhereShortcutHelperWin::CreateStartMenuShortcut)
+      .Then(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+  EXPECT_TRUE(base::PathExists(shortcut_path));
+}
+
+TEST_F(OmniboxEverywhereShortcutWinTest, CreateStartMenuShortcutKeepsExisting) {
+  base::ScopedTempDir start_menu_dir;
+  ASSERT_TRUE(start_menu_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride start_menu_override(base::DIR_START_MENU,
+                                               start_menu_dir.GetPath());
+
+  // Stands in for an already-present shortcut. Only its presence is checked,
+  // so a sentinel file is enough to detect an unwanted rewrite.
+  const base::FilePath shortcut_path = ShortcutPathIn(start_menu_dir.GetPath());
+  ASSERT_TRUE(base::WriteFile(shortcut_path, "sentinel"));
+
+  OmniboxEverywhereShortcutHelperWin helper;
+  EXPECT_TRUE(helper.CreateStartMenuShortcut());
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(shortcut_path, &contents));
+  EXPECT_EQ(contents, "sentinel");
+}
+
+TEST_F(OmniboxEverywhereShortcutWinTest,
+       CreateStartMenuShortcutReportsFailure) {
+  // Point DIR_START_MENU at a regular file so the shortcut cannot be created.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath not_a_directory =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("not_a_directory"));
+  ASSERT_TRUE(base::WriteFile(not_a_directory, "content"));
+  base::ScopedPathOverride start_menu_override(base::DIR_START_MENU,
+                                               not_a_directory,
+                                               /*is_absolute=*/true,
+                                               /*create=*/false);
+
+  OmniboxEverywhereShortcutHelperWin helper;
+  EXPECT_FALSE(helper.CreateStartMenuShortcut());
+}
+
 TEST_F(OmniboxEverywhereShortcutWinTest, SetWindowPropertiesPersistentMode) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -153,11 +223,17 @@ TEST_F(OmniboxEverywhereShortcutWinTest, SetWindowPropertiesPersistentMode) {
   HWND hwnd = views::HWNDForWidget(widget.get());
   ASSERT_NE(hwnd, nullptr);
 
-  SetWindowProperties(hwnd, /*is_ephemeral=*/false);
+  SetWindowProperties(hwnd, /*is_ephemeral=*/false, /*allow_pinning=*/true);
 
   Microsoft::WRL::ComPtr<IPropertyStore> pps;
   ASSERT_HRESULT_SUCCEEDED(
       SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps)));
+
+  // Persistent windows stay pinnable when `allow_pinning` is true.
+  base::win::ScopedPropVariant pv_prevent;
+  ASSERT_HRESULT_SUCCEEDED(
+      pps->GetValue(PKEY_AppUserModel_PreventPinning, pv_prevent.Receive()));
+  EXPECT_EQ(pv_prevent.get().vt, VT_EMPTY);
 
   // Verify AppUserModelID.
   base::win::ScopedPropVariant pv_appid;
@@ -185,6 +261,39 @@ TEST_F(OmniboxEverywhereShortcutWinTest, SetWindowPropertiesPersistentMode) {
   EXPECT_EQ(std::wstring(pv_name.get().pwszVal),
             base::UTF16ToWide(
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_EVERYWHERE_NAME)));
+
+  widget->CloseNow();
+}
+
+TEST_F(OmniboxEverywhereShortcutWinTest,
+       SetWindowPropertiesPersistentModeWithoutPinning) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+                       views::Widget::InitParams::TYPE_WINDOW);
+  HWND hwnd = views::HWNDForWidget(widget.get());
+  ASSERT_NE(hwnd, nullptr);
+
+  SetWindowProperties(hwnd, /*is_ephemeral=*/false, /*allow_pinning=*/false);
+
+  Microsoft::WRL::ComPtr<IPropertyStore> pps;
+  ASSERT_HRESULT_SUCCEEDED(
+      SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps)));
+
+  base::win::ScopedPropVariant pv_prevent;
+  ASSERT_HRESULT_SUCCEEDED(
+      pps->GetValue(PKEY_AppUserModel_PreventPinning, pv_prevent.Receive()));
+  EXPECT_EQ(pv_prevent.get().vt, VT_BOOL);
+  EXPECT_EQ(pv_prevent.get().boolVal, VARIANT_TRUE);
+
+  // Suppressing pinning must not cost the window its own taskbar grouping and
+  // icon, which the AppUserModelId provides.
+  base::win::ScopedPropVariant pv_appid;
+  ASSERT_HRESULT_SUCCEEDED(
+      pps->GetValue(PKEY_AppUserModel_ID, pv_appid.Receive()));
+  EXPECT_EQ(pv_appid.get().vt, VT_LPWSTR);
+  EXPECT_NE(
+      std::wstring(pv_appid.get().pwszVal).find(L"app_search_with_chrome"),
+      std::wstring::npos);
 
   widget->CloseNow();
 }

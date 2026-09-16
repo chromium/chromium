@@ -77,6 +77,12 @@
 #include "media/base/media_switches.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/base_paths_win.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_path_override.h"
+#endif
+
 namespace omnibox_everywhere {
 
 class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
@@ -92,6 +98,15 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
 #endif
   }
   ~OmniboxEverywhereBrowserTest() override = default;
+
+  void SetUp() override {
+#if BUILDFLAG(IS_WIN)
+    ASSERT_TRUE(temp_start_menu_dir_.CreateUniqueTempDir());
+    start_menu_override_.emplace(base::DIR_START_MENU,
+                                 temp_start_menu_dir_.GetPath());
+#endif
+    InteractiveBrowserTest::SetUp();
+  }
 
   // Simulates triggering the global hotkey to show or dismiss the Omnibox
   // Everywhere widget.
@@ -251,6 +266,10 @@ class OmniboxEverywhereBrowserTest : public InteractiveBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_WIN)
+  base::ScopedTempDir temp_start_menu_dir_;
+  std::optional<base::ScopedPathOverride> start_menu_override_;
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, ShowAndCloseWidget) {

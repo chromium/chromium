@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/win/windows_types.h"
 
 namespace omnibox_everywhere {
@@ -17,8 +16,9 @@ std::wstring GetAppUserModelId();
 
 // Configures the Windows taskbar, AUMID, relaunch details, and pinning
 // properties for an Omnibox Everywhere widget window based on whether
-// ephemeral mode is active.
-void SetWindowProperties(HWND hwnd, bool is_ephemeral);
+// ephemeral mode is active. Pass `allow_pinning` false when no Start Menu
+// shortcut is available; it must be decided here, before the AUMID is set.
+void SetWindowProperties(HWND hwnd, bool is_ephemeral, bool allow_pinning);
 
 // Helper class for Windows shortcut operations that execute
 // synchronously on a background COM STA thread, managed via
@@ -33,9 +33,8 @@ class OmniboxEverywhereShortcutHelperWin {
   OmniboxEverywhereShortcutHelperWin& operator=(
       const OmniboxEverywhereShortcutHelperWin&) = delete;
 
-  // Creates/updates the Start Menu shortcut for Omnibox Everywhere with
-  // AppUserModelId, icon resource, and relaunch command.
-  // Must be run on a COM STA thread supporting blocking I/O.
+  // Creates the Start Menu shortcut if absent, and returns whether a usable
+  // one exists. Must run on a COM STA thread supporting blocking I/O.
   bool CreateStartMenuShortcut();
 };
 

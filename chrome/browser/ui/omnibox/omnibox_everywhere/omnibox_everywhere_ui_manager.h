@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
@@ -31,6 +32,12 @@
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/functional/callback.h"
+#include "base/threading/sequence_bound.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_shortcut_win.h"
+#endif
 
 class Profile;
 class ScopedKeepAlive;
@@ -219,6 +226,24 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   bool IsPointInDraggableRegion(const gfx::Point& point) const;
 
+#if BUILDFLAG(IS_WIN)
+  // Creates the Start Menu shortcut the Shell requires for taskbar pinning,
+  // on a COM STA runner. Reports whether a usable shortcut exists.
+  void CreateStartMenuShortcut(
+      base::OnceCallback<void(bool)> callback = base::DoNothing());
+
+  // Suppresses taskbar pinning on widgets created from now on; pinning remains
+  // enabled until this is called. Does not affect the open widget.
+  void DisableTaskbarPinning();
+
+  bool taskbar_pinning_disabled_for_testing() const {
+    return taskbar_pinning_disabled_;
+  }
+  bool start_menu_shortcut_requested_for_testing() const {
+    return start_menu_shortcut_requested_;
+  }
+#endif
+
   // For testing:
   WebUIContentsWrapper* contents_wrapper_for_testing() {
     return contents_wrapper_.get();
@@ -279,6 +304,11 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void CreateAndInitWidget(gfx::NativeWindow context);
   void ActivateAndFocus();
   void OnEphemeralModelPrefChanged();
+
+#if BUILDFLAG(IS_WIN)
+  // Disables taskbar pinning if no Start Menu shortcut is available.
+  void OnStartMenuShortcutChecked(bool shortcut_exists);
+#endif
   void OnMostVisitedPrefChanged();
   void MaybeRecordFreImpression();
   static gfx::Rect CalculateWidgetBounds(int height);
@@ -367,6 +397,17 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   base::ScopedObservation<PermissionPromptObserver,
                           PermissionPromptObserver::Observer>
       permission_prompt_observation_{this};
+
+#if BUILDFLAG(IS_WIN)
+  base::SequenceBound<OmniboxEverywhereShortcutHelperWin> shortcut_helper_;
+
+  // Tracks whether shortcut creation has succeeded or is in flight.
+  // Reset on failure so subsequent persistent widgets can retry.
+  bool start_menu_shortcut_requested_ = false;
+
+  // See DisableTaskbarPinning().
+  bool taskbar_pinning_disabled_ = false;
+#endif
 
   base::WeakPtrFactory<OmniboxEverywhereUIManager> weak_factory_{this};
 };
