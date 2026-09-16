@@ -514,9 +514,6 @@ const MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetPaintCanvas()
 }
 
 const MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() const {
-  if (!canvas()) {
-    return nullptr;
-  }
   return recorder_.get();
 }
 
