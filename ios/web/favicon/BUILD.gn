@@ -62,6 +62,7 @@ source_set("unittests") {
     "//ios/web/public/favicon",
     "//ios/web/public/test:test_fixture",
     "//testing/gtest",
+    "//url",
   ]
   sources = [ "favicon_util_unittest.mm" ]
 }

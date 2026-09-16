@@ -8,6 +8,7 @@
 #import "ios/web/public/favicon/favicon_url.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
 
 namespace web {
 
@@ -15,28 +16,24 @@ using FaviconUtilTest = PlatformTest;
 
 // Tries to extract multiple favicons url, all should be extracted.
 TEST_F(FaviconUtilTest, ExtractFaviconURLMultipleFavicons) {
-  base::DictValue favicon;
-  favicon.Set("href", "http://fav.ico");
-  favicon.Set("rel", "icon");
-  favicon.Set("sizes", "10x20");
-  base::DictValue favicon2;
-  favicon2.Set("href", "http://fav2.ico");
-  favicon2.Set("rel", "apple-touch-icon");
-  favicon2.Set("sizes", "10x20 30x40");
-  base::DictValue favicon3;
-  favicon3.Set("href", "http://fav3.ico");
-  favicon3.Set("rel", "apple-touch-icon-precomposed");
-  favicon3.Set("sizes", "werfxw");
-  base::ListValue favicons;
-  favicons.Append(std::move(favicon));
-  favicons.Append(std::move(favicon2));
-  favicons.Append(std::move(favicon3));
+  const base::ListValue favicons =
+      base::ListValue()
+          .Append(base::DictValue()
+                      .Set("href", "http://fav.ico")
+                      .Set("rel", "icon")
+                      .Set("sizes", "10x20"))
+          .Append(base::DictValue()
+                      .Set("href", "http://fav2.ico")
+                      .Set("rel", "apple-touch-icon")
+                      .Set("sizes", "10x20 30x40"))
+          .Append(base::DictValue()
+                      .Set("href", "http://fav3.ico")
+                      .Set("rel", "apple-touch-icon-precomposed")
+                      .Set("sizes", "werfxw"));
 
-  std::vector<web::FaviconURL> urls;
-  bool result =
-      web::ExtractFaviconURL(favicons, GURL("http://chromium.org"), &urls);
+  const std::vector<web::FaviconURL> urls =
+      web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
 
-  EXPECT_TRUE(result);
   ASSERT_EQ(3U, urls.size());
   EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
@@ -57,87 +54,68 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLMultipleFavicons) {
 
 // Tries to extract favicons with the rel attributes missing in one of them.
 TEST_F(FaviconUtilTest, ExtractFaviconURLNoRel) {
-  base::DictValue favicon;
-  favicon.Set("href", "http://fav.ico");
-  favicon.Set("rel", "icon");
-  base::DictValue favicon2;
-  favicon2.Set("href", "http://fav2.ico");
-  base::DictValue favicon3;
-  favicon3.Set("href", "http://fav3.ico");
-  favicon3.Set("rel", "apple-touch-icon-precomposed");
-  base::ListValue favicons;
-  favicons.Append(std::move(favicon));
-  favicons.Append(std::move(favicon2));
-  favicons.Append(std::move(favicon3));
+  const base::ListValue favicons =
+      base::ListValue()
+          .Append(base::DictValue()
+                      .Set("href", "http://fav.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue().Set("href", "http://fav2.ico"))
+          .Append(base::DictValue()
+                      .Set("href", "http://fav3.ico")
+                      .Set("rel", "apple-touch-icon-precomposed"));
 
-  std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons, GURL(), &urls);
+  const std::vector<web::FaviconURL> urls =
+      web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
 
-  EXPECT_FALSE(result);
-  ASSERT_EQ(1U, urls.size());
-  EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
-  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+  EXPECT_TRUE(urls.empty());
 }
 
 // Tries to extract favicons with the rel attributes being an int.
 TEST_F(FaviconUtilTest, ExtractFaviconURLIntRel) {
-  base::DictValue favicon;
-  favicon.Set("href", "http://fav.ico");
-  favicon.Set("rel", "icon");
-  base::DictValue favicon2;
-  favicon2.Set("href", "http://fav2.ico");
-  favicon2.Set("rel", 12);
-  base::DictValue favicon3;
-  favicon3.Set("href", "http://fav3.ico");
-  favicon3.Set("rel", "apple-touch-icon-precomposed");
-  base::ListValue favicons;
-  favicons.Append(std::move(favicon));
-  favicons.Append(std::move(favicon2));
-  favicons.Append(std::move(favicon3));
+  const base::ListValue favicons =
+      base::ListValue()
+          .Append(base::DictValue()
+                      .Set("href", "http://fav.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "http://fav2.ico")
+                      .Set("rel", 12345))
+          .Append(base::DictValue()
+                      .Set("href", "http://fav3.ico")
+                      .Set("rel", "apple-touch-icon-precomposed"));
 
-  std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons, GURL(), &urls);
+  const std::vector<web::FaviconURL> urls =
+      web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
 
-  EXPECT_FALSE(result);
-  ASSERT_EQ(1U, urls.size());
-  EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
-  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+  EXPECT_TRUE(urls.empty());
 }
 
 // Tries to extract favicons with the href attributes missing in one of them.
 TEST_F(FaviconUtilTest, ExtractFaviconURLNoHref) {
-  base::DictValue favicon;
-  favicon.Set("href", "http://fav.ico");
-  favicon.Set("rel", "icon");
-  base::DictValue favicon2;
-  favicon2.Set("rel", "apple-touch-icon");
-  base::DictValue favicon3;
-  favicon3.Set("href", "http://fav3.ico");
-  favicon3.Set("rel", "apple-touch-icon-precomposed");
-  base::ListValue favicons;
-  favicons.Append(std::move(favicon));
-  favicons.Append(std::move(favicon2));
-  favicons.Append(std::move(favicon3));
+  const base::ListValue favicons =
+      base::ListValue()
+          .Append(base::DictValue()
+                      .Set("href", "http://fav.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue().Set("rel", "apple-touch-icon"))
+          .Append(base::DictValue()
+                      .Set("href", "http://fav3.ico")
+                      .Set("rel", "apple-touch-icon-precomposed"));
 
-  std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons, GURL(), &urls);
+  const std::vector<web::FaviconURL> urls =
+      web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
 
-  EXPECT_FALSE(result);
-  ASSERT_EQ(1U, urls.size());
-  EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
-  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+  EXPECT_TRUE(urls.empty());
 }
 
 // Tries to extract the default favicon when there are no favicon in the
 // message.
 TEST_F(FaviconUtilTest, ExtractFaviconURLNoFavicons) {
-  base::ListValue favicons;
+  const base::ListValue favicons;
 
-  std::vector<web::FaviconURL> urls;
-  bool result =
-      web::ExtractFaviconURL(favicons, GURL("http://chromium.org"), &urls);
+  const std::vector<web::FaviconURL> urls =
+      web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
 
-  EXPECT_TRUE(result);
   ASSERT_EQ(1U, urls.size());
   EXPECT_EQ(GURL("http://chromium.org/favicon.ico"), urls[0].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
@@ -147,22 +125,20 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoFavicons) {
 // Tries to extract favicons with the sizes attributes containing one correct
 // size and one incorrectly formatted.
 TEST_F(FaviconUtilTest, ExtractFaviconURLSizesCorrectAndGarbage) {
-  base::DictValue favicon;
-  favicon.Set("href", "http://fav.ico");
-  favicon.Set("rel", "icon");
-  favicon.Set("sizes", "10x20 sgxer");
-  base::DictValue favicon2;
-  favicon2.Set("href", "http://fav2.ico");
-  favicon2.Set("rel", "apple-touch-icon");
-  favicon2.Set("sizes", "sgxer 30x40");
-  base::ListValue favicons;
-  favicons.Append(std::move(favicon));
-  favicons.Append(std::move(favicon2));
+  const base::ListValue favicons =
+      base::ListValue()
+          .Append(base::DictValue()
+                      .Set("href", "http://fav.ico")
+                      .Set("rel", "icon")
+                      .Set("sizes", "10x20 sgxer"))
+          .Append(base::DictValue()
+                      .Set("href", "http://fav2.ico")
+                      .Set("rel", "apple-touch-icon")
+                      .Set("sizes", "sgxer 30x40"));
 
-  std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons, GURL(), &urls);
+  const std::vector<web::FaviconURL> urls =
+      web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
 
-  EXPECT_TRUE(result);
   ASSERT_EQ(2U, urls.size());
   EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
@@ -182,22 +158,20 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLSizesCorrectAndGarbage) {
 // Tries to extract favicons with the sizes attributes containing size only
 // partially correctly formatted.
 TEST_F(FaviconUtilTest, ExtractFaviconURLSizesPartiallyCorrect) {
-  base::DictValue favicon;
-  favicon.Set("href", "http://fav.ico");
-  favicon.Set("rel", "icon");
-  favicon.Set("sizes", "10x");
-  base::DictValue favicon2;
-  favicon2.Set("href", "http://fav2.ico");
-  favicon2.Set("rel", "apple-touch-icon");
-  favicon2.Set("sizes", "x40");
-  base::ListValue favicons;
-  favicons.Append(std::move(favicon));
-  favicons.Append(std::move(favicon2));
+  const base::ListValue favicons =
+      base::ListValue()
+          .Append(base::DictValue()
+                      .Set("href", "http://fav.ico")
+                      .Set("rel", "icon")
+                      .Set("sizes", "10x"))
+          .Append(base::DictValue()
+                      .Set("href", "http://fav2.ico")
+                      .Set("rel", "apple-touch-icon")
+                      .Set("sizes", "x40"));
 
-  std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons, GURL(), &urls);
+  const std::vector<web::FaviconURL> urls =
+      web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
 
-  EXPECT_TRUE(result);
   ASSERT_EQ(2U, urls.size());
   EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
@@ -206,6 +180,83 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLSizesPartiallyCorrect) {
   EXPECT_EQ(GURL("http://fav2.ico"), urls[1].icon_url);
   EXPECT_EQ(web::FaviconURL::IconType::kTouchIcon, urls[1].icon_type);
   EXPECT_EQ(0U, urls[1].icon_sizes.size());
+}
+
+// Tries to extract favicons from various origins from a normal orign.
+TEST_F(FaviconUtilTest, ExtractFaviconURLFromNormalOrigin) {
+  const base::ListValue favicons =
+      base::ListValue()
+          .Append(base::DictValue()
+                      .Set("href", "http://fav.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "https://fav.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "data:favicon.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "file:favicon.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "testwebui:favicon.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "non-webui:favicon.ico")
+                      .Set("rel", "icon"));
+
+  const std::vector<web::FaviconURL> urls =
+      web::ExtractFaviconURL(favicons, GURL("http://chromium.org"));
+
+  ASSERT_EQ(3U, urls.size());
+  EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+
+  EXPECT_EQ(GURL("https://fav.ico"), urls[1].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[1].icon_type);
+
+  EXPECT_EQ(GURL("data:favicon.ico"), urls[2].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[2].icon_type);
+}
+
+// Tries to extract favicons from various origins from a custom orign.
+TEST_F(FaviconUtilTest, ExtractFaviconURLFromCustomOrigin) {
+  const base::ListValue favicons =
+      base::ListValue()
+          .Append(base::DictValue()
+                      .Set("href", "http://fav.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "https://fav.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "data:favicon.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "file:favicon.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "testwebui:favicon.ico")
+                      .Set("rel", "icon"))
+          .Append(base::DictValue()
+                      .Set("href", "non-webui:favicon.ico")
+                      .Set("rel", "icon"));
+
+  const std::vector<web::FaviconURL> urls =
+      web::ExtractFaviconURL(favicons, GURL("testwebui://internal-ui"));
+
+  ASSERT_EQ(4U, urls.size());
+  EXPECT_EQ(GURL("http://fav.ico"), urls[0].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[0].icon_type);
+
+  EXPECT_EQ(GURL("https://fav.ico"), urls[1].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[1].icon_type);
+
+  EXPECT_EQ(GURL("data:favicon.ico"), urls[2].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[2].icon_type);
+
+  EXPECT_EQ(GURL("testwebui:favicon.ico"), urls[3].icon_url);
+  EXPECT_EQ(web::FaviconURL::IconType::kFavicon, urls[3].icon_type);
 }
 
 }  // namespace web

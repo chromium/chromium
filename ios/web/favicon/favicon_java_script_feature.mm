@@ -15,9 +15,7 @@
 namespace {
 const char kScriptName[] = "favicon";
 const char kEventListenersScriptName[] = "favicon_event_listeners";
-
 const char kFaviconScriptHandlerName[] = "FaviconUrlsHandler";
-
 }  // namespace
 
 namespace web {
@@ -48,19 +46,17 @@ void FaviconJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
   DCHECK(message.is_main_frame());
-
-  if (!message.legacy_body() || !message.legacy_body()->is_list() ||
-      !message.request_url()) {
+  if (!message.legacy_body() || !message.legacy_body()->is_list()) {
     return;
   }
 
-  const GURL url = message.request_url().value();
-
-  std::vector<FaviconURL> urls;
-  if (!ExtractFaviconURL(message.legacy_body()->GetList(), url, &urls)) {
+  const std::optional<GURL> request_url = message.request_url();
+  if (!request_url.has_value()) {
     return;
   }
 
+  const std::vector<FaviconURL> urls =
+      ExtractFaviconURL(message.legacy_body()->GetList(), *request_url);
   if (!urls.empty()) {
     WebStateImpl::FromWebState(web_state)->OnFaviconUrlUpdated(urls);
   }
