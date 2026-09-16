@@ -63,6 +63,55 @@ public class BottomSheetMediatorUnitTest {
     }
 
     @Test
+    public void testInitialStateAndQueries() {
+        assertEquals(SheetState.HIDDEN, mMediator.getSheetState());
+        assertEquals(SheetState.NONE, mMediator.getTargetSheetState());
+        assertEquals(SheetState.NONE, mMediator.getScrollingStartState());
+        assertFalse(mMediator.isSheetOpen());
+        assertNull(mMediator.getCurrentSheetContent());
+    }
+
+    @Test
+    public void testTargetSheetState() {
+        mMediator.setTargetSheetState(SheetState.FULL);
+        assertEquals(SheetState.FULL, mMediator.getTargetSheetState());
+
+        mMediator.setTargetSheetState(SheetState.NONE);
+        assertEquals(SheetState.NONE, mMediator.getTargetSheetState());
+    }
+
+    @Test
+    public void testSetInternalCurrentState() {
+        mMediator.setInternalCurrentState(SheetState.HALF);
+        assertEquals(SheetState.HALF, mMediator.getSheetState());
+        assertFalse(mMediator.isSheetOpen());
+        assertTrue(mModel.get(BottomSheetProperties.CONTAINER_TOUCH_ENABLED));
+
+        mMediator.setInternalCurrentState(SheetState.SCROLLING);
+        assertEquals(SheetState.SCROLLING, mMediator.getSheetState());
+        assertFalse(mModel.get(BottomSheetProperties.CONTAINER_TOUCH_ENABLED));
+
+        mMediator.setInternalCurrentState(SheetState.PEEK);
+        assertEquals(SheetState.PEEK, mMediator.getSheetState());
+        assertTrue(mModel.get(BottomSheetProperties.CONTAINER_TOUCH_ENABLED));
+
+        mMediator.setInternalCurrentState(SheetState.FULL);
+        assertEquals(SheetState.FULL, mMediator.getSheetState());
+        assertTrue(mModel.get(BottomSheetProperties.CONTAINER_TOUCH_ENABLED));
+
+        mMediator.setInternalCurrentState(SheetState.HIDDEN);
+        assertEquals(SheetState.HIDDEN, mMediator.getSheetState());
+        assertTrue(mModel.get(BottomSheetProperties.CONTAINER_TOUCH_ENABLED));
+    }
+
+    @Test
+    public void testSetSheetStateForTesting() {
+        mMediator.setSheetStateForTesting(SheetState.SCROLLING);
+        assertEquals(SheetState.SCROLLING, mMediator.getSheetState());
+        verify(mObserver, never()).onSheetStateChanged(anyInt(), anyInt());
+    }
+
+    @Test
     public void testSetSheetContent_NonNull() {
         GlowSpec glowSpec = new GlowSpec(0xFF112233, GlowSpec.ShadowSize.LONG);
         when(mContent.getContentView()).thenReturn(mContentView);
@@ -136,14 +185,27 @@ public class BottomSheetMediatorUnitTest {
     }
 
     @Test
-    public void testNotifySheetOpened() {
-        mMediator.notifySheetOpened(StateChangeReason.SWIPE);
+    public void testOnSheetOpened() {
+        assertTrue(mMediator.onSheetOpened(StateChangeReason.SWIPE));
+        assertTrue(mMediator.isSheetOpen());
+        verify(mObserver).onSheetOpened(StateChangeReason.SWIPE);
+
+        assertFalse(mMediator.onSheetOpened(StateChangeReason.SWIPE));
         verify(mObserver).onSheetOpened(StateChangeReason.SWIPE);
     }
 
     @Test
-    public void testNotifySheetClosed() {
-        mMediator.notifySheetClosed(StateChangeReason.NAVIGATION);
+    public void testOnSheetClosed() {
+        assertFalse(mMediator.onSheetClosed(StateChangeReason.NAVIGATION));
+        verify(mObserver, never()).onSheetClosed(anyInt());
+
+        assertTrue(mMediator.onSheetOpened(StateChangeReason.SWIPE));
+        assertTrue(mMediator.isSheetOpen());
+        assertTrue(mMediator.onSheetClosed(StateChangeReason.NAVIGATION));
+        assertFalse(mMediator.isSheetOpen());
+        verify(mObserver).onSheetClosed(StateChangeReason.NAVIGATION);
+
+        assertFalse(mMediator.onSheetClosed(StateChangeReason.NAVIGATION));
         verify(mObserver).onSheetClosed(StateChangeReason.NAVIGATION);
     }
 
@@ -201,7 +263,7 @@ public class BottomSheetMediatorUnitTest {
         assertFalse(mMediator.hasObserver(mObserver));
         assertEquals(mContent, mMediator.getCurrentSheetContent());
 
-        mMediator.notifySheetOpened(StateChangeReason.SWIPE);
+        mMediator.onSheetOpened(StateChangeReason.SWIPE);
         verify(mObserver, never()).onSheetOpened(anyInt());
     }
 }

@@ -23,6 +23,10 @@ class BottomSheetMediator {
     private final ObserverList<BottomSheetObserver> mObservers = new ObserverList<>();
 
     private @Nullable BottomSheetContent mSheetContent;
+    private @SheetState int mCurrentState = SheetState.HIDDEN;
+    private @SheetState int mTargetState = SheetState.NONE;
+    private @SheetState int mScrollingStartState = SheetState.NONE;
+    private boolean mIsSheetOpen;
 
     /**
      * Creates a new BottomSheetMediator.
@@ -78,6 +82,86 @@ class BottomSheetMediator {
     }
 
     /**
+     * Gets the current sheet state.
+     *
+     * @return The current {@link SheetState}.
+     */
+    @SheetState
+    int getSheetState() {
+        return mCurrentState;
+    }
+
+    /**
+     * Gets the target sheet state.
+     *
+     * @return The target {@link SheetState}.
+     */
+    @SheetState
+    int getTargetSheetState() {
+        return mTargetState;
+    }
+
+    /**
+     * Sets the target sheet state.
+     *
+     * @param targetState The target {@link SheetState}.
+     */
+    void setTargetSheetState(@SheetState int targetState) {
+        mTargetState = targetState;
+    }
+
+    /**
+     * Returns whether the sheet is currently open.
+     *
+     * @return True if the sheet is open.
+     */
+    boolean isSheetOpen() {
+        return mIsSheetOpen;
+    }
+
+    /**
+     * Gets the state before the current scrolling sequence began.
+     *
+     * @return The scrolling start {@link SheetState}.
+     */
+    @SheetState
+    int getScrollingStartState() {
+        return mScrollingStartState;
+    }
+
+    /**
+     * Sets the state before the current scrolling sequence began.
+     *
+     * @param state The scrolling start {@link SheetState}.
+     */
+    void setScrollingStartState(@SheetState int state) {
+        mScrollingStartState = state;
+    }
+
+    /**
+     * Updates the internal current sheet state, start state, and properties.
+     *
+     * @param state The new {@link SheetState}.
+     */
+    void setInternalCurrentState(@SheetState int state) {
+        mScrollingStartState =
+                state == SheetState.SCROLLING
+                        ? (mCurrentState != SheetState.SCROLLING ? mCurrentState : SheetState.NONE)
+                        : SheetState.NONE; // Not scrolling anymore.
+        mModel.set(BottomSheetProperties.CONTAINER_TOUCH_ENABLED, state != SheetState.SCROLLING);
+        mCurrentState = state;
+    }
+
+    /**
+     * Sets the current sheet state for testing.
+     *
+     * @param state The new {@link SheetState}.
+     */
+    void setSheetStateForTesting(@SheetState int state) {
+        mCurrentState = state;
+    }
+
+    /**
      * Gets the current sheet content.
      *
      * @return The current {@link BottomSheetContent}, or null.
@@ -109,25 +193,33 @@ class BottomSheetMediator {
     }
 
     /**
-     * Notifies observers that the sheet was opened.
+     * Handles sheet open state transition and notifies observers.
      *
      * @param reason The reason the sheet opened.
+     * @return True if the sheet transitioned to open, false if already open.
      */
-    void notifySheetOpened(@StateChangeReason int reason) {
+    boolean onSheetOpened(@StateChangeReason int reason) {
+        if (mIsSheetOpen) return false;
+        mIsSheetOpen = true;
         for (BottomSheetObserver o : mObservers) {
             o.onSheetOpened(reason);
         }
+        return true;
     }
 
     /**
-     * Notifies observers that the sheet was closed.
+     * Handles sheet closed state transition and notifies observers.
      *
      * @param reason The reason the sheet closed.
+     * @return True if the sheet transitioned to closed, false if already closed.
      */
-    void notifySheetClosed(@StateChangeReason int reason) {
+    boolean onSheetClosed(@StateChangeReason int reason) {
+        if (!mIsSheetOpen) return false;
+        mIsSheetOpen = false;
         for (BottomSheetObserver o : mObservers) {
             o.onSheetClosed(reason);
         }
+        return true;
     }
 
     /**
