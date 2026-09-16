@@ -487,6 +487,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "android-tab-ui-refactor",
+    "owners": [
+      "agazal@google.com",
+      "ckitagawa@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-tabstrip-startup-capture-bug-fix",
     "owners": ["peilinwang@google.com"],
     "expiry_milestone": 160

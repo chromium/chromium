@@ -7823,6 +7823,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidSetupListDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidSetupList)},
 
+    {"android-tab-ui-refactor", flag_descriptions::kAndroidTabUiRefactorName,
+     flag_descriptions::kAndroidTabUiRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidTabUiRefactor)},
+
     {"android-vertical-tabs", flag_descriptions::kAndroidVerticalTabsName,
      flag_descriptions::kAndroidVerticalTabsDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidVerticalTabs,

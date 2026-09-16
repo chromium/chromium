@@ -1417,6 +1417,11 @@ inline constexpr char kAndroidSetupListName[] = "Android Setup List";
 inline constexpr char kAndroidSetupListDescription[] =
     "Enables the Android Setup List feature.";
 
+inline constexpr char kAndroidTabUiRefactorName[] = "Android Tab UI Refactor";
+inline constexpr char kAndroidTabUiRefactorDescription[] =
+    "Enables Tab UI refactoring on Android. For example, modeling tab group "
+    "cards as first-class group items in the tab switcher.";
+
 inline constexpr char kAndroidVerticalTabsName[] = "Android Vertical Tabs";
 inline constexpr char kAndroidVerticalTabsDescription[] =
     "Enables the Vertical Tabs feature on Android.";

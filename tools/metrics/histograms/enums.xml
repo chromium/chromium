@@ -7759,6 +7759,7 @@ from previous Chrome versions.
   <int value="-2146613579" label="V8Future:disabled"/>
   <int value="-2146512732" label="FullUserAgent:disabled"/>
   <int value="-2146263880" label="LensRegionSearch:disabled"/>
+  <int value="-2146000640" label="AndroidTabUiRefactor:enabled"/>
   <int value="-2145601047" label="Mahi:enabled"/>
   <int value="-2145472146" label="OfflinePagesResourceBasedSnapshot:disabled"/>
   <int value="-2144796781" label="TurnOffStreamingMediaCachingAlways:enabled"/>
@@ -8279,6 +8280,7 @@ from previous Chrome versions.
   <int value="-2005089558" label="BackgroundVideoTrackOptimization:disabled"/>
   <int value="-2004882388" label="AutofillPruneSuggestions:enabled"/>
   <int value="-2004862295" label="FedCmUserInfo:disabled"/>
+  <int value="-2004395535" label="AndroidTabUiRefactor:disabled"/>
   <int value="-2004231189" label="AppNotificationStatusMessaging:disabled"/>
   <int value="-2004019042" label="CastMirroringNativeNV12:disabled"/>
   <int value="-2003893779" label="SpeakOnMuteEnabled:enabled"/>

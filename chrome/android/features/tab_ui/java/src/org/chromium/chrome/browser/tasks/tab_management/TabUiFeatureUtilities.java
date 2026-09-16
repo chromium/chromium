@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.os.Build;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.Locale;
 import java.util.Set;
@@ -19,5 +20,10 @@ public class TabUiFeatureUtilities {
     /** Returns whether device OEM is allow-listed for tab tearing */
     public static boolean doesOemSupportDragToCreateInstance() {
         return TAB_TEARING_OEM_ALLOWLIST.contains(Build.MANUFACTURER.toLowerCase(Locale.US));
+    }
+
+    /** Returns whether the Android Tab UI refactor is enabled. */
+    public static boolean isAndroidTabUiRefactorEnabled() {
+        return ChromeFeatureList.sAndroidTabUiRefactor.isEnabled();
     }
 }
