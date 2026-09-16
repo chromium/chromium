@@ -1137,7 +1137,6 @@ enum GlicRequestEvent {
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
 // WebClientHandler is created.
-// Next version: 2
 interface WebClientHandler {
   // Reports API request count metrics from the web client.
   ReportApiRequestCount(int32 request_type_id, GlicRequestEvent event);
