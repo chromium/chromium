@@ -164,6 +164,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       const base::Version& max_previous_product_version =
           base::Version(kNullVersion));
 
+  // Overrides for update_client::CrxInstaller.
   void Install(const base::FilePath& unpack_path,
                const std::string& public_key,
                std::unique_ptr<InstallParams> install_params,
@@ -172,6 +173,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
 
   std::optional<base::FilePath> GetInstalledFile(
       const std::string& file) override;
+
   // Components bundled with installations of Chrome cannot be uninstalled.
   bool Uninstall() override;
 
