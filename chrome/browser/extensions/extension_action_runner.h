@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/extension_action.h"
@@ -112,6 +113,7 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // Handles mojom::LocalFrameHost::RequestScriptInjectionPermission(). It
   // replies back with `callback`.
   void OnRequestScriptInjectionPermission(
+      content::RenderFrameHost* render_frame_host,
       const ExtensionId& extension_id,
       mojom::InjectionType script_type,
       mojom::RunLocation run_location,
@@ -124,12 +126,14 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   PermissionsData::PageAccess RequiresUserConsentForScriptInjectionForTesting(
       const Extension* extension,
       mojom::InjectionType type) {
-    return RequiresUserConsentForScriptInjection(extension, type);
+    return RequiresUserConsentForScriptInjection(nullptr, extension, type);
   }
   void RequestScriptInjectionForTesting(const Extension* extension,
                                         mojom::RunLocation run_location,
                                         ScriptInjectionCallback callback) {
-    return RequestScriptInjection(extension, run_location, std::move(callback));
+    return RequestScriptInjection(extension, nullptr,
+                                  mojom::InjectionType::kProgrammaticScript,
+                                  run_location, std::move(callback));
   }
   void ClearInjectionsForTesting(const Extension& extension) {
     pending_scripts_.erase(extension.id());
@@ -144,11 +148,19 @@ class ExtensionActionRunner : public content::WebContentsObserver,
                            DoNotResetExtensionActionRunner);
 
   struct PendingScript {
-    PendingScript(mojom::RunLocation run_location,
+    PendingScript(content::RenderFrameHost* frame,
+                  mojom::InjectionType script_type,
+                  mojom::RunLocation run_location,
                   ScriptInjectionCallback permit_script);
     PendingScript(const PendingScript&) = delete;
     PendingScript& operator=(const PendingScript&) = delete;
     ~PendingScript();
+
+    // The target frame ID where the script is to be injected.
+    content::GlobalRenderFrameHostId frame_id;
+
+    // The script injection type.
+    mojom::InjectionType script_type;
 
     // The run location that the script wants to inject at.
     mojom::RunLocation run_location;
@@ -164,12 +176,15 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // user consent. If this is true, the caller should then register a request
   // via RequestScriptInjection().
   PermissionsData::PageAccess RequiresUserConsentForScriptInjection(
+      content::RenderFrameHost* render_frame_host,
       const Extension* extension,
       mojom::InjectionType type);
 
   // `callback`. The only assumption that can be made about when (or if)
   // `callback` is run is that, if it is run, it will run on the current page.
   void RequestScriptInjection(const Extension* extension,
+                              content::RenderFrameHost* render_frame_host,
+                              mojom::InjectionType script_type,
                               mojom::RunLocation run_location,
                               ScriptInjectionCallback callback);
 

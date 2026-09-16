@@ -55,7 +55,8 @@ void ChromeExtensionFrameHost::RequestScriptInjectionPermission(
     std::move(callback).Run(false);
     return;
   }
-  runner->OnRequestScriptInjectionPermission(extension_id, script_type,
+  runner->OnRequestScriptInjectionPermission(&receivers_.CurrentTargetFrame(),
+                                             extension_id, script_type,
                                              run_location, std::move(callback));
 }
 

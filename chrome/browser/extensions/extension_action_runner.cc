@@ -39,6 +39,7 @@
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
@@ -48,6 +49,7 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
@@ -58,9 +60,15 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace extensions {
 
 ExtensionActionRunner::PendingScript::PendingScript(
+    content::RenderFrameHost* frame,
+    mojom::InjectionType script_type,
     mojom::RunLocation run_location,
     ScriptInjectionCallback permit_script)
-    : run_location(run_location), permit_script(std::move(permit_script)) {}
+    : frame_id(frame ? frame->GetGlobalId()
+                     : content::GlobalRenderFrameHostId()),
+      script_type(script_type),
+      run_location(run_location),
+      permit_script(std::move(permit_script)) {}
 
 ExtensionActionRunner::PendingScript::~PendingScript() = default;
 
@@ -245,6 +253,7 @@ void ExtensionActionRunner::RunForTesting(const Extension* extension) {
 
 PermissionsData::PageAccess
 ExtensionActionRunner::RequiresUserConsentForScriptInjection(
+    content::RenderFrameHost* render_frame_host,
     const Extension* extension,
     mojom::InjectionType type) {
   CHECK(extension);
@@ -254,7 +263,12 @@ ExtensionActionRunner::RequiresUserConsentForScriptInjection(
     return PermissionsData::PageAccess::kAllowed;
   }
 
-  GURL url = web_contents()->GetLastCommittedURL();
+  GURL url = render_frame_host ? render_frame_host->GetLastCommittedURL()
+                               : web_contents()->GetLastCommittedURL();
+  if (render_frame_host &&
+      (url.is_empty() || url.SchemeIs(url::kAboutScheme))) {
+    url = render_frame_host->GetLastCommittedOrigin().GetURL();
+  }
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents()).id();
   switch (type) {
     case mojom::InjectionType::kContentScript:
@@ -269,12 +283,14 @@ ExtensionActionRunner::RequiresUserConsentForScriptInjection(
 
 void ExtensionActionRunner::RequestScriptInjection(
     const Extension* extension,
+    content::RenderFrameHost* render_frame_host,
+    mojom::InjectionType script_type,
     mojom::RunLocation run_location,
     ScriptInjectionCallback callback) {
   CHECK(extension);
   PendingScriptList& list = pending_scripts_[extension->id()];
-  list.push_back(
-      std::make_unique<PendingScript>(run_location, std::move(callback)));
+  list.push_back(std::make_unique<PendingScript>(
+      render_frame_host, script_type, run_location, std::move(callback)));
 
   // If this was the first entry, we need to notify that a new extension wants
   // to run.
@@ -314,11 +330,31 @@ void ExtensionActionRunner::RunPendingScriptsForExtension(
   iter->second.swap(scripts);
   pending_scripts_.erase(extension->id());
 
-  // Run all pending injections for the given extension.
-  RunCallbackOnPendingScript(scripts, true);
+  for (const auto& script : scripts) {
+    content::RenderFrameHost* frame = nullptr;
+    bool is_allowed = false;
+    if (script->frame_id) {
+      frame = content::RenderFrameHost::FromID(script->frame_id);
+      is_allowed = frame && (RequiresUserConsentForScriptInjection(
+                                 frame, extension, script->script_type) ==
+                             PermissionsData::PageAccess::kAllowed);
+    } else {
+      is_allowed = RequiresUserConsentForScriptInjection(nullptr, extension,
+                                                         script->script_type) ==
+                   PermissionsData::PageAccess::kAllowed;
+    }
+
+    if (is_allowed && frame) {
+      ScriptInjectionTracker::WillExecuteCode(
+          base::PassKey<ExtensionActionRunner>(), script->script_type, frame,
+          *extension);
+    }
+    std::move(script->permit_script).Run(is_allowed);
+  }
 }
 
 void ExtensionActionRunner::OnRequestScriptInjectionPermission(
+    content::RenderFrameHost* render_frame_host,
     const ExtensionId& extension_id,
     mojom::InjectionType script_type,
     mojom::RunLocation run_location,
@@ -335,12 +371,22 @@ void ExtensionActionRunner::OnRequestScriptInjectionPermission(
 
   ++num_page_requests_;
 
-  switch (RequiresUserConsentForScriptInjection(extension, script_type)) {
+  switch (RequiresUserConsentForScriptInjection(render_frame_host, extension,
+                                                script_type)) {
     case PermissionsData::PageAccess::kAllowed:
+      // Ensure the tracker is updated if the permission was granted after the
+      // injection was initially dispatched by ScriptExecutor or if it became
+      // allowed dynamically.
+      if (render_frame_host) {
+        ScriptInjectionTracker::WillExecuteCode(
+            base::PassKey<ExtensionActionRunner>(), script_type,
+            render_frame_host, *extension);
+      }
       std::move(callback).Run(true);
       break;
     case PermissionsData::PageAccess::kWithheld:
-      RequestScriptInjection(extension, run_location, std::move(callback));
+      RequestScriptInjection(extension, render_frame_host, script_type,
+                             run_location, std::move(callback));
       break;
     case PermissionsData::PageAccess::kDenied:
       std::move(callback).Run(false);

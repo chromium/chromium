@@ -16,6 +16,8 @@
 #include "base/trace_event/trace_log.h"
 #include "build/buildflag.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/extensions/blocked_action_waiter.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -48,6 +50,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/permissions_test_util.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension_features.h"
@@ -326,6 +329,212 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
       *web_contents->GetPrimaryMainFrame()->GetProcess(), extension->id()));
   EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *background_frame->GetProcess(), extension->id()));
+}
+
+// Tests that a `chrome.scripting.executeScript` call which is deferred because
+// the extension's host permission is withheld is only recorded by
+// ScriptInjectionTracker once the user grants access and the script actually
+// runs.
+IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest,
+                       ProgrammaticContentScript_WithheldHostPermission) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install a test extension with a host permission and the scripting
+  // permission, but no manifest content scripts.
+  TestExtensionDir dir;
+  const char kManifest[] = R"(
+      {
+        "name": "ProgrammaticContentScript_WithheldHostPermission",
+        "version": "1.0",
+        "manifest_version": 3,
+        "permissions": ["scripting", "tabs"],
+        "host_permissions": ["http://foo.com/*"],
+        "background": {"service_worker": "worker.js"}
+      } )";
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), "");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Withhold the extension's host permissions (equivalent to the user choosing
+  // "On click" site access).
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  // Navigate to a page that matches the (withheld) host permission.
+  GURL page_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, page_url));
+
+  content::RenderProcessHost* page_process =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *page_process, extension->id()));
+
+  ExtensionActionRunner* runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  ASSERT_TRUE(runner);
+
+  // Ask the extension to inject a programmatic content script. Because the host
+  // permission is withheld the renderer will defer execution and request
+  // permission from the browser; wait for that request to be queued.
+  const char kInjected[] = "injected";
+  ExtensionTestMessageListener inject_listener(kInjected);
+  {
+    BlockedActionWaiter blocked_action_waiter(runner);
+    int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+    std::string background_script = content::JsReplace(
+        R"(chrome.scripting.executeScript({
+             target: {tabId: $1},
+             func: () => {
+               document.body.innerText = 'content script has run';
+               chrome.test.sendMessage('injected');
+             }
+           }).catch(() => {});)",
+        tab_id);
+    ASSERT_TRUE(BackgroundScriptExecutor::ExecuteScriptAsync(
+        profile(), extension->id(), background_script));
+    blocked_action_waiter.Wait();
+  }
+
+  // The injection was deferred pending user action, so the script has not run
+  // and the tracker should not yet associate the extension with the page's
+  // process.
+  EXPECT_TRUE(runner->WantsToRun(extension));
+  EXPECT_FALSE(inject_listener.was_satisfied());
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(web_contents, "document.body.innerText"));
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *page_process, extension->id()));
+
+  // Grant the extension access to the page (as if the user clicked the action)
+  // and wait for the deferred script to run.
+  runner->RunAction(extension, /*grant_tab_permissions=*/true);
+  ASSERT_TRUE(inject_listener.WaitUntilSatisfied());
+
+  EXPECT_FALSE(runner->WantsToRun(extension));
+  EXPECT_EQ("content script has run",
+            content::EvalJs(web_contents, "document.body.innerText"));
+  EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *page_process, extension->id()));
+}
+
+// Tests that a `chrome.scripting.executeScript` call with `allFrames: true`
+// on a page where host permissions are withheld correctly defers injection and
+// once permission is granted, updates ScriptInjectionTracker for both the main
+// frame and subframe processes.
+IN_PROC_BROWSER_TEST_F(
+    ScriptInjectionTrackerBrowserTest,
+    ProgrammaticContentScript_WithheldHostPermission_Subframe) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  TestExtensionDir dir;
+  const char kManifest[] = R"(
+      {
+        "name": "ProgrammaticContentScript_WithheldHostPermission_Subframe",
+        "version": "1.0",
+        "manifest_version": 3,
+        "permissions": ["scripting", "tabs"],
+        "host_permissions": ["http://foo.com/*"],
+        "background": {"service_worker": "worker.js"}
+      } )";
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), "");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  GURL page_url = embedded_test_server()->GetURL("foo.com", "/title1.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, page_url));
+
+  GURL iframe_url = embedded_test_server()->GetURL("foo.com", "/title2.html");
+  const char kScript[] = R"(
+      let iframe = document.createElement('iframe');
+      iframe.src = $1;
+      document.body.appendChild(iframe);
+  )";
+  ASSERT_TRUE(ExecJs(web_contents, content::JsReplace(kScript, iframe_url)));
+  content::WaitForLoadStop(web_contents);
+
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* subframe = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(subframe);
+
+  content::RenderProcessHost* main_process = main_frame->GetProcess();
+  content::RenderProcessHost* subframe_process = subframe->GetProcess();
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *main_process, extension->id()));
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *subframe_process, extension->id()));
+
+  ExtensionActionRunner* runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  ASSERT_TRUE(runner);
+
+  const char kMainFrameInjected[] = "mainframe_injected";
+  ExtensionTestMessageListener main_frame_listener(kMainFrameInjected);
+
+  // Ask the extension to inject into all frames. Because host permissions
+  // are withheld on the page, the main frame injection is deferred pending
+  // user permission. The subframe is not allowed to run either.
+  {
+    BlockedActionWaiter blocked_action_waiter(runner);
+    int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+    std::string background_script = content::JsReplace(
+        R"(chrome.scripting.executeScript({
+             target: {tabId: $1, allFrames: true},
+             func: () => {
+               if (window === window.top) {
+                 chrome.test.sendMessage('mainframe_injected');
+               }
+             }
+           }).catch(() => {});)",
+        tab_id);
+    ASSERT_TRUE(BackgroundScriptExecutor::ExecuteScriptAsync(
+        profile(), extension->id(), background_script));
+    blocked_action_waiter.Wait();
+  }
+
+  EXPECT_TRUE(runner->WantsToRun(extension));
+  EXPECT_FALSE(main_frame_listener.was_satisfied());
+  // While withheld, neither main frame nor subframe process should be tracked.
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *main_process, extension->id()));
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *subframe_process, extension->id()));
+
+  // Grant the extension access to the tab and run the blocked action.
+  runner->RunAction(extension, /*grant_tab_permissions=*/true);
+  ASSERT_TRUE(main_frame_listener.WaitUntilSatisfied());
+  EXPECT_FALSE(runner->WantsToRun(extension));
+
+  // The main frame injection was resumed.
+  EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *main_process, extension->id()));
+
+  // Now inject into the subframe now that tab permissions are granted.
+  const char kInjected[] = "subframe_injected";
+  ExtensionTestMessageListener inject_listener(kInjected);
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+  std::string inject_subframe_script = content::JsReplace(
+      R"(chrome.scripting.executeScript({
+           target: {tabId: $1, allFrames: true},
+           func: () => {
+             if (window !== window.top) {
+               chrome.test.sendMessage('subframe_injected');
+             }
+           }
+         });)",
+      tab_id);
+  ASSERT_TRUE(BackgroundScriptExecutor::ExecuteScriptAsync(
+      profile(), extension->id(), inject_subframe_script));
+  ASSERT_TRUE(inject_listener.WaitUntilSatisfied());
+
+  EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *subframe_process, extension->id()));
 }
 
 // Tests tracking of user scripts through the ScriptExecutor.

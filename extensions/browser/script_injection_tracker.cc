@@ -839,6 +839,25 @@ void ScriptInjectionTracker::WillExecuteCode(
 }
 
 // static
+void ScriptInjectionTracker::WillExecuteCode(
+    base::PassKey<ExtensionActionRunner> pass_key,
+    mojom::InjectionType script_type,
+    content::RenderFrameHost* frame,
+    const Extension& extension) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  TRACE_EVENT("extensions", "ScriptInjectionTracker::WillExecuteCode/3",
+              ChromeTrackEvent::kRenderProcessHost, *frame->GetProcess(),
+              ChromeTrackEvent::kChromeExtensionId,
+              ExtensionIdForTracing(extension.id()));
+
+  // A programmatic injection that was deferred while host access was withheld
+  // is being permitted to run; this is treated like any other programmatic
+  // content script injection.
+  HandleProgrammaticScriptInjection(PassKey(), ScriptType::kContentScript,
+                                    frame, extension);
+}
+
+// static
 void ScriptInjectionTracker::WillGrantActiveTab(
     base::PassKey<ActiveTabPermissionGranter> pass_key,
     const Extension& extension,

@@ -20,6 +20,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -34,6 +36,7 @@
 #include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "pdf/buildflags.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "extensions/common/constants.h"
@@ -110,15 +113,15 @@ class Handler : public content::WebContentsObserver {
       root_frame_token_ = pending_render_frames_[0]->GetFrameToken();
     }
 
+    int tab_id = -1;
+    if (host_id_.type == mojom::HostID::HostType::kExtensions) {
+      tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+    }
+
     // If we are to include subframes, iterate over all descendants of frames in
     // `pending_render_frames_` and add them if they are alive (and not already
     // contained in `pending_frames`).
     if (scope == ScriptExecutor::INCLUDE_SUB_FRAMES) {
-      int tab_id = -1;
-      if (host_id_.type == mojom::HostID::HostType::kExtensions) {
-        tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
-      }
-
       // We iterate over the requested frames. Note we can't use an iterator
       // as the for loop will mutate `pending_render_frames_`.
       const size_t requested_frame_count = pending_render_frames_.size();
@@ -131,7 +134,7 @@ class Handler : public content::WebContentsObserver {
     }
 
     for (content::RenderFrameHost* frame : pending_render_frames_)
-      SendExecuteCode(pass_key, params.Clone(), frame);
+      SendExecuteCode(pass_key, params.Clone(), frame, extension, tab_id);
 
     if (pending_render_frames_.empty()) {
       Finish();
@@ -285,7 +288,9 @@ class Handler : public content::WebContentsObserver {
   // the number of pending messages.
   void SendExecuteCode(base::PassKey<ScriptExecutor> pass_key,
                        mojom::ExecuteCodeParamsPtr params,
-                       content::RenderFrameHost* frame) {
+                       content::RenderFrameHost* frame,
+                       const Extension* extension,
+                       int tab_id) {
     DCHECK(frame->IsRenderFrameLive());
     DCHECK(std::ranges::contains(pending_render_frames_, frame));
 
@@ -300,8 +305,35 @@ class Handler : public content::WebContentsObserver {
         case mojom::ExecutionWorld::kUserScript:
           script_type = ScriptInjectionTracker::ScriptType::kUserScript;
       }
-      ScriptInjectionTracker::WillExecuteCode(pass_key, script_type, frame,
-                                              host_id_);
+
+      // When the extension's host permission for `frame`'s document is
+      // withheld, the renderer defers execution and asks the browser for
+      // permission instead of running the script. In that case the
+      // ScriptInjectionTracker is updated by ExtensionActionRunner if and when
+      // the user grants access and the deferred script is permitted to run.
+      bool record_injection = true;
+      if (!is_web_view_ && extension) {
+        GURL url = frame->GetLastCommittedURL();
+        if (url.is_empty() || url.SchemeIs(url::kAboutScheme)) {
+          content::NavigationEntry* pending_entry =
+              web_contents()->GetController().GetPendingEntry();
+          if (pending_entry && !pending_entry->GetURL().is_empty()) {
+            url = pending_entry->GetURL();
+          } else {
+            url = frame->GetLastCommittedOrigin().GetURL();
+          }
+        }
+        if (!url.is_empty()) {
+          record_injection = (extension->permissions_data()->GetPageAccess(
+                                  url, tab_id,
+                                  /*error=*/nullptr) !=
+                              PermissionsData::PageAccess::kWithheld);
+        }
+      }
+      if (record_injection) {
+        ScriptInjectionTracker::WillExecuteCode(pass_key, script_type, frame,
+                                                host_id_);
+      }
     }
     ExtensionWebContentsObserver::GetForWebContents(web_contents())
         ->GetLocalFrameChecked(frame)

@@ -12,6 +12,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
+#include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -25,6 +26,7 @@ namespace extensions {
 
 class ActiveTabPermissionGranter;
 class Extension;
+class ExtensionActionRunner;
 class ExtensionWebContentsObserver;
 class UserScriptLoader;
 class PermissionsUpdater;
@@ -130,6 +132,14 @@ class ScriptInjectionTracker {
   // invoked in a renderer process (e.g. when handling RequestContentScript
   // action of the `chrome.declarativeContent` API).
   static void WillExecuteCode(base::PassKey<RequestContentScript> pass_key,
+                              content::RenderFrameHost* frame,
+                              const Extension& extension);
+
+  // Called before a programmatic injection that was previously deferred
+  // (because host access was withheld) is permitted to run as a result of the
+  // user granting the extension access to the page.
+  static void WillExecuteCode(base::PassKey<ExtensionActionRunner> pass_key,
+                              mojom::InjectionType script_type,
                               content::RenderFrameHost* frame,
                               const Extension& extension);
 
