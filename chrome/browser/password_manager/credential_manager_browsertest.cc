@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
@@ -956,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   BubbleObserver prompt_observer(WebContents());
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
   EXPECT_FALSE(prompt_observer.IsUpdatePromptShownAutomatically());
-  signin_form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  signin_form.match_type = affiliations::MatchType::kExact;
   signin_form.skip_zero_click = false;
   signin_form.times_used_in_html_form = 1;
   signin_form.password_value = PasswordString(u"API");
@@ -1124,7 +1125,7 @@ void CredentialManagerAvatarTest::AddFederatedCredentialForURL(
   form.password_value = PasswordString(u"12345");
   form.type = password_manager::PasswordForm::Type::kApi;
   form.federation_origin = url::SchemeHostPort(GURL("https://google.com"));
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   form.icon_url = https_test_server().GetURL(kAvatarOrigin, kAvatarPath);
 
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =

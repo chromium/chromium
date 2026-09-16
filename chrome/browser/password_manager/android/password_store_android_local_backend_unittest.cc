@@ -21,6 +21,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
@@ -50,7 +51,7 @@ PasswordForm CreateEntry(
     const std::string& username,
     const std::string& password,
     const GURL& origin_url,
-    PasswordForm::MatchType match_type = PasswordForm::MatchType::kExact) {
+    affiliations::MatchType match_type = affiliations::MatchType::kExact) {
   PasswordForm form;
   form.username_value = base::ASCIIToUTF16(username);
   form.password_value = PasswordString(base::ASCIIToUTF16(password));
@@ -64,10 +65,10 @@ std::vector<PasswordForm> CreateTestLogins() {
   std::vector<PasswordForm> forms;
   forms.push_back(CreateEntry("Todd Tester", "S3cr3t",
                               GURL(u"https://example.com"),
-                              PasswordForm::MatchType::kExact));
+                              affiliations::MatchType::kExact));
   forms.push_back(CreateEntry("Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
                               GURL(u"https://m.example.com"),
-                              PasswordForm::MatchType::kPSL));
+                              affiliations::MatchType::kPSL));
   return forms;
 }
 
@@ -75,9 +76,7 @@ std::vector<PasswordForm> CreateTestLogins() {
 
 class PasswordStoreAndroidLocalBackendTest : public testing::Test {
  protected:
-  PasswordStoreAndroidLocalBackendTest() {
-    ResetBackend();
-  }
+  PasswordStoreAndroidLocalBackendTest() { ResetBackend(); }
 
   ~PasswordStoreAndroidLocalBackendTest() override {
     lifecycle_helper_->UnregisterObserver();
@@ -208,29 +207,29 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
   std::vector<StoredCredential> returned_logins;
   returned_logins.push_back(FromPasswordForm(
       CreateEntry("Todd Tester", "S3cr3t", GURL(u"https://example.com/"),
-                  PasswordForm::MatchType::kAffiliated)));
+                  affiliations::MatchType::kAffiliated)));
   returned_logins.push_back(FromPasswordForm(CreateEntry(
       "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
-      GURL(u"https://m.example.com/"), PasswordForm::MatchType::kGrouped)));
+      GURL(u"https://m.example.com/"), affiliations::MatchType::kGrouped)));
   returned_logins.push_back(FromPasswordForm(CreateEntry(
       "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
-      GURL(u"https://example.org/"), PasswordForm::MatchType::kGrouped)));
+      GURL(u"https://example.org/"), affiliations::MatchType::kGrouped)));
 
   std::vector<PasswordForm> expected_logins;
   // Exact match is defined as such even if it was marked as affiliated match
   // before.
   expected_logins.push_back(CreateEntry("Todd Tester", "S3cr3t",
                                         GURL(u"https://example.com/"),
-                                        PasswordForm::MatchType::kExact));
+                                        affiliations::MatchType::kExact));
   // Grouped match is also a PSL match.
   expected_logins.push_back(CreateEntry(
       "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
       GURL(u"https://m.example.com/"),
-      PasswordForm::MatchType::kGrouped | PasswordForm::MatchType::kPSL));
+      affiliations::MatchType::kGrouped | affiliations::MatchType::kPSL));
   // Grouped only match.
   expected_logins.push_back(CreateEntry(
       "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
-      GURL(u"https://example.org/"), PasswordForm::MatchType::kGrouped));
+      GURL(u"https://example.org/"), affiliations::MatchType::kGrouped));
 
   EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {

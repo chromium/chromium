@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/password_manager/core/browser/form_saver.h"
@@ -83,7 +84,7 @@ void ManagePasswordsTest::SetUpOnMainThread() {
   password_form_.url = test_url;
   password_form_.username_value = kTestUsername;
   password_form_.password_value = PasswordString(u"test_password");
-  password_form_.match_type = password_manager::PasswordForm::MatchType::kExact;
+  password_form_.match_type = affiliations::MatchType::kExact;
   ASSERT_TRUE(AddTabAtIndex(0, test_url, ui::PAGE_TRANSITION_TYPED));
 }
 
@@ -123,14 +124,14 @@ void ManagePasswordsTest::SetUpInProcessBrowserTestFixture() {
                 actor::ActorKeyedServiceFactory::GetInstance()
                     ->SetTestingFactory(
                         context,
-                        base::BindRepeating([](content::BrowserContext* context)
-                                                -> std::unique_ptr<
-                                                    KeyedService> {
-                          Profile* profile =
-                              Profile::FromBrowserContext(context);
-                          return std::make_unique<actor::ActorKeyedServiceFake>(
-                              profile);
-                        }));
+                        base::BindRepeating(
+                            [](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+                              Profile* profile =
+                                  Profile::FromBrowserContext(context);
+                              return std::make_unique<
+                                  actor::ActorKeyedServiceFake>(profile);
+                            }));
               }));
 }
 
@@ -153,7 +154,7 @@ void ManagePasswordsTest::SetupManagingPasswords(
   federated_form.federation_origin =
       url::SchemeHostPort(GURL("https://somelongeroriginurl.com/"));
   federated_form.username_value = u"test_federation_username";
-  federated_form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  federated_form.match_type = affiliations::MatchType::kExact;
   // Overrides url to a defined value to avoid flakiness in pixel tests.
   password_form_.url = !password_form_url.is_empty()
                            ? GURL(password_form_url.spec() + "empty.html")

@@ -212,10 +212,6 @@ struct PasswordForm {
     kMaxValue = kNegativeSignalSent,
   };
 
-  // TODO(crbug.com/529620190): Refactor old usages to use
-  // `affiliations::MatchType` directly.
-  using MatchType = affiliations::MatchType;
-
   // The primary key of the password record in the logins database. This is only
   // set when the credentials has been read from the login database. Password
   // forms parsed from the web, or manually added in settings don't have this
@@ -429,7 +425,7 @@ struct PasswordForm {
 
   // Only available when PasswordForm was requested though
   // PasswordStoreInterface::GetLogins(), empty otherwise.
-  std::optional<MatchType> match_type;
+  std::optional<affiliations::MatchType> match_type;
 
   // The type of the event that was taken as an indication that this form is
   // being or has already been submitted. This field is not persisted and filled

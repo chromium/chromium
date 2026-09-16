@@ -22,6 +22,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -719,7 +720,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest, IgnoredSavedPasswords) {
       url::SchemeHostPort(GURL("https://idp.com"));
   federated_from.password_value.clear();
   federated_from.signon_realm = "federation://example.com/accounts.com";
-  federated_from.match_type = PasswordForm::MatchType::kExact;
+  federated_from.match_type = affiliations::MatchType::kExact;
   profile_store().AddLogin(password_manager::FromPasswordForm(federated_from));
   AdvanceClockForWeakAndReusedChecks();
   ASSERT_EQ(1UL, service()->weak_credential_count());

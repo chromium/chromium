@@ -14,6 +14,7 @@
 #include "chrome/browser/password_manager/android/protos/list_affiliated_passwords_result.pb.h"
 #include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
 #include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 
 using autofill::FormData;
@@ -191,10 +192,10 @@ std::vector<StoredCredential> StoredCredentialVectorFromListResult(
     cred.app_display_name = password.password_branding_info().display_name();
     cred.app_icon_url = GURL(password.password_branding_info().icon_url());
     if (password.is_credential_sharing_affiliation_match()) {
-      cred.match_type |= PasswordForm::MatchType::kAffiliated;
+      cred.match_type |= affiliations::MatchType::kAffiliated;
     }
     if (password.is_grouping_affiliation_match()) {
-      cred.match_type |= PasswordForm::MatchType::kGrouped;
+      cred.match_type |= affiliations::MatchType::kGrouped;
     }
     SetStoreForCredential(cred, is_account_store);
     credentials.push_back(std::move(cred));

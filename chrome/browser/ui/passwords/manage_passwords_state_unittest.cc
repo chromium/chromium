@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
@@ -77,13 +78,13 @@ class ManagePasswordsStateTest : public testing::Test {
     saved_match_.username_element = u"username_element";
     saved_match_.password_value = PasswordString(u"12345");
     saved_match_.password_element = u"password_element";
-    saved_match_.match_type = PasswordForm::MatchType::kExact;
+    saved_match_.match_type = affiliations::MatchType::kExact;
 
     psl_match_ = saved_match_;
     psl_match_.url = GURL(kTestPSLOrigin);
     psl_match_.signon_realm = kTestPSLOrigin;
     psl_match_.username_value = u"username_psl";
-    psl_match_.match_type = PasswordForm::MatchType::kPSL;
+    psl_match_.match_type = affiliations::MatchType::kPSL;
 
     local_federated_form_ = saved_match_;
     local_federated_form_.federation_origin =
@@ -91,7 +92,7 @@ class ManagePasswordsStateTest : public testing::Test {
     local_federated_form_.password_value.clear();
     local_federated_form_.signon_realm =
         "federation://example.com/accounts.com";
-    local_federated_form_.match_type = PasswordForm::MatchType::kExact;
+    local_federated_form_.match_type = affiliations::MatchType::kExact;
 
     passwords_data_.set_client(&mock_client_);
   }
@@ -576,7 +577,7 @@ TEST_F(ManagePasswordsStateTest, AndroidPasswordUpdateSubmitted) {
   android_form.url = GURL(android_form.signon_realm);
   android_form.username_value = u"username";
   android_form.password_value = PasswordString(u"old pass");
-  android_form.match_type = PasswordForm::MatchType::kAffiliated;
+  android_form.match_type = affiliations::MatchType::kAffiliated;
   std::vector<PasswordForm> best_matches = {android_form};
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(best_matches, {}));

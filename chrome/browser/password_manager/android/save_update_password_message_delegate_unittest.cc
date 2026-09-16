@@ -28,6 +28,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -384,7 +385,7 @@ PasswordForm SaveUpdatePasswordMessageDelegateTest::CreatePasswordForm(
   PasswordForm password_form;
   password_form.username_value = std::move(username);
   password_form.password_value = PasswordString(std::move(password));
-  password_form.match_type = PasswordForm::MatchType::kExact;
+  password_form.match_type = affiliations::MatchType::kExact;
   password_form.in_store =
       is_account_store ? password_manager::PasswordForm::Store::kAccountStore
                        : password_manager::PasswordForm::Store::kProfileStore;

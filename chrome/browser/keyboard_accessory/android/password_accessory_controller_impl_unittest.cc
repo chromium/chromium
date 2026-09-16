@@ -33,6 +33,7 @@
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -480,7 +481,7 @@ TEST_F(PasswordAccessoryControllerTest, IsNotRecreatedForSameWebContents) {
 TEST_F(PasswordAccessoryControllerTest, TransformsMatchesToSuggestions) {
   CreateSheetController();
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -502,7 +503,7 @@ TEST_F(PasswordAccessoryControllerTest, TransformsMatchesToSuggestions) {
 TEST_F(PasswordAccessoryControllerTest, HintsToEmptyUserNames) {
   CreateSheetController();
   std::vector<PasswordForm> matches = {CreateEntry(
-      "", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -526,13 +527,13 @@ TEST_F(PasswordAccessoryControllerTest, SortsAlphabeticalDuringTransform) {
   CreateSheetController();
   std::vector<PasswordForm> matches = {
       CreateEntry("Ben", "S3cur3", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       CreateEntry("Zebra", "M3h", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       CreateEntry("Alf", "PWD", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       CreateEntry("Cat", "M1@u", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact)};
+                  affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -569,7 +570,7 @@ TEST_F(PasswordAccessoryControllerTest, SortsAlphabeticalDuringTransform) {
 TEST_F(PasswordAccessoryControllerTest, RepeatsSuggestionsForSameFrame) {
   CreateSheetController();
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -609,9 +610,9 @@ TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
   CreateSheetController();
   std::vector<password_manager::PasswordForm> matches = {
       CreateEntry("Ben", "S3cur3", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       CreateEntry("", "p455w0rd", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact)};
+                  affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -663,7 +664,7 @@ TEST_F(PasswordAccessoryControllerTest, PasswordFieldChangesSuggestionType) {
 TEST_F(PasswordAccessoryControllerTest, CacheChangesReplacePasswords) {
   CreateSheetController();
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -682,7 +683,7 @@ TEST_F(PasswordAccessoryControllerTest, CacheChangesReplacePasswords) {
                 .Build());
 
   std::vector<PasswordForm> changed_matches = {CreateEntry(
-      "Alf", "M3lm4k", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Alf", "M3lm4k", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       changed_matches, CredentialCache::IsOriginBlocklisted(false),
       std::nullopt, url::Origin::Create(GURL(kExampleSite)));
@@ -705,9 +706,9 @@ TEST_F(PasswordAccessoryControllerTest, SetsTitleForPSLMatchedOriginsInV2) {
   CreateSheetController();
   std::vector<PasswordForm> matches = {
       CreateEntry("Ben", "S3cur3", GURL(kExampleSite),
-                  PasswordForm::MatchType::kExact),
+                  affiliations::MatchType::kExact),
       CreateEntry("Alf", "R4nd0m", GURL(kExampleSiteMobile),
-                  PasswordForm::MatchType::kPSL)};
+                  affiliations::MatchType::kPSL)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -740,7 +741,7 @@ TEST_F(PasswordAccessoryControllerTest, SetsTitleForPSLMatchedOriginsInV2) {
 TEST_F(PasswordAccessoryControllerTest, UnfillableFieldClearsSuggestions) {
   CreateSheetController();
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -777,7 +778,7 @@ TEST_F(PasswordAccessoryControllerTest, NavigatingMainFrameClearsSuggestions) {
   // Set any, non-empty password list and pretend a username field was focused.
   // This should result in non-emtpy suggestions.
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -1148,7 +1149,7 @@ TEST_F(PasswordAccessoryControllerTest,
 TEST_F(PasswordAccessoryControllerTest, FillsUsername) {
   CreateSheetController();
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -1177,7 +1178,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
 
   CreateSheetController();
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -1213,7 +1214,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfAuthSuccessful) {
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -1254,7 +1255,7 @@ TEST_F(PasswordAccessoryControllerTest, DoesntFillPasswordIfAuthFails) {
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -1297,7 +1298,7 @@ TEST_F(PasswordAccessoryControllerTest,
   form.username_value = u"Ben";
   form.password_value = PasswordString(u"S3cur3");
   form.signon_realm = kExampleAndroidApp;
-  form.match_type = PasswordForm::MatchType::kGrouped;
+  form.match_type = affiliations::MatchType::kGrouped;
   form.app_display_name = "Example android app";
   std::vector<PasswordForm> matches = {form};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
@@ -1335,7 +1336,7 @@ TEST_F(PasswordAccessoryControllerTest,
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kGrouped)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kGrouped)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -1370,7 +1371,7 @@ TEST_F(PasswordAccessoryControllerTest,
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kGrouped)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kGrouped)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -1398,7 +1399,7 @@ TEST_F(PasswordAccessoryControllerTest,
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kGrouped)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kGrouped)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -1437,7 +1438,7 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
   CreateSheetController();
 
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
       url::Origin::Create(GURL(kExampleSite)));
@@ -1764,7 +1765,7 @@ TEST_F(PasswordAccessoryControllerTest,
 TEST_F(PasswordAccessoryControllerTest, LogBackupPasswordSelected) {
   CreateSheetController();
   std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+      "Ben", "S3cur3", GURL(kExampleSite), affiliations::MatchType::kExact)};
   matches[0].SetPasswordBackupNote(u"BackupPassword");
   cache()->SaveCredentialsAndBlocklistedForOrigin(
       matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,

@@ -8,6 +8,7 @@
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
@@ -38,7 +39,7 @@ std::unique_ptr<PasswordForm> CreateUnnoitifiedSharedPasswordForm(
   shared_credentials->signon_realm = shared_credentials->url.spec();
   shared_credentials->username_value = username;
   shared_credentials->password_value = PasswordString(u"12345");
-  shared_credentials->match_type = PasswordForm::MatchType::kExact;
+  shared_credentials->match_type = affiliations::MatchType::kExact;
   shared_credentials->type = PasswordForm::Type::kReceivedViaSharing;
   shared_credentials->sharing_notification_displayed = false;
   shared_credentials->sender_name = u"Sender Name";

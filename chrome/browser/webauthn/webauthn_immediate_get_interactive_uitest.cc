@@ -19,6 +19,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
@@ -121,7 +122,7 @@ class WebAuthnImmediateGetTest : public Fixture {
         password_manager::PasswordString(base::ASCIIToUTF16(password));
     form.signon_realm = GetHttpsURL().DeprecatedGetOriginAsURL().spec();
     form.url = GetHttpsURL().DeprecatedGetOriginAsURL();
-    form.match_type = password_manager::PasswordForm::MatchType::kExact;
+    form.match_type = affiliations::MatchType::kExact;
 
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         ProfilePasswordStoreFactory::GetForProfile(

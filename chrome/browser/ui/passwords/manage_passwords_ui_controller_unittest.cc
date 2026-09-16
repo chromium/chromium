@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_page_action_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/metrics/profile_metrics_service.h"
@@ -405,7 +406,7 @@ void ManagePasswordsUIControllerTest::SetUp() {
   test_local_form_.username_element = u"username_element";
   test_local_form_.password_value = PasswordString(u"12345");
   test_local_form_.password_element = u"password_element";
-  test_local_form_.match_type = PasswordForm::MatchType::kExact;
+  test_local_form_.match_type = affiliations::MatchType::kExact;
 
   test_federated_form_.url = GURL("http://example.com/login");
   test_federated_form_.signon_realm =
@@ -413,7 +414,7 @@ void ManagePasswordsUIControllerTest::SetUp() {
   test_federated_form_.username_value = u"username";
   test_federated_form_.federation_origin =
       url::SchemeHostPort(GURL("https://federation.test/"));
-  test_federated_form_.match_type = PasswordForm::MatchType::kExact;
+  test_federated_form_.match_type = affiliations::MatchType::kExact;
 
   submitted_form_ = test_local_form_;
   submitted_form_.username_value = u"submitted_username";
@@ -1112,7 +1113,7 @@ TEST_F(ManagePasswordsUIControllerTest, ChooseCredentialPrefetch) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest, ChooseCredentialPSL) {
-  test_local_form().match_type = PasswordForm::MatchType::kPSL;
+  test_local_form().match_type = affiliations::MatchType::kPSL;
   std::vector<std::unique_ptr<PasswordForm>> local_credentials;
   local_credentials.emplace_back(new PasswordForm(test_local_form()));
   url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
@@ -1236,7 +1237,7 @@ TEST_F(ManagePasswordsUIControllerTest, ActiveOnPSLMatched) {
   std::u16string kTestUsername = u"test_username";
   std::vector<PasswordForm> forms;
   PasswordForm psl_matched_test_form(test_local_form());
-  psl_matched_test_form.match_type = PasswordForm::MatchType::kPSL;
+  psl_matched_test_form.match_type = affiliations::MatchType::kPSL;
   forms.push_back(psl_matched_test_form);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnPasswordAutofilled(

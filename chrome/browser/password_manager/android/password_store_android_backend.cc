@@ -35,6 +35,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -177,13 +178,13 @@ void ProcessGroupedLoginsAndReply(
       case MatchResult::FEDERATED_MATCH:
         // Rewrite match type completely for exact matches so it won't be
         // confused as other types.
-        form.match_type = PasswordForm::MatchType::kExact;
+        form.match_type = affiliations::MatchType::kExact;
         break;
       case MatchResult::PSL_MATCH:
       case MatchResult::FEDERATED_PSL_MATCH:
         // PSL match is only possible if form was marked as grouped match.
         CHECK(form.match_type.has_value());
-        form.match_type |= PasswordForm::MatchType::kPSL;
+        form.match_type |= affiliations::MatchType::kPSL;
         break;
     }
   }

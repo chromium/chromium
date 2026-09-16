@@ -31,6 +31,7 @@
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -213,8 +214,7 @@ class ChangePasswordFormFillingSubmissionHelperTest
     existing_credential_.password_value =
         password_manager::PasswordString(std::u16string(kOldPassword));
     existing_credential_.url = url();
-    existing_credential_.match_type =
-        password_manager::PasswordForm::MatchType::kExact;
+    existing_credential_.match_type = affiliations::MatchType::kExact;
     existing_credential_.in_store =
         password_manager::PasswordForm::Store::kProfileStore;
     existing_credential_.scheme = password_manager::PasswordForm::Scheme::kHtml;

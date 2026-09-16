@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -226,8 +227,7 @@ TEST_P(PasswordSaveUpdateViewTest,
 
   // Set the federation_origin to force a Federated Credentials bubble.
   pending_password_.federation_origin = url::SchemeHostPort(kURL);
-  pending_password_.match_type =
-      password_manager::PasswordForm::MatchType::kExact;
+  pending_password_.match_type = affiliations::MatchType::kExact;
   CreateViewAndShow();
 }
 
@@ -575,8 +575,7 @@ TEST_F(PasswordDropdownExperimentTest,
 
   // Set the federation_origin to force a Federated Credentials bubble.
   pending_password_.federation_origin = url::SchemeHostPort(kURL);
-  pending_password_.match_type =
-      password_manager::PasswordForm::MatchType::kExact;
+  pending_password_.match_type = affiliations::MatchType::kExact;
 
   CreateViewAndShow();
 }

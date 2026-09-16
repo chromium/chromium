@@ -46,6 +46,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -129,7 +130,7 @@ PasswordForm CreateSharedCredentials(
   shared_credentials.url = url;
   shared_credentials.username_value = username;
   shared_credentials.password_value = PasswordString(u"12345");
-  shared_credentials.match_type = PasswordForm::MatchType::kExact;
+  shared_credentials.match_type = affiliations::MatchType::kExact;
   shared_credentials.type = PasswordForm::Type::kReceivedViaSharing;
   shared_credentials.sender_name = sender_name;
   return shared_credentials;
@@ -557,9 +558,9 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
       WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId),
       // 2. Add and switch to tab 1.
       Do([this]() {
-        ASSERT_TRUE(AddTabAtIndex(
-            1, embedded_test_server()->GetURL("/empty.html"),
-            ui::PAGE_TRANSITION_TYPED));
+        ASSERT_TRUE(AddTabAtIndex(1,
+                                  embedded_test_server()->GetURL("/empty.html"),
+                                  ui::PAGE_TRANSITION_TYPED));
         browser()->GetTabStripModel()->ActivateTabAt(
             1, TabStripUserGestureDetails(
                    TabStripUserGestureDetails::GestureType::kOther));
@@ -698,8 +699,9 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, SaveUiDismissalReason) {
 
   RunTestSequence(
       Do([this]() { SetupPendingPassword(); }),
-      WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId),
-      Do([]() { PasswordBubbleViewBase::manage_password_bubble()->AcceptDialog(); }),
+      WaitForShow(PasswordSaveUpdateView::kPasswordBubbleElementId), Do([]() {
+        PasswordBubbleViewBase::manage_password_bubble()->AcceptDialog();
+      }),
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       Do([]() { content::RunAllPendingInMessageLoop(); }),
       Check([]() { return IsBubbleShowing(); }),
@@ -1362,9 +1364,10 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
       }),
       // Click the manage passwords button
       Do([]() {
-        ClickOnView(PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
-            static_cast<int>(
-                password_manager::ManagePasswordsViewIDs::kManagePasswordButton)));
+        ClickOnView(
+            PasswordBubbleViewBase::manage_password_bubble()->GetViewByID(
+                static_cast<int>(password_manager::ManagePasswordsViewIDs::
+                                     kManagePasswordButton)));
       }),
       // Wait for the bubble to hide on navigation
       WaitForHide(ManagePasswordsView::kTopView));

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -84,8 +85,7 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsUIControllerBrowserTest,
   non_shared_credentials.username_value = u"username";
   non_shared_credentials.password_value =
       password_manager::PasswordString(u"12345");
-  non_shared_credentials.match_type =
-      password_manager::PasswordForm::MatchType::kExact;
+  non_shared_credentials.match_type = affiliations::MatchType::kExact;
 
   password_manager::PasswordForm shared_credentials = non_shared_credentials;
   shared_credentials.type =
@@ -121,8 +121,7 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsUIControllerBrowserTest,
   non_shared_credentials.username_value = u"username";
   non_shared_credentials.password_value =
       password_manager::PasswordString(u"12345");
-  non_shared_credentials.match_type =
-      password_manager::PasswordForm::MatchType::kExact;
+  non_shared_credentials.match_type = affiliations::MatchType::kExact;
 
   password_manager::PasswordForm shared_credentials = non_shared_credentials;
   shared_credentials.type =

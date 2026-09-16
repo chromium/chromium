@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
@@ -138,8 +139,7 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsControllerTest,
   non_shared_credentials.username_value = u"username";
   non_shared_credentials.password_value =
       password_manager::PasswordString(u"12345");
-  non_shared_credentials.match_type =
-      password_manager::PasswordForm::MatchType::kExact;
+  non_shared_credentials.match_type = affiliations::MatchType::kExact;
 
   password_manager::PasswordForm shared_credentials = non_shared_credentials;
   shared_credentials.type =

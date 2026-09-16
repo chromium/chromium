@@ -37,6 +37,7 @@
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/common/autofill_test_util.h"
@@ -165,7 +166,7 @@ password_manager::StoredCredential CreateTestCredential() {
   form.username_value = kTestUsername;
   form.password_value = password_manager::PasswordString(kTestPassword);
   form.in_store = password_manager::PasswordForm::Store::kProfileStore;
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   return password_manager::FromPasswordForm(std::move(form));
 }
 
@@ -320,7 +321,7 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
     form.username_value = kTestUsername;
     form.password_value = password_manager::PasswordString(kTestPassword);
     form.in_store = password_manager::PasswordForm::Store::kProfileStore;
-    form.match_type = password_manager::PasswordForm::MatchType::kExact;
+    form.match_type = affiliations::MatchType::kExact;
     seed_credentials.push_back(form);
 
     form_fetcher_.SetBestMatches(seed_credentials);
@@ -347,7 +348,7 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
       form.username_value = kTestUsername;
       form.password_value = password_manager::PasswordString(kTestPassword);
       form.in_store = password_manager::PasswordForm::Store::kProfileStore;
-      form.match_type = password_manager::PasswordForm::MatchType::kExact;
+      form.match_type = affiliations::MatchType::kExact;
       custom_actuator_ = std::make_unique<GlicPasswordChangeActuator>(
           password_manager::FromPasswordForm(std::move(form)), web_contents(),
           profile(), target_url);

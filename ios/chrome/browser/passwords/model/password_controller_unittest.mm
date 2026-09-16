@@ -22,6 +22,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/values.h"
+#import "components/affiliations/core/browser/match_type.h"
 #import "components/autofill/core/browser/foundations/test_autofill_client.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
@@ -192,7 +193,7 @@ PasswordForm CreatePasswordForm(const char* origin_url,
   form.username_value = ASCIIToUTF16(username_value);
   form.password_value = PasswordString(ASCIIToUTF16(password_value));
   form.in_store = password_manager::PasswordForm::Store::kProfileStore;
-  form.match_type = PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   return form;
 }
 
@@ -707,7 +708,7 @@ PasswordForm MakeSimpleForm() {
   form.signon_realm = "http://www.google.com/";
   form.form_data = MakeSimpleFormData();
   form.in_store = password_manager::PasswordForm::Store::kProfileStore;
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   return form;
 }
 

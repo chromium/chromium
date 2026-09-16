@@ -109,6 +109,7 @@
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -712,7 +713,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowManagePasswordsIcon) {
   password_manager::StoredCredential credential;
   credential.username_value = u"test";
   credential.url = GetAppURL().DeprecatedGetOriginAsURL();
-  credential.match_type = password_manager::PasswordForm::MatchType::kExact;
+  credential.match_type = affiliations::MatchType::kExact;
   std::vector<password_manager::StoredCredential> credentials;
   credentials.push_back(std::move(credential));
   PasswordsClientUIDelegateFromWebContents(web_contents)

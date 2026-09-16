@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/passwords/password_combined_selector_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
@@ -358,7 +359,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
   form.icon_url = GURL("broken url");
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
   form.icon_url = embedded_test_server()->GetURL("/icon.png");
@@ -401,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
   form.icon_url = GURL("broken url");
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
   GURL icon_url("https://google.com/icon.png");
@@ -437,7 +438,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   form.url = origin;
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -468,7 +469,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   form.url = origin;
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -499,7 +500,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   form.url = origin;
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -532,7 +533,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   form.url = origin;
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -566,7 +567,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest, PopupAccountChooserInIncognito) {
   form.url = origin;
   form.display_name = u"Peter";
   form.username_value = u"peter@pan.test";
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
   local_credentials.push_back(
       std::make_unique<password_manager::PasswordForm>(form));
 
@@ -639,7 +640,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   form.url = origin;
   form.username_value = u"peter@pan.test";
   form.password_value = PasswordString(u"I can fly!");
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
 
   // Successful login alone will not prompt:
   client()->NotifySuccessfulLoginWithExistingPassword(WrapFormInManager(&form));
@@ -708,7 +709,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
     form1->url = GURL("https://terracottaand.co");
     form1->username_value = u"peter@pan.test";
     form1->password_value = PasswordString(u"I can fly!");
-    form1->match_type = password_manager::PasswordForm::MatchType::kExact;
+    form1->match_type = affiliations::MatchType::kExact;
     remote_actor_forms_.push_back(std::move(form1));
 
     if (name == "RemoteActorMultiple") {
@@ -716,7 +717,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
       form2->url = GURL("https://terracottaand.co");
       form2->username_value = u"notpeter@pan.test";
       form2->password_value = PasswordString(u"I cannot fly!");
-      form2->match_type = password_manager::PasswordForm::MatchType::kExact;
+      form2->match_type = affiliations::MatchType::kExact;
       remote_actor_forms_.push_back(std::move(form2));
     }
 
@@ -761,7 +762,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
       form.display_name = base::ASCIIToUTF16(base::StringPrintf("User %d", i));
       form.username_value =
           base::ASCIIToUTF16(base::StringPrintf("user%d@example.com", i));
-      form.match_type = password_manager::PasswordForm::MatchType::kExact;
+      form.match_type = affiliations::MatchType::kExact;
       local_credentials.push_back(
           std::make_unique<password_manager::PasswordForm>(form));
     }
@@ -779,7 +780,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
     form.username_value = u"peter@pan.test";
     form.federation_origin =
         url::SchemeHostPort(GURL("https://google.com/federation"));
-    form.match_type = password_manager::PasswordForm::MatchType::kExact;
+    form.match_type = affiliations::MatchType::kExact;
     local_credentials.push_back(
         std::make_unique<password_manager::PasswordForm>(form));
 
@@ -801,7 +802,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
   form.url = origin;
   form.display_name = u"Peter Pan";
   form.username_value = u"peter@pan.test";
-  form.match_type = password_manager::PasswordForm::MatchType::kExact;
+  form.match_type = affiliations::MatchType::kExact;
 
   if (name == "PopupAutoSigninPrompt") {
     form.icon_url = GURL("broken url");
@@ -848,7 +849,7 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
     form.url = origin;
     form.display_name = kFirstDisplayName;
     form.username_value = kFirstUsername;
-    form.match_type = password_manager::PasswordForm::MatchType::kExact;
+    form.match_type = affiliations::MatchType::kExact;
 
     local_credentials.push_back(
         std::make_unique<password_manager::PasswordForm>(form));
@@ -1118,7 +1119,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   auto form = std::make_unique<password_manager::PasswordForm>();
   form->username_value = u"peter@pan.test";
   form->password_value = PasswordString(u"I can fly!");
-  form->match_type = password_manager::PasswordForm::MatchType::kExact;
+  form->match_type = affiliations::MatchType::kExact;
   forms.push_back(std::move(form));
 
   EXPECT_CALL(mock_controller, GetLocalForms())
@@ -1207,13 +1208,13 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   auto form1 = std::make_unique<password_manager::PasswordForm>();
   form1->username_value = u"peter@pan.test";
   form1->password_value = PasswordString(u"I can fly!");
-  form1->match_type = password_manager::PasswordForm::MatchType::kExact;
+  form1->match_type = affiliations::MatchType::kExact;
   forms.push_back(std::move(form1));
 
   auto form2 = std::make_unique<password_manager::PasswordForm>();
   form2->username_value = u"notpeter@pan.test";
   form2->password_value = PasswordString(u"I cannot fly!");
-  form2->match_type = password_manager::PasswordForm::MatchType::kExact;
+  form2->match_type = affiliations::MatchType::kExact;
   forms.push_back(std::move(form2));
 
   EXPECT_CALL(mock_controller, GetLocalForms())
@@ -1318,7 +1319,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   form->url = GURL("https://m.terracottaand.co");
   form->username_value = u"peter@pan.test";
   form->password_value = PasswordString(u"I can fly!");
-  form->match_type = password_manager::PasswordForm::MatchType::kPSL;
+  form->match_type = affiliations::MatchType::kPSL;
   forms.push_back(std::move(form));
 
   EXPECT_CALL(mock_controller, GetLocalForms())

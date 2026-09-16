@@ -22,6 +22,7 @@
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/affiliations/core/browser/match_type.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
@@ -150,8 +151,7 @@ class ChangePasswordFormFillerTest : public ChromeRenderViewHostTestHarness {
     existing_credential_.password_value =
         password_manager::PasswordString(std::u16string(kOldPassword));
     existing_credential_.url = url();
-    existing_credential_.match_type =
-        password_manager::PasswordForm::MatchType::kExact;
+    existing_credential_.match_type = affiliations::MatchType::kExact;
     existing_credential_.in_store =
         password_manager::PasswordForm::Store::kProfileStore;
     existing_credential_.scheme = password_manager::PasswordForm::Scheme::kHtml;
