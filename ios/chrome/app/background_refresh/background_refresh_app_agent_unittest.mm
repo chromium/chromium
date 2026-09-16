@@ -735,12 +735,16 @@ TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionMetrics) {
   SimulateAppBackgrounding();
   InvokeTaskHandlerThen(run_loop_.QuitClosure());
   run_loop_.Run();
+  base::HistogramTester* histogram_tester_ptr = &histogram_tester;
   // Ensure the dispatched handleExecutionForTask block runs on the main thread.
-  // This is signaled by the task request count being incremented (once for
-  // SimulateAppBackgrounding, once for handleExecutionForTask).
+  // This is signaled by the launch type histogram being recorded for
+  // kLaunchTypePreBrowserObjects.
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
-        return task_request_count_ >= 2;
+        return histogram_tester_ptr->GetBucketCount(
+                   kLaunchTypeForBackgroundRefreshHistogram,
+                   LaunchTypeForBackgroundRefreshActions::
+                       kLaunchTypePreBrowserObjects) == 1;
       }));
 
   histogram_tester.ExpectTotalCount(kStartupWaitDurationCompletedHistogram, 0);
@@ -756,6 +760,8 @@ TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionMetrics) {
   second_run_loop.Run();
 
   histogram_tester.ExpectTotalCount(kStartupWaitDurationCompletedHistogram, 1);
+  // Rescheduled once when executing the deferred task after browser objects.
+  EXPECT_EQ(task_request_count_, 2);
 }
 
 TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionNeverStartedMetrics) {
@@ -774,12 +780,16 @@ TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionNeverStartedMetrics) {
   SimulateAppBackgrounding();
   InvokeTaskHandlerThen(run_loop_.QuitClosure());
   run_loop_.Run();
+  base::HistogramTester* histogram_tester_ptr = &histogram_tester;
   // Ensure the dispatched handleExecutionForTask block runs on the main thread.
-  // This is signaled by the task request count being incremented (once for
-  // SimulateAppBackgrounding, once for handleExecutionForTask).
+  // This is signaled by the launch type histogram being recorded for
+  // kLaunchTypePreBrowserObjects.
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
-        return task_request_count_ >= 2;
+        return histogram_tester_ptr->GetBucketCount(
+                   kLaunchTypeForBackgroundRefreshHistogram,
+                   LaunchTypeForBackgroundRefreshActions::
+                       kLaunchTypePreBrowserObjects) == 1;
       }));
 
   histogram_tester.ExpectTotalCount(kStartupWaitDurationNeverStartedHistogram,
@@ -792,6 +802,9 @@ TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionNeverStartedMetrics) {
 
   histogram_tester.ExpectTotalCount(kStartupWaitDurationNeverStartedHistogram,
                                     1);
+  // The task never started, so it was never rescheduled after the initial
+  // backgrounding request.
+  EXPECT_EQ(task_request_count_, 1);
 }
 
 TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionTimeoutMetrics) {
@@ -812,12 +825,16 @@ TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionTimeoutMetrics) {
   SimulateAppBackgrounding();
   InvokeTaskHandlerThen(run_loop_.QuitClosure());
   run_loop_.Run();
+  base::HistogramTester* histogram_tester_ptr = &histogram_tester;
   // Ensure the dispatched handleExecutionForTask block runs on the main thread.
-  // This is signaled by the task request count being incremented (once for
-  // SimulateAppBackgrounding, once for handleExecutionForTask).
+  // This is signaled by the launch type histogram being recorded for
+  // kLaunchTypePreBrowserObjects.
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
-        return task_request_count_ >= 2;
+        return histogram_tester_ptr->GetBucketCount(
+                   kLaunchTypeForBackgroundRefreshHistogram,
+                   LaunchTypeForBackgroundRefreshActions::
+                       kLaunchTypePreBrowserObjects) == 1;
       }));
 
   histogram_tester.ExpectTotalCount(kStartupWaitDurationTimeoutHistogram, 0);
@@ -837,4 +854,6 @@ TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionTimeoutMetrics) {
   second_run_loop.Run();
 
   histogram_tester.ExpectTotalCount(kStartupWaitDurationTimeoutHistogram, 1);
+  // Rescheduled once when executing the deferred task after browser objects.
+  EXPECT_EQ(task_request_count_, 2);
 }

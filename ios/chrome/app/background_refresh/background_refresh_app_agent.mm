@@ -228,9 +228,6 @@
   _startupWaitDuration = base::TimeDelta();
   _hasStartupWaitDuration = NO;
 
-  // Schedule another refresh.
-  [self requestAppRefresh];
-
   // If it's possible to handle the tasks now, do it. If not, mark the task as
   // pending.
   if (continueExecution) {
@@ -242,6 +239,10 @@
 
 - (void)executeProvidersForTask:(BGTask*)task {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  // Do not execute earlier: feature flags are not yet initialized on cold
+  // start.
+  [self requestAppRefresh];
 
   // Set the start time of actual task execution.
   base::TimeTicks start = base::TimeTicks::Now();
