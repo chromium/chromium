@@ -189,6 +189,17 @@ void ActionAppMenu::WillShowMenu(views::MenuItemView* menu) {
   }
 }
 
+bool ActionAppMenu::IsItemChecked(int id) const {
+  auto action_iterator = command_to_action_map_.find(id);
+  if (action_iterator == command_to_action_map_.end()) {
+    return false;
+  }
+
+  actions::ActionItem* action_ptr = action_iterator->second->GetActionItem();
+  CHECK(action_ptr);
+  return action_ptr->GetChecked();
+}
+
 const gfx::FontList* ActionAppMenu::GetLabelFontList(int id) const {
   if (id == ui::MenuModel::kTitleId) {
     return &views::TypographyProvider::Get().GetFont(
@@ -279,14 +290,24 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
       display_type != AppMenuActionItem::DisplayType::kCustom &&
       !base_action_item->GetChildren().children().empty();
 
+  command_to_action_map_[command_id] = base_action_item;
+
+  const bool is_checkable =
+      action_item->GetProperty(AppMenuActionItem::kIsCheckableKey);
+
+  views::MenuItemView::Type menu_item_type =
+      is_checkable ? views::MenuItemView::Type::kCheckbox
+                   : views::MenuItemView::Type::kNormal;
+
   views::MenuItemView* menu_item =
       has_submenu ? parent_menu_item->AppendSubMenu(
                         command_id, std::u16string(action_item->GetText()))
-                  : parent_menu_item->AppendMenuItem(command_id);
+                  : parent_menu_item->AppendMenuItemImpl(
+                        command_id, /*label=*/std::u16string(),
+                        /*icon=*/ui::ImageModel(), menu_item_type);
 
   action_view_controller_.CreateActionViewRelationship(
       menu_item, action_item->GetAsWeakPtr());
-  command_to_action_map_[command_id] = base_action_item;
   return menu_item;
 }
 

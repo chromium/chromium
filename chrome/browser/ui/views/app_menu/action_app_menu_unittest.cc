@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -44,6 +45,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/prefs/pref_service.h"
@@ -51,6 +53,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#include "components/search/ntp_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/test/test_renderer_host.h"
@@ -486,6 +489,61 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenuWithManagedFolder) {
     }
   }
   ASSERT_NE(managed_child_item, nullptr);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, BookmarkBarSubmenuCheckItems) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ntp_features::kNtpSimplificationBookmarkBar);
+
+  actions::ActionItem* always_show_action =
+      actions::ActionManager::Get().FindAction(
+          kActionBookmarkBarSubmenuAlwaysShow,
+          browser_actions_->root_action_item());
+  ASSERT_NE(always_show_action, nullptr);
+  always_show_action->SetChecked(true);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* bookmarks_item =
+      root->GetMenuItemByID(kActionBookmarksSubmenu);
+  ASSERT_TRUE(bookmarks_item);
+  EXPECT_TRUE(bookmarks_item->HasSubmenu());
+
+  // Trigger lazy loading of the dynamic bookmarks submenu.
+  menu.WillShowMenu(bookmarks_item);
+
+  views::MenuItemView* always_hide =
+      root->GetMenuItemByID(kActionBookmarkBarSubmenuAlwaysHide);
+  ASSERT_NE(always_hide, nullptr);
+  EXPECT_EQ(always_hide->GetType(), views::MenuItemView::Type::kCheckbox);
+  EXPECT_FALSE(menu.IsItemChecked(kActionBookmarkBarSubmenuAlwaysHide));
+
+  views::MenuItemView* always_show =
+      root->GetMenuItemByID(kActionBookmarkBarSubmenuAlwaysShow);
+  ASSERT_NE(always_show, nullptr);
+  EXPECT_EQ(always_show->GetType(), views::MenuItemView::Type::kCheckbox);
+  EXPECT_TRUE(menu.IsItemChecked(kActionBookmarkBarSubmenuAlwaysShow));
+
+  views::MenuItemView* only_on_ntp =
+      root->GetMenuItemByID(kActionBookmarkBarSubmenuOnlyOnNtp);
+  ASSERT_NE(only_on_ntp, nullptr);
+  EXPECT_EQ(only_on_ntp->GetType(), views::MenuItemView::Type::kCheckbox);
+  EXPECT_FALSE(menu.IsItemChecked(kActionBookmarkBarSubmenuOnlyOnNtp));
+
+  // Dynamically update checked state and verify:
+  always_show_action->SetChecked(false);
+  EXPECT_FALSE(menu.IsItemChecked(kActionBookmarkBarSubmenuAlwaysShow));
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

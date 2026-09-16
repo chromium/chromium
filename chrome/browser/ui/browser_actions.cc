@@ -223,7 +223,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page_navigator.h"
-#include "content/public/common/profiling.h"
 #include "extensions/common/extension_urls.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
@@ -1647,10 +1646,12 @@ void BrowserActions::InitializeChromeMenuActions() {
 
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
-          base::BindRepeating([](actions::ActionItem* item,
-                                 actions::ActionInvocationContext context) {
-            content::Profiling::Toggle();
-          }))
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ExecuteCommand(bwi, IDC_PROFILING_ENABLED);
+              },
+              bwi))
           .SetActionId(kActionProfilingEnabled)
           .SetText(l10n_util::GetStringUTF16(IDS_PROFILING_ENABLED))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_PROFILING_ENABLED))

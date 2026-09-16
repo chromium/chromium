@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -17,7 +18,11 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -312,6 +317,63 @@ TEST_F(ActionAppMenuManagerTest,
                 ->GetActionItem()
                 ->GetActionId(),
             kActionNewIsolatedWindow);
+}
+
+TEST_F(ActionAppMenuManagerTest, BookmarkBarSubmenuCheckItems) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ntp_features::kNtpSimplificationBookmarkBar);
+
+  profile_->GetPrefs()->SetInteger(
+      bookmarks::prefs::kBookmarkBarVisibilityState,
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  actions::ActionItem* your_chrome_section =
+      root->GetChildren().children()[1]->GetActionItem();
+  ASSERT_NE(your_chrome_section, nullptr);
+
+  actions::BaseAction* bookmarks_submenu = nullptr;
+  for (const auto& child : your_chrome_section->GetChildren().children()) {
+    if (child->GetActionItem()->GetActionId() == kActionBookmarksSubmenu) {
+      bookmarks_submenu = child.get();
+      break;
+    }
+  }
+  ASSERT_NE(bookmarks_submenu, nullptr);
+
+  actions::BaseAction* bookmark_bar_submenu = nullptr;
+  for (const auto& child : bookmarks_submenu->GetChildren().children()) {
+    if (child->GetActionItem()->GetActionId() == kActionBookmarkBarSubmenu) {
+      bookmark_bar_submenu = child.get();
+      break;
+    }
+  }
+  ASSERT_NE(bookmark_bar_submenu, nullptr);
+
+  const auto& bookmark_bar_children =
+      bookmark_bar_submenu->GetChildren().children();
+  ASSERT_EQ(bookmark_bar_children.size(), 3u);
+
+  EXPECT_EQ(bookmark_bar_children[0]->GetActionItem()->GetActionId(),
+            kActionBookmarkBarSubmenuAlwaysHide);
+  EXPECT_TRUE(bookmark_bar_children[0]->GetActionItem()->GetProperty(
+      AppMenuActionItem::kIsCheckableKey));
+
+  EXPECT_EQ(bookmark_bar_children[1]->GetActionItem()->GetActionId(),
+            kActionBookmarkBarSubmenuAlwaysShow);
+  EXPECT_TRUE(bookmark_bar_children[1]->GetActionItem()->GetProperty(
+      AppMenuActionItem::kIsCheckableKey));
+
+  EXPECT_EQ(bookmark_bar_children[2]->GetActionItem()->GetActionId(),
+            kActionBookmarkBarSubmenuOnlyOnNtp);
+  EXPECT_TRUE(bookmark_bar_children[2]->GetActionItem()->GetProperty(
+      AppMenuActionItem::kIsCheckableKey));
 }
 
 }  // namespace

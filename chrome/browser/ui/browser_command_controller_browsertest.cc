@@ -38,6 +38,8 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -1589,9 +1591,22 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   EXPECT_TRUE(command_controller->IsCommandEnabled(
       IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP));
 
+  auto* const root_action = BrowserActions::From(browser())->root_action_item();
+  auto* const always_show_action = actions::ActionManager::Get().FindAction(
+      kActionBookmarkBarSubmenuAlwaysShow, root_action);
+  auto* const always_hide_action = actions::ActionManager::Get().FindAction(
+      kActionBookmarkBarSubmenuAlwaysHide, root_action);
+  auto* const only_on_ntp_action = actions::ActionManager::Get().FindAction(
+      kActionBookmarkBarSubmenuOnlyOnNtp, root_action);
+
+  ASSERT_NE(always_show_action, nullptr);
+  ASSERT_NE(always_hide_action, nullptr);
+  ASSERT_NE(only_on_ntp_action, nullptr);
+
   base::UserActionTester user_action_tester;
 
-  // Test executing visibility commands updates the pref correctly.
+  // Test executing visibility commands updates the pref and ActionItem checked
+  // state correctly.
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "WrenchMenu_Bookmarks_AlwaysShowBookmarkBar"));
   chrome::ExecuteCommand(browser(), IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW);
@@ -1601,6 +1616,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "WrenchMenu_Bookmarks_AlwaysShowBookmarkBar"));
+  EXPECT_TRUE(always_show_action->GetChecked());
+  EXPECT_FALSE(always_hide_action->GetChecked());
+  EXPECT_FALSE(only_on_ntp_action->GetChecked());
 
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "WrenchMenu_Bookmarks_AlwaysHideBookmarkBar"));
@@ -1611,6 +1629,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "WrenchMenu_Bookmarks_AlwaysHideBookmarkBar"));
+  EXPECT_FALSE(always_show_action->GetChecked());
+  EXPECT_TRUE(always_hide_action->GetChecked());
+  EXPECT_FALSE(only_on_ntp_action->GetChecked());
 
   EXPECT_EQ(0, user_action_tester.GetActionCount(
                    "WrenchMenu_Bookmarks_OnlyShowBookmarkBarOnNtp"));
@@ -1621,6 +1642,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "WrenchMenu_Bookmarks_OnlyShowBookmarkBarOnNtp"));
+  EXPECT_FALSE(always_show_action->GetChecked());
+  EXPECT_FALSE(always_hide_action->GetChecked());
+  EXPECT_TRUE(only_on_ntp_action->GetChecked());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,

@@ -1229,6 +1229,7 @@ void BrowserCommandController::HandleCommandWithDisposition(
       break;
     case IDC_PROFILING_ENABLED:
       content::Profiling::Toggle();
+      UpdateCommandsForProfiling();
       break;
     case IDC_CARET_BROWSING_TOGGLE:
       ToggleCaretBrowsing(browser_);
@@ -2340,6 +2341,22 @@ void BrowserCommandController::UpdateCommandsForBookmarkBar() {
                                          visibility_commands_enabled);
   command_updater_->UpdateCommandEnabled(IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP,
                                          visibility_commands_enabled);
+
+  const int bookmark_bar_state = profile()->GetPrefs()->GetInteger(
+      bookmarks::prefs::kBookmarkBarVisibilityState);
+  UpdateCheckedState(
+      kActionBookmarkBarSubmenuAlwaysShow,
+      bookmark_bar_state ==
+          static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
+  UpdateCheckedState(
+      kActionBookmarkBarSubmenuAlwaysHide,
+      bookmark_bar_state ==
+          static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
+  UpdateCheckedState(
+      kActionBookmarkBarSubmenuOnlyOnNtp,
+      bookmark_bar_state ==
+          static_cast<int>(
+              bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
 }
 
 void BrowserCommandController::UpdateCommandsForFileSelectionDialogs() {
@@ -2417,9 +2434,7 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
   command_updater_->UpdateCommandEnabled(IDC_SHOW_APP_MENU, show_main_ui);
   command_updater_->UpdateCommandEnabled(IDC_SHOW_MANAGEMENT_PAGE, true);
 
-  if (base::debug::IsProfilingSupported()) {
-    command_updater_->UpdateCommandEnabled(IDC_PROFILING_ENABLED, show_main_ui);
-  }
+  UpdateCommandsForProfiling();
 
 #if !BUILDFLAG(IS_MAC)
   // Disable toggling into fullscreen mode if disallowed by pref.
@@ -2626,6 +2641,13 @@ void BrowserCommandController::UpdateTabRestoreCommandState() {
                               !tab_restore_service->entries().empty()));
 }
 
+void BrowserCommandController::UpdateCheckedState(actions::ActionId action_id,
+                                                  bool checked) {
+  auto* const action = FindAction(action_id, browser_);
+  CHECK(action);
+  action->SetChecked(checked);
+}
+
 void BrowserCommandController::UpdateCommandsForFind() {
   if (IsInLockedFullscreenMode(/*allow_ontask=*/true)) {
     return;
@@ -2773,6 +2795,15 @@ void BrowserCommandController::UpdateCommandsForTabGroupFocusChanged() {
             FindAction(kActionToggleCollapseVertical, browser_)) {
       action->SetVisible(!is_focused);
     }
+  }
+}
+
+void BrowserCommandController::UpdateCommandsForProfiling() {
+  if (base::debug::IsProfilingSupported()) {
+    command_updater_->UpdateCommandEnabled(IDC_PROFILING_ENABLED,
+                                           IsShowingMainUI());
+    UpdateCheckedState(kActionProfilingEnabled,
+                       content::Profiling::BeingProfiled());
   }
 }
 

@@ -31,6 +31,8 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ui::MenuSeparatorType,
                              kAppMenuSeparatorInternal,
                              ui::NORMAL_SEPARATOR)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAppMenuIsCheckableInternal, false)
+
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuMinorIconInternal)
@@ -57,6 +59,9 @@ const ui::ClassProperty<ui::MenuSeparatorType>* const
 const ui::ClassProperty<std::u16string*>* const
     AppMenuActionItem::kChipTextKey = kAppMenuChipTextInternal;
 
+const ui::ClassProperty<bool>* const AppMenuActionItem::kIsCheckableKey =
+    kAppMenuIsCheckableInternal;
+
 std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
     actions::ActionId action_id,
     actions::ActionItem* scope,
@@ -72,6 +77,10 @@ std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
 
   if (params.container_color.has_value()) {
     action->SetProperty(kContainerColorKey, params.container_color.value());
+  }
+
+  if (params.is_checkable.has_value()) {
+    action->SetProperty(kIsCheckableKey, params.is_checkable.value());
   }
 
   auto item = std::make_unique<actions::IndirectActionItem>(action);

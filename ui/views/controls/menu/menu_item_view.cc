@@ -2031,6 +2031,7 @@ void MenuItemActionViewInterface::ActionItemChangedImpl(
   if (!action_item->GetImage().IsEmpty()) {
     menu_item_view->SetIcon(action_item->GetImage());
   }
+  menu_item_view->RefreshCheckmarkState();
 }
 
 BEGIN_METADATA(MenuItemView)
