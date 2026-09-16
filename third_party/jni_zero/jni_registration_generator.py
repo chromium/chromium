@@ -30,12 +30,16 @@ import proxy
 _THIS_DIR = os.path.dirname(__file__)
 
 
-def _ParseHelper(package_prefix, package_prefix_filter, path):
+def _ParseHelper(package_prefix, package_prefix_filter, enable_safe_pointers,
+                 path):
   try:
+    # The link step emits only JNI boundary types, so safe pointer inner types
+    # are never resolved to C++ types here.
     return parse.parse_java_file(path,
                                  package_prefix=package_prefix,
                                  package_prefix_filter=package_prefix_filter,
-                                 allow_private_called_by_natives=True)
+                                 allow_private_called_by_natives=True,
+                                 enable_safe_pointers=enable_safe_pointers)
   except Exception as e:
     return e
 
@@ -45,7 +49,8 @@ def _LoadJniObjs(paths,
                  package_prefix,
                  package_prefix_filter,
                  *,
-                 weak_cbns_by_path=None):
+                 weak_cbns_by_path=None,
+                 enable_safe_pointers=False):
   ret = {}
   weak_cbns_by_path = weak_cbns_by_path or {}
   if all(p.endswith('.jni.pickle') for p in paths):
@@ -62,7 +67,7 @@ def _LoadJniObjs(paths,
       ]
   else:
     func = functools.partial(_ParseHelper, package_prefix,
-                             package_prefix_filter)
+                             package_prefix_filter, enable_safe_pointers)
     with multiprocessing.Pool() as pool:
       errors = []
       for res in pool.imap_unordered(func, paths, chunksize=64):
@@ -136,11 +141,13 @@ def _Generate(args,
   native_sources_set = set(native_sources_list)
   java_sources_set = set(java_sources_list)
 
-  jni_objs_by_path = _LoadJniObjs(native_sources_set | java_sources_set,
-                                  args.namespace,
-                                  args.package_prefix,
-                                  args.package_prefix_filter,
-                                  weak_cbns_by_path=weak_cbns_by_path)
+  jni_objs_by_path = _LoadJniObjs(
+      native_sources_set | java_sources_set,
+      args.namespace,
+      args.package_prefix,
+      args.package_prefix_filter,
+      weak_cbns_by_path=weak_cbns_by_path,
+      enable_safe_pointers=args.enable_safe_pointers)
 
   present_jni_objs = list(
       _Flatten(jni_objs_by_path, native_sources_set & java_sources_set))

@@ -844,6 +844,41 @@ class MyFile {
         subprocess.check_call(options_partial.to_args(),
                               stderr=subprocess.DEVNULL)
 
+  def testTypeTokensFromCurrentTargetInputs(self):
+    # Resolution must succeed for either input ordering via post-parse
+    # resolution, without any external --type-catalog. SampleTypeDefine.java
+    # also has no native methods, so this covers _CheckNotEmpty.
+    use_file = os.path.join(_JAVA_SRC_DIR, "SampleTypeUse.java")
+    define_file = os.path.join(_JAVA_SRC_DIR, "SampleTypeDefine.java")
+    for input_files in ([use_file, define_file], [define_file, use_file]):
+      with self.subTest(order=[os.path.basename(f) for f in input_files]):
+        with tempfile.TemporaryDirectory() as tdir:
+          shared_headers = [
+              f"{os.path.splitext(os.path.basename(f))[0]}_shared_jni.h"
+              for f in input_files
+          ]
+          unshared_headers = [
+              f"{os.path.splitext(os.path.basename(f))[0]}_jni.h"
+              for f in input_files
+          ]
+          options = CliOptions(input_files=input_files,
+                               output_dir=tdir,
+                               shared_header_files=shared_headers,
+                               unshared_header_files=unshared_headers,
+                               enable_safe_pointers=True)
+          subprocess.check_call(options.to_args())
+
+          header_path = os.path.join(tdir, "SampleTypeUse_jni.h")
+          self.AssertGoldenTextEquals(
+              pathlib.Path(header_path).read_text(),
+              'testTypeCatalog-SampleTypeUse_jni.h.golden')
+
+  def testSafePointersLinkStepNeedsNoCatalog(self):
+    # generate-final is never given a type catalog, so its output must not
+    # depend on a token's C++ type. A golden makes any such dependence visible.
+    self._TestGenerateFinal(['SampleTypeUse.java', 'SampleTypeDefine.java'],
+                            enable_safe_pointers=True)
+
 
 def main():
   try:

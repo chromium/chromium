@@ -215,6 +215,7 @@ template("generate_final_jni") {
         rebase_path(depfile, root_build_dir),
         "--java-sources-file",
         rebase_path(_java_sources_list, root_build_dir),
+        "--enable-safe-pointers",
       ]
 
       if (_needs_cpp_codegen) {

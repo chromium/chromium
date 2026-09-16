@@ -67,6 +67,14 @@ def _parse_java_file_data(filename, contents, enable_safe_pointers=False):
                                     enable_safe_pointers=enable_safe_pointers)
 
 
+def _parse_and_resolve(filename, contents):
+  parsed_file = _parse_java_file_data(filename,
+                                      contents,
+                                      enable_safe_pointers=True)
+  parse.resolve_safe_pointers([parsed_file], {})
+  return parsed_file
+
+
 class TestParse(unittest.TestCase):
 
   def _assert_golden(self, expected, actual):
@@ -467,9 +475,7 @@ public class MissingJniTypeTest {
 }
 """
     with self.assertRaises(parse.ParseError):
-      _parse_java_file_data('MissingJniTypeTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_and_resolve('MissingJniTypeTest.java', contents)
 
   def testParseMaliciousGenerics(self):
     contents = """
@@ -481,9 +487,7 @@ public class MaliciousGenericsTest {
 """
     with self.assertRaisesRegex(parse.ParseError,
                                 "does not resolve to a C\\+\\+ type"):
-      _parse_java_file_data('MaliciousGenericsTest.java',
-                            contents,
-                            enable_safe_pointers=True)
+      _parse_and_resolve('MaliciousGenericsTest.java', contents)
 
   def testParseSafePointerPrimitiveInnerError(self):
     contents = """

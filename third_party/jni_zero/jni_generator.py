@@ -779,6 +779,12 @@ def GenerateFromSource(parser, args, jni_mode):
 
     _CheckNotEmpty(parsed_files)
 
+    for pf in parsed_files:
+      common.merge_type_catalogs(type_catalog, pf.type_tokens, pf.filename)
+
+    if args.enable_safe_pointers:
+      parse.resolve_safe_pointers(parsed_files, type_catalog)
+
     if args.output_type_catalog:
       local_type_catalog = {}
       for parsed_file in parsed_files:

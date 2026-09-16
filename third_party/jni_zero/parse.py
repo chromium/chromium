@@ -336,12 +336,6 @@ def _validate_safe_pointer(type_resolver, value, parsed_value, java_class,
     raise ParseError(
         f'Safe pointer inner type must be a JniTypeToken interface, not '
         f'"{inner.non_array_full_name_with_slashes}": {value}')
-  if not inner.converted_type:
-    raise ParseError(
-        f'Safe pointer inner type "{inner.non_array_full_name_with_slashes}" '
-        f'does not resolve to a C++ type. Annotate its JniTypeToken '
-        f'interface with @JniType("::your::CppType") (or provide it via '
-        f'the type catalog): {value}')
 
 
 def _resolve_token(type_resolver, java_type):
@@ -791,6 +785,48 @@ def parse_java_file_data(filename,
     ret.proxy_methods = parsed_proxy_natives.methods
 
   return ret
+
+
+def _resolve_type(java_type, type_catalog):
+  if java_type.is_safe_pointer():
+    inner = java_type.generics[0]
+    if not inner.converted_type:
+      fqn = inner.java_class.class_without_prefix.full_name_with_slashes
+      converted_type = type_catalog.get(fqn)
+      if not converted_type:
+        raise ParseError(
+            f'Safe pointer inner type "{inner.non_array_full_name_with_slashes}" '
+            f'does not resolve to a C++ type. Annotate its JniTypeToken '
+            f'interface with @JniType("::your::CppType") (or provide it via '
+            f'the type catalog): {java_type.to_java(with_generics=True)}')
+      # Mutate frozen dataclass in place since JavaType is not used in
+      # sets or dicts at this phase.
+      object.__setattr__(inner, 'converted_type', converted_type)
+
+
+def _resolve_signature(signature, type_catalog):
+  for java_type in signature.iter_types():
+    _resolve_type(java_type, type_catalog)
+
+
+def resolve_safe_pointers(parsed_files, type_catalog):
+  """Resolves and validates safe pointer types across parsed files."""
+  for pf in parsed_files:
+    try:
+      for m in pf.proxy_methods:
+        _resolve_signature(m.signature, type_catalog)
+      for c in pf.classes_with_jni:
+        for cbn in c.called_by_natives:
+          _resolve_signature(cbn.signature, type_catalog)
+        for f in c.fields:
+          _resolve_type(f.java_type, type_catalog)
+        for m in c.non_proxy_methods:
+          _resolve_signature(m.signature, type_catalog)
+    except Exception as e:
+      # This runs after parse_java_file() has returned, so it must attach the
+      # filename itself.
+      common.add_note(e, f'when parsing {pf.filename}')
+      raise
 
 
 def parse_java_file(filename,
