@@ -20,6 +20,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/pdf/common/constants.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/common/translate_features.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -41,6 +42,38 @@ content::WebContents* GetWebContentsToUse(
   return guest_view
              ? guest_view->embedder_web_contents()
              : content::WebContents::FromRenderFrameHost(&render_frame_host);
+}
+
+content::RenderFrameHost* GetEmbedderHost(
+    content::RenderFrameHost& render_frame_host) {
+  if (chrome_pdf::features::IsOopifPdfEnabled()) {
+    return pdf_frame_util::GetEmbedderHost(&render_frame_host);
+  }
+  auto* guest_view =
+      extensions::MimeHandlerViewGuest::FromRenderFrameHost(&render_frame_host);
+  return guest_view ? guest_view->embedder_rfh() : nullptr;
+}
+
+// Returns the primary main frame if `render_frame_host` belongs to an active,
+// full-page PDF, or nullptr otherwise.
+content::RenderFrameHost* GetFullPagePdfMainFrame(
+    content::RenderFrameHost& render_frame_host) {
+  if (!render_frame_host.IsActive()) {
+    return nullptr;
+  }
+
+  content::WebContents* web_contents = GetWebContentsToUse(render_frame_host);
+  if (!web_contents ||
+      web_contents->GetContentsMimeType() != pdf::kPDFMimeType) {
+    return nullptr;
+  }
+
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  if (!main_frame || GetEmbedderHost(render_frame_host) != main_frame) {
+    return nullptr;
+  }
+
+  return main_frame;
 }
 
 bool MaybeShowFeaturePromo(const base::Feature& feature,
@@ -109,11 +142,12 @@ void ChromePDFDocumentHelperClient::OnDocumentLoadComplete(
     }
   }
 
-  if (base::FeatureList::IsEnabled(translate::kEnableTranslatePdf)) {
-    auto* pdf_helper =
-        pdf::PDFDocumentHelper::GetForCurrentDocument(&render_frame_host);
-    if (pdf_helper) {
-      // Get the text of the first page and send it to the render frame for
+  // Only full-page PDFs are eligible for translation.
+  if (base::FeatureList::IsEnabled(translate::kEnableTranslatePdf) &&
+      GetFullPagePdfMainFrame(render_frame_host)) {
+    if (auto* pdf_helper =
+            pdf::PDFDocumentHelper::GetForCurrentDocument(&render_frame_host)) {
+      // Get the text of the first page and send it to the main frame for
       // language detection.
       pdf_helper->GetPageText(
           0, base::BindOnce(&ChromePDFDocumentHelperClient::OnPdfTextExtracted,
@@ -132,12 +166,18 @@ void ChromePDFDocumentHelperClient::OnPdfTextExtracted(
     return;
   }
 
+  content::RenderFrameHost* main_frame =
+      GetFullPagePdfMainFrame(*render_frame_host);
+  if (!main_frame) {
+    return;
+  }
+
   mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
-  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+  main_frame->GetRemoteAssociatedInterfaces()->GetInterface(
       &chrome_render_frame);
-  // TODO(b/502015383): Use the actual PDF language tag.
+  // TODO(crbug.com/502015383): Use the actual PDF language tag.
   chrome_render_frame->PdfPageCaptured(text, /*pdf_lang=*/"",
-                                       render_frame_host->GetLastCommittedURL());
+                                       main_frame->GetLastCommittedURL());
 }
 
 void ChromePDFDocumentHelperClient::UpdateContentRestrictions(
