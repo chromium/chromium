@@ -263,8 +263,7 @@ class WindowPerformanceTest : public testing::Test,
   PerformanceEventTiming* SimulateEventDispatch(
       const Event& event,
       base::TimeDelta processing_duration) {
-    performance_->GetResponsivenessMetrics()
-        .SetCurrentInteractionEventQueuedTimestamp(event.PlatformTimeStamp());
+    EventQueuedTimestampScope scoped_queued_time(event.PlatformTimeStamp());
 
     UIEventTiming ui_event_timing(GetFrame(), event);
     PerformanceEventTiming* entry = ui_event_timing.GetEntry();
@@ -556,6 +555,84 @@ TEST_P(WindowPerformanceTest, Expose100MsEvents) {
       performance_->getBufferedEntriesByType(performance_entry_names::kEvent);
   EXPECT_EQ(1u, entries.size());
   EXPECT_EQ(event_type_names::kMousedown, entries.at(0)->name());
+}
+
+TEST_P(WindowPerformanceTest, QueuedTimestampScopingAndFallback) {
+  base::TimeTicks creation_time = base::TimeTicks::Now();
+
+  // 1. When no queued timestamp is set, fallback to processing_start.
+  auto* event1 =
+      CreatePointerEvent(event_type_names::kPointerdown, creation_time, 1);
+  UIEventTiming timing1(GetFrame(), *event1);
+  PerformanceEventTiming* entry1 = timing1.GetEntry();
+  ASSERT_TRUE(entry1);
+  EXPECT_EQ(entry1->GetEventTimingReportingInfo()->enqueued_to_main_thread_time,
+            entry1->GetEventTimingReportingInfo()->processing_start_time);
+
+  // 2. When queued timestamp is before creation_time, fallback to
+  // processing_start.
+  base::TimeTicks stale_queued_time = creation_time - base::Milliseconds(10);
+  {
+    EventQueuedTimestampScope scoped_queued_time(stale_queued_time);
+    auto* event2 =
+        CreatePointerEvent(event_type_names::kPointerdown, creation_time, 2);
+    UIEventTiming timing2(GetFrame(), *event2);
+    PerformanceEventTiming* entry2 = timing2.GetEntry();
+    ASSERT_TRUE(entry2);
+    EXPECT_EQ(
+        entry2->GetEventTimingReportingInfo()->enqueued_to_main_thread_time,
+        entry2->GetEventTimingReportingInfo()->processing_start_time);
+  }
+
+  // 3. When queued timestamp is valid (>= creation_time), use queued timestamp.
+  base::TimeTicks valid_queued_time = creation_time + base::Milliseconds(5);
+  {
+    EventQueuedTimestampScope scoped_queued_time(valid_queued_time);
+    auto* event3 =
+        CreatePointerEvent(event_type_names::kPointerdown, creation_time, 3);
+    UIEventTiming timing3(GetFrame(), *event3);
+    PerformanceEventTiming* entry3 = timing3.GetEntry();
+    ASSERT_TRUE(entry3);
+    EXPECT_EQ(
+        entry3->GetEventTimingReportingInfo()->enqueued_to_main_thread_time,
+        valid_queued_time);
+  }
+
+  // 4. Once EventQueuedTimestampScope goes out of scope, queued timestamp is
+  // reset.
+  EXPECT_TRUE(EventQueuedTimestampScope::CurrentQueuedTimestamp().is_null());
+
+  // 5. Nested scopes restore previous queued timestamp.
+  {
+    EventQueuedTimestampScope outer_scope(valid_queued_time);
+    EXPECT_EQ(EventQueuedTimestampScope::CurrentQueuedTimestamp(),
+              valid_queued_time);
+    {
+      base::TimeTicks inner_queued_time =
+          creation_time + base::Milliseconds(10);
+      EventQueuedTimestampScope inner_scope(inner_queued_time);
+      EXPECT_EQ(EventQueuedTimestampScope::CurrentQueuedTimestamp(),
+                inner_queued_time);
+    }
+    EXPECT_EQ(EventQueuedTimestampScope::CurrentQueuedTimestamp(),
+              valid_queued_time);
+  }
+  EXPECT_TRUE(EventQueuedTimestampScope::CurrentQueuedTimestamp().is_null());
+
+  // 6. Subframe (separate LocalFrame/WindowPerformance) inherits the active
+  // EventQueuedTimestampScope timestamp on the main thread.
+  {
+    DummyPageHolder subframe_page(gfx::Size(400, 300));
+    EventQueuedTimestampScope scoped_queued_time(valid_queued_time);
+    auto* subframe_event =
+        CreatePointerEvent(event_type_names::kPointerdown, creation_time, 4);
+    UIEventTiming subframe_timing(&subframe_page.GetFrame(), *subframe_event);
+    PerformanceEventTiming* subframe_entry = subframe_timing.GetEntry();
+    ASSERT_TRUE(subframe_entry);
+    EXPECT_EQ(subframe_entry->GetEventTimingReportingInfo()
+                  ->enqueued_to_main_thread_time,
+              valid_queued_time);
+  }
 }
 
 TEST_P(WindowPerformanceTest, EventTimingDuration) {

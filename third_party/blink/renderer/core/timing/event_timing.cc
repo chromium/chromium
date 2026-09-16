@@ -155,5 +155,21 @@ EventTiming::~EventTiming() {
   }
 }
 
+base::TimeTicks EventQueuedTimestampScope::g_current_queued_time_;
+
+EventQueuedTimestampScope::EventQueuedTimestampScope(
+    base::TimeTicks queued_time)
+    : previous_queued_time_(g_current_queued_time_) {
+  g_current_queued_time_ = queued_time;
+}
+
+EventQueuedTimestampScope::~EventQueuedTimestampScope() {
+  g_current_queued_time_ = previous_queued_time_;
+}
+
+// static
+base::TimeTicks EventQueuedTimestampScope::CurrentQueuedTimestamp() {
+  return g_current_queued_time_;
+}
 
 }  // namespace blink

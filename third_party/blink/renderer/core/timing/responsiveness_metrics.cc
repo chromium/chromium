@@ -690,16 +690,6 @@ uint64_t ResponsivenessMetrics::GetInteractionCount() const {
   return interaction_count;
 }
 
-void ResponsivenessMetrics::SetCurrentInteractionEventQueuedTimestamp(
-    base::TimeTicks queued_time) {
-  current_interaction_event_queued_timestamp_ = queued_time;
-}
-
-base::TimeTicks ResponsivenessMetrics::CurrentInteractionEventQueuedTimestamp()
-    const {
-  return current_interaction_event_queued_timestamp_;
-}
-
 void ResponsivenessMetrics::Trace(Visitor* visitor) const {
   visitor->Trace(window_performance_);
   visitor->Trace(pending_pointerdown_entries_);

@@ -11,8 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
-#include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
@@ -21,15 +20,12 @@ WebInputEventResult WidgetEventHandler::HandleInputEvent(
     const WebCoalescedInputEvent& coalesced_event,
     LocalFrame* root) {
   const WebInputEvent& event = coalesced_event.Event();
+  EventQueuedTimestampScope scoped_queued_time(event.QueuedTimeStamp());
   if (root) {
     Document* document = root->GetDocument();
     DCHECK(document);
     if (LocalFrameView* view = document->View())
       view->GetLayoutShiftTracker().NotifyInput(event);
-    WindowPerformance* performance =
-        DOMWindowPerformance::performance(*root->DomWindow());
-    performance->GetResponsivenessMetrics()
-        .SetCurrentInteractionEventQueuedTimestamp(event.QueuedTimeStamp());
   }
 
   if (event.GetModifiers() & WebInputEvent::kIsTouchAccessibility &&

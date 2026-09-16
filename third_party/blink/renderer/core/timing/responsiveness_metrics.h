@@ -58,9 +58,6 @@ class CORE_EXPORT ResponsivenessMetrics
   void StopUkmSamplingForTesting() { sampling_ = false; }
   uint64_t GetInteractionCount() const;
 
-  void SetCurrentInteractionEventQueuedTimestamp(base::TimeTicks queued_time);
-  base::TimeTicks CurrentInteractionEventQueuedTimestamp() const;
-
   // The `navigate` event dispatches during a pre-commit phase of navigations
   // and can defer actual commit until a promise resolves.
   // `popstate` and `hashchange` will not dispatch until this deferred commit.
@@ -189,8 +186,6 @@ class CORE_EXPORT ResponsivenessMetrics
           PerformanceTimelineEntryIdInfo,
           IntWithZeroKeyHashTraits<PointerDownKeyType>>
       pointerid_to_interactionid_;
-
-  base::TimeTicks current_interaction_event_queued_timestamp_;
 
   PerformanceTimelineEntryIdGenerator interaction_id_generator_;
 

@@ -1,0 +1,8 @@
+Tests EventTiming trace events and enqueuedToMainThreadTime for main frame and subframe.
+Recording started
+Tracing complete
+Found 2 pointerdown EventTiming trace events.
+Event valid enqueuedToMainThreadTime: true
+Event valid enqueuedToMainThreadTime: true
+Distinct frames recorded: 2
+

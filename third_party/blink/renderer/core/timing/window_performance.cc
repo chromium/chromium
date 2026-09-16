@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_candidate.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
+#include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
@@ -656,7 +657,7 @@ PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
   PerformanceEventTiming::EventTimingReportingInfo reporting_info{
       .frame_index = current_frame_index_,
       .enqueued_to_main_thread_time =
-          responsiveness_metrics_->CurrentInteractionEventQueuedTimestamp(),
+          EventQueuedTimestampScope::CurrentQueuedTimestamp(),
       .processing_start_time = processing_start,
       .is_processing_fully_nested_in_another_event =
           !active_event_timing_entries_.empty(),
@@ -678,6 +679,25 @@ PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
     if (key_event) {
       reporting_info.key_code = key_event->keyCode();
     }
+  }
+
+  if (reporting_info.creation_time > processing_start) {
+    // TODO(crbug.com/503294875): Creation time can be in the future relative to
+    // processing start due to clock skew, faulty hardware timestamps, or bad
+    // test mocks. We cannot adjust creation_time to fake the expected invariant
+    // because it must match event.timeStamp exactly.
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kEventTimingCreationTimeInFuture);
+  }
+
+  if (reporting_info.enqueued_to_main_thread_time.is_null() ||
+      reporting_info.enqueued_to_main_thread_time <
+          reporting_info.creation_time) {
+    // TODO(crbug.com/503340988): Enqueued time can be missing or earlier than
+    // creation time due to synthetic events that skip normal input dispatch,
+    // clock skew, or bad test mocks. We can fallback to processing_start since
+    // this is only used for tracing/histograms.
+    reporting_info.enqueued_to_main_thread_time = processing_start;
   }
 
   // Set prevent_counting_as_interaction to true for all the event entries when

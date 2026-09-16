@@ -93,6 +93,27 @@ class CORE_EXPORT NavigationEventTiming final {
   std::optional<EventTiming> timing_;
 };
 
+// Scoper to track the queued-to-main-thread timestamp of the WebInputEvent
+// currently being dispatched by WidgetEventHandler. This is used by
+// EventTiming to record accurate input delays even for events targeted at
+// child frames.
+class CORE_EXPORT EventQueuedTimestampScope {
+  STACK_ALLOCATED();
+
+ public:
+  explicit EventQueuedTimestampScope(base::TimeTicks queued_time);
+  ~EventQueuedTimestampScope();
+  EventQueuedTimestampScope(const EventQueuedTimestampScope&) = delete;
+  EventQueuedTimestampScope& operator=(const EventQueuedTimestampScope&) =
+      delete;
+
+  static base::TimeTicks CurrentQueuedTimestamp();
+
+ private:
+  base::TimeTicks previous_queued_time_;
+  static base::TimeTicks g_current_queued_time_;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_EVENT_TIMING_H_
