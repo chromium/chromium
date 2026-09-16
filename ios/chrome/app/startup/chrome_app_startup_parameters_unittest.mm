@@ -35,8 +35,25 @@ void CheckLaunchSourceForURL(first_run::ExternalLaunch expectedSource,
   EXPECT_EQ(expectedSource, [params launchSource]);
 }
 
-typedef PlatformTest AppStartupParametersTest;
-TEST_F(PlatformTest, ParseURLWithEmptyURL) {
+// Test fixture for testing ChromeAppStartupParameters with the legacy startup
+// flow.
+class AppStartupParametersTest : public PlatformTest {
+ protected:
+  AppStartupParametersTest() {
+    ResetEnableNewStartupFlowEnabledForTesting();
+    scoped_feature_list_.InitAndDisableFeature(kEnableNewStartupFlow);
+    SaveEnableNewStartupFlowForNextStart();
+  }
+
+  ~AppStartupParametersTest() override {
+    ResetEnableNewStartupFlowEnabledForTesting();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that parsing an empty URL returns nil.
+TEST_F(AppStartupParametersTest, ParseURLWithEmptyURL) {
   NSURL* url = [NSURL URLWithString:@""];
   ChromeAppStartupParameters* params = [ChromeAppStartupParameters
       startupParametersWithURL:url
