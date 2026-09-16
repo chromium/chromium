@@ -11,8 +11,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.view.View;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,7 +42,6 @@ public class ListSectionDividerViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testColor() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListSectionDividerProperties.ALL_KEYS)
@@ -58,7 +55,6 @@ public class ListSectionDividerViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testColor_DefaultOrZero() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListSectionDividerProperties.ALL_KEYS).build();

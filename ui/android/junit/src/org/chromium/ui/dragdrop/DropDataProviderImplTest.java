@@ -25,8 +25,6 @@ import android.os.Process;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -83,7 +81,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testCache() {
         Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         Assert.assertEquals(
@@ -108,7 +105,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testGetStreamTypes() {
         Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         String[] res = mDropDataProviderImpl.getStreamTypes(uri, "image/*");
@@ -127,7 +123,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testQuery() {
         Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         Cursor cursor = mDropDataProviderImpl.query(uri, null);
@@ -143,7 +138,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testClearCache() {
         Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         mDropDataProviderImpl.onDragEnd(false);
@@ -159,7 +153,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testClearCacheWithDelay() throws FileNotFoundException {
         Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         mDropDataProviderImpl.setClearCachedDataIntervalMs(CLEAR_CACHED_DATA_INTERVAL_MS);
@@ -192,7 +185,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testClearCacheWithDelayCancelled() throws FileNotFoundException {
         Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         mDropDataProviderImpl.setClearCachedDataIntervalMs(CLEAR_CACHED_DATA_INTERVAL_MS);
@@ -252,7 +244,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testCall_mismatchedCallingUid() {
         ShadowBinder.setCallingUid(Process.myUid() + 1);
 
@@ -279,7 +270,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testCall_cache_valid() {
         Bundle bundle = new Bundle();
         bundle.putByteArray(BYTES_PARAM, IMAGE_DATA_A);
@@ -299,7 +289,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testCall_setClearCachedDataIntervalMs_valid() throws FileNotFoundException {
         Uri uri = mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         Bundle bundle = new Bundle();
@@ -325,7 +314,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testCall_onDragEnd_valid() {
         mDropDataProviderImpl.cache(IMAGE_DATA_A, EXTENSION_A, IMAGE_FILENAME_A);
         Assert.assertNotNull(
@@ -342,7 +330,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testCall_nullOrInvalidParameters() {
         Assert.assertNull(
                 "Result should be null for null method.",
@@ -383,7 +370,6 @@ public class DropDataProviderImplTest {
     }
 
     @Test
-    @SmallTest
     public void testDropDataProviderUtils_cacheAndClear() {
         DropDataAndroid dropData =
                 DropDataAndroid.create(

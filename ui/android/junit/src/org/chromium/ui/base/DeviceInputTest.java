@@ -19,8 +19,6 @@ import android.util.SparseArray;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,7 +51,6 @@ public class DeviceInputTest {
     }
 
     @Test
-    @SmallTest
     public void testNotifyNullInputDeviceAdded() {
         int nextDeviceId = 1;
 
@@ -78,7 +75,6 @@ public class DeviceInputTest {
     }
 
     @Test
-    @SmallTest
     public void testNotifyNullInputDeviceChanged() {
         int nextDeviceId = 1;
 
@@ -123,7 +119,6 @@ public class DeviceInputTest {
     }
 
     @Test
-    @SmallTest
     public void testNotifyNullInputDeviceRemoved() {
         int nextDeviceId = 1;
 
@@ -148,7 +143,6 @@ public class DeviceInputTest {
     }
 
     @Test
-    @SmallTest
     public void testSupportsAlphabeticKeyboard() {
         int nextDeviceId = 1;
 
@@ -188,7 +182,6 @@ public class DeviceInputTest {
     }
 
     @Test
-    @SmallTest
     public void testSupportsKeyboard() {
         Context context = ContextUtils.getApplicationContext();
         Configuration config = context.getResources().getConfiguration();
@@ -217,7 +210,6 @@ public class DeviceInputTest {
     }
 
     @Test
-    @SmallTest
     public void testSupportsPrecisionPointer() {
         int nextDeviceId = 1;
 
@@ -249,7 +241,6 @@ public class DeviceInputTest {
     }
 
     @Test
-    @SmallTest
     public void testSupportsMotionRanges() {
         int deviceId = 1;
 
@@ -266,7 +257,6 @@ public class DeviceInputTest {
     }
 
     @Test
-    @SmallTest
     public void testSupportsMotionRangesWrongSource() {
         int deviceId = 1;
 
@@ -281,7 +271,6 @@ public class DeviceInputTest {
     }
 
     @Test
-    @SmallTest
     public void testSupportsMotionRangesWrongDeviceId() {
         int deviceId = 1;
         int nonExistentDeviceId = 2;

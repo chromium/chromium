@@ -8,8 +8,6 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -69,7 +67,6 @@ public class LoadingViewTest {
     }
 
     @Test
-    @SmallTest
     public void testLoadingFast() {
         mLoadingView.showLoadingUi();
         Assert.assertEquals(
@@ -109,7 +106,6 @@ public class LoadingViewTest {
     }
 
     @Test
-    @SmallTest
     public void testLoadingSlow() {
         mLoadingView.showLoadingUi();
         Assert.assertEquals(
@@ -166,7 +162,6 @@ public class LoadingViewTest {
     }
 
     @Test
-    @SmallTest
     public void testLoadingSkipDelay() {
         mLoadingView.showLoadingUi(/* skipDelay= */ true);
         Assert.assertEquals(
@@ -180,7 +175,6 @@ public class LoadingViewTest {
     }
 
     @Test
-    @SmallTest
     public void testHideLoadingSkipDelay() {
         mLoadingView.showLoadingUi();
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();

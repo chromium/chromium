@@ -31,7 +31,6 @@ import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsAnimationCompat.BoundsCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -163,7 +162,6 @@ public class InsetObserverTest {
 
     /** Test that applying new insets notifies observers. */
     @Test
-    @SmallTest
     public void applyInsets_NotifiesObservers() {
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, times(1)).onInsetChanged();
@@ -194,7 +192,6 @@ public class InsetObserverTest {
     }
 
     @Test
-    @SmallTest
     public void applyInsets_withInsetConsumer() {
         mInsetObserver.addInsetsConsumer(mInsetsConsumer1, InsetConsumerSource.TEST_SOURCE);
 
@@ -210,7 +207,6 @@ public class InsetObserverTest {
 
     /** Test that consumed insets do not trigger observers. */
     @Test
-    @SmallTest
     public void applyInsets_retriggerOnApplyWindowInsets() {
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, times(1)).onInsetChanged();
@@ -225,7 +221,6 @@ public class InsetObserverTest {
     }
 
     @Test
-    @SmallTest
     public void applyInsets_withMultipleInsetConsumers() {
         // Add consumers in reverse order of priority.
         mInsetObserver.addInsetsConsumer(
@@ -252,7 +247,6 @@ public class InsetObserverTest {
     }
 
     @Test
-    @SmallTest
     public void isKeyboardInOverlayMode() {
         mInsetObserver.setKeyboardInOverlayMode(true);
         assertTrue(mInsetObserver.isKeyboardInOverlayMode());
@@ -262,7 +256,6 @@ public class InsetObserverTest {
     }
 
     @Test
-    @SmallTest
     public void insetAnimation() {
         mInsetObserver.addWindowInsetsAnimationListener(mInsetsAnimationListener);
         WindowInsetsAnimationCompat.Callback callback =
@@ -287,7 +280,6 @@ public class InsetObserverTest {
 
     /** Test that applying new insets does not notify the observer. */
     @Test
-    @SmallTest
     @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets() {
         setCutout(false);
@@ -297,7 +289,6 @@ public class InsetObserverTest {
 
     /** Test that applying new insets with a cutout notifies the observer. */
     @Test
-    @SmallTest
     @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_WithCutout_WithSystemInsets() {
         setCutout(true);
@@ -316,7 +307,6 @@ public class InsetObserverTest {
 
     /** Test applying new insets with a cutout and then remove the cutout. */
     @Test
-    @SmallTest
     @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_WithCutout_ChangeWindowInsets() {
         setCutout(true);
@@ -343,7 +333,6 @@ public class InsetObserverTest {
 
     /** Test that applying new insets with a cutout but no observer is a no-op. */
     @Test
-    @SmallTest
     @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_WithCutout_NoListener() {
         setCutout(true);
@@ -353,7 +342,6 @@ public class InsetObserverTest {
 
     /** Test that applying new insets with no observer is a no-op. */
     @Test
-    @SmallTest
     @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_NoListener() {
         setCutout(false);
@@ -437,7 +425,6 @@ public class InsetObserverTest {
     }
 
     @Test
-    @SmallTest
     public void verifyInsets_gestureNav_recordsAppropriateHistograms() {
         mInsetObserver =
                 new InsetObserver(
@@ -509,7 +496,6 @@ public class InsetObserverTest {
     }
 
     @Test
-    @SmallTest
     public void verifyInsets_tappableNav_recordsAppropriateHistograms() {
         mInsetObserver =
                 new InsetObserver(
@@ -581,7 +567,6 @@ public class InsetObserverTest {
     }
 
     @Test
-    @SmallTest
     public void verifyInsets_bothNav_recordsAppropriateHistograms() {
         mInsetObserver =
                 new InsetObserver(
@@ -653,7 +638,6 @@ public class InsetObserverTest {
     }
 
     @Test
-    @SmallTest
     public void verifyInsets_neitherNav_recordsAppropriateHistograms() {
         mInsetObserver =
                 new InsetObserver(

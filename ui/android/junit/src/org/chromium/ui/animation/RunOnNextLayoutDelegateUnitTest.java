@@ -16,8 +16,6 @@ import android.content.Context;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -92,7 +90,6 @@ public class RunOnNextLayoutDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRunsImmediatelyIfNotWaitingForLayout() {
         mRootView.addView(mRunOnNextLayoutView);
         ShadowLooper.runUiThreadTasks();
@@ -108,7 +105,6 @@ public class RunOnNextLayoutDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRunsOnNextLayout() {
         mRootView.addView(mRunOnNextLayoutView);
         ShadowLooper.runUiThreadTasks();
@@ -131,7 +127,6 @@ public class RunOnNextLayoutDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testRunsWithoutALayout() {
         mRootView.addView(mRunOnNextLayoutView);
         ShadowLooper.runUiThreadTasks();
@@ -155,7 +150,6 @@ public class RunOnNextLayoutDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDelayedIfLayoutHasZeroDimension() {
         mRootView.addView(mRunOnNextLayoutView);
         ShadowLooper.runUiThreadTasks();
@@ -178,7 +172,6 @@ public class RunOnNextLayoutDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testForceRunnablesToRun() {
         mRootView.addView(mRunOnNextLayoutView);
         ShadowLooper.runUiThreadTasks();
@@ -200,7 +193,6 @@ public class RunOnNextLayoutDelegateUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAvoidsReentrantCalls() {
         mRootView.addView(mRunOnNextLayoutView);
         ShadowLooper.runUiThreadTasks();

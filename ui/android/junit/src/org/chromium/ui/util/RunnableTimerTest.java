@@ -8,8 +8,6 @@ import static org.mockito.Mockito.verify;
 
 import android.os.Handler;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +22,6 @@ import org.chromium.base.test.util.CallbackHelper;
 public class RunnableTimerTest {
     /** Ensure Runnable has been called by an active timer. */
     @Test
-    @SmallTest
     public void testStartTimer() throws Exception {
         CallbackHelper callbackHelper = new CallbackHelper();
         long duration = 1;
@@ -37,7 +34,6 @@ public class RunnableTimerTest {
 
     /** Ensure Runnable has been set as null after cancellation. */
     @Test
-    @SmallTest
     public void testCancelTimer() {
         Handler h = Mockito.mock(Handler.class);
         long duration = 1;
@@ -57,7 +53,6 @@ public class RunnableTimerTest {
      * been cancelled.
      */
     @Test
-    @SmallTest
     public void testResetTimer() {
         Handler h = Mockito.mock(Handler.class);
         long duration = 1;

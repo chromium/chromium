@@ -13,7 +13,6 @@ import android.text.TextPaint;
 
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,7 +43,6 @@ public class DownloadableFontTextAppearanceSpanTest {
     }
 
     @Test
-    @SmallTest
     @DisabledTest // This needs to be re-worked for Q.
     public void testTextAppearance() {
         DownloadableFontTextAppearanceSpan span =

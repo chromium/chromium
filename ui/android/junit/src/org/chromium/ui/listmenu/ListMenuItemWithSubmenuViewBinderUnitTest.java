@@ -16,8 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,7 +61,6 @@ public class ListMenuItemWithSubmenuViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIconTint() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
@@ -85,7 +82,6 @@ public class ListMenuItemWithSubmenuViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testTouchListener() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
@@ -97,7 +93,6 @@ public class ListMenuItemWithSubmenuViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGenericMotionListener() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)

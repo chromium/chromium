@@ -27,7 +27,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -96,7 +95,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetTitle() {
         String title = "Test Title";
         PropertyModel propertyModel =
@@ -108,7 +106,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetSubtitle() {
         String subtitle = "Test Subtitle";
         PropertyModel propertyModel =
@@ -128,7 +125,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSubtitleTextAppearance() {
         int customStyleId = 123;
         PropertyModel propertyModel =
@@ -150,7 +146,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testVerticalPadding() {
         int verticalPadding = 24;
         int paddingStart = 16;
@@ -180,7 +175,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testStartIconBitmap() {
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         PropertyModel propertyModel =
@@ -201,7 +195,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testStartIconBitmapWithKeepSpacing() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -217,7 +210,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEnabledState() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -238,7 +230,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIconTint() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -262,7 +253,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testIconTint_shouldNotTintEndIcon() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -281,7 +271,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShouldTintEndIconProperty() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -295,7 +284,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShouldTintEndIconProperty_recyclesToTrue() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -320,7 +308,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testStartIconId() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -334,7 +321,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testEndIconId() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -348,7 +334,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSubmenuHeaderIconTint() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
@@ -374,7 +359,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testStartIconWidth() {
         int width = 12;
         PropertyModel propertyModel =
@@ -391,7 +375,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testBothIcons() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -416,7 +399,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testStartIconBitmapDoesNotOverrideDrawable() {
         Drawable drawable =
                 AppCompatResources.getDrawable(mContext, R.drawable.ic_delete_fill_24dp);
@@ -444,7 +426,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testStartIconDrawableDoesNotOverrideBitmap() {
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         PropertyModel propertyModel =
@@ -471,7 +452,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGenericMotionListener() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -485,7 +465,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCheckableAndChecked_CheckedTrue() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -514,7 +493,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCheckableAndChecked_CheckedFalse() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
@@ -543,7 +521,6 @@ public class ListMenuItemViewBinderUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testCheckableAndChecked_NotCheckedProperty() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)

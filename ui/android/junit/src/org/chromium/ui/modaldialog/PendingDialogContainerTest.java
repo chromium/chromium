@@ -12,8 +12,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,7 +42,6 @@ public class PendingDialogContainerTest {
     }
 
     @Test
-    @SmallTest
     public void testSimpleInsertion() {
         PropertyModel model = new PropertyModel();
         mPendingDialogContainer.put(
@@ -53,7 +50,6 @@ public class PendingDialogContainerTest {
     }
 
     @Test
-    @SmallTest
     public void testMultipleInsertion_WithShowAsNextSpecified() {
         PropertyModel model1 = new PropertyModel();
         PropertyModel model2 = new PropertyModel();
@@ -96,7 +92,6 @@ public class PendingDialogContainerTest {
     }
 
     @Test
-    @SmallTest
     public void testInsertionWithDifferentPriorities() {
         PropertyModel model1 = new PropertyModel();
         PropertyModel model2 = new PropertyModel();
@@ -140,7 +135,6 @@ public class PendingDialogContainerTest {
     }
 
     @Test
-    @SmallTest
     public void testSimpleRemoval() {
         PropertyModel model = new PropertyModel();
         mPendingDialogContainer.put(
@@ -154,7 +148,6 @@ public class PendingDialogContainerTest {
     }
 
     @Test
-    @SmallTest
     public void testRemovalWithConsumer() {
         PropertyModel model = new PropertyModel();
         mPendingDialogContainer.put(
@@ -172,7 +165,6 @@ public class PendingDialogContainerTest {
     }
 
     @Test
-    @SmallTest
     public void testMultipleRemovalsWithConsumer_SameDialogType() {
         PropertyModel model1 = new PropertyModel();
         PropertyModel model2 = new PropertyModel();
@@ -202,7 +194,6 @@ public class PendingDialogContainerTest {
     }
 
     @Test
-    @SmallTest
     public void testMultipleRemovalsWithConsumer_DifferentDialogType() {
         PropertyModel model1 = new PropertyModel();
         PropertyModel model2 = new PropertyModel();
@@ -234,7 +225,6 @@ public class PendingDialogContainerTest {
     }
 
     @Test
-    @SmallTest
     public void testNonExistentenceOfDialogs() {
         PropertyModel model = new PropertyModel();
         assertFalse(
@@ -244,7 +234,6 @@ public class PendingDialogContainerTest {
     }
 
     @Test
-    @SmallTest
     public void testRemovalOfNonExistententPendingDialogs() {
         PropertyModel model = new PropertyModel();
         assertFalse(
@@ -253,21 +242,18 @@ public class PendingDialogContainerTest {
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testOutOfBoundValues_LowerBound() {
         PropertyModel model = new PropertyModel();
         mPendingDialogContainer.put(ModalDialogType.APP, 0, model, /* showAsNext= */ false);
     }
 
     @Test(expected = AssertionError.class)
-    @SmallTest
     public void testOutOfBoundValues_UpperBound() {
         PropertyModel model = new PropertyModel();
         mPendingDialogContainer.put(ModalDialogType.APP, 10, model, /* showAsNext= */ false);
     }
 
     @Test
-    @SmallTest
     public void testKeyUniqueness() {
         for (@ModalDialogPriority int priority = ModalDialogPriority.RANGE_MIN;
                 priority <= ModalDialogPriority.RANGE_MAX;

@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -21,7 +19,6 @@ import java.util.Locale;
 @RunWith(BaseRobolectricTestRunner.class)
 public class LocalizationUtilsTest {
     @Test
-    @SmallTest
     public void testGetSplitLanguageForAndroid() {
         assertEquals("en", LocalizationUtils.getSplitLanguageForAndroid("en"));
         assertEquals("es", LocalizationUtils.getSplitLanguageForAndroid("es"));
@@ -32,7 +29,6 @@ public class LocalizationUtilsTest {
     }
 
     @Test
-    @SmallTest
     public void testChromiumLocaleMatchesLanguage() {
         assertTrue(LocalizationUtils.chromiumLocaleMatchesLanguage("en-US", "en"));
         assertTrue(LocalizationUtils.chromiumLocaleMatchesLanguage("en-GB", "en"));
@@ -51,7 +47,6 @@ public class LocalizationUtilsTest {
     }
 
     @Test
-    @SmallTest
     public void testGetJavaLocaleForBcp47Tag() {
         Locale enUs = LocalizationUtils.getJavaLocaleForBcp47Tag("en-US");
         assertEquals("en", enUs.getLanguage());

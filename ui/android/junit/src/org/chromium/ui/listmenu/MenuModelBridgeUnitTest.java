@@ -9,8 +9,6 @@ import static org.junit.Assert.assertTrue;
 
 import android.view.Menu;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +31,6 @@ public class MenuModelBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddCommand() {
         mMenuModelBridge.addCommand(0, -1, "Test Command", null, true, 0);
         List<ListItem> items = mMenuModelBridge.getListItems();
@@ -46,7 +43,6 @@ public class MenuModelBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddCommand_customOrder() {
         // 35003 == IDC_PRINT (chrome/app/chrome_command_ids.h).
         mMenuModelBridge.addCommand(35003, 100, "Print", null, true, 0);
@@ -56,7 +52,6 @@ public class MenuModelBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddCheck() {
         mMenuModelBridge.addCheck(101, -1, "Test Check", true, true, 0);
         List<ListItem> items = mMenuModelBridge.getListItems();
@@ -70,7 +65,6 @@ public class MenuModelBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddCheck_customOrder() {
         mMenuModelBridge.addCheck(101, 50, "Test Check", true, true, 0);
         ListItem item = mMenuModelBridge.getListItems().get(0);
@@ -79,7 +73,6 @@ public class MenuModelBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddRadioButton() {
         mMenuModelBridge.addRadioButton(102, -1, "Test Radio", true, true, 0);
         List<ListItem> items = mMenuModelBridge.getListItems();
@@ -93,7 +86,6 @@ public class MenuModelBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddRadioButton_customOrder() {
         mMenuModelBridge.addRadioButton(102, 60, "Test Radio", true, true, 0);
         ListItem item = mMenuModelBridge.getListItems().get(0);
@@ -102,7 +94,6 @@ public class MenuModelBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddSubmenu() {
         MenuModelBridge submenuBridge = new MenuModelBridge(0L);
         mMenuModelBridge.addSubmenu(103, -1, "Test Submenu", null, true, submenuBridge);
@@ -117,7 +108,6 @@ public class MenuModelBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddSubmenu_customOrder() {
         MenuModelBridge submenuBridge = new MenuModelBridge(0L);
         mMenuModelBridge.addSubmenu(103, 70, "Test Submenu", null, true, submenuBridge);
@@ -127,7 +117,6 @@ public class MenuModelBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddDividerHasSectionDividerKeys() {
         mMenuModelBridge.addDivider(-1);
         List<ListItem> items = mMenuModelBridge.getListItems();
@@ -142,7 +131,6 @@ public class MenuModelBridgeUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testAddDivider_customOrder() {
         mMenuModelBridge.addDivider(80);
         ListItem item = mMenuModelBridge.getListItems().get(0);

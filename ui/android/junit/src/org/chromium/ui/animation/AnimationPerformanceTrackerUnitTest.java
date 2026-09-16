@@ -9,8 +9,6 @@ import static org.junit.Assert.assertNull;
 
 import android.os.SystemClock;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +42,6 @@ public class AnimationPerformanceTrackerUnitTest implements AnimationPerformance
     }
 
     @Test
-    @SmallTest
     public void testStartEndNoUpdate() {
         assertNull(mMetrics);
 
@@ -66,7 +63,6 @@ public class AnimationPerformanceTrackerUnitTest implements AnimationPerformance
     }
 
     @Test
-    @SmallTest
     public void testStartUpdateEnd() {
         assertNull(mMetrics);
 

@@ -15,8 +15,6 @@ import android.os.Build;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 
-import androidx.test.filters.SmallTest;
-
 import com.google.common.collect.ImmutableSet;
 
 import org.junit.After;
@@ -116,7 +114,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testSimpleString() {
         String inputString = "placeholder";
         List<String> response =
@@ -129,7 +126,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testBadInput() {
         String inputString = "placeholder:::";
         List<String> response =
@@ -142,7 +138,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testComplexString() {
         String inputString = "com.google.placeholder.test/com.test.google";
         List<String> response =
@@ -155,7 +150,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testMultipleSimpleStrings() {
         String inputString = "placeholder:foo:bar";
         List<String> response =
@@ -170,7 +164,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testMulitpleComplexStrings() {
         String inputString =
                 "com.google.placeholder.test/com.test.google:"
@@ -188,7 +181,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testMulitpleComplexStringsIncludingBadInput() {
         String inputString =
                 "com.google.placeholder.test/com.test.google:"
@@ -206,7 +198,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testEnabledServices() {
         String enabledServices = "placeholder:services";
         AccessibilityServiceInfo service1 = new BuilderForTests().setId("placeholder").build();
@@ -218,7 +209,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testRunningServices() {
         AccessibilityServiceInfo service1 = new AccessibilityServiceInfo();
         AccessibilityServiceInfo service2 = new AccessibilityServiceInfo();
@@ -238,7 +228,6 @@ public class AccessibilityStateTest {
 
     /** Test logic for converting event type masks to a list of relevant event types. */
     @Test
-    @SmallTest
     public void testMaskToEventTypeConversion() {
         // Create some event masks with known outcomes.
         int serviceEventMaskEmpty = 0;
@@ -295,13 +284,11 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testAreOnlyPasswordManagerFlagsRequested_empty() {
         Assert.assertFalse(mDelegate.areOnlyPasswordManagerMasksRequested());
     }
 
     @Test
-    @SmallTest
     public void testAreOnlyPasswordManagerFlagsRequested_true() {
         AccessibilityServiceInfo passwordManagerService =
                 createPasswordManagerServiceInfoWithFlags(
@@ -314,7 +301,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testAreOnlyPasswordManagerFlagsRequested_missingFlags() {
         int flagsMask =
                 AccessibilityServiceInfo.DEFAULT
@@ -335,7 +321,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testAreOnlyPasswordManagerFlagsRequested_extraFlags() {
         int flagsMask =
                 AccessibilityServiceInfo.DEFAULT
@@ -357,7 +342,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testCalculateHeuristicState_Autofill_passwordManager() {
         AccessibilityServiceInfo myService =
                 createPasswordManagerServiceInfoBuilderWithFlags(
@@ -373,7 +357,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testCalculateHeuristicState_notAutofill_notPasswordManager() {
         AccessibilityServiceInfo myService =
                 new BuilderForTests().setEventTypes(~0).setFlags(~0).setCapabilities(~0).build();
@@ -386,7 +369,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testCalculateHeuristicState_notAutofill_passwordManager() {
         AccessibilityServiceInfo myService =
                 new BuilderForTests()
@@ -406,7 +388,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testTogglingMisconfiguredAccessibilityServices() {
         // This service has the same config as Microsoft Authenticator during recent P0.
         AccessibilityServiceInfo errorProneService =
@@ -447,7 +428,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testRelevantEventTypesUpdatedWhenServiceRegistered() {
         AccessibilityState.registerObservers();
 
@@ -474,7 +454,6 @@ public class AccessibilityStateTest {
      * available.
      */
     @Test
-    @SmallTest
     @Config(shadows = {CountAnimatorDurationScaleShadowSettingsSecure.class})
     public void testPrefersReducedMotionUsesCachedValue() throws Exception {
         CountAnimatorDurationScaleShadowSettingsSecure.sNumAnimatorDurationGets = 0;
@@ -493,7 +472,6 @@ public class AccessibilityStateTest {
 
     /** Test that Chromium ignores accessibility state changes when its in the background. */
     @Test
-    @SmallTest
     public void testApplicationStateChange() {
         Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
@@ -544,7 +522,6 @@ public class AccessibilityStateTest {
      */
     @Config(sdk = Build.VERSION_CODES.S)
     @Test
-    @SmallTest
     public void testApplicationStateChangeFontWeightAdjustment() {
         Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
         Configuration config = mContext.getResources().getConfiguration();
@@ -581,7 +558,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testUninitialize() {
         Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
@@ -614,7 +590,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testIsSamsungTalkBackEnabled_true() {
         AccessibilityServiceInfo samsungService =
                 new BuilderForTests()
@@ -632,7 +607,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testIsSamsungTalkBackEnabled_shortId_true() {
         AccessibilityServiceInfo samsungService =
                 new BuilderForTests()
@@ -648,7 +622,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testIsSamsungTalkBackEnabled_false() {
         AccessibilityServiceInfo googleTalkBack =
                 new BuilderForTests()
@@ -664,7 +637,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testIsSamsungTalkBackEnabled_noServices() {
         Assert.assertFalse(AccessibilityState.isAnyAccessibilityServiceEnabled());
         Assert.assertFalse(AccessibilityState.isSamsungTalkBackEnabled());
@@ -672,7 +644,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testIsSamsungTalkBackEnabled_transitionsNotifyNative() {
         Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
         AccessibilityServiceInfo samsungService =
@@ -711,7 +682,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testIsSamsungTalkBackEnabled_resumedUpdatesNative() {
         Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
         AccessibilityServiceInfo samsungService =
@@ -755,7 +725,6 @@ public class AccessibilityStateTest {
     }
 
     @Test
-    @SmallTest
     public void testIsSamsungTalkBackEnabled_resumedWithPollingUpdatesNative() {
         Activity mockActivity = Robolectric.buildActivity(Activity.class).setup().get();
         AccessibilityServiceInfo samsungService =
