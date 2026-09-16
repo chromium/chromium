@@ -74,6 +74,7 @@ public class TabSwitcherActionMenuPTTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154154
     public void testOpenNewTabFromIncognito() {
         IncognitoNewTabPageStation incognitoNtp =
                 mCtaTestRule
