@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/android/hats/hats_service_android.h"
@@ -19,6 +20,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
@@ -615,6 +617,105 @@ TEST_F(SuspiciousSiteControllerAndroidTest, CloseDialog_CloseTab) {
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
       SuspiciousSiteControllerAndroid::WarningOutcome::kAdhered, 1);
+}
+
+TEST_F(SuspiciousSiteControllerAndroidTest,
+       CloseDialog_ThenOnContinueButtonClicked) {
+  base::HistogramTester histogram_tester;
+  GURL malicious_url("https://suspicious.com");
+  NavigateAndCommit(malicious_url);
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+
+  SuspiciousSiteControllerAndroid* controller = MakeController();
+  controller->ShowDialog();
+  SetIsSuspended(controller, false);
+
+  // User dismisses dialog by clicking close button (ACTION_ON_CONTENT).
+  controller->CloseDialog(
+      ui::ModalDialogWrapper::DismissalCause::ACTION_ON_CONTENT);
+
+  // Controller should still be active on WebContents.
+  EXPECT_TRUE(SuspiciousSiteControllerAndroid::FromWebContents(web_contents()));
+
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  ASSERT_TRUE(hcsm);
+  EXPECT_FALSE(SuspiciousSiteWarningAllowlist(hcsm).IsSiteAllowedForHost(
+      std::string(malicious_url.host())));
+
+  // User opens Page Info and clicks "Mark as safe", which calls
+  // OnContinueButtonClicked.
+  controller->OnContinueButtonClicked();
+
+  // Site should now be in the local allowlist.
+  EXPECT_TRUE(SuspiciousSiteWarningAllowlist(hcsm).IsSiteAllowedForHost(
+      std::string(malicious_url.host())));
+
+  // Interaction and outcome metrics should be logged.
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kDismissed, 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kMarkAsSafe, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
+      SuspiciousSiteControllerAndroid::WarningOutcome::kBypassed, 1);
+
+  // Controller should be deleted.
+  EXPECT_FALSE(
+      SuspiciousSiteControllerAndroid::FromWebContents(web_contents()));
+}
+
+TEST_F(SuspiciousSiteControllerAndroidTest,
+       CloseDialog_ThenHandleBackNavigation) {
+  NavigateAndCommit(GURL("https://safe.com"));
+  NavigateAndCommit(GURL("https://suspicious.com"));
+
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+
+  SuspiciousSiteControllerAndroid* controller = MakeController();
+  controller->ShowDialog();
+  SetIsSuspended(controller, false);
+
+  // User dismisses dialog with close button.
+  controller->CloseDialog(
+      ui::ModalDialogWrapper::DismissalCause::ACTION_ON_CONTENT);
+
+  EXPECT_TRUE(SuspiciousSiteControllerAndroid::FromWebContents(web_contents()));
+
+  // User opens Page Info and clicks "Back to safety", which calls
+  // HandleBackNavigation.
+  controller->HandleBackNavigation(
+      SuspiciousSiteControllerAndroid::UserInteraction::kBackToSafetyButton);
+
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kDismissed, 1);
+  histogram_tester.ExpectBucketCount(
+      "SafeBrowsing.SuspiciousSiteWarning.UserInteraction",
+      SuspiciousSiteControllerAndroid::UserInteraction::kBackToSafetyButton, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.SuspiciousSiteWarning.WarningOutcome",
+      SuspiciousSiteControllerAndroid::WarningOutcome::kAdhered, 1);
+
+  EXPECT_EQ(web_contents()->GetController().GetPendingEntry()->GetURL(),
+            GURL("https://safe.com"));
+  EXPECT_FALSE(
+      SuspiciousSiteControllerAndroid::FromWebContents(web_contents()));
 }
 
 }  // namespace safe_browsing

@@ -350,6 +350,7 @@ void SuspiciousSiteControllerAndroid::CloseDialog(
   }
 
   dialog_view_.reset();
+  is_closing_ = false;
 }
 
 void SuspiciousSiteControllerAndroid::HandleBackNavigation(
