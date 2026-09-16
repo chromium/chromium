@@ -50,6 +50,8 @@ class MockReadAloudPlaybackControllerClient
 
   void ResetReceiver() { receiver_.reset(); }
 
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
   // read_aloud::mojom::ReadAloudPlaybackControllerClient:
   void OnPlaybackStateChanged(read_aloud::mojom::PlaybackState state) override {
     last_state_ = state;
@@ -81,6 +83,7 @@ class MockReadAloudPlaybackControllerClient
       const std::u16string& text_chunk,
       uint64_t sequence_id,
       RequestSpeechSynthesisCallback callback) override {
+    synthesis_request_count_++;
     if (synthesis_handler_) {
       synthesis_handler_.Run(text_chunk, sequence_id, std::move(callback));
       return;
@@ -132,6 +135,8 @@ class MockReadAloudPlaybackControllerClient
     return last_state_;
   }
 
+  uint32_t synthesis_request_count() const { return synthesis_request_count_; }
+
   const std::optional<std::vector<std::u16string>>& last_chunks() const {
     return last_chunks_;
   }
@@ -145,6 +150,7 @@ class MockReadAloudPlaybackControllerClient
   std::optional<std::vector<std::u16string>> last_chunks_;
   base::OnceClosure chunks_closure_;
   SpeechSynthesisHandler synthesis_handler_;
+  uint32_t synthesis_request_count_ = 0;
 };
 
 }  // namespace
@@ -930,6 +936,61 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentEmptySegmentsValidateSeque
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "ReadAloudPlaybackController: segment_index must be monotonically increasing in SetTextContent");
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, PlayCalledBeforeSetTextContentDefersUntilTextSet) {
+  CreateSession();
+
+  // Call Play() BEFORE SetTextContent() has been called.
+  // play_on_ready_ should be set to true, deferring playback.
+  controller_remote_->Play();
+  controller_remote_.FlushForTesting();
+
+  EXPECT_TRUE(controller_remote_.is_connected());
+
+  // Now supply text content via SetTextContent().
+  // MaybePlayOnReady() should be triggered, fulfilling play intent.
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Sentence to play on ready.";
+  segments.push_back(std::move(seg));
+
+  controller_remote_->SetTextContent(std::move(segments));
+  controller_remote_.FlushForTesting();
+  mock_client_->FlushForTesting();
+
+  EXPECT_TRUE(controller_remote_.is_connected());
+  // Verify playback intent was fulfilled (SetTextContent did NOT default state to kPaused).
+  EXPECT_NE(mock_client_->last_state(), read_aloud::mojom::PlaybackState::kPaused);
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, PauseClearsPlayOnReady) {
+  CreateSession();
+
+  // Call Play() BEFORE SetTextContent() has been called (sets play_on_ready_ = true).
+  controller_remote_->Play();
+  controller_remote_.FlushForTesting();
+
+  EXPECT_TRUE(controller_remote_.is_connected());
+
+  // Call Pause() before text arrives (must reset play_on_ready_ = false).
+  controller_remote_->Pause();
+  controller_remote_.FlushForTesting();
+
+  // Now supply text content via SetTextContent().
+  // Playback should NOT start automatically because Pause() cleared play_on_ready_.
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Text provided after explicit pause.";
+  segments.push_back(std::move(seg));
+
+  controller_remote_->SetTextContent(std::move(segments));
+  controller_remote_.FlushForTesting();
+
+  EXPECT_TRUE(controller_remote_.is_connected());
+  EXPECT_EQ(mock_client_->last_state(), read_aloud::mojom::PlaybackState::kPaused);
 }
 
 }  // namespace readaloud

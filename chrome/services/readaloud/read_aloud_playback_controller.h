@@ -101,6 +101,19 @@ class ReadAloudPlaybackController
                                  mojo_base::BigBuffer response_bytes,
                                  bool success);
 
+  // Evaluates whether all prerequisites for audio playback are satisfied.
+  bool IsReadyToPlay() const;
+  bool IsTextSet() const;
+
+  // Evaluates playback readiness. If all requirements are met, starts playback
+  // pipeline, clears play_on_ready_, and returns true.
+  bool PlayIfReady();
+
+  // If a Play request is pending (play_on_ready_) and all prerequisites are satisfied
+  // (IsReadyToPlay()), fulfills the pending Play intent and starts playback.
+  // Returns true if playback was started.
+  bool MaybePlayOnReady();
+
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackControllerFactory>
       receiver_;
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackController>
@@ -112,6 +125,9 @@ class ReadAloudPlaybackController
   // Current playback rate multiplier (clamped between kMinPlaybackRate and
   // kMaxPlaybackRate).
   float playback_rate_ = 1.0f;
+
+  // True if a Play request was received while requirements were unfulfilled.
+  bool play_on_ready_ = false;
 
   // Manages document-bound speech synthesis caching and sentence timeline.
   PrefetchManager prefetch_manager_;
