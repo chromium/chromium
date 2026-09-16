@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_android)
+
+source_set("android") {
+  configs += [ "//components/enterprise:extra_warnings" ]
+
+  public = [ "device_trust_key_manager_android.h" ]
+
+  sources = [ "device_trust_key_manager_android.cc" ]
+
+  public_deps = [
+    "//base",
+    "//components/enterprise/device_trust/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
+  sources = [ "device_trust_key_manager_android_unittest.cc" ]
+
+  deps = [
+    ":android",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

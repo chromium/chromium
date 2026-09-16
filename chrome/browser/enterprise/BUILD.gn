@@ -541,6 +541,7 @@ source_set("impl") {
     deps += [
       "//chrome/android:chrome_jni_headers",
       "//chrome/browser/android:tabs_public",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/android",
       "//chrome/browser/enterprise/util:jni_headers",
       "//chrome/browser/ui/android/tab_model",
       "//components/enterprise/browser/reporting/android:jni_headers",

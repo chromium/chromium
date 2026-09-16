@@ -7131,6 +7131,10 @@ test("unit_tests") {
     ]
   }
 
+  if (is_android) {
+    deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/android:unit_tests" ]
+  }
+
   if (enable_dice_support || is_chromeos) {
     deps += [
       "//chrome/browser/ui/webui/batch_upload_promo",
