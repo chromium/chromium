@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/numerics/byte_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,26 +14,6 @@
 #include "chrome/browser/ttc/app/ttc_mes_client.h"
 
 namespace ttc {
-
-namespace {
-Conversation::FactoryCallback* GetFactory() {
-  static base::NoDestructor<Conversation::FactoryCallback> factory;
-  return factory.get();
-}
-}  // namespace
-
-// static
-std::unique_ptr<Conversation> Conversation::Create(Profile* profile) {
-  if (auto* factory = GetFactory(); *factory) {
-    return factory->Run(profile);
-  }
-  return std::make_unique<ConversationImpl>(profile);
-}
-
-// static
-void Conversation::SetFactoryForTesting(FactoryCallback factory) {
-  *GetFactory() = std::move(factory);
-}
 
 ConversationImpl::ConversationImpl(Profile* profile)
     : backend_(std::make_unique<TtcMesClient>(profile, this)),

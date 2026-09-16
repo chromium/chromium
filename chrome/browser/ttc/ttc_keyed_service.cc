@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ttc/ttc_keyed_service.h"
 
+#include <utility>
+
+#include "chrome/browser/ttc/app/public/make_conversation.h"
+#include "chrome/browser/ttc/conversation.h"
 #include "chrome/browser/ttc/session_controller_impl.h"
 #include "chrome/browser/ttc/ttc_keyed_service_factory.h"
 
@@ -14,7 +18,10 @@ TtcKeyedService* TtcKeyedService::Get(content::BrowserContext* context) {
   return TtcKeyedServiceFactory::GetTtcKeyedService(context);
 }
 
-TtcKeyedService::TtcKeyedService(Profile* profile) : profile_(profile) {}
+TtcKeyedService::TtcKeyedService(Profile* profile,
+                                 ConversationFactory conversation_factory)
+    : profile_(profile),
+      conversation_factory_(std::move(conversation_factory)) {}
 
 TtcKeyedService::~TtcKeyedService() = default;
 
@@ -29,6 +36,15 @@ void TtcKeyedService::StartSession() {
 
 void TtcKeyedService::EndSession() {
   session_controller_.reset();
+}
+
+std::unique_ptr<Conversation> TtcKeyedService::MakeConversation(
+    base::PassKey<SessionControllerImpl>) {
+  std::unique_ptr<Conversation> conversation =
+      conversation_factory_ ? conversation_factory_.Run(profile_)
+                            : MakeConversationImpl(profile_);
+  CHECK(conversation);
+  return conversation;
 }
 
 }  // namespace ttc

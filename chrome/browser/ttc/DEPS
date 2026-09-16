@@ -1,3 +1,5 @@
 include_rules = [
   "-chrome/browser/ttc/app",
+  # The only part of the app implementation visible outside of it.
+  "+chrome/browser/ttc/app/public",
 ]

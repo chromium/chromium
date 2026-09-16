@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TTC_CONVERSATION_H_
 #define CHROME_BROWSER_TTC_CONVERSATION_H_
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -15,8 +14,6 @@
 #include "base/values.h"
 #include "chrome/browser/ttc/tool_definition.h"
 #include "url/gurl.h"
-
-class Profile;
 
 namespace optimization_guide::proto {
 class AnnotatedPageContent;
@@ -45,12 +42,6 @@ class Conversation {
                             base::DictValue arguments,
                             ToolResponseCallback response_callback) {}
   };
-
-  using FactoryCallback =
-      base::RepeatingCallback<std::unique_ptr<Conversation>(Profile*)>;
-
-  static std::unique_ptr<Conversation> Create(Profile* profile);
-  static void SetFactoryForTesting(FactoryCallback factory);
 
   virtual ~Conversation() = default;
 

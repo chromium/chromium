@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/ttc/conversation.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
@@ -23,7 +24,8 @@ namespace ttc {
 
 SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
     : service_(service),
-      conversation_(Conversation::Create(service.profile())),
+      conversation_(
+          service.MakeConversation(base::PassKey<SessionControllerImpl>())),
       session_view_(std::make_unique<SessionView>(*this)) {
   // TODO(bokan): How should we get the active tab/WebContents on Android?
 #if !BUILDFLAG(IS_ANDROID)

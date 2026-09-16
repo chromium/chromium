@@ -23,8 +23,8 @@ class MockConversation;
 class TtcKeyedService;
 
 // Base class for Ttc core browser tests with common settings and setup.
-// Installs a Conversation factory that creates MockConversations, so tests can
-// set expectations on the conversation belonging to the current session.
+// Installs a TtcKeyedService that creates MockConversations, so tests can set
+// expectations on the conversation belonging to the current session.
 class TtcCoreBrowserTestBase : public PlatformBrowserTest {
  public:
   TtcCoreBrowserTestBase();
@@ -32,7 +32,6 @@ class TtcCoreBrowserTestBase : public PlatformBrowserTest {
 
   // PlatformBrowserTest:
   void SetUpOnMainThread() override;
-  void TearDownOnMainThread() override;
 
   Profile* profile();
   content::WebContents* web_contents();

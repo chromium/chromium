@@ -28,24 +28,38 @@ source_set("impl") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+  public_deps = [
+    ":core",
+    "//base",
+    "//chrome/browser/ttc",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gmock",
+    "//url",
+  ]
+  deps = [ "//base/test:test_support" ]
+}
+
 if (!is_android) {
-  source_set("test_support") {
+  source_set("browser_test_support") {
     testonly = true
     sources = [
-      "test_utils.cc",
-      "test_utils.h",
       "ttc_core_browser_test_base.cc",
       "ttc_core_browser_test_base.h",
     ]
     public_deps = [
       ":core",
+      ":test_support",
       "//base",
       "//chrome/browser/ttc",
       "//chrome/test:test_support",
-      "//components/optimization_guide/proto:optimization_guide_proto",
       "//content/public/browser",
       "//testing/gmock",
-      "//url",
     ]
     deps = [
       "//base/test:test_support",
@@ -62,6 +76,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [ "page_context_monitor_browsertest.cc" ]
     deps = [
+      ":browser_test_support",
       ":core",
       ":impl",
       ":test_support",

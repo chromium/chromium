@@ -6,59 +6,30 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ttc/conversation.h"
+#include "chrome/browser/ttc/core/test_utils.h"
 #include "chrome/browser/ttc/features.h"
 #include "chrome/browser/ttc/session_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ttc {
-
-namespace {
-class FakeConversation : public Conversation {
- public:
-  FakeConversation() = default;
-  ~FakeConversation() override = default;
-
-  void AddObserver(Observer* observer) override {
-    observers_.AddObserver(observer);
-  }
-  void RemoveObserver(Observer* observer) override {
-    observers_.RemoveObserver(observer);
-  }
-  void Start() override { is_started_ = true; }
-  void Stop() override { is_started_ = false; }
-  bool is_connected() const override { return is_started_; }
-  void SendTextInput(const std::string& text) override {}
-  void SendContextUpdate(
-      const GURL& url,
-      const std::string& title,
-      const optimization_guide::proto::AnnotatedPageContent& apc) override {}
-  void SendToolSetUpdate(const std::vector<ToolDefinition>& tools) override {}
-
-  void OnPageContextChanged() override {}
-
- private:
-  bool is_started_ = false;
-  base::ObserverList<Observer> observers_;
-};
-}  // namespace
 
 class TtcKeyedServiceUnitTest : public testing::Test {
  public:
   TtcKeyedServiceUnitTest() {
     scoped_feature_list_.InitAndEnableFeature(kTtc);
-    Conversation::SetFactoryForTesting(
+    service_ = std::make_unique<TtcKeyedService>(
+        &profile_,
         base::BindRepeating([](Profile*) -> std::unique_ptr<Conversation> {
-          return std::make_unique<FakeConversation>();
+          return std::make_unique<testing::NiceMock<MockConversation>>();
         }));
-    service_ = std::make_unique<TtcKeyedService>(&profile_);
   }
-  ~TtcKeyedServiceUnitTest() override {
-    Conversation::SetFactoryForTesting({});
-  }
+  ~TtcKeyedServiceUnitTest() override = default;
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
