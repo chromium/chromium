@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_BASE_H_
-#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_BASE_H_
+#ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_H_
+#define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_H_
 
 #include <memory>
 #include <optional>
@@ -30,7 +30,7 @@ namespace enterprise_connectors {
 
 // This class encapsulates the upload of a file with metadata using the
 // resumable protocol. This class is neither movable nor copyable.
-class ResumableUploadRequestBase : public ConnectorUploadRequest {
+class ResumableUploadRequest : public ConnectorUploadRequest {
  public:
   using ContentUploadedCallback = base::OnceClosure;
   using VerdictReceivedCallback =
@@ -39,19 +39,19 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       base::OnceCallback<void(enterprise_connectors::OnGotHashCallback)>;
   using ConnectorUploadRequest::ConnectorUploadRequest;
 
-  // Creates a ResumableUploadRequestBase, which will upload the `metadata` of
+  // Creates a ResumableUploadRequest, which will upload the `metadata` of
   // the file corresponding to the provided `path` to the given `base_url`, and
   // then the file content to the `path` if necessary.
   //
   // `get_data_result` is the result when getting basic information about the
-  // file or page.  It lets the ResumableUploadRequestBase know if the data is
+  // file or page.  It lets the ResumableUploadRequest know if the data is
   // considered too large or is encrypted.
   //
   // when `register_on_got_hash_callback` is non-null the final call should
-  // include the file hash as a header. ResumableUploadRequestBase should run it
+  // include the file hash as a header. ResumableUploadRequest should run it
   // with a callback that receives a string and completes the upload with the
   // hash.
-  ResumableUploadRequestBase(
+  ResumableUploadRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -67,10 +67,10 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       OnceRegisterOnGotHashCallback register_on_got_hash_callback,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
-  // Creates a ResumableUploadRequestBase, which will upload the `metadata` of
+  // Creates a ResumableUploadRequest, which will upload the `metadata` of
   // the page to the given `base_url`, and then the content of `page_region` if
   // necessary.
-  ResumableUploadRequestBase(
+  ResumableUploadRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -83,9 +83,9 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       bool force_sync_upload,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
-  // Creates a ResumableUploadRequestBase, which will upload the `metadata` of a
+  // Creates a ResumableUploadRequest, which will upload the `metadata` of a
   // pasted image to the given `base_url`, and then the `data` if necessary.
-  ResumableUploadRequestBase(
+  ResumableUploadRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -98,10 +98,10 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       bool force_sync_upload,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
-  // Creates a ResumableUploadRequestBase, which will upload the `metadata` of
+  // Creates a ResumableUploadRequest, which will upload the `metadata` of
   // the network request to the given `base_url`, and its `request_body` if
   // necessary.
-  ResumableUploadRequestBase(
+  ResumableUploadRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -113,13 +113,12 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       bool force_sync_upload,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
-  ResumableUploadRequestBase(const ResumableUploadRequestBase&) = delete;
-  ResumableUploadRequestBase& operator=(const ResumableUploadRequestBase&) =
-      delete;
-  ResumableUploadRequestBase(ResumableUploadRequestBase&&) = delete;
-  ResumableUploadRequestBase& operator=(ResumableUploadRequestBase&&) = delete;
+  ResumableUploadRequest(const ResumableUploadRequest&) = delete;
+  ResumableUploadRequest& operator=(const ResumableUploadRequest&) = delete;
+  ResumableUploadRequest(ResumableUploadRequest&&) = delete;
+  ResumableUploadRequest& operator=(ResumableUploadRequest&&) = delete;
 
-  ~ResumableUploadRequestBase() override;
+  ~ResumableUploadRequest() override;
 
   static std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -264,19 +263,18 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
   // The upload URL returned from the metadata request.
   std::string upload_url_;
 
-  base::WeakPtrFactory<ResumableUploadRequestBase> weak_factory_{this};
+  base::WeakPtrFactory<ResumableUploadRequest> weak_factory_{this};
 };
 
-using ResumableUploadRequest = ResumableUploadRequestBase;
+using ResumableUploadRequestBase = ResumableUploadRequest;
 
 }  // namespace enterprise_connectors
 
 namespace safe_browsing {
 
 // Compatibility alias for callers during migration.
-using ResumableUploadRequest =
-    ::enterprise_connectors::ResumableUploadRequestBase;
+using ResumableUploadRequest = ::enterprise_connectors::ResumableUploadRequest;
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_BASE_H_
+#endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_H_

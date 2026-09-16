@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader_base.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader.h"
 
 #include <memory>
 #include <vector>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader_base.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/resumable_uploader.h"
 
 #include <memory>
 
@@ -87,7 +87,7 @@ std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
 
 }  // namespace
 
-ResumableUploadRequestBase::ResumableUploadRequestBase(
+ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
@@ -121,7 +121,7 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
   file_hash_computation_is_async_ = !register_on_got_hash_callback_.is_null();
 }
 
-ResumableUploadRequestBase::ResumableUploadRequestBase(
+ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
@@ -148,7 +148,7 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
   AssertCalledOnUIThread();
 }
 
-ResumableUploadRequestBase::ResumableUploadRequestBase(
+ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
@@ -176,7 +176,7 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
   AssertCalledOnUIThread();
 }
 
-ResumableUploadRequestBase::ResumableUploadRequestBase(
+ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
@@ -202,11 +202,11 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
   AssertCalledOnUIThread();
 }
 
-ResumableUploadRequestBase::~ResumableUploadRequestBase() = default;
+ResumableUploadRequest::~ResumableUploadRequest() = default;
 
 // static
 std::unique_ptr<ConnectorUploadRequest>
-ResumableUploadRequestBase::CreateStringRequest(
+ResumableUploadRequest::CreateStringRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
@@ -225,7 +225,7 @@ ResumableUploadRequestBase::CreateStringRequest(
         std::move(verdict_received_callback)
             .Then(std::move(content_uploaded_callback)));
   }
-  return std::make_unique<ResumableUploadRequestBase>(
+  return std::make_unique<ResumableUploadRequest>(
       url_loader_factory, base_url, metadata, data, data_source,
       histogram_suffix, traffic_annotation,
       std::move(verdict_received_callback),
@@ -235,7 +235,7 @@ ResumableUploadRequestBase::CreateStringRequest(
 
 // static
 std::unique_ptr<ConnectorUploadRequest>
-ResumableUploadRequestBase::CreateFileRequest(
+ResumableUploadRequest::CreateFileRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
@@ -267,7 +267,7 @@ ResumableUploadRequestBase::CreateFileRequest(
             .Then(std::move(register_on_got_hash_closure))
             .Then(std::move(content_uploaded_callback)));
   }
-  return std::make_unique<ResumableUploadRequestBase>(
+  return std::make_unique<ResumableUploadRequest>(
       url_loader_factory, base_url, metadata, get_data_result, path, file_size,
       is_obfuscated, histogram_suffix, traffic_annotation,
       std::move(verdict_received_callback),
@@ -277,7 +277,7 @@ ResumableUploadRequestBase::CreateFileRequest(
 
 // static
 std::unique_ptr<ConnectorUploadRequest>
-ResumableUploadRequestBase::CreatePageRequest(
+ResumableUploadRequest::CreatePageRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
@@ -296,7 +296,7 @@ ResumableUploadRequestBase::CreatePageRequest(
         std::move(verdict_received_callback)
             .Then(std::move(content_uploaded_callback)));
   }
-  return std::make_unique<ResumableUploadRequestBase>(
+  return std::make_unique<ResumableUploadRequest>(
       url_loader_factory, base_url, metadata, get_data_result,
       std::move(page_region), histogram_suffix, traffic_annotation,
       std::move(verdict_received_callback),
@@ -304,7 +304,7 @@ ResumableUploadRequestBase::CreatePageRequest(
       std::move(ui_task_runner));
 }
 
-void ResumableUploadRequestBase::OnSendContentCompleted(
+void ResumableUploadRequest::OnSendContentCompleted(
     base::TimeTicks start_time,
     std::optional<std::string> response_body) {
   AssertCalledOnUIThread();
@@ -329,7 +329,7 @@ void ResumableUploadRequestBase::OnSendContentCompleted(
                          std::move(response_body));
 }
 
-void ResumableUploadRequestBase::SetMetadataRequestHeaders(
+void ResumableUploadRequest::SetMetadataRequestHeaders(
     network::ResourceRequest* request) {
   CHECK(request);
 
@@ -366,7 +366,7 @@ void ResumableUploadRequestBase::SetMetadataRequestHeaders(
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 }
 
-std::string ResumableUploadRequestBase::GetUploadInfo() {
+std::string ResumableUploadRequest::GetUploadInfo() {
   std::string scan_info;
   switch (scan_type_) {
     case PENDING:
@@ -388,12 +388,12 @@ std::string ResumableUploadRequestBase::GetUploadInfo() {
        file_hash_computation_is_async_ ? ", hash in final call" : ""});
 }
 
-void ResumableUploadRequestBase::Start() {
+void ResumableUploadRequest::Start() {
   AssertCalledOnUIThread();
   SendMetadataRequest();
 }
 
-std::string ResumableUploadRequestBase::GetRequestType() {
+std::string ResumableUploadRequest::GetRequestType() {
   switch (data_source_) {
     case FILE:
       return "File";
@@ -408,7 +408,7 @@ std::string ResumableUploadRequestBase::GetRequestType() {
   }
 }
 
-void ResumableUploadRequestBase::SendMetadataRequest() {
+void ResumableUploadRequest::SendMetadataRequest() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = base_url_;
   resource_request->method = "POST";
@@ -425,11 +425,11 @@ void ResumableUploadRequestBase::SendMetadataRequest() {
                                      kMetadataContentType);
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&ResumableUploadRequestBase::OnMetadataUploadCompleted,
+      base::BindOnce(&ResumableUploadRequest::OnMetadataUploadCompleted,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
-void ResumableUploadRequestBase::MaybeSendHashAndFinish(
+void ResumableUploadRequest::MaybeSendHashAndFinish(
     size_t upload_offset,
     int net_error,
     int response_code,
@@ -447,17 +447,16 @@ void ResumableUploadRequestBase::MaybeSendHashAndFinish(
     request->headers.SetHeader(kUploadOffsetHeader,
                                base::NumberToString(upload_offset));
     std::move(register_on_got_hash_callback_)
-        .Run(base::BindOnce(&ResumableUploadRequestBase::SendHashNow,
+        .Run(base::BindOnce(&ResumableUploadRequest::SendHashNow,
                             weak_factory_.GetWeakPtr(), std::move(request)));
   } else {
     Finish(net_error, response_code, std::move(response_body));
   }
 }
 
-void ResumableUploadRequestBase::Finish(
-    int net_error,
-    int response_code,
-    std::optional<std::string> response_body) {
+void ResumableUploadRequest::Finish(int net_error,
+                                    int response_code,
+                                    std::optional<std::string> response_body) {
   AssertCalledOnUIThread();
   if (!histogram_suffix_.empty()) {
     std::string histogram = base::StrCat(
@@ -482,7 +481,7 @@ void ResumableUploadRequestBase::Finish(
   }
 }
 
-void ResumableUploadRequestBase::SendHashNow(
+void ResumableUploadRequest::SendHashNow(
     std::unique_ptr<network::ResourceRequest> request,
     std::string hash) {
   if (hash.empty()) {
@@ -498,11 +497,11 @@ void ResumableUploadRequestBase::SendHashNow(
   url_loader_->SetAllowHttpErrorResults(true);
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&ResumableUploadRequestBase::OnSendHashCompleted,
+      base::BindOnce(&ResumableUploadRequest::OnSendHashCompleted,
                      weak_factory_.GetWeakPtr()));
 }
 
-void ResumableUploadRequestBase::OnSendHashCompleted(
+void ResumableUploadRequest::OnSendHashCompleted(
     std::optional<std::string> response_body) {
   AssertCalledOnUIThread();
   int response_code = 0;
@@ -512,7 +511,7 @@ void ResumableUploadRequestBase::OnSendHashCompleted(
   Finish(url_loader_->NetError(), response_code, std::move(response_body));
 }
 
-void ResumableUploadRequestBase::SendContentSoon() {
+void ResumableUploadRequest::SendContentSoon() {
   CHECK(!upload_url_.empty());
   auto request = std::make_unique<network::ResourceRequest>();
   request->method = "POST";
@@ -528,7 +527,7 @@ void ResumableUploadRequestBase::SendContentSoon() {
     case FILE:
       file_access::RequestFilesAccessForSystem(
           {path_},
-          base::BindOnce(&ResumableUploadRequestBase::CreateDatapipe,
+          base::BindOnce(&ResumableUploadRequest::CreateDatapipe,
                          weak_factory_.GetWeakPtr(), std::move(request)));
       break;
     case PAGE:
@@ -552,7 +551,7 @@ void ResumableUploadRequestBase::SendContentSoon() {
 
 // TODO(crbug.com/328415950): Move the data pipe creation logics to
 // connector_upload_request.
-void ResumableUploadRequestBase::CreateDatapipe(
+void ResumableUploadRequest::CreateDatapipe(
     std::unique_ptr<network::ResourceRequest> request,
     file_access::ScopedFileAccess file_access) {
   scoped_file_access_ =
@@ -560,11 +559,11 @@ void ResumableUploadRequestBase::CreateDatapipe(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&CreateFileDataPipeGetterBlocking, path_, is_obfuscated_),
-      base::BindOnce(&ResumableUploadRequestBase::OnDataPipeCreated,
+      base::BindOnce(&ResumableUploadRequest::OnDataPipeCreated,
                      weak_factory_.GetWeakPtr(), std::move(request)));
 }
 
-void ResumableUploadRequestBase::OnDataPipeCreated(
+void ResumableUploadRequest::OnDataPipeCreated(
     std::unique_ptr<network::ResourceRequest> request,
     std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter) {
   scoped_file_access_.reset();
@@ -579,7 +578,7 @@ void ResumableUploadRequestBase::OnDataPipeCreated(
   SendContentNow(std::move(request));
 }
 
-void ResumableUploadRequestBase::SendContentNow(
+void ResumableUploadRequest::SendContentNow(
     std::unique_ptr<network::ResourceRequest> request) {
   // `data_pipe_getter_` is null for STRING requests, which are handled by
   // attaching the string data directly to the URL loader. For FILE and PAGE
@@ -606,11 +605,11 @@ void ResumableUploadRequestBase::SendContentNow(
 
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&ResumableUploadRequestBase::OnSendContentCompleted,
+      base::BindOnce(&ResumableUploadRequest::OnSendContentCompleted,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
-void ResumableUploadRequestBase::OnMetadataUploadCompleted(
+void ResumableUploadRequest::OnMetadataUploadCompleted(
     base::TimeTicks start_time,
     std::optional<std::string> response_body) {
   AssertCalledOnUIThread();
@@ -669,7 +668,7 @@ void ResumableUploadRequestBase::OnMetadataUploadCompleted(
   SendContentSoon();
 }
 
-void ResumableUploadRequestBase::MaybeRunVerdictReceivedCallback(
+void ResumableUploadRequest::MaybeRunVerdictReceivedCallback(
     int net_error,
     int response_code,
     std::optional<std::string> response_body) {
@@ -680,7 +679,7 @@ void ResumableUploadRequestBase::MaybeRunVerdictReceivedCallback(
   }
 }
 
-bool ResumableUploadRequestBase::CanUploadContent(
+bool ResumableUploadRequest::CanUploadContent(
     const scoped_refptr<net::HttpResponseHeaders>& headers) {
   if (headers->response_code() != net::HTTP_OK) {
     return false;
@@ -699,7 +698,7 @@ bool ResumableUploadRequestBase::CanUploadContent(
   return is_active;
 }
 
-bool ResumableUploadRequestBase::ShouldUploadEncryptedFile() {
+bool ResumableUploadRequest::ShouldUploadEncryptedFile() {
   return base::FeatureList::IsEnabled(kEnableEncryptedFileUpload) &&
          scan_type_ == ASYNC;
 }
