@@ -210,8 +210,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   MemoryManagedPaintCanvas* GetOrCreatePaintCanvas() final;
   using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
   const MemoryManagedPaintCanvas* GetPaintCanvas() const final;
-  using BaseRenderingContext2D::Recorder;  // Pull the non-const overload.
-  const MemoryManagedPaintRecorder* Recorder() const override;
 
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
@@ -334,7 +332,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   std::unique_ptr<CanvasHibernationHandler> hibernation_handler_;
   std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
   std::unique_ptr<Canvas2DBitmapProvider> bitmap_provider_;
-  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 
   // `did_fail_to_create_resource_provider_` prevents repeated attempts in
   // allocating resources after the first attempt failed.

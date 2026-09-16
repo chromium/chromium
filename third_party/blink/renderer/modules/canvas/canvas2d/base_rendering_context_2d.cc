@@ -159,6 +159,10 @@ BaseRenderingContext2D::BaseRenderingContext2D(
   UpdateRecordingLimits(/*is_graphite=*/false);
 }
 
+const MemoryManagedPaintRecorder* BaseRenderingContext2D::Recorder() const {
+  return recorder_.get();
+}
+
 void BaseRenderingContext2D::UpdateRecordingLimits(bool is_graphite) {
   max_recorded_op_bytes_ =
       static_cast<size_t>(is_graphite ? features::kMaxRecordedOpGraphiteKB.Get()

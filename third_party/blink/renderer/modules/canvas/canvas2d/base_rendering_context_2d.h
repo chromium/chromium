@@ -84,6 +84,9 @@ class MODULES_EXPORT BaseRenderingContext2D
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
   void RecordingCleared() override;
 
+  using Canvas2DRecorderContext::Recorder;
+  const MemoryManagedPaintRecorder* Recorder() const final;
+
   bool clear_frame() const { return clear_frame_; }
   void set_clear_frame(bool clear_frame) { clear_frame_ = clear_frame; }
 
@@ -341,6 +344,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   bool context_restorable_{true};
   Canvas2DColorParams color_params_;
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 
  private:
   virtual bool IsHibernating() const { return false; }

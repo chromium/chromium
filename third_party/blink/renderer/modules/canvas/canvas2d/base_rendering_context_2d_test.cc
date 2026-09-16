@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -82,16 +83,14 @@ class TestRenderingContext2D final
             MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument()),
             CanvasContextCreationAttributesCore(),
             scheduler::GetSingleThreadTaskRunnerForTesting()),
-        execution_context_(scope.GetExecutionContext()),
-        recorder_(gfx::Size(Width(), Height()), this) {}
+        execution_context_(scope.GetExecutionContext()) {
+    recorder_ = std::make_unique<MemoryManagedPaintRecorder>(
+        gfx::Size(Width(), Height()), this);
+  }
   ~TestRenderingContext2D() override = default;
 
   // Returns the content of the paint recorder, leaving it empty.
-  cc::PaintRecord FlushRecorder() { return recorder_.ReleaseMainRecording(); }
-
-  const MemoryManagedPaintRecorder* Recorder() const override {
-    return &recorder_;
-  }
+  cc::PaintRecord FlushRecorder() { return recorder_->ReleaseMainRecording(); }
 
   bool OriginClean() const override { return true; }
   void SetOriginTainted() override {}
@@ -114,12 +113,12 @@ class TestRenderingContext2D final
       return nullptr;
     }
 
-    return &recorder_.getRecordingCanvas();
+    return &recorder_->getRecordingCanvas();
   }
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
   using BaseRenderingContext2D::GetPaintCanvas;  // Pull the non-const overload.
   const MemoryManagedPaintCanvas* GetPaintCanvas() const override {
-    return &recorder_.getRecordingCanvas();
+    return &recorder_->getRecordingCanvas();
   }
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) override {}
@@ -155,7 +154,7 @@ class TestRenderingContext2D final
   }
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override {
-    return recorder_.ReleaseMainRecording();
+    return recorder_->ReleaseMainRecording();
   }
 
   bool ResolveFont(const String& new_font) override {
@@ -197,7 +196,6 @@ class TestRenderingContext2D final
 
   Member<ExecutionContext> execution_context_;
   bool restore_matrix_enabled_ = true;
-  MemoryManagedPaintRecorder recorder_;
 };
 
 BeginLayerOptions* FilterOption(blink::V8TestingScope& scope,

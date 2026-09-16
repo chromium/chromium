@@ -442,11 +442,6 @@ OffscreenCanvasRenderingContext2D::GetPaintCanvas() const {
   return recorder ? &recorder->getRecordingCanvas() : nullptr;
 }
 
-const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
-    const {
-  return recorder_.get();
-}
-
 void OffscreenCanvasRenderingContext2D::RecordingCleared() {
   BaseRenderingContext2D::RecordingCleared();
   if (shared_image_provider_) {
