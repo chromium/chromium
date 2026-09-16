@@ -1670,6 +1670,7 @@ public class PdfCoordinatorUnitTest {
         assertFalse(intercepted);
         assertFalse(proceedCalled[0]);
         assertFalse(cancelCalled[0]);
+        verify(mNativePageHost, never()).selectTab();
     }
 
     @Test
@@ -1718,6 +1719,7 @@ public class PdfCoordinatorUnitTest {
 
             boolean intercepted = callback.handleBeforeUnload(onProceed, onCancel);
             assertTrue(intercepted);
+            verify(mNativePageHost).selectTab();
 
             PropertyModel dialogModel = fakeModalDialogManager.getShownDialogModel();
             assertNotNull("Modal dialog should be shown", dialogModel);
@@ -1838,6 +1840,7 @@ public class PdfCoordinatorUnitTest {
 
             boolean intercepted = callback.handleBeforeUnload(onProceed, onCancel);
             assertTrue(intercepted);
+            verify(mNativePageHost).selectTab();
 
             PropertyModel dialogModel = fakeModalDialogManager.getShownDialogModel();
             assertNotNull("Modal dialog should be shown", dialogModel);

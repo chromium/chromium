@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -45,14 +46,29 @@ public class PassthroughTabRemover implements TabRemover {
             boolean allowDialog,
             @Nullable TabModelActionListener listener,
             Callback<TabClosureParams> onPreparedCallback) {
-        if (listener != null) {
-            listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
+        Runnable proceedWithClose =
+                () -> {
+                    if (listener != null) {
+                        listener.willPerformActionOrShowDialog(
+                                DialogType.NONE, /* willSkipDialog= */ true);
+                    }
+                    onPreparedCallback.onResult(tabClosureParams);
+                    if (listener != null) {
+                        listener.onConfirmationDialogResult(
+                                DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
+                    }
+                };
+
+        if (!allowDialog) {
+            proceedWithClose.run();
+            return;
         }
-        onPreparedCallback.onResult(tabClosureParams);
-        if (listener != null) {
-            listener.onConfirmationDialogResult(
-                    DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
-        }
+
+        List<Tab> tabsToClose =
+                tabClosureParams.isAllTabs
+                        ? TabModelUtils.convertTabListToListOfTabs(getTabModel())
+                        : tabClosureParams.tabs;
+        TabRemover.checkBeforeUnloadAndProceed(tabsToClose, listener, proceedWithClose);
     }
 
     @Override

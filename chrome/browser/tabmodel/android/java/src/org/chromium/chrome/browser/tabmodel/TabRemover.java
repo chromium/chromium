@@ -8,6 +8,12 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
+import org.chromium.chrome.browser.ui.native_page.BeforeUnloadCallback;
+import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Handles removal of {@link Tab} entities from a {@link TabModel} via closure or removal. Also
@@ -84,5 +90,54 @@ public interface TabRemover {
     /** {@link #removeTab(Tab, boolean, TabModelActionListener)} without the {@code listener}. */
     default void removeTab(Tab tab, boolean allowDialog) {
         removeTab(tab, allowDialog, /* listener= */ null);
+    }
+
+    /**
+     * Checks {@link BeforeUnloadCallback} for tabs before proceeding with closure.
+     *
+     * @param tabs The list of tabs to close.
+     * @param listener A {@link TabModelActionListener} that receives updates about the closure.
+     * @param onProceedAction Action to run when all tabs have proceeded.
+     */
+    static void checkBeforeUnloadAndProceed(
+            @Nullable List<Tab> tabs,
+            @Nullable TabModelActionListener listener,
+            Runnable onProceedAction) {
+        if (tabs == null) {
+            onProceedAction.run();
+            return;
+        }
+
+        checkBeforeUnloadAndProceed(tabs.iterator(), listener, onProceedAction);
+    }
+
+    private static void checkBeforeUnloadAndProceed(
+            Iterator<Tab> tabs,
+            @Nullable TabModelActionListener listener,
+            Runnable onProceedAction) {
+        while (tabs.hasNext()) {
+            Tab tab = tabs.next();
+            BeforeUnloadCallback callback =
+                    !tab.isDestroyed() && tab.getUserDataHost() != null
+                            ? tab.getUserDataHost().getUserData(BeforeUnloadCallback.class)
+                            : null;
+            if (callback != null) {
+                Runnable onProceed =
+                        () -> checkBeforeUnloadAndProceed(tabs, listener, onProceedAction);
+                Runnable onCancel =
+                        () -> {
+                            if (listener != null) {
+                                listener.onConfirmationDialogResult(
+                                        DialogType.NONE,
+                                        ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+                            }
+                        };
+                if (callback.handleBeforeUnload(onProceed, onCancel)) {
+                    return; // Paused for dialog
+                }
+            }
+        }
+
+        onProceedAction.run();
     }
 }

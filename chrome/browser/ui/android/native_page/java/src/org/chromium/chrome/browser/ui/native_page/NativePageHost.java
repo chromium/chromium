@@ -72,4 +72,7 @@ public interface NativePageHost {
      * @param url The URL to download.
      */
     default void downloadUrl(String url) {}
+
+    /** Selects the tab hosting this native page if supported; no-op by default. */
+    default void selectTab() {}
 }

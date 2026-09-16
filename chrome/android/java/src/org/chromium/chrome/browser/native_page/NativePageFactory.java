@@ -67,7 +67,9 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -658,7 +660,8 @@ public class NativePageFactory {
     }
 
     /** Simple implementation of NativePageHost backed by a {@link Tab} */
-    private static class TabShim implements NativePageHost {
+    @VisibleForTesting
+    static class TabShim implements NativePageHost {
         private final Tab mTab;
         private final BrowserControlsStateProvider mBrowserControlsStateProvider;
         private final TabModelSelector mTabModelSelector;
@@ -735,6 +738,19 @@ public class NativePageFactory {
                 return;
             }
             DownloadController.downloadUrl(url, mTab);
+        }
+
+        @Override
+        public void selectTab() {
+            if (mTab.isDestroyed() || mTab.isClosing() || isVisible()) return;
+            TabModel model = mTabModelSelector.getModelForTabId(mTab.getId());
+            if (model != null) {
+                int index = TabModelUtils.getTabIndexById(model, mTab.getId());
+                if (index != TabModel.INVALID_TAB_INDEX) {
+                    mTabModelSelector.selectModel(model.isIncognito());
+                    TabModelUtils.setIndex(model, index);
+                }
+            }
         }
     }
 

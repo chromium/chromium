@@ -2428,6 +2428,7 @@ public class PdfCoordinator
             onProceed.run();
             return;
         }
+        mNativePageHost.selectTab();
         ModalDialogManager modalDialogManager = null;
         if (mActivity instanceof ModalDialogManagerHolder) {
             modalDialogManager = ((ModalDialogManagerHolder) mActivity).getModalDialogManager();
