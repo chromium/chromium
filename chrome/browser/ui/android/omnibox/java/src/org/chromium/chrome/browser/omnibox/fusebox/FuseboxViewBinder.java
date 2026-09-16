@@ -480,6 +480,8 @@ class FuseboxViewBinder {
             return R.drawable.ic_globe_24dp;
         } else if (iconId == IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE_VALUE) {
             return R.drawable.search_spark_black_24dp;
+        } else if (iconId == IconResourceIds.IMAGE_CREATE_VALUE) {
+            return R.drawable.image_create_24dp;
         } else if (iconId == IconResourceIds.BANANA_VALUE) {
             return R.drawable.create_image_24dp;
         } else if (iconId == IconResourceIds.TRAVEL_EXPLORE_VALUE) {

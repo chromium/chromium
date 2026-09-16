@@ -1248,15 +1248,14 @@ import java.util.function.Supplier;
      */
     private void updateRequestTypeButtonProperties(
             @ToolMode int activeTool, @Nullable ToolConfig toolConfig) {
+        @IconResourceIds int iconId = getRequestTypeButtonIconId(activeTool, toolConfig);
         mModel.set(
                 FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION,
                 getNavigateButtonContentDescription(toolConfig));
-        mModel.set(
-                FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID,
-                getRequestTypeButtonIconId(activeTool, toolConfig));
+        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID, iconId);
         mModel.set(
                 FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON,
-                shouldTintRequestTypeButtonIcon(activeTool));
+                shouldTintRequestTypeButtonIcon(iconId));
         mModel.set(
                 FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT,
                 getRequestTypeButtonText(activeTool, toolConfig));
@@ -1323,7 +1322,7 @@ import java.util.function.Supplier;
                             && (!disableTabsForCanvas
                                     || !hasAttachedTabs
                                     || toolMode != ToolMode.TOOL_MODE_CANVAS);
-            boolean hasColor = ToolModeUtils.isImageGenTool(toolMode);
+            boolean hasColor = !shouldTintRequestTypeButtonIcon(iconId);
 
             toolButtonDataList.add(
                     new PopupButtonData(
@@ -1446,12 +1445,11 @@ import java.util.function.Supplier;
     }
 
     /**
-     * Returns whether the request type button's start icon should be tinted to match the
-     * surrounding text color. Image generation icons are multicolored by design, so they are left
-     * untinted.
+     * Returns whether an icon should be tinted to match the surrounding text color. The banana icon
+     * is multicolored by design, so it is left untinted in both the request type button and popup.
      */
-    private static boolean shouldTintRequestTypeButtonIcon(@ToolMode int activeTool) {
-        return !ToolModeUtils.isImageGenTool(activeTool);
+    private static boolean shouldTintRequestTypeButtonIcon(@IconResourceIds int iconId) {
+        return iconId != IconResourceIds.BANANA;
     }
 
     private boolean trySetRequestType(@AutocompleteRequestType int requestType) {

@@ -3131,6 +3131,72 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testOnInputStateChange_activeToolImageGen_imageCreate() {
+        recreateMediator();
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        ToolConfig config =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setChipLabel("Create Image Chip")
+                        .setIcon(Icon.newBuilder().setIconId(IconResourceIds.IMAGE_CREATE).build())
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .withToolConfigs(new byte[][] {config.toByteArray()})
+                        .build();
+
+        mInputStateSupplier.set(state);
+
+        assertEquals(
+                "Create Image Chip",
+                mModel.get(FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION));
+        assertEquals(
+                IconResourceIdsProtoIntDef.IconResourceIds.IMAGE_CREATE,
+                mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_ICON_ID));
+        assertEquals("Create Image Chip", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
+        assertTrue(mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_SHOULD_TINT_ICON));
+    }
+
+    @Test
+    public void testPopupToolButton_hasColor() {
+        recreateMediator();
+        ToolConfig bananaConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setMenuLabel("Banana Tool")
+                        .setIcon(Icon.newBuilder().setIconId(IconResourceIds.BANANA).build())
+                        .build();
+        ToolConfig imageCreateConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
+                        .setMenuLabel("Image Create Tool")
+                        .setIcon(Icon.newBuilder().setIconId(IconResourceIds.IMAGE_CREATE).build())
+                        .build();
+        InputState state =
+                new InputState.Builder()
+                        .withAllowedTools(
+                                ToolMode.TOOL_MODE_IMAGE_GEN_VALUE,
+                                ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
+                        .withToolConfigs(
+                                new byte[][] {
+                                    bananaConfig.toByteArray(), imageCreateConfig.toByteArray()
+                                })
+                        .build();
+
+        mInputStateSupplier.set(state);
+        mMediator.onPlusButtonClicked();
+
+        List<PopupButtonData> tools = mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+        assertEquals(3, tools.size());
+        assertFalse(tools.get(0).hasColor);
+        assertTrue(tools.get(1).hasColor);
+        assertEquals(IconResourceIds.BANANA_VALUE, tools.get(1).iconId);
+        assertFalse(tools.get(2).hasColor);
+        assertEquals(IconResourceIds.IMAGE_CREATE_VALUE, tools.get(2).iconId);
+    }
+
+    @Test
     public void testOnInputStateChange_activeToolUnspecified() {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         InputState state =
