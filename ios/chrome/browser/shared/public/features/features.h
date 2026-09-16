@@ -173,6 +173,8 @@ inline constexpr char kEnableLensOnIPadPresentationStyleSidePanel[] =
     "side-panel";
 inline constexpr char kEnableLensOnIPadPresentationStyleBottomSheet[] =
     "bottom-sheet";
+inline constexpr char kEnableLensOnIPadPresentationStyleWideBottomSheet[] =
+    "wide-bottom-sheet";
 
 // Feature flag that allows the Auto-deletion feature to clear all downloaded
 // files scheduled for deletion on every application startup, regardless of when

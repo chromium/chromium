@@ -513,10 +513,14 @@ const FeatureEntry::FeatureParam kEnableLensOnIPadSidePanel[] = {
 const FeatureEntry::FeatureParam kEnableLensOnIPadBottomSheet[] = {
     {kEnableLensOnIPadPresentationStyleParam,
      kEnableLensOnIPadPresentationStyleBottomSheet}};
+const FeatureEntry::FeatureParam kEnableLensOnIPadWideBottomSheet[] = {
+    {kEnableLensOnIPadPresentationStyleParam,
+     kEnableLensOnIPadPresentationStyleWideBottomSheet}};
 
 const FeatureEntry::FeatureVariation kEnableLensOnIPadVariations[] = {
     {"(Side Panel)", kEnableLensOnIPadSidePanel, nullptr},
-    {"(Bottom Sheet)", kEnableLensOnIPadBottomSheet, nullptr}};
+    {"(Bottom Sheet)", kEnableLensOnIPadBottomSheet, nullptr},
+    {"(Wide Bottom Sheet)", kEnableLensOnIPadWideBottomSheet, nullptr}};
 
 const FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0[] = {

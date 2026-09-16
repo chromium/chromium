@@ -176,4 +176,22 @@ TEST_F(LensOverlayPresentationTypeTest,
             lens::ResultPagePresentationType::kSidePanel);
 }
 
+// Test that on tablet, LVF uses bottom sheet when kEnableLensOnIPad is
+// enabled with wide bottom sheet param.
+TEST_F(LensOverlayPresentationTypeTest,
+       TestResultPagePresentationFor_Tablet_LVF_FeatureEnabledWideBottomSheet) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    GTEST_SKIP() << "Test requires tablet form factor.";
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kEnableLensOnIPad, {{kEnableLensOnIPadPresentationStyleParam,
+                           kEnableLensOnIPadPresentationStyleWideBottomSheet}});
+
+  FakeTraitEnvironment* regularEnv = CreateRegularXRegularEnvironment();
+  EXPECT_EQ(lens::ResultPagePresentationFor(regularEnv, /*is_lvf=*/true),
+            lens::ResultPagePresentationType::kEdgeAttachedBottomSheet);
+}
+
 }  // namespace
