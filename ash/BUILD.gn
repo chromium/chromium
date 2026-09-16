@@ -2562,8 +2562,6 @@ component("ash") {
     "system/tray/view_click_listener.h",
     "system/tray/zero_state_view.cc",
     "system/tray/zero_state_view.h",
-    "system/unified/collapse_button.cc",
-    "system/unified/collapse_button.h",
     "system/unified/current_locale_view.cc",
     "system/unified/current_locale_view.h",
     "system/unified/custom_shape_button.cc",

@@ -21,8 +21,8 @@ enum class QsButtonCatalogName {
   kDateViewButton = 5,
   kBatteryButton = 6,
   kManagedButton = 7,
-  kAvatarButton = 8,    // To be deprecated
-  kCollapseButton = 9,  // To be deprecated
+  kAvatarButton = 8,  // To be deprecated
+  kCollapseButton_DEPRECATED = 9,
   kFeedBackButton = 10,
   kVersionButton = 11,
   kPowerOffMenuButton = 12,
