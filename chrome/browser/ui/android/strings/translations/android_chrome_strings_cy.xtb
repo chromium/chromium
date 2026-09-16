@@ -515,6 +515,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2996682533106928201">Tapiwch i ddiystyru</translation>
 <translation id="2996809686854298943">Angen URL</translation>
 <translation id="3024215143424744261">Modd darllen dewisiadau wedi cau</translation>
+<translation id="3024277805447899099">Rhagolwg o'r llun</translation>
 <translation id="3026955690410463085">Cynnwys y ddolen</translation>
 <translation id="3027950907978057636">O <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Dim rhaglwytho</translation>
@@ -1028,9 +1029,11 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5032430150487044192">Methu â chreu Cod QR</translation>
 <translation id="5035846135112863536">Dewiswch 'Rhagor o fanylion' isod i gael rhagor o wybodaeth gan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab - <ph name="URL_LIST" />}zero{<ph name="TAB_COUNT_MANY" /> tabiau - <ph name="URL_LIST" />}two{<ph name="TAB_COUNT_MANY" /> dab - <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> thab - <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> thab - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> tab - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Caniatáu</translation>
 <translation id="5040262127954254034">Preifatrwydd</translation>
 <translation id="504456571576643789">Pethau i'w hystyried</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> Ffenestr wedi'i Dewis}zero{<ph name="WINDOW_COUNT_NORMAL" /> Ffenestr wedi'u Dewis}two{<ph name="WINDOW_COUNT_NORMAL" /> Ffenestr wedi'u Dewis}few{<ph name="WINDOW_COUNT_NORMAL" /> Ffenestr wedi'u Dewis}many{<ph name="WINDOW_COUNT_NORMAL" /> Ffenestr wedi'u Dewis}other{<ph name="WINDOW_COUNT_NORMAL" /> Ffenestr wedi'u Dewis}}</translation>
+<translation id="5058506215037547387">Rhagolwg o'r dudalen</translation>
 <translation id="506254248375231072">Dim tabiau</translation>
 <translation id="5075939510584558547">Cadw heb amgryptio</translation>
 <translation id="5078638979202084724">Creu nod tudalen ar gyfer pob tab</translation>

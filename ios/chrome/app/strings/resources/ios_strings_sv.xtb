@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{{count} bokmärken har sparats i {title} i ditt konto, {email}}}</translation>
 <translation id="1207493287814084192">15.30</translation>
-<translation id="1215414310909588335">{count,plural, =1{1 minut av skrivande har sparats}other{# minuter av skrivande har sparats}}</translation>
 <translation id="1217294226280635614">Delad skärm</translation>
 <translation id="1218730690561976633">Aktivera eller inaktivera användarverifiering för förbättrad autofyll</translation>
 <translation id="1219674500290482172">Det går inte att ansluta till internet.</translation>

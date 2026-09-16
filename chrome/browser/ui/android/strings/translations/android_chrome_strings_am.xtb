@@ -1026,6 +1026,7 @@
 <translation id="5032430150487044192">የQR ኮድ መፍጠር አልተቻለም</translation>
 <translation id="5035846135112863536">ከ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ተጨማሪ መረጃን ለማግኘት ከታች «ተጨማሪ ዝርዝሮች» ይምረጡ።</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ትር - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> ትር - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ትሮች - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">ፍቀድ</translation>
 <translation id="5040262127954254034">ግላዊነት</translation>
 <translation id="504456571576643789">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> መስኮት ተመርጧል}one{<ph name="WINDOW_COUNT_NORMAL" /> መስኮት ተመርጧል}other{<ph name="WINDOW_COUNT_NORMAL" /> መስኮቶች ተመርጠዋል}}</translation>

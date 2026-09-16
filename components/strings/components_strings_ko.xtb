@@ -882,6 +882,7 @@
 <translation id="2467272921457885625">CPU/RAM 사용 기록과 같은 기기 하드웨어 사양 및 통계</translation>
 <translation id="2467421459221956357">센서를 사용하시겠습니까?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />네트워크 진단 프로그램 실행<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">주문</translation>
 <translation id="2469153820345007638">1-to-N 순서</translation>
 <translation id="24699311393038040">용지(코팅됨)</translation>
 <translation id="2471632709106952369">비교 테이블</translation>
@@ -1063,7 +1064,7 @@
 <translation id="277133753123645258">배송 방법</translation>
 <translation id="277499241957683684">기기 기록 없음</translation>
 <translation id="2775884851269838147">첫 인쇄 페이지</translation>
-<translation id="277828055419948999">Chromium은 표준 자동 완성에서 누락될 수 있는 어려운 필드를 자동 완성할 수 있습니다.</translation>
+<translation id="277828055419948999">Chromium은 일반적인 자동 완성에서 놓치기 쉬운 복잡한 필드도 자동으로 완성해 줍니다</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">결제 준비 중</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
@@ -3756,7 +3757,7 @@
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">미디어 컨트롤</translation>
 <translation id="7378810950367401542">/</translation>
-<translation id="7379321689415048316">Chrome은 표준 자동 완성에서 누락될 수 있는 어려운 필드를 자동 완성할 수 있습니다.</translation>
+<translation id="7379321689415048316">Chrome은 일반적인 자동 완성에서 놓치기 쉬운 복잡한 필드도 자동으로 완성해 줍니다</translation>
 <translation id="7380398842872229465">10x15인치</translation>
 <translation id="7381551826960739226">양식에 보안 연결이 사용되지 않아 자동 결제 수단 채우기가 사용 중지되었습니다.</translation>
 <translation id="7382980704744807223">의심스러운 파일</translation>
@@ -4600,7 +4601,7 @@
 <translation id="883848425547221593">기타 북마크</translation>
 <translation id="8842351563145134519">터치하여 입력할 수 있는 결제 수단이 절반 높이로 열렸습니다.</translation>
 <translation id="884264119367021077">배송지 주소</translation>
-<translation id="8843516219908676469">Chrome이 양식을 더 잘 이해하고 더 빠르게 자동 완성할 수 있습니다.</translation>
+<translation id="8843516219908676469">Chrome이 양식을 더 잘 이해하고, 더 빠르게 자동 완성을 제공할 수 있습니다</translation>
 <translation id="8845586173202501576">포모도로 기법과 간격 반복을 사용해 곧 있을 시험에 대비하는 7일 공부 일정표를 만들어 줘. 시험 전날 벼락치기하고 싶지 않으니 전날에는 가볍게 복습하고 잠을 잘 수 있게 일정을 짜줘.</translation>
 <translation id="8849032795302265570">직원들의 웹 탐색 방식을 간편하게 관리하세요</translation>
 <translation id="8849231003559822746">130x180mm</translation>

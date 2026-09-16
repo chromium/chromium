@@ -1026,6 +1026,7 @@
 <translation id="5032430150487044192">QR குறியீட்டை உருவாக்க முடியவில்லை</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> இடமிருந்து கூடுதல் தகவல்களைப் பெற, கீழே உள்ள "கூடுதல் விவரங்கள்" என்பதைத் தேர்வுசெய்யுங்கள்.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> பக்கம் - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> பக்கங்கள் - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">அனுமதி</translation>
 <translation id="5040262127954254034">தனியுரிமை</translation>
 <translation id="504456571576643789">கருத்தில்கொள்ள வேண்டியவை</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> சாளரம் தேர்ந்தெடுக்கப்பட்டுள்ளது}other{<ph name="WINDOW_COUNT_NORMAL" /> சாளரங்கள் தேர்ந்தெடுக்கப்பட்டுள்ளன}}</translation>

@@ -882,6 +882,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2467272921457885625">Špecifikácie a štatistiky hardvéru zariadenia, napríklad história využitia procesora alebo operačnej pamäte</translation>
 <translation id="2467421459221956357">Chcete používať senzory?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Spustiť nástroj Diagnostika siete<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">Zoradiť</translation>
 <translation id="2469153820345007638">Poradie 1 až N</translation>
 <translation id="24699311393038040">Papier (s povrchovou úpravou)</translation>
 <translation id="2471632709106952369">Porovnávacie tabulky</translation>
@@ -1425,6 +1426,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3432601291244612633">Zavrieť stránku</translation>
 <translation id="3434025015623587566">Správca hesiel Google potrebuje rozsiahlejší prístup</translation>
 <translation id="343474037147570563">Súbory, ktoré nahráte alebo priložíte, sa odošlú na analýzu do služby Google Cloud alebo tretím stranám. V rámci nej môžu byť napríklad podrobené kontrole prítomnosti citlivých údajov alebo malvéru, pričom môžu byť uložené podľa firemných pravidiel a viditeľné pre vášho správcu.</translation>
+<translation id="3435267628744367511">Ak chcete nájsť a doplniť informácie bez prepínania kariet, dvakrát stlačte Ctrl v ľubovoľnom formulári</translation>
 <translation id="3435557549311968410">Nepretržité (krátke)</translation>
 <translation id="3435738964857648380">Zabezpečenie</translation>
 <translation id="3436125638121079308">Chcete automaticky zdieľať relevantné karty, aby ste v tomto vlákne dostávali lepšie odpovede?</translation>
@@ -2739,7 +2741,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5605670050355397069">Účtovná kniha</translation>
 <translation id="5610142619324316209">Skontrolovať pripojenie</translation>
 <translation id="5610807607761827392">Karty a adresy môžete spravovať v časti <ph name="BEGIN_LINK" />Nastavenia<ph name="END_LINK" />.</translation>
-<translation id="5611398002774823980">Uložiť v účte</translation>
+<translation id="5611398002774823980">Uložiť do účtu</translation>
 <translation id="561165882404867731">Preložiť túto stránku v Prekladači Google</translation>
 <translation id="5612720917913232150"><ph name="URL" /> chce použiť polohu vášho počítača</translation>
 <translation id="5613117810542399920">Akcia s anotáciou bola zopakovaná</translation>
@@ -2891,6 +2893,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5884465125445718607">Čínska obálka č. 6</translation>
 <translation id="5887400589839399685">Karta bola uložená</translation>
 <translation id="5887687176710214216">Naposledy navštívený včera</translation>
+<translation id="5887791684215121787">Ak chcete nájsť a doplniť informácie bez prepínania kariet, stlačte ⌘ ⌘ v ľubovoľnom formulári</translation>
 <translation id="5889251770650310375">Ak chcete získať históriu zo svojich ostatných zariadení, overte svoju totožnosť a synchronizujte históriu aj karty. Synchronizáciu môžete kedykoľvek zastaviť v nastaveniach. Google môže prispôsobovať Vyhľadávanie a ďalšie služby na základe vašej histórie.</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="5895187275912066135">Vydané dňa</translation>

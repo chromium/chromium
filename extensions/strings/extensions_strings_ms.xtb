@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Permintaan kebenaran ibu bapa gagal.</translation>
 <translation id="1803557475693955505">Tidak dapat memuatkan halaman latar belakang '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">Item ini hanya boleh ditambahkan daripada <ph name="CHROME_WEB_STORE" />.</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (ID sambungan "<ph name="EXTENSION_ID" />") tidak boleh dipasang mengikut dasar dalam persekitaran kepercayaan rendah.</translation>
 <translation id="2131077480075264">Tidak dapat memasang "<ph name="APP_NAME" />" kerana tidak dibenarkan oleh "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">Tambah "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Tidak dapat menyahkod imej: ' <ph name="IMAGE_NAME" /> '</translation>

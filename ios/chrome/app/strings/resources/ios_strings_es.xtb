@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1204075260022434100">{count,plural, =1{Marcador guardado en {title} de tu cuenta {email}}other{{count} marcadores guardados en {title} de tu cuenta {email}}}</translation>
 <translation id="1207493287814084192">17:30</translation>
-<translation id="1215414310909588335">{count,plural, =1{1 minuto de escritura ahorrado}other{# minutos de escritura ahorrados}}</translation>
 <translation id="1217294226280635614">Vista dividida</translation>
 <translation id="1218730690561976633">Activar/desactivar la verificación de usuario de Autocompletar mejorada</translation>
 <translation id="1219674500290482172">No se ha podido establecer conexión a Internet.</translation>

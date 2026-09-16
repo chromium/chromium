@@ -787,6 +787,7 @@
 <translation id="4162867837470729563">શેરિંગના વિકલ્પોની સૂચિ સંપૂર્ણ ઊંચાઈએ ખોલી છે.</translation>
 <translation id="4164642020717536140">ઝડપી અને સુરક્ષિત વેબ બ્રાઉઝિંગ</translation>
 <translation id="4165077084524712774">વધુ ટૂલ</translation>
+<translation id="4169156312706405526">Driveમાંથી ફાઇલો જોડો</translation>
 <translation id="4170577491341606575">તમારું કન્ટેન્ટ મેળવી રહ્યાં છીએ\u2026</translation>
 <translation id="4172051516777682613">હંમેશા બતાવો</translation>
 <translation id="4176838562184310003">Chrome યોગ્ય રીતે શટ ડાઉન થયું નથી અને તમારી ગુમાવેલી વિન્ડો અને ટૅબ રિસ્ટોર કરવાનો પ્રયાસ કરી શકે છે. રિસ્ટોર કરતી વખતે કેટલીક વિન્ડો નાની કરવામાં આવી હોઈ શકે છે.</translation>
@@ -1026,6 +1027,7 @@
 <translation id="5032430150487044192">QR કોડ બનાવી શકતા નથી</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />માંથી વધુ માહિતી મેળવવા માટે, નીચે "વધુ માહિતી" પસંદ કરો.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબ - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> ટૅબ - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ટૅબ - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">મંજૂરી આપો</translation>
 <translation id="5040262127954254034">પ્રાઇવસી</translation>
 <translation id="504456571576643789">ધ્યાનમાં લેવા જેવી બાબતો</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> વિન્ડો પસંદ કરી}one{<ph name="WINDOW_COUNT_NORMAL" /> વિન્ડો પસંદ કરી}other{<ph name="WINDOW_COUNT_NORMAL" /> વિન્ડો પસંદ કરી}}</translation>

@@ -839,6 +839,8 @@
 <translation id="2384307209577226199">លំនាំដើមសហគ្រាស</translation>
 <translation id="2385809941344967209">ដំឡើង​កំណែ Chrome ពីការកំណត់ Chrome របស់អ្នក</translation>
 <translation id="2386255080630008482">វិញ្ញាបនប័ត្រម៉ាស៊ីនមេត្រូវបានបញ្ឈប់សុពលភាព។</translation>
+<translation id="2387424091060104123">បានណែនាំដោយ Gemini · <ph name="SRC_LINK" />មើលប្រភព<ph name="END_SRC_LINK" />
+អ្នកអាចដកការណែនាំនេះចេញពី Chrome បាន។ ប្រភព​ដើម​របស់អ្នក​នឹងមិន​ត្រូវបាន​លុបទេ។ <ph name="MANAGE_LINK" />គ្រប់គ្រងការបំពេញស្វ័យប្រវត្តិរហ័ស<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">បរិយាយ</translation>
 <translation id="2392959068659972793">បង្ហាញគោលការណ៍ដែលមិនកំណត់តម្លៃ</translation>
 <translation id="239429038616798445">មិនមានមធ្យោបាយដឹកជញ្ជូនតាមប្រៃសណីយ៍នេះទេ។ សូមសាកល្បងមធ្យោបាយផ្សេង។</translation>
@@ -885,6 +887,7 @@
 <translation id="2467272921457885625">ស្ថិតិ និងសេចក្តីលម្អិតអំពីហាតវែររបស់ឧបករណ៍ដូចជា ប្រវត្តិនៃការប្រើប្រាស់ CPU/RAM ជាដើម</translation>
 <translation id="2467421459221956357">ប្រើសេនស័រឬ?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />កំពុងដំណើរការការវិភាគបណ្តាញ<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">លំដាប់</translation>
 <translation id="2469153820345007638">លំដាប់លំដោយ 1-to-N</translation>
 <translation id="24699311393038040">ក្រដាស (ស្រោប)</translation>
 <translation id="2471632709106952369">តារាងប្រៀបធៀប</translation>

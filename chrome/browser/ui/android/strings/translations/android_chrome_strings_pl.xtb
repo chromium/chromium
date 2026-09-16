@@ -1026,6 +1026,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5032430150487044192">Nie udało się utworzyć kodu QR</translation>
 <translation id="5035846135112863536">Aby dowiedzieć się więcej od <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, kliknij „Więcej szczegółów” poniżej.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta – <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> karty – <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> kart – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> karty – <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Zezwalaj</translation>
 <translation id="5040262127954254034">Prywatność</translation>
 <translation id="504456571576643789">Istotne kwestie</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Wybrane <ph name="WINDOW_COUNT_ONE" /> okno}few{Wybrane <ph name="WINDOW_COUNT_NORMAL" /> okna}many{Wybranych <ph name="WINDOW_COUNT_NORMAL" /> okien}other{Wybrane <ph name="WINDOW_COUNT_NORMAL" /> okna}}</translation>

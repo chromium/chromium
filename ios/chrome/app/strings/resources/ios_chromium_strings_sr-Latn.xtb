@@ -142,6 +142,7 @@ Sačekajte nekoliko minuta pre nego što promenite nalog. Ako sada promenite nal
 <translation id="3855938650519180865">Šta je novo u Chromium-u</translation>
 <translation id="3886689467633467988">Prijavite se na ovaj sajt i u Chromium da bi vam obeleživači i drugi sadržaj bili dostupni na svim uređajima.</translation>
 <translation id="3949514465204582407">Savet za Chromium: Pristupajte lozinkama u bilo kojoj aplikaciji</translation>
+<translation id="3983298990898629929">Podesite Chromium kao podrazumevani pregledač da biste otvarali linkove jednim dodirom</translation>
 <translation id="4005283307739974863">Otvara i pokreće Proveru bezbednosti u Chromium-u.</translation>
 <translation id="4043291146360695975">Lozinke se čuvaju u Menadžeru lozinki samo na ovom uređaju.</translation>
 <translation id="4046625794029820944">Prestanite da kopirate URL-ove. Podesite Chromium kao podrazumevani pregledač da biste direktno učitavali stranice.</translation>
@@ -302,6 +303,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Lozinka se čuva u Menadžeru lozinki za <ph name="EMAIL" /></translation>
 <translation id="7434848749522628428">Pristupni ključ se čuva u Menadžeru lozinki za <ph name="USER_EMAIL" /></translation>
+<translation id="7453822113116681031">Postavite Chromium kao podrazumevani pregledač da biste otvarali linkove jednim dodirom</translation>
 <translation id="7504829997542308412">Otvorite Chromium</translation>
 <translation id="7531461704633548377">Iz Chromium-a</translation>
 <translation id="7554983317097061001">Savet za Chromium: Premestite Chromium na traku s aplikacijama</translation>

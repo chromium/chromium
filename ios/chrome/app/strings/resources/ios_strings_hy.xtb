@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Հաջորդ</translation>
 <translation id="1204075260022434100">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}other{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}}</translation>
 <translation id="1207493287814084192">17:30</translation>
-<translation id="1215414310909588335">{count,plural, =1{Դուք խնայեցիք 1 րոպե տեքստ մուտքագրելու վրա}one{Դուք խնայեցիք # րոպե տեքստ մուտքագրելու վրա}other{Դուք խնայեցիք # րոպե տեքստ մուտքագրելու վրա}}</translation>
 <translation id="1217294226280635614">Տրոհված էկրան</translation>
 <translation id="1218730690561976633">Միացնել/անջատել բարելավված ինքնալրացման օգտատիրոջ հաստատումը</translation>
 <translation id="1219674500290482172">Հնարավոր չէ միանալ համացանցին:</translation>

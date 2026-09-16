@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">다음</translation>
 <translation id="1204075260022434100">{count,plural, =1{{email} 계정의 "{title}"에 북마크가 저장됨}other{{email} 계정의 "{title}"에 북마크 {count}개가 저장됨}}</translation>
 <translation id="1207493287814084192">오후 5시 30분</translation>
-<translation id="1215414310909588335">{count,plural, =1{1분 동안 입력한 내용이 저장됨}other{#분 동안 입력한 내용이 저장됨}}</translation>
 <translation id="1217294226280635614">분할 보기</translation>
 <translation id="1218730690561976633">향상된 자동 완성 사용자 인증을 전환합니다.</translation>
 <translation id="1219674500290482172">인터넷에 연결할 수 없습니다.</translation>
@@ -1963,7 +1962,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="72961285530871072">이렇게 하면 Level Up 진행 상황이 영구적으로 삭제되며, 더 이상 프로필을 위해 Level Up 기능 사용 데이터가 Google로 전송되지 않습니다.
 
 언제든지 다시 시작할 수 있습니다.</translation>
-<translation id="7300448350764260141">온라인 위협에 대비해 한층 강화된 보호 기능을 사용하세요</translation>
+<translation id="7300448350764260141">온라인 위협에 대비해 한층 강화된 보호 기능을 사용하세요.</translation>
 <translation id="7311244614769792472">검색 결과 없음</translation>
 <translation id="7312823817809783355">내 작업</translation>
 <translation id="7313347584264171202">여기에서 시크릿 탭을 확인할 수 있습니다</translation>

@@ -677,6 +677,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1523978563989812243">Mga engine para sa text-to-speech</translation>
 <translation id="1524563461097350801">Hindi, Salamat na lang</translation>
 <translation id="1525740877599838384">Wi-Fi lang ang gamitin upang matukoy ang lokasyon</translation>
+<translation id="1526274304859009691">Mag-sign in para makuha ang iyong mga extension at higit pa mula sa <ph name="DEVICE" /></translation>
 <translation id="1526560967942511387">Walang pamagat na Dokumento</translation>
 <translation id="1527336312600375509">Rate ng pag-refresh ng monitor</translation>
 <translation id="152913213824448541">Mga contact sa Nearby Share</translation>
@@ -6389,6 +6390,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5902400038326841449">Naka-off ang Google Password Manager</translation>
 <translation id="5902892210366342391">Makakita ng mga babala bago makapunta sa mga hindi secure na site sa Incognito mode</translation>
 <translation id="5906457147959147328">Patuloy na payagan ang site na ito na gumamit ng mga identifier para mag-play ng pinoprotektahang content</translation>
+<translation id="5906549184882174190">Naka-isolate</translation>
 <translation id="5906655207909574370">Halos napapanahon na! I-restart ang iyong device upang tapusin ang pag-a-update.</translation>
 <translation id="5906732635754427568">Aalisin sa device na ito ang data na nauugnay sa app na ito.</translation>
 <translation id="5906974869830879618">Maglagay ng pin</translation>
@@ -6614,6 +6616,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6088475950266477163">Mga Settin&amp;g</translation>
 <translation id="608912389580139775">Para idagdag ang page na ito sa iyong listahan ng babasahin, i-click ang icon ng Bookmark</translation>
 <translation id="6089289670051481345">Tritanomaly</translation>
+<translation id="6090068946774422711">Mag-sign in para makuha ang iyong listahan ng babasahin at higit pa mula sa <ph name="DEVICE" /></translation>
 <translation id="6090760257419195752">Mga na-dismiss na babala</translation>
 <translation id="609174145569509836">Linisin ang storage</translation>
 <translation id="6091761513005122595">Matagumpay na na-mount ang share</translation>
@@ -7968,6 +7971,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7124712201233930202">Hindi natutugunan ang mga patakaran ng iyong organisasyon</translation>
 <translation id="7125148293026877011">I-delete ang Crostini</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">Mag-sign in para makuha ang iyong mga extension at higit pa sa lahat ng device mo</translation>
 <translation id="7125932261198019860">Tiyaking nakakonekta ang iyong printer sa Wi-Fi network kung saan nakakonekta ang Chromebook mo o gumamit ng USB cable. <ph name="LINK_BEGIN" />Matuto pa tungkol sa compatibility<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Kasaysayan ng pag-download</translation>
 <translation id="7130438335435247835">Access point name (APN)</translation>
@@ -8823,6 +8827,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7780992949171378848">Magpadala ng request sa pag-opt out sa mga site kaugnay ng paggamit ng iyong data</translation>
 <translation id="7782102568078991263">Wala nang mga suhestiyon mula sa Google</translation>
 <translation id="7782717250816686129">I-store ang mga persistent data sa screen sa pag-log in at ilagay ang mga kredensyal sa session.</translation>
+<translation id="7782885970382585765">Mag-sign in para makuha ang iyong listahan ng babasahin at higit pa sa lahat ng device mo</translation>
 <translation id="7784020347632229094">Matuto pa tungkol sa keyboard shortcut</translation>
 <translation id="7784067724422331729">Na-block ng mga setting ng seguridad sa iyong computer ang file na ito.</translation>
 <translation id="7784796923038949829">Hindi mabasa o mapalitan ang data ng site</translation>

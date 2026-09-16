@@ -676,6 +676,7 @@
 <translation id="1523978563989812243">စာ-မှ-စကား အင်ဂျင်များ</translation>
 <translation id="1524563461097350801">မလိုပါ</translation>
 <translation id="1525740877599838384">တည်နေရာ သိရှိနိုင်ရန် Wi-Fi ကိုသာ အသုံးပြုပါ</translation>
+<translation id="1526274304859009691"><ph name="DEVICE" /> မှ နောက်ဆက်တွဲနှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="1526560967942511387">ခေါင်းစဉ်မဲ့ စာတမ်း</translation>
 <translation id="1527336312600375509">မော်နီတာ ပြန်လည်စတင်နှုန်း</translation>
 <translation id="152913213824448541">'အနီးတစ်ဝိုက် မျှဝေခြင်း' အဆက်အသွယ်များ</translation>
@@ -1439,6 +1440,7 @@
 <translation id="2111670510994270194">ညာဘက်တွင် တဘ်အသစ်</translation>
 <translation id="2111778868023567359">‘တဘ်အုပ်စုများ’ ကို ဤစာမျက်နှာတွင် ထပ်မြင်ရမည်မဟုတ်ပါ</translation>
 <translation id="2112554630428445878">ကြိုဆိုပါသည် <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">macOS မှ ထည့်သွင်းထားသော အသိအမှတ်ပြုလက်မှတ်များကို ကြည့်ရန်</translation>
 <translation id="21133533946938348">တဘ် ပင်ထိုးရန်</translation>
 <translation id="2113479184312716848">ဖိုင်ဖွင့်ရန်...</translation>
@@ -1994,6 +1996,7 @@
 <translation id="252513908494776481">ဤတဘ်အကြောင်း မေးနိုင်သည်</translation>
 <translation id="2525746158911982776">စနစ်တွင် သိုလှောင်ခန်းနေရာ မလုံလောက်သဖြင့် အပ်ဒိတ်လုပ်၍ မရလိုက်ပါ။</translation>
 <translation id="2525842906387880861">ဤစာမျက်နှာတွင် အကြံပြုချက်များကို ထပ်မြင်ရတော့မည်မဟုတ်ပါ</translation>
+<translation id="2526346836766369775">သီးခြား&amp;တဘ် အသစ်</translation>
 <translation id="2526590354069164005">ဒက်စက်တော့</translation>
 <translation id="2526619973349913024">အပ်ဒိတ်စစ်ရန်</translation>
 <translation id="2527167509808613699">မည်သည့် ချိတ်ဆက်မှု မဆို</translation>
@@ -6386,6 +6389,7 @@
 <translation id="5902400038326841449">Google Password Manager ကို ပိတ်ထားသည်</translation>
 <translation id="5902892210366342391">ရုပ်ဖျက်မုဒ်တွင် လုံခြုံမှုမရှိသော ဝဘ်ဆိုက်များသို့ မသွားမီ သတိပေးချက်များ မြင်ရရန်</translation>
 <translation id="5906457147959147328">ကာကွယ်ထားသော အကြောင်းအရာ ဖွင့်ရန် သတ်မှတ်မှုစနစ်များ အသုံးပြုခြင်းအတွက် ဤဝဘ်ဆိုက်ကို ဆက်ခွင့်ပြုရန်</translation>
+<translation id="5906549184882174190">သီးခြား</translation>
 <translation id="5906655207909574370">အပ်ဒိတ်ပြီးရန် အနည်းငယ်သာလိုပါသည်။ အပ်ဒိတ်လုပ်ခြင်းကို အဆုံးသတ်ရန် သင့်စက်ပစ္စည်းကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="5906732635754427568">ဤအက်ပ်နှင့်ဆက်စပ်သည့် ဒေတာကို ဤစက်ပစ္စည်းထဲမှ ဖယ်ရှားပါမည်။</translation>
 <translation id="5906974869830879618">ပင်နံပါတ် ထည့်ပါ</translation>
@@ -6611,6 +6615,7 @@
 <translation id="6088475950266477163">&amp;ဆက်တင်များ</translation>
 <translation id="608912389580139775">သင်၏ဖတ်ရန် စာရင်းတွင် ဤစာမျက်နှာကို ထည့်ရန် ‘လိပ်စာ’ သင်္ကေတကို နှိပ်ပါ</translation>
 <translation id="6089289670051481345">အပြာ-အဝါ မခွဲခြားနိုင်ခြင်း</translation>
+<translation id="6090068946774422711"><ph name="DEVICE" /> မှ ဖတ်ရန်စာရင်းနှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6090760257419195752">ပယ်ထားသော သတိပေးချက်များ</translation>
 <translation id="609174145569509836">သိုလှောင်ခန်းနေရာ ရှင်းရန်</translation>
 <translation id="6091761513005122595">မျှဝေပြီးပါပြီ။</translation>
@@ -7961,6 +7966,7 @@
 <translation id="7124712201233930202">သင့်အဖွဲ့အစည်း၏ မူဝါဒများနှင့် မကိုက်ညီပါ</translation>
 <translation id="7125148293026877011">Crostini ကို ဖျက်ရန်</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">သင့်စက်အားလုံးတွင် နောက်ဆက်တွဲနှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="7125932261198019860">ပရင်တာသည် သင့် Chromebook နှင့် Wi-Fi ကွန်ရက်တစ်ခုတည်းသို့ ချိတ်ဆက်ထားကြောင်း သေချာပါစေ (သို့) USB ကြိုး သုံးပါ။ <ph name="LINK_BEGIN" />တွဲဖက်သုံးနိုင်မှုအကြောင်း ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">ဒေါင်းလုဒ် မှတ်တမ်း</translation>
 <translation id="7130438335435247835">APN အချိတ်အဆက် (APN)</translation>
@@ -8543,6 +8549,7 @@
 <translation id="7578137152457315135">လက်ဗွေ ဆက်တင်များ</translation>
 <translation id="7578692661782707876">မှန်ကြောင်းအတည်ပြုကုဒ် ထည့်ပါ။</translation>
 <translation id="757941033127302446">လက်မှတ်ထိုးဝင်ထားသည်</translation>
+<translation id="7580311608678791180">Windows လုပ်ဆောင်စရာဘားမှ ဖွင့်ပါ</translation>
 <translation id="7581462281756524039">သန့်ရှင်းရေး ကိရိယာ</translation>
 <translation id="7582582252461552277">ဒီကွန်ရက်ကို ပိုနှစ်ခြိုက်</translation>
 <translation id="7582844466922312471">မိုဘိုင်း ဒေတာ</translation>
@@ -8556,6 +8563,7 @@
 <translation id="7590883480672980941">ထည့်သွင်းမှု ဆက်တင်များ</translation>
 <translation id="7592060599656252486">အချို့</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (အမှားကုဒ် <ph name="ERROR_CODE" />)။</translation>
+<translation id="7597816893408026784">Mac မီနူးဘားမှ ဖွင့်ပါ</translation>
 <translation id="7600054753482800821">&amp;ရှာဖွေရေး အင်ဂျင်များနှင့် Site Search ကို စီမံရန်</translation>
 <translation id="7600218158048761260">ဤအကောင့်အမျိုးအစားအတွက် Google Drive ကိုပိတ်ထားသည်။</translation>
 <translation id="7600965453749440009">ဘာသာပြန်အသစ် <ph name="LANGUAGE" /></translation>
@@ -8814,6 +8822,7 @@
 <translation id="7780992949171378848">သင့်ဒေတာ အသုံးပြုမှုနှင့် ပတ်သက်၍ ဝဘ်ဆိုက်များသို့ ‘မပါဝင်ရန် တောင်းဆိုချက်’ ပို့ရန်</translation>
 <translation id="7782102568078991263">Google မှအကြံပေးချက်များ မရှိတော့ပါ</translation>
 <translation id="7782717250816686129">အကောင့်ဝင်ရောက်မှု ဖန်သားပြင်တွင် အမြဲသုံးဒေတာကို သိမ်းပြီး စက်ရှင်သို့ဝင်ရန် အထောက်အထားများ ထည့်သွင်းပါ။</translation>
+<translation id="7782885970382585765">သင့်စက်အားလုံးတွင် ဖတ်ရန်စာရင်းနှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="7784020347632229094">လက်ကွက်ဖြတ်လမ်းများအကြောင်း ပိုလေ့လာရန်</translation>
 <translation id="7784067724422331729">သင့်ကွန်ပျူတာရှိ လုံခြုံရေး ကြိုတင်ချိန်ညှိမှုများသည် ဤဖိုင်အား ပိတ်ဆို့ထားသည်။</translation>
 <translation id="7784796923038949829">ဝဘ်ဆိုက်၏ဒေတာများကို ဖတ်၍ (သို့) ပြောင်း၍ မရပါ</translation>
@@ -9240,6 +9249,7 @@
 <translation id="8102139037507939978">system_logs.txt မှ 'ပုဂ္ဂိုလ်ရေးအရ ခွဲခြားသိရှိနိုင်သော အချက်အလက်များ' ကို ဖယ်ရှားသည်။</translation>
 <translation id="810362914482827094">လျှို့ဝှက်ကီးများရှာရန်</translation>
 <translation id="8104088837833760645">eSIM ပရိုဖိုင် ဒေါင်းလုဒ်လုပ်ရန်</translation>
+<translation id="8104388155778519213">သင့်စခရင်ပေါ်ရှိအရာကို Google Lens နှင့် မျှဝေပါ</translation>
 <translation id="8104778744208707085">ပြန်ကြည့်ရန်လိုသည်</translation>
 <translation id="8105273883928376822">ရှေ့ဆက်ရန် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="8106114112474206597">မောက်စ်ခလုတ်နှိပ်ရန် “i” ကိုသုံးပါ</translation>

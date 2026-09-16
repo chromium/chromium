@@ -882,6 +882,7 @@
 <translation id="2467272921457885625">Specificații privind hardware-ul dispozitivului și statistici, cum ar fi istoricul de folosire a unității CPU / RAM</translation>
 <translation id="2467421459221956357">Folosești senzorii?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />să rulezi Diagnostice rețea<ph name="END_LINK" />;</translation>
+<translation id="2468247643665097563">Ordine</translation>
 <translation id="2469153820345007638">În ordinea de la 1-la-N</translation>
 <translation id="24699311393038040">Hârtie (tratată)</translation>
 <translation id="2471632709106952369">Tabele de comparație</translation>
@@ -1428,6 +1429,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3432601291244612633">Închide pagina</translation>
 <translation id="3434025015623587566">Managerul de parole Google are nevoie de mai multe permisiuni de acces</translation>
 <translation id="343474037147570563">Fișierele pe care le încarci sau atașezi sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile sau programe malware și pot să fie stocate conform politicilor companiei și să fie vizibile pentru administrator.</translation>
+<translation id="3435267628744367511">Apasă de două ori pe Ctrl în orice formular pentru a găsi și a completa informații fără a schimba fila</translation>
 <translation id="3435557549311968410">Continuu (scurt)</translation>
 <translation id="3435738964857648380">Securitate</translation>
 <translation id="3436125638121079308">Permiți automat accesul la filele relevante pentru răspunsuri mai bune în acest fir?</translation>
@@ -2895,6 +2897,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5884465125445718607">Plic chinezesc 6</translation>
 <translation id="5887400589839399685">Cardul a fost salvat</translation>
 <translation id="5887687176710214216">Accesat ultima dată ieri</translation>
+<translation id="5887791684215121787">Apasă pe ⌘ ⌘ în orice formular pentru a găsi și a completa informații fără a schimba fila</translation>
 <translation id="5889251770650310375">Pentru a accesa istoricul de pe celelalte dispozitive, confirmă-ți identitatea și sincronizează istoricul și filele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5895187275912066135">Emis la</translation>

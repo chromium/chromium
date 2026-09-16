@@ -882,6 +882,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2467272921457885625">Hardverske specifikacije uređaja i statistika, na primer, istorija korišćenja procesora ili RAM-a</translation>
 <translation id="2467421459221956357">Želite da koristite senzore?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />da pokrenete dijagnostiku mreže<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">Redosled</translation>
 <translation id="2469153820345007638">Redosled od 1 do n</translation>
 <translation id="24699311393038040">Papir (premaz)</translation>
 <translation id="2471632709106952369">Tabele za poređenje</translation>
@@ -1428,6 +1429,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3432601291244612633">Zatvori stranicu</translation>
 <translation id="3434025015623587566">Google menadžeru lozinki treba dodatni pristup</translation>
 <translation id="343474037147570563">Fajlovi koje otpremite ili priložite se šalju u Google Cloud ili trećim stranama na analizu. Na primer, možda će biti skenirani u potrazi za osetljivim podacima ili malverom i mogu da budu sačuvani na osnovu smernica preduzeća i vidljivi su administratoru.</translation>
+<translation id="3435267628744367511">Pritisnite Ctrl dvaput u bilo kom obrascu da biste pronašli i popunili informacije bez prelaska na drugu karticu</translation>
 <translation id="3435557549311968410">Neprekidno (kratko)</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
 <translation id="3436125638121079308">Želite automatski da delite relevantne kartice da biste dobijali bolje odgovore u ovoj konverzaciji?</translation>
@@ -2895,6 +2897,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="5884465125445718607">Kineska koverta br. 6</translation>
 <translation id="5887400589839399685">Kartica je sačuvana</translation>
 <translation id="5887687176710214216">Poslednja poseta: juče</translation>
+<translation id="5887791684215121787">Pritisnite ⌘ ⌘ u bilo kom obrascu da biste pronašli i popunili informacije bez prelaska na drugu karticu</translation>
 <translation id="5889251770650310375">Da biste preuzeli istoriju sa drugih uređaja, potvrdite identitet i sinhronizujte istoriju i kartice. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="5895138241574237353">Pokreni ponovo</translation>
 <translation id="5895187275912066135">Izdato</translation>

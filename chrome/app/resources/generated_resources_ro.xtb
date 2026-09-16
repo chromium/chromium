@@ -1432,6 +1432,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2111670510994270194">Filă nouă la dreapta</translation>
 <translation id="2111778868023567359">Nu vei mai vedea cardul Grupuri de file în această pagină</translation>
 <translation id="2112554630428445878">Bun venit, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Vezi certificatele importate din macOS</translation>
 <translation id="21133533946938348">Fixează fila</translation>
 <translation id="2113479184312716848">Deschide &amp;fișierul...</translation>
@@ -1984,6 +1985,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="252513908494776481">Întreabă despre această filă</translation>
 <translation id="2525746158911982776">Actualizarea nu a reușit deoarece sistemul nu are suficient spațiu de stocare.</translation>
 <translation id="2525842906387880861">Nu vei mai vedea sugestii în această pagină.</translation>
+<translation id="2526346836766369775">Filă izola&amp;tă nouă</translation>
 <translation id="2526590354069164005">Desktop</translation>
 <translation id="2526619973349913024">Verifică dacă există actualizări</translation>
 <translation id="2527167509808613699">Orice fel de conexiune</translation>
@@ -8536,6 +8538,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7578137152457315135">Setări pentru amprentă</translation>
 <translation id="7578692661782707876">Introdu codul de confirmare.</translation>
 <translation id="757941033127302446">Te-ai conectat</translation>
+<translation id="7580311608678791180">Deschide din bara de activități Windows</translation>
 <translation id="7581462281756524039">Un instrument de curățare</translation>
 <translation id="7582582252461552277">Prefer această rețea</translation>
 <translation id="7582844466922312471">Date mobile</translation>
@@ -8549,6 +8552,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7590883480672980941">Setări de introducere a textului</translation>
 <translation id="7592060599656252486">Câteva</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (cod de eroare <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Deschide din bara de meniu a computerului Mac</translation>
 <translation id="7600054753482800821">&amp;Gestionează motoarele de căutare și căutarea pe site</translation>
 <translation id="7600218158048761260">Google Drive este dezactivat pentru acest tip de cont.</translation>
 <translation id="7600965453749440009">Nu traduce niciodată din <ph name="LANGUAGE" /></translation>
@@ -9234,6 +9238,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8102139037507939978">Elimină datele cu caracter personal din system_logs.txt.</translation>
 <translation id="810362914482827094">Caută chei de acces</translation>
 <translation id="8104088837833760645">Descarcă profilul eSIM</translation>
+<translation id="8104388155778519213">Permite accesul la conținutul de pe ecran cu Google Lens</translation>
 <translation id="8104778744208707085">Ia măsuri!</translation>
 <translation id="8105273883928376822">Conectează-te pentru a continua.</translation>
 <translation id="8106114112474206597">Folosește tasta „i” pentru a apăsa un buton al mouse-ului</translation>

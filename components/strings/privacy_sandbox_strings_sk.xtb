@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="1184166532603925201">V režime inkognito blokuje Chrome webom možnosť používať súbory cookie tretích strán</translation>
+<translation id="1365023215312302966">Weby môžu pomocou súborov cookie tretích strán prispôsobovať obsah a reklamy a získavať informácie o akciách, ktoré vykonávate na iných weboch</translation>
 <translation id="1569440020357229235">Keď máte aktivovaný režim inkognito, weby nemôžu používať súbory cookie tretích strán. Ak web, ktorý využíva tieto súbory cookie, nefunguje, môžete <ph name="BEGIN_LINK" />mu skúsiť udeliť dočasný prístup k súborom cookie tretích strán<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Funkcie na niektorých weboch nemusia fungovať</translation>
 <translation id="2183376768278472507">Ak web nefunguje podľa očakávaní, môžete skúsiť povoliť treťostranné súbory cookie pre konkrétny navštívený web</translation>
 <translation id="2235344399760031203">Súbory cookie tretích strán sú blokované</translation>
+<translation id="2360633687155619995">Weby môžu pomocou súborov cookie tretích strán prispôsobovať obsah a reklamy a získavať informácie o akciách, ktoré vykonávate na iných weboch. Niektoré funkcie webov nemusia fungovať podľa očakávaní.</translation>
 <translation id="2496115946829713659">Weby môžu pomocou súborov cookie tretích strán prispôsobovať obsah a reklamy a získavať informácie o akciách, ktoré vykonávate na iných weboch</translation>
 <translation id="3045333309254072201">Keď máte aktivovaný režim inkognito, weby nemôžu používať súbory cookie tretích strán. Ak web, ktorý využíva tieto súbory cookie, nefunguje, môžete <ph name="START_LINK" />mu skúsiť udeliť dočasný prístup k súborom cookie tretích strán<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Weby, ktoré využívajú súbory cookie tretích strán, by mali fungovať podľa očakávaní</translation>

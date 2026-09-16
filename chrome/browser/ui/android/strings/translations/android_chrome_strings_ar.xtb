@@ -1027,6 +1027,7 @@
 <translation id="5032430150487044192">يتعذّر إنشاء رمز الاستجابة السريعة.</translation>
 <translation id="5035846135112863536">يُرجى اختيار "مزيد من التفاصيل" أدناه للحصول على مزيد من المعلومات من "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />): <ph name="URL_LIST" />}zero{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب: <ph name="URL_LIST" />}two{علامتا تبويب (<ph name="TAB_COUNT_MANY" />): <ph name="URL_LIST" />}few{‫<ph name="TAB_COUNT_MANY" /> علامات تبويب: <ph name="URL_LIST" />}many{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب: <ph name="URL_LIST" />}other{‫<ph name="TAB_COUNT_MANY" /> علامة تبويب: <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">سماح</translation>
 <translation id="5040262127954254034">الخصوصية</translation>
 <translation id="504456571576643789">ملاحظات مهمّة</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{تم اختيار نافذة واحدة (<ph name="WINDOW_COUNT_ONE" />)}zero{تم اختيار <ph name="WINDOW_COUNT_NORMAL" /> نافذة}two{تم اختيار نافذتَين (<ph name="WINDOW_COUNT_NORMAL" />)}few{تم اختيار <ph name="WINDOW_COUNT_NORMAL" /> نوافذ}many{تم اختيار <ph name="WINDOW_COUNT_NORMAL" /> نافذةً}other{تم اختيار <ph name="WINDOW_COUNT_NORMAL" /> نافذة}}</translation>

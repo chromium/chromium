@@ -882,6 +882,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2467272921457885625">Especificacións e estatísticas do hardware do dispositivo, como o historial de uso de CPU/RAM</translation>
 <translation id="2467421459221956357">Queres utilizar os sensores?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Executar diagnóstico de rede<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">Facer pedido</translation>
 <translation id="2469153820345007638">Orde de 1 a N</translation>
 <translation id="24699311393038040">Papel (revestido)</translation>
 <translation id="2471632709106952369">Táboas de comparación</translation>
@@ -1428,6 +1429,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3432601291244612633">Pechar páxina</translation>
 <translation id="3434025015623587566">O xestor de contrasinais de Google necesita máis acceso</translation>
 <translation id="343474037147570563">Os ficheiros que cargues ou anexes enviaranse a Google Cloud ou a terceiros para a súa análise. Por exemplo, poderían examinarse para ver se conteñen datos confidenciais ou software malicioso, e almacenarse en función das políticas da empresa. Tamén podería velos a persoa administradora.</translation>
+<translation id="3435267628744367511">Preme Control dúas veces en calquera formulario para buscar e completar información sen cambiar de pestana</translation>
 <translation id="3435557549311968410">Continuo (curto)</translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3436125638121079308">Queres compartir automaticamente as pestanas relevantes para obter mellores respostas neste fío de mensaxes?</translation>
@@ -2895,6 +2897,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5884465125445718607">Sobre chinés n.º 6</translation>
 <translation id="5887400589839399685">Gardouse a tarxeta</translation>
 <translation id="5887687176710214216">Visitouse onte por última vez</translation>
+<translation id="5887791684215121787">Preme ⌘ ⌘ en calquera formulario para buscar e completar información sen cambiar de pestana</translation>
 <translation id="5889251770650310375">Para obter o historial dos teus outros dispositivos, verifica a túa identidade e sincroniza o historial e as pestanas. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895187275912066135">Emitido o</translation>

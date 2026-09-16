@@ -1026,6 +1026,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5032430150487044192">Nevar izveidot kvadrātkodu</translation>
 <translation id="5035846135112863536">Lai iegūtu plašāku informāciju no uzņēmuma <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />, tālāk atlasiet pogu “Plašāka informācija”.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> cilne — <ph name="URL_LIST" />}zero{<ph name="TAB_COUNT_MANY" /> ciļņu — <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> cilne — <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> cilnes — <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Atļaut</translation>
 <translation id="5040262127954254034">Konfidencialitāte</translation>
 <translation id="504456571576643789">Svarīgi apsvērumi</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Atlasīts <ph name="WINDOW_COUNT_ONE" /> logs}zero{Atlasīti <ph name="WINDOW_COUNT_NORMAL" /> logi}one{Atlasīts <ph name="WINDOW_COUNT_NORMAL" /> logs}other{Atlasīti <ph name="WINDOW_COUNT_NORMAL" /> logi}}</translation>

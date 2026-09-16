@@ -881,6 +881,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2467272921457885625">Qurilmaning apparat xususiyatlari va uning ishlashi haqidagi maʼlumotlar, masalan, CPU va RAM ishlatishi.</translation>
 <translation id="2467421459221956357">Sensorlardan foydalanilsinmi?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Tarmoq diagnostikasini ishga tushiring<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">Buyurtma</translation>
 <translation id="2469153820345007638">1 dan N gacha tartibda</translation>
 <translation id="24699311393038040">Qogʻoz (qoplamali)</translation>
 <translation id="2471632709106952369">Taqqoslash jadvallari</translation>
@@ -1512,6 +1513,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3577473026931028326">Xatolik yuz berdi. Qayta urining.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Sahifa tayyor boʻlganda Chrome buni xabar qiladi. &lt;a&gt;Bekor qilish&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Varaqlarni avtomatik kiritish</translation>
 <translation id="3582930987043644930">Nom qo‘shish</translation>
 <translation id="3583757800736429874">&amp;Ko‘chirib o‘tkazishni qayta bajarish</translation>
 <translation id="3584299510153766161">Quyidan ikkita teshik ochish</translation>
@@ -1586,6 +1588,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Yuklanmoqda…</translation>
 <translation id="3709599264800900598">Nusxalangan matn</translation>
+<translation id="3711223220609269738">Yangi izolyatsiyalangan varaq</translation>
 <translation id="3711430313228789376">Chrome brauzeri parollarni chiqarishga urinmoqda</translation>
 <translation id="3711895659073496551">To‘xtatib qo‘yish</translation>
 <translation id="3712004750972384495">Ekran yozuvi saqlanmoqda</translation>
@@ -1604,6 +1607,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3727309136762649052">Nom maydoni</translation>
 <translation id="3727850735097852673">MacOS Keychain bilan Google Parol menejeridan foydalanish uchun Chrome brauzerini qayta ishga tushiring va Keychainʼdan foydalanish ruxsatini bering. Qayta ishga tushirilgandan keyin varaqlar qayta ochiladi.</translation>
 <translation id="3728173127485570463">Chrome endi parollarni avtomatik kiritishda barmoq izingizni talab qilmaydi</translation>
+<translation id="3729811201279509483">Varaqlarni mustaqil kiritish</translation>
 <translation id="3736564442532774454">Chrome <ph name="APP_NAME" /> sahifasida maxfiy axborotni kiritishga urinmoqda.</translation>
 <translation id="3738166223076830879">Brauzeringiz administrator tomonidan boshqariladi.</translation>
 <translation id="3739842843727261045">Ijobiy baho bosilsa, bu natijalarning sizga yoqqani haqida fikr-mulohaza yuboriladi</translation>
@@ -2767,6 +2771,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5649053991847567735">Avtomatik yuklamalar</translation>
 <translation id="5651323159439184939">Avtomatik uzatiladigan qogʻoz</translation>
 <translation id="5653681867130739344">Google Walletda ID kartani xavfsiz yangilang</translation>
+<translation id="5653744563415531641">Maʼlumotlaringizni saqlang va Google mahsulotlarida shakllarni toʻldirish kabi vazifalarni tezroq bajaring. <ph name="ACCOUNT" /> hisobi uchun <ph name="MANAGE_WALLET_SETTINGS_LINK" /> mumkin.</translation>
 <translation id="5654927323611874862">Yuklangan ishdan chiqish hisoboti identifikatori:</translation>
 <translation id="5654965123204121933">URL manzilda <ph name="SEARCH_TERMS_REPLACEMENT" /> almashtiriladigan qator boʻlmaydi: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">Email</translation>
@@ -3211,6 +3216,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> kartasining amal qilish muddati va CVC kodini kiriting</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Ota-onadan ruxsat olish oynasi</translation>
+<translation id="6413532517183895572">Wallet sozlamalaringizni boshqarish</translation>
 <translation id="6415778972515849510">Chromium Google hisobingizni himoyalash va parolni almashtirish uchun yordam beradi.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Muhim boʻlgan biznesga oid yoki shaxsiy fayllarni tashqi xotirada saqlang.</translation>

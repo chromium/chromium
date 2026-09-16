@@ -1759,7 +1759,7 @@ Cette règle a été supprimée dans Chrome 145. Nous vous recommandons d'utili
 <translation id="2149957154942061013">Usage interne uniquement</translation>
 <translation id="2151831603578119302">Activer les raccourcis des fonctionnalités d'accessibilité</translation>
 <translation id="2156132677421487971">Configurer les règles pour <ph name="PRODUCT_NAME" />, une fonctionnalité permettant aux utilisateurs de caster le contenu des onglets, des sites ou de leur bureau depuis leur navigateur sur des écrans ou systèmes audio distants.</translation>
-<translation id="2156359411909638496">Paramètres pour les Découvertes Chrome</translation>
+<translation id="2156359411909638496">Paramètres Chrome Finds</translation>
 <translation id="2156755242840687300">Serveurs d'impression externes activés</translation>
 <translation id="2157842368188031417">Cette règle ne concerne que les sessions Invité gérées. Elle doit être activée pour que le mode station de travail partagée d'Imprivata autorise les changements d'utilisateurs en cours de session.
       Si cette règle est définie sur "True", certaines règles sont ignorées d'office pour des fonctionnalités, qui conservent les données utilisateur sensibles et qui ne sont pas gérées par le mécanisme de nettoyage utilisé pour les changements d'utilisateurs en cours de session avec le mode station de travail partagée d'Imprivata.
@@ -4264,7 +4264,7 @@ Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />,
 <translation id="3749511622128647337">Désactiver la sortie audio</translation>
 <translation id="3750220015372671395">Bloquer la génération de clé sur ces sites</translation>
 <translation id="3753267109888284695">Liste d'autorisation HTTP</translation>
-<translation id="3753514818525019935">Ne pas autoriser les Découvertes Chrome.</translation>
+<translation id="3753514818525019935">Ne pas autoriser Chrome Finds.</translation>
 <translation id="3753959315989102457">Désactiver la mise à jour de la position de l'appareil</translation>
 <translation id="3755237588083934849">Permet de spécifier la fréquence d'envoi (en millisecondes) des informations sur l'état de l'appareil. La fréquence minimale autorisée est de 60 secondes.
 
@@ -4700,7 +4700,7 @@ Pendant les intervalles de restriction, les sessions en cours sont fermées et l
 <translation id="402759845255257575">Interdire à tous les sites d'exécuter JavaScript</translation>
 <translation id="4027608872760987929">Activer le moteur de recherche par défaut</translation>
 <translation id="4030152268425532846">Désactiver l'annulation de la connexion automatique</translation>
-<translation id="4032740546145417900">Ne pas autoriser la saisie de texte par commande vocale.</translation>
+<translation id="4032740546145417900">Ne pas autoriser la fonctionnalité Parler pour écrire.</translation>
 <translation id="4043796890723386527">Empêcher les utilisateurs de créer et d'utiliser des profils secondaires, et d'utiliser le mode Invité dans le navigateur <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Permet de contrôler l'application du filtre d'URL SafeSites, qui utilise l'API Google Safe Search pour déterminer si une URL est associée ou non à du contenu pornographique.
 
@@ -6719,11 +6719,11 @@ Remarque : Cette fonctionnalité n'est pas encore disponible au grand public. S
 <translation id="5247584184349816217">Activer l'économiseur d'écran pour l'écran de verrouillage.</translation>
 <translation id="5247973380763021389">Empêcher les règles cloud utilisateur d'ignorer les règles cloud machine.</translation>
 <translation id="5249006530384016395">Détermine si la syntaxe <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> obsolète de l'état personnalisé CSS est activée</translation>
-<translation id="5249271416806588789">La saisie de texte par commande vocale est une fonctionnalité basée sur l'IA qui permet aux utilisateurs de saisir et de modifier du texte à l'aide de leur voix. Elle s'appuie sur des modèles d'IA générative afin de fournir une transcription et une mise en forme de haute qualité.
+<translation id="5249271416806588789">"Parler pour écrire" est une fonctionnalité basée sur l'IA qui permet aux utilisateurs de saisir et de modifier du texte en parlant. Elle s'appuie sur des modèles d'IA générative pour fournir une transcription et une mise en forme de haute qualité.
 
-0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. Elles pourront également être examinées par des réviseurs humains afin d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
+0 = Autoriser l'utilisation de la fonctionnalité et autoriser Google à utiliser les données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, ces données peuvent inclure les prompts, les données d'entrée et de sortie, les sources et les commentaires écrits. Elles pourront aussi être examinées par des réviseurs humains afin d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
 
-1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les prompts, les entrées, les sorties, les sources et les retours écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+1 = Autoriser l'utilisation de la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les prompts, les données d'entrée et de sortie, les sources et les commentaires écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
 2 = Ne pas autoriser la fonctionnalité.
 
@@ -7544,7 +7544,7 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
 <translation id="5776508475264864949">Interdire à l'appli Gemini d'effectuer des actions sur les pages Web.</translation>
 <translation id="5779185945203505880">Demander chaque fois qu'un site veut accéder aux capteurs</translation>
 <translation id="5783009211970309878">Imprimer les en-têtes et les pieds de page</translation>
-<translation id="5786913136266632175">Autoriser les Découvertes Chrome et améliorer les modèles d'IA.</translation>
+<translation id="5786913136266632175">Autoriser Chrome Finds et améliorer les modèles d'IA.</translation>
 <translation id="5789288985554424301">Permet de définir si les sites Web sont autorisés à utiliser l'API Idle Detection.
 
 Si cette règle est définie sur "1 - <ph name="ALLOW_IDLE_DETECTION_VALUE_NAME" />", les sites Web peuvent utiliser l'API sans demander l'autorisation de l'utilisateur.
@@ -7891,7 +7891,7 @@ Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_AUTOMATIC_DOW
       Si elle est désactivée, les utilisateurs ne peuvent pas envoyer de commentaires à Google.</translation>
 <translation id="5976636832661103220">Les paramètres F11 utilisent le raccourci qui contient la touche de modification Maj</translation>
 <translation id="5979376378555121803">Application hébergée</translation>
-<translation id="5983016603010860828">Paramètres de la saisie de texte par commande vocale</translation>
+<translation id="5983016603010860828">Paramètres de la fonctionnalité Parler pour écrire</translation>
 <translation id="5983274643567559194">La définition d'un raccourci pour l'action "Supprimer" est désactivée.</translation>
 <translation id="5984099692320899605">Ne pas utiliser l'authentification NTLM</translation>
 <translation id="5984237109586500246">Accepter les contenus Web diffusés via Signed HTTP Exchange</translation>
@@ -9144,7 +9144,7 @@ Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, c'est
 
       Si cette règle n'est pas configurée, aucune donnée de télémétrie supplémentaire ne sera signalée en cas d'événements de modification de l'intensité du signal.</translation>
 <translation id="6751612743847158732">Restaurez toujours la dernière session.</translation>
-<translation id="6751882390104737961">Les Découvertes Chrome sont une fonctionnalité basée sur l'IA qui aide les utilisateurs à rechercher et à comprendre le contenu de la page Web actuelle.
+<translation id="6751882390104737961">Chrome Finds est une fonctionnalité basée sur l'IA qui aide les utilisateurs à rechercher et à comprendre le contenu de la page Web actuelle.
 
 0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. Elles pourront également être examinées par des réviseurs humains afin d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
 
@@ -10148,7 +10148,7 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de co
       Si vous activez cette règle, vous exposez les sites à certaines attaques ciblant plusieurs sites et autorisez le suivi des utilisateurs d'un site à l'autre même sans cookies, grâce à l'ajout d'entrées au cache d'authentification HTTP par le biais d'identifiants intégrés aux URL.
 
       Cette règle a pour but de donner l'opportunité aux entreprises tributaires de l'ancien comportement de mettre à jour leur processus de connexion. Elle sera prochainement supprimée.</translation>
-<translation id="7322231030019184787">Autoriser la saisie de texte par commande vocale sans collecte de données.</translation>
+<translation id="7322231030019184787">Autoriser la fonctionnalité Parler pour écrire sans collecte de données.</translation>
 <translation id="7322825363493984512">Mot de passe pour authentifier les services système auprès du proxy Web à distance.</translation>
 <translation id="7323773727263636287">Activer la fonctionnalité d'accessibilité de correction des couleurs.
 
@@ -10579,7 +10579,7 @@ On attend de cette règle qu'elle soit utilisée dans le cadre de la modificatio
       Lorsque cette règle est activée, le code d'accès parental peut être validé sur l'appareil d'un enfant.
       Lorsqu'elle est désactivée, il est impossible de valider ce code sur l'appareil d'un enfant.</translation>
 <translation id="7623431489198474050">Désactiver l'attestation à distance pour la protection du contenu</translation>
-<translation id="7624832415093566709">Autoriser la saisie de texte par commande vocale.</translation>
+<translation id="7624832415093566709">Autoriser la fonctionnalité Parler pour écrire.</translation>
 <translation id="7625858205605842562">Cette règle permet de lister les formats d'URL pour lesquels les sites ne peuvent pas demander aux utilisateurs l'accès à un appareil USB.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, le paramètre défini par l'utilisateur s'applique.
@@ -12233,7 +12233,7 @@ Si <ph name="LIVE_CAPTION_ENABLED_POLICY_NAME" /> est désactivée, la traductio
 <translation id="8713535263782304771">Désactiver la navigation sécurisée</translation>
 <translation id="8714556680280715750">URL permettant aux utilisateurs d'en savoir plus. Si cette règle n'est pas configurée, plus aucune URL "En savoir plus" ne figurera dans le programme d'installation. Si l'URL est spécifiée, elle doit utiliser le format HTTPS.</translation>
 <translation id="8715885991031124968">Autoriser les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente.</translation>
-<translation id="8720288018555457355">Autoriser les Découvertes Chrome sans améliorer les modèles d'IA.</translation>
+<translation id="8720288018555457355">Autoriser Chrome Finds sans améliorer les modèles d'IA.</translation>
 <translation id="8720547069538712402">Autoriser l'utilisateur à activer ou désactiver le correcteur orthographique</translation>
 <translation id="8721685661759544418">Activer la lecture à voix haute des pages Web (distillation du texte et synthèse vocale)</translation>
 <translation id="8726080977639508431">Cette règle contrôle la façon dont <ph name="PRODUCT_NAME" /> interprète les règles des listes grises/de sites pour la fonctionnalité Legacy Browser Support. Cela concerne ces règles : <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> et <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.

@@ -1027,6 +1027,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5032430150487044192">Hindi magawa ang QR Code</translation>
 <translation id="5035846135112863536">Piliin ang "Higit pang detalye" sa ibaba para kumuha ng higit pang impormasyon mula sa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> tab - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> na tab - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Payagan</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="504456571576643789">Mga bagay na dapat isaalang-alang</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> Window ang Napili}one{<ph name="WINDOW_COUNT_NORMAL" /> Window ang Napili}other{<ph name="WINDOW_COUNT_NORMAL" /> na Window ang Napili}}</translation>

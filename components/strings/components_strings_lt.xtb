@@ -882,6 +882,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2467272921457885625">Įrenginio aparatinės įrangos specifikacijos ir statistika, pvz., centrinio procesoriaus ir (arba) laisvosios prieigos atminties naudojimo istorija</translation>
 <translation id="2467421459221956357">Naudoti jutiklius?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Paleistas įrankis „Windows Network Diagnostics“<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">Rikiuoti</translation>
 <translation id="2469153820345007638">Tvarka: nuo 1 iki N</translation>
 <translation id="24699311393038040">Popierius (dengtas)</translation>
 <translation id="2471632709106952369">Palyginimo lentelės</translation>
@@ -1518,6 +1519,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3577473026931028326">Kažkas ne taip. Bandykite dar kartą.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">„Chrome“ informuos jus, kai šis puslapis bus paruoštas. &lt;a&gt;Atšaukti&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Automatinis skirtukų pridėjimas</translation>
 <translation id="3582930987043644930">Pridėti vardą</translation>
 <translation id="3583757800736429874">&amp;Perkelti dar kartą</translation>
 <translation id="3584299510153766161">Dvi skylės apačioje</translation>
@@ -1593,6 +1595,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Įkeliama...</translation>
 <translation id="3709599264800900598">Nukopijuotas tekstas</translation>
+<translation id="3711223220609269738">Naujas izoliuotas skirtukas</translation>
 <translation id="3711430313228789376">Naršyklė „Chrome“ bando rodyti slaptažodžius</translation>
 <translation id="3711895659073496551">Laikinai sustabdyti</translation>
 <translation id="3712004750972384495">Išsaugomas ekrano vaizdo įrašas</translation>
@@ -1611,6 +1614,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3727309136762649052">Pavadinimų sritis</translation>
 <translation id="3727850735097852673">Jei norite naudoti „Google“ slaptažodžių tvarkyklę su „macOS Keychain“, iš naujo paleiskite „Chrome“ ir leiskite pasiekti „Keychain“. Paleidus iš naujo skirtukai bus atidaryti iš naujo.</translation>
 <translation id="3728173127485570463">„Chrome“ naršyklėje nebebus reikalaujama piršto atspaudo, kad būtų galima automatiškai užpildyti slaptažodžius</translation>
+<translation id="3729811201279509483">Skirtukų pridėjimas neautomatiškai</translation>
 <translation id="3736564442532774454">„Chrome“ naršyklė bando užpildyti jūsų neskelbtiną informaciją programoje „<ph name="APP_NAME" />“.</translation>
 <translation id="3738166223076830879">Jūsų naršyklę tvarko jūsų administratorius.</translation>
 <translation id="3739842843727261045">Spustelėjus mygtuką „Patinka“ pateikiamas atsiliepimas, kad jums patinka šie rezultatai</translation>
@@ -2774,6 +2778,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5649053991847567735">Automatiškai atsisiųsti</translation>
 <translation id="5651323159439184939">Tiekimas naudojant trauktuvą</translation>
 <translation id="5653681867130739344">Patikimai atnaujinkite asmens tapatybės kortelės duomenis sistemoje „Google Wallet“</translation>
+<translation id="5653744563415531641">Išsaugokite informaciją ir sparčiau atlikite užduotis, pvz., užpildykite formas „Google“ produktuose. Galite <ph name="MANAGE_WALLET_SETTINGS_LINK" /> už <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">Įkeltos strigčių ataskaitos ID:</translation>
 <translation id="5654965123204121933">URL nėra būtinos pakeitimo eilutės <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">El. paštas</translation>
@@ -3220,6 +3225,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6410264514553301377">įveskite „<ph name="CREDIT_CARD" />“ galiojimo pabaigos datą ir kortelės saugos kodą (CVC)</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Tėvų patvirtinimo dialogo langas</translation>
+<translation id="6413532517183895572">tvarkyti „Wallet“ nustatymus</translation>
 <translation id="6415778972515849510">„Chromium“ gali padėti apsaugoti „Google“ paskyrą ir pakeisti slaptažodį.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Įsitikinkite, kad visi svarbūs verslo ar asmens duomenys saugomi išorėje.</translation>

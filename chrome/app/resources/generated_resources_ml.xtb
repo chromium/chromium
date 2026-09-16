@@ -1431,6 +1431,7 @@
 <translation id="2111670510994270194">പുതിയ ടാബ് വലതുവശത്തേക്ക്</translation>
 <translation id="2111778868023567359">ഈ പേജിൽ നിങ്ങൾ ഇനി ടാബ് ഗ്രൂപ്പുകൾ കാണില്ല</translation>
 <translation id="2112554630428445878">സ്വാഗതം, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">macOS-ൽ നിന്ന് ഇമ്പോർട്ട് ചെയ്ത സർട്ടിഫിക്കറ്റുകൾ കാണുക</translation>
 <translation id="21133533946938348">ടാബ് പിൻ ചെയ്യുക</translation>
 <translation id="2113479184312716848">&amp;സ്ഥാനം തുറക്കുക...</translation>
@@ -1983,6 +1984,7 @@
 <translation id="252513908494776481">ഈ ടാബിനെ കുറിച്ച് ചോദിക്കുക</translation>
 <translation id="2525746158911982776">സിസ്റ്റത്തിൽ മതിയായ സ്റ്റോറേജ് സ്പെയ്‌സ് ഇല്ലാത്തതിനാൽ അപ്‌ഡേറ്റ് ചെയ്യാനായില്ല.</translation>
 <translation id="2525842906387880861">ഈ പേജിൽ നിങ്ങൾ ഇനി നിർദ്ദേശങ്ങൾ കാണില്ല</translation>
+<translation id="2526346836766369775">പുതിയ ഐസൊലേറ്റഡ് &amp;ടാബ്</translation>
 <translation id="2526590354069164005">ഡെസ്ക്‌ടോപ്പ്</translation>
 <translation id="2526619973349913024">അപ്ഡേറ്റിനായി പരിശോധിക്കുക</translation>
 <translation id="2527167509808613699">ഏത് രീതിയിലുള്ള കണക്ഷനും</translation>
@@ -8534,6 +8536,7 @@
 <translation id="7578137152457315135">ഫിംഗർപ്രിന്റ് ക്രമീകരണം</translation>
 <translation id="7578692661782707876">നിങ്ങളുടെ സ്ഥിരീകരണ കോഡ് നൽകുക.</translation>
 <translation id="757941033127302446">സൈൻ ഇൻ ചെയ്‌തു</translation>
+<translation id="7580311608678791180">Windows ടാസ്‌ക് ബാറിൽ നിന്ന് തുറക്കുക</translation>
 <translation id="7581462281756524039">ക്ലീൻഅപ്പ് ടൂൾ</translation>
 <translation id="7582582252461552277">ഈ നെറ്റ്‌വെർക്ക് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7582844466922312471">മൊബൈല്‍ ഡാറ്റ</translation>
@@ -8547,6 +8550,7 @@
 <translation id="7590883480672980941">ഇൻപുട്ട് ക്രമീകരണം</translation>
 <translation id="7592060599656252486">ചിലത്</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (പിശക് കോഡ് <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Mac മെനു ബാറിൽ നിന്ന് തുറക്കുക</translation>
 <translation id="7600054753482800821">തിരയൽ യന്ത്രങ്ങളും സൈറ്റ് തിരയലും മാനേജ് ചെയ്യുക</translation>
 <translation id="7600218158048761260">ഈ അക്കൗണ്ട് തരത്തിനായി Google Drive പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
@@ -9232,6 +9236,7 @@
 <translation id="8102139037507939978">system_logs.txt-ൽ നിന്ന് വ്യക്തിപരമായി തിരിച്ചറിയാനുതകുന്ന വിവരങ്ങൾ ഇല്ലാതാക്കുക.</translation>
 <translation id="810362914482827094">പാസ്‌കീകൾ തിരയുക</translation>
 <translation id="8104088837833760645">ഇ-സിം പ്രൊഫൈൽ ഡൗൺലോഡ് ചെയ്യുക</translation>
+<translation id="8104388155778519213">നിങ്ങളുടെ സ്‌ക്രീനിലുള്ള കാര്യങ്ങൾ Google Lens-മായി പങ്കിടുക</translation>
 <translation id="8104778744208707085">ശ്രദ്ധ ആവശ്യമാണ്</translation>
 <translation id="8105273883928376822">തുടരാൻ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="8106114112474206597">മൗസ് ബട്ടൺ അമർത്താൻ “i” ഉപയോഗിക്കുക</translation>

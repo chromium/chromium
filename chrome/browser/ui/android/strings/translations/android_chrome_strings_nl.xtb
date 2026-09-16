@@ -1026,6 +1026,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5032430150487044192">Kan geen QR-code maken</translation>
 <translation id="5035846135112863536">Kies hieronder Meer informatie voor meer informatie van <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tabblad: <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> tabbladen: <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Toestaan</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="504456571576643789">Overwegingen</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> venster geselecteerd}other{<ph name="WINDOW_COUNT_NORMAL" /> vensters geselecteerd}}</translation>

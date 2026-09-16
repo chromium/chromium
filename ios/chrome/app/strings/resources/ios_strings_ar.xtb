@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">التالي</translation>
 <translation id="1204075260022434100">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" ضِمن حسابك {email}}zero{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}two{تمّ حفظ إشارتَين مرجعيتَين ({count}) في "{title}" ضِمن حسابك {email}}few{تمّ حفظ {count} إشارات مرجعية في "{title}" ضِمن حسابك {email}}many{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}other{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}}</translation>
 <translation id="1207493287814084192">‫5:30 مساءً</translation>
-<translation id="1215414310909588335">{count,plural, =1{تم توفير دقيقة واحدة من الكتابة}zero{تم توفير # دقيقة من الكتابة}two{تم توفير دقيقتَين من الكتابة}few{تم توفير # دقائق من الكتابة}many{تم توفير # دقيقة من الكتابة}other{تم توفير # دقيقة من الكتابة}}</translation>
 <translation id="1217294226280635614">تقسيم العرض</translation>
 <translation id="1218730690561976633">إيقاف أو تفعيل التحقق من هوية المستخدم قبل الملء التلقائي المحسّن</translation>
 <translation id="1219674500290482172">يتعذر الاتصال بالإنترنت.</translation>

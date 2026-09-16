@@ -1432,6 +1432,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2111670510994270194">Nova pestana á dereita</translation>
 <translation id="2111778868023567359">Non verás os grupos de pestanas nesta páxina de novo</translation>
 <translation id="2112554630428445878">Dámosche a benvida, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Ver os certificados importados de macOS</translation>
 <translation id="21133533946938348">Ancorar pestana</translation>
 <translation id="2113479184312716848">Abrir &amp;ficheiro...</translation>
@@ -1984,6 +1985,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="252513908494776481">Fai preguntas sobre esta pestana</translation>
 <translation id="2525746158911982776">Produciuse un erro na actualización porque o sistema non ten suficiente espazo de almacenamento.</translation>
 <translation id="2525842906387880861">Non volverás ver suxestións nesta páxina de novo</translation>
+<translation id="2526346836766369775">Nova &amp;pestana illada</translation>
 <translation id="2526590354069164005">Ordenador</translation>
 <translation id="2526619973349913024">Buscar actualizacións</translation>
 <translation id="2527167509808613699">Calquera tipo de conexión</translation>
@@ -8536,6 +8538,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7578137152457315135">Configuración de impresión dixital</translation>
 <translation id="7578692661782707876">Mete o código de confirmación.</translation>
 <translation id="757941033127302446">Sesión iniciada</translation>
+<translation id="7580311608678791180">Ábreo desde a barra de tarefas de Windows</translation>
 <translation id="7581462281756524039">Unha ferramenta de limpeza</translation>
 <translation id="7582582252461552277">Establecer esta rede como preferida</translation>
 <translation id="7582844466922312471">Datos móbiles</translation>
@@ -8549,6 +8552,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7590883480672980941">Configuración da introdución de texto</translation>
 <translation id="7592060599656252486">Algúns signos de puntuación</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (código de erro <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Ábreo desde a barra de menú de Mac</translation>
 <translation id="7600054753482800821">Xestionar &amp;motores de busca e busca de sitios</translation>
 <translation id="7600218158048761260">Google Drive está desactivado para este tipo de conta.</translation>
 <translation id="7600965453749440009">Non traducir nunca do <ph name="LANGUAGE" /></translation>
@@ -9234,6 +9238,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8102139037507939978">Obter información que permita a identificación persoal do ficheiro system_logs.txt.</translation>
 <translation id="810362914482827094">Buscar claves de acceso</translation>
 <translation id="8104088837833760645">Descargar perfil de eSIM</translation>
+<translation id="8104388155778519213">Comparte o que aparece na pantalla con Google Lens</translation>
 <translation id="8104778744208707085">A tarefa precisa a túa atención</translation>
 <translation id="8105273883928376822">Inicia sesión para continuar.</translation>
 <translation id="8106114112474206597">Usa a tecla I para premer un botón do rato</translation>

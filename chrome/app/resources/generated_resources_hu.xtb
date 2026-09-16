@@ -677,6 +677,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1523978563989812243">Szövegfelolvasó motorok</translation>
 <translation id="1524563461097350801">Köszönöm, nem</translation>
 <translation id="1525740877599838384">Csak a Wi-Fi használata a tartózkodási hely megállapításához</translation>
+<translation id="1526274304859009691">Jelentkezzen be, hogy hozzáférhessen a(z) <ph name="DEVICE" /> eszközön lévő bővítményekhez és sok máshoz</translation>
 <translation id="1526560967942511387">Név nélküli dokumentum</translation>
 <translation id="1527336312600375509">Monitor frissítési gyakorisága</translation>
 <translation id="152913213824448541">Közeli megosztáshoz használható névjegyek</translation>
@@ -6385,6 +6386,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5902400038326841449">A Google Jelszókezelő ki van kapcsolva</translation>
 <translation id="5902892210366342391">Figyelmeztetések megjelenítése inkognitó módban a nem biztonságos webhelyek felkeresése előtt</translation>
 <translation id="5906457147959147328">A webhely továbbra is használhat azonosítókat a védett tartalmak lejátszásához</translation>
+<translation id="5906549184882174190">Izolált</translation>
 <translation id="5906655207909574370">Már majdnem naprakész! Indítsa újra az eszközt a frissítés befejezéséhez.</translation>
 <translation id="5906732635754427568">Az alkalmazáshoz kapcsolódó adatok törlődnek erről az eszközről.</translation>
 <translation id="5906974869830879618">Adja meg a PIN-kódot</translation>
@@ -6610,6 +6612,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6088475950266477163">Beá&amp;llítások</translation>
 <translation id="608912389580139775">Ha szeretne oldalakat felvenni az olvasási listájára, kattintson a Könyvjelző ikonra</translation>
 <translation id="6089289670051481345">Tritanomália</translation>
+<translation id="6090068946774422711">Jelentkezzen be, hogy hozzáférhessen a(z) <ph name="DEVICE" /> eszközön lévő olvasólistájához és sok máshoz</translation>
 <translation id="6090760257419195752">Elvetett figyelmeztetések</translation>
 <translation id="609174145569509836">Tárhely felszabadítása</translation>
 <translation id="6091761513005122595">A megosztott tároló csatlakoztatása sikeres volt.</translation>
@@ -7962,6 +7965,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7124712201233930202">Nem teljesültek a szervezet irányelvei</translation>
 <translation id="7125148293026877011">A Crostini törlése</translation>
 <translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
+<translation id="7125576351373654452">A bejelentkezéssel valamennyi eszközén hozzáférhet a bővítményeihez és egyebekhez</translation>
 <translation id="7125932261198019860">Győződjön meg arról, hogy a nyomtató ugyanahhoz a Wi-Fi-hálózathoz csatlakozik, mint a Chromebook, vagy használjon USB-kábelt. <ph name="LINK_BEGIN" />További információ a kompatibilitásról<ph name="LINK_END" />.</translation>
 <translation id="7127980134843952133">Letöltési előzmények</translation>
 <translation id="7130438335435247835">Hozzáférési pont neve (APN)</translation>
@@ -8814,6 +8818,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7780992949171378848">Leiratkozási kérelem küldése a webhelyeknek az Ön adatainak felhasználásával kapcsolatban</translation>
 <translation id="7782102568078991263">Nincs több javaslat a Google-tól</translation>
 <translation id="7782717250816686129">Állandó adatok tárolása a bejelentkezési képernyőn, és hitelesítő adatok beillesztése a munkamenetbe.</translation>
+<translation id="7782885970382585765">A bejelentkezéssel valamennyi eszközén hozzáférhet az olvasólistájához és egyebekhez.</translation>
 <translation id="7784020347632229094">További információ a billentyűparancsról</translation>
 <translation id="7784067724422331729">A számítógép biztonsági beállításai letiltották ezt a fájlt.</translation>
 <translation id="7784796923038949829">Nem lehetséges a webhely adatainak olvasása és módosítása</translation>

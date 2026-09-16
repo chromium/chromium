@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">अगला</translation>
 <translation id="1204075260022434100">{count,plural, =1{आपके खाते ({email}) में मौजूद "{title}" में बुकमार्क सेव किया गया}one{आपके खाते ({email}) में मौजूद "{title}" में {count} बुकमार्क सेव किया गया}other{आपके खाते ({email}) में मौजूद "{title}" में {count} बुकमार्क सेव किए गए}}</translation>
 <translation id="1207493287814084192">शाम 5:30 बजे</translation>
-<translation id="1215414310909588335">{count,plural, =1{टाइपिंग में 1 मिनट बचा}one{टाइपिंग में # मिनट बचा}other{टाइपिंग में # मिनट बचे}}</translation>
 <translation id="1217294226280635614">स्प्लिट व्यू</translation>
 <translation id="1218730690561976633">ऑटोमैटिक तरीके से जानकारी भरने की बेहतर सुविधा के लिए, उपयोगकर्ता की पुष्टि करने की सुविधा को टॉगल करें</translation>
 <translation id="1219674500290482172">इंटरनेट से कनेक्‍ट होने में असमर्थ.</translation>
@@ -269,6 +268,7 @@
 <translation id="17906873777101817">पासवर्ड और पासकी सेव करने का विकल्प दें</translation>
 <translation id="1794893174442046596">टैब ग्रुप</translation>
 <translation id="1807893857950749072">प्रॉडक्ट की कीमत को ट्रैक करने की सुविधा से जुड़ी सूचनाओं को अनुमति दें…</translation>
+<translation id="1808142805674973090">मोड बदलें</translation>
 <translation id="1809929083618343438">इससे Chrome से चुनी गई जानकारी हट जाती है. हालांकि, आपके Google खाते से यह जानकारी नहीं मिटती.</translation>
 <translation id="1810976980198522421">अभी नहीं</translation>
 <translation id="1815941218935345331">पासवर्ड</translation>
@@ -455,6 +455,7 @@
 <translation id="2381405137052800939">मूलभूत बातें</translation>
 <translation id="2384692388811649784">गुप्त टैब छिपाएं</translation>
 <translation id="2386793615875593361">1 चयनित</translation>
+<translation id="2388949452472546050">Google के साथ-साथ, जिन साइटों पर विज़िट किया जाता है वे यह तय करती हैं कि इस अनुरोध का जवाब कैसे दिया जाए. आपके देश/इलाके के कानूनों के हिसाब से, साइटें आपके डेटा की बिक्री और शेयर करने की सुविधा को सीमित कर सकती हैं. इसके अलावा, साइटें दिलचस्पी के हिसाब से दिखाए जाने वाले विज्ञापनों के लिए भी आपके डेटा के इस्तेमाल को सीमित कर सकती हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="2390457533592708044">"<ph name="MODULE_NAME" />" छिपाएं</translation>
 <translation id="2393230427496852974">लोगों की राय पढ़ें</translation>
 <translation id="2394659309569789395">फिर भी साइट पर जाएं</translation>
@@ -850,6 +851,7 @@
 <translation id="3779810277399252432">कोई इंटरनेट कनेक्शन नहीं.</translation>
 <translation id="3782614601387961027">चेतावनी खारिज करें</translation>
 <translation id="3789841737615482174">इंस्‍टॉल करें</translation>
+<translation id="3793603310364129123">फटाफट लिंक खोलें</translation>
 <translation id="380329542618494757">नाम</translation>
 <translation id="3803696231112616155">इस साइट का अनुवाद करने के लिए पूछें</translation>
 <translation id="3810973564298564668">मैनेज करें</translation>
@@ -1381,6 +1383,7 @@
 <translation id="5467163657366219870">Maps Preview की सुविधा बंद करें</translation>
 <translation id="5474397204728336997">परिवार के सदस्यों के साथ शेयर किए जाने वाले पासवर्ड की सुविधा, कस्टमाइज़ेशन से जुड़े नए विकल्प वगैरह. ज़्यादा जानने के लिए टैप करें.</translation>
 <translation id="5475793109165786685">{count,plural, =0{कोई पासवर्ड इंपोर्ट नहीं किया गया}=1{{count} पासवर्ड इंपोर्ट किया गया}one{{count} पासवर्ड इंपोर्ट किया गया}other{{count} पासवर्ड इंपोर्ट किए गए}}</translation>
+<translation id="5477188385487393357">कॉपी करके चिपकाने की प्रोसेस भूल जाएं</translation>
 <translation id="5478327362747197944">किसी वेब पेज पर, तारीख पर क्लिक करके सीधे कैलेंडर इवेंट बनाएं.</translation>
 <translation id="5482922178977937393">क्या आपको अपनी दिलचस्पी के मुताबिक खबरों, खेल-कूद वगैरह के लिए सूचनाएं चाहिए?</translation>
 <translation id="5483838506518938965">आप बिलकुल तैयार हैं</translation>
@@ -1747,6 +1750,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6585618849026997638">किसी भी अहम पेज पर आसानी से वापस जाने के लिए, आप उसे बुकमार्क कर सकते हैं</translation>
 <translation id="6589001036857939353">डुप्लीकेट संपर्कों को मर्ज करें</translation>
 <translation id="659407965921887085">इस कार्ड में, वेब पर उन प्रॉडक्ट की कीमत में गिरावट दिखती है जिन्हें आपने ट्रैक किया है</translation>
+<translation id="6596324345367949437">Gemini गुप्त मोड में उपलब्ध नहीं है</translation>
 <translation id="6596481460663245319">Google की मदद से इमेज खोजें</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> के लिए, Google Photos में इमेज सेव की गई</translation>
 <translation id="6602173570135186741">ऑटोमैटिक तरीके से भरने की सुविधा और पासवर्ड</translation>

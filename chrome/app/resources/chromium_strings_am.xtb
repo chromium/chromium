@@ -70,6 +70,7 @@
 <translation id="1793486931176048546">ለፈጣን መዳረሻ Chromiumን በተግባር አሞሌዎ ላይ ለመሰካት በWindows ማሳወቂያ ውስጥ <ph name="BEGIN_BOLD" />አዎ<ph name="END_BOLD" /> ላይ ጠቅ ያድርጉ</translation>
 <translation id="1808667845054772817">Chromiumን ዳግም ጫን</translation>
 <translation id="1820835682567584003">Chromium <ph name="AUTHENTICATION_PURPOSE" /> በመሞከር ላይ ነው</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" /> አስቀድመው ገብተዋል። አሰሳዎን ለያይተው ለማቆየት በራስዎ መገለጫ ውስጥ እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ወደ Chromium ይግቡ። እንዲሁም ከ<ph name="DEVICE" /> ቅጥያዎችዎን እና ሌሎችንም ያገኛሉ።</translation>
 <translation id="183031085822326697">በሚቀጥለው ጊዜ Chromiumን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ሲከፍቱ Google የይለፍ ቃል አስተዳዳሪን ለመጠቀም ጥያቄ ያያሉ።</translation>
 <translation id="1838374766361614909">ፍለጋን ያፅዱ</translation>
 <translation id="18552579716432081">በGoogle መለያዎ ውስጥ እያስቀመጡት የአሰሳ ውሂብን ከዚህ መሣሪያ ብቻ ለመሰረዝ፣ <ph name="BEGIN_LINK" />ከChromium ዘግተው ይውጡ<ph name="END_LINK" />።</translation>
@@ -192,6 +193,7 @@
 <translation id="3038232873781883849">ለመጫን በመጠበቅ ላይ...</translation>
 <translation id="3045032126857188731">የተተረጎመው ቋንቋ፦ <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">የግብረመልስ መገናኛን ይዝጉ</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" /> አስቀድመው ገብተዋል። አሰሳዎን ለያይተው ለማቆየት በራስዎ መገለጫ ውስጥ እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ወደ Chromium ይግቡ። እንዲሁም ከ<ph name="DEVICE" /> የንባብ ዝርዝርዎን እና ሌሎችንም ያገኛሉ።</translation>
 <translation id="3068187312562070417">ሌሎች የChromium መገለጫዎች</translation>
 <translation id="3068290154869370196">ቅጥያዎች Chromiumን እንዲያበጁ የሚያስችሉዎት ተጨማሪዎች ናቸው። ተደራጅቶ ከመቆየት ጀምሮ የዕለት ተዕለት ተግባሮችን እስከማቃለል ድረስ ቅጥያዎች Chromiumን የራስዎ እንዲያደርጉ ያግዙዎታል።</translation>
 <translation id="3068515742935458733">የብልሽት ሪፖርቶችን እና <ph name="UMA_LINK" /> ወደ Google በመላክ Chromiumን የተሻለ ለማድረግ እገዛ ያድርጉ</translation>
@@ -293,6 +295,7 @@
 <translation id="4147856324248078748">የእርስዎን Chromium ያብጁ</translation>
 <translation id="4148957013307229264">በመጫን ላይ...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - በአውታረ መረብ ወደ መለያ መግባት - Chromium</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" /> አስቀድመው ገብተዋል። አሰሳዎን ለያይተው ለማቆየት በራስዎ መገለጫ ውስጥ እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ወደ Chromium ይግቡ። እንዲሁም በሁሉም መሣሪያዎችዎ ላይ የንባብ ዝርዝርዎን እና ሌሎችንም ያገኛሉ።</translation>
 <translation id="421369550622382712">ለChromium ምርጥ መተግበሪያዎችን፣ ጨዋታዎችን፣ ቅጥያዎችን እና ገጽታዎችን ያግኙ።</translation>
 <translation id="4217080900579554343">በሁሉም ኮምፒውተርዎችዎ ላይ ይህን ቅጥያ እና ተጨማሪ ለማግኘት ወደ Chromium ይግቡ</translation>
 <translation id="4217972271355023382">በወላጅዎ ምርጫ መስመር ላይ የበለጠ ደህንነቱ የተጠበቀ ሆኖ ለመቆየት፣ አስቀድመው እንደ <ph name="USER_EMAIL_ADDRESS" /> ወደ ገቡበት የChromium መገለጫ ይቀይሩ</translation>
@@ -392,6 +395,7 @@
 <translation id="5382964351116519680">ፍለጋን በChromium ክፈት</translation>
 <translation id="5383439451358640070">Chromium ለምን አንዳንድ ፋይሎችን እንደሚያግድ ይወቁ</translation>
 <translation id="5386450000063123300">Chromiumን በማዘመን ላይ (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" /> አስቀድመው ገብተዋል። አሰሳዎን ለያይተው ለማቆየት በራስዎ መገለጫ ውስጥ እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ወደ Chromium ይግቡ። እንዲሁም በሁሉም መሣሪያዎችዎ ላይ ቅጥያዎችዎን እና ሌሎችንም ያገኛሉ።</translation>
 <translation id="538767207339317086">የChromium በመለያ መግባትን ይፍቀዱ</translation>
 <translation id="5405650547142096840">ከChromium አስወግድ</translation>
 <translation id="5424544524441439284">አፈጻጸምን ይቀንሳል ነገር ግን Chromium ጥቃቶችን ይበልጥ እንዲቋቋም ያደርገዋል</translation>

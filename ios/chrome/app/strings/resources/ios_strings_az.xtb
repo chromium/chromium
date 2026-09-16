@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Növbəti</translation>
 <translation id="1204075260022434100">{count,plural, =1{Əlfəcin hesabda ({email}) "{title}" bölməsində yadda saxlandı}other{{count} əlfəcin hesabda ({email}) "{title}" bölməsində yadda saxlandı}}</translation>
 <translation id="1207493287814084192">17:30</translation>
-<translation id="1215414310909588335">{count,plural, =1{1 dəqiqəlik yazı yadda saxlanıldı}other{# dəqiqəlik yazı yadda saxlanıldı}}</translation>
 <translation id="1217294226280635614">Bölünmüş görüntü</translation>
 <translation id="1218730690561976633">Təkmil avtodoldurmalı istifadəçi doğrulamasını aktiv/deaktiv edin</translation>
 <translation id="1219674500290482172">İnternetə qoşulmaq mümkün deyil.</translation>
@@ -269,6 +268,7 @@
 <translation id="17906873777101817">Parolları və giriş açarlarını yadda saxlamağı təklif edin</translation>
 <translation id="1794893174442046596">Tab qrupu</translation>
 <translation id="1807893857950749072">Qiymət izləmə bildirişlərinə icazə verin…</translation>
+<translation id="1808142805674973090">Rejimləri dəyişin</translation>
 <translation id="1809929083618343438">Bu, seçilmiş məlumatları Chrome-dan silir, lakin həmin məlumatları Google Hesabınızdan silmir.</translation>
 <translation id="1810976980198522421">Ləğv edin</translation>
 <translation id="1815941218935345331">Parol</translation>
@@ -850,6 +850,7 @@
 <translation id="3779810277399252432">İnternet bağlantısı yoxdur.</translation>
 <translation id="3782614601387961027">Xəbərdarlığı ötürün</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
+<translation id="3793603310364129123">Daha az addım, daha sürətli keçidlər</translation>
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803696231112616155">Bu saytı tərcümə etməyi təklif edin</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
@@ -1381,6 +1382,7 @@
 <translation id="5467163657366219870">Xəritə Önizləmələrini deaktiv edin</translation>
 <translation id="5474397204728336997">Ailə parolları, yeni fərdiləşdirmələr və s. Ətraflı məlumat üçün toxunun.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Heç bir parol import edilməyib}=1{İmport edilmiş {count} parol}other{İmport edilmiş {count} parol}}</translation>
+<translation id="5477188385487393357">Kopiyalama və əlavə etmə əməliyyatlarını ötürün</translation>
 <translation id="5478327362747197944">Veb-səhifədə tarixə klikləməklə Təqvim tədbiri yaradın.</translation>
 <translation id="5482922178977937393">Maraqlarınıza əsasən xəbərlər, idman və s. haqqında bildiriş almaq istərdiniz?</translation>
 <translation id="5483838506518938965">Hər şey hazırdır</translation>
@@ -1747,6 +1749,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6585618849026997638">Əlfəcin əlavə etməklə vacib səhifəyə qayıda bilərsiniz</translation>
 <translation id="6589001036857939353">Dublikatları birləşdirin</translation>
 <translation id="659407965921887085">Bu kart hazırda izlədiyiniz məhsullarda veb üzrə qiymətin düşməsini göstərir</translation>
+<translation id="6596324345367949437">Gemini Anonim rejimdə əlçatan deyil</translation>
 <translation id="6596481460663245319">Google ilə Şəkil axtarın</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> üçün şəkil Google Fotoda yadda saxlandı</translation>
 <translation id="6602173570135186741">Avto doldurma və parollar</translation>

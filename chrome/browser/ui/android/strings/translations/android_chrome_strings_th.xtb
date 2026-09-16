@@ -1026,6 +1026,7 @@
 <translation id="5032430150487044192">สร้างคิวอาร์โค้ดไม่ได้</translation>
 <translation id="5035846135112863536">เลือก "รายละเอียดเพิ่มเติม" ด้านล่างเพื่อดูข้อมูลเพิ่มเติมจาก <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> แท็บ - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> แท็บ - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">อนุญาต</translation>
 <translation id="5040262127954254034">ความเป็นส่วนตัว</translation>
 <translation id="504456571576643789">สิ่งที่ควรพิจารณา</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{เลือกหน้าต่าง <ph name="WINDOW_COUNT_ONE" /> รายการไว้}other{เลือกหน้าต่าง <ph name="WINDOW_COUNT_NORMAL" /> รายการไว้}}</translation>

@@ -1026,6 +1026,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5032430150487044192">Ezin da sortu QR kodea</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearengandik informazio gehiago lortzeko, aukeratu beheko "Xehetasun gehiago" aukera.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fitxa: <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> fitxa: <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Baimendu</translation>
 <translation id="5040262127954254034">Pribatutasuna</translation>
 <translation id="504456571576643789">Kontuan hartu beharrekoak</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> leiho hautatu da}other{<ph name="WINDOW_COUNT_NORMAL" /> leiho hautatu dira}}</translation>

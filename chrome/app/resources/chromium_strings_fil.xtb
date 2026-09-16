@@ -70,6 +70,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1793486931176048546">I-click ang <ph name="BEGIN_BOLD" />Oo<ph name="END_BOLD" /> sa notification ng Windows para i-pin ang Chromium sa iyong taskbar para sa mabilis na pag-access.</translation>
 <translation id="1808667845054772817">Muling i-install ang Chromium</translation>
 <translation id="1820835682567584003">Sinusubukan ng Chromium na <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chromium sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong mga extension at higit pa mula sa <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">Sa susunod na buksan mo ang Chromium sa iyong <ph name="DEVICE_TYPE" />, makakakita ka ng prompt na gamitin ang Google Password Manager.</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="18552579716432081">Para ma-delete ang data mula sa pag-browse sa device lang na ito, habang pinapanatili ito sa iyong Google Account, <ph name="BEGIN_LINK" />mag-sign out sa Chromium<ph name="END_LINK" />.</translation>
@@ -192,6 +193,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3038232873781883849">Naghihintay sa pag-install...</translation>
 <translation id="3045032126857188731">Isinaling wika: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Isara ang dialog ng feedback</translation>
+<translation id="3064717200427679322">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chromium sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong listahan ng babasahin at higit pa mula sa <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Iba pang profile sa Chromium</translation>
 <translation id="3068290154869370196">Ang mga extension ay mga add-on na nagbibigay-daan sa iyong i-customize ang Chromium. Mula sa pananatiling organisado, hanggang sa pagpapasimple ng mga pang-araw-araw na gawain, tutulungan ka ng mga extension na gawing sarili mo ang Chromium.</translation>
 <translation id="3068515742935458733">Tumulong na gawing mas mahusay ang Chromium sa pamamagitan ng pagpapadala ng mga ulat ng pag-crash at <ph name="UMA_LINK" /> sa Google</translation>
@@ -293,6 +295,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4147856324248078748">I-c&amp;ustomize ang iyong Chromium</translation>
 <translation id="4148957013307229264">Ini-install...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Pag-sign in sa Network - Chromium</translation>
+<translation id="4208652172235621272">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chromium sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong listahan ng babasahin at higit pa sa lahat ng device mo.</translation>
 <translation id="421369550622382712">Tumuklas ng mahuhusay na app, laro, extension at tema para sa Chromium.</translation>
 <translation id="4217080900579554343">Para makuha ang extension na ito at higit pa sa lahat ng iyong computer, mag-sign in sa Chromium</translation>
 <translation id="4217972271355023382">Para manatiling mas ligtas online sa pamamagitan ng mga pinili ng iyong magulang, lumipat sa profile mo sa Chromium kung saan naka-sign in ka na bilang <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -393,6 +396,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5382964351116519680">Buksan ang paghahanap gamit ang Chromium</translation>
 <translation id="5383439451358640070">Alamin kung bakit bina-block ng Chromium ang ilang file</translation>
 <translation id="5386450000063123300">Ina-update ang Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chromium sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong mga extension at higit pa sa lahat ng device mo.</translation>
 <translation id="538767207339317086">Pagayan ang pag-sign in sa Chromium</translation>
 <translation id="5405650547142096840">Alisin mula sa Chromium</translation>
 <translation id="5424544524441439284">Pinapahina ang performance pero ginagawang mas matatag ang Chromium laban sa mga attack</translation>

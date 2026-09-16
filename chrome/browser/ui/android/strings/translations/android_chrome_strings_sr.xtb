@@ -787,6 +787,7 @@
 <translation id="4162867837470729563">Листа опција за дељење је отворена на целом екрану.</translation>
 <translation id="4164642020717536140">Брзо и безбедно прегледање веба</translation>
 <translation id="4165077084524712774">Још алатки</translation>
+<translation id="4169156312706405526">Приложите фајлове са Диска</translation>
 <translation id="4170577491341606575">Преузимају се ствари\u2026</translation>
 <translation id="4172051516777682613">Увек прикажи</translation>
 <translation id="4176838562184310003">Chrome се није правилно искључио и може да проба да врати изгубљене прозоре и картице. Неки прозори могу да буду умањени при враћању.</translation>
@@ -1026,6 +1027,7 @@ Google налог можда има друге облике историје п�
 <translation id="5032430150487044192">Прављење QR кода није успело</translation>
 <translation id="5035846135112863536">Изаберите Још детаља испод да бисте пронашли више информација од: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картица – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> картица – <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> картице – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> картица – <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Дозволи</translation>
 <translation id="5040262127954254034">Приватност</translation>
 <translation id="504456571576643789">Шта треба имати у виду</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Изабран је <ph name="WINDOW_COUNT_ONE" /> прозор}one{Изабран је <ph name="WINDOW_COUNT_NORMAL" /> прозор}few{Изабрана су <ph name="WINDOW_COUNT_NORMAL" /> прозора}other{Изабрано је <ph name="WINDOW_COUNT_NORMAL" /> прозора}}</translation>

@@ -919,7 +919,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis}one{# mot de passe compromis}other{# mots de passe compromis}}</translation>
 <translation id="4641919525231168205">Accéder à la page suivante</translation>
 <translation id="4642472735733036929">Suivi des prix interrompu</translation>
-<translation id="4643661539340338954">Notifications des découvertes Chrome activées</translation>
+<translation id="4643661539340338954">Notifications Chrome Finds activées</translation>
 <translation id="4649493483932335039">Afficher les onglets récents</translation>
 <translation id="465657074423018424">La navigation sécurisée vous protège contre les sites Web trompeurs. Si vous la désactivez, faites preuve d'une grande vigilance en ligne, surtout lorsque vous saisissez des mots de passe.</translation>
 <translation id="4662373422909645029">Le pseudo ne doit pas contenir de chiffres</translation>
@@ -1026,6 +1026,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5032430150487044192">Impossible de créer le QR code</translation>
 <translation id="5035846135112863536">Sélectionnez "Plus d'informations" ci-dessous pour obtenir des informations complémentaires auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> onglet - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> onglets - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Autoriser</translation>
 <translation id="5040262127954254034">Confidentialité</translation>
 <translation id="504456571576643789">Éléments à prendre en compte</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> fenêtre sélectionnée}one{<ph name="WINDOW_COUNT_NORMAL" /> fenêtre sélectionnée}other{<ph name="WINDOW_COUNT_NORMAL" /> fenêtres sélectionnées}}</translation>
@@ -1714,7 +1715,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7682724950699840886">Essayez l'astuce suivante°: assurez-vous de disposer de suffisamment d'espace sur votre appareil, puis tentez à nouveau d'exporter les mots de passe.</translation>
 <translation id="7690596512217303514">Votre appareil n'a pas pu ouvrir Chrome. Pour résoudre ce problème, téléchargez la dernière mise à jour de Chrome depuis votre plate-forme de téléchargement d'applications.</translation>
 <translation id="7692761875510935111">Ouvrez rapidement dans le navigateur. Pour modifier ce raccourci, appuyez dessus de manière prolongée.</translation>
-<translation id="7695270712963178084">Découvertes Chrome</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7695610746377249436">La réponse apportée par les sites, y compris Google, à cette demande est à leur discrétion.</translation>
 <translation id="7697383401610880082">Poignée de déplacement</translation>
 <translation id="7698359219371678927">Créer un e-mail dans <ph name="APP_NAME" /></translation>
@@ -1861,7 +1862,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8236097722223016103">Ajouter aux favoris</translation>
 <translation id="8236917170563564587">Partager cet onglet à la place</translation>
 <translation id="8243077599929149377">Ajouter votre nom d'utilisateur</translation>
-<translation id="8244387390464017490">Person. page Nouv. onglet</translation>
+<translation id="8244387390464017490">Personnaliser la page</translation>
 <translation id="8244444485683708655">Joindre une image de la caméra</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8257429805444572809">Désabonné de <ph name="DOMAIN" /></translation>

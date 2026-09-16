@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="1184166532603925201">Jika Anda menggunakan mode Samaran, Chrome akan memblokir situs agar tidak menggunakan cookie pihak ketiga</translation>
+<translation id="1365023215312302966">Situs tidak dapat menggunakan cookie pihak ketiga untuk mempersonalisasi konten dan iklan, serta mempelajari tindakan yang Anda lakukan di situs lain</translation>
 <translation id="1569440020357229235">Jika Anda menggunakan mode Samaran, situs tidak dapat menggunakan cookie pihak ketiga. Jika situs yang mengandalkan cookie ini tidak berfungsi, Anda dapat <ph name="BEGIN_LINK" />mencoba memberi situs tersebut akses sementara ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
 <translation id="2183376768278472507">Jika situs tidak berfungsi sebagaimana mestinya, Anda dapat mencoba mengizinkan cookie pihak ketiga untuk situs tertentu yang Anda buka</translation>
 <translation id="2235344399760031203">Cookie pihak ketiga diblokir</translation>
+<translation id="2360633687155619995">Situs tidak dapat menggunakan cookie pihak ketiga untuk mempersonalisasi konten dan iklan, serta mempelajari tindakan yang Anda lakukan di situs lain. Beberapa fitur situs mungkin tidak berfungsi sebagaimana mestinya.</translation>
 <translation id="2496115946829713659">Situs dapat menggunakan cookie pihak ketiga untuk mempersonalisasi konten dan iklan, serta mempelajari tindakan yang Anda lakukan di situs lain</translation>
 <translation id="3045333309254072201">Jika Anda menggunakan mode Samaran, situs tidak dapat menggunakan cookie pihak ketiga. Jika situs yang mengandalkan cookie ini tidak berfungsi, Anda dapat <ph name="START_LINK" />mencoba memberi situs tersebut akses sementara ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Situs yang mengandalkan cookie pihak ketiga akan berfungsi sebagaimana mestinya</translation>

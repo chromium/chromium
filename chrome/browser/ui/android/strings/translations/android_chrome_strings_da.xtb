@@ -1026,6 +1026,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5032430150487044192">QR-koden kan ikke oprettes</translation>
 <translation id="5035846135112863536">Vælg "Flere oplysninger" nedenfor for at få flere oplysninger fra <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> fane – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> faner – <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Tillad</translation>
 <translation id="5040262127954254034">Privatliv</translation>
 <translation id="504456571576643789">Vigtige oplysninger</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> vindue er valgt}one{<ph name="WINDOW_COUNT_NORMAL" /> vindue er valgt}other{<ph name="WINDOW_COUNT_NORMAL" /> vinduer er valgt}}</translation>

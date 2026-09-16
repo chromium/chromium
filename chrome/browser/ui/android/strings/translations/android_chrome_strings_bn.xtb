@@ -1026,6 +1026,7 @@
 <translation id="5032430150487044192">QR কোড তৈরি করা যায়নি</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> থেকে আরও তথ্য পেতে নিচে "আরও বিবরণ" বিকল্প বেছে নিন।</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ট্যাব - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" />টি ট্যাব - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" />টি ট্যাব - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">অনুমতি দিন</translation>
 <translation id="5040262127954254034">গোপনীয়তা</translation>
 <translation id="504456571576643789">যা যা দেখে নেওয়া প্রয়োজন</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" />টি উইন্ডো বেছে নেওয়া হয়েছে}one{<ph name="WINDOW_COUNT_NORMAL" />টি উইন্ডো বেছে নেওয়া হয়েছে}other{<ph name="WINDOW_COUNT_NORMAL" />টি উইন্ডো বেছে নেওয়া হয়েছে}}</translation>

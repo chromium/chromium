@@ -227,6 +227,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3112458742631356345">Chrome a blocat descărcarea, deoarece fișierul nu este descărcat frecvent și ar putea fi periculos</translation>
 <translation id="3119573284443908657">Chrome a blocat descărcarea deoarece fișierul arhivă include alte fișiere care pot ascunde programe malware</translation>
 <translation id="3124332159330678621">Personalizează Chrome pentru a-i oferi browserului un nou aspect</translation>
+<translation id="3125851611828811913">Caută și pune întrebări de oriunde, chiar dacă Chrome este minimizat. Permite ca Chrome să ruleze în fundal.</translation>
 <translation id="3130333203120345554">Căutare nouă</translation>
 <translation id="3135560418014806498">Adaugă un profil Chrome</translation>
 <translation id="3137969841538672700">Trage pentru a căuta</translation>
@@ -384,6 +385,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4793679854893018356">Află cum te protejează Chrome</translation>
 <translation id="4799870290441980300">Activează funcții suplimentare ca să oferi cele mai eficiente protecții din Chrome</translation>
 <translation id="4828579605166583682">Google Chrome încearcă să înlocuiască parolele existente. Introdu parola Windows pentru a permite acest lucru.</translation>
+<translation id="4836321460899997044">Profil Chrome</translation>
 <translation id="4842397268809523050">ChromeOS Flex nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> s-a conectat deja.  Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chrome din Setări de sistem</translation>
@@ -497,6 +499,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6014316319780893079">Cu <ph name="BEGIN_LINK" />instrumentele din Chrome<ph name="END_LINK" />, navighezi în siguranță și deții controlul</translation>
 <translation id="6018578474045062808">Încearcă Google Lens cu Chrome pe telefon.</translation>
 <translation id="6022659036123304283">Personalizează Chrome</translation>
+<translation id="6024930613143833266">Caută cu Chrome de oriunde</translation>
 <translation id="6025087594896450715">Google Chrome va reporni în <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="604424701295382420">S-a fixat! Poți să accesezi din nou Google Lens folosind noul buton din bara de instrumente</translation>
@@ -587,6 +590,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6750954913813541382">Pentru a corecta erorile de scriere, Chrome trimite la Google textul pe care îl introduci în browser</translation>
 <translation id="6760235774835597023">Accelerează site-urile cu motorul V8 din Chrome, dar reduce ușor rezistența Chrome la atacuri. Setarea este activată.</translation>
 <translation id="677276454032249905">Ieși din Chrome oricum?</translation>
+<translation id="6777654166489463890">Întreabă despre conținut din afara browserului Chrome, cum ar fi o altă aplicație sau un alt fișier pe care l-ai deschis</translation>
 <translation id="6794858689789885890">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chrome</translation>
 <translation id="6800285125190089494">Conectează-te mai rapid la site-uri folosind parolele salvate pentru Chrome pe iOS</translation>
 <translation id="6831043979455480757">Tradu</translation>
@@ -639,6 +643,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7285990705317078173">Descarcă Chrome pe telefon pentru a urmări prețurile și a primi alerte atunci când scade prețul pe orice site</translation>
 <translation id="7288567540154601580">File și extensii</translation>
 <translation id="7296210096911315575">Informații importante cu privire la folosire și siguranță</translation>
+<translation id="7299899569525778554">Caută de pe computer</translation>
 <translation id="7302361266603927550">Unele date Chrome nu au fost salvate încă în Contul Google. Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="7306401458628386911">Începe să navighezi instantaneu: Chrome se poate lansa acum când pornește Windows.</translation>
 <translation id="7308322188646931570">Pentru a descărca fișiere, Chrome necesită acces la stocare</translation>

@@ -1027,6 +1027,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5032430150487044192">Imeshindwa kutunga Msimbo wa QR</translation>
 <translation id="5035846135112863536">Chagua "Maelezo zaidi" hapa chini ili upate maelezo zaidi kutoka <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{Kichupo <ph name="TAB_COUNT_ONE" /> - <ph name="URL_LIST" />}other{Vichupo <ph name="TAB_COUNT_MANY" /> - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Ruhusu</translation>
 <translation id="5040262127954254034">Faragha</translation>
 <translation id="504456571576643789">Mambo ya kuzingatia</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Umechagua Dirisha <ph name="WINDOW_COUNT_ONE" />}other{Umechagua Madirisha <ph name="WINDOW_COUNT_NORMAL" />}}</translation>

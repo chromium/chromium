@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1204075260022434100">{count,plural, =1{Gardouse o marcador no cartafol "{title}" da túa conta ({email})}other{Gardáronse {count} marcadores no cartafol "{title}" da túa conta ({email})}}</translation>
 <translation id="1207493287814084192">17:30</translation>
-<translation id="1215414310909588335">{count,plural, =1{Aforrouse 1 minuto de escritura}other{Aforráronse # minutos de escritura}}</translation>
 <translation id="1217294226280635614">Vista dividida</translation>
 <translation id="1218730690561976633">Activar/desactivar a verificación de usuario da función de autocompletar mellorada</translation>
 <translation id="1219674500290482172">Non se puido conectar a Internet.</translation>
@@ -269,6 +268,7 @@
 <translation id="17906873777101817">Ofrecer gardar contrasinais e claves de acceso</translation>
 <translation id="1794893174442046596">Grupo de pestanas</translation>
 <translation id="1807893857950749072">Permitir notificacións de seguimento de prezos…</translation>
+<translation id="1808142805674973090">Cambiar de modo</translation>
 <translation id="1809929083618343438">Con esta acción elimínase a información seleccionada de Chrome, pero non se elimina esta información da túa Conta de Google.</translation>
 <translation id="1810976980198522421">Cancelar</translation>
 <translation id="1815941218935345331">Contrasinal</translation>
@@ -850,6 +850,7 @@
 <translation id="3779810277399252432">Non hai conexión a Internet.</translation>
 <translation id="3782614601387961027">Pechar advertencia</translation>
 <translation id="3789841737615482174">Instalar</translation>
+<translation id="3793603310364129123">Aforra pasos, abre ligazóns máis rápido</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Ofrecer traducir este sitio</translation>
 <translation id="3810973564298564668">Xestionar</translation>
@@ -1381,6 +1382,7 @@
 <translation id="5467163657366219870">Desactivar vista previa de Maps</translation>
 <translation id="5474397204728336997">Contrasinais familiares, novas personalizacións e moito máis. Toca para obter máis información.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Non se importou ningún contrasinal}=1{{count} contrasinal importado}other{{count} contrasinais importados}}</translation>
+<translation id="5477188385487393357">Evita ter que copiar e pegar</translation>
 <translation id="5478327362747197944">Fai clic nunha data dunha páxina web para crear directamente eventos no calendario.</translation>
 <translation id="5482922178977937393">Queres recibir notificacións de noticias, deportes e máis temas en función dos teus intereses?</translation>
 <translation id="5483838506518938965">Xa terminaches</translation>
@@ -1747,6 +1749,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6585618849026997638">Engade un marcador para volver acceder a unha páxina que consideres importante</translation>
 <translation id="6589001036857939353">Combinar contactos duplicados</translation>
 <translation id="659407965921887085">Nesta tarxeta mostraranse as baixadas de prezo na Web dos produtos dos que esteas facendo un seguimento</translation>
+<translation id="6596324345367949437">Gemini non está dispoñible no modo de incógnito</translation>
 <translation id="6596481460663245319">Buscar imaxe con Google</translation>
 <translation id="6601302169302852717">Gardouse a imaxe de <ph name="USER_EMAIL" /> en Google Fotos</translation>
 <translation id="6602173570135186741">Autocompletar e contrasinais</translation>

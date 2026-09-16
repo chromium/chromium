@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1204075260022434100">{count,plural, =1{Na-save ang bookmark sa "{title}" sa iyong account, {email}}one{Na-save ang {count} bookmark sa "{title}" sa iyong account, {email}}other{Na-save ang {count} na bookmark sa "{title}" sa iyong account, {email}}}</translation>
 <translation id="1207493287814084192">5:30 PM</translation>
-<translation id="1215414310909588335">{count,plural, =1{1 minutong pag-type ang na-save}one{# minutong pag-type ang na-save}other{# na minutong pag-type ang na-save}}</translation>
 <translation id="1217294226280635614">Split view</translation>
 <translation id="1218730690561976633">I-toggle ang pag-verify ng user para sa pinahusay na autofill</translation>
 <translation id="1219674500290482172">Hindi makakonekta sa Internet.</translation>

@@ -338,6 +338,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="4621240073146040695">Güncəllənmək üzrədir. Güncəlləşməni tamamlamaq üçün Chromium'u yenidən işə salın.</translation>
 <translation id="4625064703209785397">Chromium-un V8 mühərriki ilə saytları sürətləndirir, lakin Chromium-un hücumlara qarşı müqavimətini bir qədər azaldır</translation>
 <translation id="4626321472657185181">Chromium ilə Axtarışı açın</translation>
+<translation id="4654639495249754755">Chromium profili</translation>
 <translation id="4665829708273112819">Xəbərdarlıq: Chromium artırmaların brauzer tarixçənizi yazmasının qarşısını ala bilməz. Bu artırmanı Anonim rejimdə deaktiv etmək üçün bu seçimi ləğv edin.</translation>
 <translation id="4673151026126227699">Chromium istifadə hesabatlarını da paylaşırsınızsa, bu hesabatlara ziyarət etdiyiniz keçidlər daxil olacaq</translation>
 <translation id="4673710618874938871"><ph name="USER_NAME" /> olaraq daxil olmusunuz, üzvlük. Hesab menyusunu açın</translation>
@@ -470,6 +471,7 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="6174920971222007286">Bu fayl təhlükəli ola bilər<ph name="LINE_BREAK" />Parolu təqdim etsəniz, Chromium bu endirməni yoxlaya bilər. Fayl haqqında məlumat Google güvənli baxışa göndərilir, lakin fayl kontenti və parol cihazda qalır.</translation>
 <translation id="6182736845697986886">Yeniləmə serverində daxili xəta səbəbindən quraşdırma alınmadı.</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> cihazınızda Chromium'a daxil olduğunuza əmin olun və sonra yenidən göndərin.</translation>
+<translation id="6192070012454216182">Chromium-un ölçüsü minimuma endirilmiş olsa belə, istənilən yerdən axtarış edin və suallar verin. Chromium-un arxa fonda işləməsinə icazə verir.</translation>
 <translation id="6212496753309875659">Bu kompüterdə Chromium'um daha son versiyası var. Proqram təminatı işləmirsə, Chroimum'u sistemdən silin və yenidən cəhd edin.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium indi yenidən başlayacaq}=1{Chromium 1 saniyəyə yenidən başlayacaq}other{Chromium # saniyəyə yenidən başlayacaq}}</translation>
 <translation id="6241367896540709610">Chromium faylları endirmək üçün yaddaşa giriş tələb edir</translation>
@@ -596,6 +598,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="7288567540154601580">Tab və artırmalar</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium onu silməyinizi tövsiyə edir}other{Chromium onları silməyinizi tövsiyə edir}}</translation>
 <translation id="7296334833518879294">Sistem audiosunu paylaşmaq üçün Sistem Ayarlarını açın və Chromium-da "Yalnız Sistem Audiosunun Qeydə Alınması"na icazə verin. Sonra Chromium-u yenidən başlatmalı olacaqsınız.</translation>
+<translation id="7299899569525778554">Masaüstündə axtarın</translation>
 <translation id="731795002583552498">Chromium güncəlləşir</translation>
 <translation id="7318036098707714271">Tərcih faylınız zədələnib və ya yanlışdır.  Chromium ayarlarınızı bərpa edə bilmir.</translation>
 <translation id="7324051657739063017">Axtarış edərkən sual vermək üçün Kontekstual tapşırıqları yenidən aça bilərsiniz</translation>
@@ -649,6 +652,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">İnternet trafikinizə girişi olanların daxil olduğunuz saytları görməsini çətinləşdirin. Chromium saytın IP ünvanını DNS-də (Domen adı sistemi) axtarmaq üçün güvənli bağlantıdan istifadə edir.</translation>
 <translation id="7810005234485217901">Asan giriş üçün Şəkil Axtarışını bərkidə bilərsiniz</translation>
+<translation id="7813626943009612327">Chromium-dan başqa tətbiq və ya açdığınız fayl kimi kənar kontent haqqında soruşun</translation>
 <translation id="7828527096541974699">Chromium ilə paylaşılacaq kontenti seçin</translation>
 <translation id="7828947555739565424">Bu hesab ilə Chromium profili artıq bu cihazda mövcuddur</translation>
 <translation id="7845233973568007926">Quraşdırdığınız üçün təşəkkür edirik. <ph name="BUNDLE_NAME" /> istifadə etməzdən əvvəl kompüterinizi yenidən başlatmalısınız.</translation>
@@ -739,6 +743,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8619360774459241877">Chromium başlayır...</translation>
 <translation id="8624541899164515475">Ayarlar, yeni tabda açılır.</translation>
 <translation id="8648201657708811153">Sınaq üçün Google Chrome defolt brauzer ola bilməz.</translation>
+<translation id="8676101123715131330">İstənilən yerdən Chromium ilə axtarın</translation>
 <translation id="8697124171261953979">O, həmçinin Chromium'u başlatdığınız zaman və ya Omnibox'dan axtarış etdiyiniz zaman göstərilən səhifəyə nəzarət edir.</translation>
 <translation id="8704119203788522458">Bu, Sizin Chromium'dur</translation>
 <translation id="8712637175834984815">Anladım</translation>

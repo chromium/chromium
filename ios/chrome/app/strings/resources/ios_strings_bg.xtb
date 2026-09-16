@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1204075260022434100">{count,plural, =1{Отметката е запазена в папката „{title}“ в профила ви {email}}other{{count} отметки са запазени в папката „{title}“ в профила ви {email}}}</translation>
 <translation id="1207493287814084192">17:30 ч.</translation>
-<translation id="1215414310909588335">{count,plural, =1{Спестена бе 1 минута писане}other{Спестени бяха # минути писане}}</translation>
 <translation id="1217294226280635614">Разделен изглед</translation>
 <translation id="1218730690561976633">Превключване на удостоверяването на потребителя за подобреното автоматично попълване</translation>
 <translation id="1219674500290482172">Не може да се установи връзка с интернет.</translation>

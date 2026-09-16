@@ -68,6 +68,7 @@
 <translation id="1793486931176048546">Haz clic en <ph name="BEGIN_BOLD" />Sí<ph name="END_BOLD" /> en la notificación de Windows para fijar Chromium a la barra de tareas y acceder rápidamente.</translation>
 <translation id="1808667845054772817">Reinstalar Chromium</translation>
 <translation id="1820835682567584003">Chromium está intentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">Ya accedió <ph name="EXISTING_USER" />. Para mantener separada la navegación, accede a Chromium en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tus extensiones y más de <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">La próxima vez que abras Chromium en tu <ph name="DEVICE_TYPE" />, verás un mensaje para usar el Administrador de contraseñas de Google.</translation>
 <translation id="1838374766361614909">Borrar la búsqueda</translation>
 <translation id="18552579716432081">Para borrar los datos de navegación solo en este dispositivo y conservarlos en tu Cuenta de Google, <ph name="BEGIN_LINK" />sal de Chromium<ph name="END_LINK" />.</translation>
@@ -190,6 +191,7 @@
 <translation id="3038232873781883849">Esperando para instalar...</translation>
 <translation id="3045032126857188731">Idioma traducido: <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Cerrar diálogo de comentarios</translation>
+<translation id="3064717200427679322">Ya accedió <ph name="EXISTING_USER" />. Para mantener separada la navegación, accede a Chromium en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tu lista de lectura y más de <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Otros perfiles de Chromium</translation>
 <translation id="3068290154869370196">Las extensiones son complementos que te permiten personalizar Chromium. Desde mantener la organización hasta simplificar las tareas cotidianas, las extensiones te ayudan a personalizar Chromium.</translation>
 <translation id="3068515742935458733">Envía a Google informes de fallos y <ph name="UMA_LINK" /> para ayudar a mejorar Chromium.</translation>
@@ -289,6 +291,7 @@
 <translation id="4147856324248078748">Personaliza tu Chromium</translation>
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" />: Acceso a la red - Chromium</translation>
+<translation id="4208652172235621272">Ya accedió <ph name="EXISTING_USER" />. Para mantener separada la navegación, accede a Chromium en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tu lista de lectura y más en todos tus dispositivos.</translation>
 <translation id="421369550622382712">Descubre aplicaciones, juegos, extensiones y temas increíbles para Chromium.</translation>
 <translation id="4217080900579554343">Para acceder a esta extensión y mucho más en todas las computadoras, accede a Chromium</translation>
 <translation id="4217972271355023382">Para protegerte más en línea con las elecciones de tu madre o padre, cambia a tu perfil de Chromium, en el que ya accediste como <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -388,6 +391,7 @@
 <translation id="5382964351116519680">Abrir la búsqueda con Chromium</translation>
 <translation id="5383439451358640070">Descubre por qué Chromium bloquea algunos archivos</translation>
 <translation id="5386450000063123300">Actualizando Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5387586787134731891">Ya accedió <ph name="EXISTING_USER" />. Para mantener separada la navegación, accede a Chromium en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tus extensiones y más en todos tus dispositivos.</translation>
 <translation id="538767207339317086">Permitir el acceso a Chromium</translation>
 <translation id="5405650547142096840">Eliminar de Chromium</translation>
 <translation id="5424544524441439284">Reduce el rendimiento, pero hace que Chromium sea más resistente a los ataques</translation>

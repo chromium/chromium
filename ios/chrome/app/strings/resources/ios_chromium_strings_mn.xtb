@@ -142,6 +142,7 @@
 <translation id="3855938650519180865">Chromium-д шинэ зүйл юу байна вэ?</translation>
 <translation id="3886689467633467988">Хавчуурга болон бусад зүйлээ бүх төхөөрөмждөө авахын тулд энэ сайт болон Chromium-д нэвтэрнэ үү.</translation>
 <translation id="3949514465204582407">Chromium-н зөвлөгөө: Дурын аппад нууц үгээ аваарай</translation>
+<translation id="3983298990898629929">Холбоосыг нэг товшилтоор нээхийн тулд Chromium-г өгөгдмөл хөтчөөрөө тохируулна уу</translation>
 <translation id="4005283307739974863">Chromium-д Аюулгүй байдлын шалгалтыг нээж, явуулна.</translation>
 <translation id="4043291146360695975">Зөвхөн энэ төхөөрөмж дээр нууц үгийг Нууц үгний менежерт хадгалдаг.</translation>
 <translation id="4046625794029820944">URL хуулахаа зогсоогоорой. Хуудсыг шууд ачаалахын тулд Chromium-г өгөгдмөл хөтчөөрөө тохируулна уу.</translation>
@@ -302,6 +303,7 @@
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7395825497086981028">Таны нууц үгийг <ph name="EMAIL" />-д зориулж Нууц үгний менежерт хадгална.</translation>
 <translation id="7434848749522628428">Энэ нэвтрэх түлхүүрийг <ph name="USER_EMAIL" />-н Нууц үгний менежерт хадгална</translation>
+<translation id="7453822113116681031">Холбоосыг нэг товшилтоор нээхийн тулд Chromium-г өгөгдмөл хөтчөө болгоно уу</translation>
 <translation id="7504829997542308412">Chromium-г нээнэ үү</translation>
 <translation id="7531461704633548377">Chromium-с</translation>
 <translation id="7554983317097061001">Chromium-н зөвлөгөө: Chromium-г суурилуулагч руу зөөнө үү</translation>

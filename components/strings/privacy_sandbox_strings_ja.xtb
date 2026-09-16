@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1184166532603925201">シークレット モードでは、サイトによるサードパーティ Cookie の使用がブロックされます</translation>
+<translation id="1365023215312302966">サイトはサードパーティ Cookie を使用して、コンテンツや広告をカスタマイズしたり、他のサイトでのあなたのアクティビティを把握したりすることはできません</translation>
 <translation id="1569440020357229235">シークレット モードでは、サイトはサードパーティ Cookie を使用できません。これらの Cookie を使用するサイトが動作しない場合は、<ph name="BEGIN_LINK" />サイトにサードパーティ Cookie へのアクセスを一時的に許可できます<ph name="END_LINK" />。</translation>
 <translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="2183376768278472507">想定どおりに動作しないサイトではサードパーティ Cookie を許可できます</translation>
 <translation id="2235344399760031203">サードパーティ Cookie がブロックされています</translation>
+<translation id="2360633687155619995">サイトはサードパーティ Cookie を使用して、コンテンツや広告をカスタマイズしたり、他のサイトでのあなたのアクティビティを把握したりすることはできません。一部のサイト機能が想定どおりに動作しない可能性があります。</translation>
 <translation id="2496115946829713659">サイトはサードパーティ Cookie を使用して、コンテンツや広告をカスタマイズしたり、他のサイトでのあなたのアクティビティを把握したりできます</translation>
 <translation id="3045333309254072201">シークレット モードでは、サイトはサードパーティ Cookie を使用できません。これらの Cookie を使用するサイトが動作しない場合は、<ph name="START_LINK" />サイトにサードパーティ Cookie へのアクセスを一時的に許可できます<ph name="END_LINK" />。</translation>
 <translation id="3425311689852411591">サードパーティ Cookie を使用するサイトは想定どおりに動作します</translation>

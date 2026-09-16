@@ -1432,6 +1432,7 @@
 <translation id="2111670510994270194">જમણી બાજુએ નવું ટૅબ</translation>
 <translation id="2111778868023567359">તમને ફરીથી આ પેજ પર ટૅબના ગ્રૂપ જોવા મળશે નહીં</translation>
 <translation id="2112554630428445878">સ્વાગત છે, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">macOSમાંથી આયાત કરેલા સર્ટિફિકેટ જુઓ</translation>
 <translation id="21133533946938348">ટૅબ પિન કરો</translation>
 <translation id="2113479184312716848">Open &amp;File...</translation>
@@ -1985,6 +1986,7 @@
 <translation id="252513908494776481">આ ટૅબ વિશે પૂછો</translation>
 <translation id="2525746158911982776">સિસ્ટમમાં પર્યાપ્ત સ્ટોરેજ સ્પેસ ન હોવાને કારણે અપડેટ નિષ્ફળ રહી.</translation>
 <translation id="2525842906387880861">તમને આ પેજ પર ફરીથી સૂચનો દેખાશે નહીં</translation>
+<translation id="2526346836766369775">નવું આઇસોલેટેડ &amp;ટૅબ</translation>
 <translation id="2526590354069164005">ડેસ્કટૉપ</translation>
 <translation id="2526619973349913024">અપડેટ માટે તપાસો</translation>
 <translation id="2527167509808613699">કોઈપણ પ્રકારનું કનેક્શન</translation>
@@ -8542,6 +8544,7 @@ USB ડિવાઇસ</translation>
 <translation id="7578137152457315135">ફિંગરપ્રિન્ટના સેટિંગ</translation>
 <translation id="7578692661782707876">કૃપા કરીને તમારો કન્ફર્મેશન કોડ દાખલ કરો.</translation>
 <translation id="757941033127302446">સાઇન ઇન કરેલું છે</translation>
+<translation id="7580311608678791180">Windows ટાસ્ક બારમાંથી ખોલો</translation>
 <translation id="7581462281756524039">સફાઈ સાધન</translation>
 <translation id="7582582252461552277">આ નેટવર્કને પસંદ કરો</translation>
 <translation id="7582844466922312471">મોબાઈલ ડેટા</translation>
@@ -8555,6 +8558,7 @@ USB ડિવાઇસ</translation>
 <translation id="7590883480672980941">ઇનપુટ સેટિંગ</translation>
 <translation id="7592060599656252486">અમુક</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (ભૂલ કોડ <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Mac મેનૂ બારમાંથી ખોલો</translation>
 <translation id="7600054753482800821">શોધ એન્જિન અને સાઇટમાં શોધવાની સુવિધા &amp;મેનેજ કરો</translation>
 <translation id="7600218158048761260">આ એકાઉન્ટના પ્રકાર માટે Google Drive બંધ કરવામાં આવી છે.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />નો ક્યારેય અનુવાદ કરશો નહીં</translation>
@@ -9235,6 +9239,7 @@ USB ડિવાઇસ</translation>
 <translation id="8102139037507939978">system_logs.txtમાંથી વ્યક્તિગત રૂપે ઓળખી શકાય તેવી માહિતી જુદી પાડો.</translation>
 <translation id="810362914482827094">પાસકી શોધો</translation>
 <translation id="8104088837833760645">ઇ-સિમ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
+<translation id="8104388155778519213">Google Lens વડે તમારી સ્ક્રીન પર જે કંઈ હોય તે શેર કરો</translation>
 <translation id="8104778744208707085">તમારે આના પર ધ્યાન આપવું જરૂરી છે</translation>
 <translation id="8105273883928376822">ચાલુ રાખવા માટે, કૃપા કરીને સાઇન ઇન કરો.</translation>
 <translation id="8106114112474206597">માઉસનું બટન દબાવવા માટે “i”નો ઉપયોગ કરો</translation>

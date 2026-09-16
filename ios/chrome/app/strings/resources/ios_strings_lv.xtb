@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1204075260022434100">{count,plural, =1{Grāmatzīme ir saglabāta mapē “{title}” jūsu kontā ({email}).}zero{{count} grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}one{{count} grāmatzīme ir saglabāta mapē “{title}” jūsu kontā ({email}).}other{{count} grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}}</translation>
 <translation id="1207493287814084192">17:30</translation>
-<translation id="1215414310909588335">{count,plural, =1{Ietaupīta 1 minūte rakstīšanas laika}zero{Ietaupītas # minūtes rakstīšanas laika}one{Ietaupīta # minūte rakstīšanas laika}other{Ietaupītas # minūtes rakstīšanas laika}}</translation>
 <translation id="1217294226280635614">Dalīts skats</translation>
 <translation id="1218730690561976633">Pārslēgt lietotāja verifikāciju uzlabotajai automātiskajai aizpildei</translation>
 <translation id="1219674500290482172">Nevar izveidot savienojumu ar internetu.</translation>

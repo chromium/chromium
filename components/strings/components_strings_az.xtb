@@ -882,6 +882,7 @@
 <translation id="2467272921457885625">Cihazın texniki xüsusiyyətləri və CPU/RAM istifadə tarixçəsi kimi statistika</translation>
 <translation id="2467421459221956357">Sensor istifadə edilsin?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Şəbəkə Diaqnostikası İşləyir<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">Sıralayın</translation>
 <translation id="2469153820345007638">1-N sırası</translation>
 <translation id="24699311393038040">Kağız (örtüklü)</translation>
 <translation id="2471632709106952369">Müqayisə cədvəlləri</translation>
@@ -1426,6 +1427,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3432601291244612633">Səhifəni bağlayın</translation>
 <translation id="3434025015623587566">Google Parol Meneceri əlavə icazələr tələb edir</translation>
 <translation id="343474037147570563">Yüklədiyiniz və ya əlavə etdiyiniz fayllar təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir. Onlar həssas data və ya zərərli proqram ilə bağlı skanlana, şirkət siyasətinə əsasən saxlana və administratora görünə bilər.</translation>
+<translation id="3435267628744367511">Tabları dəyişmədən məlumatları tapmaq və doldurmaq üçün istənilən formada Ctrl düyməsinə iki dəfə basın</translation>
 <translation id="3435557549311968410">Davamlı (qısa)</translation>
 <translation id="3435738964857648380">Təhlükəsizlik</translation>
 <translation id="3436125638121079308">Bu mövzuda daha yaxşı cavablar əldə etmək üçün müvafiq tablar avtomatik paylaşılsın?</translation>
@@ -2891,6 +2893,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5884465125445718607">Zərf Çin #6</translation>
 <translation id="5887400589839399685">Kart yadda saxlanıldı</translation>
 <translation id="5887687176710214216">Son ziyarət dünən olub</translation>
+<translation id="5887791684215121787">Tabları dəyişmədən məlumatları tapmaq və doldurmaq üçün istənilən formaya ⌘ ⌘ yazın</translation>
 <translation id="5889251770650310375">Digər cihazlarınızdakı tarixçəyə daxil olmaq üçün kimliyinizi doğrulayın, habelə tarixçənizi və tablarınızı sinxronlaşdırın. Ayarlarda sinxronlaşdırmanı istənilən vaxt dayandıra bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
 <translation id="5895187275912066135">Buraxılış Tarixi</translation>

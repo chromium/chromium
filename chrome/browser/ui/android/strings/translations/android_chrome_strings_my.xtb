@@ -787,6 +787,7 @@
 <translation id="4162867837470729563">မျှဝေရန် ရွေးချယ်စရာစာရင်းကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်။</translation>
 <translation id="4164642020717536140">မြန်ဆန်လုံခြုံသော ဝဘ်ဘရောက်စ်လုပ်ခြင်း</translation>
 <translation id="4165077084524712774">နောက်ထပ် တူးလ်များ</translation>
+<translation id="4169156312706405526">Drive မှ ဖိုင်များ ပူးတွဲရန်</translation>
 <translation id="4170577491341606575">သင့်ဒေတာများကို ရယူနေသည်\u2026</translation>
 <translation id="4172051516777682613">အမြဲပြရန်</translation>
 <translation id="4176838562184310003">Chrome သည် ပုံမှန်အတိုင်း အပြီးပိတ်မသွားသဖြင့် သင်၏ ဆုံးရှုံးသွားသော ဝင်းဒိုးနှင့် တဘ်များကို ပြန်ယူနိုင်သည်။ ပြန်ယူသည့်အခါ ဝင်းဒိုးအချို့ကို ချုံ့ထားနိုင်သည်။</translation>
@@ -1026,6 +1027,7 @@
 <translation id="5032430150487044192">QR ကုဒ် ပြုလုပ်၍မရပါ</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ထံမှ နောက်ထပ်အချက်အလက်များ ရယူရန် “နောက်ထပ်အသေးစိတ်” ကိုရွေးပါ။</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု - <ph name="URL_LIST" />}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5040262127954254034">ကိုယ်ရေးအချက်အလက်လုံခြုံမှု</translation>
 <translation id="504456571576643789">စဉ်းစားရန် အချက်များ</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{ဝင်းဒိုး <ph name="WINDOW_COUNT_ONE" /> ခုကို ရွေးထားသည်}other{ဝင်းဒိုး <ph name="WINDOW_COUNT_NORMAL" /> ခုကို ရွေးထားသည်}}</translation>

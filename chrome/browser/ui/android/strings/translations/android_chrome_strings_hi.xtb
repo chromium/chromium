@@ -787,6 +787,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="4162867837470729563">शेयर करने के विकल्पों की सूची पूरी स्क्रीन पर खुली हुई है.</translation>
 <translation id="4164642020717536140">तेज़ और सुरक्षित वेब ब्राउज़िंग</translation>
 <translation id="4165077084524712774">ज़्यादा टूल</translation>
+<translation id="4169156312706405526">Drive से फ़ाइलें अटैच करें</translation>
 <translation id="4170577491341606575">आपका डेटा लोड किया जा रहा है\u2026</translation>
 <translation id="4172051516777682613">हमेशा दिखाएं</translation>
 <translation id="4176838562184310003">Chrome सही तरीके से शट डाउन नहीं हुआ. इसलिए, यह बंद की गई विंडो और टैब वापस ला सकता है. विंडो वापस लाने पर, कुछ विंडो छोटी हो सकती हैं.</translation>
@@ -1026,6 +1027,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5032430150487044192">क्यूआर कोड नहीं बनाया जा सकता</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> से ज़्यादा जानकारी पाने के लिए, नीचे मौजूद "ज़्यादा जानकारी" चुनें.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टैब - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> टैब - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> टैब - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">अनुमति दें</translation>
 <translation id="5040262127954254034">निजता</translation>
 <translation id="504456571576643789">इन बातों का ध्यान रखें</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> विंडो चुनी गई}one{<ph name="WINDOW_COUNT_NORMAL" /> विंडो चुनी गई}other{<ph name="WINDOW_COUNT_NORMAL" /> विंडो चुनी गईं}}</translation>

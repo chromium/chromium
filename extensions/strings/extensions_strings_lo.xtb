@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">ຄຳຮ້ອງຂໍການອະນຸຍາດພໍ່ແມ່ບໍ່ສຳເລັດ.</translation>
 <translation id="1803557475693955505">ບໍ່ສາມາດໂຫຼດໜ້າພື້ນຫຼັງໄດ້ '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="1875387611427697908">ສາມາດເພີ່ມອັນນີ້ໄດ້ຈາກ <ph name="CHROME_WEB_STORE" /> ເທົ່ານັ້ນ</translation>
+<translation id="1901182793187376715"><ph name="EXTENSION_NAME" /> (ID ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_ID" />") ບໍ່ສາມາດຕິດຕັ້ງຕາມນະໂຍບາຍໃນສະພາບແວດລ້ອມທີ່ມີຄວາມໜ້າເຊື່ອຖືຕ່ຳໄດ້.</translation>
 <translation id="2131077480075264">ບໍ່ສາມາດຕິດຕັ້ງ "<ph name="APP_NAME" />" ໄດ້ ເພາະວ່າມັນບໍ່ໄດ້ຮັບອະນຸຍາດໂດຍ "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">ເພີ່ມ "<ph name="EXTENSION_NAME" />" ບໍ?</translation>
 <translation id="2159915644201199628">ບໍ່ສາມາດຖອດລະຫັດຮູບໄດ້: '<ph name="IMAGE_NAME" />'</translation>

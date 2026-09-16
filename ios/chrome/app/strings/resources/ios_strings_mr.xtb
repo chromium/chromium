@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1204075260022434100">{count,plural, =1{बुकमार्क तुमच्या {email} या खात्यामध्ये "{title}" मध्ये सेव्ह केला आहे}other{{count} बुकमार्क तुमच्या {email} या खात्यामध्ये "{title}" मध्ये सेव्ह केले आहेत}}</translation>
 <translation id="1207493287814084192">संध्याकाळी ५:३० वाजता</translation>
-<translation id="1215414310909588335">{count,plural, =1{टाइप करण्याचा १ मिनिट वाचवला आहे}other{टाइप करण्याची # मिनिटे वाचवली आहेत}}</translation>
 <translation id="1217294226280635614">विभाजित दृश्य</translation>
 <translation id="1218730690561976633">वर्धित ऑटोफिल वापरकर्ता पडताळणी टॉगल करा</translation>
 <translation id="1219674500290482172">इंटरनेटशी कनेक्ट करण्यात अक्षम.</translation>
@@ -269,6 +268,7 @@
 <translation id="17906873777101817">पासवर्ड आणि पासकी सेव्ह करण्यासाठी ऑफर करा</translation>
 <translation id="1794893174442046596">टॅब गट</translation>
 <translation id="1807893857950749072">किमतीचा माग ठेवण्यासंबंधित नोटिफिकेशनना अनुमती द्या…</translation>
+<translation id="1808142805674973090">मोड स्विच करा</translation>
 <translation id="1809929083618343438">यामुळे Chrome मधून निवडलेली माहिती काढून टाकली जाते, पण तुमचे Google खाते यामधून ही माहिती हटवली जात नाही.</translation>
 <translation id="1810976980198522421">रद्द करा</translation>
 <translation id="1815941218935345331">पासकोड</translation>
@@ -850,6 +850,7 @@
 <translation id="3779810277399252432">कोणतेही इंटरनेट कनेक्शन नाही.</translation>
 <translation id="3782614601387961027">चेतावणी डिसमिस करा</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
+<translation id="3793603310364129123">कमी पायऱ्या, जलद लिंक</translation>
 <translation id="380329542618494757">नाव</translation>
 <translation id="3803696231112616155">ही साइट भाषांतरित करण्यासाठी ऑफर</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
@@ -1381,6 +1382,7 @@
 <translation id="5467163657366219870">Maps पूर्वावलोकने बंद करा</translation>
 <translation id="5474397204728336997">कुटुंबाचे पासवर्ड, नवीन कस्टमायझेशन आणि आणखी बरेच काही. अधिक जाणून घेण्यासाठी टॅप करा.</translation>
 <translation id="5475793109165786685">{count,plural, =0{कोणताही पासवर्ड इंपोर्ट केला नाही}=1{{count} पासवर्ड इंपोर्ट केला आहे}other{{count} पासवर्ड इंपोर्ट केले आहेत}}</translation>
+<translation id="5477188385487393357">कॉपी आणि पेस्ट करणे वगळा</translation>
 <translation id="5478327362747197944">वेब पेजवरील तारखेवर क्लिक करून थेट कॅलेंडर इव्हेंट तयार करा.</translation>
 <translation id="5482922178977937393">तुम्हाला तुमच्या स्वारस्यांवर आधारित बातम्या, क्रीडा आणि आणखी बऱ्याच गोष्टींसाठी सूचना मिळवायच्या आहेत का?</translation>
 <translation id="5483838506518938965">तुम्ही पूर्णपणे तयार आहात</translation>
@@ -1748,6 +1750,7 @@
 <translation id="6585618849026997638">बुकमार्क जोडून तुम्ही तुमच्यासाठी महत्त्वाच्या असलेल्या पेजवर परत जाऊ शकता</translation>
 <translation id="6589001036857939353">डुप्लिकेट मर्ज करा</translation>
 <translation id="659407965921887085">तुम्ही सध्या माग ठेवत असलेल्या उत्पादनांसंबंधित संपूर्ण वेबवरील किमतीतील घट या कार्डवर दाखवली आहे</translation>
+<translation id="6596324345367949437">Gemini हे गुप्त मोडमध्ये उपलब्ध नाही</translation>
 <translation id="6596481460663245319">Google वापरून इमेज शोधा</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> साठी Google Photos मध्ये इमेज सेव्ह केली आहे</translation>
 <translation id="6602173570135186741">ऑटोफिल आणि पासवर्ड</translation>

@@ -1026,6 +1026,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5032430150487044192">Izrada QR koda nije uspjela</translation>
 <translation id="5035846135112863536">Odaberite Više pojedinosti u nastavku da biste saznali više informacija od <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> kartica – <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> kartice – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> kartica – <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Dopusti</translation>
 <translation id="5040262127954254034">Privatnost</translation>
 <translation id="504456571576643789">Važne napomene</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Odabran je <ph name="WINDOW_COUNT_ONE" /> prozor}one{Odabran je <ph name="WINDOW_COUNT_NORMAL" /> prozor}few{Odabrana su <ph name="WINDOW_COUNT_NORMAL" /> prozora}other{Odabrano je <ph name="WINDOW_COUNT_NORMAL" /> prozora}}</translation>

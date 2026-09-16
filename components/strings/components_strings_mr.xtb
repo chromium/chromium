@@ -882,6 +882,7 @@
 <translation id="2467272921457885625">डिव्हाइसच्या हार्डवेअरचे तपशील आणि आकडेवारी, जसे की सीपीयू/रॅमच्या वापराचा इतिहास</translation>
 <translation id="2467421459221956357">सेन्सर वापरा</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />नेटवर्क निदान चालविणे<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">ऑर्डर करा</translation>
 <translation id="2469153820345007638">१ ते एन क्रम</translation>
 <translation id="24699311393038040">पेपर (कोटेड)</translation>
 <translation id="2471632709106952369">तुलना सारण्या</translation>
@@ -1428,6 +1429,7 @@
 <translation id="3432601291244612633">पेज बंद करा</translation>
 <translation id="3434025015623587566">Google Password Manager ला आणखी अ‍ॅक्सेस हवा आहे</translation>
 <translation id="343474037147570563">तुम्ही अपलोड किंवा अटॅच केलेल्या फाइल विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवल्या जातात. उदाहरणार्थ, त्या संवेदनशील डेटा किंवा मालवेअरसाठी स्कॅन केल्या जाऊ शकतात आणि कंपनीच्या धोरणांच्या आधारावर स्टोअर केल्या जाऊ शकतात व तुमच्या अ‍ॅडमिनिस्ट्रेटरला दृश्यमान असू शकतात.</translation>
+<translation id="3435267628744367511">टॅब स्विच न करता माहिती शोधण्यासाठी आणि भरण्यासाठी कोणत्याही फॉर्ममध्ये दोनदा Ctrl प्रेस करा</translation>
 <translation id="3435557549311968410">कंटिन्युअस (शॉर्ट)</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
 <translation id="3436125638121079308">या थ्रेडमध्ये आणखी चांगल्या प्रतिसादांसाठी सुसंबद्ध टॅब आपोआप शेअर करायचे आहेत का?</translation>
@@ -1515,6 +1517,7 @@
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">हे पेज केव्हा तयार होईल हे Chrome तुम्हाला कळवेल. &lt;a&gt;रद्द करा&lt;/a&gt;</translation>
+<translation id="3581499772329034229">टॅब आपोआप जोडा</translation>
 <translation id="3582930987043644930">नाव जोडा</translation>
 <translation id="3583757800736429874">&amp;हलवा पुन्हा करा</translation>
 <translation id="3584299510153766161">ड्युअल पंच बॉटम</translation>
@@ -1590,6 +1593,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
 <translation id="3709599264800900598">तुम्ही कॉपी केलेला मजकूर</translation>
+<translation id="3711223220609269738">नवीन आयसोलेटेड टॅब</translation>
 <translation id="3711430313228789376">Chrome ब्राउझर पासवर्ड दाखवण्याचा प्रयत्न करत आहे</translation>
 <translation id="3711895659073496551">निलंबन</translation>
 <translation id="3712004750972384495">स्क्रीन रेकॉर्डिंग सेव्ह करत आहे</translation>
@@ -1608,6 +1612,7 @@
 <translation id="3727309136762649052">नेमस्पेस</translation>
 <translation id="3727850735097852673">macOS Keychain सह Google Password Manager वापरण्यासाठी, Chrome पुन्हा लाँच करा आणि Keychain च्या अ‍ॅक्सेसची अनुमती द्या. पुन्हा लाँच केल्यानंतर तुमचे टॅब पुन्हा उघडतील.</translation>
 <translation id="3728173127485570463">पासवर्ड ऑटोफिल करण्यासाठी Chrome ब्राउझरला यापुढे तुमच्या फिंगरप्रिंटची आवश्यकता असणार नाही</translation>
+<translation id="3729811201279509483">मॅन्युअली टॅब जोडा</translation>
 <translation id="3736564442532774454">Chrome ब्राउझर हा <ph name="APP_NAME" /> वर तुमची संवेदनशील माहिती भरण्याचा प्रयत्न करत आहे.</translation>
 <translation id="3738166223076830879">तुमचा ब्राउझर तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केला जातो.</translation>
 <translation id="3739842843727261045">थंब्स अपवर क्लिक केल्यावर तुम्हाला हे परिणाम आवडले आहेत असा फीडबॅक सबमिट केला जातो</translation>
@@ -2771,6 +2776,7 @@
 <translation id="5649053991847567735">स्वयंचलित डाउनलोड</translation>
 <translation id="5651323159439184939">ट्रॅक्टर फीड</translation>
 <translation id="5653681867130739344">Google Wallet मध्ये ओळखपत्र सुरक्षितपणे अपडेट करा</translation>
+<translation id="5653744563415531641">तुमची माहिती सेव्ह करा आणि सर्व Google उत्पादनांवर फॉर्म भरणे यासारखी कामे अधिक जलद पूर्ण करा. तुम्ही <ph name="ACCOUNT" /> साठी <ph name="MANAGE_WALLET_SETTINGS_LINK" /> करू शकता.</translation>
 <translation id="5654927323611874862">अपलोड केलेल्या क्रॅश अहवालाचा आयडी:</translation>
 <translation id="5654965123204121933">URL मध्ये आवश्यक बदली स्ट्रिंग समाविष्ट नाही <ph name="SEARCH_TERMS_REPLACEMENT" />: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">ई-मेल</translation>
@@ -2894,6 +2900,7 @@
 <translation id="5884465125445718607">एन्व्हलप चायनीज #६</translation>
 <translation id="5887400589839399685">कार्ड सेव्ह केले</translation>
 <translation id="5887687176710214216">काल शेवटची भेट दिली</translation>
+<translation id="5887791684215121787">टॅब स्विच न करता माहिती शोधण्यासाठी आणि भरण्यासाठी कोणत्याही फॉर्ममध्ये ⌘ ⌘ प्रेस करा</translation>
 <translation id="5889251770650310375">तुमच्या इतर डिव्हाइसवरील इतिहास मिळवण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा आणि तुमचा इतिहास व टॅब सिंक करा. तुम्ही सेटिंग्जमध्ये सिंक करणे कधीही थांबवू शकता. Google तुमच्या इतिहासाच्या आधारे Search आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="5895187275912066135">रोजी जारी केले</translation>
@@ -3217,6 +3224,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> साठी कालबाह्यता तारीख आणि CVC प्रविष्‍ट करा</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">पालकांच्या मंजुरीशी संबंधित डायलॉग</translation>
+<translation id="6413532517183895572">तुमची Wallet सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="6415778972515849510">तुमच्या Google खात्याचे संरक्षण करण्यात आणि तुमचा पासवर्ड बदलण्यात Chromium तुम्हाला मदत करू शकते.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">कोणताही महत्त्वाचा व्यवसायासंबंधित किंवा वैयक्तिक डेटा बाह्यरीत्या स्टोअर केल्याची खात्री करा.</translation>

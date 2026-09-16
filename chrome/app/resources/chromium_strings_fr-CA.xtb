@@ -69,6 +69,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1793486931176048546">Cliquez sur <ph name="BEGIN_BOLD" />Oui<ph name="END_BOLD" /> dans la notification Windows afin d'épingler Chromium à votre barre des tâches pour un accès rapide.</translation>
 <translation id="1808667845054772817">Réinstaller Chromium</translation>
 <translation id="1820835682567584003">Chromium essaie de <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="1828328511398219809">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté. Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous récupérerez également vos extensions et plus encore à partir de <ph name="DEVICE" />.</translation>
 <translation id="183031085822326697">La prochaine fois que vous ouvrirez Chromium sur votre <ph name="DEVICE_TYPE" />, une invite vous proposera d'utiliser le gestionnaire de mots de passe Google.</translation>
 <translation id="1838374766361614909">Effacer les termes de recherche</translation>
 <translation id="18552579716432081">Pour supprimer les données de navigation de cet appareil uniquement, tout en les conservant dans votre compte Google, <ph name="BEGIN_LINK" />déconnectez-vous de Chromium<ph name="END_LINK" />.</translation>
@@ -191,6 +192,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3038232873781883849">Installation en attente…</translation>
 <translation id="3045032126857188731">Langue de la traduction : <ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">Fermer la boîte de dialogue des commentaires</translation>
+<translation id="3064717200427679322">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté. Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous récupérerez également votre liste de lecture et plus encore à partir de <ph name="DEVICE" />.</translation>
 <translation id="3068187312562070417">Autres profils Chromium</translation>
 <translation id="3068290154869370196">Les extensions sont des modules complémentaires qui vous permettent de personnaliser Chromium. Qu'il s'agisse de rester organisé ou de simplifier les tâches quotidiennes, les extensions vous aident à personnaliser Chromium.</translation>
 <translation id="3068515742935458733">Aidez-nous à améliorer Chromium en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
@@ -292,6 +294,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4147856324248078748">Personnaliser votre Chromium</translation>
 <translation id="4148957013307229264">Installation...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Connexion au réseau – Chromium</translation>
+<translation id="4208652172235621272">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté. Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous récupérerez également votre liste de lecture et plus encore sur tous vos appareils.</translation>
 <translation id="421369550622382712">Découvrez des applications, des jeux, des extensions et des thèmes exceptionnels conçus pour Chromium.</translation>
 <translation id="4217080900579554343">Pour obtenir cette extension et plus sur tous vos ordinateurs, connectez-vous à Chromium</translation>
 <translation id="4217972271355023382">Pour rester en sécurité en ligne avec les choix de tes parents, passe à ton profil Chromium où tu as utilisé l'adresse <ph name="USER_EMAIL_ADDRESS" /> pour te connecter</translation>
@@ -391,6 +394,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="5382964351116519680">Ouvrir la recherche avec Chromium</translation>
 <translation id="5383439451358640070">Découvrir pourquoi Chromium bloque certains fichiers</translation>
 <translation id="5386450000063123300">Mise à jour de Chromium en cours (<ph name="PROGRESS_PERCENT" />)…</translation>
+<translation id="5387586787134731891">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté. Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chromium en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous récupérerez également vos extensions et plus encore sur tous vos appareils.</translation>
 <translation id="538767207339317086">Autoriser la connexion à Chromium</translation>
 <translation id="5405650547142096840">Supprimer de Chromium</translation>
 <translation id="5424544524441439284">Réduit les performances, mais rend Chromium plus résistant aux attaques</translation>

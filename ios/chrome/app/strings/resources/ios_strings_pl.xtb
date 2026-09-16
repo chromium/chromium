@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1204075260022434100">{count,plural, =1{Zakładka została zapisana w folderze „{title}” na Twoim koncie {email}}few{{count} zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}many{{count} zakładek zostało zapisanych w folderze „{title}” na Twoim koncie {email}}other{{count} zakładki zostało zapisane w folderze „{title}” na Twoim koncie {email}}}</translation>
 <translation id="1207493287814084192">17:30</translation>
-<translation id="1215414310909588335">{count,plural, =1{Zaoszczędzono minutę pisania}few{Zaoszczędzono # minuty pisania}many{Zaoszczędzono # minut pisania}other{Zaoszczędzono # minuty pisania}}</translation>
 <translation id="1217294226280635614">Widok dzielony</translation>
 <translation id="1218730690561976633">Włącz lub wyłącz weryfikację użytkownika w ulepszonym autouzupełnianiu</translation>
 <translation id="1219674500290482172">Nie można połączyć się z internetem.</translation>

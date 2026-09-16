@@ -1343,6 +1343,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="2026367923222947564">Butun sahifa</translation>
 <translation id="2026377162111110983">Qamrovli ovoz</translation>
 <translation id="2028449514182362831">Harakat sensori ishlatadigan funksiyalar ishlamaydi</translation>
+<translation id="2029064269235798707">Tezkor tugmalarni tanlash</translation>
 <translation id="202918510990975568">Xavfsizlik va kirish parametrlarini sozlash uchun parolingizni kiriting</translation>
 <translation id="2030455719695904263">Sensorli panel</translation>
 <translation id="2030803782168502207">Obunani qurilmadan olib tashlash</translation>
@@ -2274,6 +2275,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2740876196999178364">Bu kodlar faqat bu qurilmaga saqlanadi. Ular Google hisobiga saqlanmaydi.</translation>
 <translation id="2741912629735277980">Kirish ekranida chiqadigan interfeys</translation>
+<translation id="274229007420507506">Tezkor tugmalarni <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> orqali oʻzgartiring</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hozir ishlamayapti.</translation>
 <translation id="2743301740238894839">Boshlash</translation>
 <translation id="2743378970365831481">Google Parollar menejeriga parolni saqlash uchun manzillar qatoridagi Parollar menejeri belgisini bosing</translation>
@@ -2623,6 +2625,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3001614333383288217">{COUNT,plural, =0{Hech qaysi tugma moslanmagan}=1{1 ta tugma moslangan}other{{COUNT} ta tugma moslangan}}</translation>
 <translation id="3002864108328203174">Gemini quyi ekrani yarim hajmda ochildi.</translation>
 <translation id="3003144360685731741">Afzal tarmoqlar</translation>
+<translation id="3003152206838282768">Chrome ichida Gemini ilovasi vazifangiz ustida ishlamoqda. Yangilanishlar borligini Chrome orqali tekshiring</translation>
 <translation id="3003253259757197230">Kelgusida qaysi saytlarga tashrif buyurishingizni bashorat qilish va kiriladigan sahifa haqida qoʻshimcha maʼlumotlarni koʻrsatish uchun kirilgan URL manzillar Googlega yuboriladi.</translation>
 <translation id="3003623123441819449">CSS Kesh hajmi</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> maxfiy Wi-Fi ulanish hosil qiladi.</translation>
@@ -5069,6 +5072,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4864805589453749318">Maktab hisobini kiritishga ruxsat berayotgan ota-onani tanlang.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (bloklandi)</translation>
 <translation id="486505726797718946">Xotira saqlandi</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Chrome ichida Gemini ilovasi vazifangiz ustida ishlamoqda. Yangilanishlar borligini Chrome orqali tekshiring</translation>
 <translation id="486635084936119914">Ba’zi turdagi fayllar yuklab olinishi bilan avtomatik ochilsin</translation>
 <translation id="4868284252360267853">Bu suhbat hozir fokuslanmagan. Bu suhbatni fokuslash uchun CMD+Shift+Option tugmalarini bosing.</translation>
 <translation id="4869170227080975044">ChromeOS tarmoq axborotini oʻqish</translation>
@@ -7700,6 +7704,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6916818963747321523">Hammasini ochish</translation>
 <translation id="6917873303492266709">Varaqlar guruhini ulashish, ularga qoʻshilish hamda boshqalar bilan birga ishlash uchun sozlamalarni oching va “Chrome hisobiga kirishga ruxsat berish” bandini yoqing</translation>
 <translation id="6919354101107095996">Saytga kirish uchun urining. Keyin esa yana yuklab oling</translation>
+<translation id="6919461818524183254">Tezkor tugmalarni tanlang</translation>
 <translation id="6919952941889172531">Bu Chrome profili uchun saytlarni kuchaytirilgan rejimda xavfsiz kezish yoqilsinmi?</translation>
 <translation id="6920989436227028121">Muntazam ichki oyna sifatida ochish</translation>
 <translation id="6921104647315081813">Faollikni tozalash</translation>

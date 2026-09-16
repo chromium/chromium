@@ -229,6 +229,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="3112458742631356345">Chrome toto sťahovanie zablokoval, pretože používatelia tento súbor bežne nesťahujú a môže byť nebezpečný</translation>
 <translation id="3119573284443908657">Chrome toto sťahovanie zablokoval, pretože daný súbor archívu obsahuje ďalšie súbory, v ktorých môže byť skrytý malvér</translation>
 <translation id="3124332159330678621">Prispôsobte si Chrome a dajte mu nový vzhľad</translation>
+<translation id="3125851611828811913">Vyhľadávajte a pýtajte sa odkiaľkoľvek, dokonca aj vtedy, keď je Chrome minimalizovaný. Umožňuje Chromu fungovať na pozadí.</translation>
 <translation id="3130333203120345554">Nové vyhľadávanie</translation>
 <translation id="3135560418014806498">Pridať profil Chromu</translation>
 <translation id="3137969841538672700">Vyhľadávanie spustíte presunutím</translation>
@@ -385,6 +386,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="4793679854893018356">Ako vás Chrome chráni</translation>
 <translation id="4799870290441980300">Zapne ďalšie funkcie, ktoré poskytujú najsilnejšiu ochranu Chromu</translation>
 <translation id="4828579605166583682">Google Chrome sa pokúša nahradiť existujúce heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
+<translation id="4836321460899997044">Profil Chromu</translation>
 <translation id="4842397268809523050">Systému Chrome OS Flex sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
 <translation id="4851866215237571846">Používateľ <ph name="EXISTING_USER" /> je už prihlásený.  Ak chcete, aby bolo vaše prehliadanie naďalej samostatné, prihláste sa vo svojom profile do Chromu profile účtom <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Ak chcete zdieľať obrazovku, povoľte Chromu nahrávať obrazovku v nastaveniach systému</translation>
@@ -502,6 +504,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6014316319780893079">Pomocou <ph name="BEGIN_LINK" />nástrojov Chromu<ph name="END_LINK" /> môžete bezpečne prehliadať a mať všetko pod kontrolou</translation>
 <translation id="6018578474045062808">Vyskúšajte Google Lens s Chromom v telefóne</translation>
 <translation id="6022659036123304283">Upravte si Chrome podľa seba</translation>
+<translation id="6024930613143833266">Vyhľadávajte pomocou Chromu odkiaľkoľvek</translation>
 <translation id="6025087594896450715">Google Chrome sa reštartuje o <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="604424701295382420">Pripnuté! Google Lens môžete znova otvoriť pomocou nového tlačidla na paneli s nástrojmi</translation>
@@ -592,6 +595,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6750954913813541382">Chrome odošle text zadaný v prehliadači Googlu s cieľom opraviť pravopisné chyby</translation>
 <translation id="6760235774835597023">Zrýchľuje weby pomocou nástroja V8 Chromu, ale mierne zníži odolnosť prehliadača voči útokom. Toto nastavenie je zapnuté.</translation>
 <translation id="677276454032249905">Chcete Chrome napriek tomu ukončiť?</translation>
+<translation id="6777654166489463890">Spýtajte sa na obsah mimo Chromu, napríklad na inú aplikáciu alebo súbor, ktorý máte otvorený</translation>
 <translation id="6794858689789885890">Vždy odstraňujte dáta webov zo zariadenia po zavretí Chromu</translation>
 <translation id="6800285125190089494">Prihlasujte sa rýchlejšie na weboch pomocou uložených hesiel pre Chrome v systéme iOS</translation>
 <translation id="6831043979455480757">Preložiť</translation>
@@ -644,6 +648,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7285990705317078173">Stiahnite si Chrome do telefónu, aby ste mohli sledovať ceny a dostávať upozornenia, keď cena na niektorom webe klesne</translation>
 <translation id="7288567540154601580">Karty a rozšírenia</translation>
 <translation id="7296210096911315575">Dôležité informácie o používaní a zabezpečení</translation>
+<translation id="7299899569525778554">Vyhľadávanie v počítači</translation>
 <translation id="7302361266603927550">Niektoré údaje Chromu zatiaľ neboli uložené vo vašom účte Google. Pred odhlásením skúste počkať niekoľko minút. Ak sa odhlásite teraz, tieto údaje budú odstránené.</translation>
 <translation id="7306401458628386911">Začnite prehliadať okamžite: Chrome sa teraz môže spúšťať pri spustení systému Windows.</translation>
 <translation id="7308322188646931570">Chrome potrebuje na sťahovanie súborov prístup k úložisku</translation>

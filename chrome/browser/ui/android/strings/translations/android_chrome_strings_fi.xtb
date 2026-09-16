@@ -1026,6 +1026,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5032430150487044192">QR-koodin luominen ei onnistu</translation>
 <translation id="5035846135112863536">Valitse alta Lisätietoja, niin <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> antaa lisäohjeita.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> välilehti – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> välilehteä – <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Salli</translation>
 <translation id="5040262127954254034">Tietosuoja</translation>
 <translation id="504456571576643789">Huomioitavaa</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> ikkuna valittu}other{<ph name="WINDOW_COUNT_NORMAL" /> ikkunaa valittu}}</translation>

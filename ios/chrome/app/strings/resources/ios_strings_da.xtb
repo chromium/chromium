@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bogmærket er gemt i "{title}" på din konto {email}}one{{count} bogmærke er gemt i "{title}" på din konto {email}}other{{count} bogmærker er gemt i "{title}" på din konto {email}}}</translation>
 <translation id="1207493287814084192">17.30</translation>
-<translation id="1215414310909588335">{count,plural, =1{1 minuts indtastning er sparet}one{# minuts indtastning er sparet}other{# minutters indtastning er sparet}}</translation>
 <translation id="1217294226280635614">Opdelt visning</translation>
 <translation id="1218730690561976633">Slå brugerverificering til/fra for forbedret autofyld</translation>
 <translation id="1219674500290482172">Der kunne ikke oprettes forbindelse til internettet.</translation>

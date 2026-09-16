@@ -1431,6 +1431,7 @@
 <translation id="2111670510994270194">Нова картица на десној страни</translation>
 <translation id="2111778868023567359">Више нећете видети групе картица на овој страници</translation>
 <translation id="2112554630428445878">Добро дошли, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" /> MB</translation>
 <translation id="2113314491145966441">Прегледајте увезене сертификате из macOS-а</translation>
 <translation id="21133533946938348">Закачи картицу</translation>
 <translation id="2113479184312716848">Open &amp;File... (Отвори датотеку)</translation>
@@ -1983,6 +1984,7 @@
 <translation id="252513908494776481">Поставите питање о овој картици</translation>
 <translation id="2525746158911982776">Ажурирање није успело јер систем нема довољно меморијског простора.</translation>
 <translation id="2525842906387880861">Више нећете видети предлоге на овој страници</translation>
+<translation id="2526346836766369775">Нова изолована &amp;картица</translation>
 <translation id="2526590354069164005">Радна површина</translation>
 <translation id="2526619973349913024">Провери да ли постоји ажурирање</translation>
 <translation id="2527167509808613699">Било која врста везе</translation>
@@ -8539,6 +8541,7 @@
 <translation id="7578137152457315135">Подешавања отиска прста</translation>
 <translation id="7578692661782707876">Унесите кôд за потврду.</translation>
 <translation id="757941033127302446">Пријављени сте</translation>
+<translation id="7580311608678791180">Отворите са Windows траке задатака</translation>
 <translation id="7581462281756524039">Алатка за чишћење</translation>
 <translation id="7582582252461552277">Подеси као приоритетну мрежу</translation>
 <translation id="7582844466922312471">податке за мобилне уређаје</translation>
@@ -8552,6 +8555,7 @@
 <translation id="7590883480672980941">Подешавања уноса</translation>
 <translation id="7592060599656252486">Делимичан</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (кôд грешке <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Отворите из траке менија на Mac-у</translation>
 <translation id="7600054753482800821">&amp;Управљајте претраживачима и претрагом сајта</translation>
 <translation id="7600218158048761260">Google диск је онемогућен за овај тип налога.</translation>
 <translation id="7600965453749440009">Никад не преводи <ph name="LANGUAGE" /></translation>
@@ -9237,6 +9241,7 @@
 <translation id="8102139037507939978">Уклони податке који могу да открију идентитет из датотеке system_logs.txt.</translation>
 <translation id="810362914482827094">Претражите приступне кодове</translation>
 <translation id="8104088837833760645">Преузмите eSIM профил</translation>
+<translation id="8104388155778519213">Делите садржај екрана помоћу Google објектива</translation>
 <translation id="8104778744208707085">Треба да обратите пажњу на ово</translation>
 <translation id="8105273883928376822">Пријавите се да бисте наставили.</translation>
 <translation id="8106114112474206597">Користите „i“ да бисте притиснули тастер миша</translation>

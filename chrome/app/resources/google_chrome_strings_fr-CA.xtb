@@ -98,6 +98,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1873233029667955273">Google Chrome n'est pas votre navigateur par défaut</translation>
 <translation id="1874309113135274312">Google Chrome bêta (mDNS-In)</translation>
 <translation id="1877026089748256423">Google Chrome n'est pas à jour</translation>
+<translation id="1877067026701708502">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté. Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous récupérerez également vos extensions et plus encore sur tous vos appareils.</translation>
 <translation id="1880677175115548835">Sélectionnez du texte</translation>
 <translation id="1896602904211344018">Obtenir l'appli Chrome</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Google Chrome</translation>
@@ -547,6 +548,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6334815226785304306">Faire de Google Chrome le navigateur par défaut et l'épingler à la barre des tâches</translation>
 <translation id="63540178978900677">Chrome n'est plus votre navigateur par défaut. Faire de Chrome le navigateur par défaut?</translation>
 <translation id="6360449101159168105">Pendant que cet onglet était inactif, de la mémoire a été libérée pour maintenir la rapidité de Chrome Vous pouvez choisir de toujours exclure ce site de l'inactivité.</translation>
+<translation id="6362984640667950211">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté. Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous récupérerez également votre liste de lecture et plus encore sur tous vos appareils.</translation>
 <translation id="6388799252195623474">aide-moi avec cela</translation>
 <translation id="6412673304250309937">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chrome. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant 1 minute. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}one{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minutes. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}other{Votre organisation ferme automatiquement Chrome lorsqu'il n'est pas utilisé pendant # minutes. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}}</translation>
@@ -707,6 +709,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7845233973568007926">Merci pour l'installation. Vous devez redémarrer votre ordinateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Lancer Chrome au démarrage de Windows</translation>
 <translation id="7849037457735762883">Reprenez là où vous en étiez : Chrome peut restaurer vos onglets à chaque redémarrage. Pour activer cette option, accédez à</translation>
+<translation id="7868731902994556427">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté. Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous récupérerez également vos extensions et plus encore à partir de <ph name="DEVICE" />.</translation>
 <translation id="7869620795354551924">Pour utiliser vos mots de passe enregistrés, balayez le code QR, téléchargez Chrome pour iOS et connectez-vous à votre compte Google</translation>
 <translation id="7872446069773932638">Téléchargement en cours… <ph name="SECONDS" /> seconde(s) restante(s)</translation>
 <translation id="7886087451482920026">Sélectionnez du texte avec Lentille Google</translation>
@@ -804,6 +807,7 @@ Vous ne pouvez pas enregistrer de nouveaux favoris dans votre compte tant que vo
 <translation id="8679801911857917785">Elle contrôle également la page qui s'affiche au démarrage de Chrome.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8712767363896337380">La mise à jour est presque terminée! Redémarrez Chrome pour terminer la mise à jour.</translation>
+<translation id="8717554232729236539">L'utilisateur (<ph name="EXISTING_USER" />) est déjà connecté. Pour maintenir votre navigation séparée, connectez-vous à votre propre profil dans Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous récupérerez également votre liste de lecture et plus encore à partir de <ph name="DEVICE" />.</translation>
 <translation id="8718062187489036808">Se déconnecter de Chrome</translation>
 <translation id="873133009373065397">Google Chrome ne parvient pas à déterminer quel est le navigateur par défaut ou à le définir</translation>
 <translation id="8747073452963259673">Coin inférieur gauche de la zone de recherche : gauche <ph name="LEFT" /> %, bas <ph name="BOTTOM" /> %</translation>

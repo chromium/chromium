@@ -1432,6 +1432,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2111670510994270194">Sağa yeni panel</translation>
 <translation id="2111778868023567359">Bu səhifədə Tab Qruplarını bir daha görməyəcəksiniz</translation>
 <translation id="2112554630428445878">Xoş gəlmisiniz, <ph name="USERNAME" /></translation>
+<translation id="211293389175579495"><ph name="NUM_MEGABYTES" />MB</translation>
 <translation id="2113314491145966441">macOS-dən import edilmiş sertifikatlara baxın</translation>
 <translation id="21133533946938348">Tabı sancın</translation>
 <translation id="2113479184312716848">Fayl Açın...</translation>
@@ -1987,6 +1988,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="252513908494776481">Bu tab haqqında soruşun</translation>
 <translation id="2525746158911982776">Sistemdə kifayət qədər yaddaş yeri olmadığına görə güncəllənmə alınmadı.</translation>
 <translation id="2525842906387880861">Bu səhifədə təklifləri bir daha görməyəcəksiniz</translation>
+<translation id="2526346836766369775">Yeni təcrid edilmiş &amp;tab</translation>
 <translation id="2526590354069164005">Masaüstü</translation>
 <translation id="2526619973349913024">Güncəllənmə olmasını yoxlayın</translation>
 <translation id="2527167509808613699">Əlaqənin hər hansı növü</translation>
@@ -8537,6 +8539,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7578137152457315135">Barmaq izi ayarları</translation>
 <translation id="7578692661782707876">Təsdiq kodunuzu daxil edin.</translation>
 <translation id="757941033127302446">Giriş edildi</translation>
+<translation id="7580311608678791180">Windows tapşırıq panelindən açın</translation>
 <translation id="7581462281756524039">Təmizləmə aləti</translation>
 <translation id="7582582252461552277">Bu şəbəkəyə üstünlük verin</translation>
 <translation id="7582844466922312471">Mobil data</translation>
@@ -8550,6 +8553,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7590883480672980941">Daxiletmə ayarları</translation>
 <translation id="7592060599656252486">Bəzi</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (xəta kodu <ph name="ERROR_CODE" />).</translation>
+<translation id="7597816893408026784">Mac menyu panelindən açın</translation>
 <translation id="7600054753482800821">&amp;Axtarış sistemlərini və sayt axtarışını idarə edin</translation>
 <translation id="7600218158048761260">Google Disk bu hesab növü üçün deaktiv edilib.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> heç vaxt tərcümə etməyin</translation>
@@ -9235,6 +9239,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8102139037507939978">Şəxsi Eyniləşdirici Məlumatları system_logs.txt faylından çıxarın.</translation>
 <translation id="810362914482827094">Parolları axtarın</translation>
 <translation id="8104088837833760645">eSIM profilini endirin</translation>
+<translation id="8104388155778519213">Ekranınızdakıları Google Linza ilə paylaşın</translation>
 <translation id="8104778744208707085">Diqqət yetirin</translation>
 <translation id="8105273883928376822">Davam etmək üçün daxil olun.</translation>
 <translation id="8106114112474206597">Maus düyməsini basmaq üçün "i" düyməsindən istifadə edin</translation>

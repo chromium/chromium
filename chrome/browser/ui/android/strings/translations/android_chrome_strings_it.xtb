@@ -1026,6 +1026,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5032430150487044192">Impossibile creare codice QR</translation>
 <translation id="5035846135112863536">Scegli "Altri dettagli" di seguito per ottenere maggiori informazioni da <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> schede - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Consenti</translation>
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="504456571576643789">Aspetti da considerare</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> finestra selezionata}other{<ph name="WINDOW_COUNT_NORMAL" /> finestre selezionate}}</translation>

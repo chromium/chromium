@@ -1026,6 +1026,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5032430150487044192">QR код түзүлгөн жок</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> камсыздоочусунан көбүрөөк маалымат алуу үчүн төмөндөгү "Толук маалымат" параметрин тандаңыз.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> өтмөк - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> өтмөк - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Ооба</translation>
 <translation id="5040262127954254034">Купуялык</translation>
 <translation id="504456571576643789">Эске ала турган нерселер</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> терезе тандалды}other{<ph name="WINDOW_COUNT_NORMAL" /> терезе тандалды}}</translation>

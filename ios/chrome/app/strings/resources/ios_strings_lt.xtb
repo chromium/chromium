@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Kitas</translation>
 <translation id="1204075260022434100">{count,plural, =1{Žymė išsaugota aplanke „{title}“ jūsų paskyroje, {email}}one{{count} žymė išsaugota aplanke „{title}“ jūsų paskyroje {email}.}few{{count} žymės išsaugotos aplanke „{title}“ jūsų paskyroje {email}.}many{{count} žymės išsaugota aplanke „{title}“ jūsų paskyroje {email}.}other{{count} žymių išsaugota aplanke „{title}“ jūsų paskyroje {email}.}}</translation>
 <translation id="1207493287814084192">17.30 val.</translation>
-<translation id="1215414310909588335">{count,plural, =1{Išsaugota 1 minutė rašymo}one{Išsaugota # minutė rašymo}few{Išsaugotos # minutės rašymo}many{Išsaugota # minutės rašymo}other{Išsaugota # minučių rašymo}}</translation>
 <translation id="1217294226280635614">Išskaidyto ekrano rodinys</translation>
 <translation id="1218730690561976633">Perjungti patobulinto automatinio pildymo naudotojo patvirtinimą</translation>
 <translation id="1219674500290482172">Nepavyksta prisijungti prie interneto.</translation>

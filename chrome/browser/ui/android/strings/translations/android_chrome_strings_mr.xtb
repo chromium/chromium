@@ -515,6 +515,7 @@
 <translation id="2996682533106928201">डिसमिस करण्यासाठी टॅप करा</translation>
 <translation id="2996809686854298943">URL आवश्यक आहे</translation>
 <translation id="3024215143424744261">वाचन मोड प्राधान्ये बंद केली आहेत</translation>
+<translation id="3024277805447899099">पूर्वावलोकन इमेज</translation>
 <translation id="3026955690410463085">लिंकचा समावेश करा</translation>
 <translation id="3027950907978057636"><ph name="APP_LABEL" /> वरून</translation>
 <translation id="3029276696788198026">प्रीलोडिंग नाही</translation>
@@ -787,6 +788,7 @@
 <translation id="4162867837470729563">पूर्ण उघडलेली शेअरिंग पर्यायांची सूची.</translation>
 <translation id="4164642020717536140">जलद आणि सुरक्षित वेब ब्राउझिंग</translation>
 <translation id="4165077084524712774">आणखी टूल</translation>
+<translation id="4169156312706405526">Drive वरून फाइल अटॅच करा</translation>
 <translation id="4170577491341606575">तुमचा आशय मिळवत आहे\u2026</translation>
 <translation id="4172051516777682613">नेहमी दर्शवा</translation>
 <translation id="4176838562184310003">Chrome योग्यरीत्या बंद झाले नाही आणि तुमच्या गमवलेल्या विंडो व टॅब रिस्टोअर करण्याचा प्रयत्न करू शकते. रिस्टोअर केल्यावर काही विंडो मिनिमाइझ केल्या जाऊ शकतात.</translation>
@@ -1026,9 +1028,11 @@
 <translation id="5032430150487044192">QR कोड तयार करता आला नाही</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> कडून अधिक माहिती मिळवण्यासाठी खाली "आणखी तपशील" निवडा.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टॅब - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> टॅब - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5040262127954254034">गोपनीयता</translation>
 <translation id="504456571576643789">विचारात घेण्याच्या गोष्टी</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> विंडो निवडली आहे}other{<ph name="WINDOW_COUNT_NORMAL" /> विंडो निवडल्या आहेत}}</translation>
+<translation id="5058506215037547387">पेजचे पूर्वावलोकन करा</translation>
 <translation id="506254248375231072">कोणतेही टॅब नाहीत</translation>
 <translation id="5075939510584558547">एन्क्रिप्शनशिवाय सेव्ह करा</translation>
 <translation id="5078638979202084724">सर्व टॅब बुकमार्क करा</translation>

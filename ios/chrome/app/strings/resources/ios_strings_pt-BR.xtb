@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Avançar</translation>
 <translation id="1204075260022434100">{count,plural, =1{Favorito salvo em "{title}" na conta {email}}one{{count} favorito salvo em "{title}" na conta {email}}other{{count} favoritos salvos em "{title}" na conta {email}}}</translation>
 <translation id="1207493287814084192">17h30</translation>
-<translation id="1215414310909588335">{count,plural, =1{1 minuto de digitação economizado}one{# minuto de digitação economizado}other{# minutos de digitação economizados}}</translation>
 <translation id="1217294226280635614">Visualização dividida</translation>
 <translation id="1218730690561976633">Ativar/desativar a verificação de usuário do preenchimento automático aprimorado</translation>
 <translation id="1219674500290482172">Não foi possível se conectar à Internet.</translation>

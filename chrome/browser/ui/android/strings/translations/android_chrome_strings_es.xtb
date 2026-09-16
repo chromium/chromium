@@ -1026,6 +1026,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5032430150487044192">No se puede crear el código QR</translation>
 <translation id="5035846135112863536">Selecciona el botón Más detalles para consultar más información de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> pestañas - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidad</translation>
 <translation id="504456571576643789">Notas importantes</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> ventana seleccionada}other{<ph name="WINDOW_COUNT_NORMAL" /> ventanas seleccionadas}}</translation>
@@ -1254,6 +1255,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="604996488070107836">No ha sido posible descargar el archivo <ph name="FILE_NAME" /> debido a un error desconocido.</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="606985262342505139">Hoja inferior de la pestaña a altura completa</translation>
+<translation id="6070608977567243308">Comprar imagen con Google Lens</translation>
 <translation id="6071995715087444295">Para comprobar si hay contraseñas vulneradas, inicia sesión en tu cuenta de Google</translation>
 <translation id="6078323886959318429">Añadir acceso directo</translation>
 <translation id="6085886413119427067">Determina cómo conectarse a sitios web mediante una conexión segura</translation>
@@ -1301,6 +1303,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="6232535412751077445">Al habilitar la opción No hacer seguimiento, se incluirá una solicitud con el tráfico de navegación. El efecto dependerá de si algún sitio web responde a la solicitud y de cómo se interpreta.
 
 Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anuncios no basados en otros sitios web que hayas visitado. Muchos sitios web seguirán recopilando y utilizando tus datos de navegación (por ejemplo, para mejorar la seguridad, para proporcionar contenido, anuncios y recomendaciones, o para generar estadísticas de informes).</translation>
+<translation id="6235349850462976369">Traducir imagen con Google Lens</translation>
 <translation id="623755660902014047">Modo Lectura</translation>
 <translation id="6246073558347462570">Ventana emergente contextual</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>

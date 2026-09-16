@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1204075260022434100">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{{count} favori enregistré dans « {title} » dans votre compte, {email}.}other{{count} favoris enregistrés dans « {title} » dans votre compte, {email}.}}</translation>
 <translation id="1207493287814084192">17 h 30</translation>
-<translation id="1215414310909588335">{count,plural, =1{1 minute de saisie économisée}one{# minute de saisie économisée}other{# minutes de saisie économisées}}</translation>
 <translation id="1217294226280635614">Affichage partagé</translation>
 <translation id="1218730690561976633">Activer/Désactiver la vérification de l'utilisateur pour le remplissage automatique améliorée</translation>
 <translation id="1219674500290482172">Échec de connexion à Internet.</translation>

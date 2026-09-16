@@ -1026,6 +1026,7 @@
 <translation id="5032430150487044192">無法建立 QR 碼</translation>
 <translation id="5035846135112863536">選取下方的「更多詳情」即可從「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」取得更多資訊。</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁 - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> 個分頁 - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">允許</translation>
 <translation id="5040262127954254034">私隱權</translation>
 <translation id="504456571576643789">考慮因素</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{已選取 <ph name="WINDOW_COUNT_ONE" /> 個視窗}other{已選取 <ph name="WINDOW_COUNT_NORMAL" /> 個視窗}}</translation>

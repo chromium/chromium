@@ -1027,6 +1027,7 @@
 <translation id="5032430150487044192">ບໍ່ສາມາດສ້າງລະຫັດ QR ໄດ້</translation>
 <translation id="5035846135112863536">ເລືອກ "ລາຍລະອຽດເພີ່ມເຕີມ" ຢູ່ລຸ່ມນີ້ເພື່ອເບິ່ງຂໍ້ມູນເພີ່ມເຕີມຈາກ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ແຖບ - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ແຖບ - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">ອະ​ນຸ​ຍາດ​</translation>
 <translation id="5040262127954254034">ຄວາມ​ເປັນ​ສ່ວນ​ຕົວ</translation>
 <translation id="504456571576643789">ສິ່ງທີ່ຕ້ອງພິຈາລະນາ</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{ເລືອກ <ph name="WINDOW_COUNT_ONE" /> ໜ້າຈໍໄວ້}other{ເລືອກ <ph name="WINDOW_COUNT_NORMAL" /> ໜ້າຈໍໄວ້}}</translation>
@@ -1256,6 +1257,7 @@
 <translation id="604996488070107836">ການດາວໂຫຼດ <ph name="FILE_NAME" /> ບໍ່ສຳເລັດເນື່ອງຈາກເກີດຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
 <translation id="605721222689873409">ປ​ປ</translation>
 <translation id="606985262342505139">ແຖບຂອງຊີດລຸ່ມສຸດແບບຄວາມສູງເຕັມໜ້າຈໍ</translation>
+<translation id="6070608977567243308">ຊື້ຈາກຮູບດ້ວຍ Google Lens</translation>
 <translation id="6071995715087444295">ເພື່ອກວດເບິ່ງລະຫັດຜ່ານທີ່ຖືກລະເມີດ, ໃຫ້ເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="6078323886959318429">ເພີ່ມທາງລັດ</translation>
 <translation id="6085886413119427067">ກຳນົດວິທີເຊື່ອມຕໍ່ກັບເວັບໄຊຜ່ານການເຊື່ອມຕໍ່ທີ່ປອດໄພ</translation>
@@ -1303,6 +1305,7 @@
 <translation id="6232535412751077445">ການເປີດໃຊ້ “ຢ່າຕິດຕາມ” ໝາຍຄວາມວ່າ ຄຳຮ້ອງຂໍຈະຖືກເອົາຮວມເຂົ້າກັບການຮັບສົ່ງຂໍ້ມູນການທ່ອງເວັບຂອງທ່ານ. ຜົນຕາມມາແມ່ນຂຶ້ນກັບວ່າເວັບໄຊຕອບສະໜອງຕໍ່ກັບຄຳຮ້ອງຂໍນັ້ນແນວໃດ ແລະຄຳຮ້ອງຂໍນັ້ນຖືກຕີຄວາມໝາຍແນວໃດ.
 
 ຕົວຢ່າງ, ບາງເວັບໄຊອາດຕອບສະໜອງຕໍ່ກັບຄຳຮ້ອງຂໍນີ້ ໂດຍການສະແດງໃຫ້ທ່ານເຫັນໂຄສະນາທີ່ບໍ່ອີງໃສ່ເວັບໄຊອື່ນທີ່ທ່ານເຂົ້າເບິ່ງ. ຫຼາຍໆເວັບໄຊຈະຍັງບັນທຶກ ແລະໃຊ້ຂໍ້ມູນການທ່ອງເວັບຂອງທ່ານ — ຕົວຢ່າງ ເຊັ່ນ: ເພື່ອປັບປຸງຄວາມປອດໄພ, ເພື່ອສະໜອງເນື້ອຫາ, ໂຄສະນາ ແລະຄຳແນະນໍາຕ່າງໆ ແລະເພື່ອສ້າງສະຖິຕິການລາຍງານ.</translation>
+<translation id="6235349850462976369">ແປຮູບພາບດ້ວຍ Google Lens</translation>
 <translation id="623755660902014047">ໂໝດການອ່ານ</translation>
 <translation id="6246073558347462570">ໜ້າຈໍປັອບອັບບໍລິບົດ</translation>
 <translation id="6247557882553405851">ຕົວຈັດການລະຫັດຜ່ານ Google</translation>

@@ -98,6 +98,7 @@
 <translation id="1873233029667955273">Google Chrome ነባሪ አሳሽዎ አይደለም</translation>
 <translation id="1874309113135274312">Google Chrome ቅድመ-ይሁነታ (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome ጊዜው አልፎበታል</translation>
+<translation id="1877067026701708502"><ph name="EXISTING_USER" /> አስቀድመው ገብተዋል። አሰሳዎን ለያይተው ለማቆየት በራስዎ መገለጫ ውስጥ እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ወደ Chrome ይግቡ። እንዲሁም በሁሉም መሣሪያዎችዎ ላይ ቅጥያዎችዎን እና ሌሎችንም ያገኛሉ።</translation>
 <translation id="1880677175115548835">ጽሁፍ ይምረጡ</translation>
 <translation id="1896602904211344018">የChrome መተግበሪያን አግኝ</translation>
 <translation id="1919130412786645364">የChrome በመለያ መግባትን ይፍቀዱ</translation>
@@ -548,6 +549,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6334815226785304306">Google Chromeን ነባሪ አሳሽ ያድርጉ እና ወደ የተግባር አሞሌ ፒን ያድርጉ</translation>
 <translation id="63540178978900677">Chrome ከእንግዲህ ነባሪ አሳሽዎ አይደለም። Chrome ነባሪ አሳሽ ይደረግ?</translation>
 <translation id="6360449101159168105">ይህ ትር ቦዝኖ ሳለ Chromeን ፈጣን እንደሆነ ለማቆየት ማህደረ ትውስታ ነፃ ተደርጓል። ይህን ጣቢያ ሁልጊዜ ከመቦዘን ማግለል መምረጥ ይችላሉ።</translation>
+<translation id="6362984640667950211"><ph name="EXISTING_USER" /> አስቀድመው ገብተዋል። አሰሳዎን ለያይተው ለማቆየት በራስዎ መገለጫ ውስጥ እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ወደ Chrome ይግቡ። እንዲሁም በሁሉም መሣሪያዎችዎ ላይ የንባብ ዝርዝርዎን እና ሌሎችንም ያገኛሉ።</translation>
 <translation id="6388799252195623474">በዚህ አግዘኝ</translation>
 <translation id="6412673304250309937">በChrome ላይ የተከማቹ ድህንነታቸው ያልተጠበቁ ጣቢያዎች ዝርዝር ጋር ዩአርኤሎችን ይፈትሻል። አንድ ጣቢያ የእርስዎን የይለፍ ቃል ለመስረቅ ከሞከረ ወይም ጎጂ ፋይል ካወረደ Chrome እንዲሁም የገጽ ይዘትን ክፍሎችም ጨምሮ ዩአርኤሎችን ወደ የጥንቃቄ አሰሳ መላክ ሊልክ ይችላል።</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{ድርጅትዎ Chrome ለ1 ደቂቃ ጥቅም ላይ ሳይውል ሲቀር በራስ ሰር ይዘጋዋል። የአሰሳ ውሂብ ተሰርዟል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል።}one{ድርጅትዎ Chrome ለ# ደቂቃ ጥቅም ላይ ሳይውል ሲቀር በራስ ሰር ይዘጋዋል። የአሰሳ ውሂብ ተሰርዟል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል።}other{ድርጅትዎ Chrome ለ# ደቂቃዎች ጥቅም ላይ ሳይውል ሲቀር በራስ ሰር ይዘጋዋል። የአሰሳ ውሂብ ተሰርዟል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል።}}</translation>
@@ -708,6 +710,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="7845233973568007926">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት ኮምፒውተርዎን እንደገና ማስጀመር አለብዎት።</translation>
 <translation id="7847170235260850604">Windows ሲጀምር Chromeን አስጀምር</translation>
 <translation id="7849037457735762883">ካቆሙበት ይቀጥሉ፦ Chrome እንደገና በጀመሩ ቁጥር የእርስዎን ትሮች ወደነበሩበት መመለስ ይችላል። ይህን ለማብራት ወደሚከተለው ይሂዱ</translation>
+<translation id="7868731902994556427"><ph name="EXISTING_USER" /> አስቀድመው ገብተዋል። አሰሳዎን ለያይተው ለማቆየት በራስዎ መገለጫ ውስጥ እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ወደ Chrome ይግቡ። እንዲሁም ከ<ph name="DEVICE" /> ቅጥያዎችዎን እና ሌሎችንም ያገኛሉ።</translation>
 <translation id="7869620795354551924">የተቀመጡ የይለፍ ቃላትዎን ለመጠቀም QR ኮዱን ይከተሉ፣ Chrome ለiOS ያውርዱ እና ወደ Google መለያዎ ይግቡ</translation>
 <translation id="7872446069773932638">በማውረድ ላይ... <ph name="SECONDS" /> ሰከንድ(ዶች) ይቀራሉ</translation>
 <translation id="7886087451482920026">በGoogle ሌንስ ጽሁፍ ይምረጡ</translation>
@@ -805,6 +808,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8679801911857917785">እንዲሁም Chromeን ሲጀምሩት የሚታየውን ገፅ ይቆጣጠራል።</translation>
 <translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8712767363896337380">ሊዘመን ጥቂት ቀርቶታል! ዝማኔውን ለማጠናቀቅ Chromeን እንደገና ያስጀምሩ።</translation>
+<translation id="8717554232729236539"><ph name="EXISTING_USER" /> አስቀድመው ገብተዋል። አሰሳዎን ለያይተው ለማቆየት በራስዎ መገለጫ ውስጥ እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ወደ Chrome ይግቡ። እንዲሁም ከ<ph name="DEVICE" /> የንባብ ዝርዝርዎን እና ሌሎችንም ያገኛሉ።</translation>
 <translation id="8718062187489036808">ከChrome ዘግተው ይውጡ</translation>
 <translation id="873133009373065397">Google Chrome ነባሪ አሳሹን ማወቅ ወይም ማቀናበር አልቻለም</translation>
 <translation id="8747073452963259673">የፍለጋው አካባቢ ከታች በስተግራ ጥግ፦ ግራ <ph name="LEFT" />%፣ ከታች <ph name="BOTTOM" />%</translation>

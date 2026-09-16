@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1204075260022434100">{count,plural, =1{તમારા એકાઉન્ટ, {email}માં "{title}"માં બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા એકાઉન્ટ, {email}માં "{title}"માં {count} બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા એકાઉન્ટ, {email}માં "{title}"માં {count} બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="1207493287814084192">સાંજે 5:30 વાગ્યે</translation>
-<translation id="1215414310909588335">{count,plural, =1{ટાઇપ કરવામાં 1 મિનિટનો સમય બચાવ્યો}one{ટાઇપ કરવામાં # મિનિટનો સમય બચાવ્યો}other{ટાઇપ કરવામાં # મિનિટનો સમય બતાવ્યો}}</translation>
 <translation id="1217294226280635614">વિભાજિત વ્યૂ</translation>
 <translation id="1218730690561976633">વપરાશકર્તાની વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધાની ચકાસણી ટૉગલ કરો</translation>
 <translation id="1219674500290482172">ઇન્ટરનેટથી કનેક્ટ કરવામાં અક્ષમ.</translation>
@@ -269,6 +268,7 @@
 <translation id="17906873777101817">પાસવર્ડ અને પાસકી સાચવવાની ઑફર આપો</translation>
 <translation id="1794893174442046596">ટૅબનું ગ્રૂપ</translation>
 <translation id="1807893857950749072">કિંમતને ટ્રૅક કરવા સંબંધિત નોટિફિકેશનને મંજૂરી આપો…</translation>
+<translation id="1808142805674973090">મોડ સ્વિચ કરો</translation>
 <translation id="1809929083618343438">આનાથી Chromeમાંથી પસંદ કરેલી માહિતી કાઢી નાખવામાં આવે છે, પણ તેનાથી તમારા Google એકાઉન્ટમાંથી આ માહિતી ડિલીટ કરવામાં આવતી નથી.</translation>
 <translation id="1810976980198522421">રદ કરો</translation>
 <translation id="1815941218935345331">પાસકોડ</translation>
@@ -850,6 +850,7 @@
 <translation id="3779810277399252432">કોઈ ઇન્ટરનેટ કનેક્શન નથી.</translation>
 <translation id="3782614601387961027">ચેતવણી છોડી દો</translation>
 <translation id="3789841737615482174">ઇન્સ્ટોલ કરો</translation>
+<translation id="3793603310364129123">ઓછા પગલાં, વધુ ઝડપી લિંક</translation>
 <translation id="380329542618494757">નામ</translation>
 <translation id="3803696231112616155">આ સાઇટનો અનુવાદ કરવાનું કહો</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
@@ -1381,6 +1382,7 @@
 <translation id="5467163657366219870">Mapsના પ્રીવ્યૂ બંધ કરો</translation>
 <translation id="5474397204728336997">કુટુંબના પાસવર્ડ, નવા કસ્ટમાઇઝેશન અને બીજું ઘણું. વધુ જાણવા માટે ટૅપ કરો.</translation>
 <translation id="5475793109165786685">{count,plural, =0{કોઈ પાસવર્ડની આયાત કરી નથી}=1{{count} પાસવર્ડની આયાત કરી}one{{count} પાસવર્ડની આયાત કરી}other{{count} પાસવર્ડની આયાત કરી}}</translation>
+<translation id="5477188385487393357">કૉપિ અને પેસ્ટ કરવાનું છોડો</translation>
 <translation id="5478327362747197944">કોઈ વેબપેજમાં કોઈ તારીખ પર ક્લિક કરીને સીધા Calendar ઇવેન્ટ બનાવો.</translation>
 <translation id="5482922178977937393">શું તમે તમારી રુચિઓના આધારે ન્યૂઝ, રમતગમત અને વધુ માટે નોટિફિકેશન મેળવવા માગો છો?</translation>
 <translation id="5483838506518938965">તમે બધું સેટ કરી લીધું</translation>
@@ -1747,6 +1749,7 @@
 <translation id="6585618849026997638">તમે બુકમાર્ક ઉમેરીને તમારા માટે મહત્ત્વપૂર્ણ હોય એવા પેજ પર પાછા જઈ શકો છો</translation>
 <translation id="6589001036857939353">ડુપ્લિકેટ હોય તેને મર્જ કરો</translation>
 <translation id="659407965921887085">આ કાર્ડ તમે હાલમાં ટ્રૅક કરતા હો તે પ્રોડક્ટ પર સમગ્ર વેબ પર કિંમતમાં ઘટાડો દર્શાવે છે</translation>
+<translation id="6596324345367949437">Gemini છૂપા મોડમાં ઉપલબ્ધ નથી</translation>
 <translation id="6596481460663245319">Google વડે છબી શોધો</translation>
 <translation id="6601302169302852717"><ph name="USER_EMAIL" /> માટે Google Photosમાં છબી સાચવી</translation>
 <translation id="6602173570135186741">ઑટોમૅટિક રીતે ભરવાની સુવિધા અને પાસવર્ડ</translation>

@@ -1025,6 +1025,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5032430150487044192">QR कोड सिर्जना गर्न सकिएन</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> बाट थप जानकारी प्राप्त गर्न तल "थप विवरणहरू" नामक बटनमा क्लिक गर्नुहोस्।</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> वटा ट्याब - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> वटा ट्याब - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
 <translation id="5040262127954254034">गोपनीयता</translation>
 <translation id="504456571576643789">विचार गर्नु पर्ने कुराहरू</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> विन्डो चयन गरिएको छ}other{<ph name="WINDOW_COUNT_NORMAL" /> वटा विन्डो चयन गरिएका छन्}}</translation>

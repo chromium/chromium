@@ -515,6 +515,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2996682533106928201">Yopish uchun bosing</translation>
 <translation id="2996809686854298943">URL manzili kiritilmadi</translation>
 <translation id="3024215143424744261">Mutolaa rejimi sozlamalari yopildi</translation>
+<translation id="3024277805447899099">Rasmga razm solish</translation>
 <translation id="3026955690410463085">Havolani kiritish</translation>
 <translation id="3027950907978057636">Manba: <ph name="APP_LABEL" /></translation>
 <translation id="3029276696788198026">Oldindan yuklanmaydi</translation>
@@ -1026,9 +1027,11 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5032430150487044192">QR kod yaratilmadi</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> orqali batafsil axborot olish uchun "Batafsil" bandini tanlang.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ta varaq - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ta varaq - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Ruxsat berish</translation>
 <translation id="5040262127954254034">Shaxsiy ma’lumotlar</translation>
 <translation id="504456571576643789">Bularni hisobga olish kerak</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> ta oyna tanlandi}other{<ph name="WINDOW_COUNT_NORMAL" /> ta oyna tanlandi}}</translation>
+<translation id="5058506215037547387">Sahifaga razm solish</translation>
 <translation id="506254248375231072">Varaqlar ochilmagan</translation>
 <translation id="5075939510584558547">Shifrlamay saqlash</translation>
 <translation id="5078638979202084724">Barcha ichki oynalarni xatcho‘plarga qo‘shish</translation>
@@ -1254,6 +1257,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="604996488070107836">Noma’lum xatolik tufayli <ph name="FILE_NAME" /> fayli yuklab olinmadi.</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="606985262342505139">Varaq quyi ekrani toʻliq hajmda ochildi</translation>
+<translation id="6070608977567243308">Google Lens bilan xaridlar</translation>
 <translation id="6071995715087444295">Oshkor etilgan parollarni tekshirish uchun Google hisobingizga kiring</translation>
 <translation id="6078323886959318429">Yorliq bilan nomlash</translation>
 <translation id="6085886413119427067">Xavfsiz aloqadan foydalanadigan saytlarga qanday ulanishini aniqlaydi</translation>
@@ -1301,6 +1305,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="6232535412751077445">Agar “Kuzatilmasin” parametri yoniq bo‘lsa, brauzer so‘rovlariga maxsus buyruq qo‘shiladi. Natijasi sayt so‘rovga javob berishi va so‘rov qanday ma’noda tushunilganligiga bog‘liq bo‘ladi.
 
 Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda reklama e’lonlari ko‘rsatilishi mumkin. Boshqa saytlar esa brauzer faoliyati haqidagi ma’lumotlarni (m-n, xavfsizlikni mustahkamlash, kontent ko‘rsatish, reklama taqdimoti, statistik hisobotlar yasash kabi) to‘plashda va bu ma’lumotlardan foydalanishda davom etmoqda.</translation>
+<translation id="6235349850462976369">Google Lens bilan tarjimalar</translation>
 <translation id="623755660902014047">Oʻqish rejimi</translation>
 <translation id="6246073558347462570">Kontekstli qalqib chiquvchi oyna</translation>
 <translation id="6247557882553405851">Google Parollar menejeri</translation>

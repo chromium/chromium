@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">សំណើសុំ​ការអនុញ្ញាត​ពី​មាតាបិតា​មិនបានសម្រេច​ទេ។</translation>
 <translation id="1803557475693955505">មិនអាចដំណើរការទំព័រផ្ទៃខាងក្រោយ '<ph name="BACKGROUND_PAGE" />' ទេ។</translation>
 <translation id="1875387611427697908">វាអាចត្រូវបានបញ្ចូលពី <ph name="CHROME_WEB_STORE" /> តែប៉ុណ្ណោះ</translation>
+<translation id="1901182793187376715">មិនអាច​ដំឡើង <ph name="EXTENSION_NAME" /> (លេខកូដ​សម្គាល់​កម្មវិធីបន្ថែម "<ph name="EXTENSION_ID" />") តាមរយៈ​គោលការណ៍​នៅក្នុង​មជ្ឈដ្ឋាន​ដែលមាន​កម្រិត​ជឿទុកចិត្ត​ទាបបានទេ។</translation>
 <translation id="2131077480075264">មិនអាចតំឡើង "<ph name="APP_NAME" />" ទេ ពីព្រោះវាមិនត្រូវបានអនុញ្ញាតដោយ "<ph name="IMPORT_NAME" />"</translation>
 <translation id="2150661552845026580">បន្ថែម "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">មិនអាចបម្លែងរូបភាព '<ph name="IMAGE_NAME" />' ទេ</translation>

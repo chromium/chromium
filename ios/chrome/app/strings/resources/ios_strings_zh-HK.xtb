@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">下一個</translation>
 <translation id="1204075260022434100">{count,plural, =1{書籤已儲存至帳戶 ({email}) 中的「{title}」。}other{{count} 個書籤已儲存至帳戶 ({email}) 中的「{title}」。}}</translation>
 <translation id="1207493287814084192">下午 5 時 30 分</translation>
-<translation id="1215414310909588335">{count,plural, =1{已節省 1 分鐘的輸入時間}other{已節省 # 分鐘的輸入時間}}</translation>
 <translation id="1217294226280635614">分割檢視模式</translation>
 <translation id="1218730690561976633">切換強化版自動填入功能的使用者驗證</translation>
 <translation id="1219674500290482172">無法連線至互聯網。</translation>

@@ -1026,6 +1026,7 @@
 <translation id="5032430150487044192">কিউআৰ ক’ড সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ পৰা অধিক তথ্য লাভ কৰিবলৈ তলত "অধিক সবিশেষ" বাছনি কৰক।</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> টা টেব - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> টা টেব - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> টা টেব - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">অনুমতি দিয়ক</translation>
 <translation id="5040262127954254034">গোপনীয়তা</translation>
 <translation id="504456571576643789">বিবেচনা কৰিব লগা বিষয়</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> খন ৱিণ্ড’ বাছনি কৰা হৈছে}one{<ph name="WINDOW_COUNT_NORMAL" /> খন ৱিণ্ড’ বাছনি কৰা হৈছে}other{<ph name="WINDOW_COUNT_NORMAL" /> খন ৱিণ্ড’ বাছনি কৰা হৈছে}}</translation>

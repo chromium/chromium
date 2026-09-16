@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1204075260022434100">{count,plural, =1{Yer işareti {email} hesabınızda "{title}" konumuna kaydedildi}other{{count} yer işareti {email} hesabınızda "{title}" konumuna kaydedildi}}</translation>
 <translation id="1207493287814084192">17:30</translation>
-<translation id="1215414310909588335">{count,plural, =1{1 dakikalık yazma işlemden kurtuldunuz}other{# dakikalık yazma işlemden kurtuldunuz}}</translation>
 <translation id="1217294226280635614">Bölünmüş görünüm</translation>
 <translation id="1218730690561976633">Gelişmiş otomatik doldurma için kullanıcı doğrulamasını açın/kapatın</translation>
 <translation id="1219674500290482172">İnternet'e bağlanılamıyor.</translation>

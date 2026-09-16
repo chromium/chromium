@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1204075260022434100">{count,plural, =1{আপনার {email} অ্যাকাউন্টের মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}one{আপনার {email} অ্যাকাউন্টের মধ্যে, "{title}"-এ {count}টি বুকমার্ক সেভ করা হয়েছে}other{আপনার {email} অ্যাকাউন্টের মধ্যে, "{title}"-এ {count}টি বুকমার্ক সেভ করা হয়েছে}}</translation>
 <translation id="1207493287814084192">বিকেল ৫:৩০</translation>
-<translation id="1215414310909588335">{count,plural, =1{১ মিনিট টাইপিংয়ের সময় বাঁচানো হয়েছে}one{# মিনিট টাইপিংয়ের সময় বাঁচানো হয়েছে}other{# মিনিট টাইপিংয়ের সময় বাঁচানো হয়েছে}}</translation>
 <translation id="1217294226280635614">স্প্লিট ভিউ</translation>
 <translation id="1218730690561976633">উন্নত অটোফিল ব্যবহারকারীর যাচাইকরণ টগল করুন</translation>
 <translation id="1219674500290482172">ইন্টারনেটের সাথে সংযোগ করতে অক্ষম৷</translation>

@@ -1026,6 +1026,7 @@ I-akhawunti yakho ye-Google ingaba namanye amafomu omlando okuphequlula afana no
 <translation id="5032430150487044192">Ayikwazi ukudala ikhodi ye-QR</translation>
 <translation id="5035846135112863536">Khetha "Imininingwane eyengeziwe" ngezansi ukuze uthole ulwazi olwengeziwe ukusuka ku-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{Ithebhu engu-<ph name="TAB_COUNT_ONE" /> - <ph name="URL_LIST" />}one{Amathebhu angu-<ph name="TAB_COUNT_MANY" /> - <ph name="URL_LIST" />}other{Amathebhu angu-<ph name="TAB_COUNT_MANY" /> - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Vumela</translation>
 <translation id="5040262127954254034">Ubumfihlo</translation>
 <translation id="504456571576643789">Izinto okufanele uzicabangele</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Kukhethwe Iwindi eli-<ph name="WINDOW_COUNT_ONE" />}one{Kukhethwe Amawindi Angu-<ph name="WINDOW_COUNT_NORMAL" />}other{Kukhethwe Amawindi Angu-<ph name="WINDOW_COUNT_NORMAL" />}}</translation>

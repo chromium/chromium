@@ -1351,6 +1351,7 @@ Gwiriwch eich cyfrineiriau unrhyw bryd yn y <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="2026367923222947564">Tudalen lawn</translation>
 <translation id="2026377162111110983">Llais ardal</translation>
 <translation id="2028449514182362831">Ni fydd nodweddion sydd angen synwyryddion symudiad yn gweithio</translation>
+<translation id="2029064269235798707">Dewis llwybr byr bysellfwrdd</translation>
 <translation id="202918510990975568">Rhowch eich cyfrinair i ffurfweddu diogelwch a mewngofnodi</translation>
 <translation id="2030455719695904263">Pad cyffwrdd</translation>
 <translation id="2030803782168502207">Tynnu'r tanysgrifiad o'r ddyfais</translation>
@@ -2284,6 +2285,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2740531572673183784">Iawn</translation>
 <translation id="2740876196999178364">Mae'r codau pas hyn yn cael eu cadw ar y ddyfais hon yn unig. Nid ydynt yn cael eu cadw i'ch Cyfrif Google.</translation>
 <translation id="2741912629735277980">Dangos yr UI ar y sgrîn mewngofnodi</translation>
+<translation id="274229007420507506">Newid llwybr byr yn y <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" /></translation>
 <translation id="2742373789128106053">Nid yw <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ar gael ar hyn o bryd.</translation>
 <translation id="2743301740238894839">Dechrau</translation>
 <translation id="2743378970365831481">I gadw'ch cyfrinair i Reolwr Cyfrineiriau Google, yr eicon Rheolwr Cyfrineiriau yn y Bar Lleoliad</translation>
@@ -2633,6 +2635,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="3001614333383288217">{COUNT,plural, =0{Dim bysellau wedi'u haddasu}=1{Mae 1 fysell wedi'i haddasu}two{Mae {COUNT} fysell wedi'u haddasu}few{Mae {COUNT} bysell wedi'u haddasu}many{Mae {COUNT} bysell wedi'u haddasu}other{Mae {COUNT} bysell wedi'u haddasu}}</translation>
 <translation id="3002864108328203174">Dalen Waelod Gemini ar hanner uchder.</translation>
 <translation id="3003144360685731741">Rhwydweithiau a ffefrir</translation>
+<translation id="3003152206838282768">Yn gweithio ar eich tasg Ap Gemini yn Chrome. Gwiriwch Chrome am ragor o ddiweddariadau</translation>
 <translation id="3003253259757197230">Anfonir cyfeiriadau URL rydych yn ymweld â nhw at Google i ragweld pa wefannau y gallech ymweld â hwy nesaf ac i ddangos gwybodaeth ychwanegol i chi am y dudalen rydych yn ymweld â hi</translation>
 <translation id="3003623123441819449">Storfa CSS</translation>
 <translation id="3003967365858406397">Bydd eich <ph name="PHONE_NAME" /> yn creu cysylltiad Wi-Fi preifat.</translation>
@@ -5082,6 +5085,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4864805589453749318">Dewiswch y rhiant sy'n rhoi caniatâd i ychwanegu at gyfrif ysgol.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (rhwystrwyd</translation>
 <translation id="486505726797718946">Cof a Arbedwyd</translation>
+<translation id="4865526064010209178"><ph name="TASK_TITLE" />: Wrthi'n gweithio ar eich tasg Ap Gemini yn Chrome. Gwiriwch Chrome am ragor o ddiweddariadau</translation>
 <translation id="486635084936119914">Agorwch rai mathau o ffeiliau yn awtomatig ar ôl eu lawrlwytho</translation>
 <translation id="4868284252360267853">Nid ydych yn ffocysu deialog hwn ar hyn o bryd Pwyswch Command-Shift-Option A i ffocysu ar y deialog hwn.</translation>
 <translation id="4869170227080975044">Darllen gwybodaeth rhwydwaith ChromeOS</translation>
@@ -7721,6 +7725,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6916818963747321523">Ehangu Popeth</translation>
 <translation id="6917873303492266709">I rannu, ymuno a chydweithio mewn grwpiau tabiau, agorwch osodiadau a throi Caniatáu mewngofnodi i Chrome ymlaen</translation>
 <translation id="6919354101107095996">Rhowch gynnig arall ar fewngofnodi i'r wefan. Yna, lawrlwythwch eto</translation>
+<translation id="6919461818524183254">Dewis llwybr byr</translation>
 <translation id="6919952941889172531">Troi Gwell Pori'n Ddiogel ymlaen ar gyfer y proffil Chrome hwn hefyd?</translation>
 <translation id="6920989436227028121">Agor fel tab rheolaidd</translation>
 <translation id="6921104647315081813">Clirio gweithgareddau</translation>

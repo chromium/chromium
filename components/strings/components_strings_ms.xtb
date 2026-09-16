@@ -837,6 +837,8 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2384307209577226199">Lalai perusahaan</translation>
 <translation id="2385809941344967209">Kemas kini Chrome daripada tetapan Chrome anda</translation>
 <translation id="2386255080630008482">Sijil pelayan telah dibatalkan.</translation>
+<translation id="2387424091060104123">Dicadangkan oleh Gemini · <ph name="SRC_LINK" />Lihat sumber<ph name="END_SRC_LINK" />
+Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak akan dipadamkan. <ph name="MANAGE_LINK" />Urus autolengkap dipertingkatkan<ph name="END_MANAGE_LINK" /></translation>
 <translation id="239203817277685015">Huraikan</translation>
 <translation id="2392959068659972793">Paparkan dasar tanpa nilai yang ditetapkan</translation>
 <translation id="239429038616798445">Kaedah penghantaran ini tidak tersedia. Cuba kaedah lain.</translation>
@@ -882,6 +884,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2467272921457885625">Spesifikasi dan statistik perkakasan peranti seperti sejarah penggunaan CPU/RAM</translation>
 <translation id="2467421459221956357">Gunakan penderia?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Jalankan Diagnostik Rangkaian<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">Tertib</translation>
 <translation id="2469153820345007638">Susunan 1-ke-N</translation>
 <translation id="24699311393038040">Kertas (Bersalut)</translation>
 <translation id="2471632709106952369">Jadual perbandingan</translation>
@@ -1517,6 +1520,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3577473026931028326">Kesilapan telah berlaku. Cuba lagi.</translation>
 <translation id="3580550219062570293"><ph name="TOS_TITLE" /> <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="3581089476000296252">Chrome akan memberitahu anda apabila halaman ini sudah sedia. &lt;a&gt;Batalkan&lt;/a&gt;</translation>
+<translation id="3581499772329034229">Tambahkan tab secara automatik</translation>
 <translation id="3582930987043644930">Tambah nama</translation>
 <translation id="3583757800736429874">&amp;Buat Semula Pindahkan</translation>
 <translation id="3584299510153766161">Dua tebukan bawah</translation>
@@ -1593,6 +1597,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Memuatkan...</translation>
 <translation id="3709599264800900598">Teks yang Anda Salin</translation>
+<translation id="3711223220609269738">Tab Terasing Baharu</translation>
 <translation id="3711430313228789376">Penyemak imbas Chrome cuba memaparkan kata laluan</translation>
 <translation id="3711895659073496551">Gantung</translation>
 <translation id="3712004750972384495">Menyimpan rakaman skrin</translation>
@@ -1611,6 +1616,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3727309136762649052">Ruang nama</translation>
 <translation id="3727850735097852673">Untuk menggunakan Google Password Manager dengan macOS Keychain, lancarkan semula Chrome dan benarkan akses Keychain. Tab anda akan dibuka semula selepas pelancaran semula.</translation>
 <translation id="3728173127485570463">Penyemak Imbas Chrome tidak memerlukan cap jari anda untuk membuat autolengkap kata laluan</translation>
+<translation id="3729811201279509483">Tambahkan tab secara manual</translation>
 <translation id="3736564442532774454">Penyemak imbas Chrome cuba mengisi maklumat sensitif anda pada <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Penyemak imbas anda diurus oleh pentadbir anda.</translation>
 <translation id="3739842843727261045">Isyarat menyukai menyerahkan maklum balas yang menunjukkan bahawa anda menyukai hasil ini</translation>
@@ -2774,6 +2780,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5649053991847567735">Muat turun automatik</translation>
 <translation id="5651323159439184939">Suapan Traktor</translation>
 <translation id="5653681867130739344">Kemas kinikan kad pengenalan dengan selamat dalam Google Wallet</translation>
+<translation id="5653744563415531641">Simpan maklumat anda dan selesaikan tugasan dengan lebih pantas, seperti mengisi borang merentas produk Google. Anda boleh <ph name="MANAGE_WALLET_SETTINGS_LINK" /> untuk <ph name="ACCOUNT" />.</translation>
 <translation id="5654927323611874862">ID Laporan Ranap Sistem yang Dimuat Naik</translation>
 <translation id="5654965123204121933">URL tidak termasuk rentetan penggantian <ph name="SEARCH_TERMS_REPLACEMENT" /> yang diperlukan: <ph name="SEARCH_URL" /></translation>
 <translation id="5659593005791499971">E-mel</translation>
@@ -3220,6 +3227,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6410264514553301377">Masukkan tarikh tamat tempoh dan CVC untuk <ph name="CREDIT_CARD" /></translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6412543105195503444">Dialog kelulusan ibu/bapa</translation>
+<translation id="6413532517183895572">urus tetapan Wallet anda</translation>
 <translation id="6415778972515849510">Chromium boleh membantu anda melindungi Google Account anda dan menukar kata laluan anda.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6418199314628742460">Pastikan sebarang data perniagaan atau peribadi yang kritikal disimpan secara luaran.</translation>

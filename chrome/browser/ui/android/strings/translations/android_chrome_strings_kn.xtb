@@ -1025,6 +1025,7 @@
 <translation id="5032430150487044192">QR ಕೋಡ್‌ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಂದ ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯನ್ನು ಪಡೆಯಲು ಕೆಳಗೆ "ಇನ್ನಷ್ಟು ವಿವರಗಳು" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ - <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">ಅನುಮತಿಸಿ</translation>
 <translation id="5040262127954254034">ಗೌಪ್ಯತೆ</translation>
 <translation id="504456571576643789">ಪರಿಗಣಿಸಬೇಕಾದ ಸಂಗತಿಗಳು</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> ವಿಂಡೋ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ}one{<ph name="WINDOW_COUNT_NORMAL" /> ವಿಂಡೋಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ}other{<ph name="WINDOW_COUNT_NORMAL" /> ವಿಂಡೋಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ}}</translation>

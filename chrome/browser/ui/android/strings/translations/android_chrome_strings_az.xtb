@@ -787,6 +787,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4162867837470729563">Paylaşım seçimlərinin siyahısı tam yüksəklikdədir.</translation>
 <translation id="4164642020717536140">Sürətli və təhlükəsiz veb axtarışı</translation>
 <translation id="4165077084524712774">Daha çox alət</translation>
+<translation id="4169156312706405526">Diskdən fayllar əlavə edin</translation>
 <translation id="4170577491341606575">Məlumatlarınız əldə edilir\u2026</translation>
 <translation id="4172051516777682613">Həmişə göstərin</translation>
 <translation id="4176838562184310003">Chrome düzgün söndürülmədi, itmiş pəncərə və tablarınızı bərpa etməyə cəhd edə bilər. Bərpa zamanı bəzi pəncərələr kiçildilə bilər.</translation>
@@ -1026,6 +1027,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5032430150487044192">QR kod yaratmaq olmur</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> tərəfindən ətraflı məlumat əldə etmək üçün aşağıda "Ətraflı məlumat" seçin.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> tab - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">İcazə verin</translation>
 <translation id="5040262127954254034">Məxfilik</translation>
 <translation id="504456571576643789">Nəzərə alınmalı amillər</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> pəncərə seçilib}other{<ph name="WINDOW_COUNT_NORMAL" /> pəncərə seçilib}}</translation>

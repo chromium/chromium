@@ -515,6 +515,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2996682533106928201">Palieskite, kad uždarytumėte</translation>
 <translation id="2996809686854298943">Reikalingas URL</translation>
 <translation id="3024215143424744261">Teksto perskaitymo režimo nuostatos uždarytos</translation>
+<translation id="3024277805447899099">Peržiūrėkite vaizdą</translation>
 <translation id="3026955690410463085">Įtraukti nuorodą</translation>
 <translation id="3027950907978057636">Iš „<ph name="APP_LABEL" />“</translation>
 <translation id="3029276696788198026">Neįkelti iš anksto</translation>
@@ -1027,9 +1028,11 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5032430150487044192">Nepavyko sukurti QR kodo</translation>
 <translation id="5035846135112863536">Toliau pasirinkite „Daugiau išsamios informacijos“, kad gautumėte daugiau informacijos iš „<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />“.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skirtukas – <ph name="URL_LIST" />}one{<ph name="TAB_COUNT_MANY" /> skirtukas – <ph name="URL_LIST" />}few{<ph name="TAB_COUNT_MANY" /> skirtukai – <ph name="URL_LIST" />}many{<ph name="TAB_COUNT_MANY" /> skirtuko – <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> skirtukų – <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">Leisti</translation>
 <translation id="5040262127954254034">Privatumas</translation>
 <translation id="504456571576643789">Į ką reikėtų atsižvelgti</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Pasirinktas <ph name="WINDOW_COUNT_ONE" /> langas}one{Pasirinktas <ph name="WINDOW_COUNT_NORMAL" /> langas}few{Pasirinkti <ph name="WINDOW_COUNT_NORMAL" /> langai}many{Pasirinkta <ph name="WINDOW_COUNT_NORMAL" /> lango}other{Pasirinkta <ph name="WINDOW_COUNT_NORMAL" /> langų}}</translation>
+<translation id="5058506215037547387">Peržiūrėkite puslapį</translation>
 <translation id="506254248375231072">Nėra skirtukų</translation>
 <translation id="5075939510584558547">Išsaugoti be šifruotės</translation>
 <translation id="5078638979202084724">Žymėti visus skirtukus</translation>

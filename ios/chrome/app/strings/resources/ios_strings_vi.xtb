@@ -71,7 +71,6 @@
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1204075260022434100">{count,plural, =1{Đã lưu dấu trang vào "{title}" trong tài khoản {email} của bạn}other{Đã lưu {count} dấu trang vào "{title}" trong tài khoản {email} của bạn.}}</translation>
 <translation id="1207493287814084192">5:30 chiều</translation>
-<translation id="1215414310909588335">{count,plural, =1{Đã tiết kiệm được 1 phút đánh máy}other{Đã tiết kiệm được # phút đánh máy}}</translation>
 <translation id="1217294226280635614">Chế độ xem chia đôi màn hình</translation>
 <translation id="1218730690561976633">Bật/tắt tuỳ chọn xác minh người dùng cho tính năng tự động điền nâng cao</translation>
 <translation id="1219674500290482172">Không thể kết nối Internet.</translation>

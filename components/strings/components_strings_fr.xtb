@@ -882,6 +882,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2467272921457885625">Configuration matérielle et statistiques de l'appareil (historique d'utilisation du CPU/de la RAM, par exemple)</translation>
 <translation id="2467421459221956357">Utiliser les capteurs ?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Exécuter les diagnostics du réseau<ph name="END_LINK" /></translation>
+<translation id="2468247643665097563">Ordre</translation>
 <translation id="2469153820345007638">Ordre 1 à N</translation>
 <translation id="24699311393038040">Papier couché</translation>
 <translation id="2471632709106952369">Tableaux comparatifs</translation>
@@ -2220,6 +2221,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4750917950439032686">Vos informations, comme vos mots de passe ou vos numéros de carte de paiement, sont privées lorsqu'elles sont transmises à ce site.</translation>
 <translation id="4754461935447132332">Non autorisées sur les sites non sécurisés</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757119894147311267">Sélectionner le champ du code promotionnel pour afficher et saisir vos offres enregistrées</translation>
 <translation id="4757740693289347881">Le code n'est pas valide</translation>
 <translation id="4757993714154412917">Vous venez de saisir votre mot de passe sur un site trompeur. Pour sécuriser vos comptes, Chromium vous recommande de vérifier vos mots de passe enregistrés.</translation>
 <translation id="4758311279753947758">Ajouter des coordonnées</translation>

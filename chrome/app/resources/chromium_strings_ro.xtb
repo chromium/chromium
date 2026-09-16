@@ -338,6 +338,7 @@
 <translation id="4621240073146040695">Aproape actualizat! Repornește Chromium pentru a finaliza actualizarea.</translation>
 <translation id="4625064703209785397">Accelerează site-urile cu motorul V8 din Chromium, dar reduce ușor rezistența Chromium la atacuri</translation>
 <translation id="4626321472657185181">Deschide Căutarea cu Chromium</translation>
+<translation id="4654639495249754755">Profil Chromium</translation>
 <translation id="4665829708273112819">Avertisment: Chromium nu poate împiedica extensiile să înregistreze istoricul de navigare. Pentru a dezactiva această extensie în modul incognito, debifează această opțiune.</translation>
 <translation id="4673151026126227699">Dacă trimiți rapoarte privind folosirea Chromium, acestea includ adresele URL pe care le accesezi</translation>
 <translation id="4673710618874938871">Te-ai conectat ca <ph name="USER_NAME" />, utilizatoare / utilizator cu abonament. Deschide meniul contului.</translation>
@@ -470,6 +471,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6174920971222007286">Fișierul poate fi periculos<ph name="LINE_BREAK" />Chromium poate verifica descărcarea dacă introduci parola. Informațiile despre fișier sunt trimise la Navigarea sigură Google, dar conținutul și parola fișierului rămân pe dispozitiv.</translation>
 <translation id="6182736845697986886">Nu s-a instalat, din cauza unei erori interne a serverului de actualizare.</translation>
 <translation id="6183079672144801177">Asigură-te că te-ai conectat la Chromium pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
+<translation id="6192070012454216182">Caută și pune întrebări de oriunde, chiar dacă Chromium este minimizat. Permite ca Chromium să ruleze în fundal.</translation>
 <translation id="6212496753309875659">Acest computer are deja o versiune mai recentă de Chromium. Dacă software-ul nu funcționează, dezinstalați Chromium și încercați din nou.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se va relansa acum}=1{Chromium se va relansa într-o secundă}few{Chromium se va relansa în # secunde}other{Chromium se va relansa în # de secunde}}</translation>
 <translation id="6241367896540709610">Pentru a descărca fișiere, Chromium necesită permisiunea de acces la stocare</translation>
@@ -596,6 +598,7 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="7288567540154601580">File și extensii</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium recomandă să o elimini}few{Chromium recomandă să le elimini.}other{Chromium recomandă să le elimini.}}</translation>
 <translation id="7296334833518879294">Pentru a permite accesul la conținutul audio de pe sistem, deschide Setările de sistem și permite Înregistrarea audio numai de pe sistem pentru Chromium. Apoi va trebui să repornești Chromium.</translation>
+<translation id="7299899569525778554">Caută de pe computer</translation>
 <translation id="731795002583552498">Chromium se actualizează</translation>
 <translation id="7318036098707714271">Fișierul de preferințe este fie deteriorat, fie nevalid.
 
@@ -651,6 +654,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. Chromium folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii).</translation>
 <translation id="7810005234485217901">Poți să fixezi Căutarea de imagini pentru acces ușor</translation>
+<translation id="7813626943009612327">Întreabă despre conținut din afara Chromium, cum ar fi altă aplicație sau alt fișier pe care l-ai deschis</translation>
 <translation id="7828527096541974699">Alege la ce date permiți accesul serviciului Chromium</translation>
 <translation id="7828947555739565424">Există deja un profil Chromium asociat acestui cont pe dispozitiv</translation>
 <translation id="7845233973568007926">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești computerul.</translation>
@@ -741,6 +745,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8619360774459241877">Se lansează Chromium...</translation>
 <translation id="8624541899164515475">Setări, se deschide într-o filă nouă.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nu poate fi setat ca browser prestabilit.</translation>
+<translation id="8676101123715131330">Caută cu Chromium de oriunde</translation>
 <translation id="8697124171261953979">Stabilește și ce pagină se afișează când porniți Chromium sau când căutați din caseta polivalentă.</translation>
 <translation id="8704119203788522458">Acesta este browserul dvs. Chromium</translation>
 <translation id="8712637175834984815">Am înțeles</translation>

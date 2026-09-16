@@ -231,6 +231,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="3112458742631356345">Chrome bloqueou esta descarga porque este ficheiro non se descarga con frecuencia e pode ser perigoso</translation>
 <translation id="3119573284443908657">Chrome bloqueou esta descarga porque o ficheiro de arquivo inclúe outros ficheiros que é posible que conteñan software malicioso</translation>
 <translation id="3124332159330678621">Personaliza Chrome para darlle outro aire ao navegador</translation>
+<translation id="3125851611828811913">Fai buscas e preguntas desde calquera lugar, aínda que Chrome estea minimizado. Permite que o navegador se execute en segundo plano.</translation>
 <translation id="3130333203120345554">Nova busca</translation>
 <translation id="3135560418014806498">Engadir perfil de Chrome</translation>
 <translation id="3137969841538672700">Arrastra o recadro para facer buscas</translation>
@@ -388,6 +389,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="4793679854893018356">Descubre como te protexe Chrome</translation>
 <translation id="4799870290441980300">Activa máis funcións para proporcionar a máxima protección de Chrome</translation>
 <translation id="4828579605166583682">Google Chrome está tentando substituír os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
+<translation id="4836321460899997044">Perfil de Chrome</translation>
 <translation id="4842397268809523050">Chrome OS Flex non puido sincronizar os teus datos porque esta función non está dispoñible para o teu dominio.</translation>
 <translation id="4851866215237571846">A sesión está iniciada como <ph name="EXISTING_USER" />.  Se queres navegar de forma independente, inicia sesión en Chrome co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Para compartir a pantalla, vai á configuración do sistema e activa a función de gravación de pantalla para Chrome</translation>
@@ -505,6 +507,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6014316319780893079">Coas <ph name="BEGIN_LINK" />ferramentas de Chrome<ph name="END_LINK" />, podes navegar de maneira segura e manter o control</translation>
 <translation id="6018578474045062808">Proba Google Lens con Chrome no teléfono</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
+<translation id="6024930613143833266">Facer buscas con Chrome desde calquera lugar</translation>
 <translation id="6025087594896450715">Google Chrome reiniciarase dentro de <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="604424701295382420">Elemento fixado! Podes volver acceder a Google Lens desde o novo botón da barra de ferramentas</translation>
@@ -595,6 +598,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6750954913813541382">Para corrixir erros ortográficos, Chrome enviaralle a Google o texto que escribas no navegador</translation>
 <translation id="6760235774835597023">Acelera os sitios co motor V8 de Chrome, pero fai que Chrome sexa un pouco menos resistente aos ataques. Esta opción de configuración está activada.</translation>
 <translation id="677276454032249905">Queres saír de Chrome de todas formas?</translation>
+<translation id="6777654166489463890">Fai preguntas sobre contido que estea fóra de Chrome, por exemplo, noutra aplicación ou nun ficheiro que teñas aberto</translation>
 <translation id="6794858689789885890">Eliminar sempre do dispositivo os datos dos sitios cando peches Chrome</translation>
 <translation id="6800285125190089494">Inicia sesión máis rápido nos sitios utilizando contrasinais gardados en Chrome para iOS</translation>
 <translation id="6831043979455480757">Traducir</translation>
@@ -647,6 +651,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7285990705317078173">Descarga Chrome no teléfono para facer un seguimento dos prezos e recibir alertas cando baixen en calquera sitio</translation>
 <translation id="7288567540154601580">Pestanas e extensións</translation>
 <translation id="7296210096911315575">Información importante sobre o uso e a seguranza</translation>
+<translation id="7299899569525778554">Facer buscas desde o ordenador</translation>
 <translation id="7302361266603927550">Algúns dos teus datos de Chrome aínda non se gardaron na túa Conta de Google. Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
 <translation id="7306401458628386911">Comeza a navegar ao instante: Chrome xa pode abrirse cando se inicie Windows.</translation>
 <translation id="7308322188646931570">Chrome necesita acceder ao almacenamento para descargar ficheiros</translation>

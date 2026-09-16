@@ -2,10 +2,12 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="1184166532603925201">Inkognito rejimda Chrome saytlarning tashqi cookie fayllaridan foydalanishini bloklaydi</translation>
+<translation id="1365023215312302966">Saytlar tashqi cookie fayllari yordamida kontent va reklamani moslashi hamda boshqa saytlardagi harakatlaringizni oʻrganishi imkonsiz</translation>
 <translation id="1569440020357229235">Inkognito rejimida saytlar tashqi cookie fayllaridan foydalana olmaydi. Agar bunday cookie ishlatadigan sayt yaxshi ishlamasa, <ph name="BEGIN_LINK" />bu saytga tashqi cookie fayllari ishlatishga vaqtincha ruxsat bering<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin</translation>
 <translation id="2183376768278472507">Sayt kutilganidek ishlamasa, ochilgan muayyan sayt uchun tashqi cookie fayllaridan foydalanishga ruxsat bering</translation>
 <translation id="2235344399760031203">Tashqi cookie fayllar bloklandi</translation>
+<translation id="2360633687155619995">Saytlar tashqi cookie fayllari yordamida kontent va reklamani moslashi hamda boshqa saytlardagi harakatlaringizni oʻrganishi imkonsiz. Ayrim sayt funksiyalari kutilganidek ishlamasligi mumkin.</translation>
 <translation id="2496115946829713659">Saytlar tashqi cookie fayllari yordamida kontent va reklamani moslashi hamda boshqa saytlardagi harakatlaringizni oʻrganishi mumkin</translation>
 <translation id="3045333309254072201">Inkognito rejimida saytlar tashqi cookie fayllaridan foydalana olmaydi. Agar bunday cookie ishlatadigan sayt yaxshi ishlamasa, <ph name="START_LINK" />bu saytga tashqi cookie fayllari ishlatishga vaqtincha ruxsat bering<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Tashqi cookie fayllariga tayanadigan saytlar kutilganidek ishlashi kerak</translation>

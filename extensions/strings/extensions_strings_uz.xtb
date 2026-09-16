@@ -28,6 +28,7 @@
 <translation id="1757786065507923842">Ota-ona ruxsati talab qilinmadi.</translation>
 <translation id="1803557475693955505">“<ph name="BACKGROUND_PAGE" />” orqa fon sahifasini yuklab bo‘lmadi.</translation>
 <translation id="1875387611427697908">Buni faqat <ph name="CHROME_WEB_STORE" /> sahifasidan qo‘shish mumkin</translation>
+<translation id="1901182793187376715">Belgilangan siyosat asosida <ph name="EXTENSION_NAME" /> (ID: “<ph name="EXTENSION_ID" />”) kengaytmasini ishonchsiz muhitlarda oʻrnatish imkonsiz.</translation>
 <translation id="2131077480075264">“<ph name="APP_NAME" />” ilovasini o‘rnatib bo‘lmadi, chunki “<ph name="IMPORT_NAME" />” ruxsat bermadi.</translation>
 <translation id="2150661552845026580">“<ph name="EXTENSION_NAME" />” o‘rnatilsinmi?</translation>
 <translation id="2159915644201199628">Tasvirni dekodlab bo‘lmadi: “<ph name="IMAGE_NAME" />”</translation>

@@ -1026,6 +1026,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5032430150487044192">QR Kodu oluşturulamıyor</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile ilgili daha fazla bilgi edinmek için aşağıda "Diğer ayrıntılar"ı seçin.</translation>
 <translation id="5039678609803776426">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> sekme - <ph name="URL_LIST" />}other{<ph name="TAB_COUNT_MANY" /> sekme - <ph name="URL_LIST" />}}</translation>
+<translation id="5039804452771397117">İzin ver</translation>
 <translation id="5040262127954254034">Gizlilik</translation>
 <translation id="504456571576643789">Dikkate alınması gereken noktalar</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> Pencere Seçildi}other{<ph name="WINDOW_COUNT_NORMAL" /> Pencere Seçildi}}</translation>

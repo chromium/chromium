@@ -231,6 +231,7 @@
 <translation id="3112458742631356345">Chrome је блокирао ово преузимање јер се овај фајл не преузима често и може да буде опасан</translation>
 <translation id="3119573284443908657">Chrome је блокирао ово преузимање јер фајл архиве садржи друге фајлове који могу да крију малвер</translation>
 <translation id="3124332159330678621">Прилагодите Chrome да бисте прешли на нов изглед прегледача</translation>
+<translation id="3125851611828811913">Претражујте и постављајте питања с било ког места, чак и ако је Chrome умањен. Дозвољава Chrome-у да ради у позадини.</translation>
 <translation id="3130333203120345554">Нова претрага</translation>
 <translation id="3135560418014806498">Додај Chrome профил</translation>
 <translation id="3137969841538672700">Превуците да бисте претражили</translation>
@@ -388,6 +389,7 @@
 <translation id="4793679854893018356">Сазнајте како вас Chrome штити</translation>
 <translation id="4799870290441980300">Укључује додатне функције ради пружања најснажније Chrome заштите</translation>
 <translation id="4828579605166583682">Google Chrome покушава да замени постојеће лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
+<translation id="4836321460899997044">Chrome профил</translation>
 <translation id="4842397268809523050">Chrome OS Flex не може да синхронизује податке јер синхронизација није доступна за домен.</translation>
 <translation id="4851866215237571846">Корисник <ph name="EXISTING_USER" /> је већ пријављен.  Да би вам прегледање било раздвојено, пријавите се у Chrome преко свог профила као <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Да бисте делили екран, дозволите снимање екрана за Chrome у подешавањима система</translation>
@@ -505,6 +507,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6014316319780893079">Помоћу <ph name="BEGIN_LINK" />Chrome алатки<ph name="END_LINK" /> можете безбедно да прегледате и задржите контролу</translation>
 <translation id="6018578474045062808">Испробајте Google објектив уз Chrome на телефону</translation>
 <translation id="6022659036123304283">Прилагодите Chrome себи</translation>
+<translation id="6024930613143833266">Претражујте помоћу Chrome-а са било ког места</translation>
 <translation id="6025087594896450715">Google Chrome ће се рестартовати за <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="604424701295382420">Закачено је. Можете поново да приступите Google објективу помоћу новог дугмета на траци с алаткама</translation>
@@ -595,6 +598,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6750954913813541382">Да би исправио правописне грешке, Chrome Google-у шаље текст који уносите у прегледач</translation>
 <translation id="6760235774835597023">Убрзава сајтове уз Chrome механизам V8, али чини Chrome мало мање отпорним на нападе. Ово подешавање је укључено.</translation>
 <translation id="677276454032249905">Желите ли ипак да затворите Chrome?</translation>
+<translation id="6777654166489463890">Постављајте питања о садржају изван Chrome-а, попут друге апликације или фајла који сте отворили</translation>
 <translation id="6794858689789885890">Увек избришите податке о сајтовима са уређаја када затворите Chrome</translation>
 <translation id="6800285125190089494">Брже се пријављујте на сајтове помоћу сачуваних лозинки за Chrome на iOS-у</translation>
 <translation id="6831043979455480757">Преведи</translation>
@@ -647,6 +651,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7285990705317078173">Преузмите Chrome на телефон да бисте пратили цене и добијали обавештења када цена падне на било ком сајту</translation>
 <translation id="7288567540154601580">Картице и додаци</translation>
 <translation id="7296210096911315575">Важне информације о употреби и безбедности</translation>
+<translation id="7299899569525778554">Претражујте са рачунара</translation>
 <translation id="7302361266603927550">Неки Chrome подаци још нису сачувани на Google налогу. Сачекајте неколико минута пре него што се одјавите. Ако се одјавите одмах, ови подаци ће бити избрисани.</translation>
 <translation id="7306401458628386911">Одмах почните да прегледате: Chrome сада може да се покрене када се покрене Windows.</translation>
 <translation id="7308322188646931570">Chrome тражи приступ меморијском простору да би преузимао датотеке</translation>
