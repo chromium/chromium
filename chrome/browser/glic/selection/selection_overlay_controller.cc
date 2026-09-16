@@ -285,6 +285,13 @@ void SelectionOverlayController::BindOverlay(
       &SelectionOverlayController::Reset, weak_factory_.GetWeakPtr()));
   page_.Bind(std::move(page));
 
+  if (overlay_web_view_) {
+    overlay_web_view_focus_subscription_ =
+        overlay_web_view_->AddWebContentsFocusedCallback(base::BindRepeating(
+            &SelectionOverlayController::OnOverlayWebViewFocused,
+            weak_factory_.GetWeakPtr()));
+  }
+
   InitializeOverlay();
 }
 
@@ -395,6 +402,17 @@ void SelectionOverlayController::OnFocusedTabChanged(
   } else if (!tab_->IsActivated()) {
     TabDeactivated(tab_);
   }
+}
+
+void SelectionOverlayController::OnOverlayWebViewFocused(
+    views::WebView* web_view) {
+  CHECK(tab_);
+  if (!tab_->IsVisible() || tab_->IsActivated()) {
+    return;
+  }
+  TabStripModel* tab_strip_model =
+      tab_->GetBrowserWindowInterface()->GetTabStripModel();
+  tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(tab_));
 }
 
 void SelectionOverlayController::OnSplitTabChanged(
@@ -733,6 +751,7 @@ void SelectionOverlayController::Reset() {
   tab_context_.reset();
   capture_region_observer_.reset();
   options_.reset();
+  overlay_web_view_focus_subscription_ = {};
 }
 
 void SelectionOverlayController::RenderRegions(bool should_focus_panel) {

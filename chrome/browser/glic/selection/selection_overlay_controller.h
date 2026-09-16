@@ -32,6 +32,10 @@ namespace input {
 struct NativeWebKeyboardEvent;
 }
 
+namespace views {
+class WebView;
+}
+
 namespace glic {
 
 class FocusedTabData;
@@ -100,6 +104,10 @@ class SelectionOverlayController
                   tabs::TabInterface::DetachReason reason);
   void TabDeactivated(tabs::TabInterface* tab);
   void OnFocusedTabChanged(const FocusedTabData& tab_data);
+  // Called when the overlay's WebView takes focus, e.g. when the user clicks
+  // on it. In a split view the overlay can be rendered over the inactive tab,
+  // in which case `tab_` needs to be activated.
+  void OnOverlayWebViewFocused(views::WebView* web_view);
 
   void InitializeOverlay();
 
@@ -184,6 +192,9 @@ class SelectionOverlayController
       selected_regions_;
   // Maps suggested action IDs to prompt strings.
   base::flat_map<base::UnguessableToken, std::string> suggested_actions_;
+  // Subscription for `OverlayBaseController::overlay_web_view_` taking focus.
+  // Scoped to the lifetime of that WebView.
+  base::CallbackListSubscription overlay_web_view_focus_subscription_;
 
   ui::ScopedUnownedUserData<SelectionOverlayController>
       scoped_unowned_user_data_;

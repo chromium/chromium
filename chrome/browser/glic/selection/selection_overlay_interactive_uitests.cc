@@ -1032,6 +1032,36 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
+                       OverlayFocusActivatesItsTabInSplitView) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
+                                      kActiveTabIndex);
+
+  RunTestSequence(
+      Do([this]() { chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true); }),
+      EnterSplitView(/*active_tab=*/0, /*other_tab=*/1), Do([this]() {
+        browser()->tab_strip_model()->ActivateTabAt(0);
+        TrackGlicInstanceWithTabIndex(0);
+      }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      PollState(
+          kActiveTabIndex,
+          [this]() { return browser()->tab_strip_model()->active_index(); }),
+      FocusInactiveTabInSplit(), WaitForState(kActiveTabIndex, 1),
+      // The overlay covers tab 0, so focusing it must bring tab 0 back.
+      MoveMouseTo(base::BindLambdaForTesting([this]() {
+        return GetOverlayView(browser(), 0)->GetBoundsInScreen().CenterPoint();
+      })),
+      ClickMouse(), WaitForState(kActiveTabIndex, 0),
+      CheckResult(GetOverlayVisibilityAt(0), true));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithSplitView,
                        OverlaySticksToTabOnReverse) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
 
