@@ -26,6 +26,7 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/window_open_disposition.h"
@@ -73,6 +74,10 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
 
   // Keeps a manager-initiated removal from being reported as an outcome.
   void suppress_result() { pending_result_.reset(); }
+
+  // Whether an outcome is still owed at destruction (i.e. the user has not yet
+  // acted via Accept, Cancel, or Dismiss, and result was not suppressed).
+  bool has_pending_result() const { return pending_result_.has_value(); }
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override {
     return spec_.identifier();
@@ -277,6 +282,14 @@ content::WebContents* GetActiveWebContents() {
 // here was created by this manager, so the cast is safe.
 void SuppressInfoBarResult(infobars::InfoBar* infobar) {
   static_cast<RegistryInfoBarDelegate*>(infobar->delegate())->suppress_result();
+}
+
+// Whether `infobar` still has an outcome pending (i.e. the user has not acted
+// on it via Accept, Cancel, or Dismiss). Every infobar here was created by
+// this manager, so the cast is safe.
+bool HasPendingResult(infobars::InfoBar* infobar) {
+  return static_cast<RegistryInfoBarDelegate*>(infobar->delegate())
+      ->has_pending_result();
 }
 
 // Removes `infobar` without reporting a result.
@@ -532,14 +545,21 @@ void BrowserInfoBarManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
   if (!browser) {
     return;
   }
-  if (!browser->GetTabStripModel()->closing_all() &&
-      !browser->IsDeleteScheduled()) {
+  // An individual tab can go away while its window stays open, and during fast
+  // shutdown its renderer may already be gone, so neither `closing_all()` nor
+  // `IsDeleteScheduled()` is sufficient on its own to detect teardown.
+  const bool is_tearing_down =
+      browser->GetTabStripModel()->closing_all() ||
+      browser->IsDeleteScheduled() || web_contents->IsBeingDestroyed() ||
+      !web_contents->GetPrimaryMainFrame()->IsRenderFrameLive();
+  if (!is_tearing_down || !HasPendingResult(infobar)) {
     Hide(identifier);
     return;
   }
-  // The window is closing, not the infobar, which stays up in the other
-  // browsers. This instance must not report an outcome for a logical infobar
-  // the user can still see; whichever instance goes last reports for it.
+  // The window or tab's renderer is closing/gone, not the infobar, which stays
+  // up in the other browsers. This instance must not report an outcome for a
+  // logical infobar the user can still see; whichever instance goes last
+  // reports for it.
   if (!instances.empty()) {
     SuppressInfoBarResult(infobar);
   }

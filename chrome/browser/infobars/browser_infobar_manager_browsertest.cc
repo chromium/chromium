@@ -756,6 +756,46 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       GlobalTabCloseReportsOnlyForTheLastInstance) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  std::vector<InfoBarResult> results;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Test Message")
+                          .SetScope(InfoBarScope::kGlobal)
+                          .SetResultCallback(base::BindLambdaForTesting(
+                              [&](content::WebContents*, InfoBarResult result) {
+                                results.push_back(result);
+                              }))
+                          .Build());
+
+  manager()->ShowGlobally(identifier);
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
+  ASSERT_EQ(1u, InfoBarCountIn(browser2));
+
+  // Open a second tab in browser2 so it has two tabs, making the new tab
+  // active.
+  chrome::AddTabAt(browser2, GURL("about:blank"), -1, true);
+  ASSERT_EQ(1u, InfoBarCountIn(browser2));
+
+  // Closing the active tab in browser2 destroys its WebContents.
+  // This must not report an outcome or dismiss the infobar globally.
+  browser2->GetTabStripModel()->CloseWebContentsAt(1,
+                                                   TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(1u, InfoBarCountIn(browser()));
+  EXPECT_EQ(1u, InfoBarCountIn(browser2));
+  EXPECT_TRUE(results.empty());
+
+  // Dismissing the last instance in browser() reports once for the infobar.
+  ContentInfoBarManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents())
+      ->infobars()[0]
+      ->delegate()
+      ->InfoBarDismissed();
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(InfoBarResult::kDismissed, results[0]);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
                        AcceptCanKeepTheInfoBarShowing) {
   const auto identifier = InfoBarDelegate::TEST_INFOBAR;
   std::vector<InfoBarResult> results;
