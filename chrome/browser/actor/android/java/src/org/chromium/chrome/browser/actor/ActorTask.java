@@ -168,9 +168,8 @@ public class ActorTask {
      * @return true if the task is acting on the given tab, false otherwise.
      */
     public boolean isActingOnTab(int tabId) {
-        // TODO(haileywang): This currently loops through all the tabs associated to the task. Look
-        // into having native update the latest tabId when the actuated tab changes.
-        return isUnderActorControl() && getTabs().contains(tabId);
+        if (mNativeTask == 0) return false;
+        return ActorTaskJni.get().isActingOnTab(mNativeTask, tabId);
     }
 
     /**
@@ -207,5 +206,7 @@ public class ActorTask {
         int[] getLastActedTabs(long nativeActorTaskAndroid);
 
         int getLastActuatedTabId(long nativeActorTaskAndroid);
+
+        boolean isActingOnTab(long nativeActorTaskAndroid, int tabId);
     }
 }

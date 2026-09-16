@@ -33,7 +33,7 @@ public class ActorServiceTabUtils {
         if (profile == null) return Collections.emptyList();
 
         ActorKeyedService service = ActorKeyedServiceFactory.getForProfile(profile);
-        if (service == null) return Collections.emptyList();
+        if (service == null || service.getActiveTasksCount() == 0) return Collections.emptyList();
 
         Set<@ActorTaskId Integer> taskIds = new HashSet<>();
         for (Tab tab : tabs) {
@@ -44,6 +44,7 @@ public class ActorServiceTabUtils {
                 taskIds.add(taskId);
             }
         }
+        if (taskIds.isEmpty()) return Collections.emptyList();
         return new ArrayList<>(taskIds);
     }
 }

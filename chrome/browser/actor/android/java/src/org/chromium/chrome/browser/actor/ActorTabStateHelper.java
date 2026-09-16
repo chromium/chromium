@@ -40,7 +40,9 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -75,18 +77,33 @@ public class ActorTabStateHelper {
     }
 
     /**
-     * Iterates over a copy of the model's tabs, detects active tasks, and performs transitions.
-     * Only creates and populates sessions for tabs whose placeholders were inserted correctly.
+     * Iterates over tabs in the model, matches any active tasks, and performs transitions. Only
+     * creates and populates sessions for tabs whose placeholders were inserted correctly.
      */
     private static List<BackgroundSession> findAndDetachActiveSessions(
             TabModel model, ActorKeyedService service, int windowId, Callback<Tab> onTabDetaching) {
+        // TODO: Support tabs associated with multiple active tasks. For now, map each tab to
+        // the first active task found in iteration order.
+        Map<Integer, Integer> activeTabIdToTaskId = new HashMap<>();
+        for (ActorTask task : service.getActiveTasks()) {
+            if (task.isUnderActorControl()) {
+                for (int tabId : task.getTabs()) {
+                    activeTabIdToTaskId.putIfAbsent(tabId, task.getId());
+                }
+            }
+        }
+
+        if (activeTabIdToTaskId.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<BackgroundSession> sessions = new ArrayList<>();
         TabGroupSyncService syncService = getTabGroupSyncService(model);
 
         for (Tab originalTab : model) {
             if (originalTab == null) continue;
 
-            Integer taskId = ActorTaskHelper.getActiveTaskIdOnTab(service, originalTab);
+            Integer taskId = activeTabIdToTaskId.get(originalTab.getId());
             if (taskId == null) continue;
 
             int originalIndex = model.indexOf(originalTab);

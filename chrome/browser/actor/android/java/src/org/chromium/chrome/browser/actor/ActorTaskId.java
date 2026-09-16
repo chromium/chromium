@@ -16,4 +16,6 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target(TYPE_USE)
 @NullMarked
-public @interface ActorTaskId {}
+public @interface ActorTaskId {
+    int INVALID_TASK_ID = 0;
+}

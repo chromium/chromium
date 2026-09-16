@@ -35,6 +35,7 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> GetActiveTasks();
   int32_t GetActiveTasksCount();
   base::android::ScopedJavaLocalRef<jobject> GetTask(int32_t task_id);
+  int32_t GetActiveTaskIdOnTab(int32_t tab_id, bool include_paused);
   void StopTask(int32_t task_id, int32_t stop_reason);
 
   // Called by JNI.

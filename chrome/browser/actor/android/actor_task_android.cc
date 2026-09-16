@@ -116,6 +116,19 @@ int32_t ActorTaskAndroid::GetLastActuatedTabId() {
   return tab_android ? tab_android->GetAndroidId() : TabAndroid::kInvalidTabId;
 }
 
+bool ActorTaskAndroid::IsActingOnTab(int32_t tab_id) {
+  if (!task_->IsUnderActorControl()) {
+    return false;
+  }
+  for (const auto& handle : task_->GetTabs()) {
+    if (auto* tab_android = TabAndroid::FromTabHandle(handle)) {
+      if (tab_android->GetAndroidId() == tab_id) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 }  // namespace actor
 
 DEFINE_JNI(ActorTask)

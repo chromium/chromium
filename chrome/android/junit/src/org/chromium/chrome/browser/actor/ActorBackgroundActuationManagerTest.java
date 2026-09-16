@@ -251,6 +251,7 @@ public class ActorBackgroundActuationManagerTest {
 
         ActorTask task = mock(ActorTask.class);
         when(task.getId()).thenReturn(123);
+        when(task.isUnderActorControl()).thenReturn(true);
         when(task.getTabs()).thenReturn(Collections.singleton(100));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
@@ -308,6 +309,7 @@ public class ActorBackgroundActuationManagerTest {
 
         ActorTask task = mock(ActorTask.class);
         when(task.getId()).thenReturn(123);
+        when(task.isUnderActorControl()).thenReturn(true);
         when(task.getTabs()).thenReturn(new LinkedHashSet<>(Arrays.asList(100, 200)));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
@@ -361,6 +363,7 @@ public class ActorBackgroundActuationManagerTest {
         when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(123);
         ActorTask task = mock(ActorTask.class);
         when(task.getId()).thenReturn(123);
+        when(task.isUnderActorControl()).thenReturn(true);
         when(task.getTabs()).thenReturn(Collections.singleton(100));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
@@ -574,6 +577,7 @@ public class ActorBackgroundActuationManagerTest {
         when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(777);
         ActorTask task = mock(ActorTask.class);
         when(task.getId()).thenReturn(777);
+        when(task.isUnderActorControl()).thenReturn(true);
         when(task.getTabs()).thenReturn(Collections.singleton(100));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
@@ -778,6 +782,7 @@ public class ActorBackgroundActuationManagerTest {
         when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(500);
         ActorTask task = mock(ActorTask.class);
         when(task.getId()).thenReturn(500);
+        when(task.isUnderActorControl()).thenReturn(true);
         when(task.getTabs()).thenReturn(Collections.singleton(100));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 

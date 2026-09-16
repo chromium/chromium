@@ -126,6 +126,23 @@ base::android::ScopedJavaLocalRef<jobject> ActorKeyedServiceAndroid::GetTask(
   return ActorTaskAndroid::GetForTask(task)->GetJavaObject();
 }
 
+int32_t ActorKeyedServiceAndroid::GetActiveTaskIdOnTab(int32_t tab_id,
+                                                       bool include_paused) {
+  for (const auto& [id, task] : service_->GetActiveTasks()) {
+    if (!include_paused && !task->IsUnderActorControl()) {
+      continue;
+    }
+    for (const auto& handle : task->GetTabs()) {
+      if (auto* tab_android = TabAndroid::FromTabHandle(handle)) {
+        if (tab_android->GetAndroidId() == tab_id) {
+          return id.value();
+        }
+      }
+    }
+  }
+  return TaskId().GetUnsafeValue();
+}
+
 void ActorKeyedServiceAndroid::StopTask(int32_t task_id, int32_t stop_reason) {
   service_->StopTask(TaskId(task_id),
                      static_cast<ActorTask::StoppedReason>(stop_reason));

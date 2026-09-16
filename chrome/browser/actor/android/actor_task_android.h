@@ -38,6 +38,7 @@ class ActorTaskAndroid : public base::SupportsUserData::Data {
   std::vector<int32_t> GetTabs();
   std::vector<int32_t> GetLastActedTabs();
   int32_t GetLastActuatedTabId();
+  bool IsActingOnTab(int32_t tab_id);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;

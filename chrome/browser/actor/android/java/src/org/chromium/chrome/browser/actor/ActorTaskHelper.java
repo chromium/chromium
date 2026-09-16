@@ -227,18 +227,6 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
     }
 
     /**
-     * Helper to get the active task ID on a given Tab.
-     *
-     * @param service The ActorKeyedService to query.
-     * @param tab The tab to get the active task ID for.
-     * @return The active task ID, or null if none.
-     */
-    public static @Nullable @ActorTaskId Integer getActiveTaskIdOnTab(
-            ActorKeyedService service, Tab tab) {
-        return service.getActiveTaskIdOnTab(tab.getId(), /* includePaused= */ false);
-    }
-
-    /**
      * Helper to find the tab in a list that was most recently acted on by a task.
      *
      * @param tabs List of candidate tabs.

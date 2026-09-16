@@ -109,13 +109,8 @@ public class ActorKeyedService {
      */
     public @Nullable @ActorTaskId Integer getActiveTaskIdOnTab(int tabId, boolean includePaused) {
         if (mNativePtr == 0) return null;
-        List<ActorTask> tasks = getActiveTasks();
-        for (ActorTask task : tasks) {
-            if (includePaused ? task.getTabs().contains(tabId) : task.isActingOnTab(tabId)) {
-                return task.getId();
-            }
-        }
-        return null;
+        int id = ActorKeyedServiceJni.get().getActiveTaskIdOnTab(mNativePtr, tabId, includePaused);
+        return id != ActorTaskId.INVALID_TASK_ID ? id : null;
     }
 
     @CalledByNative
@@ -178,6 +173,9 @@ public class ActorKeyedService {
         int getActiveTasksCount(long nativeActorKeyedServiceAndroid);
 
         ActorTask getTask(long nativeActorKeyedServiceAndroid, int taskId);
+
+        int getActiveTaskIdOnTab(
+                long nativeActorKeyedServiceAndroid, int tabId, boolean includePaused);
 
         void stopTask(long nativeActorKeyedServiceAndroid, int taskId, int stopReason);
 
