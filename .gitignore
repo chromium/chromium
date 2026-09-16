@@ -37,6 +37,8 @@
 .*.sw?
 .DS_Store
 /.agent
+/_agent
+/_agents
 .android
 .ccls-cache
 .checkstyle
