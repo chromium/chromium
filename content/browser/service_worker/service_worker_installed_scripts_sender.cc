@@ -30,10 +30,12 @@ ServiceWorkerInstalledScriptsSender::ServiceWorkerInstalledScriptsSender(
       state_(State::kNotStarted),
       last_finished_reason_(
           ServiceWorkerInstalledScriptReader::FinishedReason::kNotFinished) {
-  CHECK(ServiceWorkerVersion::IsInstalled(owner_->status()),
-        base::NotFatalUntil::M159);
-  CHECK_NE(blink::mojom::kInvalidServiceWorkerResourceId, main_script_id_,
-           base::NotFatalUntil::M159);
+  // TODO(crbug.com/562096942): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(ServiceWorkerVersion::IsInstalled(owner_->status()));
+  // TODO(crbug.com/562096942): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_NE(blink::mojom::kInvalidServiceWorkerResourceId, main_script_id_);
 }
 
 ServiceWorkerInstalledScriptsSender::~ServiceWorkerInstalledScriptsSender() {}
