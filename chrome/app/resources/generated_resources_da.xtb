@@ -2628,7 +2628,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3000461861112256445">Monolyd</translation>
 <translation id="3001144475369593262">Børnekonti</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Ingen nøgler er tilpasset}=1{1 tilpasset nøgle}one{{COUNT} tilpasset nøgle}other{{COUNT} tilpassede nøgler}}</translation>
-<translation id="3002745665522516995">Vælg hvad som helst på siden for at søge</translation>
 <translation id="3002864108328203174">Gemini-feltet i bunden er åbent i halv højde.</translation>
 <translation id="3003144360685731741">Favoritter netværk</translation>
 <translation id="3003253259757197230">De webadresser, du besøger, sendes til Google for at forudsige, hvilke websites du kunne have lyst til at besøge som det næste, og for at vise dig oplysninger om den side, du besøger</translation>
@@ -5480,7 +5479,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5173668317844998239">Tilføj eller slet de fingeraftryk, der er gemt på din sikkerhedsnøgle</translation>
 <translation id="5174169235862638850">Adgangskoden er kopieret til udklipsholderen</translation>
 <translation id="517488401359338823">Lås sikkerhedsenheden op</translation>
-<translation id="5176671554021050278">Brug Google Lens til at få flere oplysninger om bestemte billeder eller tekst på en side.</translation>
 <translation id="5177479852722101802">Fortsæt blokering af adgang til kamera og mikrofon</translation>
 <translation id="5178667623289523808">Find forrige</translation>
 <translation id="5179428098696668914">Deaktiver AI-afspilning</translation>

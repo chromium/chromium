@@ -2616,7 +2616,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001144475369593262">Comptes pour enfants</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Aucune clé personnalisée}=1{1 clé personnalisée}one{{COUNT} clés personnalisées}other{{COUNT} clés personnalisées}}</translation>
-<translation id="3002745665522516995">Sélectionnez n'importe quel élément sur la page pour faire une recherche</translation>
 <translation id="3002864108328203174">Zone de contenu dans le bas de l'écran Gemini à mi-hauteur.</translation>
 <translation id="3003144360685731741">Réseaux préférés</translation>
 <translation id="3003253259757197230">Les URL que vous visitez sont envoyées à Google pour effectuer des prédictions sur les sites que vous pourriez ensuite visiter et pour vous montrer des informations supplémentaires sur la page que vous visitez</translation>
@@ -5467,7 +5466,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5173668317844998239">Ajoutez et supprimez des empreintes digitales enregistrées sur votre clé de sécurité</translation>
 <translation id="5174169235862638850">Le mot de passe a été copié dans le presse-papiers</translation>
 <translation id="517488401359338823">Déverrouiller l'appareil de sécurité</translation>
-<translation id="5176671554021050278">Utilisez Lentille Google pour en savoir plus sur des images ou du texte précis sur une page.</translation>
 <translation id="5177479852722101802">Continuer à bloquer l'accès à la caméra et au microphone</translation>
 <translation id="5178667623289523808">Trouver le précédent</translation>
 <translation id="5179428098696668914">Désactiver la lecture par IA</translation>

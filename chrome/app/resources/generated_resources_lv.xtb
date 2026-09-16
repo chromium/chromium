@@ -2614,7 +2614,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001144475369593262">Bērnu konti</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Nav pielāgotu taustiņu}=1{Viens pielāgots taustiņš}zero{{COUNT} pielāgotu taustiņu}one{{COUNT} pielāgots taustiņš}other{{COUNT} pielāgoti taustiņi}}</translation>
-<translation id="3002745665522516995">Atlasiet jebkādu lapā ietverto saturu, lai to meklētu.</translation>
 <translation id="3002864108328203174">Gemini ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā.</translation>
 <translation id="3003144360685731741">Vēlamie tīkli</translation>
 <translation id="3003253259757197230">Uzņēmumam Google tiek sūtīti jūsu apmeklētie vietrāži URL, lai prognozētu, kuras vietnes jūs varētu apmeklēt turpmāk, un rādītu jums papildinformāciju par apmeklēto lapu.</translation>
@@ -5464,7 +5463,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5173668317844998239">Pievienojiet un dzēsiet drošības atslēgā saglabātos pirkstu nospiedumus.</translation>
 <translation id="5174169235862638850">Parole ir kopēta starpliktuvē.</translation>
 <translation id="517488401359338823">Drošības ierīces atbloķēšana</translation>
-<translation id="5176671554021050278">Izmantojiet pakalpojumu Google Lens, lai uzzinātu vairāk par konkrētiem lapā esošajiem attēliem vai tekstu.</translation>
 <translation id="5177479852722101802">Turpināt piekļuves bloķēšanu kamerai un mikrofonam</translation>
 <translation id="5178667623289523808">Atrast iepriekšējo</translation>
 <translation id="5179428098696668914">Izslēgt MI atskaņošanu</translation>

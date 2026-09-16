@@ -2628,7 +2628,6 @@
 <translation id="3000461861112256445">모노 오디오</translation>
 <translation id="3001144475369593262">어린이 계정</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{맞춤설정된 키 없음}=1{맞춤설정된 키 1개}other{맞춤설정된 키 {COUNT}개}}</translation>
-<translation id="3002745665522516995">페이지에서 검색할 항목을 선택하세요</translation>
 <translation id="3002864108328203174">Gemini 하단 시트가 절반 높이로 열렸습니다.</translation>
 <translation id="3003144360685731741">기본 설정된 네트워크</translation>
 <translation id="3003253259757197230">다음에 방문할 사이트를 예측하고 현재 방문 중인 페이지에 관한 추가 정보를 표시하기 위해 내가 방문한 URL이 Google에 전송됩니다.</translation>
@@ -5478,7 +5477,6 @@
 <translation id="5173668317844998239">보안 키에 저장된 지문을 추가 및 삭제합니다.</translation>
 <translation id="5174169235862638850">비밀번호가 클립보드에 복사되었습니다.</translation>
 <translation id="517488401359338823">보안 기기 잠금 해제</translation>
-<translation id="5176671554021050278">Google 렌즈를 사용하여 페이지의 특정 이미지 또는 텍스트에 관해 자세히 알아보세요.</translation>
 <translation id="5177479852722101802">카메라 및 마이크 액세스 계속 차단</translation>
 <translation id="5178667623289523808">이전 찾기</translation>
 <translation id="5179428098696668914">AI 재생 사용 중지</translation>

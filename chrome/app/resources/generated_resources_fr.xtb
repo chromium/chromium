@@ -2614,7 +2614,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001144475369593262">Comptes enfants</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Aucune touche personnalisée}=1{1 touche personnalisée}one{{COUNT} touche personnalisée}other{{COUNT} touches personnalisées}}</translation>
-<translation id="3002745665522516995">Sélectionnez n'importe quel élément sur la page pour le rechercher</translation>
 <translation id="3002864108328203174">Bottom sheet Gemini à mi-hauteur.</translation>
 <translation id="3003144360685731741">Réseaux préférés</translation>
 <translation id="3003253259757197230">Les URL que vous consultez sont envoyées à Google pour prédire les sites que vous êtes susceptible de visiter plus tard et vous fournir des informations supplémentaires sur la page que vous consultez</translation>
@@ -5463,7 +5462,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5173668317844998239">Ajouter et supprimer les empreintes enregistrées sur votre clé de sécurité</translation>
 <translation id="5174169235862638850">Mot de passe copié dans le presse-papiers</translation>
 <translation id="517488401359338823">Déverrouiller l'appareil de sécurité</translation>
-<translation id="5176671554021050278">Utilisez Google Lens pour en savoir plus sur des images ou du texte spécifiques sur une page.</translation>
 <translation id="5177479852722101802">Continuer à bloquer l'accès à la caméra et au micro</translation>
 <translation id="5178667623289523808">Rechercher le précédent</translation>
 <translation id="5179428098696668914">Désactiver la lecture IA</translation>

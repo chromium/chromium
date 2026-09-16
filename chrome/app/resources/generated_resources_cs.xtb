@@ -2614,7 +2614,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
 <translation id="3001144475369593262">Dětské účty</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Žádné přizpůsobené klávesy}=1{1 přizpůsobená klávesa}few{{COUNT} přizpůsobené klávesy}many{{COUNT} přizpůsobené klávesy}other{{COUNT} přizpůsobených kláves}}</translation>
-<translation id="3002745665522516995">Vyberte cokoli na stránce, co chcete vyhledat</translation>
 <translation id="3002864108328203174">Spodní panel Gemini je otevřený na polovinu výšky.</translation>
 <translation id="3003144360685731741">Preferované sítě</translation>
 <translation id="3003253259757197230">Navštívené adresy URL se odesílají do Googlu, aby mohl předvídat, které weby byste mohli navštívit jako další, a mohl vám také zobrazit další informace o stránce, kterou si právě prohlížíte</translation>
@@ -5462,7 +5461,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5173668317844998239">Přidat nebo vymazat otisky prstů uložené na bezpečnostním klíči</translation>
 <translation id="5174169235862638850">Heslo bylo zkopírováno do schránky</translation>
 <translation id="517488401359338823">Odemknutí bezpečnostního zařízení</translation>
-<translation id="5176671554021050278">Pomocí Google Lens se můžete dozvědět víc o konkrétních obrázcích nebo textu na stránce</translation>
 <translation id="5177479852722101802">Blokovat přístup k webové kameře a mikrofonu i nadále</translation>
 <translation id="5178667623289523808">Najít předchozí</translation>
 <translation id="5179428098696668914">Vypnout audio od AI</translation>

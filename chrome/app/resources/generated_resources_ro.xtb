@@ -2614,7 +2614,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001144475369593262">Conturi pentru copii</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Nicio tastă personalizată}=1{O tastă personalizată}few{{COUNT} taste personalizate}other{{COUNT} de taste personalizate}}</translation>
-<translation id="3002745665522516995">Selectează orice din pagină pentru a căuta</translation>
 <translation id="3002864108328203174">Foaia din partea de jos a serviciului Gemini este deschisă la jumătate din înălțime.</translation>
 <translation id="3003144360685731741">Rețele preferate</translation>
 <translation id="3003253259757197230">Adresele URL pe care le accesezi se trimit la Google pentru a anticipa site-urile pe care le-ai putea accesa în continuare și pentru a afișa informații suplimentare despre pagina pe care o accesezi</translation>
@@ -5464,7 +5463,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5173668317844998239">Adaugă și șterge amprentele salvate pe cheia de securitate</translation>
 <translation id="5174169235862638850">Parola a fost copiată în clipboard</translation>
 <translation id="517488401359338823">Deblochează dispozitivul de securitate</translation>
-<translation id="5176671554021050278">Folosește Google Lens pentru a afla mai multe despre anumite imagini sau texte dintr-o pagină.</translation>
 <translation id="5177479852722101802">Blocați în continuare accesul la cameră și microfon</translation>
 <translation id="5178667623289523808">Găsește anteriorul</translation>
 <translation id="5179428098696668914">Dezactivează redarea AI</translation>

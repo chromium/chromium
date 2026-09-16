@@ -2627,7 +2627,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001144475369593262">Mga pambatang account</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Walang na-customize na key}=1{1 na-customize na key}one{{COUNT} na-customize na key}other{{COUNT} na na-customize na key}}</translation>
-<translation id="3002745665522516995">Pumili ng kahit ano sa page para maghanap</translation>
 <translation id="3002864108328203174">Binuksan nang kalahati ang Bottom Sheet ng Gemini.</translation>
 <translation id="3003144360685731741">Mga gustong network</translation>
 <translation id="3003253259757197230">Ipinapadala sa Google ang mga URL na binibisita mo para mahulaan kung anong mga site ang posibleng susunod mong bibisitahin at para pakitaan ka ng karagdagang impormasyon tungkol sa page na binibisita mo</translation>
@@ -5479,7 +5478,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5173668317844998239">Magdagdag at mag-delete ng mga fingerprint na naka-save sa iyong security key</translation>
 <translation id="5174169235862638850">Nakopya sa clipboard ang password</translation>
 <translation id="517488401359338823">I-unlock ang Panseguridad na Device</translation>
-<translation id="5176671554021050278">Gamitin ang Google Lens para matuto pa tungkol sa mga partikular na larawan o text sa isang page.</translation>
 <translation id="5177479852722101802">Ipagpatuloy ang pag-block ng access sa camera at mikropono</translation>
 <translation id="5178667623289523808">Find Previous</translation>
 <translation id="5179428098696668914">I-off ang AI Playback</translation>

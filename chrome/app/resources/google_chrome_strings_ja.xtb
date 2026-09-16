@@ -653,7 +653,7 @@
 <translation id="7452987490177144319">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chrome の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}other{# 分間使用しなかった場合、組織は Chrome の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}}</translation>
 <translation id="7466577301922356468">このデータを Google に自動送信すると、Chrome の機能向上に役立ちます。この設定はいつでも変更できます。</translation>
 <translation id="7477130805345743099">Chrome で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
-<translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
+<translation id="7481213027396403996">Chrome の最強の保護機能を利用</translation>
 <translation id="749228101751499733">Chrome にログイン中は、Google アカウントのパスワードやその他の設定を使用できます。<ph name="SHORTCUT" /> キーを押すと Google サービスの設定を変更できます。</translation>
 <translation id="7496017508659652909">ページがプリロードされ、閲覧と検索をすばやく行えるようになります。<ph name="BEGIN_LINK" />ページのプリロードの詳細<ph name="END_LINK" /></translation>
 <translation id="7510190804000607802">ヒント: Google の優れた機能をいつでも手元に</translation>

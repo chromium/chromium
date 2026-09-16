@@ -2613,7 +2613,6 @@
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3001144475369593262">子アカウント</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{カスタマイズされたキーはありません}=1{1 個のカスタマイズされたキー}other{{COUNT} 個のカスタマイズされたキー}}</translation>
-<translation id="3002745665522516995">ページ上のあらゆるものを選択して検索</translation>
 <translation id="3002864108328203174">Gemini のボトムシートが画面の下半分に表示されています。</translation>
 <translation id="3003144360685731741">優先ネットワーク</translation>
 <translation id="3003253259757197230">アクセスした URL が Google に送信され、次にアクセスするサイトの予測と、アクセスしているページに関する追加情報の表示が行われます</translation>
@@ -5461,7 +5460,6 @@
 <translation id="5173668317844998239">セキュリティ キーに保存されている指紋を追加、削除できます</translation>
 <translation id="5174169235862638850">パスワードをクリップボードにコピーしました</translation>
 <translation id="517488401359338823">セキュリティ デバイスのロック解除</translation>
-<translation id="5176671554021050278">Google レンズを使って、ページ上の特定の画像やテキストの詳細情報を確認できます。</translation>
 <translation id="5177479852722101802">カメラとマイクへのアクセスを引き続きブロックする</translation>
 <translation id="5178667623289523808">前を検索</translation>
 <translation id="5179428098696668914">AI 再生をオフにする</translation>
@@ -8413,7 +8411,7 @@
 <translation id="7479221278376295180">ストレージ使用状況</translation>
 <translation id="747981547666531654"><ph name="FIRST_DEVICE" /> および <ph name="SECOND_DEVICE" /> という名前の Bluetooth デバイスに接続しました</translation>
 <translation id="7480076846077373008">メッセージのその他の操作</translation>
-<translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
+<translation id="7481213027396403996">Chrome の最強の保護機能を利用</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7483732342458943943">このリンクは機能していません</translation>
 <translation id="7484645889979462775">このサイトでは保存しない</translation>

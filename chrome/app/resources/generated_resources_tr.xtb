@@ -2614,7 +2614,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3000461861112256445">Mono ses</translation>
 <translation id="3001144475369593262">Alt hesaplar</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Özelleştirilmiş anahtar yok}=1{1 özelleştirilmiş anahtar}other{{COUNT} özelleştirilmiş anahtar}}</translation>
-<translation id="3002745665522516995">Sayfadaki herhangi bir öğeyi seçerek arama yapın</translation>
 <translation id="3002864108328203174">Gemini alt sayfası ekranın yarısına kadar açıldı.</translation>
 <translation id="3003144360685731741">Tercih edilen ağlar</translation>
 <translation id="3003253259757197230">Ziyaret ettiğiniz URL'ler, daha sonra hangi siteleri ziyaret edebileceğinizi tahmin etmek ve ziyaret ettiğiniz sayfa hakkında size ek bilgi göstermek için Google'a gönderilir</translation>
@@ -5464,7 +5463,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5173668317844998239">Güvenlik anahtarınızda kayıtlı parmak izlerini ekleme ve silme</translation>
 <translation id="5174169235862638850">Şifre panoya kopyalandı</translation>
 <translation id="517488401359338823">Güvenlik cihazının kilidini açın</translation>
-<translation id="5176671554021050278">Bir sayfadaki belirli görseller veya metinler hakkında daha fazla bilgi edinmek için Google Lens'i kullanın.</translation>
 <translation id="5177479852722101802">Kamera ve mikrofon erişimini engellemeye devam et</translation>
 <translation id="5178667623289523808">Öncekini Bul</translation>
 <translation id="5179428098696668914">Yapay zeka destekli oynatmayı devre dışı bırak</translation>
