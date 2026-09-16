@@ -147,8 +147,9 @@ if (enable_rust) {
   if (use_chromium_rust_toolchain) {
     toolchain_has_rust = chromium_toolchain_supports_platform
     if (toolchain_has_rust) {
-      rustc_revision =
-          read_file("//third_party/rust-toolchain/VERSION", "trim string")
+      _version_lines =
+          read_file("//third_party/rust-toolchain/VERSION", "list lines")
+      rustc_revision = _version_lines[0]
 
       # Example:
       # rustc 1.88.0 c8f94230282a8e8c1148f3e657f0199aad909228 (c8f94230282a8e8c1148f3e657f0199aad909228-1-llvmorg-21-init-9266-g09006611 chromium)

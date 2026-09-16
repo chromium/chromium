@@ -21,7 +21,12 @@ from build_rust import (
     RustTargetTriple,
     RUST_HOST_LLVM_INSTALL_DIR,
 )
-from update_rust import RUST_TOOLCHAIN_OUT_DIR, THIRD_PARTY_DIR
+
+from update_rust import (
+    RUST_TOOLCHAIN_OUT_DIR,
+    THIRD_PARTY_DIR,
+    BINDGEN_REVISION,
+)
 
 # Get variables and helpers from Clang update script
 sys.path.append(
@@ -39,9 +44,7 @@ from build import (
 )
 from update import RmTree
 
-# The git hash to use.  See https://github.com/rust-lang/rust-bindgen/tags.
-# The current hash below corresponds to 0.73.2
-BINDGEN_GIT_VERSION = '73c69d681eec90b84ffba4f993b5fb2f19580781'
+BINDGEN_GIT_VERSION = BINDGEN_REVISION
 BINDGEN_GIT_REPO = (
     'https://chromium.googlesource.com/external/'
     + 'github.com/rust-lang/rust-bindgen'

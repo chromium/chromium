@@ -88,6 +88,8 @@ from update import (
 )
 
 from update_rust import (
+    BINDGEN_REVISION,
+    CRUBIT_REVISION,
     RUST_REVISION,
     RUST_TOOLCHAIN_OUT_DIR,
     STAGE0_JSON_SHA256,
@@ -638,7 +640,11 @@ def MakeVersionStamp(
     else:
         package_version = GetRustClangRevision()
 
-    return f'rustc {rust_version} {rust_hash} ({package_version} chromium)\n'
+    return (
+        f'rustc {rust_version} {rust_hash} ({package_version} chromium)\n'
+        f'crubit: {CRUBIT_REVISION}\n'
+        f'bindgen: {BINDGEN_REVISION}\n'
+    )
 
 
 def GetLatestRustCommit():

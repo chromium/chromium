@@ -26,7 +26,7 @@ from pathlib import Path
 
 # Add Clang scripts to path so we can import them later (if running within a
 # Chromium checkout.)
-# Note: Imports cannot be done until after the --print-rust-revision flag
+# Note: Imports cannot be done until after the --print-revision flag
 # has been processed, since that needs to work when running this script
 # in isolation.
 sys.path.append(
@@ -35,17 +35,20 @@ sys.path.append(
     )
 )
 
-# These fields are written by //tools/clang/scripts/upload_revision.py, and
-# should not be changed manually.
-# They are also read by build/config/compiler/BUILD.gn.
-RUST_REVISION = '1edd55dcfcd573872c727fa3e086369a71661ee0'
-RUST_SUB_REVISION = 1
-
-# The revision of Crubit to use from https://github.com/google/crubit
+# The revisions of rustc, crubit, and bindgen to use, from
+# https://github.com/google/rust-lang/rust,
+# https://github.com/google/crubit, and
+# https://github.com/rust-lang/rust-bindgen/tags
+# respectively.
 #
-# If changing the CRUBIT_REVISION but not the RUST_REVISION, bump the
-# RUST_SUB_REVISION to generate a unique package name.
+# Do NOT CHANGE these fields if you don't know what you're doing -- see
+# https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang.md
+# Reverting problematic toolchain rolls is safe, though.
+RUST_REVISION = '1edd55dcfcd573872c727fa3e086369a71661ee0'
 CRUBIT_REVISION = 'a355b02da81bc9f350925c73ec0322ce4d5140f1'
+BINDGEN_REVISION = '73c69d681eec90b84ffba4f993b5fb2f19580781'
+# If you change the above without changing RUST_REVISION, increment this.
+RUST_SUB_REVISION = 2
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
@@ -90,22 +93,47 @@ def main():
     )
     parser.add_argument(
         '--print-revision',
-        choices=['rust', 'installed', 'validate'],
-        help='Print the rust revision then quit. Possible formats:\n'
-        '- rust: print only the expected rust revision (without clang).\n'
-        '  Can be run outside of a Chromium checkout.\n'
-        '- installed: print the installed package version (including both\n'
+        nargs='?',
+        const='all',
+        choices=[
+            'all',
+            'rust',
+            'crubit',
+            'bindgen',
+            'stage0',
+            'installed',
+            'validate',
+        ],
+        help='Print the revision then quit. Possible formats:\n'
+        '- all (default): print all expected revisions.\n'
+        '- rust: print the expected rust revision (without clang).\n'
+        '- crubit: print the expected crubit revision.\n'
+        '- bindgen: print the expected bindgen revision.\n'
+        '- stage0: print the expected stage0.json hash.\n'
+        '- installed: print the installed rust version (including both\n'
         '  rust and clang revisions), without checking that it matches the\n'
         '  expected version in this file.\n'
-        '- validate: print the expected package version, and ensure it\n'
-        '  matches the installed package.',
+        '- validate: print the expected rust version, and ensure it\n'
+        '  matches the installed rust version.\n'
+        'All options besides `installed` and `validate` can be run outside\n'
+        'of a Chromium checkout.',
     )
     parser.add_argument('--output-dir', help='Where to extract the package.')
 
     args = parser.parse_args()
 
-    if args.print_revision == 'rust':
-        print(f'{RUST_REVISION}-{RUST_SUB_REVISION}')
+    revisions = {
+        'rust': f'{RUST_REVISION}-{RUST_SUB_REVISION}',
+        'crubit': CRUBIT_REVISION,
+        'bindgen': BINDGEN_REVISION,
+        'stage0': STAGE0_JSON_SHA256,
+    }
+    if args.print_revision == 'all':
+        for name, rev in revisions.items():
+            print(f'{name}: {rev}')
+        return 0
+    elif args.print_revision in revisions:
+        print(f'{args.print_revision}: {revisions[args.print_revision]}')
         return 0
     elif args.print_revision:
         stamp_version = GetStampVersion()
