@@ -50,21 +50,22 @@ class PendingPaintTimingRecordObserverClient
     visitor->Trace(pending_image_records_);
   }
 
-  void OnPaintFinished(
-      const HeapVector<Member<ImageRecord>>& image_records,
-      const HeapVector<Member<TextRecord>>& text_records) override {
+  void OnElementLastContentfulPaint(TextRecord* record,
+                                    bool was_previously_presented) override {
     // Only track records that are needed by some other client. This works
     // because this observer is added after the default clients, specifically
     // LCP for these tests.
-    for (TextRecord* record : text_records) {
-      if (record->IsNeededForPaintTiming()) {
-        pending_text_records_.insert(record);
-      }
+    if (record->IsNeededForPaintTiming()) {
+      pending_text_records_.insert(record);
     }
-    for (ImageRecord* record : image_records) {
-      if (record->IsNeededForPaintTiming()) {
-        pending_image_records_.insert(record);
-      }
+  }
+
+  void OnElementLastContentfulPaint(ImageRecord* record) override {
+    // Only track records that are needed by some other client. This works
+    // because this observer is added after the default clients, specifically
+    // LCP for these tests.
+    if (record->IsNeededForPaintTiming()) {
+      pending_image_records_.insert(record);
     }
   }
 

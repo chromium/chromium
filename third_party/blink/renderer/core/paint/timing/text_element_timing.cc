@@ -120,17 +120,15 @@ void TextElementTiming::OnTextNodePresented(const TextRecord& record) {
   }
 }
 
-void TextElementTiming::OnPaintFinished(
-    const HeapVector<Member<ImageRecord>>&,
-    const HeapVector<Member<TextRecord>>& text_records) {
-  for (const auto& record : text_records) {
-    CHECK(!record->IsNeededForElementTiming());
-    if (record->WasPreviouslyReported() ||
-        !NeededForTiming(CHECK_DEREF(record->GetNode()))) {
-      continue;
-    }
-    record->SetIsNeededForElementTiming(true);
+void TextElementTiming::OnElementLastContentfulPaint(
+    TextRecord* record,
+    bool was_previously_reported) {
+  CHECK(!record->IsNeededForElementTiming());
+  if (was_previously_reported ||
+      !NeededForTiming(CHECK_DEREF(record->GetNode()))) {
+    return;
   }
+  record->SetIsNeededForElementTiming(true);
 }
 
 void TextElementTiming::Trace(Visitor* visitor) const {

@@ -44,8 +44,8 @@ class CORE_EXPORT TextElementTiming final
       const PropertyTreeStateOrAlias&);
 
   // PaintTimingClient:
-  void OnPaintFinished(const HeapVector<Member<ImageRecord>>&,
-                       const HeapVector<Member<TextRecord>>&) override;
+  void OnElementLastContentfulPaint(TextRecord*,
+                                    bool was_previously_reported) override;
   void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
                         const HeapVector<Member<TextRecord>>&,
                         const HeapVector<Member<ElementTimingInfo>>&,
