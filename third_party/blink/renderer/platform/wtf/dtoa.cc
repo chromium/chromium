@@ -124,7 +124,7 @@ FormatStringTruncatingTrailingZerosIfNeeded(
 
 base::span<const LChar> DoubleToStringConverter::ToStringWithFixedPrecision(
     double d,
-    unsigned significant_figures) {
+    wtf_size_t significant_figures) {
   // Mimic printf("%.[precision]g", ...), but use dtoas rounding facilities.
   // "g": Signed value printed in f or e format, whichever is more compact for
   // the given value and precision.
@@ -147,7 +147,7 @@ base::span<const LChar> DoubleToStringConverter::ToStringWithFixedPrecision(
 
 base::span<const LChar> DoubleToStringConverter::ToStringWithFixedWidth(
     double d,
-    unsigned decimal_places) {
+    wtf_size_t decimal_places) {
   // Mimic printf("%.[precision]f", ...), but use dtoas rounding facilities.
   // "f": Signed value having the form [ - ]dddd.dddd, where dddd is one or more
   // decimal digits.  The number of digits before the decimal point depends on

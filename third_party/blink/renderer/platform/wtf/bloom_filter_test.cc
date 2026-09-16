@@ -12,28 +12,28 @@ namespace blink {
 
 class BloomFilterTest : public ::testing::Test {
  protected:
-  template <unsigned keyBits>
-  size_t BloomFilterBitArrayIndex(unsigned key) {
-    return BloomFilter<keyBits>::BitArrayIndex(key);
+  template <wtf_size_t kKeyBits>
+  size_t BloomFilterBitArrayIndex(uint32_t key) {
+    return BloomFilter<kKeyBits>::BitArrayIndex(key);
   }
 
-  template <unsigned keyBits>
-  unsigned BloomFilterBitMask(unsigned key) {
-    return BloomFilter<keyBits>::BitMask(key);
+  template <wtf_size_t kKeyBits>
+  uint32_t BloomFilterBitMask(uint32_t key) {
+    return BloomFilter<kKeyBits>::BitMask(key);
   }
 
-  template <unsigned keyBits>
+  template <wtf_size_t kKeyBits>
   void TestBloomFilterKeyBoundary() {
-    BloomFilter<keyBits> filter;
+    BloomFilter<kKeyBits> filter;
 
     filter.Add(0);
     EXPECT_TRUE(filter.MayContain(0));
-    const unsigned max_key_bits = BloomFilter<keyBits>::kMaxKeyBits;
-    static_assert(max_key_bits + keyBits <= sizeof(unsigned) * 8);
-    for (unsigned i = max_key_bits; i < max_key_bits + keyBits; i++) {
-      unsigned hash = 1u << i;
+    const size_t max_key_bits = BloomFilter<kKeyBits>::kMaxKeyBits;
+    static_assert(max_key_bits + kKeyBits <= sizeof(uint32_t) * 8);
+    for (size_t i = max_key_bits; i < max_key_bits + kKeyBits; ++i) {
+      uint32_t hash = 1u << i;
       EXPECT_FALSE(filter.MayContain(hash)) << Format(
-          "BloomFilter<{}>.Add(0) Must not contain 0x{:08x}", keyBits, hash);
+          "BloomFilter<{}>.Add(0) Must not contain 0x{:08x}", kKeyBits, hash);
     }
   }
 };
@@ -79,9 +79,9 @@ TEST_F(BloomFilterTest, NonCountingBloomFilterKeyBoundary) {
 }
 
 TEST_F(BloomFilterTest, NonCountingBloomFilterBasic) {
-  unsigned alfa = AtomicString("Alfa").Hash();
-  unsigned bravo = AtomicString("Bravo").Hash();
-  unsigned charlie = AtomicString("Charlie").Hash();
+  uint32_t alfa = AtomicString("Alfa").Hash();
+  uint32_t bravo = AtomicString("Bravo").Hash();
+  uint32_t charlie = AtomicString("Charlie").Hash();
 
   BloomFilter<12> filter;
   EXPECT_FALSE(filter.MayContain(alfa));

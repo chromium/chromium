@@ -28,6 +28,7 @@
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -37,7 +38,7 @@ class WTF_EXPORT DoubleToStringConverter {
  public:
   // Size = 80 for sizeof(DtoaBuffer) + some sign bits, decimal point, 'e',
   // exponent digits.
-  constexpr static unsigned kBufferSize = 96;
+  constexpr static wtf_size_t kBufferSize = 96;
 
   DoubleToStringConverter() = default;
 
@@ -47,9 +48,9 @@ class WTF_EXPORT DoubleToStringConverter {
   base::span<const LChar> ToString(double) LIFETIME_BOUND;
   base::span<const LChar> ToStringWithFixedPrecision(
       double,
-      unsigned significant_figures) LIFETIME_BOUND;
+      wtf_size_t significant_figures) LIFETIME_BOUND;
   base::span<const LChar> ToStringWithFixedWidth(double,
-                                                 unsigned decimal_places)
+                                                 wtf_size_t decimal_places)
       LIFETIME_BOUND;
 
  private:

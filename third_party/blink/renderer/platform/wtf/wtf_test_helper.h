@@ -242,7 +242,7 @@ class DummyRefCounted : public RefCounted<DummyRefCounted> {
     RefCounted<DummyRefCounted>::Release();
   }
 
-  static int ref_invokes_count_;
+  static wtf_size_t ref_invokes_count_;
 
  private:
   bool& is_deleted_;
@@ -291,7 +291,7 @@ class LivenessCounter {
   void AddRef() { live_++; }
   void Release() { live_--; }
 
-  static unsigned live_;
+  static wtf_size_t live_;
 };
 
 }  // namespace blink

@@ -359,21 +359,23 @@ void TestDequeDestructorAndConstructorCallsWhenSwappingWithInlineCapacity() {
   // that sometimes wrap around the end of the buffer, testing various ways
   // in which the in-use ranges of the inline buffers can overlap when we
   // call swap().
-  for (unsigned i = 0; i < 12; i++) {
+  for (wtf_size_t i = 0; i < 12; ++i) {
     if (!InterestingNumber(i))
       continue;
-    for (unsigned j = i; j < 12; j++) {
+    for (wtf_size_t j = i; j < 12; ++j) {
       if (!InterestingNumber(j))
         continue;
       deque.clear();
       deque2.clear();
       EXPECT_EQ(0u, LivenessCounter::live_);
-      for (unsigned k = 0; k < j; k++)
+      for (wtf_size_t k = 0; k < j; ++k) {
         deque.push_back(&counter);
+      }
       EXPECT_EQ(j, LivenessCounter::live_);
       EXPECT_EQ(j, deque.size());
-      for (unsigned k = 0; k < i; k++)
+      for (wtf_size_t k = 0; k < i; ++k) {
         deque.pop_front();
+      }
 
       EXPECT_EQ(j - i, LivenessCounter::live_);
       EXPECT_EQ(j - i, deque.size());
@@ -388,7 +390,7 @@ void TestDequeDestructorAndConstructorCallsWhenSwappingWithInlineCapacity() {
       deque2.push_back(&counter);
       deque2.push_back(&counter);
 
-      for (unsigned k = 0; k < 12; k++) {
+      for (wtf_size_t k = 0; k < 12; ++k) {
         EXPECT_EQ(3 + j - i, LivenessCounter::live_);
         EXPECT_EQ(j - i, deque.size());
         EXPECT_EQ(3u, deque2.size());
@@ -414,49 +416,57 @@ TEST(DequeTest, SwapWithConstructorsAndDestructors) {
   TestDequeDestructorAndConstructorCallsWhenSwappingWithInlineCapacity<9>();
 }
 
-template <wtf_size_t inlineCapacity>
+template <wtf_size_t kInlineCapacity>
 void TestDequeValuesMovedAndSwappedWithInlineCapacity() {
-  Deque<unsigned, inlineCapacity> deque;
-  Deque<unsigned, inlineCapacity> deque2;
+  Deque<uint32_t, kInlineCapacity> deque;
+  Deque<uint32_t, kInlineCapacity> deque2;
 
   // Add various numbers of elements to deques, then remove various numbers
   // of elements from the head. This creates in-use ranges in the backing
   // that sometimes wrap around the end of the buffer, testing various ways
   // in which the in-use ranges of the inline buffers can overlap when we
   // call swap().
-  for (unsigned pad = 0; pad < 12; pad++) {
+  for (wtf_size_t pad = 0; pad < 12; ++pad) {
     if (!InterestingNumber(pad))
       continue;
-    for (unsigned pad2 = 0; pad2 < 12; pad2++) {
+    for (wtf_size_t pad2 = 0; pad2 < 12; ++pad2) {
       if (!InterestingNumber(pad2))
         continue;
-      for (unsigned size = 0; size < 12; size++) {
+      for (wtf_size_t size = 0; size < 12; ++size) {
         if (!InterestingNumber(size))
           continue;
-        for (unsigned size2 = 0; size2 < 12; size2++) {
+        for (wtf_size_t size2 = 0; size2 < 12; ++size2) {
           if (!InterestingNumber(size2))
             continue;
           deque.clear();
           deque2.clear();
-          for (unsigned i = 0; i < pad; i++)
+          for (wtf_size_t i = 0; i < pad; ++i) {
             deque.push_back(103);
-          for (unsigned i = 0; i < pad2; i++)
+          }
+          for (wtf_size_t i = 0; i < pad2; ++i) {
             deque2.push_back(888);
-          for (unsigned i = 0; i < size; i++)
+          }
+          for (wtf_size_t i = 0; i < size; ++i) {
             deque.push_back(i);
-          for (unsigned i = 0; i < size2; i++)
+          }
+          for (wtf_size_t i = 0; i < size2; ++i) {
             deque2.push_back(i + 42);
-          for (unsigned i = 0; i < pad; i++)
+          }
+          for (wtf_size_t i = 0; i < pad; ++i) {
             EXPECT_EQ(103u, deque.TakeFirst());
-          for (unsigned i = 0; i < pad2; i++)
+          }
+          for (wtf_size_t i = 0; i < pad2; ++i) {
             EXPECT_EQ(888u, deque2.TakeFirst());
+          }
           EXPECT_EQ(size, deque.size());
           EXPECT_EQ(size2, deque2.size());
           deque.Swap(deque2);
-          for (unsigned i = 0; i < size; i++)
+          for (wtf_size_t i = 0; i < size; ++i) {
             EXPECT_EQ(i, deque2.TakeFirst());
-          for (unsigned i = 0; i < size2; i++)
+          }
+          for (wtf_size_t i = 0; i < size2; ++i) {
             EXPECT_EQ(i + 42, deque.TakeFirst());
+          }
         }
       }
     }

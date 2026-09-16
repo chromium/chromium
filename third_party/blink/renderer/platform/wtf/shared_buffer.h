@@ -120,9 +120,7 @@ class WTF_EXPORT SegmentedBuffer {
   bool empty() const { return !size(); }
 
   void Append(base::span<const char> data);
-  void Append(base::span<const unsigned char> data) {
-    Append(base::as_chars(data));
-  }
+  void Append(base::span<const uint8_t> data) { Append(base::as_chars(data)); }
   void Append(Vector<char>&& vector);
 
   void Clear();
@@ -262,8 +260,7 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
     return base::AdoptRef(new SharedBuffer(data));
   }
 
-  static scoped_refptr<SharedBuffer> Create(
-      base::span<const unsigned char> data) {
+  static scoped_refptr<SharedBuffer> Create(base::span<const uint8_t> data) {
     return base::AdoptRef(new SharedBuffer(data));
   }
 
@@ -280,7 +277,7 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
   SharedBuffer();
   explicit SharedBuffer(wtf_size_t);
   explicit SharedBuffer(base::span<const char>);
-  explicit SharedBuffer(base::span<const unsigned char>);
+  explicit SharedBuffer(base::span<const uint8_t>);
   explicit SharedBuffer(SegmentedBuffer&&);
 };
 

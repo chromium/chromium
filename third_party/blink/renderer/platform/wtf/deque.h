@@ -247,7 +247,7 @@ class DequeIteratorBase {
 
  private:
   Deque<T, kInlineCapacity, Allocator>* deque_ = nullptr;
-  unsigned index_ = 0;
+  wtf_size_t index_ = 0;
 
   friend class Deque<T, kInlineCapacity, Allocator>;
 };

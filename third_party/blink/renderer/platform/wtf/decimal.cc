@@ -680,8 +680,8 @@ Decimal Decimal::FromString(const String& str) {
   }
 
   uint64_t accumulator = 0;
-  for (unsigned index = 0; index < str.length(); ++index) {
-    const int ch = str[index];
+  for (wtf_size_t index = 0; index < str.length(); ++index) {
+    const UChar ch = str[index];
     switch (state) {
       case kStateDigit:
         if (IsAsciiDigit(ch)) {

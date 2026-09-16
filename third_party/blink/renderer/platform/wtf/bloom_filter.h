@@ -45,11 +45,11 @@ class BloomFilter {
  public:
   BloomFilter() = default;
 
-  void Add(unsigned hash);
+  void Add(uint32_t hash);
 
   // The filter may give false positives (claim it may contain a key it doesn't)
   // but never false negatives (claim it doesn't contain a key it does).
-  bool MayContain(unsigned hash) const;
+  bool MayContain(uint32_t hash) const;
 
   // The filter must be cleared before reuse.
   void Clear();
@@ -64,21 +64,21 @@ class BloomFilter {
     return a.bit_array_ == b.bit_array_;
   }
 
-  base::span<unsigned> GetRawData() { return base::span(bit_array_); }
+  base::span<uint32_t> GetRawData() { return base::span(bit_array_); }
 
  private:
-  using BitArrayUnit = unsigned;
+  using BitArrayUnit = uint32_t;
   static constexpr size_t kMaxKeyBits = 16;
   static constexpr size_t kTableSize = 1 << kKeyBits;
   static constexpr size_t kBitsPerPosition = 8 * sizeof(BitArrayUnit);
   static constexpr size_t kBitArraySize = kTableSize / kBitsPerPosition;
-  static constexpr unsigned kKeyMask = (1 << kKeyBits) - 1;
+  static constexpr uint32_t kKeyMask = (1u << kKeyBits) - 1;
 
-  static size_t BitArrayIndex(unsigned key);
-  static unsigned BitMask(unsigned key);
+  static size_t BitArrayIndex(uint32_t key);
+  static uint32_t BitMask(uint32_t key);
 
-  bool IsBitSet(unsigned key) const;
-  void SetBit(unsigned key);
+  bool IsBitSet(uint32_t key) const;
+  void SetBit(uint32_t key);
 
   std::array<BitArrayUnit, kBitArraySize> bit_array_{};
 
@@ -88,7 +88,7 @@ class BloomFilter {
 };
 
 template <wtf_size_t kKeyBits>
-inline bool BloomFilter<kKeyBits>::MayContain(unsigned hash) const {
+inline bool BloomFilter<kKeyBits>::MayContain(uint32_t hash) const {
   // The top and bottom bits of the incoming hash are treated as independent
   // bloom filter hash functions. This works well as long as the filter size
   // is not much above 2^kMaxKeyBits
@@ -96,7 +96,7 @@ inline bool BloomFilter<kKeyBits>::MayContain(unsigned hash) const {
 }
 
 template <wtf_size_t kKeyBits>
-inline void BloomFilter<kKeyBits>::Add(unsigned hash) {
+inline void BloomFilter<kKeyBits>::Add(uint32_t hash) {
   SetBit(hash);
   SetBit(hash >> kMaxKeyBits);
 }
@@ -114,22 +114,22 @@ inline void BloomFilter<kKeyBits>::Merge(const BloomFilter<kKeyBits>& other) {
 }
 
 template <wtf_size_t kKeyBits>
-inline size_t BloomFilter<kKeyBits>::BitArrayIndex(unsigned key) {
+inline size_t BloomFilter<kKeyBits>::BitArrayIndex(uint32_t key) {
   return (key & kKeyMask) / kBitsPerPosition;
 }
 
 template <wtf_size_t kKeyBits>
-inline unsigned BloomFilter<kKeyBits>::BitMask(unsigned key) {
-  return 1 << (key % kBitsPerPosition);
+inline uint32_t BloomFilter<kKeyBits>::BitMask(uint32_t key) {
+  return 1u << (key % kBitsPerPosition);
 }
 
 template <wtf_size_t kKeyBits>
-bool BloomFilter<kKeyBits>::IsBitSet(unsigned key) const {
+bool BloomFilter<kKeyBits>::IsBitSet(uint32_t key) const {
   return bit_array_[BitArrayIndex(key)] & BitMask(key);
 }
 
 template <wtf_size_t kKeyBits>
-void BloomFilter<kKeyBits>::SetBit(unsigned key) {
+void BloomFilter<kKeyBits>::SetBit(uint32_t key) {
   bit_array_[BitArrayIndex(key)] |= BitMask(key);
 }
 

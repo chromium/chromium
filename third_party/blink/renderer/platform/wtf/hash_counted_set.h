@@ -40,8 +40,8 @@ class HashCountedSet {
   USE_ALLOCATOR(HashCountedSet, Allocator);
 
  private:
-  typedef HashMap<Value, unsigned, Traits, HashTraits<unsigned>, Allocator>
-      ImplType;
+  using ImplType =
+      HashMap<Value, wtf_size_t, Traits, HashTraits<wtf_size_t>, Allocator>;
 
  public:
   typedef Value ValueType;
@@ -73,7 +73,7 @@ class HashCountedSet {
     return impl_.find(value);
   }
   bool Contains(const ValueType& value) const { return impl_.Contains(value); }
-  unsigned count(const ValueType& value) const { return impl_.at(value); }
+  wtf_size_t count(const ValueType& value) const { return impl_.at(value); }
 
   // Increases the count if an equal value is already present the return value
   // is a pair of an iterator to the new value's location, and a bool that is
@@ -81,7 +81,7 @@ class HashCountedSet {
   AddResult insert(const ValueType&);
 
   // Generalized add(), adding the value N times.
-  AddResult insert(const ValueType&, unsigned);
+  AddResult insert(const ValueType&, wtf_size_t);
 
   // Reduces the count of the value, and removes it if count goes down to
   // zero, returns true if the value is removed.
@@ -129,7 +129,7 @@ class HashCountedSet {
 
 template <typename T, typename U, typename V>
 inline typename HashCountedSet<T, U, V>::AddResult
-HashCountedSet<T, U, V>::insert(const ValueType& value, unsigned count) {
+HashCountedSet<T, U, V>::insert(const ValueType& value, wtf_size_t count) {
   DCHECK_GT(count, 0u);
   AddResult result = impl_.insert(value, 0);
   result.stored_value->value += count;
@@ -147,9 +147,9 @@ inline bool HashCountedSet<T, U, V>::erase(iterator it) {
   if (it == end())
     return false;
 
-  unsigned old_val = it->value;
+  wtf_size_t old_val = it->value;
   DCHECK(old_val);
-  unsigned new_val = old_val - 1;
+  wtf_size_t new_val = old_val - 1;
   if (new_val) {
     it->value = new_val;
     return false;

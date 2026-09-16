@@ -168,7 +168,7 @@ SharedBuffer::SharedBuffer(base::span<const char> data) {
   Append(data);
 }
 
-SharedBuffer::SharedBuffer(base::span<const unsigned char> data)
+SharedBuffer::SharedBuffer(base::span<const uint8_t> data)
     : SharedBuffer(base::as_chars(data)) {}
 
 SharedBuffer::SharedBuffer(SegmentedBuffer&& data)

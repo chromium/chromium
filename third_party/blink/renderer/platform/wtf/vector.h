@@ -437,7 +437,7 @@ struct VectorTypeOperations {
       static_assert(sizeof(T) == sizeof(char), "size of type should be one");
       static_assert(!Allocator::kIsGarbageCollected,
                     "memset is unsupported for garbage-collected vectors.");
-      UNSAFE_TODO(memset(dst, static_cast<unsigned char>(val), dst_end - dst));
+      UNSAFE_TODO(memset(dst, static_cast<uint8_t>(val), dst_end - dst));
     } else {
       UNSAFE_TODO(for (T* current = dst; current != dst_end; ++current) {
         ConstructTraits::Construct(current, T(val));
@@ -538,10 +538,8 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") VectorBufferBase {
   void CheckUnusedSlots(const T* from, const T* to) {
 #if DCHECK_IS_ON() && !defined(ANNOTATE_CONTIGUOUS_CONTAINER)
     if constexpr (NeedsToClearUnusedSlots()) {
-      const unsigned char* unused_area =
-          reinterpret_cast<const unsigned char*>(from);
-      const unsigned char* end_address =
-          reinterpret_cast<const unsigned char*>(to);
+      const uint8_t* unused_area = reinterpret_cast<const uint8_t*>(from);
+      const uint8_t* end_address = reinterpret_cast<const uint8_t*>(to);
       DCHECK_GE(end_address, unused_area);
       for (; unused_area != end_address; ++unused_area)
         DCHECK(!*unused_area);

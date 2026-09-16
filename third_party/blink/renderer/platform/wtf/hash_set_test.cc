@@ -449,7 +449,7 @@ enum TestEnum {
   kItem0,
 };
 
-enum class TestEnumClass : unsigned char {
+enum class TestEnumClass : uint8_t {
   kItem0,
 };
 

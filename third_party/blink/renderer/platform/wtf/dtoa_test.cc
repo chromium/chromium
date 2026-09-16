@@ -12,7 +12,7 @@ namespace blink {
 TEST(DtoaTest, ToFixedPrecisionString) {
   DoubleToStringConverter converter;
   auto serialize = [&converter](double value,
-                                unsigned precision) -> StringView {
+                                wtf_size_t precision) -> StringView {
     return StringView(converter.ToStringWithFixedPrecision(value, precision));
   };
 
