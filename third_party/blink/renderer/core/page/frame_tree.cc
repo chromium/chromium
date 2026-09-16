@@ -453,8 +453,7 @@ static void PrintFrames(const blink::Frame* frame,
     PrintIndent(indent);
   }
 
-  auto* local_frame = blink::DynamicTo<blink::LocalFrame>(frame);
-  blink::LocalFrameView* view = local_frame ? local_frame->View() : nullptr;
+  blink::FrameView* view = frame->View();
   printf("Frame %p %dx%d\n", frame, view ? view->Width() : 0,
          view ? view->Height() : 0);
   PrintIndent(indent);
@@ -462,17 +461,27 @@ static void PrintFrames(const blink::Frame* frame,
   PrintIndent(indent);
   printf("  frameView=%p\n", view);
   PrintIndent(indent);
-  printf("  document=%p\n", local_frame ? local_frame->GetDocument() : nullptr);
-  PrintIndent(indent);
-  UNSAFE_TODO(
-      printf("  uri=%s\n\n",
-             local_frame && local_frame->GetDocument()
-                 ? local_frame->GetDocument()->Url().GetString().Utf8().c_str()
-                 : nullptr));
+  if (auto* local_frame = blink::DynamicTo<blink::LocalFrame>(frame)) {
+    auto* document = local_frame->GetDocument();
+    printf("  document=%p\n", document);
+    if (document) {
+      PrintIndent(indent);
+      printf("  uri=%s\n", document->Url().GetString().Utf8().c_str());
+    }
+  } else {
+    printf("  document=remote\n");
+    if (auto* origin = frame->GetSecurityContext()->GetSecurityOrigin()) {
+      printf("  origin=%s\n", origin->ToString().Utf8().c_str());
+    } else {
+      printf("  origin=null\n");
+    }
+  }
+  printf("\n");
 
   for (blink::Frame* child = frame->Tree().FirstChild(); child;
-       child = child->Tree().NextSibling())
+       child = child->Tree().NextSibling()) {
     PrintFrames(child, targetFrame, indent + 1);
+  }
 }
 
 void ShowFrameTree(const blink::Frame* frame) {
