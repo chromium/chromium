@@ -36,8 +36,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Caches device info during app start-up. For values that might change during the lifetime of the
- * app, refer to @see org.chromium.ui.base.DeviceFormFactor.java
+ * Caches device info for the lifetime of the process. Most fields are initialized during app
+ * start-up, while GMS info is initialized on first use. For values that might change during the
+ * lifetime of the app, refer to @see org.chromium.ui.base.DeviceFormFactor.java
  */
 @JNINamespace("base::android::device_info")
 @NullMarked
@@ -47,7 +48,9 @@ public final class DeviceInfo {
     @VisibleForTesting
     static final String XR_OPENXR_FEATURE_NAME = "android.software.xr.api.openxr";
 
+    @GuardedBy("GMS_INFO_LOCK")
     private static @Nullable String sGmsVersionCodeForTesting;
+
     private static @Nullable Boolean sIsAutomotiveForTesting;
     private static @Nullable Boolean sIsTVForTesting;
     private static boolean sInitialized;
@@ -57,7 +60,6 @@ public final class DeviceInfo {
     private static @Nullable Boolean sIsFoldableForTesting;
     private final IDeviceInfo mIDeviceInfo;
     private @Nullable Boolean mIsRetailDemoMode;
-    private @Nullable ApplicationInfo mGmsAppInfo;
 
     // This is the minimum width in DP that defines a large display device
     public static final int LARGE_DISPLAY_MIN_SCREEN_WIDTH_600_DP = 600;
@@ -66,6 +68,11 @@ public final class DeviceInfo {
     private static @Nullable DeviceInfo sInstance;
 
     private static final Object CREATION_LOCK = new Object();
+
+    private static final Object GMS_INFO_LOCK = new Object();
+
+    @GuardedBy("GMS_INFO_LOCK")
+    private static @Nullable GmsInfo sGmsInfo;
 
     @IntDef({FormFactor.TV, FormFactor.AUTOMOTIVE, FormFactor.DESKTOP, FormFactor.XR})
     @Retention(RetentionPolicy.SOURCE)
@@ -77,6 +84,17 @@ public final class DeviceInfo {
     }
 
     private static boolean sIsNativeLoaded;
+    private static volatile boolean sIsGmsVersionNativeLoaded;
+
+    private static final class GmsInfo {
+        final String mVersionCode;
+        final @Nullable ApplicationInfo mApplicationInfo;
+
+        GmsInfo(String versionCode, @Nullable ApplicationInfo applicationInfo) {
+            mVersionCode = versionCode;
+            mApplicationInfo = applicationInfo;
+        }
+    }
 
     @VisibleForTesting
     static final class SystemFeatureSnapshot {
@@ -136,7 +154,6 @@ public final class DeviceInfo {
     public static void sendToNative(IDeviceInfo info) {
         DeviceInfoJni.get()
                 .fillFields(
-                        /* gmsVersionCode= */ info.gmsVersionCode,
                         /* isTV= */ info.isTv,
                         /* isAutomotive= */ info.isAutomotive,
                         /* isFoldable= */ (sIsFoldableForTesting != null)
@@ -148,28 +165,54 @@ public final class DeviceInfo {
                         /* vulkanDeqpLevel= */ info.vulkanDeqpLevel,
                         /* isXr= */ (sIsXrForTesting != null) ? sIsXrForTesting : info.isXr,
                         /* wasLaunchedOnLargeDisplay= */ info.wasLaunchedOnLargeDisplay);
+        // Child processes receive GMS through AIDL. The browser's early capability snapshot leaves
+        // this null so that initializing the other fields does not trigger the package query.
+        if (info.gmsVersionCode != null) {
+            DeviceInfoJni.get().setGmsVersionCode(info.gmsVersionCode);
+        }
     }
 
     public static IDeviceInfo getAidlInfo() {
-        return getInstance().mIDeviceInfo;
+        IDeviceInfo info = getInstance().mIDeviceInfo;
+        // Native-only child processes cannot query Java, so materialize the lazy value before
+        // parceling this snapshot.
+        info.gmsVersionCode = getGmsVersionCode();
+        return info;
     }
 
     public static String getGmsVersionCode() {
-        return getInstance().mIDeviceInfo.gmsVersionCode;
+        synchronized (GMS_INFO_LOCK) {
+            return sGmsVersionCodeForTesting != null
+                    ? sGmsVersionCodeForTesting
+                    : getGmsInfoLocked().mVersionCode;
+        }
+    }
+
+    @CalledByNative
+    private static @JniType("std::string") String getGmsVersionCodeForNative() {
+        sIsGmsVersionNativeLoaded = true;
+        return getGmsVersionCode();
     }
 
     public static @Nullable ApplicationInfo getGmsAppInfo() {
-        return getInstance().mGmsAppInfo;
+        synchronized (GMS_INFO_LOCK) {
+            return getGmsInfoLocked().mApplicationInfo;
+        }
     }
 
     @CalledByNativeForTesting
     public static void setGmsVersionCodeForTest(@JniType("std::string") String gmsVersionCode) {
-        sGmsVersionCodeForTesting = gmsVersionCode;
-        // Every time we call getInstance in a test we reconstruct the mIDeviceInfo object, so we
-        // don't need to set mIDeviceInfo's copy here as it'll just get reconstructed.
-        ResettersForTesting.register(() -> sGmsVersionCodeForTesting = null);
-        if (sIsNativeLoaded) {
-            sendToNative(getInstance().mIDeviceInfo);
+        synchronized (GMS_INFO_LOCK) {
+            sGmsVersionCodeForTesting = gmsVersionCode;
+        }
+        ResettersForTesting.register(
+                () -> {
+                    synchronized (GMS_INFO_LOCK) {
+                        sGmsVersionCodeForTesting = null;
+                    }
+                });
+        if (sIsNativeLoaded || sIsGmsVersionNativeLoaded) {
+            DeviceInfoJni.get().setGmsVersionCode(gmsVersionCode);
         }
     }
 
@@ -269,6 +312,20 @@ public final class DeviceInfo {
         return sInitialized;
     }
 
+    static boolean isGmsInfoInitializedForTesting() {
+        synchronized (GMS_INFO_LOCK) {
+            return sGmsInfo != null;
+        }
+    }
+
+    static void resetGmsInfoForTesting() {
+        synchronized (GMS_INFO_LOCK) {
+            sGmsInfo = null;
+            sGmsVersionCodeForTesting = null;
+        }
+        sIsGmsVersionNativeLoaded = false;
+    }
+
     @CalledByNativeForTesting
     public static void setIsXrForTesting(boolean value) {
         sIsXrForTesting = value;
@@ -340,6 +397,21 @@ public final class DeviceInfo {
         }
     }
 
+    @GuardedBy("GMS_INFO_LOCK")
+    private static GmsInfo getGmsInfoLocked() {
+        if (sGmsInfo == null) {
+            PackageInfo packageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
+            String versionCode = "gms versionCode not available.";
+            ApplicationInfo applicationInfo = null;
+            if (packageInfo != null) {
+                versionCode = String.valueOf(packageVersionCode(packageInfo));
+                applicationInfo = packageInfo.applicationInfo;
+            }
+            sGmsInfo = new GmsInfo(versionCode, applicationInfo);
+        }
+        return sGmsInfo;
+    }
+
     /**
      * Return the "long" version code of the given PackageInfo. Does the right thing for
      * before/after Android P when this got wider.
@@ -389,19 +461,6 @@ public final class DeviceInfo {
     private DeviceInfo() {
         mIDeviceInfo = new IDeviceInfo();
         sInitialized = true;
-        PackageInfo gmsPackageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
-        String gmsVersionCode;
-        if (gmsPackageInfo != null) {
-            mGmsAppInfo = gmsPackageInfo.applicationInfo;
-            gmsVersionCode = String.valueOf(packageVersionCode(gmsPackageInfo));
-        } else {
-            gmsVersionCode = "gms versionCode not available.";
-        }
-        if (sGmsVersionCodeForTesting != null) {
-            gmsVersionCode = sGmsVersionCodeForTesting;
-        }
-        mIDeviceInfo.gmsVersionCode = gmsVersionCode;
-
         Context appContext = ContextUtils.getApplicationContext();
         PackageManager pm = appContext.getPackageManager();
         // See https://developer.android.com/training/tv/start/hardware.html#runtime-check.
@@ -498,7 +557,6 @@ public final class DeviceInfo {
     @NativeMethods
     interface Natives {
         void fillFields(
-                @JniType("std::string") String gmsVersionCode,
                 boolean isTV,
                 boolean isAutomotive,
                 boolean isFoldable,
@@ -506,5 +564,7 @@ public final class DeviceInfo {
                 int vulkanDeqpLevel,
                 boolean isXr,
                 boolean wasLaunchedOnLargeDisplay);
+
+        void setGmsVersionCode(@JniType("std::string") String gmsVersionCode);
     }
 }
