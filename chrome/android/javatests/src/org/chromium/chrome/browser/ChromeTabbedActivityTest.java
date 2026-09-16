@@ -26,6 +26,7 @@ import androidx.test.runner.lifecycle.Stage;
 import com.google.common.collect.Lists;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,17 +38,19 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -85,8 +88,8 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -96,6 +99,8 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -108,7 +113,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Instrumentation tests for ChromeTabbedActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DoNotBatch(reason = "Testing state in static singletons from multiple activities.")
+@Batch(Batch.PER_CLASS)
 public class ChromeTabbedActivityTest {
     private static final Token TAB_GROUP_ID = new Token(2L, 2L);
     private static final String TAB_GROUP_TITLE = "Regrouped tabs";
@@ -122,8 +127,8 @@ public class ChromeTabbedActivityTest {
     private static final int TEST_SESSION_ID = 42;
 
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -155,6 +160,17 @@ public class ChromeTabbedActivityTest {
         when(mMockNormalModel.getTabById(TEST_SESSION_ID)).thenReturn(mMockTab);
         when(mMockIncognitoModel.getTabById(TEST_SESSION_ID)).thenReturn(null);
         when(mMockTab.getId()).thenReturn(TEST_SESSION_ID);
+    }
+
+    @After
+    public void tearDown() {
+        if (ApplicationStatus.getStateForActivity(mActivity) != ActivityState.DESTROYED) {
+            ModalDialogManager modalDialogManager = mActivity.getModalDialogManager();
+            if (modalDialogManager != null) {
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> modalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN));
+            }
+        }
     }
 
     /**
@@ -386,6 +402,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
+    @RequiresRestart("Spawns and destroys a temporary ChromeTabbedActivity instance")
     public void testExplicitViewIntent_OpensInExistingLiveActivity() {
         int initialWindowCount = MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY);
         Intent intent =
@@ -417,6 +434,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
+    @RequiresRestart("Destroys tab persistent store early on an activity instance")
     public void testHandleMismatchedIndices_ActivityFinishing() {
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
@@ -445,6 +463,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
+    @RequiresRestart("Destroys tab persistent store early on an activity instance")
     public void testHandleMismatchedIndices_ActivityInSameTask() {
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
@@ -473,6 +492,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
+    @RequiresRestart("Destroys tab persistent store early on an activity instance")
     public void testHandleMismatchedIndices_ActivityNotInAppTasks() {
         // Create two new ChromeTabbedActivity's.
         ChromeTabbedActivity activity1 = createActivityForMismatchedIndicesTest();
@@ -562,6 +582,7 @@ public class ChromeTabbedActivityTest {
         DeviceRestriction.RESTRICTION_TYPE_NON_FOLDABLE
     })
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    @RequiresRestart("Spawns a new incognito window via RedirectTabCreator")
     public void testNewIncognitoTab_NewWindow() {
         mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
         ChromeTabCreator tabCreatorIncognito = mActivity.getTabCreator(true);
@@ -962,6 +983,7 @@ public class ChromeTabbedActivityTest {
     @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    @RequiresRestart("Spawns a new incognito window with customized night mode")
     public void testLaunchIncognitoWindowWithExtras_NightModeDefaultEnabled() {
         // This is Android V+ because overriding night mode requires the intent to be stored
         // by attachBaseContext(), which is not the case for versions below Android V.
@@ -1243,6 +1265,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
+    @RequiresRestart("Creates an additional window and manipulates multi-window orchestrator state")
     public void testMoveTabsToOtherWindowAndMerge() {
         // 1. Launch a second ChromeTabbedActivity.
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -1380,6 +1403,10 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @MediumTest
+    @RequiresRestart(
+            "TabWindowManagerSingleton.setTabWindowManagerForTesting() resets the singleton to null"
+                    + " on teardown, orphaning the shared ChromeTabbedActivity from the"
+                    + " TabWindowManager that created its TabModelSelector")
     public void testRestoreTabFromClosedWindow_hasRemainingTabs() throws Exception {
         int windowId = 2;
 
@@ -1401,6 +1428,10 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @MediumTest
+    @RequiresRestart(
+            "TabWindowManagerSingleton.setTabWindowManagerForTesting() resets the singleton to null"
+                    + " on teardown, orphaning the shared ChromeTabbedActivity from the"
+                    + " TabWindowManager that created its TabModelSelector")
     public void testRestoreTabFromClosedWindow_noRemainingTabs() throws Exception {
         int windowId = 2;
 
