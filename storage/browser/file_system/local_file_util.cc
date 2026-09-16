@@ -53,7 +53,7 @@ class LocalFileUtil::LocalFileEnumerator
       if (next.empty()) {
         error_ = file_enum_.GetError();
         return next;
-      } else if (file_util_->IsHiddenItem(next)) {
+      } else if (file_util_->IsHiddenItemUnderRoot(next, platform_root_path_)) {
         continue;
       }
       file_util_info_ = file_enum_.GetInfo();
@@ -96,6 +96,37 @@ class LocalFileUtil::LocalFileEnumerator
 LocalFileUtil::LocalFileUtil() = default;
 
 LocalFileUtil::~LocalFileUtil() = default;
+
+// static
+base::FilePath LocalFileUtil::GetRootPathForURL(const FileSystemURL& url) {
+  size_t prefix_len = 0;
+  const FileSystemType effective_type =
+      url.mount_type() != kFileSystemTypeUnknown ? url.mount_type()
+                                                 : url.type();
+  if (effective_type == kFileSystemTypeIsolated ||
+      effective_type == kFileSystemTypeDragged) {
+    prefix_len = 2;
+  } else if (effective_type == kFileSystemTypeExternal ||
+             effective_type == kFileSystemTypeLocalForPlatformApp) {
+    prefix_len = 1;
+  } else {
+    // For standard local filesystems (FSA API, unit tests, etc.),
+    // do not walk up to `/`. Only check the target file itself.
+    return url.path().DirName();
+  }
+  std::vector<base::FilePath::StringType> components =
+      VirtualPath::GetComponents(url.virtual_path());
+  size_t relative_components =
+      components.size() > prefix_len ? components.size() - prefix_len : 0;
+
+  base::FilePath root_path = url.path();
+  for (size_t i = 0; i < relative_components && !root_path.empty() &&
+                     root_path != root_path.DirName();
+       ++i) {
+    root_path = root_path.DirName();
+  }
+  return root_path;
+}
 
 base::File LocalFileUtil::CreateOrOpen(FileSystemOperationContext* context,
                                        const FileSystemURL& url,
@@ -171,7 +202,7 @@ base::File::Error LocalFileUtil::GetLocalFilePath(
     return base::File::FILE_ERROR_ACCESS_DENIED;
   }
   *local_file_path = url.path();
-  if (IsHiddenItem(*local_file_path)) {
+  if (IsHiddenItemUnderRoot(*local_file_path, GetRootPathForURL(url))) {
     return base::File::FILE_ERROR_NOT_FOUND;
   }
   return base::File::FILE_OK;
@@ -275,6 +306,19 @@ ScopedFile LocalFileUtil::CreateSnapshotFile(
 bool LocalFileUtil::IsHiddenItem(const base::FilePath& local_file_path) const {
   // We should not follow symbolic links in sandboxed file system.
   return base::IsLink(local_file_path);
+}
+
+bool LocalFileUtil::IsHiddenItemUnderRoot(
+    const base::FilePath& local_file_path,
+    const base::FilePath& root_path) const {
+  for (base::FilePath path = local_file_path;
+       !path.empty() && path != path.DirName() && path != root_path;
+       path = path.DirName()) {
+    if (IsHiddenItem(path)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace storage

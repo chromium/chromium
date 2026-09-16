@@ -34,6 +34,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileUtil
 
   ~LocalFileUtil() override;
 
+  static base::FilePath GetRootPathForURL(const FileSystemURL& url);
+
   base::File CreateOrOpen(FileSystemOperationContext* context,
                           const FileSystemURL& url,
                           int file_flags) override;
@@ -89,6 +91,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileUtil
   // can ensure safety of symlinks in some other way, it can lift this
   // restriction by overriding this method.
   virtual bool IsHiddenItem(const base::FilePath& local_file_path) const;
+
+  // Checks whether |local_file_path| or any of its ancestors up to
+  // (but not including) |root_path| is a hidden item.
+  virtual bool IsHiddenItemUnderRoot(const base::FilePath& local_file_path,
+                                     const base::FilePath& root_path) const;
 
  private:
   class LocalFileEnumerator;

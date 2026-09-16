@@ -18,6 +18,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/isolated_context.h"
 #include "storage/browser/file_system/local_file_util.h"
 #include "storage/browser/file_system/native_file_util.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -280,6 +281,89 @@ TEST_F(LocalFileUtilTest, CopyInForeignFileFailForSymlink) {
             file_util()->CopyInForeignFile(context.get(), foreign_path,
                                            CreateURL(symlink_name)));
   EXPECT_EQ(0, GetSize(target_name));
+}
+
+TEST_F(LocalFileUtilTest, AccessFailForFileUnderSymlink) {
+  const char* target_dir_name = "target_dir";
+  base::FilePath target_dir_path = LocalPath(target_dir_name);
+  EXPECT_TRUE(base::CreateDirectory(target_dir_path));
+
+  const char* target_file_name = "target_dir/target_file";
+  base::File target_file = CreateFile(target_file_name);
+  EXPECT_TRUE(target_file.IsValid());
+  EXPECT_TRUE(target_file.created());
+  target_file.Close();
+
+  const char* symlink_dir_name = "symlink_dir";
+  base::FilePath symlink_dir_path = LocalPath(symlink_dir_name);
+  EXPECT_TRUE(base::CreateSymbolicLink(target_dir_path, symlink_dir_path));
+
+  std::unique_ptr<FileSystemOperationContext> context(NewContext());
+  FileSystemURL url = CreateURL("symlink_dir/target_file");
+  int file_flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
+  base::File file = file_util()->CreateOrOpen(context.get(), url, file_flags);
+  EXPECT_FALSE(file.IsValid());
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, file.error_details());
+
+  bool created = false;
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            EnsureFileExists("symlink_dir/target_file", &created));
+  EXPECT_FALSE(created);
+
+  context = NewContext();
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->Touch(context.get(), url, base::Time::Now(),
+                               base::Time::Now()));
+
+  context = NewContext();
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->Truncate(context.get(), url, 1));
+
+  context = NewContext();
+  base::File::Info file_info;
+  base::FilePath platform_path;
+  EXPECT_EQ(
+      base::File::FILE_ERROR_NOT_FOUND,
+      file_util()->GetFileInfo(context.get(), url, &file_info, &platform_path));
+}
+
+TEST_F(LocalFileUtilTest, OpenSuccessForUserSelectedSymlink) {
+  // Create symlink target file.
+  const char* target_name = "symlink_target";
+  base::File target_file = CreateFile(target_name);
+  ASSERT_TRUE(target_file.IsValid());
+  ASSERT_TRUE(target_file.created());
+  target_file.Close();
+  base::FilePath target_path = LocalPath(target_name);
+
+  // Create symlink where target must be real file.
+  const char* symlink_name = "symlink_file";
+  base::FilePath symlink_path = LocalPath(symlink_name);
+  ASSERT_TRUE(base::CreateSymbolicLink(target_path, symlink_path));
+  ASSERT_TRUE(FileExists(symlink_name));
+
+  // Register user-selected symlink in isolated context.
+  std::string register_name = symlink_name;
+  IsolatedContext::ScopedFSHandle fs =
+      IsolatedContext::GetInstance()->RegisterFileSystemForPath(
+          kFileSystemTypeLocal, std::string(), symlink_path, &register_name);
+  ASSERT_TRUE(fs.is_valid());
+
+  FileSystemURL url = file_system_context()->CreateCrackedFileSystemURL(
+      blink::StorageKey::CreateFromStringForTesting("http://foo/"),
+      kFileSystemTypeIsolated,
+      IsolatedContext::GetInstance()
+          ->CreateVirtualRootPath(fs.id())
+          .Append(base::FilePath::FromUTF8Unsafe(register_name)));
+
+  // Try to open the symlink file which should succeed.
+  std::unique_ptr<FileSystemOperationContext> context(NewContext());
+  int file_flags = base::File::FLAG_OPEN | base::File::FLAG_READ;
+  LocalFileUtil local_file_util;
+  base::File file =
+      local_file_util.CreateOrOpen(context.get(), url, file_flags);
+  ASSERT_TRUE(file.IsValid());
+  EXPECT_EQ(base::File::FILE_OK, file.error_details());
 }
 #endif
 

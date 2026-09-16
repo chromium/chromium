@@ -102,7 +102,7 @@ base::File::Error DraggedFileUtil::GetFileInfo(
     return base::File::FILE_OK;
   }
   base::File::Error error = NativeFileUtil::GetFileInfo(url.path(), file_info);
-  if (IsHiddenItem(url.path()) && !base::FilePath().IsParent(url.path())) {
+  if (IsHiddenItemUnderRoot(url.path(), GetRootPathForURL(url))) {
     // Don't follow symlinks unless it's the one that are selected by the user.
     return base::File::FILE_ERROR_NOT_FOUND;
   }
