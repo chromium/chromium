@@ -391,7 +391,7 @@ export class PrintPreviewDestinationSettingsElement extends
     this.isDialogOpen_ = false;
   }
 
-  private updateDestinationSelect_() {
+  private async updateDestinationSelect_() {
     if (this.destinationState === DestinationState.ERROR && !this.destination) {
       return;
     }
@@ -405,6 +405,7 @@ export class PrintPreviewDestinationSettingsElement extends
 
     this.$.destinationSelect.updateDestination();
     if (shouldFocus) {
+      await this.$.destinationSelect.updateComplete;
       this.$.destinationSelect.focus();
     }
   }

@@ -79,8 +79,7 @@ suite('DestinationSettingsInteractiveTest', function() {
     await whenCapabilitiesReady;
     await microtasksFinished();
 
-    // TODO(crbug.com/485290999): Focus should be restored to select after
-    // capabilities load. For now, it remains on the body.
-    assertEquals(document.body, getDeepActiveElement());
+    // Focus is restored to select after capabilities load.
+    assertEquals(select, getDeepActiveElement());
   });
 });
