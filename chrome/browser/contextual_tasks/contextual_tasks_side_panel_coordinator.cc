@@ -1440,6 +1440,20 @@ void ContextualTasksSidePanelCoordinator::ShowPageInfoBubble(
   PageInfoBubbleSpecification::Builder builder(
       specification_anchor, browser_view->GetWidget()->GetNativeWindow(),
       contents, contents->GetVisibleURL());
+  // The panel's WebContents is not a tab, so page info's default lookup
+  // (BrowserCollection::FindBrowserWithTab()) cannot resolve a browser for it.
+  // Supply the hosting browser window instead; without it, actions such as
+  // "Site settings" dereference a null BrowserWindowInterface.
+  builder.AddGetBrowserCallback(base::BindRepeating(
+      [](base::WeakPtr<ContextualTasksSidePanelCoordinator> coordinator,
+         content::WebContents*) -> BrowserWindowInterface* {
+        // Page info is owned by the browser window, so it should never outlive
+        // the coordinator. Returning null here would only move the crash into
+        // chrome::ShowSiteSettings().
+        CHECK(coordinator);
+        return coordinator->GetBrowserWindow();
+      },
+      weak_ptr_factory_.GetWeakPtr()));
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Deliberately does not bind `specification_anchor`: this callback outlives
   // the anchored bubble, and the anchor holds a raw pointer to a WebUI
@@ -1490,6 +1504,11 @@ ContextualTasksSidePanelCoordinator::GetSuperGButtonAnchor() {
   return views::BubbleAnchor(anchor_element);
 }
 #endif
+
+BrowserWindowInterface* ContextualTasksSidePanelCoordinator::GetBrowserWindow()
+    const {
+  return browser_window_;
+}
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
 void ContextualTasksSidePanelCoordinator::OnSeeExtensionsClicked() {

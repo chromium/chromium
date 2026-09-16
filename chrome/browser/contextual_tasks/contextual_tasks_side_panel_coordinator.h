@@ -340,6 +340,9 @@ class ContextualTasksSidePanelCoordinator
   views::BubbleAnchor GetSuperGButtonAnchor();
 #endif
 
+  // Returns the browser window hosting this side panel.
+  BrowserWindowInterface* GetBrowserWindow() const;
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
   void OnSeeExtensionsClicked();
   std::unique_ptr<ContextualTasksExtensionsContainer> extensions_container_;
