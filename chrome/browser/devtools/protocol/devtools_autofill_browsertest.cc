@@ -511,10 +511,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
 
   // Assert the expected values used to build the address UI were sent to
   // devtools.
-  ASSERT_EQ(
-      field_types_added_to_address_ui,
-      GetExpectedFieldTypesToBuildAddressUiForCountryCode(base::UTF16ToUTF8(
-          profile.GetInfo(FieldType::ADDRESS_HOME_COUNTRY, "en-US"))));
+  ASSERT_EQ(field_types_added_to_address_ui,
+            GetExpectedFieldTypesToBuildAddressUiForCountryCode(
+                base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY))));
   // Assert that the filled fields sent to devtools match exactly the ones
   // filled by autofill.
   const base::ListValue* filled_fields =
