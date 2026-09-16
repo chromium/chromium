@@ -207,9 +207,8 @@ class AutofillAiPersonalContextAccessManagerImpl
   void LogPrefetchTotalLatency(EntityType type);
 
   // Computes the non-eligibility reason specific to personal context in
-  // Autofill AI (e.g. G1 subscription status or Android premium device status)
-  // and logs it to UMA if the reason has changed and the startup delay has
-  // elapsed.
+  // Autofill AI (e.g. G1 subscription status) and logs it to UMA if the reason
+  // has changed and the startup delay has elapsed.
   void ComputeAndMaybeLogNonEligibilityReason();
 
   // Indicates whether `kNonEligibilityLoggingDelayOnStartup` has elapsed,

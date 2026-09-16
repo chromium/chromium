@@ -20,7 +20,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -81,22 +80,6 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case PersonalContextEligibilityState::kDisabledNotEligible:
       return false;
   }
-}
-
-// Returns whether the current Android hardware model is configured as eligible
-// for Ambient Autofill by feature parameters.
-[[nodiscard]] bool IsAndroidDeviceEligibleForAmbientAutofill() {
-#if BUILDFLAG(IS_ANDROID)
-  const std::string model_name = base::SysInfo::HardwareModelName();
-  const std::string enabled_devices_str =
-      features::kAutofillAmbientAutofillEnabledDevices.Get();
-  return std::ranges::contains(
-      base::SplitStringPiece(enabled_devices_str, ",", base::TRIM_WHITESPACE,
-                             base::SPLIT_WANT_NONEMPTY),
-      model_name);
-#else
-  return false;
-#endif
 }
 
 // Checks whether `country_code` belongs to a country where Wallet is
@@ -520,12 +503,9 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
     case AutofillAiAction::kAmbientAutofill:
     case AutofillAiAction::kShowAmbientAutofillInSettings:
     case AutofillAiAction::kTypeSupportsAmbientAutofillData: {
-      if (!IsDeviceOrSubscriptionTierEligibleForAmbientAutofill(
-              subscription_service)) {
-        MaybeOutputReason(
-            debug_message,
-            "User subscription tier is not eligible and device is "
-            "not eligible.");
+      if (!IsSubscriptionTierEligibleForAmbientAutofill(subscription_service)) {
+        MaybeOutputReason(debug_message,
+                          "User subscription tier is not eligible.");
         return false;
       }
       break;
@@ -957,14 +937,12 @@ bool IsAutofillAiDefaultAvailabilityEnabled() {
 #endif
 }
 
-[[nodiscard]] bool IsDeviceOrSubscriptionTierEligibleForAmbientAutofill(
+[[nodiscard]] bool IsSubscriptionTierEligibleForAmbientAutofill(
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service) {
-  const bool tier_eligible =
-      subscription_eligibility_service &&
-      GetAutofillAmbientAutofillEligibleTiers().contains(
-          subscription_eligibility_service->GetAiSubscriptionTier());
-  return tier_eligible || IsAndroidDeviceEligibleForAmbientAutofill();
+  return subscription_eligibility_service &&
+         GetAutofillAmbientAutofillEligibleTiers().contains(
+             subscription_eligibility_service->GetAiSubscriptionTier());
 }
 
 DenseSet<EntityType> GetAutofillAmbientAutofillSupportedEntityTypes() {

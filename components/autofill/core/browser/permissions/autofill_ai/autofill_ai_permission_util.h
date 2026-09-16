@@ -215,10 +215,10 @@ bool IsAutofillAiEntityTypeBlockedByPolicy(const AutofillClient& client,
 // `kAutofillAiAvailableByDefault` is enabled.
 [[nodiscard]] bool IsAutofillAiDefaultAvailabilityEnabled();
 
-// Returns whether the user's subscription tier or current device is eligible
-// for Ambient Autofill. Note that this does not check other requirements (e.g.
-// user sign-in state or enterprise policy).
-[[nodiscard]] bool IsDeviceOrSubscriptionTierEligibleForAmbientAutofill(
+// Returns whether the user's subscription tier is eligible for Ambient
+// Autofill. Note that this does not check other requirements (e.g. user sign-in
+// state or enterprise policy).
+[[nodiscard]] bool IsSubscriptionTierEligibleForAmbientAutofill(
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service);
 

@@ -44,10 +44,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/system/sys_info.h"
-#endif
-
 namespace autofill {
 
 namespace {
@@ -1612,42 +1608,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       "Autofill.Ai.PersonalContext.NonEligibilityReason",
       personal_context::PersonalContextNonEligibilityReason::kEligible, 2);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-// Tests that `Autofill.Ai.PersonalContext.NonEligibilityReason` logs
-// `kEligible` when the Android device is supported, even if the user's
-// subscription tier is not in the eligible tiers list.
-TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
-       LogsAmbientEligibilityReasonOnAndroidPremiumDevice) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kAutofillAmbientAutofill,
-        {{features::kAutofillAmbientAutofillEligibleTiers.name, "1,2"},
-         {features::kAutofillAmbientAutofillEnabledDevices.name,
-          base::SysInfo::HardwareModelName()}}}},
-      {});
-
-  // Set tier to an eligible tier (1) before startup delay.
-  pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
-                           1);
-
-  // Fast forward past startup delay to complete startup logging.
-  FastForwardBy(kNonEligibilityLoggingDelayOnStartup + base::Seconds(1));
-
-  histogram_tester().ExpectBucketCount(
-      "Autofill.Ai.PersonalContext.NonEligibilityReason",
-      personal_context::PersonalContextNonEligibilityReason::kEligible, 1);
-
-  // Then change tier to an ineligible tier (99). Since the Android device is
-  // supported, the user remains eligible (`kEligible`), so no duplicate sample
-  // is logged.
-  pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
-                           99);
-  histogram_tester().ExpectBucketCount(
-      "Autofill.Ai.PersonalContext.NonEligibilityReason",
-      personal_context::PersonalContextNonEligibilityReason::kEligible, 1);
-}
-#endif
 
 // Tests that `PrefetchContext` populates the `client_id` field of
 // `ContextMemoryAmbientAutofillRequest` using the cache GUID retrieved from

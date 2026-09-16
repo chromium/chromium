@@ -742,7 +742,7 @@ void AutofillAiPersonalContextAccessManagerImpl::
 
   if (non_eligibility_reason ==
           PersonalContextNonEligibilityReason::kEligible &&
-      !IsDeviceOrSubscriptionTierEligibleForAmbientAutofill(
+      !IsSubscriptionTierEligibleForAmbientAutofill(
           subscription_eligibility_observation_.GetSource())) {
     non_eligibility_reason = PersonalContextNonEligibilityReason::
         kNotG1SubscriberOrAndroidPremiumDevice;

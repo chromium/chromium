@@ -176,8 +176,6 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(std::string,
                            kAutofillAmbientAutofillSupportedEntityTypes);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE_PARAM(std::string, kAutofillAmbientAutofillEnabledDevices);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL);

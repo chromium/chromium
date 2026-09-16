@@ -448,11 +448,6 @@ BASE_FEATURE_PARAM(std::string,
                    &kAutofillAmbientAutofill,
                    "ambient_autofill_supported_entity_types",
                    "");
-BASE_FEATURE_PARAM(std::string,
-                   kAutofillAmbientAutofillEnabledDevices,
-                   &kAutofillAmbientAutofill,
-                   "ambient_autofill_enabled_devices",
-                   "");
 // The TTL for prefetched (masked/non-SPII) entities and presence signals.
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL,
