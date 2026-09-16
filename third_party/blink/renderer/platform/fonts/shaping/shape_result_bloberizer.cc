@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
@@ -248,15 +247,9 @@ inline void ShapeResultBloberizer::AddEmphasisMark(
       IsCanvasRotationInVerticalUpright(emphasis_data.canvas_rotation);
 
   if (!is_vertical) {
-    if (RuntimeEnabledFeatures::TextEmphasisLetterSpacingEnabled()) {
-      Add(emphasis_data.glyph, emphasis_font_data,
-          CanvasRotationInVertical::kRegular,
-          mid_glyph_offset - glyph_center.x() - letter_spacing / 2, 0);
-    } else {
-      Add(emphasis_data.glyph, emphasis_font_data,
-          CanvasRotationInVertical::kRegular,
-          mid_glyph_offset - glyph_center.x(), 0);
-    }
+    Add(emphasis_data.glyph, emphasis_font_data,
+        CanvasRotationInVertical::kRegular,
+        mid_glyph_offset - glyph_center.x() - letter_spacing / 2, 0);
   } else {
     Add(emphasis_data.glyph, emphasis_font_data, emphasis_data.canvas_rotation,
         gfx::Vector2dF(-glyph_center.x(), mid_glyph_offset - glyph_center.y()),
