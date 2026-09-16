@@ -987,7 +987,6 @@ END_METADATA
 GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
     ActionDelegate& action_delegate,
     const gfx::Rect& anchor_rect,
-    const gfx::Rect& window_bounds,
     const std::u16string& selected_text)
     : BubbleDialogDelegate(
           nullptr,
@@ -999,8 +998,7 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
           views::BubbleBorder::STANDARD_SHADOW,
           /*autosize=*/true),
       action_delegate_(action_delegate),
-      original_anchor_rect_(anchor_rect),
-      window_bounds_(window_bounds) {
+      original_anchor_rect_(anchor_rect) {
   SetContentsView(
       std::make_unique<GlicSelectionContentsView>(this, selected_text));
 

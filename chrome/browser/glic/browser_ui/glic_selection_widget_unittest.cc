@@ -120,7 +120,7 @@ TEST_F(GlicSelectionWidgetTest, CopyButtonsHiddenByDefault) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+      *test_delegate, anchor_rect, selected_text);
 
   views::View* contents_view = widget_delegate->GetContentsView();
   ASSERT_TRUE(contents_view);
@@ -148,7 +148,7 @@ TEST_F(GlicSelectionWidgetTest, ButtonsTriggerCallbacks) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+      *test_delegate, anchor_rect, selected_text);
 
   views::View* contents_view = widget_delegate->GetContentsView();
   ASSERT_TRUE(contents_view);
@@ -220,7 +220,7 @@ TEST_F(GlicSelectionWidgetTest, ShowAndCloseWidget) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+      *test_delegate, anchor_rect, selected_text);
 
   EXPECT_FALSE(widget_delegate->GetWidget());
 
@@ -253,7 +253,7 @@ TEST_F(GlicSelectionWidgetTest,
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   test_delegate->inline_fulfillment_supported = false;
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+      *test_delegate, anchor_rect, selected_text);
 
   views::View* contents_view = widget_delegate->GetContentsView();
   ASSERT_TRUE(contents_view);
@@ -287,7 +287,7 @@ TEST_F(GlicSelectionWidgetTest,
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   test_delegate->inline_fulfillment_supported = true;
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+      *test_delegate, anchor_rect, selected_text);
 
   views::View* contents_view = widget_delegate->GetContentsView();
   ASSERT_TRUE(contents_view);
@@ -330,7 +330,7 @@ TEST_F(GlicSelectionWidgetTest, AskGeminiRightClickSkillsMenu) {
       skills::Skill("user_2", "User Skill 2", "", ""));
 
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+      *test_delegate, anchor_rect, selected_text);
 
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -403,7 +403,7 @@ TEST_F(GlicSelectionWidgetTest, AskGeminiRightClickMoreSkillsSubmenu) {
       skills::Skill("user_4", "User Skill 4", "🎨", ""));
 
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+      *test_delegate, anchor_rect, selected_text);
 
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -465,7 +465,7 @@ TEST_F(GlicSelectionWidgetTest,
       skills::Skill("user_1", "User Skill 1", "🧪", ""));
 
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+      *test_delegate, anchor_rect, selected_text);
 
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -505,7 +505,7 @@ TEST_F(GlicSelectionWidgetTest, SmallChip) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+      *test_delegate, anchor_rect, selected_text);
 
   EXPECT_EQ(widget_delegate->arrow(), views::BubbleBorder::BOTTOM_LEFT);
 
@@ -540,7 +540,7 @@ TEST_F(GlicSelectionWidgetTest, SmallChipBottom) {
 
   auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
   auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
-      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+      *test_delegate, anchor_rect, selected_text);
 
   EXPECT_EQ(widget_delegate->arrow(), views::BubbleBorder::TOP_LEFT);
 }

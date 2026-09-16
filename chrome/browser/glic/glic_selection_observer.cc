@@ -935,8 +935,7 @@ void GlicSelectionObserver::ShowSelectionAffordance(
           CountWords(selected_text));
 
       widget_delegate_ = std::make_unique<GlicSelectionWidgetDelegate>(
-          *action_delegate_, *bounds, web_contents()->GetContainerBounds(),
-          std::u16string(selected_text));
+          *action_delegate_, *bounds, std::u16string(selected_text));
       widget_delegate_->set_parent_window(platform_util::GetViewForWindow(
           web_contents()->GetTopLevelNativeWindow()));
       dismissal_recorded_ = false;

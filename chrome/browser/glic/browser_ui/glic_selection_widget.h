@@ -55,7 +55,6 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
 
   GlicSelectionWidgetDelegate(ActionDelegate& action_delegate,
                               const gfx::Rect& anchor_rect,
-                              const gfx::Rect& window_bounds,
                               const std::u16string& selected_text);
   ~GlicSelectionWidgetDelegate() override;
 
@@ -86,7 +85,6 @@ class GlicSelectionWidgetDelegate : public views::BubbleDialogDelegate {
 
   const raw_ref<ActionDelegate> action_delegate_;
   gfx::Rect original_anchor_rect_;
-  gfx::Rect window_bounds_;
   std::unique_ptr<views::Widget> widget_;
   base::WeakPtrFactory<GlicSelectionWidgetDelegate> weak_ptr_factory_{this};
 };
