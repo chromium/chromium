@@ -393,6 +393,14 @@ void RoundedOmniboxResultsFrame::Layout(PassKey) {
     top_background_->SetBoundsRect(top_bounds);
   }
 
+  // `contents_` is null once it has been extracted during widget teardown (see
+  // `OmniboxPopupPresenterBase::OnWidgetClosed()`). The widget can still be
+  // laid out by the compositor between that point and its actual destruction,
+  // so there may be nothing left to position.
+  if (!contents_) {
+    return;
+  }
+
   gfx::Rect results_bounds(contents_host_->GetContentsBounds());
   results_bounds.Inset(GetContentInsets());
 

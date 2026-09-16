@@ -508,9 +508,12 @@ void OmniboxPopupFullPresenter::WidgetDestroyed() {
   forward_events_timer_.Stop();
   popup_widget_observation_.Reset();
   // Update the popup state manager if widget was destroyed externally, e.g., by
-  // the OS. This ensures the popup state manager stays in sync.
-  if (controller()->popup_state_manager()->popup_state() ==
-      OmniboxPopupState::kFull) {
+  // the OS. This ensures the popup state manager stays in sync. Skip this when
+  // `Hide()` is discarding the widget on purpose, since clearing the state here
+  // would re-enter `Hide()`.
+  if (!is_destroying_widget() &&
+      controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kFull) {
     controller()->popup_state_manager()->SetPopupState(
         OmniboxPopupState::kNone);
   }
