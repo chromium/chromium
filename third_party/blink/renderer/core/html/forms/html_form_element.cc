@@ -360,6 +360,13 @@ void HTMLFormElement::ScheduleDeclarativeWebMCPToolRegistration() {
   if (!GetDocument().GetFrame()) {
     return;
   }
+  // Declarative WebMCP tools require script execution capability. Sandboxed
+  // frames without `allow-scripts` cannot register tools, consistent with the
+  // imperative `registerTool()` API.
+  if (GetExecutionContext()->IsSandboxed(
+          network::mojom::blink::WebSandboxFlags::kScripts)) {
+    return;
+  }
   // The `<form>` must have *both* the `toolname` and `tooldescription`
   // attributes, and the form must be document-connected, to qualify for
   // declarative WebMCP inclusion.
