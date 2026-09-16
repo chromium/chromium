@@ -16507,6 +16507,24 @@
             ]
         }
     ],
+    "PreloadActivationReportWithExtensionInterception": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PreloadActivationReportWithExtensionInterception"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreloadMediaEngagementData": [
         {
             "platforms": [
