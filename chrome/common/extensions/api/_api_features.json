@@ -629,7 +629,8 @@
   },
   "languageSettingsPrivate": [{
     "dependencies": ["permission:languageSettingsPrivate"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    "default_parent": true
   }, {
     "channel": "stable",
     "contexts": ["webui"],
@@ -639,12 +640,42 @@
       "chrome://os-settings/*",
       "chrome://settings/*"
     ]
-  },
-  {
+  }],
+  // chrome-untrusted://lens-overlay only needs getLanguageList and
+  // getTranslateTargetLanguage; grant them individually instead of the whole
+  // namespace (crbug.com/561921279).
+  "languageSettingsPrivate.getLanguageList": [{
+    "contexts": ["privileged_extension"]
+  }, {
     "channel": "stable",
-    "contexts": [
-      "webui_untrusted"
-    ],
+    "contexts": ["webui"],
+    "dependencies": [],
+    "matches": [
+      "chrome://os-settings/*",
+      "chrome://settings/*"
+    ]
+  }, {
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "dependencies": [],
+    "matches": [
+      "chrome-untrusted://lens-overlay/*"
+    ]
+  }],
+  "languageSettingsPrivate.getTranslateTargetLanguage": [{
+    "contexts": ["privileged_extension"]
+  }, {
+    "channel": "stable",
+    "contexts": ["webui"],
+    "dependencies": [],
+    "matches": [
+      "chrome://os-settings/*",
+      "chrome://settings/*"
+    ]
+  }, {
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "dependencies": [],
     "matches": [
       "chrome-untrusted://lens-overlay/*"
     ]
