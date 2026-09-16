@@ -229,9 +229,9 @@ bool Address::SetInfoWithVerificationStatus(const AutofillType& type,
   FieldType storable_type = type.GetAddressType();
 
   if (storable_type == ADDRESS_HOME_COUNTRY) {
-    // `ParseCountryCode` handles empty values, trying to parse the country from
-    // a country code or a country name
-    const std::string country_code = ParseCountryCode(type, value, locale);
+    // `ParseCountry` handles empty values, trying to parse the country from a
+    // country code or a country name
+    const std::string country_code = ParseCountry(value, locale);
 
     SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY,
                                      base::UTF8ToUTF16(country_code), status);

@@ -251,17 +251,14 @@ std::string CaptureTypeWithPatternOptional(
 
 // Determines the 2-letter country code from a given value.
 // This function handles two cases:
-// 1. The value is expected to be a country code (e.g.,
-// autocomplete="country-code").
-//   It validates the value as a 2-letter code. If validation fails,
-//   it falls back to treating it as a full country name (to handle
-//   incorrectly tagged fields).
-// 2. The value is expected to be a full country name (e.g.,
-// autocomplete="country").
-//   It attempts to find a matching country code from the name.
-std::string ParseCountryCode(const AutofillType& type,
-                             std::u16string_view value,
-                             std::string_view app_locale);
+// 1. The value is expected to be a country code.
+//    It validates the value as a 2-letter code. If validation fails,
+//    it falls back to treating it as a full country name (to handle
+//    incorrectly tagged fields).
+// 2. The value is expected to be a full country name.
+//    It attempts to find a matching country code from the name.
+std::string ParseCountry(std::u16string_view value,
+                         std::string_view app_locale);
 
 // Returns true of both vectors contain the same tokens in the same order.
 bool AreSortedTokensEqual(const std::vector<AddressToken>& first,

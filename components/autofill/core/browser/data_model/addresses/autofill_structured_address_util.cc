@@ -329,16 +329,14 @@ std::string CaptureTypeWithPatternOptional(
       type, base::StrCat(base::span(pattern_span_initializer_list)));
 }
 
-std::string ParseCountryCode(const AutofillType& type,
-                             std::u16string_view value,
-                             std::string_view app_locale) {
+std::string ParseCountry(std::u16string_view value,
+                         std::string_view app_locale) {
   if (value.empty()) {
     return std::string();
   }
 
   // First, try to interpret the value as a 2-letter country code.
-  // This handles autocomplete="country-code".
-  if (type.is_country_code()) {
+  if (value.size() == 2U) {
     std::string potential_code =
         base::IsStringASCII(value)
             ? base::ToUpperASCII(base::UTF16ToASCII(value))
