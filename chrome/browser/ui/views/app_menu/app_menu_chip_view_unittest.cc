@@ -56,11 +56,10 @@ TEST_F(AppMenuChipViewTest, AttachTo_DrivenByChipTextProperty) {
   auto item = AppMenuActionItem::CreateIndirect(
       kActionNewTab,
       BrowserActions::From(&mock_window_interface_)->root_action_item(),
-      AppMenuActionItem::DisplayType::kRow,
-      /*container_color=*/std::nullopt,
-      /*text_override=*/u"Profile Name",
-      /*icon_override=*/std::nullopt,
-      /*chip_text=*/u"Signed in");
+      {
+          .text_override = u"Profile Name",
+          .chip_text = u"Signed in",
+      });
   ASSERT_NE(item, nullptr);
 
   std::u16string* chip_text_prop =

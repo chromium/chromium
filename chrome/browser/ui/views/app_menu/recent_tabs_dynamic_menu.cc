@@ -168,8 +168,8 @@ void RecentTabsDynamicMenu::CreateRecentTabsAction(
       if (recent_tab.action_id().has_value()) {
         action_item = AppMenuActionItem::CreateIndirect(
             recent_tab.action_id().value(),
-            BrowserActions::From(browser_window_interface_)->root_action_item(),
-            AppMenuActionItem::DisplayType::kRow);
+            BrowserActions::From(browser_window_interface_)
+                ->root_action_item());
 
         action_item.get()->GetActionItem()->SetText(recent_tab.title());
         action_item.get()->GetActionItem()->SetImage(recent_tab.icon());

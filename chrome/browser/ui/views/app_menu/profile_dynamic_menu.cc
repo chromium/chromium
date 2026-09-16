@@ -231,11 +231,13 @@ bool ProfileDynamicMenu::BuildSyncSectionImpl(actions::BaseAction* parent_item,
       parent_item->AddChild(AppMenuActionItem::CreateIndirect(
           action_id,
           BrowserActions::From(browser_window_interface_)->root_action_item(),
-          AppMenuActionItem::DisplayType::kRow, ui::kColorMenuBackground,
-          l10n_util::GetStringUTF16(button_string_id),
-          ui::ImageModel::FromVectorIcon(
-              *icon, ui::kColorMenuIcon,
-              ui::SimpleMenuModel::kDefaultIconSize)));
+          {
+              .container_color = ui::kColorMenuBackground,
+              .text_override = l10n_util::GetStringUTF16(button_string_id),
+              .icon_override = ui::ImageModel::FromVectorIcon(
+                  *icon, ui::kColorMenuIcon,
+                  ui::SimpleMenuModel::kDefaultIconSize),
+          }));
       return true;
     }
   }
@@ -248,24 +250,30 @@ bool ProfileDynamicMenu::BuildSyncSectionImpl(actions::BaseAction* parent_item,
     parent_item->AddChild(AppMenuActionItem::CreateIndirect(
         kActionShowSyncSettings,
         BrowserActions::From(browser_window_interface_)->root_action_item(),
-        AppMenuActionItem::DisplayType::kRow, ui::kColorMenuBackground,
-        l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SYNC_IS_ON),
-        ui::ImageModel::FromVectorIcon(
-            features::IsRoundedIconsEnabled()
-                ? vector_icons::kSyncIcon
-                : vector_icons::kSyncChromeRefreshOldIcon,
-            ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize)));
+        {
+            .container_color = ui::kColorMenuBackground,
+            .text_override =
+                l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SYNC_IS_ON),
+            .icon_override = ui::ImageModel::FromVectorIcon(
+                features::IsRoundedIconsEnabled()
+                    ? vector_icons::kSyncIcon
+                    : vector_icons::kSyncChromeRefreshOldIcon,
+                ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize),
+        }));
   } else if (!identity_manager->HasPrimaryAccount(
                  signin::ConsentLevel::kSignin)) {
     parent_item->AddChild(AppMenuActionItem::CreateIndirect(
         kActionShowSignin,
         BrowserActions::From(browser_window_interface_)->root_action_item(),
-        AppMenuActionItem::DisplayType::kRow, ui::kColorMenuBackground,
-        l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON),
-        ui::ImageModel::FromVectorIcon(
-            features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
-                                              : kAccountCircleOldIcon,
-            ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize)));
+        {
+            .container_color = ui::kColorMenuBackground,
+            .text_override =
+                l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON),
+            .icon_override = ui::ImageModel::FromVectorIcon(
+                features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
+                                                  : kAccountCircleOldIcon,
+                ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize),
+        }));
     signin_metrics::LogSignInOffered(
         signin_metrics::AccessPoint::kMenu,
         signin_ui_util::GetSingleAccountForPromos(
