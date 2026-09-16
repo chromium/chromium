@@ -30,8 +30,6 @@
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
         "fuchsia.kernel.VmexResource",
-        "fuchsia.media.ProfileProvider",
-        "fuchsia.scheduler.RoleManager",
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.settings.Display",
@@ -42,6 +40,16 @@
       ],
       from: "parent",
       to: "#realm_builder",
+    },
+    {
+      // WebEngine integration tests run in the "chromium-tests" test realm,
+      // which does not provide fuchsia.scheduler.RoleManager. Since the tests
+      // do not require thread scheduling roles, route the capability from void
+      // and configure ContextProviderForTest with --use-scheduler-roles=unused.
+      protocol: [ "fuchsia.scheduler.RoleManager" ],
+      from: "void",
+      to: "#realm_builder",
+      availability: "optional",
     },
     {
       directory: "root-ssl-certificates",

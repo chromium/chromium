@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <fuchsia/web/cpp/fidl.h>
+
 #include <utility>
 
 #include "base/command_line.h"
@@ -12,6 +13,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_launcher.h"
 #include "fuchsia_web/webengine/browser/web_engine_browser_main_parts.h"
+#include "fuchsia_web/webengine/switches.h"
 #include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "fuchsia_web/webengine/web_engine_main_delegate.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -51,6 +53,10 @@ int main(int argc, char** argv) {
   // test, so that dependencies which might compromise test isolation
   // won't be used (e.g. memory pressure).
   command_line->AppendSwitch(switches::kBrowserTest);
+
+  if (!command_line->HasSwitch(switches::kUseSchedulerRoles)) {
+    command_line->AppendSwitchASCII(switches::kUseSchedulerRoles, "unused");
+  }
 
   size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/2);
   if (parallel_jobs == 0U)

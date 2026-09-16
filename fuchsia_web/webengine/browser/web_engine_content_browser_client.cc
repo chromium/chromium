@@ -166,6 +166,7 @@ static constexpr char const*
 static constexpr char const* kAllProcessSwitchesToCopy[] = {
     // This is used by every child process in WebEngineContentClient.
     switches::kEnableContentDirectories,
+    switches::kUseSchedulerRoles,
 };
 
 }  // namespace

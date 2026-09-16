@@ -25,6 +25,7 @@ namespace {
   static constexpr char kContextProviderService[] = "context_provider";
   realm_builder.AddChild(kContextProviderService, "#meta/context_provider.cm");
 
+  command_line.AppendSwitchASCII("use-scheduler-roles", "unused");
   static constexpr char const* kSwitchesToCopy[] = {"ozone-platform"};
   command_line.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                 kSwitchesToCopy);
@@ -58,7 +59,6 @@ namespace {
                ::component_testing::Protocol{"fuchsia.sysmem2.Allocator"},
                // Optional capabilities offered to web-instance.cm:
                ::component_testing::Protocol{"fuchsia.camera3.DeviceWatcher"},
-               ::component_testing::Protocol{"fuchsia.media.ProfileProvider"},
                ::component_testing::Protocol{"fuchsia.scheduler.RoleManager"},
                ::component_testing::Protocol{"fuchsia.settings.Display"},
                ::component_testing::Protocol{

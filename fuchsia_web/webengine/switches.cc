@@ -24,6 +24,7 @@ const char kContextProvider[] = "context-provider";
 const char kProxyBypassList[] = "proxy-bypass-list";
 const char kProxyServer[] = "proxy-server";
 const char kProtectedServiceWorkers[] = "protected-service-workers";
+const char kUseSchedulerRoles[] = "use-scheduler-roles";
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
 const char kAllowRunningInsecureContent[] = "allow-running-insecure-content";

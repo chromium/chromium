@@ -111,6 +111,7 @@ bool AddCommandLineArgsFromConfig(const base::DictValue& config,
       switches::kWebglAntialiasingMode,
       switches::kWebglMSAASampleCount,
       switches::kProtectedServiceWorkers,
+      switches::kUseSchedulerRoles,
   };
 
   for (const auto arg : *args) {
@@ -190,6 +191,12 @@ bool UpdateCommandLineFromConfigFile(const base::DictValue& config,
 
   if (!AddCommandLineArgsFromConfig(config, command_line)) {
     return false;
+  }
+
+  if (const std::string* use_scheduler_roles =
+          config.FindString(switches::kUseSchedulerRoles)) {
+    command_line->AppendSwitchASCII(switches::kUseSchedulerRoles,
+                                    *use_scheduler_roles);
   }
 
   // The following two args are set by calling component. They are used to set

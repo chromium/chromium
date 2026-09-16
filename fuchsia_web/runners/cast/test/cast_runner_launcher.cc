@@ -97,6 +97,7 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
   realm_builder.AddChild(kCastRunnerComponentName, "#meta/cast_runner.cm");
 
   base::CommandLine command_line = CommandLineFromFeatures(runner_features);
+  command_line.AppendSwitchASCII("use-scheduler-roles", "unused");
   static constexpr char const* kSwitchesToCopy[] = {"ozone-platform"};
   command_line.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                 kSwitchesToCopy);
@@ -140,7 +141,6 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
               Protocol{fuchsia::intl::PropertyProvider::Name_},
               Protocol{fuchsia::kernel::VmexResource::Name_},
               Dictionary{"diagnostics"},
-              Protocol{fuchsia::media::ProfileProvider::Name_},
               Protocol{"fuchsia.scheduler.RoleManager"},
               Protocol{fuchsia::memorypressure::Provider::Name_},
               Protocol{"fuchsia.process.Launcher"},

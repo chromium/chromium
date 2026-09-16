@@ -63,6 +63,13 @@ extern const char kProxyServer[];
 // ServiceWorkers which are protected and never deleted.
 extern const char kProtectedServiceWorkers[];
 
+// Specifies how fuchsia.scheduler.RoleManager should be used to apply
+// scheduling profiles to threads ("unused", "ignore-missing", "error-missing",
+// or "require"). Defaults to "error-missing", which causes WebEngine to
+// terminate if RoleManager is unavailable and logs an error if a profile is
+// missing.
+extern const char kUseSchedulerRoles[];
+
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
 // By default, an HTTPS page cannot run JavaScript, CSS or resources from HTTP
 // URLs. This provides an override to get the old insecure behavior.

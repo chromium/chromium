@@ -4,20 +4,19 @@
 
 #include "base/threading/platform_thread.h"
 
-#include <fidl/fuchsia.media/cpp/fidl.h>
-#include <lib/fdio/directory.h>
-#include <lib/sys/cpp/component_context.h>
+#include <fidl/fuchsia.scheduler/cpp/fidl.h>
 #include <pthread.h>
 #include <sched.h>
-#include <zircon/syscalls.h>
 
-#include <mutex>
+#include <atomic>
 #include <string_view>
 
 #include "base/fuchsia/fuchsia_component_connect.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/scheduler.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_local_storage.h"
@@ -26,54 +25,73 @@ namespace base {
 
 namespace {
 
-fidl::SyncClient<fuchsia_media::ProfileProvider> ConnectProfileProvider() {
-  auto profile_provider_client_end =
-      base::fuchsia_component::Connect<fuchsia_media::ProfileProvider>();
-  if (profile_provider_client_end.is_error()) {
-    LOG(ERROR) << base::FidlConnectionErrorMessage(profile_provider_client_end);
-    return {};
+std::atomic<SchedulerRoles> g_scheduler_roles{SchedulerRoles::kUnused};
+
+fidl::SyncClient<fuchsia_scheduler::RoleManager> ConnectRoleManager() {
+  auto client_end =
+      base::fuchsia_component::Connect<fuchsia_scheduler::RoleManager>();
+  if (client_end.is_error()) {
+    LOG(FATAL) << "Failed to connect to fuchsia.scheduler.RoleManager: "
+               << base::FidlConnectionErrorMessage(client_end);
   }
-  return fidl::SyncClient(std::move(profile_provider_client_end.value()));
+  return fidl::SyncClient(std::move(client_end.value()));
 }
 
-// Sets the current thread to the given scheduling role, optionally including
-// hints about the workload period and max CPU runtime (capacity * period) in
-// that period.
-// TODO(crbug.com/42050523): Migrate to the new
-// fuchsia.scheduler.ProfileProvider API when available.
-void SetThreadRole(std::string_view role_name,
-                   TimeDelta period = {},
-                   float capacity = 0.0f) {
-  DCHECK_GE(capacity, 0.0);
-  DCHECK_LE(capacity, 1.0);
-
-  static const base::NoDestructor<
-      fidl::SyncClient<fuchsia_media::ProfileProvider>>
-      profile_provider(ConnectProfileProvider());
-
-  if (!profile_provider->is_valid()) {
+// Sets the current thread to the given scheduling role via
+// fuchsia.scheduler.RoleManager.
+void SetThreadRole(std::string_view role_name) {
+  const SchedulerRoles roles = GetSchedulerRoles();
+  if (roles == SchedulerRoles::kUnused) {
     return;
   }
+
+  static const base::NoDestructor<
+      fidl::SyncClient<fuchsia_scheduler::RoleManager>>
+      role_manager(ConnectRoleManager());
 
   zx::thread dup_thread;
   zx_status_t status =
       zx::thread::self()->duplicate(ZX_RIGHT_SAME_RIGHTS, &dup_thread);
   ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
 
-  std::string role_selector{role_name};
-  auto result = (*profile_provider)
-                    ->RegisterHandlerWithCapacity(
-                        {{.thread_handle = std::move(dup_thread),
-                          .name = role_selector,
-                          .period = period.ToZxDuration(),
-                          .capacity = capacity}});
+  fuchsia_scheduler::RoleManagerSetRoleRequest request;
+  request.target(
+      fuchsia_scheduler::RoleTarget::WithThread(std::move(dup_thread)));
+  request.role(fuchsia_scheduler::RoleName(std::string(role_name)));
+
+  auto result = (*role_manager)->SetRole(std::move(request));
   if (result.is_error()) {
-    ZX_DLOG(ERROR, result.error_value().status())
-        << "Failed call to RegisterHandlerWithCapacity";
+    if (result.error_value().is_framework_error()) {
+      LOG(FATAL) << "fuchsia.scheduler.RoleManager channel error while "
+                 << "applying role '" << role_name
+                 << "': " << result.error_value().FormatDescription();
+    }
+    switch (roles) {
+      case SchedulerRoles::kUnused:
+        NOTREACHED();
+      case SchedulerRoles::kIgnoreMissing:
+        // Missing role definitions and other errors are intentionally ignored.
+        break;
+      case SchedulerRoles::kErrorMissing:
+        LOG(ERROR) << "Failed to apply scheduler role '" << role_name
+                   << "': " << result.error_value().FormatDescription();
+        break;
+      case SchedulerRoles::kRequire:
+        LOG(FATAL) << "Failed to apply scheduler role '" << role_name
+                   << "': " << result.error_value().FormatDescription();
+    }
   }
 }
 
 }  // namespace
+
+void SetSchedulerRoles(SchedulerRoles roles) {
+  g_scheduler_roles.store(roles, std::memory_order_relaxed);
+}
+
+SchedulerRoles GetSchedulerRoles() {
+  return g_scheduler_roles.load(std::memory_order_relaxed);
+}
 
 void InitThreading() {}
 
@@ -105,7 +123,6 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
   switch (thread_type) {
     case ThreadType::kDefault:
       SetThreadRole("chromium.base.threading.default");
-
       break;
 
     case ThreadType::kBackground:
@@ -118,13 +135,11 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
 
     case ThreadType::kPresentation:
     case ThreadType::kAudioProcessing:
-      SetThreadRole("chromium.base.threading.display", kDisplaySchedulingPeriod,
-                    kDisplaySchedulingCapacity);
+      SetThreadRole("chromium.base.threading.display");
       break;
 
     case ThreadType::kRealtimeAudio:
-      SetThreadRole("chromium.base.threading.realtime-audio",
-                    kAudioSchedulingPeriod, kAudioSchedulingCapacity);
+      SetThreadRole("chromium.base.threading.realtime-audio");
       break;
   }
 }

@@ -5,31 +5,41 @@
 #ifndef BASE_FUCHSIA_SCHEDULER_H_
 #define BASE_FUCHSIA_SCHEDULER_H_
 
+#include "base/base_export.h"
 #include "base/time/time.h"
 
 namespace base {
 
 // Scheduling interval to use for realtime audio threads.
 // TODO(crbug.com/42050308): Add scheduling period to Thread::Options and remove
-// this constants.
+// this constant.
 constexpr TimeDelta kAudioSchedulingPeriod = Milliseconds(10);
 
-// Request 30% max CPU deadline utilization for an audio thread.
-// TODO(crbug.com/42050235): A different value may need to be used for WebAudio
-// threads (see media::FuchsiaAudioOutputDevice). A higher capacity may need to
-// be allocated in that case.
-constexpr float kAudioSchedulingCapacity = 0.3;
+// Controls how fuchsia.scheduler.RoleManager is used to apply thread roles.
+enum class SchedulerRoles {
+  // Do not connect to or call fuchsia.scheduler.RoleManager.
+  kUnused,
 
-// Scheduling interval to use for display threads.
-// TODO(crbug.com/42050308): Add scheduling period to Thread::Options and remove
-// this constants.
-constexpr TimeDelta kDisplaySchedulingPeriod = Seconds(1) / 60;
+  // Require fuchsia.scheduler.RoleManager to be connected (fatal on
+  // framework/connection errors), and silently ignore missing role
+  // definitions and other errors.
+  kIgnoreMissing,
 
-// Request 50% max CPU deadline utilization for a display thread.
-// TODO(crbug.com/40750845): Currently DISPLAY priority is not enabled for any
-// thread on Fuchsia. The value below will need to be fine-tuned when it's
-// enabled.
-const float kDisplaySchedulingCapacity = 0.5;
+  // Require fuchsia.scheduler.RoleManager to be connected (fatal on
+  // framework/connection errors), and log an ERROR on missing role
+  // definitions and other errors.
+  kErrorMissing,
+
+  // Require both fuchsia.scheduler.RoleManager and all requested role
+  // definitions to succeed (fatal on any error).
+  kRequire,
+};
+
+// Sets the mode used to apply scheduler roles. Defaults to kUnused.
+BASE_EXPORT void SetSchedulerRoles(SchedulerRoles roles);
+
+// Returns the current scheduler role mode.
+BASE_EXPORT SchedulerRoles GetSchedulerRoles();
 
 }  // namespace base
 

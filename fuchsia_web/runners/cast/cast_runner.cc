@@ -321,6 +321,8 @@ WebContentRunner::WebInstanceConfig CastRunner::GetCommonWebInstanceConfig() {
       "enable-logging",
       // Must match the value in `ui/ozone/public/ozone_switches.cc`.
       "ozone-platform",
+      // Must match the value in `fuchsia_web/webengine/switches.cc`.
+      "use-scheduler-roles",
   };
   config.extra_args.CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                      kSwitchesToCopy);

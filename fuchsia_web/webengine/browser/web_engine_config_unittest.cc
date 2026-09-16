@@ -4,10 +4,14 @@
 
 #include "fuchsia_web/webengine/browser/web_engine_config.h"
 
+#include <optional>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/values.h"
+#include "content/public/common/content_switches.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,6 +27,22 @@ base::DictValue CreateConfigWithSwitchValue(std::string switch_name,
   config_dict.Set(kCommandLineArgs, std::move(args));
   return config_dict;
 }
+
+enum class ConfigLocation {
+  // Key nested inside the "command-line-args" dictionary in the config JSON.
+  kCommandLineArgs,
+  // Key in the root dictionary of the config JSON.
+  kTopLevel,
+};
+
+struct ConfigArgTestParam {
+  std::string test_name;
+  ConfigLocation location;
+  std::string arg_name;
+  std::optional<std::string> arg_value;
+  std::string expected_switch;
+  std::optional<std::string> expected_value;
+};
 
 }  // namespace
 
@@ -47,13 +67,75 @@ class WebEngineConfigTest : public testing::Test {
   raw_ptr<base::FieldTrialList> backup_field_trial_list_ = nullptr;
 };
 
-TEST_F(WebEngineConfigTest, CommandLineArgs) {
-  // Specify a configuration that sets valid args with valid strings.
-  auto config = CreateConfigWithSwitchValue("renderer-process-limit", "0");
+class WebEngineConfigArgumentsTest
+    : public WebEngineConfigTest,
+      public ::testing::WithParamInterface<ConfigArgTestParam> {};
+
+TEST_P(WebEngineConfigArgumentsTest, SetArgument) {
+  const ConfigArgTestParam& param = GetParam();
+
+  base::DictValue config;
+  if (param.location == ConfigLocation::kTopLevel) {
+    ASSERT_TRUE(param.arg_value);
+    config.Set(param.arg_name, *param.arg_value);
+  } else {
+    base::DictValue args;
+    if (param.arg_value) {
+      args.Set(param.arg_name, *param.arg_value);
+    } else {
+      args.Set(param.arg_name, base::Value());
+    }
+    config.Set(kCommandLineArgs, std::move(args));
+  }
+
   base::CommandLine command(base::CommandLine::NO_PROGRAM);
   EXPECT_TRUE(UpdateCommandLineFromConfigFile(config, &command));
-  EXPECT_EQ(command.GetSwitchValueASCII("renderer-process-limit"), "0");
+  EXPECT_TRUE(command.HasSwitch(param.expected_switch));
+  if (param.expected_value) {
+    EXPECT_EQ(command.GetSwitchValueASCII(param.expected_switch),
+              *param.expected_value);
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebEngineConfigArgumentsTest,
+    testing::Values(
+        ConfigArgTestParam{
+            .test_name = "CommandLineArgs",
+            .location = ConfigLocation::kCommandLineArgs,
+            .arg_name = "renderer-process-limit",
+            .arg_value = "0",
+            .expected_switch = switches::kRendererProcessLimit,
+            .expected_value = "0",
+        },
+        ConfigArgTestParam{
+            .test_name = "WithGoogleApiKeyValue",
+            .location = ConfigLocation::kCommandLineArgs,
+            .arg_name = "google-api-key",
+            .arg_value = "apikey123",
+            .expected_switch = switches::kGoogleApiKey,
+            .expected_value = "apikey123",
+        },
+        ConfigArgTestParam{
+            .test_name = "UseSchedulerRolesCommandLineArg",
+            .location = ConfigLocation::kCommandLineArgs,
+            .arg_name = "use-scheduler-roles",
+            .arg_value = "require",
+            .expected_switch = switches::kUseSchedulerRoles,
+            .expected_value = "require",
+        },
+        ConfigArgTestParam{
+            .test_name = "UseSchedulerRolesTopLevel",
+            .location = ConfigLocation::kTopLevel,
+            .arg_name = "use-scheduler-roles",
+            .arg_value = "require",
+            .expected_switch = switches::kUseSchedulerRoles,
+            .expected_value = "require",
+        }),
+    [](const testing::TestParamInfo<ConfigArgTestParam>& info) {
+      return info.param.test_name;
+    });
 
 TEST_F(WebEngineConfigTest, DisallowedCommandLineArgs) {
   // Specify a configuration that sets a disallowed command-line argument.
@@ -73,12 +155,4 @@ TEST_F(WebEngineConfigTest, WronglyTypedCommandLineArgs) {
 
   base::CommandLine command(base::CommandLine::NO_PROGRAM);
   EXPECT_FALSE(UpdateCommandLineFromConfigFile(config, &command));
-}
-
-TEST_F(WebEngineConfigTest, WithGoogleApiKeyValue) {
-  constexpr char kDummyApiKey[] = "apikey123";
-  auto config = CreateConfigWithSwitchValue("google-api-key", kDummyApiKey);
-  base::CommandLine command(base::CommandLine::NO_PROGRAM);
-  EXPECT_TRUE(UpdateCommandLineFromConfigFile(config, &command));
-  EXPECT_EQ(command.GetSwitchValueASCII(switches::kGoogleApiKey), kDummyApiKey);
 }

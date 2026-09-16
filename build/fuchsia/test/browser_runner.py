@@ -149,6 +149,7 @@ class BrowserRunner:
                 '--webgl-msaa-sample-count=0',
                 '--max-decoded-image-size-mb=10',
                 '--protected-service-workers=https://[*.]',
+                '--use-scheduler-roles=unused',
             ]
         )
         if extra_args:
