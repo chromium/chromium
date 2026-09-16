@@ -675,7 +675,13 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest,
   table->RequestFocus();
 
   EXPECT_TRUE(table->HasFocus());
-  EXPECT_EQ(1u, table->ViewToModel(0));
+  // Sanity check that sorting actually reordered the rows, so that the
+  // expectations below verify that the first *visual* row is selected rather
+  // than simply the first model row.
+  // Note that the exact model index of the first visual row must not be
+  // hardcoded: features such as the WebUI add extra rows (e.g. "Tool: Omnibox")
+  // which shift the model indices.
+  EXPECT_NE(0u, table->ViewToModel(0));
   EXPECT_EQ(table->ViewToModel(0), table->GetFirstSelectedRow());
   EXPECT_EQ(table->ViewToModel(0), table->selection_model().active());
 }
