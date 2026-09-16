@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/gfx/output_surface_provider_webview.h"
 
+#include <optional>
 #include <utility>
 
 #include "android_webview/browser/gfx/aw_gl_surface_external_stencil.h"
@@ -34,7 +35,6 @@
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace android_webview {
@@ -162,6 +162,18 @@ scoped_refptr<gpu::SharedContextState> GetOrCreateSharedContextState(
     GLSurfaceContextPair real_context) {
   static base::NoDestructor<base::WeakPtr<gpu::SharedContextState>>
       cached_shared_context_state;
+  // The `is_angle` value which was used to create the cached
+  // SharedContextState. Note that this can not be recomputed from the cached
+  // SharedContextState's GLVersionInfo: the latter is derived from GL_RENDERER,
+  // which reports ANGLE whenever the underlying driver is ANGLE - including
+  // when Android itself uses ANGLE as the system GLES driver while Chrome runs
+  // on native EGL. `is_angle` below instead answers the question we care about
+  // here, namely whether *our* EGL implementation is ANGLE.
+  static std::optional<bool> cached_is_angle;
+
+  gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
+  const bool is_angle =
+      !enable_vulkan && display->ext->b_EGL_ANGLE_external_context_and_surface;
 
   if (*cached_shared_context_state &&
       !(*cached_shared_context_state)->context_lost()) {
@@ -177,13 +189,8 @@ scoped_refptr<gpu::SharedContextState> GetOrCreateSharedContextState(
       CHECK_EQ(shared_context_state->vk_context_provider(),
                vulkan_context_provider);
     } else {
-      gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
-      const bool is_angle =
-          !enable_vulkan &&
-          display->ext->b_EGL_ANGLE_external_context_and_surface;
       CHECK(shared_context_state->feature_info());
-      CHECK_EQ(shared_context_state->feature_info()->gl_version_info().is_angle,
-               is_angle);
+      CHECK_EQ(cached_is_angle.value(), is_angle);
     }
     return base::WrapRefCounted(shared_context_state);
   }
@@ -191,9 +198,6 @@ scoped_refptr<gpu::SharedContextState> GetOrCreateSharedContextState(
   // To avoid confusion of sharing the first WebView's gl_surface_ globally,
   // we create an independent dummy surface for the SharedContextState.
   scoped_refptr<gl::GLSurface> dummy_surface;
-  gl::GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
-  const bool is_angle =
-      !enable_vulkan && display->ext->b_EGL_ANGLE_external_context_and_surface;
 
   if (enable_vulkan) {
     if (real_context.first) {
@@ -217,6 +221,7 @@ scoped_refptr<gpu::SharedContextState> GetOrCreateSharedContextState(
           std::move(real_context));
 
   *cached_shared_context_state = shared_context_state->GetWeakPtr();
+  cached_is_angle = is_angle;
   return shared_context_state;
 }
 
