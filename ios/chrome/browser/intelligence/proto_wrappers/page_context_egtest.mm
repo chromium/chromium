@@ -5,8 +5,6 @@
 #import <string>
 
 #import "base/strings/stringprintf.h"
-#import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -78,63 +76,20 @@ std::unique_ptr<net::test_server::HttpResponse> LargeLinksPageResponse(
 
 @end
 
-#pragma mark - IPC Optimization Enabled (Default)
-
 @interface PageContextTestCase : PageContextBaseTestCase
 @end
 
 @implementation PageContextTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kPageContextIPCOptimization);
-  return config;
-}
-
 - (void)DISABLED_testLargePage_RichOn_ActionableOn {
   // TODO(crbug.com/507473141): this test returns null in some cases, but
   // ideally it should not. We appear to run over a size limit with rich +
-  // actionable mode, even with IPC optimization enabled.
+  // actionable mode on large pages.
   [self runLinksTestWithRichExtraction:YES actionableMode:YES expectNull:NO];
 }
 
 - (void)testLargePage_RichOn_ActionableOff {
   [self runLinksTestWithRichExtraction:YES actionableMode:NO expectNull:NO];
-}
-
-- (void)testLargePage_RichOff {
-  [self runLinksTestWithRichExtraction:NO actionableMode:NO expectNull:NO];
-}
-
-@end
-
-@interface PageContextIPCOptimizationDisabledTestCase : PageContextBaseTestCase
-@end
-
-@implementation PageContextIPCOptimizationDisabledTestCase
-
-// TODO(crbug.com/507473141): it is not ideal that any of these tests return
-// null, but lacking the IPC optimization means rich extraction fails more
-// frequently. These tests should be removed once IPC optimization is the
-// default.
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(kPageContextIPCOptimization);
-  return config;
-}
-
-// TODO(crbug.com/514631478): Re-enable this test on iPad once fixed.
-// TODO(crbug.com/515628350): Re-enable once fixed.
-- (void)DISABLED_testLargePage_RichOn_ActionableOn_ExpectNull {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Disabled on iPad.");
-  }
-  [self runLinksTestWithRichExtraction:YES actionableMode:YES expectNull:YES];
-}
-
-// TODO(crbug.com/513432449): Re-enable this test once the bug is fixed.
-- (void)DISABLED_testLargePage_RichOn_ActionableOff_ExpectNull {
-  [self runLinksTestWithRichExtraction:YES actionableMode:NO expectNull:YES];
 }
 
 - (void)testLargePage_RichOff {

@@ -26,8 +26,6 @@ namespace {
 constexpr char kScriptName[] = "page_context_extractor";
 constexpr char kDetachLogicPlaceholder[] =
     "window.gCrWebPlaceholderPageContextShouldDetach";
-constexpr char kOptimizeIPCPlaceholder[] =
-    "window.gCrWebPlaceholderPageContextIPCOptimization";
 constexpr char kActionableOptimizationPlaceholder[] =
     "window.gCrWebPlaceholderPageContextActionableOptimization";
 
@@ -95,45 +93,12 @@ PageContextExtractorJavaScriptFeature::GetReplacements() {
   return @{
     base::SysUTF8ToNSString(kDetachLogicPlaceholder) :
         base::SysUTF16ToNSString(detach_script_block),
-    base::SysUTF8ToNSString(kOptimizeIPCPlaceholder) :
-            IsPageContextIPCOptimizationEnabled() ? @"true" : @"false",
     base::SysUTF8ToNSString(kActionableOptimizationPlaceholder) :
             IsPageContextActionableOptimizationEnabled() ? @"true" : @"false",
   };
 }
 
 void PageContextExtractorJavaScriptFeature::ExtractPageContext(
-    web::WebFrame* frame,
-    bool include_cross_origin_frame_content,
-    bool use_rich_extraction,
-    bool use_rich_extraction_with_actionable,
-    bool extract_paid_content,
-    bool attempt_paid_content_json_fixing,
-    bool include_sensitive_payments_for_redaction,
-    bool extract_autofill_otp_redactions,
-    bool extract_password_screenshot_redactions,
-    const std::string& nonce,
-    base::TimeDelta timeout,
-    base::OnceCallback<void(const base::Value*)> callback) {
-  // TODO(crbug.com/464503759): Use one single config to pass all the
-  // parameters.
-  base::ListValue parameters;
-  parameters.Append(nonce);
-  parameters.Append(include_cross_origin_frame_content);
-  parameters.Append(use_rich_extraction);
-  parameters.Append(use_rich_extraction_with_actionable);
-  parameters.Append(extract_paid_content);
-  parameters.Append(attempt_paid_content_json_fixing);
-  parameters.Append(include_sensitive_payments_for_redaction);
-  parameters.Append(extract_autofill_otp_redactions);
-  parameters.Append(extract_password_screenshot_redactions);
-  CallJavaScriptFunction(frame, "pageContextExtractor.extractPageContext",
-                         parameters, std::move(callback), timeout);
-}
-
-// Extract Page Context using JSON. This is used with PageContextIPCOptimization
-// feature.
-void PageContextExtractorJavaScriptFeature::ExtractPageContextJSON(
     web::WebFrame* frame,
     bool include_cross_origin_frame_content,
     bool use_rich_extraction,

@@ -1637,11 +1637,6 @@ inline constexpr char kPageActionMenuDescription[] =
     "When enabled, the entry point for the Page Action Menu becomes available "
     "for actions relating to the web page.";
 
-inline constexpr char kPageContextIPCOptimizationName[] =
-    "PageContextIPCOptimization";
-inline constexpr char kPageContextIPCOptimizationDescription[] =
-    "Enables the PageContextIPCOptimization feature.";
-
 inline constexpr char kPageContextPdfName[] = "Page Context PDF";
 inline constexpr char kPageContextPdfDescription[] =
     "Enables PDF support for Page Context in Gemini.";

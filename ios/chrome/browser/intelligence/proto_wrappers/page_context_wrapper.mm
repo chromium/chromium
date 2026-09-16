@@ -630,7 +630,6 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
 }
 
 // Helper to extract page context for a given frame.
-// TODO(crbug.com/495446456): Clean up once the JSON experiment is done.
 - (void)extractPageContextForFrame:(web::WebFrame*)frame
                        isMainFrame:(BOOL)isMainFrame
                              nonce:(const std::string&)nonce
@@ -647,80 +646,44 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   // empty results).
   base::TimeDelta jsTimeout = _timeoutTimer.GetCurrentDelay() * 2;
 
-  if (IsPageContextIPCOptimizationEnabled()) {
-    // Callback to aggregate values from the JS execution via JSON string
-    // parsing.
-    auto callbackJson = [](PageContextWrapper* weakWrapper,
-                           base::RepeatingClosure barrier, BOOL isMainFrame,
-                           const url::Origin& securityOrigin,
-                           std::optional<autofill::LocalFrameToken> frameId,
-                           std::optional<base::Value> value) {
-      // TODO(crbug.com/454261374): Remove `withError` from args once we
-      // cleanup the old code. Can't provide an error object since the
-      // javascript feature doesn't support that.
-      [weakWrapper aggregateJavaScriptValue:value ? &value.value() : nullptr
-                                  withError:nil
-                                isMainFrame:isMainFrame
-                             securityOrigin:securityOrigin
-                            localFrameToken:frameId];
-      barrier.Run();
+  // Callback to aggregate values from the JS execution via JSON string parsing.
+  auto callback = [](PageContextWrapper* weakWrapper,
+                     base::RepeatingClosure barrier, BOOL isMainFrame,
+                     const url::Origin& securityOrigin,
+                     std::optional<autofill::LocalFrameToken> frameId,
+                     std::optional<base::Value> value) {
+    // TODO(crbug.com/454261374): Remove `withError` from args once we
+    // cleanup the old code. Can't provide an error object since the
+    // javascript feature doesn't support that.
+    [weakWrapper aggregateJavaScriptValue:value ? &value.value() : nullptr
+                                withError:nil
+                              isMainFrame:isMainFrame
+                           securityOrigin:securityOrigin
+                          localFrameToken:frameId];
+    barrier.Run();
 
-      // Defer destruction of the base::DictValue to a background thread to
-      // prevent blocking the main thread. The object is self-contained and
-      // thread-safe.
-      if (value) {
-        base::ThreadPool::PostTask(
-            FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-            base::BindOnce([](base::Value v) {}, std::move(*value)));
-      }
-    };
+    // Defer destruction of the base::DictValue to a background thread to
+    // prevent blocking the main thread. The object is self-contained and
+    // thread-safe.
+    if (value) {
+      base::ThreadPool::PostTask(
+          FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+          base::BindOnce([](base::Value v) {}, std::move(*value)));
+    }
+  };
 
-    extractorFeature->ExtractPageContextJSON(
-        frame, _config->graft_cross_origin_frame_content(),
-        _config->use_rich_extraction(),
-        _config->use_rich_extraction_with_actionable(),
-        _config->extract_paid_content(),
-        _config->attempt_paid_content_json_fixing(),
-        _config->include_sensitive_payments_for_redaction(),
-        _config->extract_autofill_otp_redactions(),
-        _config->extract_password_screenshot_redactions(), nonce, jsTimeout,
-        base::BindOnce(
-            callbackJson, weakSelf, annotatedPageContentBarrier, isMainFrame,
-            frame->GetSecurityOrigin(),
-            DeserializeFrameIdAsLocalFrameToken(frame->GetFrameId())));
-  } else {
-    // Callback to aggregate values from the JS execution via the base value
-    // received directly from WebKit.
-    auto callback = [](PageContextWrapper* weakWrapper,
-                       base::RepeatingClosure barrier, BOOL isMainFrame,
-                       const url::Origin& securityOrigin,
-                       std::optional<autofill::LocalFrameToken> frameId,
-                       const base::Value* value) {
-      // TODO(crbug.com/454261374): Remove `withError` from args once we
-      // cleanup the old code. Can't provide an error object since the
-      // javascript feature doesn't support that.
-      [weakWrapper aggregateJavaScriptValue:value
-                                  withError:nil
-                                isMainFrame:isMainFrame
-                             securityOrigin:securityOrigin
-                            localFrameToken:frameId];
-      barrier.Run();
-    };
-
-    extractorFeature->ExtractPageContext(
-        frame, _config->graft_cross_origin_frame_content(),
-        _config->use_rich_extraction(),
-        _config->use_rich_extraction_with_actionable(),
-        _config->extract_paid_content(),
-        _config->attempt_paid_content_json_fixing(),
-        _config->include_sensitive_payments_for_redaction(),
-        _config->extract_autofill_otp_redactions(),
-        _config->extract_password_screenshot_redactions(), nonce, jsTimeout,
-        base::BindOnce(
-            callback, weakSelf, annotatedPageContentBarrier, isMainFrame,
-            frame->GetSecurityOrigin(),
-            DeserializeFrameIdAsLocalFrameToken(frame->GetFrameId())));
-  }
+  extractorFeature->ExtractPageContext(
+      frame, _config->graft_cross_origin_frame_content(),
+      _config->use_rich_extraction(),
+      _config->use_rich_extraction_with_actionable(),
+      _config->extract_paid_content(),
+      _config->attempt_paid_content_json_fixing(),
+      _config->include_sensitive_payments_for_redaction(),
+      _config->extract_autofill_otp_redactions(),
+      _config->extract_password_screenshot_redactions(), nonce, jsTimeout,
+      base::BindOnce(callback, weakSelf, annotatedPageContentBarrier,
+                     isMainFrame, frame->GetSecurityOrigin(),
+                     DeserializeFrameIdAsLocalFrameToken(frame->GetFrameId())));
 }
 
 // Get the WebState's AnnotatedPageContent filled with innerTexts. The

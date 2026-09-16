@@ -669,26 +669,15 @@ void PersistTabContextBrowserAgent::WriteContextToContentCache(
   const base::Time visit_timestamp = web_state->GetLastActiveTime();
   const base::Time extraction_timestamp = base::Time::Now();
 
-  if (IsPageContextIPCOptimizationEnabled()) {
-    std::unique_ptr<optimization_guide::proto::PageContext> page_context =
-        std::move(response.value());
-    size_t size_in_bytes = page_context->ByteSizeLong();
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  size_t size_in_bytes = page_context->ByteSizeLong();
 
-    page_content_cache_service_->CachePageContent(tab_id, url, visit_timestamp,
-                                                  extraction_timestamp,
-                                                  std::move(*page_context));
+  page_content_cache_service_->CachePageContent(tab_id, url, visit_timestamp,
+                                                extraction_timestamp,
+                                                std::move(*page_context));
 
-    base::UmaHistogramCounts10M(kPersistTabContextSizeHistogram, size_in_bytes);
-  } else {
-    const optimization_guide::proto::PageContext& page_context =
-        *response.value();
-
-    page_content_cache_service_->CachePageContent(
-        tab_id, url, visit_timestamp, extraction_timestamp, page_context);
-
-    base::UmaHistogramCounts10M(kPersistTabContextSizeHistogram,
-                                page_context.ByteSizeLong());
-  }
+  base::UmaHistogramCounts10M(kPersistTabContextSizeHistogram, size_in_bytes);
 }
 
 void PersistTabContextBrowserAgent::ReadAndParseContextFromContentCache(

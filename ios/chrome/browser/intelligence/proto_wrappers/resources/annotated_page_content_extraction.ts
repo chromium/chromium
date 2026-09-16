@@ -618,13 +618,6 @@ const MAX_TABLE_ANCESTOR_LOOKUP_DEPTH = 100;
 const MAX_CAPTION_CHILD_SEARCH_COUNT = 50;
 
 /**
- * Returns true if page context IPC optimization is enabled.
- */
-function isPageContextIPCOptimizationEnabled() {
-  return (window as any).gCrWebPlaceholderPageContextIPCOptimization ?? false;
-}
-
-/**
  * Returns true if page context actionable optimization is enabled.
  */
 function isPageContextActionableOptimizationEnabled() {
@@ -784,41 +777,19 @@ const HEADING_6_FONT_SIZE_MULTIPLIER = 0.67;
  * Heading 6: 0.67em
  *
  * @param fontSize The font size string (e.g., "16px").
- * @param doc The document to use for root font size reference.
  * @param styleCache The style cache to use for computed styles.
  * @return The corresponding PageContentTextSize category.
  */
 function getTextSizeCategory(
-    fontSize: string, doc: Document,
-    styleCache?: StyleCache): PageContentTextSize {
+    fontSize: string, styleCache?: StyleCache): PageContentTextSize {
   const size = parseFloat(fontSize);
   if (isNaN(size)) {
     return PageContentTextSize.M;
   }
 
-  // If the cache exists, the font size should have already been computed
-  // pre-walk. Fallback to PageContentTextSize.M if it was not determined.
-  if (styleCache && styleCache.docFontSize === undefined) {
+  const docFontSize = styleCache?.docFontSize;
+  if (!docFontSize) {
     return PageContentTextSize.M;
-  }
-
-  let docFontSize = styleCache?.docFontSize;
-
-  // TODO(crbug.com/480945289): Remove this fallback when optimizations are
-  // enabled by default. It is evaluated at the beginning of the extraction.
-  // Fallback for cacheless path.
-  if (docFontSize === undefined) {
-    // Avoid caching the style as this would cause cache thrashing, erasing the
-    // latest walked element style.
-    const rootStyle =
-        getComputedStyleForElement(doc.documentElement, undefined);
-    if (!rootStyle) {
-      return PageContentTextSize.M;
-    }
-    docFontSize = parseFloat(rootStyle.fontSize);
-    if (isNaN(docFontSize) || docFontSize <= 0) {
-      return PageContentTextSize.M;
-    }
   }
 
   const multiplier = size / docFontSize;
@@ -1485,62 +1456,33 @@ function getScrollerInfo(
   const scrollWidth = safeScrollWidth(element);
   const scrollHeight = safeScrollHeight(element);
 
-  // TODO(crbug.com/480945289): Remove this when page context IPC optimization
-  // is enabled.
-  if (isPageContextIPCOptimizationEnabled()) {
-    // Make sure to call element.clientWidth before element.scrollWidth.
-    // This will guide the layout engine to perform the shallow layout first
-    // and then the deep layout calculation.
-    const visibleArea = {
-      x: scrollLeft,
-      y: scrollTop,
-      width: clientWidth,
-      height: clientHeight,
-      top: scrollTop,
-      right: scrollLeft + clientWidth,
-      bottom: scrollTop + clientHeight,
-      left: scrollLeft,
-    };
+  // Make sure to call element.clientWidth before element.scrollWidth.
+  // This will guide the layout engine to perform the shallow layout first
+  // and then the deep layout calculation.
+  const visibleArea = {
+    x: scrollLeft,
+    y: scrollTop,
+    width: clientWidth,
+    height: clientHeight,
+    top: scrollTop,
+    right: scrollLeft + clientWidth,
+    bottom: scrollTop + clientHeight,
+    left: scrollLeft,
+  };
 
-    // Populate bounds.
-    // Scrolling bounds = whole content size.
-    const scrollingBounds = {
-      width: scrollWidth,
-      height: scrollHeight,
-    };
+  // Populate bounds.
+  // Scrolling bounds = whole content size.
+  const scrollingBounds = {
+    width: scrollWidth,
+    height: scrollHeight,
+  };
 
-    return {
-      scrollingBounds,
-      visibleArea,
-      userScrollableHorizontal: isScrollableX && (scrollWidth > clientWidth),
-      userScrollableVertical: isScrollableY && (scrollHeight > clientHeight),
-    };
-  } else {
-    // Populate bounds.
-    // Scrolling bounds = whole content size.
-    const scrollingBounds = {
-      width: scrollWidth,
-      height: scrollHeight,
-    };
-
-    const visibleArea = {
-      x: scrollLeft,
-      y: scrollTop,
-      width: clientWidth,
-      height: clientHeight,
-      top: scrollTop,
-      right: scrollLeft + clientWidth,
-      bottom: scrollTop + clientHeight,
-      left: scrollLeft,
-    };
-
-    return {
-      scrollingBounds,
-      visibleArea,
-      userScrollableHorizontal: isScrollableX && (scrollWidth > clientWidth),
-      userScrollableVertical: isScrollableY && (scrollHeight > clientHeight),
-    };
-  }
+  return {
+    scrollingBounds,
+    visibleArea,
+    userScrollableHorizontal: isScrollableX && (scrollWidth > clientWidth),
+    userScrollableVertical: isScrollableY && (scrollHeight > clientHeight),
+  };
 }
 
 /**
@@ -2216,9 +2158,7 @@ function getAttributesForTextNode(
   const weight = style.fontWeight;
   const hasEmphasis = weight === 'bold' || weight === '700' ||
       parseInt(weight) >= 700 || style.fontStyle === 'italic';
-  const doc = safeOwnerDocument(domNode);
-  const textSize = doc ? getTextSizeCategory(style.fontSize, doc, styleCache) :
-                         PageContentTextSize.M;
+  const textSize = getTextSizeCategory(style.fontSize, styleCache);
   const color = parseCssColor(style.color)?.toString();
 
   return {
@@ -4367,24 +4307,22 @@ export function extractAnnotatedPageContent(
     return null;
   }
 
-  const styleCache = !isPageContextIPCOptimizationEnabled() ? undefined : {
+  const styleCache: StyleCache = {
     lastStyledNode: null,
     lastComputedStyle: undefined,
     window: documentWindow,
-  } as StyleCache;
+  };
 
-  // Pre-calculate root font size if optimization is enabled.
-  if (styleCache) {
-    let fontSize: number|undefined = undefined;
-    const rootStyle = documentWindow.getComputedStyle(document.documentElement);
-    if (rootStyle) {
-      const parsedSize = parseFloat(rootStyle.fontSize);
-      if (!isNaN(parsedSize) && parsedSize > 0) {
-        fontSize = parsedSize;
-      }
+  // Pre-calculate root font size.
+  let fontSize: number|undefined = undefined;
+  const rootStyle = documentWindow.getComputedStyle(document.documentElement);
+  if (rootStyle) {
+    const parsedSize = parseFloat(rootStyle.fontSize);
+    if (!isNaN(parsedSize) && parsedSize > 0) {
+      fontSize = parsedSize;
     }
-    styleCache.docFontSize = fontSize;
   }
+  styleCache.docFontSize = fontSize;
 
   const root = document.body;
   if (!root) {
@@ -4397,12 +4335,9 @@ export function extractAnnotatedPageContent(
   }
   safeSetAttribute(root, NONCE_ATTR, nonce);
 
-  // TODO(crbug.com/480945289): Assume there is a canvas when feature is
-  // disabled. We only need to extract the scroller info for nodes when there is
-  // a canvas on the page. It is required to compute the canvas heavy heuristic.
-  const hasCanvas = isPageContextIPCOptimizationEnabled() ?
-      document.querySelector('canvas') !== null :
-      true;
+  // We only need to extract the scroller info for nodes when there is a canvas
+  // on the page. It is required to compute the canvas heavy heuristic.
+  const hasCanvas = document.querySelector('canvas') !== null;
 
   // Perform pre-walk extraction of paid content globals and specific nodes.
   const paidContentContext = extractContainsPaidContent(
@@ -4499,13 +4434,8 @@ function walkTreeAndPopulate(
   // Instead, `shouldAcceptNode` will be called at the beginning of the loop
   // and will skip traversal of subtrees that should not be processed like
   // the tree walker does natively.
-  const walker = isPageContextIPCOptimizationEnabled() ?
-      document.createTreeWalker(
-          root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, undefined) :
-      document.createTreeWalker(
-          root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, (node) => {
-            return shouldAcceptNode(node, styleCache);
-          });
+  const walker = document.createTreeWalker(
+      root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, undefined);
 
   // Helper to find the next sibling after the current node's subtree.
   const jumpSubtree = (w: TreeWalker): Node|null => {
@@ -4531,16 +4461,14 @@ function walkTreeAndPopulate(
 
   let currentNode = walker.nextNode();
   while (currentNode) {
-    if (isPageContextIPCOptimizationEnabled()) {
-      const filterResult = shouldAcceptNode(currentNode, styleCache);
-      if (filterResult === NodeFilter.FILTER_REJECT) {
-        currentNode = jumpSubtree(walker);
-        continue;
-      }
-      if (filterResult === NodeFilter.FILTER_SKIP) {
-        currentNode = walker.nextNode();
-        continue;
-      }
+    const filterResult = shouldAcceptNode(currentNode, styleCache);
+    if (filterResult === NodeFilter.FILTER_REJECT) {
+      currentNode = jumpSubtree(walker);
+      continue;
+    }
+    if (filterResult === NodeFilter.FILTER_SKIP) {
+      currentNode = walker.nextNode();
+      continue;
     }
 
     // 1. Maintain Stack Invariant & Post-Pruning.

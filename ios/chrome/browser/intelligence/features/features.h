@@ -321,12 +321,6 @@ BASE_DECLARE_FEATURE(kGeminiBinaryMigration);
 // Returns true if the GeminiBinaryMigration feature is enabled.
 bool IsGeminiBinaryMigrationEnabled();
 
-// Enables the PageContextIPCOptimization feature.
-BASE_DECLARE_FEATURE(kPageContextIPCOptimization);
-
-// Returns true if the PageContextIPCOptimization feature is enabled.
-bool IsPageContextIPCOptimizationEnabled();
-
 // Enables the PageContextActionableOptimization feature.
 BASE_DECLARE_FEATURE(kPageContextActionableOptimization);
 
