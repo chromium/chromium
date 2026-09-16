@@ -767,11 +767,9 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
   parent_key.push_back(base::FilePath::kSeparators[0]);
   const std::wstring::size_type base_length = parent_key.size();
   std::wstring child_key;
-  for (const wchar_t* const* proto =
-           &ShellUtil::kPotentialProtocolAssociations[0];
-       *proto != nullptr; UNSAFE_TODO(++proto)) {
+  for (std::wstring_view proto : ShellUtil::kPotentialProtocolAssociations) {
     parent_key.resize(base_length);
-    parent_key.append(*proto);
+    parent_key.append(proto);
     child_key.assign(parent_key).append(ShellUtil::kRegShellOpen);
     DeleteRegistryKeyIf(root, parent_key, child_key, WorkItem::kWow64Default,
                         nullptr, open_command_pred);

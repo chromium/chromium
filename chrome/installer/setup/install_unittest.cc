@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -98,22 +99,23 @@ class InstallShortcutTest : public testing::Test {
   installer::InitialPreferences* GetFakeInitialPrefs(
       bool do_not_create_desktop_shortcut,
       bool do_not_create_quick_launch_shortcut) {
-    const struct {
+    struct DesiredPref {
       const char* pref_name;
       bool is_desired;
-    } desired_prefs[] = {
+    };
+    const auto desired_prefs = std::to_array<DesiredPref>({
         {installer::initial_preferences::kDoNotCreateDesktopShortcut,
          do_not_create_desktop_shortcut},
         {installer::initial_preferences::kDoNotCreateQuickLaunchShortcut,
          do_not_create_quick_launch_shortcut},
-    };
+    });
 
     std::string initial_prefs("{\"distribution\":{");
-    for (size_t i = 0; i < std::size(desired_prefs); ++i) {
+    for (size_t i = 0; i < desired_prefs.size(); ++i) {
       initial_prefs += (i == 0 ? "\"" : ",\"");
-      initial_prefs += UNSAFE_TODO(desired_prefs[i]).pref_name;
+      initial_prefs += desired_prefs[i].pref_name;
       initial_prefs += "\":";
-      initial_prefs += base::ToString(UNSAFE_TODO(desired_prefs[i]).is_desired);
+      initial_prefs += base::ToString(desired_prefs[i].is_desired);
     }
     initial_prefs += "}}";
 

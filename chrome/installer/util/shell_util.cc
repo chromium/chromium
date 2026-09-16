@@ -400,13 +400,10 @@ void GetShellIntegrationEntries(
   entries->push_back(std::make_unique<RegistryEntry>(
       capabilities + L"\\FileAssociations", L".pdf", GetPDFProgId(suffix)));
 
-  for (int i = 0;
-       UNSAFE_TODO(ShellUtil::kPotentialProtocolAssociations[i]) != nullptr;
-       i++) {
-    entries->push_back(std::make_unique<RegistryEntry>(
-        capabilities + L"\\URLAssociations",
-        UNSAFE_TODO(ShellUtil::kPotentialProtocolAssociations[i]),
-        html_prog_id));
+  for (std::wstring_view proto : ShellUtil::kPotentialProtocolAssociations) {
+    entries->push_back(
+        std::make_unique<RegistryEntry>(capabilities + L"\\URLAssociations",
+                                        std::wstring(proto), html_prog_id));
   }
 
   // Add the direct launch URL scheme if one is defined for this mode.
@@ -540,23 +537,18 @@ void GetXPStyleDefaultBrowserUserEntries(
     std::vector<std::unique_ptr<RegistryEntry>>* entries) {
   // File extension associations.
   std::wstring html_prog_id(GetBrowserProgId(suffix));
-  for (int i = 0;
-       UNSAFE_TODO(ShellUtil::kDefaultFileAssociations[i]) != nullptr; i++) {
-    GetAppDefaultRegistrationEntries(
-        html_prog_id, UNSAFE_TODO(ShellUtil::kDefaultFileAssociations[i]), true,
-        entries);
+  for (std::wstring_view ext : ShellUtil::kDefaultFileAssociations) {
+    GetAppDefaultRegistrationEntries(html_prog_id, std::wstring(ext), true,
+                                     entries);
   }
 
   // Protocols associations.
   std::wstring chrome_open = ShellUtil::GetChromeShellOpenCmd(chrome_exe);
   std::wstring chrome_icon = ShellUtil::FormatIconLocation(
       chrome_exe, install_static::GetAppIconResourceIndex());
-  for (int i = 0;
-       UNSAFE_TODO(ShellUtil::kBrowserProtocolAssociations[i]) != nullptr;
-       i++) {
-    GetXPStyleUserProtocolEntries(
-        UNSAFE_TODO(ShellUtil::kBrowserProtocolAssociations[i]), chrome_icon,
-        chrome_open, entries);
+  for (std::wstring_view proto : ShellUtil::kBrowserProtocolAssociations) {
+    GetXPStyleUserProtocolEntries(std::wstring(proto), chrome_icon, chrome_open,
+                                  entries);
   }
 
   // start->Internet shortcut.
@@ -1510,13 +1502,6 @@ const wchar_t* ShellUtil::kAppPathsRegistryKey =
     L"Software\\Microsoft\\Windows\\CurrentVersion\\App Paths";
 const wchar_t* ShellUtil::kAppPathsRegistryPathName = L"Path";
 
-const wchar_t* ShellUtil::kDefaultFileAssociations[] = {
-    L".htm", L".html", L".shtml", L".xht", L".xhtml", nullptr};
-const wchar_t* ShellUtil::kBrowserProtocolAssociations[] = {L"http", L"https",
-                                                            nullptr};
-const wchar_t* ShellUtil::kPotentialProtocolAssociations[] = {
-    L"http", L"https", L"irc",   L"mailto", L"mms", L"news",   L"nntp",
-    L"sms",  L"smsto", L"snews", L"tel",    L"urn", L"webcal", nullptr};
 const wchar_t* ShellUtil::kRegUrlProtocol = L"URL Protocol";
 const wchar_t* ShellUtil::kRegApplication = L"\\Application";
 const wchar_t* ShellUtil::kRegAppUserModelId = L"AppUserModelId";

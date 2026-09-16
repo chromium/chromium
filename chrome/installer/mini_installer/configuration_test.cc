@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -87,15 +88,14 @@ TEST_F(MiniInstallerConfigurationTest, ArgumentCount) {
 }
 
 TEST_F(MiniInstallerConfigurationTest, CommandLine) {
-  static const wchar_t* const kCommandLines[] = {
+  static constexpr auto kCommandLines = std::to_array<const wchar_t*>({
       L"",
       L"spam.exe",
       L"spam.exe --foo",
-  };
-  for (size_t i = 0; i < _countof(kCommandLines); ++i) {
-    EXPECT_TRUE(
-        std::wstring(UNSAFE_TODO(kCommandLines[i])) ==
-        TestConfiguration(UNSAFE_TODO(kCommandLines[i])).command_line());
+  });
+  for (const wchar_t* command_line : kCommandLines) {
+    EXPECT_TRUE(std::wstring(command_line) ==
+                TestConfiguration(command_line).command_line());
   }
 }
 
