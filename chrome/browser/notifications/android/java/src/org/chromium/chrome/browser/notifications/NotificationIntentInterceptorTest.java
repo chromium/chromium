@@ -272,4 +272,237 @@ public class NotificationIntentInterceptorTest {
                 interceptIntent0,
                 interceptIntent1);
     }
+
+    /**
+     * Verifies that notifications with different tags that have identical String hash codes produce
+     * distinct intercept PendingIntents and do not overwrite each other.
+     */
+    @Test
+    public void testTagsWithSameHashCodeProduceDistinctPendingIntents() throws Exception {
+        String tag1 = "p#http://localhost:8080/#1login-alert";
+        String tag2 = "p#http://localhost:8081/#1(~tzmkq";
+        Assert.assertEquals(tag1.hashCode(), tag2.hashCode());
+
+        NotificationMetadata metadata1 =
+                new NotificationMetadata(
+                        NotificationUmaTracker.SystemNotificationType.SITES,
+                        tag1,
+                        /* notificationId= */ -1);
+        NotificationMetadata metadata2 =
+                new NotificationMetadata(
+                        NotificationUmaTracker.SystemNotificationType.SITES,
+                        tag2,
+                        /* notificationId= */ -1);
+
+        Intent intent1 = new Intent("action_1");
+        PendingIntentProvider provider1 =
+                PendingIntentProvider.getActivity(
+                        RuntimeEnvironment.getApplication(),
+                        /* requestCode= */ 0,
+                        intent1,
+                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        /* mutable= */ false);
+
+        Intent intent2 = new Intent("action_2");
+        PendingIntentProvider provider2 =
+                PendingIntentProvider.getActivity(
+                        RuntimeEnvironment.getApplication(),
+                        /* requestCode= */ 0,
+                        intent2,
+                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        /* mutable= */ false);
+
+        PendingIntent interceptIntent1 =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
+                        NotificationUmaTracker.ActionType.UNKNOWN,
+                        metadata1,
+                        provider1);
+
+        PendingIntent interceptIntent2 =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
+                        NotificationUmaTracker.ActionType.UNKNOWN,
+                        metadata2,
+                        provider2);
+
+        Assert.assertNotEquals(
+                "PendingIntents for different notification tags must not be equal",
+                interceptIntent1,
+                interceptIntent2);
+
+        ShadowPendingIntent shadowIntent1 = Shadows.shadowOf(interceptIntent1);
+        ShadowPendingIntent shadowIntent2 = Shadows.shadowOf(interceptIntent2);
+        Intent savedIntent1 = shadowIntent1.getSavedIntent();
+        Intent savedIntent2 = shadowIntent2.getSavedIntent();
+        Assert.assertNotNull(savedIntent1);
+        Assert.assertNotNull(savedIntent2);
+
+        PendingIntent innerIntent1 =
+                NotificationIntentInterceptor.getPendingIntentForTesting(savedIntent1);
+        PendingIntent innerIntent2 =
+                NotificationIntentInterceptor.getPendingIntentForTesting(savedIntent2);
+        Assert.assertEquals(provider1.getPendingIntent(), innerIntent1);
+        Assert.assertEquals(provider2.getPendingIntent(), innerIntent2);
+        Assert.assertNotEquals(innerIntent1, innerIntent2);
+
+        // Verify broadcast delivery isolation for colliding tags as well.
+        Intent broadcastIntent1 = new Intent(TestReceiver.TEST_ACTION);
+        broadcastIntent1.setIdentifier("broadcast_inner_1");
+        broadcastIntent1.putExtra("source", "provider1");
+        PendingIntentProvider broadcastProvider1 =
+                PendingIntentProvider.getBroadcast(
+                        RuntimeEnvironment.getApplication(),
+                        /* requestCode= */ 0,
+                        broadcastIntent1,
+                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        /* mutable= */ false);
+
+        Intent broadcastIntent2 = new Intent(TestReceiver.TEST_ACTION);
+        broadcastIntent2.setIdentifier("broadcast_inner_2");
+        broadcastIntent2.putExtra("source", "provider2");
+        PendingIntentProvider broadcastProvider2 =
+                PendingIntentProvider.getBroadcast(
+                        RuntimeEnvironment.getApplication(),
+                        /* requestCode= */ 0,
+                        broadcastIntent2,
+                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        /* mutable= */ false);
+
+        PendingIntent broadcastIntercept1 =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.DELETE_INTENT,
+                        NotificationUmaTracker.ActionType.UNKNOWN,
+                        metadata1,
+                        broadcastProvider1);
+
+        PendingIntent broadcastIntercept2 =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.DELETE_INTENT,
+                        NotificationUmaTracker.ActionType.UNKNOWN,
+                        metadata2,
+                        broadcastProvider2);
+
+        Assert.assertNotEquals(broadcastIntercept1, broadcastIntercept2);
+
+        sendPendingIntent(broadcastIntercept1);
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertNotNull(mReceiver.intentReceived());
+        Assert.assertEquals("provider1", mReceiver.intentReceived().getStringExtra("source"));
+
+        sendPendingIntent(broadcastIntercept2);
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertNotNull(mReceiver.intentReceived());
+        Assert.assertEquals("provider2", mReceiver.intentReceived().getStringExtra("source"));
+    }
+
+    /**
+     * Verifies that null tags, empty tags, and literal "null" string tags produce distinct
+     * intercept PendingIntents.
+     */
+    @Test
+    public void testNullEmptyAndLiteralNullTagsProduceDistinctPendingIntents() {
+        NotificationMetadata metadataNull =
+                new NotificationMetadata(
+                        NotificationUmaTracker.SystemNotificationType.SITES,
+                        null,
+                        /* notificationId= */ 0);
+        NotificationMetadata metadataEmpty =
+                new NotificationMetadata(
+                        NotificationUmaTracker.SystemNotificationType.SITES,
+                        "",
+                        /* notificationId= */ 0);
+        NotificationMetadata metadataLiteralNull =
+                new NotificationMetadata(
+                        NotificationUmaTracker.SystemNotificationType.SITES,
+                        "null",
+                        /* notificationId= */ 0);
+
+        Intent sampleIntent = new Intent("sample_action");
+        PendingIntentProvider provider =
+                PendingIntentProvider.getActivity(
+                        RuntimeEnvironment.getApplication(),
+                        /* requestCode= */ 0,
+                        sampleIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        /* mutable= */ false);
+
+        PendingIntent intentNull =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
+                        NotificationUmaTracker.ActionType.UNKNOWN,
+                        metadataNull,
+                        provider);
+        PendingIntent intentEmpty =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
+                        NotificationUmaTracker.ActionType.UNKNOWN,
+                        metadataEmpty,
+                        provider);
+        PendingIntent intentLiteralNull =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
+                        NotificationUmaTracker.ActionType.UNKNOWN,
+                        metadataLiteralNull,
+                        provider);
+
+        Assert.assertNotEquals(intentNull, intentEmpty);
+        Assert.assertNotEquals(intentNull, intentLiteralNull);
+        Assert.assertNotEquals(intentEmpty, intentLiteralNull);
+    }
+
+    /**
+     * Verifies that updating a notification with the same metadata and intent type correctly
+     * updates the PendingIntent when FLAG_UPDATE_CURRENT is used.
+     */
+    @Test
+    public void testSameMetadataUpdatesPendingIntent() {
+        NotificationMetadata metadata =
+                new NotificationMetadata(
+                        NotificationUmaTracker.SystemNotificationType.SITES,
+                        "sample_notification_tag",
+                        /* notificationId= */ 100);
+
+        Intent intentInitial = new Intent("initial_action");
+        PendingIntentProvider providerInitial =
+                PendingIntentProvider.getBroadcast(
+                        RuntimeEnvironment.getApplication(),
+                        /* requestCode= */ 0,
+                        intentInitial,
+                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        /* mutable= */ false);
+
+        PendingIntent interceptIntentInitial =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
+                        NotificationUmaTracker.ActionType.UNKNOWN,
+                        metadata,
+                        providerInitial);
+
+        Intent intentUpdated = new Intent("updated_action");
+        PendingIntentProvider providerUpdated =
+                PendingIntentProvider.getBroadcast(
+                        RuntimeEnvironment.getApplication(),
+                        /* requestCode= */ 0,
+                        intentUpdated,
+                        PendingIntent.FLAG_UPDATE_CURRENT,
+                        /* mutable= */ false);
+
+        PendingIntent interceptIntentUpdated =
+                NotificationIntentInterceptor.createInterceptPendingIntent(
+                        NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
+                        NotificationUmaTracker.ActionType.UNKNOWN,
+                        metadata,
+                        providerUpdated);
+
+        Assert.assertEquals(
+                "PendingIntents for the same notification metadata must be equal to allow updates",
+                interceptIntentInitial,
+                interceptIntentUpdated);
+
+        ShadowPendingIntent shadow = Shadows.shadowOf(interceptIntentInitial);
+        PendingIntent forwardedPendingIntent =
+                NotificationIntentInterceptor.getPendingIntentForTesting(shadow.getSavedIntent());
+        Assert.assertEquals(providerUpdated.getPendingIntent(), forwardedPendingIntent);
+    }
 }

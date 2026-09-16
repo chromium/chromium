@@ -329,10 +329,12 @@ public class NotificationIntentInterceptor {
         // broadcast delivery.
         if (shouldUseBroadcast) intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
 
-        // Use request code to distinguish different PendingIntents on Android.
+        // Use request code and identifier to distinguish different PendingIntents on Android.
         int originalRequestCode =
                 pendingIntentProvider != null ? pendingIntentProvider.getRequestCode() : 0;
         int requestCode = computeHashCode(metadata, intentType, actionType, originalRequestCode);
+        intent.setIdentifier(
+                computeIntentIdentifier(metadata, intentType, actionType, originalRequestCode));
 
         return shouldUseBroadcast
                 ? PendingIntent.getBroadcast(applicationContext, requestCode, intent, flags)
@@ -397,6 +399,35 @@ public class NotificationIntentInterceptor {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * Computes a unique identifier for the intercept {@link Intent} so that {@link
+     * Intent#filterEquals} distinguishes intents with different metadata.
+     *
+     * @param metadata Notification metadata including notification id, tag, etc.
+     * @param intentType The type of the {@link PendingIntent}.
+     * @param actionType Distinguishes actions for `ACTION_INTENT` {@link IntentType}.
+     * @param requestCode The request code of the wrapped {@link PendingIntent}.
+     * @return The unique identifier string for the intercept {@link Intent}.
+     */
+    private static String computeIntentIdentifier(
+            NotificationMetadata metadata,
+            @IntentType int intentType,
+            @NotificationUmaTracker.ActionType int actionType,
+            int requestCode) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(metadata.type).append(':');
+        sb.append(intentType).append(':');
+        sb.append(actionType).append(':');
+        sb.append(metadata.id).append(':');
+        sb.append(requestCode).append(':');
+        if (metadata.tag == null) {
+            sb.append("null");
+        } else {
+            sb.append(metadata.tag.length()).append(':').append(metadata.tag);
+        }
+        return sb.toString();
     }
 
     /**
