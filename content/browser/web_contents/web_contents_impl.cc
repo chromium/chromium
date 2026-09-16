@@ -12480,7 +12480,9 @@ void WebContentsImpl::BindScreenOrientation(
   screen_orientation_provider_->BindScreenOrientation(rfh, std::move(receiver));
 }
 
-bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
+bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen(
+    RenderFrameHostImpl* requesting_frame,
+    bool is_xr_overlay) {
   // Allow fullscreen if the screen orientation changed in the last 1 second.
   static constexpr base::TimeDelta kMaxInterval = base::Seconds(1);
   const base::TimeDelta delta =
@@ -12490,9 +12492,12 @@ bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
   }
 
   // Require transient activation shortly after a same-origin WebContents exit.
-  RenderFrameHostImpl* host = GetPrimaryMainFrame();
+  RenderFrameHostImpl* primary_main_frame = GetPrimaryMainFrame();
+  RenderFrameHostImpl* host =
+      requesting_frame ? requesting_frame : primary_main_frame;
   auto* last_exits = GetFullscreenUserData(GetBrowserContext())->last_exits();
-  auto last_exit = last_exits->find(host->GetLastCommittedOrigin());
+  auto last_exit =
+      last_exits->find(primary_main_frame->GetLastCommittedOrigin());
   constexpr base::TimeDelta kCooldown = base::Seconds(5);
   if (last_exit != last_exits->end() &&
       base::TimeTicks::Now() < last_exit->second + kCooldown) {
@@ -12501,6 +12506,11 @@ bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
 
   // Waive transient activation requirements if Automatic Fullscreen is granted.
   if (IsAutomaticFullscreenGranted(host)) {
+    return false;
+  }
+
+  // Waive transient activation requirements for verified WebXR DOM overlay.
+  if (is_xr_overlay && host->HasSeenRecentXrOverlaySetup()) {
     return false;
   }
 

@@ -4405,6 +4405,139 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RejectFullscreenIfBlocked) {
   ASSERT_EQ(title, u"onfullscreenerror");
 }
 
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       XrOverlayWaiverRespectsFullscreenCooldown) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  TestWCDelegateForDialogsAndFullscreen test_delegate(web_contents);
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImpl* main_frame = web_contents->GetPrimaryMainFrame();
+
+  // Precondition: the frame has no transient user activation.
+  EXPECT_FALSE(main_frame->HasTransientUserActivation());
+
+  // Simulate exiting fullscreen, which records the exit timestamp and starts
+  // the post-exit cooldown.
+  web_contents->ExitFullscreenMode(/*will_cause_resize=*/false);
+
+  // The cooldown is now active: transient activation is required.
+  EXPECT_TRUE(web_contents->IsTransientActivationRequiredForHtmlFullscreen(
+      main_frame, /*is_xr_overlay=*/false));
+
+  // Baseline: with cooldown active and no XR overlay setup, entering fullscreen
+  // without user activation is rejected.
+  {
+    base::test::TestFuture<bool> future;
+    auto options = blink::mojom::FullscreenOptions::New();
+    main_frame->EnterFullscreen(std::move(options), future.GetCallback());
+    EXPECT_FALSE(future.Get());
+    EXPECT_FALSE(test_delegate.IsFullscreenForTabOrPending(web_contents));
+  }
+
+  EXPECT_FALSE(main_frame->HasTransientUserActivation());
+
+  // Setup XR overlay timestamp.
+  main_frame->SetIsXrOverlaySetup();
+
+  // Fullscreen requests during cooldown without transient user activation must
+  // still be rejected, even if XR overlay setup occurred.
+  {
+    base::test::TestFuture<bool> future;
+    auto options = blink::mojom::FullscreenOptions::New();
+    options->is_xr_overlay = true;
+    main_frame->EnterFullscreen(std::move(options), future.GetCallback());
+    EXPECT_FALSE(future.Get());
+    EXPECT_FALSE(test_delegate.IsFullscreenForTabOrPending(web_contents));
+  }
+
+  {
+    base::test::TestFuture<bool> future;
+    auto options = blink::mojom::FullscreenOptions::New();
+    options->is_xr_overlay = false;
+    main_frame->EnterFullscreen(std::move(options), future.GetCallback());
+    EXPECT_FALSE(future.Get());
+    EXPECT_FALSE(test_delegate.IsFullscreenForTabOrPending(web_contents));
+  }
+
+  // When legitimate transient user activation is provided during cooldown,
+  // entering fullscreen succeeds.
+  main_frame->UpdateUserActivationState(
+      blink::mojom::UserActivationUpdateType::kNotifyActivation,
+      blink::mojom::UserActivationNotificationType::kInteraction);
+  EXPECT_TRUE(main_frame->HasTransientUserActivation());
+
+  {
+    base::test::TestFuture<bool> future;
+    auto options = blink::mojom::FullscreenOptions::New();
+    main_frame->EnterFullscreen(std::move(options), future.GetCallback());
+    EXPECT_TRUE(future.Get());
+    EXPECT_TRUE(test_delegate.IsFullscreenForTabOrPending(web_contents));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       XrOverlayWaiverRequiresVerifiedXrSetup) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  TestWCDelegateForDialogsAndFullscreen test_delegate(web_contents);
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImpl* main_frame = web_contents->GetPrimaryMainFrame();
+
+  // Precondition: cooldown is inactive and frame has no user activation.
+  EXPECT_FALSE(main_frame->HasTransientUserActivation());
+  EXPECT_TRUE(web_contents->IsTransientActivationRequiredForHtmlFullscreen(
+      main_frame, /*is_xr_overlay=*/false));
+
+  // Requesting is_xr_overlay without actual XR overlay setup is rejected.
+  {
+    base::test::TestFuture<bool> future;
+    auto options = blink::mojom::FullscreenOptions::New();
+    options->is_xr_overlay = true;
+    main_frame->EnterFullscreen(std::move(options), future.GetCallback());
+    EXPECT_FALSE(future.Get());
+    EXPECT_FALSE(test_delegate.IsFullscreenForTabOrPending(web_contents));
+  }
+
+  // Setup XR overlay timestamp.
+  main_frame->SetIsXrOverlaySetup();
+
+  // With verified XR setup and is_xr_overlay=true, transient activation is
+  // waived.
+  EXPECT_FALSE(web_contents->IsTransientActivationRequiredForHtmlFullscreen(
+      main_frame, /*is_xr_overlay=*/true));
+
+  // But a standard fullscreen request (is_xr_overlay=false) still requires
+  // activation.
+  EXPECT_TRUE(web_contents->IsTransientActivationRequiredForHtmlFullscreen(
+      main_frame, /*is_xr_overlay=*/false));
+
+  // Requesting standard fullscreen without activation fails despite XR setup.
+  {
+    base::test::TestFuture<bool> future;
+    auto options = blink::mojom::FullscreenOptions::New();
+    options->is_xr_overlay = false;
+    main_frame->EnterFullscreen(std::move(options), future.GetCallback());
+    EXPECT_FALSE(future.Get());
+    EXPECT_FALSE(test_delegate.IsFullscreenForTabOrPending(web_contents));
+  }
+
+  // Requesting with is_xr_overlay=true succeeds without transient activation.
+  {
+    base::test::TestFuture<bool> future;
+    auto options = blink::mojom::FullscreenOptions::New();
+    options->is_xr_overlay = true;
+    main_frame->EnterFullscreen(std::move(options), future.GetCallback());
+    EXPECT_TRUE(future.Get());
+    EXPECT_TRUE(test_delegate.IsFullscreenForTabOrPending(web_contents));
+  }
+}
+
 // Regression test for https://crbug.com/855018.
 // RenderFrameHostImpls exit fullscreen as soon as they are unloaded.
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, FullscreenAfterFrameUnload) {

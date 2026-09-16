@@ -653,7 +653,11 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
           receiver) {}
 
   // Return whether HTML Fullscreen requires transient activation.
-  virtual bool IsTransientActivationRequiredForHtmlFullscreen();
+  // `requesting_frame` is the frame requesting fullscreen, and `is_xr_overlay`
+  // indicates whether the request is for a WebXR DOM Overlay.
+  virtual bool IsTransientActivationRequiredForHtmlFullscreen(
+      RenderFrameHostImpl* requesting_frame,
+      bool is_xr_overlay);
 
   // Return true if the back forward cache is supported. This is not an
   // indication that the cache will be used.

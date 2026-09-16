@@ -930,7 +930,9 @@ class CONTENT_EXPORT WebContentsImpl
       RenderFrameHost* rfh,
       mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
           receiver) override;
-  bool IsTransientActivationRequiredForHtmlFullscreen() override;
+  bool IsTransientActivationRequiredForHtmlFullscreen(
+      RenderFrameHostImpl* requesting_frame,
+      bool is_xr_overlay) override;
   bool IsBackForwardCacheSupported() override;
   RenderWidgetHostImpl* CreateNewPopupWidget(
       base::SafeRef<SiteInstanceGroup> site_instance_group,

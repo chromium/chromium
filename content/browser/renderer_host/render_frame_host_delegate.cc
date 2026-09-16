@@ -171,7 +171,9 @@ RenderFrameHostDelegate::GetClipboardTypesIfPolicyApplied(
   return std::nullopt;
 }
 
-bool RenderFrameHostDelegate::IsTransientActivationRequiredForHtmlFullscreen() {
+bool RenderFrameHostDelegate::IsTransientActivationRequiredForHtmlFullscreen(
+    RenderFrameHostImpl* requesting_frame,
+    bool is_xr_overlay) {
   return true;
 }
 

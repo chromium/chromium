@@ -1854,7 +1854,8 @@ TEST_F(WebContentsImplTest,
   // fullscreen will fail.
   main_test_rfh()->EnterFullscreen(blink::mojom::FullscreenOptions::New(),
                                    base::BindOnce(&ExpectFalse));
-  EXPECT_TRUE(contents()->IsTransientActivationRequiredForHtmlFullscreen());
+  EXPECT_TRUE(contents()->IsTransientActivationRequiredForHtmlFullscreen(
+      main_test_rfh(), /*is_xr_overlay=*/false));
   EXPECT_FALSE(
       main_test_rfh()->frame_tree_node()->HasTransientUserActivation());
   EXPECT_FALSE(contents()->IsFullscreen());

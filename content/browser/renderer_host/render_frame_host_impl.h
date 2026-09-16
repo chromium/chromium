@@ -610,6 +610,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void UpdateToAdFrame() override;
   bool IsAdFrame() const override;
   void SetIsXrOverlaySetup() override;
+  bool HasSeenRecentXrOverlaySetup();
   ukm::SourceId GetPageUkmSourceId() override;
   StoragePartitionImpl* GetStoragePartition() override;
   BrowserContext* GetBrowserContext() override;
@@ -4106,9 +4107,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void JavaScriptDialogClosed(JavaScriptDialogCallback response_callback,
                               bool success,
                               const std::u16string& user_input);
-
-  // See |SetIsXrOverlaySetup()|
-  bool HasSeenRecentXrOverlaySetup();
 
   bool has_unload_handlers() const {
     return has_unload_handler_ || has_pagehide_handler_ ||

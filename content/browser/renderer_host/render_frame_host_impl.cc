@@ -9464,9 +9464,12 @@ bool RenderFrameHostImpl::HasSeenRecentXrOverlaySetup() {
   // behalf of a child OOPIF will check its own RenderFrameHostImpl, but the XR
   // overlay setup timestamp was recorded on the child OOPIF's RenderFrameHost.
   ForEachRenderFrameHostImpl([&found_recent_setup](RenderFrameHostImpl* rfh) {
+    if (rfh->last_xr_overlay_setup_time_.is_null()) {
+      return;
+    }
     base::TimeDelta delta =
         base::TimeTicks::Now() - rfh->last_xr_overlay_setup_time_;
-    if (delta <= kMaxInterval) {
+    if (delta >= base::TimeDelta() && delta <= kMaxInterval) {
       found_recent_setup = true;
     }
   });
@@ -9514,8 +9517,8 @@ void RenderFrameHostImpl::EnterFullscreen(
 
   // Entering fullscreen generally requires a transient user activation signal,
   // or another feature-specific transient allowance.
-  if (delegate_->IsTransientActivationRequiredForHtmlFullscreen() &&
-      !HasSeenRecentXrOverlaySetup()) {
+  if (delegate_->IsTransientActivationRequiredForHtmlFullscreen(
+          this, options->is_xr_overlay)) {
     // Reject requests made without transient user activation or a token.
     // TODO(lanwei): Investigate whether we can terminate the renderer when
     // transient user activation and the delegated token are both inactive.
