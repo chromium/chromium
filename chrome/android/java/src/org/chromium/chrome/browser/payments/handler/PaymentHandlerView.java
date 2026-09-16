@@ -182,4 +182,9 @@ import org.chromium.content_public.browser.WebContents;
         // flinging down hard enough will close the sheet.
         return true;
     }
+
+    @Override
+    public boolean showHandlebar() {
+        return true;
+    }
 }

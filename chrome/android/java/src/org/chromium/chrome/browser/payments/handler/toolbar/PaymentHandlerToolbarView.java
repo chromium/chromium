@@ -51,6 +51,9 @@ import org.chromium.components.browser_ui.widget.FadingShadowView;
         // These parts from sheet_tab_toolbar are not needed in this component.
         mToolbarView.findViewById(R.id.open_in_new_tab).setVisibility(View.GONE);
         mToolbarView.findViewById(R.id.favicon).setVisibility(View.GONE);
+        // TODO(crbug.com/553514361): Remove this once sheet_tab_toolbar.xml has drag_handlebar
+        // completely removed after all shared consumers (e.g. EphemeralTab) are migrated.
+        mToolbarView.findViewById(R.id.drag_handlebar).setVisibility(View.GONE);
 
         FadingShadowView shadow = mToolbarView.findViewById(R.id.shadow);
         shadow.init(context.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
