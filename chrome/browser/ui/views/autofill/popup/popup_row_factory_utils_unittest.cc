@@ -697,4 +697,77 @@ TEST_F(PopupRowFactoryUtilsTest,
   styled_label->ClickFirstLinkForTesting();
 }
 
+// Tests that Wallet Direct Offer suggestions have a multiline main text label
+// with max 2 lines and extra vertical padding when the text wraps onto multiple
+// lines.
+TEST_F(PopupRowFactoryUtilsTest, WalletDirectOfferMultiLineAndHeight) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+
+  EXPECT_CALL(controller(), GetMainFillingProduct())
+      .WillRepeatedly(testing::Return(FillingProduct::kMerchantPromoCode));
+
+  Suggestion suggestion(
+      u"Very long offer value prop text that spans multiple lines",
+      SuggestionType::kMerchantPromoCodeEntry);
+  suggestion.icon = Suggestion::Icon::kOfferTag;
+  suggestion.labels = {{Suggestion::Text(u"Code: PROMO123")},
+                       {Suggestion::Text(u"Expires in 2 days")}};
+  ShowSuggestion(suggestion);
+
+  views::Label* label = FindLabelWithText(
+      &row_view().GetContentView(),
+      u"Very long offer value prop text that spans multiple lines");
+  ASSERT_THAT(label, NotNull());
+  EXPECT_TRUE(label->GetMultiLine());
+  EXPECT_EQ(label->GetMaxLines(), 2u);
+  EXPECT_EQ(label->GetMaximumWidth(), 192);
+  EXPECT_EQ(label->GetHorizontalAlignment(), gfx::ALIGN_TO_HEAD);
+
+  gfx::Insets insets = row_view().GetContentView().GetInsideBorderInsets();
+  EXPECT_EQ(insets.top(), 8);
+  EXPECT_EQ(insets.bottom(), 8);
+}
+
+// Tests that Wallet Direct Offer suggestions with short main text do not get
+// extra vertical padding.
+TEST_F(PopupRowFactoryUtilsTest, WalletDirectOfferShortTextNoExtraPadding) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableWalletDirectOffers);
+
+  EXPECT_CALL(controller(), GetMainFillingProduct())
+      .WillRepeatedly(testing::Return(FillingProduct::kMerchantPromoCode));
+
+  Suggestion suggestion(u"5% off", SuggestionType::kMerchantPromoCodeEntry);
+  suggestion.icon = Suggestion::Icon::kOfferTag;
+  suggestion.labels = {{Suggestion::Text(u"Code: PROMO123")}};
+  ShowSuggestion(suggestion);
+
+  views::Label* label =
+      FindLabelWithText(&row_view().GetContentView(), u"5% off");
+  ASSERT_THAT(label, NotNull());
+  EXPECT_TRUE(label->GetMultiLine());
+  EXPECT_EQ(label->GetMaxLines(), 2u);
+
+  gfx::Insets insets = row_view().GetContentView().GetInsideBorderInsets();
+  EXPECT_EQ(insets.top(), 0);
+  EXPECT_EQ(insets.bottom(), 0);
+}
+
+// Tests that legacy promo code suggestions (without kOfferTag icon) use
+// standard single-line rows.
+TEST_F(PopupRowFactoryUtilsTest, LegacyPromoCodeSuggestionSingleLine) {
+  EXPECT_CALL(controller(), GetMainFillingProduct())
+      .WillRepeatedly(testing::Return(FillingProduct::kMerchantPromoCode));
+
+  Suggestion suggestion(u"PROMO123", SuggestionType::kMerchantPromoCodeEntry);
+  suggestion.icon = Suggestion::Icon::kNoIcon;
+  ShowSuggestion(suggestion);
+
+  views::Label* label =
+      FindLabelWithText(&row_view().GetContentView(), u"PROMO123");
+  ASSERT_THAT(label, NotNull());
+  EXPECT_FALSE(label->GetMultiLine());
+}
+
 }  // namespace autofill

@@ -10,8 +10,11 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
+#include "base/i18n/time_formatting.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
@@ -20,6 +23,8 @@
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 namespace {
@@ -36,17 +41,32 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
   suggestions.reserve(promo_code_offers.size());
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
     // For each promo code, create a suggestion.
-    suggestions.emplace_back(
-        base::ASCIIToUTF16(promo_code_offer->GetPromoCode()),
-        SuggestionType::kMerchantPromoCodeEntry);
-    Suggestion& suggestion = suggestions.back();
-    if (!promo_code_offer->GetDisplayStrings().value_prop_text.empty()) {
-      suggestion.labels = {{Suggestion::Text(base::ASCIIToUTF16(
-          promo_code_offer->GetDisplayStrings().value_prop_text))}};
-    }
+    std::u16string main_text = base::UTF8ToUTF16(
+        promo_code_offer->GetDisplayStrings().value_prop_text);
+    Suggestion& suggestion = suggestions.emplace_back(
+        main_text, SuggestionType::kMerchantPromoCodeEntry);
+    suggestion.icon = Suggestion::Icon::kOfferTag;
+
+    std::vector<std::vector<Suggestion::Text>> labels;
+    labels.reserve(2);
+
+    std::u16string code_label = l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_PROMO_CODE_SUGGESTION_CODE_LABEL,
+        base::UTF8ToUTF16(promo_code_offer->GetPromoCode()));
+    labels.emplace_back(
+        std::vector<Suggestion::Text>{Suggestion::Text(code_label)});
+
+    std::u16string expiration_date =
+        base::TimeFormatShortDate(promo_code_offer->GetExpiry());
+    labels.emplace_back(std::vector<Suggestion::Text>{
+        Suggestion::Text(l10n_util::GetStringFUTF16(
+            IDS_AUTOFILL_OFFERS_EXPIRES_ON, expiration_date))});
+
+    suggestion.labels = std::move(labels);
     suggestion.payload =
         Suggestion::Guid(base::NumberToString(promo_code_offer->GetOfferId()));
   }
+
   return suggestions;
 }
 
@@ -92,17 +112,18 @@ void MerchantPromoCodeSuggestionGenerator::GenerateSuggestions(
     callback({SuggestionDataSource::kMerchantPromoCode, {}});
     return;
   }
+  const PaymentsDataManager& payments_data_manager =
+      client.GetPaymentsAutofillClient()->GetPaymentsDataManager();
+
   const std::vector<const AutofillOfferData*> promo_code_offers =
-      client.GetPaymentsAutofillClient()
-          ->GetPaymentsDataManager()
-          .GetActiveAutofillPromoCodeOffersForOrigin(
-              form_structure->main_frame_origin().GetURL());
+      payments_data_manager.GetActiveAutofillPromoCodeOffersForOrigin(
+          form_structure->main_frame_origin().GetURL());
 
   // If the input box content equals any of the available promo codes, then
   // assume the promo code has been filled, and don't show any suggestions.
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
     if (trigger_autofill_field->value() ==
-        base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
+        base::UTF8ToUTF16(promo_code_offer->GetPromoCode())) {
       callback({SuggestionDataSource::kMerchantPromoCode, {}});
       return;
     }

@@ -1358,6 +1358,12 @@
   <message name="IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL" desc="Label for the positive button for the bubble/infobar shown on the merchant website when an offer is available to use.">
     Got it
   </message>
+  <message name="IDS_AUTOFILL_PROMO_CODE_SUGGESTION_CODE_LABEL" desc="Label for the promo code in the autofill suggestions popup.">
+    Code: <ph name="PROMO_CODE">$1<ex>WELCOME15</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_OFFERS_EXPIRES_ON" desc="Text shown on the third line of the suggestion dropdown for Wallet Direct Offers indicating when the offer expires.">
+    Expires: <ph name="EXPIRATION_DATE">$1<ex>Sept 20, 2026</ex></ph>
+  </message>
   <message name="IDS_AUTOFILL_WALLET_DIRECT_OFFERS_IPH_BUBBLE_LABEL" desc="Text shown in the IPH bubble for merchant promo code fields when direct offers from Google Wallet are available.">
     Select the promo code field to view and fill your saved offers
   </message>

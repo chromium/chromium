@@ -143,10 +143,9 @@ class MerchantPromoCodeManagerTest
 };
 
 TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
-  std::string promo_code = SetUpPromoCodeOffer(
-      kTestOriginUrl, GURL("https://offer-details-url.com/"));
+  SetUpPromoCodeOffer(kTestOriginUrl, GURL("https://offer-details-url.com/"));
   Suggestion promo_code_suggestion = Suggestion(
-      base::ASCIIToUTF16(promo_code), SuggestionType::kMerchantPromoCodeEntry);
+      u"5% off on shoes. Up to $50.", SuggestionType::kMerchantPromoCodeEntry);
 
   // Setting up mock to verify that the handler is returned a list of
   // promo-code-based suggestions.
