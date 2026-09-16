@@ -7418,6 +7418,22 @@
             ]
         }
     ],
+    "DiscardCompositionBackBuffersMac": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NotifyCompositorOfWindowVisibilityOnMacOs",
+                        "VizBufferQueueDiscardOnVisibilityChange"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisconnectWebSocketOnBFCache": [
         {
             "platforms": [
