@@ -267,7 +267,7 @@ void WebTestBrowserMainRunner::Initialize() {
   if (!command_line.HasSwitch(switches::kEnableGpuRasterization))
     command_line.AppendSwitch(switches::kDisableGpuRasterization);
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC)
   // If Graphite is not explicitly disabled, enable it. This is to use
   // Graphite as the renderer for web tests on all bots for this platform
   // except those explicitly testing Ganesh.
