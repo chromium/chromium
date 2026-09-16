@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/multicol_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
@@ -808,6 +809,25 @@ void LayoutBlockFlow::InvalidateDisplayItemClients(
       break;
     }
   }
+}
+
+wtf_size_t LayoutBlockFlow::StitchedRowGapIndex(
+    const PhysicalBoxFragment& fragment,
+    wtf_size_t gap_index,
+    std::optional<wtf_size_t>) const {
+  NOT_DESTROYED();
+  if (!IsMulticolContainer()) {
+    return gap_index;
+  }
+
+  if (const BlockBreakToken* previous_break_token =
+          FindPreviousBreakToken(fragment)) {
+    if (const auto* data = DynamicTo<MulticolBreakTokenData>(
+            previous_break_token->TokenData())) {
+      return data->GetFirstUnprocessedRowGapIndex() + gap_index;
+    }
+  }
+  return gap_index;
 }
 
 }  // namespace blink

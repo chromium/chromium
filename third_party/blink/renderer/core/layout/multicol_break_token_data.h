@@ -10,9 +10,17 @@
 namespace blink {
 
 struct MulticolBreakTokenData final : BreakTokenAlgorithmData {
-  explicit MulticolBreakTokenData(LayoutUnit consumed_row_block_size)
+  explicit MulticolBreakTokenData(LayoutUnit consumed_row_block_size,
+                                  wtf_size_t first_unprocessed_row_gap_index)
       : BreakTokenAlgorithmData(kMulticolData),
-        consumed_row_block_size(consumed_row_block_size) {}
+        consumed_row_block_size(consumed_row_block_size),
+        first_unprocessed_row_gap_index(first_unprocessed_row_gap_index) {}
+
+  // Returns the index of the first row gap not processed by preceding
+  // fragments.
+  wtf_size_t GetFirstUnprocessedRowGapIndex() const {
+    return first_unprocessed_row_gap_index;
+  }
 
   // Completes tracing for this data type.
   void TraceAfterDispatch(Visitor* visitor) const {
@@ -23,6 +31,10 @@ struct MulticolBreakTokenData final : BreakTokenAlgorithmData {
   // `column-height` property) is too tall to fit in one outer fragmentainer,
   // the remainder needs to be handled in subsequent outer fragmentainers.
   LayoutUnit consumed_row_block_size;
+
+  // Index of the first row gap not processed by preceding fragments. Row gaps
+  // suppressed at fragmentation boundaries are considered processed.
+  wtf_size_t first_unprocessed_row_gap_index;
 };
 
 template <>

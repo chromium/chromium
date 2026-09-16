@@ -122,9 +122,10 @@ bool GapGeometry::HasRowGapFragmentation(
     return false;
   }
 
-  // For grid, fragmentation only affects grid rows gaps indices (i.e. main
-  // gaps).
-  if (container_type_ == ContainerType::kGrid) {
+  // For grid and multicol, fragmentation only affects row gap indices (i.e.
+  // main gaps).
+  if (container_type_ == ContainerType::kGrid ||
+      container_type_ == ContainerType::kMultiColumn) {
     return is_main;
   }
 
@@ -134,8 +135,29 @@ bool GapGeometry::HasRowGapFragmentation(
     return main_direction_ == kForColumns ? !is_main : is_main;
   }
 
-  // TODO(samomekarajr): Implement for multicol in a follow-up CL.
   return false;
+}
+
+wtf_size_t GapGeometry::MulticolPaintableMainGapCount() const {
+  CHECK_EQ(container_type_, ContainerType::kMultiColumn);
+  CHECK_LE(multicol_spanner_main_gap_count_, main_gaps_.size());
+  return main_gaps_.size() - multicol_spanner_main_gap_count_;
+}
+
+wtf_size_t GapGeometry::CountMulticolSpannerMainGaps(
+    ContainerType container_type,
+    const MainGaps& main_gaps) {
+  if (container_type != ContainerType::kMultiColumn) {
+    return 0;
+  }
+
+  wtf_size_t count = 0;
+  for (const MainGap& main_gap : main_gaps) {
+    if (main_gap.IsSpannerMainGap()) {
+      ++count;
+    }
+  }
+  return count;
 }
 
 bool GapGeometry::NeedsDecorationValueAssignmentMapping(

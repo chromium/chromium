@@ -211,6 +211,8 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
             other.fragmented_flex_cross_gap_decoration_indices_),
         fragmented_flex_cross_gap_count_(
             other.fragmented_flex_cross_gap_count_),
+        multicol_spanner_main_gap_count_(
+            CountMulticolSpannerMainGaps(container_type_, main_gaps_)),
         gap_placement_reversal_(other.gap_placement_reversal_),
         content_inline_start_(other.content_inline_start_),
         content_inline_end_(other.content_inline_end_),
@@ -225,6 +227,8 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
            block_gap_size_ == other.block_gap_size_ &&
            container_type_ == other.container_type_ &&
            main_gaps_ == other.main_gaps_ && cross_gaps_ == other.cross_gaps_ &&
+           multicol_spanner_main_gap_count_ ==
+               other.multicol_spanner_main_gap_count_ &&
            flex_cross_gap_sizes_ == other.flex_cross_gap_sizes_ &&
            fragmented_flex_cross_gap_decoration_indices_ ==
                other.fragmented_flex_cross_gap_decoration_indices_ &&
@@ -308,6 +312,10 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   MainGap& AddMainGap(LayoutUnit offset,
                       SpannerMainGapType type = SpannerMainGapType::kNone) {
+    if (container_type_ == ContainerType::kMultiColumn &&
+        type != SpannerMainGapType::kNone) {
+      ++multicol_spanner_main_gap_count_;
+    }
     main_gaps_.emplace_back(offset, type);
     return main_gaps_.back();
   }
@@ -325,6 +333,11 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   void RemoveLastMainGap() {
     CHECK(!main_gaps_.empty());
+    if (container_type_ == ContainerType::kMultiColumn &&
+        main_gaps_.back().IsSpannerMainGap()) {
+      CHECK_GT(multicol_spanner_main_gap_count_, 0u);
+      --multicol_spanner_main_gap_count_;
+    }
     main_gaps_.pop_back();
   }
 
@@ -345,6 +358,10 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   wtf_size_t MainGapCount() const { return main_gaps_.size(); }
   wtf_size_t CrossGapCount() const { return cross_gaps_.size(); }
+
+  // Returns the number of multicol main gaps eligible for painting. Spanner
+  // main gaps are skipped because they do not consume decoration values.
+  wtf_size_t MulticolPaintableMainGapCount() const;
 
   // Per-line main axis gap sizes for flex containers. This is needed because
   // different lines in a flex container can have different effective gap sizes
@@ -634,6 +651,9 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                                LayoutUnit cross_decoration_width) const;
 
  private:
+  static wtf_size_t CountMulticolSpannerMainGaps(ContainerType container_type,
+                                                 const MainGaps& main_gaps);
+
   // Returns whether a multicol cross-gap intersection is adjacent to a
   // synthetic main gap that represents a spanner boundary.
   bool IsMulticolSpannerBoundaryIntersection(wtf_size_t intersection_index,
@@ -792,6 +812,10 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   // this fragmented flex geometry.
   Vector<wtf_size_t> fragmented_flex_cross_gap_decoration_indices_;
   wtf_size_t fragmented_flex_cross_gap_count_ = 0;
+
+  // Number of multicol main gaps created for spanner boundaries. These gaps
+  // are not painted and do not consume decoration values.
+  wtf_size_t multicol_spanner_main_gap_count_ = 0;
 
   // Describes how gap placement order differs from geometric paint order.
   // See `SetGapPlacementReversal`.

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/gap/gap_intersection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/multicol_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -24,6 +25,44 @@
 namespace blink {
 
 namespace {
+
+// Returns the total number of row gaps, including gaps suppressed by
+// fragmentation. Grid and flex store the total on the first fragment. For
+// multicol, it is derived from the last one.
+wtf_size_t StitchedRowGapCount(const PhysicalBoxFragment& box_fragment,
+                               const GapGeometry& gap_geometry) {
+  if (gap_geometry.GetContainerType() !=
+      GapGeometry::ContainerType::kMultiColumn) {
+    const BreakTokenAlgorithmData* first_fragment_data =
+        GetFirstFragmentBreakTokenData(box_fragment);
+    CHECK(first_fragment_data);
+    // Only grid and flex break tokens carry the full row-gap count.
+    if (const auto* grid_data =
+            DynamicTo<GridBreakTokenData>(first_fragment_data)) {
+      return grid_data->GetTotalRowGapCount();
+    }
+    return To<FlexBreakTokenData>(first_fragment_data)->GetTotalRowGapCount();
+  }
+
+  const auto* box = To<LayoutBox>(box_fragment.GetLayoutObject());
+  const wtf_size_t fragment_count = box->PhysicalFragmentCount();
+  CHECK_GT(fragment_count, 0u);
+  const PhysicalBoxFragment& last_fragment =
+      *box->GetPhysicalFragment(fragment_count - 1);
+
+  wtf_size_t total_row_gap_count = 0;
+  if (const BlockBreakToken* previous_break_token =
+          FindPreviousBreakToken(last_fragment)) {
+    if (const auto* data = DynamicTo<MulticolBreakTokenData>(
+            previous_break_token->TokenData())) {
+      total_row_gap_count = data->GetFirstUnprocessedRowGapIndex();
+    }
+  }
+  if (const GapGeometry* last_gap_geometry = last_fragment.GetGapGeometry()) {
+    total_row_gap_count += last_gap_geometry->MulticolPaintableMainGapCount();
+  }
+  return total_row_gap_count;
+}
 
 // Determines if the `start_index` should advance when determining pairs for gap
 // decorations.
@@ -289,17 +328,12 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
   if (has_fragmented_flex_cross_gap_indices) {
     gap_slot_count = gap_geometry.FragmentedFlexCrossGapCount();
   } else if (has_row_gap_fragmentation) {
-    const BreakTokenAlgorithmData* first_fragment_data =
-        GetFirstFragmentBreakTokenData(box_fragment_);
-    CHECK(first_fragment_data);
-    // Other token types keep the fragment-local gap count.
-    if (const auto* grid_data =
-            DynamicTo<GridBreakTokenData>(first_fragment_data)) {
-      gap_slot_count = grid_data->GetTotalRowGapCount();
-    } else if (const auto* flex_data =
-                   DynamicTo<FlexBreakTokenData>(first_fragment_data)) {
-      gap_slot_count = flex_data->GetTotalRowGapCount();
-    }
+    gap_slot_count = StitchedRowGapCount(box_fragment_, gap_geometry);
+  } else if (is_main && gap_geometry.GetContainerType() ==
+                            GapGeometry::ContainerType::kMultiColumn) {
+    // Multicol spanner main gaps are only used to generate cross-gap
+    // intersections. They are not painted and do not consume decoration values.
+    gap_slot_count = gap_geometry.MulticolPaintableMainGapCount();
   }
 
   // When `overlap-join` is specified, the decoration extends to meet the
@@ -370,7 +404,7 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
     wtf_size_t stitched_gap_index = paint_order_gap_index++;
     if (has_row_gap_fragmentation && !has_fragmented_flex_cross_gap_indices) {
       stitched_gap_index = box_fragment_.GetLayoutObject()->StitchedRowGapIndex(
-          box_fragment_, gap_index, cross_gap_owner_index);
+          box_fragment_, stitched_gap_index, cross_gap_owner_index);
     }
     const GapGeometry::DecorationValueAssignment decoration_value_assignment =
         gap_geometry.DecorationValueAssignmentForGap(

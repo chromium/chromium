@@ -241,6 +241,10 @@ class CORE_EXPORT ColumnLayoutAlgorithm
     return LayoutUnit(Style().ColumnHeight());
   }
 
+  bool HasRowGap() const {
+    return gap_accumulator_ && row_gap_size_ > LayoutUnit();
+  }
+
   // Convert a line offset (which is relative to the block-start of the multicol
   // fragment under construction) to an offset relatively to the start of the
   // current row.
@@ -292,6 +296,12 @@ class CORE_EXPORT ColumnLayoutAlgorithm
   // Accumulates gap-decoration state when CSS gap decorations are enabled and
   // the style has a gap rule. Null otherwise.
   std::optional<ColumnGapAccumulator> gap_accumulator_;
+
+  // Index of the first row gap not processed by preceding fragments.
+  wtf_size_t first_unprocessed_row_gap_index_ = 0;
+
+  // Number of row gaps suppressed at outer fragment boundaries.
+  wtf_size_t suppressed_row_gap_count_ = 0;
 };
 
 }  // namespace blink
