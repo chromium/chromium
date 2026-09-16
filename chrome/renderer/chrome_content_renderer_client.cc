@@ -93,6 +93,8 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
+#include "components/facilitated_payments/content/renderer/facilitated_payments_agent.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/guest_view/buildflags/buildflags.h"
@@ -822,6 +824,16 @@ void ChromeContentRendererClient::RenderFrameCreated(
           wallet::features::kWalletablePassDetection) &&
       render_frame->IsMainFrame()) {
     wallet::ImageExtractor::Create(render_frame, registry);
+  }
+
+  // Scans the DOM for payment QR codes. The main frame check precedes the
+  // feature flag check so that subframes never enroll into the experiment and
+  // dilute its metrics.
+  if (render_frame->IsMainFrame() &&
+      base::FeatureList::IsEnabled(
+          payments::facilitated::kEnableDesktopQrCodeDetection)) {
+    new payments::facilitated::FacilitatedPaymentsAgent(render_frame,
+                                                        associated_interfaces);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
