@@ -3928,10 +3928,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.ActivationTransitionMismatch{PreloadingTriggerType}"
-    enum="PrerenderActivationTransitionMismatchType" expires_after="2025-04-06">
+    enum="PrerenderActivationTransitionMismatchType" expires_after="2027-03-16">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
+    Warning: this histogram was expired from 2025-04-06 to 2026-09-16; data may
+    be missing.
+
     Breakdown metric for PrerenderActivationNavigationParamsMatch::kTransition.
 
     When we are attempting to activate a prerendered page, we compare the
