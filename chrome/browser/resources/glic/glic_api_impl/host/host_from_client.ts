@@ -12,15 +12,14 @@ import {enumFromClient, enumToClient} from '../../enum_conversions.js';
 import {CaptureRegionObserverReceiver, PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo, TabDataHandlerReceiver, TabFaviconHandlerReceiver} from '../../glic.mojom-webui.js';
 import type {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, TabDataHandlerInterface, TabDataMojoType, TabFaviconHandlerInterface, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureScreenshotErrorReason, ResponseStopCause} from '../../glic_api/glic_api.js';
-import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ExperimentalTriggeringUpdate, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PinTabsOptions, PromptType, Screenshot, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
+import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PinTabsOptions, PromptType, Screenshot, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
-import {getGuestLoadTimeData} from '../guest_load_time_data.js';
 import type {GlicException, ImageBytesResultPrivate, RgbaImage, TabContextResultPrivate, WebClientHost, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver} from '../request_types.js';
-import {ErrorWithReasonImpl, exceptionFromTransferable, SubscriberObservationType} from '../request_types.js';
+import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
 import {ResponseExtras} from '../transport/messaging.js';
 import type {PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
 
-import {bitmapN32ToRGBAImage, captureRegionResultToClient, conversationInfoFromClient, counterAbuseVerdictFromClient, idFromClient, idToClient, imageBytesResultToClient, microphoneStatusToMojo, openPinnedTabPickerOptionsToMojo, optionalFromClient, pinTabsOptionsToMojo, subscriberObservationTypeFromClient, tabContextOptionsFromClient, tabContextToClient, tabDataToPrivate, timeDeltaFromClient, unpinTabsOptionsToMojo, urlToClient, webClientModeToMojo} from './conversions.js';
+import {bitmapN32ToRGBAImage, captureRegionResultToClient, conversationInfoFromClient, counterAbuseVerdictFromClient, idFromClient, idToClient, imageBytesResultToClient, microphoneStatusToMojo, openPinnedTabPickerOptionsToMojo, optionalFromClient, pinTabsOptionsToMojo, tabContextOptionsFromClient, tabContextToClient, tabDataToPrivate, timeDeltaFromClient, unpinTabsOptionsToMojo, urlToClient, webClientModeToMojo} from './conversions.js';
 import type {GlicApiHost} from './glic_api_host.js';
 import {linkPipeClosure} from './host_utils.js';
 
@@ -34,8 +33,6 @@ import {linkPipeClosure} from './host_utils.js';
  * `GlicApiHost`.
  */
 export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
-  private enableStructuredYieldMetadata: boolean|null = null;
-
   // Reminder: Don't add more state here! See `HostMessageHandler`'s comment.
   constructor(
       private handler: WebClientHandlerInterface, private host: GlicApiHost) {}
@@ -54,37 +51,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
       this.host.webClientInitialized();
     } else {
       this.host.webClientInitializeFailed();
-    }
-  }
-
-  onExperimentalTriggeringUpdate(payload: {
-    observationId: number,
-    update?: ExperimentalTriggeringUpdate,
-          observation: SubscriberObservationType,
-  }) {
-    const handler = this.host.getExperimentalTriggeringUpdatesHandler(
-        payload.observationId);
-    if (handler) {
-      if (this.enableStructuredYieldMetadata === null) {
-        this.enableStructuredYieldMetadata =
-            getGuestLoadTimeData().enableStructuredYieldMetadata ?? false;
-      }
-      handler.onUpdate(
-          payload.update ? {
-            type: enumFromClient(payload.update.type),
-            data: payload.update.data,
-            metadata: this.enableStructuredYieldMetadata ?
-                optionalFromClient(payload.update.metadata) :
-                null,
-          } :
-                           null,
-          subscriberObservationTypeFromClient(payload.observation));
-
-      if (payload.observation === SubscriberObservationType.COMPLETE ||
-          payload.observation === SubscriberObservationType.ERROR) {
-        this.host.deleteExperimentalTriggeringUpdatesHandler(
-            payload.observationId);
-      }
     }
   }
 

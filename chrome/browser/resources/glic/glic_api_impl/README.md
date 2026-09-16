@@ -33,3 +33,10 @@ The zero state suggestions module. Contains the client implementation for zero
 state suggestions related glic API functions.
   zero_state_suggestions_client.ts - client implementation.
 
+### experimental_triggering/
+
+The experimental triggering module. Contains the client implementation for
+experimental triggering related glic API functions.
+  experimental_triggering_client.ts - client implementation.
+
+

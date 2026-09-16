@@ -32,6 +32,7 @@
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_api_metrics.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -412,6 +413,7 @@ class ExperimentalTriggeringUpdatesHandler
     if (terminal_update_sent_) {
       return;
     }
+    LogApiRequestCount(GlicHostApiRequestId::kOnExperimentalTriggeringUpdate);
     switch (observation) {
       case mojom::SubscriberObservationType::kComplete:
         HandleTerminalUpdate(

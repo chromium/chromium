@@ -6,20 +6,17 @@
 // Communicates with the web client side in ../client/.
 
 import {enumToClient} from '../../enum_conversions.js';
-import {ExperimentalTriggeringClientReceiver, GlicRequestEvent as MojomGlicRequestEvent, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
-import type {ExperimentalTriggeringUpdatesHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
+import {GlicRequestEvent as MojomGlicRequestEvent, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
+import type {WebClientInitialState} from '../../glic.mojom-webui.js';
 import {ClientCapabilities} from '../../glic_api/glic_api.js';
 import {ObservableValue} from '../../observable.js';
 import type {ObservableValueReadOnly} from '../../observable.js';
 import {TaskQueue} from '../../task_queue.js';
-import {ExperimentalTriggeringClientImpl} from '../experimental_triggering/experimental_triggering_host.js';
-import {ExperimentalTriggeringClientDef} from '../experimental_triggering/experimental_triggering_types.js';
-import type {ExperimentalTriggeringClient} from '../experimental_triggering/experimental_triggering_types.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
 import {getHostRequestHistogramInfo} from '../request_types.js';
 import type {WebClient} from '../request_types.js';
 import type {ResponseExtras} from '../transport/messaging.js';
-import type {InterfaceDef, PendingReceiver, PostMessageLifecycleObserver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
+import type {InterfaceDef, PostMessageLifecycleObserver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
 
 import {conversionSettings, urlFromClient} from './conversions.js';
 import {HostMessageHandler} from './host_from_client.js';
@@ -70,10 +67,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   readonly router: PostMessageRouter;
   private isDestroyed = false;
 
-  private experimentalTriggeringUpdatesHandler =
-      new Map<number, ExperimentalTriggeringUpdatesHandlerRemote>();
-  private nextExperimentalTriggeringUpdateHandlerId = 0;
-
   constructor(
       hostRemote: PostMessageRemote<WebClient>,
       hostRouter: PostMessageRouter,
@@ -106,35 +99,16 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
         WebClientState.ERROR);  // Final state
     this.hostMessageHandler.destroy();
     this.captureRegionObserver?.destroy();
-    for (const handler of this.experimentalTriggeringUpdatesHandler.values()) {
-      handler.$.close();
-    }
-    this.experimentalTriggeringUpdatesHandler.clear();
   }
 
   setInitialState(
       initialState: WebClientInitialState,
-      clientCapabilities: Set<ClientCapabilities>): {
-    experimentalTriggeringReceiver?: PendingReceiver<
-                                      ExperimentalTriggeringClient>,
-  } {
+      clientCapabilities: Set<ClientCapabilities>): void {
     this.panelIsActive = initialState.panelIsActive;
     this.instanceIsActive = initialState.instanceIsActive;
     conversionSettings.platform = enumToClient(initialState.platform);
     conversionSettings.omitFaviconInTabData =
         clientCapabilities.has(ClientCapabilities.IGNORES_TAB_DATA_FAVICONS);
-
-    const {remote: clientRemote, receiver: experimentalTriggeringReceiver} =
-        this.router.newPipeWithRemote(ExperimentalTriggeringClientDef);
-    const experimentalTriggeringClientReceiver =
-        new ExperimentalTriggeringClientReceiver(
-            new ExperimentalTriggeringClientImpl(clientRemote, this));
-    this.handler.createExperimentalTriggeringClient(
-        experimentalTriggeringClientReceiver.$.bindNewPipeAndPassRemote());
-
-    return {
-      experimentalTriggeringReceiver,
-    };
   }
 
   waitingOnPanelWillOpen() {
@@ -267,22 +241,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     } catch (e) {
       console.error('[reportApiRequestCount ERROR]', e);
     }
-  }
-
-  addExperimentalTriggeringUpdatesHandler(
-      handler: ExperimentalTriggeringUpdatesHandlerRemote): number {
-    const id = this.nextExperimentalTriggeringUpdateHandlerId++;
-    this.experimentalTriggeringUpdatesHandler.set(id, handler);
-    return id;
-  }
-
-  getExperimentalTriggeringUpdatesHandler(observationId: number):
-      ExperimentalTriggeringUpdatesHandlerRemote|undefined {
-    return this.experimentalTriggeringUpdatesHandler.get(observationId);
-  }
-
-  deleteExperimentalTriggeringUpdatesHandler(observationId: number): void {
-    this.experimentalTriggeringUpdatesHandler.delete(observationId);
   }
 
   reportLatency(
