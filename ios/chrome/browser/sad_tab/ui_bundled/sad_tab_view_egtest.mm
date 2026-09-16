@@ -122,7 +122,8 @@ id<GREYMatcher> sadTabReloadButton() {
 }
 
 // Tests that the context menu is correctly shown.
-- (void)testSadTabContextMenu {
+// TODO(crbug.com/562407008): Re-enable flaky test.
+- (void)FLAKY_testSadTabContextMenu {
   // Prepare a simple but known URL to avoid testing from the NTP.
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
