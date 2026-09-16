@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://chromestatus.com/feature/4709671889534976">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+function createFrame(src) {
+  return new Promise(resolve => {
+    const iframe = document.createElement('iframe');
+    iframe.onload = () => {
+      // Give time for any XSLT commit navigation to settle.
+      setTimeout(() => resolve(iframe), 50);
+    };
+    iframe.src = src;
+    (document.body || document.documentElement).appendChild(iframe);
+  });
+}
+
+async function bannerText(src) {
+  const frame = await createFrame(src);
+  const doc = frame.contentDocument;
+  assert_not_equals(doc, null, `contentDocument for ${src} should exist`);
+  assert_not_equals(doc.getElementById('transformed'), null,
+      `${src} should have been transformed by XSLT`);
+  return doc.documentElement.textContent;
+}
+
+// Sources whose transform source contains an XHTML <script src> at most two
+// levels below the document element are treated as already polyfilled, and
+// must not get the banner.
+const kSuppressed = [
+  'resources/polyfill-script-depth1.xml',
+  'resources/polyfill-script-depth2.xml',
+];
+
+// Everything else still gets the banner.
+const kNotSuppressed = [
+  'resources/polyfill-script-depth3.xml',
+  'resources/polyfill-script-no-namespace.xml',
+  'resources/polyfill-script-no-src.xml',
+  'resources/non-cap-transform.xml',
+];
+
+for (const src of kSuppressed) {
+  promise_test(async () => {
+    if (!internals.runtimeFlags.xsltEnabled) {
+      return;
+    }
+    const text = await bannerText(src);
+    assert_false(text.includes("This site uses XSLT"),
+        `${src} should not contain the general deprecation warning banner`);
+    assert_false(text.includes("This CAP alert"),
+        `${src} should not contain the CAP deprecation warning banner`);
+  }, `Banner suppressed for ${src}`);
+}
+
+for (const src of kNotSuppressed) {
+  promise_test(async () => {
+    if (!internals.runtimeFlags.xsltEnabled) {
+      return;
+    }
+    const text = await bannerText(src);
+    assert_true(text.includes("This site uses XSLT"),
+        `${src} should contain the general deprecation warning banner`);
+  }, `Banner still shown for ${src}`);
+}
+
+promise_test(async () => {
+  if (!internals.runtimeFlags.xsltEnabled) {
+    return;
+  }
+  // CAP alerts are never scanned for polyfill scripts: they always get the
+  // CAP banner.
+  const text = await bannerText('resources/cap-alert-polyfill-script.xml');
+  assert_true(text.includes("This CAP alert"),
+      "CAP alert with a polyfill script should still contain the CAP banner");
+  assert_false(text.includes("This site uses XSLT"),
+      "CAP alert should not contain the general deprecation message");
+}, "Banner still shown for a CAP alert containing a polyfill script");
+</script>

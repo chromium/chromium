@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="transform.xsl"?>
+<page>
+  <script xmlns="http://www.w3.org/1999/xhtml">var unused = 1;</script>
+  <info><headline>Alert</headline></info>
+</page>

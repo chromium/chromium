@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="transform.xsl"?>
+<page>
+  <wrapper>
+    <script src="xslt-polyfill.js" xmlns="http://www.w3.org/1999/xhtml"></script>
+  </wrapper>
+  <info><headline>Alert</headline></info>
+</page>
