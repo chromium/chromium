@@ -690,14 +690,8 @@ TEST_F(AILanguageModelTest, SpeculativeDecodingSamplingDefault) {
   feature_list.InitAndEnableFeature(
       on_device_model::features::kOnDeviceModelSpeculativeDecoding);
 
-  TestCreateLanguageModelClient language_model_client;
-  mojo::test::BadMessageObserver observer;
-  GetAIManagerRemote()->CreateLanguageModel(
-      language_model_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AILanguageModelCreateOptions::New(),
-      /*monitor=*/mojo::NullRemote());
-  EXPECT_EQ(observer.WaitForBadMessage(),
-            "Incompatible speculative decoding options");
+  auto session = CreateSession();
+  EXPECT_THAT(Prompt(*session, MakeInput("foo")), ElementsAre("UfooEM"));
 }
 
 TEST_F(AILanguageModelTest, SpeculativeDecodingSamplingParams) {
@@ -743,21 +737,18 @@ TEST_F(AILanguageModelTest, SpeculativeDecodingSamplingParams) {
                 ElementsAre("UfooEM", "TopK: 2, Temp: 0"));
   }
 
-  // Non-greedy sampling (top_k = 2, temperature = 0.5) should fail.
+  // Non-greedy sampling (top_k = 2, temperature = 0.5) should succeed with
+  // standard decode.
   {
-    TestCreateLanguageModelClient language_model_client;
     auto sampling_params = blink::mojom::AILanguageModelSamplingParams::New();
     sampling_params->top_k = 2;
     sampling_params->temperature = 0.5f;
 
     auto options = blink::mojom::AILanguageModelCreateOptions::New();
     options->sampling_params = std::move(sampling_params);
-    mojo::test::BadMessageObserver observer;
-    GetAIManagerRemote()->CreateLanguageModel(
-        language_model_client.BindNewPipeAndPassRemote(), std::move(options),
-        /*monitor=*/mojo::NullRemote());
-    EXPECT_EQ(observer.WaitForBadMessage(),
-              "Incompatible speculative decoding options");
+    auto session = CreateSession(std::move(options));
+    EXPECT_THAT(Prompt(*session, MakeInput("foo")),
+                ElementsAre("UfooEM", "TopK: 2, Temp: 0.5"));
   }
 }
 
@@ -775,18 +766,14 @@ TEST_F(AILanguageModelTest, SpeculativeDecodingSamplingMode) {
     EXPECT_THAT(Prompt(*session, MakeInput("foo")), ElementsAre("UfooEM"));
   }
 
-  // Other modes (e.g. kBalanced) should fail.
+  // Other modes (e.g. kBalanced) should succeed with standard decode.
   {
-    TestCreateLanguageModelClient language_model_client;
     auto options = blink::mojom::AILanguageModelCreateOptions::New();
     options->sampling_mode =
         blink::mojom::AILanguageModelSamplingMode::kBalanced;
-    mojo::test::BadMessageObserver observer;
-    GetAIManagerRemote()->CreateLanguageModel(
-        language_model_client.BindNewPipeAndPassRemote(), std::move(options),
-        /*monitor=*/mojo::NullRemote());
-    EXPECT_EQ(observer.WaitForBadMessage(),
-              "Incompatible speculative decoding options");
+    auto session = CreateSession(std::move(options));
+    EXPECT_THAT(Prompt(*session, MakeInput("foo")),
+                ElementsAre("UfooEM", IsPromptWithParams(64, 1.0)));
   }
 }
 
@@ -1924,6 +1911,26 @@ TEST_F(AILanguageModelTest,
   EXPECT_EQ(kTestDefaultTopK, params->default_sampling_params->top_k);
   EXPECT_FLOAT_EQ(kTestDefaultTemperature,
                   params->default_sampling_params->temperature);
+}
+
+TEST_F(AILanguageModelTest,
+       GetLanguageModelParamsReturnsGreedyWhenSpeculativeDecodingEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      on_device_model::features::kOnDeviceModelSpeculativeDecoding);
+
+  EnsureModelIsReady();
+
+  base::test::TestFuture<blink::mojom::AILanguageModelParamsPtr> future;
+  ai_manager_->GetLanguageModelParams(future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  const auto& params = future.Get();
+
+  ASSERT_TRUE(!params.is_null());
+  ASSERT_TRUE(!params->default_sampling_params.is_null());
+  EXPECT_EQ(1u, params->default_sampling_params->top_k);
+  EXPECT_FLOAT_EQ(0.0f, params->default_sampling_params->temperature);
 }
 
 // Test class for `Tool Use` functionality.

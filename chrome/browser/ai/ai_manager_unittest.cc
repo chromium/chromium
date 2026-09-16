@@ -313,16 +313,14 @@ TEST_F(AIManagerTest, CanCreateSpeculativeDecodingSamplingOptions) {
   feature_list.InitAndEnableFeature(
       on_device_model::features::kOnDeviceModelSpeculativeDecoding);
 
-  // Default options (no explicit greedy params/mode) should return
-  // incompatible.
+  // Default options should return downloadable.
   {
     base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
     ai_manager_->CanCreateLanguageModel(
         blink::mojom::AILanguageModelCreateOptions::New(),
         future.GetCallback());
     EXPECT_EQ(future.Get(),
-              blink::mojom::ModelAvailabilityCheckResult::
-                  kUnavailableIncompatibleSpeculativeDecodingOptions);
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
   }
 
   // Explicit greedy options (top_k = 1, temperature = 0.5) should return
@@ -342,8 +340,8 @@ TEST_F(AIManagerTest, CanCreateSpeculativeDecodingSamplingOptions) {
               blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
   }
 
-  // Non-greedy options (top_k = 2, temperature = 0.5) should return
-  // incompatible.
+  // Non-greedy options (top_k = 2, temperature = 0.5) should also return
+  // downloadable.
   {
     auto sampling_params = blink::mojom::AILanguageModelSamplingParams::New();
     sampling_params->top_k = 2;
@@ -356,11 +354,10 @@ TEST_F(AIManagerTest, CanCreateSpeculativeDecodingSamplingOptions) {
     ai_manager_->CanCreateLanguageModel(std::move(options),
                                         future.GetCallback());
     EXPECT_EQ(future.Get(),
-              blink::mojom::ModelAvailabilityCheckResult::
-                  kUnavailableIncompatibleSpeculativeDecodingOptions);
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
   }
 
-  // Compatible sampling mode (kMostPredictable) should return downloadable.
+  // Sampling mode (kMostPredictable) should return downloadable.
   {
     auto options = blink::mojom::AILanguageModelCreateOptions::New();
     options->sampling_mode =
@@ -373,7 +370,7 @@ TEST_F(AIManagerTest, CanCreateSpeculativeDecodingSamplingOptions) {
               blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
   }
 
-  // Incompatible sampling mode (kBalanced) should return incompatible.
+  // Sampling mode (kBalanced) should also return downloadable.
   {
     auto options = blink::mojom::AILanguageModelCreateOptions::New();
     options->sampling_mode =
@@ -383,8 +380,7 @@ TEST_F(AIManagerTest, CanCreateSpeculativeDecodingSamplingOptions) {
     ai_manager_->CanCreateLanguageModel(std::move(options),
                                         future.GetCallback());
     EXPECT_EQ(future.Get(),
-              blink::mojom::ModelAvailabilityCheckResult::
-                  kUnavailableIncompatibleSpeculativeDecodingOptions);
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
   }
 }
 

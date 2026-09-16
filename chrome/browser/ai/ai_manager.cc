@@ -241,25 +241,6 @@ bool HasInvalidOutputTypes(
   return false;
 }
 
-bool IsSpeculativeDecodingCompatibleWithSampling(
-    const blink::mojom::AILanguageModelCreateOptionsPtr& options) {
-  if (!base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelSpeculativeDecoding)) {
-    return true;
-  }
-  if (!options) {
-    return false;
-  }
-  if (options->sampling_params) {
-    return options->sampling_params->top_k == 1 ||
-           options->sampling_params->temperature == 0.0f;
-  }
-  if (options->sampling_mode.has_value()) {
-    return options->sampling_mode.value() ==
-           blink::mojom::AILanguageModelSamplingMode::kMostPredictable;
-  }
-  return false;
-}
 
 on_device_model::Capabilities GetExpectedInputCapabilities(
     base::optional_ref<
@@ -801,12 +782,6 @@ void AIManager::CanCreateLanguageModel(
       }
       input_capabilities.Put(on_device_model::CapabilityFlags::kToolUse);
     }
-    if (!IsSpeculativeDecodingCompatibleWithSampling(options)) {
-      std::move(callback).Run(
-          blink::mojom::ModelAvailabilityCheckResult::
-              kUnavailableIncompatibleSpeculativeDecodingOptions);
-      return;
-    }
   }
 
   if (!CheckAndFixLanguages(
@@ -852,10 +827,6 @@ void AIManager::CreateLanguageModel(
     return;
   }
 
-  if (!IsSpeculativeDecodingCompatibleWithSampling(options)) {
-    receivers_.ReportBadMessage("Incompatible speculative decoding options");
-    return;
-  }
 
   CheckAndLogEligibility(
       browser_context_, optimization_guide::mojom::OnDeviceFeature::kPromptApi);
@@ -1327,10 +1298,16 @@ blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams(
       blink::mojom::AILanguageModelSamplingParams::New(),
       blink::mojom::AILanguageModelSamplingParams::New());
 
-  model_info->default_sampling_params->top_k =
-      sampling_params_config->default_top_k;
-  model_info->default_sampling_params->temperature =
-      sampling_params_config->default_temperature;
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelSpeculativeDecoding)) {
+    model_info->default_sampling_params->top_k = 1;
+    model_info->default_sampling_params->temperature = 0.0f;
+  } else {
+    model_info->default_sampling_params->top_k =
+        sampling_params_config->default_top_k;
+    model_info->default_sampling_params->temperature =
+        sampling_params_config->default_temperature;
+  }
 
   model_info->max_sampling_params->top_k =
       optimization_guide::features::GetOnDeviceModelMaxTopK();
