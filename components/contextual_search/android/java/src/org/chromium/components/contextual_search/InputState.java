@@ -13,7 +13,6 @@ import org.jni_zero.JniType;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
@@ -46,10 +45,10 @@ public class InputState {
     public final List<@ToolMode Integer> allowedTools;
     public final List<@ToolMode Integer> disabledTools;
     public final boolean imageGenUploadActive;
-    public final @ModelMode int activeModel;
-    public final @ModelMode int defaultModel;
-    public final List<@ModelMode Integer> allowedModels;
-    public final List<@ModelMode Integer> disabledModels;
+    public final int activeModel;
+    public final int defaultModel;
+    public final List<Integer> allowedModels;
+    public final List<Integer> disabledModels;
 
     // Raw buffers and parsed lazy fields must be kept mutually exclusive.
     private byte @Nullable [][] mRawInputTypeConfigs;
@@ -79,10 +78,10 @@ public class InputState {
             boolean imageGenUploadActive,
             byte @Nullable [][] toolConfigs,
             @JniType("std::vector<uint8_t>") byte @Nullable [] toolsSectionConfig,
-            @JniType("omnibox::ModelMode") @ModelMode int activeModel,
-            @JniType("omnibox::ModelMode") @ModelMode int defaultModel,
-            @JniType("std::vector<omnibox::ModelMode>") @ModelMode int[] allowedModels,
-            @JniType("std::vector<omnibox::ModelMode>") @ModelMode int[] disabledModels,
+            @JniType("omnibox::ModelMode") int activeModel,
+            @JniType("omnibox::ModelMode") int defaultModel,
+            @JniType("std::vector<omnibox::ModelMode>") int[] allowedModels,
+            @JniType("std::vector<omnibox::ModelMode>") int[] disabledModels,
             byte @Nullable [][] modelConfigs,
             @JniType("std::vector<uint8_t>") byte @Nullable [] modelSectionConfig) {
         this.hintText = hintText;
@@ -229,7 +228,7 @@ public class InputState {
      * @param modelMode The model mode to check.
      * @return Whether the model should be visible in the UI.
      */
-    public boolean isModelVisible(@ModelMode int modelMode) {
+    public boolean isModelVisible(int modelMode) {
         return activeModel == modelMode || allowedModels.contains(modelMode);
     }
 
@@ -237,7 +236,7 @@ public class InputState {
      * @param modelMode The model mode to check.
      * @return Whether the model should be enabled in the UI.
      */
-    public boolean isModelEnabled(@ModelMode int modelMode) {
+    public boolean isModelEnabled(int modelMode) {
         return activeModel == modelMode
                 || (allowedModels.contains(modelMode) && !disabledModels.contains(modelMode));
     }
@@ -314,10 +313,10 @@ public class InputState {
         private boolean mImageGenUploadActive;
         private byte @Nullable [][] mToolConfigs;
         private byte @Nullable [] mToolsSectionConfig;
-        private @ModelMode int mActiveModel;
-        private @ModelMode int mDefaultModel;
-        private @ModelMode int[] mAllowedModels = new int[0];
-        private @ModelMode int[] mDisabledModels = new int[0];
+        private int mActiveModel;
+        private int mDefaultModel;
+        private int[] mAllowedModels = new int[0];
+        private int[] mDisabledModels = new int[0];
         private byte @Nullable [][] mModelConfigs;
         private byte @Nullable [] mModelSectionConfig;
 
@@ -381,22 +380,22 @@ public class InputState {
             return this;
         }
 
-        public Builder withActiveModel(@ModelMode int activeModel) {
+        public Builder withActiveModel(int activeModel) {
             mActiveModel = activeModel;
             return this;
         }
 
-        public Builder withDefaultModel(@ModelMode int defaultModel) {
+        public Builder withDefaultModel(int defaultModel) {
             mDefaultModel = defaultModel;
             return this;
         }
 
-        public Builder withAllowedModels(@ModelMode int... allowedModels) {
+        public Builder withAllowedModels(int... allowedModels) {
             mAllowedModels = allowedModels;
             return this;
         }
 
-        public Builder withDisabledModels(@ModelMode int... disabledModels) {
+        public Builder withDisabledModels(int... disabledModels) {
             mDisabledModels = disabledModels;
             return this;
         }

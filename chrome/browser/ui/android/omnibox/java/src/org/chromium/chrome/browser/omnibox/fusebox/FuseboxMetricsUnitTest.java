@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachm
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
+import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
@@ -137,9 +137,9 @@ public class FuseboxMetricsUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.ModelButtonSelected",
-                        ModelMode.MODEL_MODE_GEMINI_PRO);
+                        ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
 
-        FuseboxMetrics.notifyModelButtonSelected(ModelMode.MODEL_MODE_GEMINI_PRO);
+        FuseboxMetrics.notifyModelButtonSelected(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
 
         histogramWatcher.assertExpected();
     }
@@ -166,7 +166,10 @@ public class FuseboxMetricsUnitTest {
     public void testModelModeHistogramBound() {
         // When this test fails, it means the proto added a new model mode, and
         // MODEL_MODE_HISTOGRAM_BOUND needs to be updated.
-        assertThat(ModelMode.MAX_VALUE).isLessThan(FuseboxMetrics.MODEL_MODE_HISTOGRAM_BOUND);
+        for (ModelMode mode : ModelMode.values()) {
+            if (mode == ModelMode.UNRECOGNIZED) continue;
+            assertThat(mode.getNumber()).isLessThan(FuseboxMetrics.MODEL_MODE_HISTOGRAM_BOUND);
+        }
     }
 
     @Test
@@ -179,7 +182,7 @@ public class FuseboxMetricsUnitTest {
                         /* enabled= */ true,
                         /* selected= */ false,
                         PopupButtonType.MODEL,
-                        ModelMode.MODEL_MODE_GEMINI_PRO,
+                        ModelMode.MODEL_MODE_GEMINI_PRO_VALUE,
                         /* hasColor= */ false,
                         /* tooltip= */ "");
         PopupButtonData data2 =
@@ -190,7 +193,7 @@ public class FuseboxMetricsUnitTest {
                         /* enabled= */ true,
                         /* selected= */ false,
                         PopupButtonType.MODEL,
-                        ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                        ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
                         /* hasColor= */ false,
                         /* tooltip= */ "");
         mPropertyModel.set(
@@ -201,10 +204,10 @@ public class FuseboxMetricsUnitTest {
                         .expectBooleanRecord("Omnibox.MobileFusebox.AttachmentsPopupToggled", true)
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.ModelButtonShown",
-                                ModelMode.MODEL_MODE_GEMINI_PRO)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.ModelButtonShown",
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
                         .build();
 
         mMetrics.notifyAttachmentsPopupToggled(/* toShowPopup= */ true, mPropertyModel, mTracker);
@@ -335,7 +338,7 @@ public class FuseboxMetricsUnitTest {
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
 
         histogramWatcher.assertExpected();
     }
@@ -354,11 +357,11 @@ public class FuseboxMetricsUnitTest {
                                 AutocompleteRequestType.AI_MODE)
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.ModelAtNavigation",
-                                ModelMode.MODEL_MODE_GEMINI_REGULAR)
+                                ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.AI_MODE, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true, AutocompleteRequestType.AI_MODE, ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
 
         histogramWatcher.assertExpected();
     }
@@ -429,7 +432,7 @@ public class FuseboxMetricsUnitTest {
                                 AutocompleteRequestType.AI_MODE)
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.ModelAtAbandon",
-                                ModelMode.MODEL_MODE_GEMINI_PRO)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .build();
 
         mMetrics.notifyAttachmentsPopupToggled(/* toShowPopup= */ true, mPropertyModel, mTracker);
@@ -442,7 +445,7 @@ public class FuseboxMetricsUnitTest {
                 FuseboxMetrics.FuseboxAttachmentButtonType.SUGGESTED_TAB);
 
         mMetrics.notifyOmniboxSessionEnded(
-                false, AutocompleteRequestType.AI_MODE, ModelMode.MODEL_MODE_GEMINI_PRO);
+                false, AutocompleteRequestType.AI_MODE, ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
 
         histogramWatcher.assertExpected();
     }
@@ -541,7 +544,7 @@ public class FuseboxMetricsUnitTest {
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
         watcher.assertExpected();
     }
 
@@ -561,7 +564,7 @@ public class FuseboxMetricsUnitTest {
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
         watcher.assertExpected();
     }
 
@@ -579,7 +582,7 @@ public class FuseboxMetricsUnitTest {
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
         watcher.assertExpected();
     }
 
@@ -598,7 +601,7 @@ public class FuseboxMetricsUnitTest {
                         .build();
 
         mMetrics.notifyOmniboxSessionEnded(
-                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+                true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
         watcher.assertExpected();
     }
 }

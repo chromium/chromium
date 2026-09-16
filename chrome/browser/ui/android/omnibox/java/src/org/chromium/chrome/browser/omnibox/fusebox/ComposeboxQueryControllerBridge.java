@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.contextual_search.InputState;
-import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -216,7 +215,7 @@ public class ComposeboxQueryControllerBridge {
     /**
      * @param modelMode The active model to set.
      */
-    public void setActiveModel(@ModelMode int modelMode) {
+    public void setActiveModel(int modelMode) {
         ComposeboxQueryControllerBridgeJni.get().setActiveModel(mNativeInstance, modelMode);
     }
 
@@ -313,6 +312,6 @@ public class ComposeboxQueryControllerBridge {
 
         void setActiveModel(
                 long nativeComposeboxQueryControllerBridge,
-                @ModelMode @JniType("omnibox::ModelMode") int modelMode);
+                @JniType("omnibox::ModelMode") int modelMode);
     }
 }

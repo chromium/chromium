@@ -20,7 +20,6 @@ import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
@@ -260,9 +259,9 @@ public class FuseboxMetrics {
                 "Omnibox.MobileFusebox.ToolButtonSelected", toolMode, TOOL_MODE_HISTOGRAM_BOUND);
     }
 
-    static void notifyModelButtonSelected(@ModelMode int modelMode) {
+    static void notifyModelButtonSelected(int modelId) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Omnibox.MobileFusebox.ModelButtonSelected", modelMode, MODEL_MODE_HISTOGRAM_BOUND);
+                "Omnibox.MobileFusebox.ModelButtonSelected", modelId, MODEL_MODE_HISTOGRAM_BOUND);
     }
 
     void notifyOmniboxSessionStarted() {
@@ -272,7 +271,7 @@ public class FuseboxMetrics {
     void notifyOmniboxSessionEnded(
             boolean userDidNavigate,
             @AutocompleteRequestType int autocompleteRequestType,
-            @ModelMode int modelMode) {
+            int modelId) {
         if (!mSessionStarted) return;
         RecordHistogram.recordBooleanHistogram(
                 "Omnibox.MobileFusebox.AttachmentsPopupButtonClickedInSession",
@@ -306,7 +305,7 @@ public class FuseboxMetrics {
                 requestTypeHistogram, autocompleteRequestType, AutocompleteRequestType.COUNT);
         if (ToolModeUtils.isAimRequest(autocompleteRequestType)) {
             RecordHistogram.recordEnumeratedHistogram(
-                    modelHistogram, modelMode, MODEL_MODE_HISTOGRAM_BOUND);
+                    modelHistogram, modelId, MODEL_MODE_HISTOGRAM_BOUND);
         }
 
         mSessionStarted = false;
