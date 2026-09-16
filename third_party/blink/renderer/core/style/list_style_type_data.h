@@ -54,12 +54,12 @@ class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
 
   // Empty for a symbols() function, which builds an anonymous counter style.
   const AtomicString& GetCounterStyleName() const {
-    CHECK_EQ(Type::kCounterStyle, type_);
+    DCHECK_EQ(Type::kCounterStyle, type_);
     return name_or_string_value_;
   }
 
   const AtomicString& GetStringValue() const {
-    CHECK_EQ(Type::kString, type_);
+    DCHECK_EQ(Type::kString, type_);
     return name_or_string_value_;
   }
 
