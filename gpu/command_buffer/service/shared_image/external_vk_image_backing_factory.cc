@@ -202,6 +202,9 @@ ExternalVkImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
                                                  const SharedImageInfo& si_info,
                                                  SurfaceHandle surface_handle,
                                                  bool is_thread_safe) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   CHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
       context_state_, enable_webgpu_on_vk_via_gl_interop_, command_pool_.get(),
@@ -214,6 +217,9 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     const SharedImageInfo& si_info,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   CHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
       context_state_, enable_webgpu_on_vk_via_gl_interop_, command_pool_.get(),
@@ -226,6 +232,9 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     const SharedImageInfo& si_info,
     bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   DCHECK(!is_thread_safe);
   CHECK(CanImportGpuMemoryBuffer(handle.type));
   return ExternalVkImageBacking::CreateFromGMB(
@@ -240,6 +249,9 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     SurfaceHandle surface_handle,
     bool is_thread_safe,
     gfx::BufferUsage buffer_usage) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   DCHECK(!is_thread_safe);
 #if BUILDFLAG(IS_OZONE)
   // Creating the backing with a native pixmap so that it can be CPU mappable.

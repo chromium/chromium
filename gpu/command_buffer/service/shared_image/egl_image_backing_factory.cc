@@ -124,6 +124,9 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     const Mailbox& mailbox,
     const SharedImageInfo& si_info,
     base::span<const uint8_t> pixel_data) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   DCHECK(!si_info.usage.Has(SHARED_IMAGE_USAGE_SCANOUT));
 
   const auto format = si_info.format;

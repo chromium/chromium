@@ -19,7 +19,8 @@ namespace gpu {
 GPU_IPC_COMMON_EXPORT base::android::ScopedHardwareBufferHandle
 CreateScopedHardwareBufferHandle(const gfx::Size& size,
                                  viz::SharedImageFormat format,
-                                 gfx::BufferUsage usage);
+                                 gfx::BufferUsage usage,
+                                 uint32_t layers = 1);
 
 }  // namespace gpu
 

@@ -55,6 +55,8 @@ GLenum GetterForTextureTarget(GLenum target) {
   switch (target) {
     case GL_TEXTURE_2D:
       return GL_TEXTURE_BINDING_2D;
+    case GL_TEXTURE_2D_ARRAY:
+      return GL_TEXTURE_BINDING_2D_ARRAY;
     case GL_TEXTURE_EXTERNAL_OES:
       return GL_TEXTURE_BINDING_EXTERNAL_OES;
     case GL_TEXTURE_RECTANGLE_ANGLE:
@@ -100,8 +102,8 @@ class ScopedFramebufferBindingReset {
 
 class ScopedTextureBindingReset {
  public:
-  // |texture_target| only supports GL_TEXTURE_2D, GL_TEXTURE_EXTERNAL_OES, and
-  // GL_TEXTURE_RECTANGLE_ANGLE.
+  // |texture_target| only supports GL_TEXTURE_2D, GL_TEXTURE_2D_ARRAY,
+  // GL_TEXTURE_EXTERNAL_OES, and GL_TEXTURE_RECTANGLE_ANGLE.
   ScopedTextureBindingReset(gl::GLApi* api, GLenum texture_target)
       : api_(api), texture_target_(texture_target), texture_(0) {
     api_->glGetIntegervFn(GetterForTextureTarget(texture_target_), &texture_);
@@ -247,6 +249,7 @@ constexpr const char* kRequiredFunctionalityExtensions[] = {
     "GL_EXT_semaphore_fd",
     "GL_KHR_debug",
     "GL_NV_fence",
+    "GL_EXT_EGL_image_storage",
     "GL_OES_EGL_image",
     "GL_OES_EGL_image_external",
     "GL_OES_EGL_image_external_essl3",
@@ -650,9 +653,7 @@ void PassthroughResources::SharedImageData::EnsureClear(
     api->glGenFramebuffersEXTFn(1, &fbo);
     api->glBindFramebufferEXTFn(GL_FRAMEBUFFER, fbo);
     api->glBindTextureFn(texture->target(), texture->service_id());
-    api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                     texture->target(), texture->service_id(),
-                                     0);
+
     // Clear the bound framebuffer.
     api->glClearColorFn(0, 0, 0, 0);
     if (use_oes_draw_buffers_indexed)
@@ -663,17 +664,40 @@ void PassthroughResources::SharedImageData::EnsureClear(
     if (has_rasterizer_discard) {
       api->glDisableFn(GL_RASTERIZER_DISCARD);
     }
-    api->glClearFn(GL_COLOR_BUFFER_BIT);
 
-    if (api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER) ==
-        GL_FRAMEBUFFER_COMPLETE) {
+    bool all_layers_cleared = true;
+    if (texture->target() == GL_TEXTURE_2D_ARRAY) {
+      const uint32_t layers = representation_->array_layers();
+      for (uint32_t layer = 0; layer < layers; ++layer) {
+        api->glFramebufferTextureLayerFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                         texture->service_id(), 0, layer);
+        api->glClearFn(GL_COLOR_BUFFER_BIT);
+        if (api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER) !=
+            GL_FRAMEBUFFER_COMPLETE) {
+          all_layers_cleared = false;
+        }
+      }
+      api->glFramebufferTextureLayerFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0,
+                                       0, 0);
+    } else {
+      api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                       texture->target(), texture->service_id(),
+                                       0);
+      api->glClearFn(GL_COLOR_BUFFER_BIT);
+      if (api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER) !=
+          GL_FRAMEBUFFER_COMPLETE) {
+        all_layers_cleared = false;
+      }
+      api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                       texture->target(), 0, 0);
+    }
+
+    if (all_layers_cleared) {
       // Mark the shared image as cleared.
       representation_->SetCleared();
     }
 
     // Delete the generated framebuffer.
-    api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                     texture->target(), 0, 0);
     api->glDeleteFramebuffersEXTFn(1, &fbo);
   }
 }

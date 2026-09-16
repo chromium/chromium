@@ -89,9 +89,24 @@ bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
 uint32_t ComputeTextureTargetForSharedImage(
     SharedImageMetadata metadata,
     gfx::GpuMemoryBufferType client_gmb_type) {
+  CHECK_GE(metadata.array_layers, 1u);
+#if !BUILDFLAG(IS_ANDROID)
+  CHECK_EQ(metadata.array_layers, 1u);
+#endif
 #if !BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_ANDROID)
   return GL_TEXTURE_2D;
 #else  // Ozone or Android
+#if BUILDFLAG(IS_ANDROID)
+  if (metadata.array_layers > 1) {
+    CHECK(GMBIsNative(client_gmb_type));
+    constexpr gpu::SharedImageUsageSet kSupportedUsages =
+        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+        gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
+    CHECK(kSupportedUsages.HasAll(metadata.usage));
+    CHECK(metadata.format.is_single_plane());
+    return GL_TEXTURE_2D_ARRAY;
+  }
+#endif
   // Check for external sampling being used.
   if (!metadata.format.PrefersExternalSampler()) {
     return GL_TEXTURE_2D;
@@ -105,7 +120,7 @@ uint32_t ComputeTextureTargetForSharedImage(
 #else
   return GL_TEXTURE_EXTERNAL_OES;
 #endif  // BUILDFLAG(IS_FUCHSIA)
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

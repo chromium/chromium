@@ -64,6 +64,9 @@ GLTextureImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
                                                 const SharedImageInfo& si_info,
                                                 SurfaceHandle surface_handle,
                                                 bool is_thread_safe) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   CHECK(!is_thread_safe);
   return CreateSharedImageInternal(mailbox, si_info, surface_handle,
                                    base::span<const uint8_t>());
@@ -75,6 +78,9 @@ GLTextureImageBackingFactory::CreateSharedImage(
     const SharedImageInfo& si_info,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   CHECK(!is_thread_safe);
   return CreateSharedImageInternal(mailbox, si_info, kNullSurfaceHandle,
                                    pixel_data);

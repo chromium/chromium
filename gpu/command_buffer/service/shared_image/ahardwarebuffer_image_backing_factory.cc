@@ -137,12 +137,24 @@ GLuint CreateAndBindTexture(EGLImage image, GLenum target) {
   api->glGenTexturesFn(1, &service_id);
   gl::ScopedTextureBinder texture_binder(target, service_id);
 
+  if (target == GL_TEXTURE_2D_ARRAY) {
+    if (!gl::g_current_gl_driver ||
+        !gl::g_current_gl_driver->fn.glEGLImageTargetTexStorageEXTFn) {
+      LOG(ERROR) << "glEGLImageTargetTexStorageEXT is not supported";
+      api->glDeleteTexturesFn(1, &service_id);
+      return 0;
+    }
+    api->glEGLImageTargetTexStorageEXTFn(target, image, nullptr);
+    api->glTexParameteriFn(target, GL_TEXTURE_BASE_LEVEL, 0);
+    api->glTexParameteriFn(target, GL_TEXTURE_MAX_LEVEL, 0);
+  } else {
+    api->glEGLImageTargetTexture2DOESFn(target, image);
+  }
+
   api->glTexParameteriFn(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   api->glTexParameteriFn(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   api->glTexParameteriFn(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-  glEGLImageTargetTexture2DOES(target, image);
 
   return service_id;
 }
@@ -602,8 +614,16 @@ AHardwareBufferImageBacking::GetGLTextureParams() {
     gl_format_desc = gl_format_caps_.ToGLFormatDescOverrideHalfFloatType(
         format(), /*plane_index=*/0);
   }
+
+  if (array_layers() > 1) {
+    gl_format_desc.target = GL_TEXTURE_2D_ARRAY;
+  }
+
   GLuint service_id =
       CreateAndBindTexture(egl_image.get(), gl_format_desc.target);
+  if (!service_id) {
+    return std::nullopt;
+  }
 
   GLTextureParams params;
   params.egl_image = std::move(egl_image);
@@ -624,7 +644,7 @@ AHardwareBufferImageBacking::ProduceGLTexture(SharedImageManager* manager,
       params->service_id, params->gl_format_desc.target);
   texture->SetLevelInfo(params->gl_format_desc.target, 0,
                         params->gl_format_desc.image_internal_format,
-                        size().width(), size().height(), 1, 0,
+                        size().width(), size().height(), array_layers(), 0,
                         params->gl_format_desc.data_format,
                         params->gl_format_desc.data_type, ClearedRect());
   texture->SetImmutable(true, false);
@@ -876,6 +896,14 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
   // Vulkan mode, we should only need this with GLES2.
   gl::GLApi* api = gl::g_current_gl_context;
   api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_gl_texture_size_);
+  if (gl::g_current_gl_driver &&
+      gl::g_current_gl_driver->fn.glEGLImageTargetTexStorageEXTFn) {
+    api->glGetIntegervFn(GL_MAX_ARRAY_TEXTURE_LAYERS,
+                         &max_gl_array_texture_layers_);
+    max_gl_array_texture_layers_ = std::max(1, max_gl_array_texture_layers_);
+  } else {
+    max_gl_array_texture_layers_ = 1;
+  }
 
   // Ensure max_texture_size_ is less than INT_MAX so that gfx::Rect and friends
   // can be used to accurately represent all valid sub-rects, with overflow
@@ -889,11 +917,31 @@ AHardwareBufferImageBackingFactory::~AHardwareBufferImageBackingFactory() =
 bool AHardwareBufferImageBackingFactory::ValidateUsage(
     SharedImageUsageSet usage,
     const gfx::Size& size,
-    viz::SharedImageFormat format) const {
+    viz::SharedImageFormat format,
+    uint32_t array_layers) const {
   if (!AHardwareBufferSupportedFormat(format)) {
     LOG(ERROR) << "viz::SharedImageFormat " << format.ToString()
                << " not supported by AHardwareBuffer";
     return false;
+  }
+
+  CHECK_GE(array_layers, 1u);
+  if (static_cast<int32_t>(array_layers) > max_gl_array_texture_layers_) {
+    LOG(ERROR) << "CreateSharedImage: invalid array_layers=" << array_layers
+               << " max_gl_array_texture_layers="
+               << max_gl_array_texture_layers_;
+    return false;
+  }
+
+  if (array_layers > 1) {
+    const SharedImageUsageSet allowed_array_usages =
+        SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+    if (!allowed_array_usages.HasAll(usage)) {
+      LOG(ERROR)
+          << "CreateSharedImage: array_layers > 1 is only supported for GLES2 "
+             "read/write usage";
+      return false;
+    }
   }
 
   // Check if AHB can be created with the current size restrictions.
@@ -923,7 +971,12 @@ AHardwareBufferImageBackingFactory::MakeBacking(
 
   DCHECK(!format.IsCompressed());
 
-  if (!ValidateUsage(usage, size, format)) {
+  if (!ValidateUsage(usage, size, format, si_info.array_layers)) {
+    return nullptr;
+  }
+
+  if (si_info.array_layers > 1 && !pixel_data.empty()) {
+    LOG(ERROR) << "Initial pixel data is not supported for array_layers > 1";
     return nullptr;
   }
 
@@ -933,6 +986,15 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     LOG(ERROR) << "Failed to calculate SharedImage size";
     return nullptr;
   }
+
+  base::CheckedNumeric<size_t> safe_total_estimated_size =
+      estimated_size.value();
+  safe_total_estimated_size *= si_info.array_layers;
+  if (!safe_total_estimated_size.IsValid()) {
+    LOG(ERROR) << "Invalid estimated size for array layers";
+    return nullptr;
+  }
+  const size_t total_estimated_size = safe_total_estimated_size.ValueOrDie();
 
   // Setup AHardwareBuffer.
   AHardwareBuffer* buffer = nullptr;
@@ -968,7 +1030,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     hwb_desc.usage |= AHARDWAREBUFFER_USAGE_CPU_WRITE_RARELY;
 
   // Number of images in an image array.
-  hwb_desc.layers = 1;
+  hwb_desc.layers = si_info.array_layers;
 
   // The following three are not used here.
   hwb_desc.stride = 0;
@@ -1024,9 +1086,8 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   }
 
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
-      mailbox, si_info, std::move(handle), estimated_size.value(),
-      is_thread_safe, std::move(initial_upload_fd), use_passthrough_,
-      gl_format_caps_);
+      mailbox, si_info, std::move(handle), total_estimated_size, is_thread_safe,
+      std::move(initial_upload_fd), use_passthrough_, gl_format_caps_);
 
   // If we uploaded initial data, set the backing as cleared.
   if (!pixel_data.empty())
@@ -1110,7 +1171,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
   const auto usage = si_info.usage;
 
   CHECK_EQ(handle.type, gfx::ANDROID_HARDWARE_BUFFER);
-  if (!ValidateUsage(usage, size, format) &&
+  if (!ValidateUsage(usage, size, format, si_info.array_layers) &&
       !IsSupportedForMappableBuffer(usage, format, handle.type)) {
     return nullptr;
   }

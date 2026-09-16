@@ -24,6 +24,7 @@ struct SharedImageMetadata {
   GrSurfaceOrigin surface_origin;
   SkAlphaType alpha_type;
   SharedImageUsageSet usage;
+  uint32_t array_layers = 1;
 };
 
 struct SharedImageInfo : public SharedImageMetadata {
@@ -33,18 +34,22 @@ struct SharedImageInfo : public SharedImageMetadata {
                   GrSurfaceOrigin surface_origin_in,
                   SkAlphaType alpha_type_in,
                   SharedImageUsageSet usage_in,
-                  std::string_view debug_label)
+                  std::string_view debug_label,
+                  uint32_t array_layers_in = 1)
       : SharedImageMetadata{format_in,         size_in,       color_space_in,
-                            surface_origin_in, alpha_type_in, usage_in},
+                            surface_origin_in, alpha_type_in, usage_in,
+                            array_layers_in},
         debug_label(debug_label) {}
   SharedImageInfo(const viz::SharedImageFormat& format_in,
                   gfx::Size size_in,
                   const gfx::ColorSpace& color_space_in,
                   SharedImageUsageSet usage_in,
-                  std::string_view debug_label)
+                  std::string_view debug_label,
+                  uint32_t array_layers_in = 1)
       : SharedImageMetadata{format_in,           size_in,
                             color_space_in,      kTopLeft_GrSurfaceOrigin,
-                            kPremul_SkAlphaType, usage_in},
+                            kPremul_SkAlphaType, usage_in,
+                            array_layers_in},
         debug_label(debug_label) {}
   SharedImageInfo(const SharedImageMetadata& meta, std::string_view debug_label)
       : SharedImageMetadata(meta), debug_label(debug_label) {}

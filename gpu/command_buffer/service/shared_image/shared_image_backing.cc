@@ -90,6 +90,7 @@ SharedImageBacking::SharedImageBacking(
       surface_origin_(si_info.surface_origin),
       alpha_type_(si_info.alpha_type),
       usage_(si_info.usage),
+      array_layers_(si_info.array_layers),
       debug_label_(si_info.debug_label),
       estimated_size_(estimated_size),
       buffer_usage_(std::move(buffer_usage)) {

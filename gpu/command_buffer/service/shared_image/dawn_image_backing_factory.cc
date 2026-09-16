@@ -25,6 +25,9 @@ std::unique_ptr<SharedImageBacking> DawnImageBackingFactory::CreateSharedImage(
     const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
     bool is_thread_safe) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   DCHECK(!is_thread_safe);
   return std::make_unique<DawnImageBacking>(mailbox, si_info);
 }

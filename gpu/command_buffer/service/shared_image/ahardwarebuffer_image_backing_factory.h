@@ -81,7 +81,8 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
  private:
   bool ValidateUsage(SharedImageUsageSet usage,
                      const gfx::Size& size,
-                     viz::SharedImageFormat format) const;
+                     viz::SharedImageFormat format,
+                     uint32_t array_layers = 1) const;
 
   bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type);
 
@@ -95,8 +96,9 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
 
   base::flat_set<viz::SharedImageFormat> supported_gl_formats_;
 
-  // Used to limit the max size of AHardwareBuffer.
+  // Used to limit the max size and array layers of AHardwareBuffer.
   int32_t max_gl_texture_size_ = 0;
+  int32_t max_gl_array_texture_layers_ = 1;
 
   const bool use_passthrough_;
   const GLFormatCaps gl_format_caps_;

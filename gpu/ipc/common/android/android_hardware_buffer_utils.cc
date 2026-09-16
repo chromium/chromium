@@ -15,13 +15,14 @@ namespace gpu {
 namespace {
 AHardwareBuffer_Desc GetBufferDescription(const gfx::Size& size,
                                           viz::SharedImageFormat format,
-                                          gfx::BufferUsage usage) {
+                                          gfx::BufferUsage usage,
+                                          uint32_t layers) {
   // On create, all elements must be initialized, including setting the
   // "reserved for future use" (rfu) fields to zero.
   AHardwareBuffer_Desc desc = {};
   desc.width = size.width();
   desc.height = size.height();
-  desc.layers = 1;  // number of images
+  desc.layers = layers;  // number of images
 
   if (format == viz::SinglePlaneFormat::kRGBA_8888) {
     desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
@@ -56,9 +57,10 @@ AHardwareBuffer_Desc GetBufferDescription(const gfx::Size& size,
 base::android::ScopedHardwareBufferHandle CreateScopedHardwareBufferHandle(
     const gfx::Size& size,
     viz::SharedImageFormat format,
-    gfx::BufferUsage usage) {
+    gfx::BufferUsage usage,
+    uint32_t layers) {
   AHardwareBuffer* buffer = nullptr;
-  AHardwareBuffer_Desc desc = GetBufferDescription(size, format, usage);
+  AHardwareBuffer_Desc desc = GetBufferDescription(size, format, usage, layers);
   AHardwareBuffer_allocate(&desc, &buffer);
   if (!buffer) {
     LOG(ERROR) << "Failed to allocate AHardwareBuffer";

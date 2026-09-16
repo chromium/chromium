@@ -784,6 +784,326 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, Overlay) {
   skia_representation.reset();
 }
 
+base::android::ScopedHardwareBufferHandle CreateScopedHardwareBufferHandle(
+    const gfx::Size& size,
+    viz::SharedImageFormat format,
+    gfx::BufferUsage usage,
+    uint32_t layers = 1) {
+  AHardwareBuffer_Desc desc = {};
+  desc.width = size.width();
+  desc.height = size.height();
+  desc.layers = layers;
+  desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+  desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
+               AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
+  AHardwareBuffer* buffer = nullptr;
+  AHardwareBuffer_allocate(&desc, &buffer);
+  return base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+}
+
+TEST_P(AHardwareBufferImageBackingFactoryTest, Texture2DArray) {
+  auto mailbox = Mailbox::Generate();
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::Size size(256, 256);
+  uint32_t layers = 4;
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
+
+  auto handle = CreateScopedHardwareBufferHandle(
+      size, format, gfx::BufferUsage::GPU_READ, layers);
+  if (!handle.is_valid()) {
+    GTEST_SKIP()
+        << "AHardwareBuffer_allocate with layers > 1 not supported on this "
+           "device";
+  }
+
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.type = gfx::ANDROID_HARDWARE_BUFFER;
+  gmb_handle.android_hardware_buffer = std::move(handle);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel", layers},
+      /*is_thread_safe=*/false, std::move(gmb_handle));
+  ASSERT_TRUE(backing);
+
+  // Check that the backing target is GL_TEXTURE_2D_ARRAY.
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+
+  // Create a GLTextureImageRepresentation.
+  auto gl_representation =
+      shared_image_representation_factory_.ProduceGLTexture(mailbox);
+  ASSERT_TRUE(gl_representation);
+  EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_2D_ARRAY),
+            gl_representation->GetTexture()->target());
+
+  auto* texture = gl_representation->GetTexture();
+  GLsizei width = 0, height = 0, depth = 0;
+  EXPECT_TRUE(
+      texture->GetLevelSize(GL_TEXTURE_2D_ARRAY, 0, &width, &height, &depth));
+  EXPECT_EQ(size.width(), width);
+  EXPECT_EQ(size.height(), height);
+  EXPECT_EQ(static_cast<GLsizei>(layers), depth);
+
+  gl_representation.reset();
+  factory_ref.reset();
+}
+
+// Test verifying if glEGLImageTargetTexStorageEXT correctly binds a multi-layer
+// AHardwareBuffer EGLImage to GL_TEXTURE_2D_ARRAY. On native GLES drivers that
+// lack full GL_TEXTURE_2D_ARRAY support for EGLImages, attaching Layer 1 to an
+// FBO will fail with GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT (0x8CD7).
+TEST_P(AHardwareBufferImageBackingFactoryTest,
+       DirectEGLImageTargetTexStorage2DArray) {
+  if (GrContextType() != GrContextType::kGL) {
+    GTEST_SKIP() << "GL only";
+  }
+
+  // 1. Allocate a 2-layer AHardwareBuffer (for stereo/layer 0 and 1).
+  AHardwareBuffer_Desc desc = {};
+  desc.width = 64;
+  desc.height = 64;
+  desc.layers = 2;
+  desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+  desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
+               AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
+  AHardwareBuffer* buffer = nullptr;
+  if (AHardwareBuffer_allocate(&desc, &buffer) != 0 || !buffer) {
+    GTEST_SKIP()
+        << "AHardwareBuffer_allocate with layers > 1 not supported on this "
+           "device";
+  }
+  auto handle = base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+
+  // 2. Create EGLImageKHR from AHardwareBuffer.
+  EGLClientBuffer client_buffer = eglGetNativeClientBufferANDROID(buffer);
+  ASSERT_TRUE(client_buffer);
+
+  EGLint attribs[] = {EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE};
+  EGLImageKHR egl_image =
+      eglCreateImageKHR(eglGetCurrentDisplay(), EGL_NO_CONTEXT,
+                        EGL_NATIVE_BUFFER_ANDROID, client_buffer, attribs);
+  ASSERT_NE(EGL_NO_IMAGE_KHR, egl_image);
+
+  // 3. Create GL_TEXTURE_2D_ARRAY texture and query
+  // glEGLImageTargetTexStorageEXT.
+  GLuint texture = 0;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, texture);
+
+  PFNGLEGLIMAGETARGETTEXSTORAGEEXTPROC eglImageTargetTexStorageEXT =
+      reinterpret_cast<PFNGLEGLIMAGETARGETTEXSTORAGEEXTPROC>(
+          eglGetProcAddress("glEGLImageTargetTexStorageEXT"));
+
+  if (!eglImageTargetTexStorageEXT) {
+    GTEST_SKIP() << "glEGLImageTargetTexStorageEXT not supported by driver";
+  }
+
+  // 4. Directly invoke glEGLImageTargetTexStorageEXT with GL_TEXTURE_2D_ARRAY.
+  eglImageTargetTexStorageEXT(GL_TEXTURE_2D_ARRAY, egl_image, nullptr);
+  GLenum err = glGetError();
+  if (err != GL_NO_ERROR) {
+    glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+    glDeleteTextures(1, &texture);
+    eglDestroyImageKHR(eglGetCurrentDisplay(), egl_image);
+    GTEST_SKIP()
+        << "glEGLImageTargetTexStorageEXT(GL_TEXTURE_2D_ARRAY) failed with "
+           "error 0x"
+        << std::hex << err << " (driver limitation)";
+  }
+
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BASE_LEVEL, 0);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, 0);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  // 5. Test attaching Layer 0 and Layer 1 to a Framebuffer.
+  GLuint fbo = 0;
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0,
+                            0);
+  GLenum fbo_status0 = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+  glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0,
+                            1);
+  GLenum fbo_status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDeleteFramebuffers(1, &fbo);
+  glDeleteTextures(1, &texture);
+  eglDestroyImageKHR(eglGetCurrentDisplay(), egl_image);
+
+  if (fbo_status0 != GL_FRAMEBUFFER_COMPLETE ||
+      fbo_status != GL_FRAMEBUFFER_COMPLETE) {
+    GTEST_SKIP()
+        << "Driver does not support multi-layer EGLImage GL_TEXTURE_2D_ARRAY "
+           "FBO "
+        << "(status0=0x" << std::hex << fbo_status0 << ", status1=0x"
+        << fbo_status << ")";
+  }
+}
+
+TEST_P(AHardwareBufferImageBackingFactoryTest,
+       CheckNativeDriverHasEGLImageTargetTexStorageEXT) {
+  if (GrContextType() != GrContextType::kGL) {
+    GTEST_SKIP() << "GL only";
+  }
+
+  void* proc = nullptr;
+  if (gl::g_current_gl_driver) {
+    proc = reinterpret_cast<void*>(
+        gl::g_current_gl_driver->fn.glEGLImageTargetTexStorageEXTFn);
+  }
+
+  void* egl_proc = reinterpret_cast<void*>(
+      eglGetProcAddress("glEGLImageTargetTexStorageEXT"));
+
+  const char* extensions =
+      reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
+  bool has_ext =
+      extensions &&
+      std::string_view(extensions).find("GL_EXT_EGL_image_storage") !=
+          std::string_view::npos;
+
+  LOG(INFO)
+      << "[NativeDriverTest] driver->fn.glEGLImageTargetTexStorageEXTFn = "
+      << proc;
+  LOG(INFO) << "[NativeDriverTest] "
+               "eglGetProcAddress(\"glEGLImageTargetTexStorageEXT\") = "
+            << egl_proc;
+  LOG(INFO) << "[NativeDriverTest] GL_EXT_EGL_image_storage in GL_EXTENSIONS: "
+            << (has_ext ? "YES" : "NO");
+
+  if (!proc && !egl_proc) {
+    GTEST_SKIP() << "glEGLImageTargetTexStorageEXT not supported by driver";
+  }
+}
+
+TEST_P(AHardwareBufferImageBackingFactoryTest,
+       AHBBackingProduceTexture2DArray) {
+  if (GrContextType() != GrContextType::kGL) {
+    GTEST_SKIP() << "GL only";
+  }
+
+  PFNGLEGLIMAGETARGETTEXSTORAGEEXTPROC eglImageTargetTexStorageEXT =
+      reinterpret_cast<PFNGLEGLIMAGETARGETTEXSTORAGEEXTPROC>(
+          eglGetProcAddress("glEGLImageTargetTexStorageEXT"));
+  if (!eglImageTargetTexStorageEXT) {
+    GTEST_SKIP() << "glEGLImageTargetTexStorageEXT not supported by driver";
+  }
+
+  gfx::Size size(64, 64);
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  uint32_t layers = 2;
+
+  AHardwareBuffer_Desc desc = {};
+  desc.width = size.width();
+  desc.height = size.height();
+  desc.layers = layers;
+  desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+  desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
+               AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
+  AHardwareBuffer* buffer = nullptr;
+  if (AHardwareBuffer_allocate(&desc, &buffer) != 0 || !buffer) {
+    GTEST_SKIP()
+        << "AHardwareBuffer_allocate with layers > 1 not supported on this "
+           "device";
+  }
+  auto scoped_ahb_handle =
+      base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.type = gfx::ANDROID_HARDWARE_BUFFER;
+  gmb_handle.android_hardware_buffer = scoped_ahb_handle.Clone();
+
+  auto mailbox = Mailbox::Generate();
+  SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       usage, "TestTag", layers},
+      /*is_thread_safe=*/false, std::move(gmb_handle));
+  ASSERT_TRUE(backing);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+
+  std::unique_ptr<GLTextureImageRepresentation> gl_representation =
+      shared_image_representation_factory_.ProduceGLTexture(mailbox);
+  ASSERT_TRUE(gl_representation);
+
+  auto scoped_access = gl_representation->BeginScopedAccess(
+      GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
+      GLTextureImageRepresentation::AllowUnclearedAccess::kYes);
+  ASSERT_TRUE(scoped_access);
+
+  auto* texture = gl_representation->GetTexture();
+  ASSERT_TRUE(texture);
+  EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_2D_ARRAY), texture->target());
+
+  GLuint fbo = 0;
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                            texture->service_id(), 0, 0);
+  GLenum status0 = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+  glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                            texture->service_id(), 0, 1);
+  GLenum status1 = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glDeleteFramebuffers(1, &fbo);
+
+  if (status0 != GL_FRAMEBUFFER_COMPLETE ||
+      status1 != GL_FRAMEBUFFER_COMPLETE) {
+    GTEST_SKIP()
+        << "Driver does not support multi-layer EGLImage GL_TEXTURE_2D_ARRAY "
+           "FBO "
+        << "(status0=0x" << std::hex << status0 << ", status1=0x" << status1
+        << ")";
+  }
+}
+
+TEST_P(AHardwareBufferImageBackingFactoryTest, ArrayLayersValidation) {
+  auto mailbox = Mailbox::Generate();
+  gfx::Size size(64, 64);
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  uint32_t layers = 2;
+
+  // 1. Array layers > 1 with non-GLES2 usages should be rejected.
+  SharedImageUsageSet invalid_usage =
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       invalid_usage, "TestTag", layers},
+      gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
+  EXPECT_FALSE(backing);
+
+  // 2. Array layers > 1 with initial pixel data should be rejected.
+  SharedImageUsageSet valid_usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+  std::vector<uint8_t> pixel_data(64 * 64 * 4 * layers, 0xFF);
+  backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       valid_usage, "TestTag", layers},
+      /*is_thread_safe=*/false, pixel_data);
+  EXPECT_FALSE(backing);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          AHardwareBufferImageBackingFactoryTest,
                          testing::Values(GrContextType::kGL,

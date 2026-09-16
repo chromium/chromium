@@ -5,6 +5,7 @@
 #ifndef GPU_IPC_COMMON_SHARED_IMAGE_METADATA_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_SHARED_IMAGE_METADATA_MOJOM_TRAITS_H_
 
+#include "base/check.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
@@ -47,15 +48,21 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
     return uint32_t(metadata.usage);
   }
 
+  static uint32_t array_layers(const gpu::SharedImageMetadata& metadata) {
+    CHECK(metadata.array_layers >= 1);
+    return metadata.array_layers;
+  }
+
   static bool Read(gpu::mojom::SharedImageMetadataDataView data,
                    gpu::SharedImageMetadata* out) {
-    if (!data.ReadFormat(&out->format) || !data.ReadSize(&out->size) ||
-        !data.ReadColorSpace(&out->color_space) ||
+    if (data.array_layers() < 1 || !data.ReadFormat(&out->format) ||
+        !data.ReadSize(&out->size) || !data.ReadColorSpace(&out->color_space) ||
         !data.ReadSurfaceOrigin(&out->surface_origin) ||
         !data.ReadAlphaType(&out->alpha_type)) {
       return false;
     }
     out->usage = gpu::SharedImageUsageSet(data.usage());
+    out->array_layers = data.array_layers();
     return true;
   }
 };

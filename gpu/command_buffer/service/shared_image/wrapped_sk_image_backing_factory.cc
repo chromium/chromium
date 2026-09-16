@@ -86,6 +86,9 @@ WrappedSkImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
                                                 const SharedImageInfo& si_info,
                                                 SurfaceHandle surface_handle,
                                                 bool is_thread_safe) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   if (use_graphite_) {
     auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
         base::PassKey<WrappedSkImageBackingFactory>(), mailbox, si_info,
@@ -111,6 +114,9 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     const SharedImageInfo& si_info,
     bool is_thread_safe,
     base::span<const uint8_t> data) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   if (use_graphite_) {
     auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
         base::PassKey<WrappedSkImageBackingFactory>(), mailbox, si_info,

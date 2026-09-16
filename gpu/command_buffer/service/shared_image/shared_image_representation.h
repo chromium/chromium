@@ -112,6 +112,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
   GrSurfaceOrigin surface_origin() const { return backing_->surface_origin(); }
   SkAlphaType alpha_type() const { return backing_->alpha_type(); }
   SharedImageUsageSet usage() const { return backing_->usage(); }
+  uint32_t array_layers() const { return backing_->array_layers(); }
   const gpu::Mailbox& mailbox() const { return backing_->mailbox(); }
   const std::string& debug_label() const { return backing_->debug_label(); }
   const char* backing_name() const { return backing_->GetName(); }

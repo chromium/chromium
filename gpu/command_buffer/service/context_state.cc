@@ -69,6 +69,10 @@ GLuint GetServiceId(const TextureUnit& unit, GLuint target) {
       return GetArbServiceId(unit);
     case GL_TEXTURE_EXTERNAL_OES:
       return GetOesServiceId(unit);
+    case GL_TEXTURE_3D:
+      return Get3dServiceId(unit);
+    case GL_TEXTURE_2D_ARRAY:
+      return Get2dArrayServiceId(unit);
     default:
       NOTREACHED();
   }
@@ -85,6 +89,9 @@ bool TargetIsSupported(const FeatureInfo* feature_info, GLuint target) {
     case GL_TEXTURE_EXTERNAL_OES:
       return feature_info->feature_flags().oes_egl_image_external ||
              feature_info->feature_flags().nv_egl_stream_consumer_external;
+    case GL_TEXTURE_3D:
+    case GL_TEXTURE_2D_ARRAY:
+      return feature_info->IsES3Capable();
     default:
       NOTREACHED();
   }

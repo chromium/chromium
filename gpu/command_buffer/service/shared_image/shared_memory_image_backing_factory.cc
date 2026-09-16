@@ -91,6 +91,9 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     const SharedImageInfo& si_info,
     bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   CHECK(handle.type == gfx::SHARED_MEMORY_BUFFER);
   SharedMemoryRegionWrapper shm_wrapper;
   if (!shm_wrapper.Initialize(handle, si_info.size, si_info.format)) {
@@ -107,6 +110,9 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     SurfaceHandle surface_handle,
     bool is_thread_safe,
     gfx::BufferUsage buffer_usage) {
+  if (si_info.array_layers > 1) {
+    return nullptr;
+  }
   const auto format = si_info.format;
   const auto size = si_info.size;
 

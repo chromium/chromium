@@ -30,4 +30,8 @@ struct SharedImageMetadata {
   // Usage flags corresponding to values defined in
   // gpu/command_buffer/common/shared_image_usage.h.
   uint32 usage;
+
+  // Number of array layers in the image.
+  uint32 array_layers = 1;
 };
+

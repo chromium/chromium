@@ -236,6 +236,13 @@ void SharedImageStub::OnCreateSharedImageWithData(
 
   auto& metadata = params->si_info->meta;
 
+  if (metadata.array_layers > 1) {
+    LOG(ERROR) << "SharedImageStub: array_layers > 1 is not supported for "
+                  "pixel upload";
+    OnError();
+    return;
+  }
+
   bool needs_gl = HasGLES2ReadOrWriteUsage(metadata.usage);
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
