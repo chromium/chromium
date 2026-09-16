@@ -6,6 +6,7 @@ import("//build/config/fuchsia/config.gni")
 import("//build/config/fuchsia/fuchsia_package_metadata.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/sysroot.gni")
+import("//build/config/vpython.gni")
 import("//build/util/generate_wrapper.gni")
 
 assert(is_fuchsia)
@@ -203,7 +204,7 @@ template("fuchsia_test_runner") {
     executable = rebase_path(_test_runner_py)
 
     if (defined(invoker.is_test_exe) && invoker.is_test_exe) {
-      data += [ "//.vpython3" ]
+      data += vpython_spec_files
     }
     output_name_format = "run_%package%"
     executable_wrapper = invoker.target_name

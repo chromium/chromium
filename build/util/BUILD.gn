@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/vpython.gni")
 import("//build/util/lastchange.gni")
 
 action("chromium_git_revision") {
@@ -36,16 +37,14 @@ action("chromium_git_revision") {
 
 group("test_results") {
   data = [
-    "//.vpython3",
-    "//build/util/lib/__init__.py",
-    "//build/util/lib/results/",
-  ]
+           "//build/util/lib/__init__.py",
+           "//build/util/lib/results/",
+         ] + vpython_spec_files
 }
 
 group("proto") {
   data = [
-    "//.vpython3",
-    "//build/util/lib/__init__.py",
-    "//build/util/lib/proto/",
-  ]
+           "//build/util/lib/__init__.py",
+           "//build/util/lib/proto/",
+         ] + vpython_spec_files
 }

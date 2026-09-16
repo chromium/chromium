@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/vpython.gni")
+
 # Wraps a target and any of its arguments to an executable script.
 #
 # Many executable targets have build-time-constant arguments. This
@@ -52,10 +54,7 @@ template("generate_wrapper") {
       _wrapper_script += ".bat"
     }
 
-    data = [
-      _wrapper_script,
-      "//.vpython3",
-    ]
+    data = [ _wrapper_script ] + vpython_spec_files
     if (defined(invoker.data)) {
       data += invoker.data
     }

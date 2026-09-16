@@ -1,0 +1,30 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build_overrides/build.gni")
+
+# Root vpython spec file(s) that must be shipped alongside generated test
+# wrappers and runner scripts so that `vpython3` can materialize its
+# virtualenv on a swarming bot.
+#
+# These are listed in GN `data` sections, so every path here must exist in the
+# consuming repository: the isolate client stats each one and fails the
+# "isolate tests" step if any is missing.
+#
+# `build/` is DEPSed into several repositories (Chromium, Dawn, ANGLE, WebRTC,
+# PDFium, ...) and "//" resolves to each of their roots, so this cannot simply
+# be hardcoded. Repositories that have migrated from the legacy `.vpython3`
+# protobuf spec to the modern `vpython.toml` + `vpython.toml.uv.lock` pair
+# (go/vpython-uv-config-lsc) override this in //build_overrides/build.gni:
+#
+#   vpython_spec_files = [
+#     "//vpython.toml",
+#     "//vpython.toml.uv.lock",
+#   ]
+#
+# The default keeps the legacy behavior for repositories that have not
+# migrated yet.
+if (!defined(vpython_spec_files)) {
+  vpython_spec_files = [ "//.vpython3" ]
+}
