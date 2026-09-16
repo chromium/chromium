@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SESSIONS_IOS_IOS_RESTORE_LIVE_TAB_H_
 #define COMPONENTS_SESSIONS_IOS_IOS_RESTORE_LIVE_TAB_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/sessions/ios/ios_live_tab.h"
 #include "ios/web/public/session/proto/navigation.pb.h"
 
@@ -32,10 +33,12 @@ class SESSIONS_EXPORT RestoreIOSLiveTab : public IOSLiveTab {
   sessions::SerializedNavigationEntry GetPendingEntry() override;
   int GetEntryCount() override;
   sessions::SerializedUserAgentOverride GetUserAgentOverride() override;
+  base::WeakPtr<LiveTab> GetWeakPtr() override;
   const web::WebState* GetWebState() const override;
 
  private:
   const web::proto::NavigationStorage storage_;
+  base::WeakPtrFactory<RestoreIOSLiveTab> weak_ptr_factory_{this};
 };
 
 }  // namespace sessions
