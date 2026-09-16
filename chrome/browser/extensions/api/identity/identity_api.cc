@@ -70,10 +70,12 @@ IdentityAPI::IdentityAPI(content::BrowserContext* context)
 
 IdentityAPI::~IdentityAPI() = default;
 
-IdentityMintRequestQueue* IdentityAPI::mint_queue() { return &mint_queue_; }
+IdentityMintRequestQueue& IdentityAPI::mint_queue() {
+  return mint_queue_;
+}
 
-IdentityTokenCache* IdentityAPI::token_cache() {
-  return &token_cache_;
+IdentityTokenCache& IdentityAPI::token_cache() {
+  return token_cache_;
 }
 
 void IdentityAPI::SetGaiaIdForExtension(const std::string& extension_id,

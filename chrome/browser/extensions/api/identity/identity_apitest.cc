@@ -1063,7 +1063,7 @@ class GetAuthTokenFunctionTest
   void SetCachedTokenForAccount(const CoreAccountInfo account_info,
                                 const IdentityTokenCacheValue& token_data) {
     ExtensionTokenKey key(extension_id_, account_info, oauth_scopes_);
-    id_api()->token_cache()->SetToken(key, token_data);
+    id_api()->token_cache().SetToken(key, token_data);
   }
 
   void SetCachedGaiaId(const GaiaId& gaia_id) {
@@ -1077,7 +1077,7 @@ class GetAuthTokenFunctionTest
         extension_id_,
         account_info.IsEmpty() ? GetPrimaryAccountInfo() : account_info,
         scopes);
-    return id_api()->token_cache()->GetToken(key);
+    return id_api()->token_cache().GetToken(key);
   }
 
   const IdentityTokenCacheValue& GetCachedToken(
@@ -1093,14 +1093,14 @@ class GetAuthTokenFunctionTest
                          IdentityMintRequestQueue::Request* request) {
     ExtensionTokenKey key(extension_id_, GetPrimaryAccountInfo(),
                           oauth_scopes_);
-    id_api()->mint_queue()->RequestStart(type, key, request);
+    id_api()->mint_queue().RequestStart(type, key, request);
   }
 
   void QueueRequestComplete(IdentityMintRequestQueue::MintType type,
                             IdentityMintRequestQueue::Request* request) {
     ExtensionTokenKey key(extension_id_, GetPrimaryAccountInfo(),
                           oauth_scopes_);
-    id_api()->mint_queue()->RequestComplete(type, key, request);
+    id_api()->mint_queue().RequestComplete(type, key, request);
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
@@ -2501,7 +2501,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, LoginInvalidatesTokenCache) {
 
   ExtensionTokenKey key(extension->id(), CoreAccountInfo(), granted_scopes);
   EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
-            id_api()->token_cache()->GetToken(key).status());
+            id_api()->token_cache().GetToken(key).status());
   histogram_tester()->ExpectUniqueSample(
       kGetAuthTokenResultHistogramName, IdentityGetAuthTokenError::State::kNone,
       1);
@@ -3017,7 +3017,7 @@ IN_PROC_BROWSER_TEST_F(
 
   {
     // Clear in-memory token cache to simulate a browser restart.
-    id_api()->token_cache()->EraseAllTokens();
+    id_api()->token_cache().EraseAllTokens();
 
     // A subsequent `getAuthToken` call without an account parameter should
     // fall back to the primary account rather than the secondary account.
@@ -3570,7 +3570,7 @@ class RemoveCachedAuthTokenFunctionTest : public ExtensionBrowserTest {
     account_info.email = "test@example.com";
     ExtensionTokenKey key(kExtensionId, account_info,
                           std::set<std::string>({"foo"}));
-    id_api()->token_cache()->SetToken(key, token_data);
+    id_api()->token_cache().SetToken(key, token_data);
   }
 
   const IdentityTokenCacheValue& GetCachedToken() {
@@ -3580,7 +3580,7 @@ class RemoveCachedAuthTokenFunctionTest : public ExtensionBrowserTest {
     account_info.email = "test@example.com";
     ExtensionTokenKey key(kExtensionId, account_info,
                           std::set<std::string>({"foo"}));
-    return id_api()->token_cache()->GetToken(key);
+    return id_api()->token_cache().GetToken(key);
   }
 };
 
@@ -4513,14 +4513,14 @@ IN_PROC_BROWSER_TEST_F(ClearAllCachedAuthTokensFunctionTest,
 IN_PROC_BROWSER_TEST_F(ClearAllCachedAuthTokensFunctionTest,
                        EraseCachedTokens) {
   ExtensionTokenKey token_key(extension()->id(), CoreAccountInfo(), {"foo"});
-  id_api()->token_cache()->SetToken(
+  id_api()->token_cache().SetToken(
       token_key, IdentityTokenCacheValue::CreateToken("access_token", {"foo"},
                                                       base::Seconds(3600)));
   EXPECT_NE(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
-            id_api()->token_cache()->GetToken(token_key).status());
+            id_api()->token_cache().GetToken(token_key).status());
   ASSERT_TRUE(RunClearAllCachedAuthTokensFunction());
   EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
-            id_api()->token_cache()->GetToken(token_key).status());
+            id_api()->token_cache().GetToken(token_key).status());
 }
 
 class OnSignInChangedEventTest : public IdentityTestWithSignin {

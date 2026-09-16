@@ -53,9 +53,9 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   ~IdentityAPI() override;
 
   // Request serialization queue for getAuthToken.
-  IdentityMintRequestQueue* mint_queue();
+  IdentityMintRequestQueue& mint_queue();
 
-  IdentityTokenCache* token_cache();
+  IdentityTokenCache& token_cache();
 
   // GAIA id cache.
   void SetGaiaIdForExtension(const std::string& extension_id,

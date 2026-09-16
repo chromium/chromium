@@ -24,7 +24,7 @@ IdentityClearAllCachedAuthTokensFunction::Run() {
 
   IdentityAPI* id_api = IdentityAPI::GetFactoryInstance()->Get(profile);
   id_api->EraseGaiaIdForExtension(extension()->id());
-  id_api->token_cache()->EraseAllTokensForExtension(extension()->id());
+  id_api->token_cache().EraseAllTokensForExtension(extension()->id());
 
   return RespondNow(NoArguments());
 }

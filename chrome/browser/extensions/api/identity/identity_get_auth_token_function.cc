@@ -511,7 +511,7 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
   // All cached tokens are invalid because the user is not signed in.
   IdentityAPI* id_api =
       extensions::IdentityAPI::GetFactoryInstance()->Get(GetProfile());
-  id_api->token_cache()->EraseAllTokens();
+  id_api->token_cache().EraseAllTokens();
 
   // If the signin flow fails, don't display the login prompt again.
   interactivity_status_for_signin_ = InteractivityStatus::kNotRequested;
@@ -575,7 +575,7 @@ void IdentityGetAuthTokenFunction::StartMintTokenFlow(
       return;
     }
 
-    if (!id_api->mint_queue()->empty(
+    if (!id_api->mint_queue().empty(
             IdentityMintRequestQueue::MINT_TYPE_INTERACTIVE, token_key_)) {
       // Another call is going through a consent UI.
       CompleteFunctionWithError(
@@ -585,7 +585,7 @@ void IdentityGetAuthTokenFunction::StartMintTokenFlow(
     }
   }
 
-  id_api->mint_queue()->RequestStart(type, token_key_, this);
+  id_api->mint_queue().RequestStart(type, token_key_, this);
 }
 
 void IdentityGetAuthTokenFunction::CompleteMintTokenFlow() {
@@ -596,7 +596,7 @@ void IdentityGetAuthTokenFunction::CompleteMintTokenFlow() {
   extensions::IdentityAPI::GetFactoryInstance()
       ->Get(GetProfile())
       ->mint_queue()
-      ->RequestComplete(type, token_key_, this);
+      .RequestComplete(type, token_key_, this);
 }
 
 void IdentityGetAuthTokenFunction::StartMintToken(
@@ -609,7 +609,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
   const auto& oauth2_info = OAuth2ManifestHandler::GetOAuth2Info(*extension());
   IdentityAPI* id_api = IdentityAPI::GetFactoryInstance()->Get(GetProfile());
   IdentityTokenCacheValue cache_entry =
-      id_api->token_cache()->GetToken(token_key_);
+      id_api->token_cache().GetToken(token_key_);
   IdentityTokenCacheValue::CacheValueStatus cache_status = cache_entry.status();
 
   if (type == IdentityMintRequestQueue::MINT_TYPE_NONINTERACTIVE) {
@@ -700,7 +700,7 @@ void IdentityGetAuthTokenFunction::OnMintTokenSuccess(
       result.access_token, result.granted_scopes, result.time_to_live);
   IdentityAPI* id_api = IdentityAPI::GetFactoryInstance()->Get(GetProfile());
 
-  id_api->token_cache()->SetToken(token_key_, token);
+  id_api->token_cache().SetToken(token_key_, token);
   // Persist the account once the remote consent flow has been verified by a
   // successful mint token response.
   if (remote_consent_approved_) {
@@ -743,8 +743,8 @@ void IdentityGetAuthTokenFunction::OnRemoteConsentSuccess(
   IdentityAPI::GetFactoryInstance()
       ->Get(GetProfile())
       ->token_cache()
-      ->SetToken(token_key_,
-                 IdentityTokenCacheValue::CreateRemoteConsent(resolution_data));
+      .SetToken(token_key_,
+                IdentityTokenCacheValue::CreateRemoteConsent(resolution_data));
   interactivity_status_for_signin_ = InteractivityStatus::kNotRequested;
   resolution_data_ = resolution_data;
   CompleteMintTokenFlow();
@@ -904,7 +904,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
   IdentityAPI::GetFactoryInstance()
       ->Get(GetProfile())
       ->token_cache()
-      ->SetToken(
+      .SetToken(
           new_token_key,
           IdentityTokenCacheValue::CreateRemoteConsentApproved(consent_result));
   CompleteMintTokenFlow();
@@ -970,7 +970,7 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
   extensions::IdentityAPI::GetFactoryInstance()
       ->Get(GetProfile())
       ->mint_queue()
-      ->RequestCancel(token_key_, this);
+      .RequestCancel(token_key_, this);
 
   CompleteFunctionWithError(IdentityGetAuthTokenError(
       IdentityGetAuthTokenError::State::kBrowserContextShutDown));
