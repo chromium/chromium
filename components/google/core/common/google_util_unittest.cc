@@ -195,6 +195,29 @@ TEST(GoogleUtilTest, GoodSearches) {
   }
 }
 
+TEST(GoogleUtilTest, GoodSearchesWithEscapedQueryParam) {
+  constexpr const char* kEscapedQueryParams[] = {
+      "%71",      // 'q' percent-encoded
+      "%51",      // 'Q' percent-encoded
+      "Q",        // uppercase 'Q'
+      "as%5Fq",   // 'as_q' percent-encoded ('_' = %5F)
+      "as%5fq",   // 'as_q' percent-encoded lowercase hex
+      "AS_Q",     // uppercase 'AS_Q'
+      "img%75rl", // 'imgurl' percent-encoded ('u' = %75)
+      "%69mgurl", // 'imgurl' percent-encoded ('i' = %69)
+      "IMGURL",   // uppercase 'IMGURL'
+  };
+
+  for (const char* query_param : kEscapedQueryParams) {
+    EXPECT_TRUE(IsSearch(
+        base::StrCat({"https://www.google.com/search?", query_param, "=term"})));
+    EXPECT_TRUE(IsSearch(
+        base::StrCat({"https://www.google.com/webhp#", query_param, "=term"})));
+    EXPECT_TRUE(IsSearch(
+        base::StrCat({"https://www.google.com/#", query_param, "=term"})));
+  }
+}
+
 TEST(GoogleUtilTest, BadSearches) {
   // A home page URL should not be identified as a search URL.
   EXPECT_FALSE(IsSearch(google_util::kGoogleHomepageURL));

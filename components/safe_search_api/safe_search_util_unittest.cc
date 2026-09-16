@@ -59,6 +59,14 @@ TEST(SafeSearchUtilTest, AddGoogleSafeSearchParams) {
   CheckAddedParameters("http://google.com/webhp?q=google&%73afe=off",
                        "q=google&%73afe=off&" + kBothParameters);
 
+  // Test search pages with percent-encoded query parameters.
+  CheckAddedParameters("http://google.com/search?%71=google",
+                       "%71=google&" + kBothParameters);
+  CheckAddedParameters("http://google.com/search?%51=google",
+                       "%51=google&" + kBothParameters);
+  CheckAddedParameters("http://google.com/search?as%5Fq=google",
+                       "as%5Fq=google&" + kBothParameters);
+
   // Test the home page, different TLDs.
   CheckAddedParameters("http://google.de/", kBothParameters);
   CheckAddedParameters("http://google.ro/", kBothParameters);

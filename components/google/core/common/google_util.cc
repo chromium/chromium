@@ -16,6 +16,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -156,7 +157,8 @@ const char kGoogleSearchPrewarmPath[] = "/search/warmup.html";
 bool HasGoogleSearchQueryParam(std::string_view str) {
   url::Component query(0, static_cast<int>(str.length())), key, value;
   while (url::ExtractQueryKeyValue(str, &query, &key, &value)) {
-    std::string_view key_str = str.substr(key.begin, key.len);
+    std::string key_str = base::ToLowerASCII(
+        base::UnescapeBinaryURLComponent(str.substr(key.begin, key.len)));
     if (key_str == "q" || key_str == "as_q" || key_str == "imgurl") {
       return true;
     }
