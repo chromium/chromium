@@ -1,6 +1,1 @@
-monorail: {
-  component: "Test>WebDriver"
-}
-buganizer_public: {
-  component_id: 1456998
-}
+mixins: "//chrome/test/chromedriver/COMMON_METADATA"
