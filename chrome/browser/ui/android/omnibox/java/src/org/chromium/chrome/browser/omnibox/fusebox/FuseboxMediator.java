@@ -101,6 +101,9 @@ import java.util.function.Supplier;
 @NullMarked
 /* package */ class FuseboxMediator implements FuseboxAttachmentChangeListener, BackPressHandler {
 
+    /* package */ static final @IconResourceIds int UNSPECIFIED_ICON_RESOURCE_ID =
+            IconResourceIds.PLACE_WHITE;
+
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
@@ -1248,7 +1251,7 @@ import java.util.function.Supplier;
      */
     private void updateRequestTypeButtonProperties(
             @ToolMode int activeTool, @Nullable ToolConfig toolConfig) {
-        @IconResourceIds int iconId = getRequestTypeButtonIconId(activeTool, toolConfig);
+        @IconResourceIds int iconId = getRequestTypeButtonIconId(toolConfig);
         mModel.set(
                 FuseboxProperties.NAVIGATE_BUTTON_CONTENT_DESCRIPTION,
                 getNavigateButtonContentDescription(toolConfig));
@@ -1312,7 +1315,7 @@ import java.util.function.Supplier;
             int iconId =
                     toolConfig.hasIcon() && toolConfig.getIcon().hasIconId()
                             ? toolConfig.getIcon().getIconIdValue()
-                            : IconResourceIds.PLACE_WHITE;
+                            : UNSPECIFIED_ICON_RESOURCE_ID;
             boolean selected =
                     mInput != null
                             && ToolModeUtils.getRequestTypeForToolMode(toolMode)
@@ -1360,7 +1363,7 @@ import java.util.function.Supplier;
                 int iconId =
                         modelConfig.hasIcon() && modelConfig.getIcon().hasIconId()
                                 ? modelConfig.getIcon().getIconIdValue()
-                                : IconResourceIds.PLACE_WHITE;
+                                : UNSPECIFIED_ICON_RESOURCE_ID;
                 modelButtonDataList.add(
                         new PopupButtonData(
                                 this::onDynamicButtonClicked,
@@ -1426,14 +1429,13 @@ import java.util.function.Supplier;
     }
 
     private static @IconResourceIds int getRequestTypeButtonIconId(
-            @ToolMode int activeTool, @Nullable ToolConfig toolConfig) {
-        if (activeTool == ToolMode.TOOL_MODE_UNSPECIFIED) {
-            return IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE;
-        }
-        if (toolConfig != null && toolConfig.getIcon().hasIconId()) {
+            @Nullable ToolConfig toolConfig) {
+        if (toolConfig != null
+                && toolConfig.getIcon().hasIconId()
+                && toolConfig.getIcon().getIconIdValue() != UNSPECIFIED_ICON_RESOURCE_ID) {
             return toolConfig.getIcon().getIconIdValue();
         }
-        return IconResourceIds.PLACE_WHITE;
+        return IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE;
     }
 
     private String getRequestTypeButtonText(
