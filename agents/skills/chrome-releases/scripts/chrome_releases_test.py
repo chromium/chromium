@@ -10,6 +10,7 @@ import json
 import unittest
 from unittest import mock
 import urllib.error
+import urllib.request
 
 import chrome_releases
 
@@ -121,6 +122,39 @@ class QueryApiTest(unittest.TestCase):
         )
         self.assertIsNone(err)
         self.assertEqual(data, {'version': '136.0.7051.0'})
+        mock_urlopen.assert_called_once()
+        req = mock_urlopen.call_args[0][0]
+        self.assertIsInstance(req, urllib.request.Request)
+        self.assertEqual(
+            req.full_url,
+            'https://developergraph.googleapis.com/v1alpha/'
+            'products/chrome/versions/136.0.7051.0',
+        )
+        self.assertEqual(
+            req.get_header('X-goog-api-key'), chrome_releases.API_KEY
+        )
+
+    @mock.patch('urllib.request.urlopen')
+    def test_custom_api_key(self, mock_urlopen: mock.MagicMock) -> None:
+        mock_response = mock.MagicMock()
+        mock_response.read.return_value = b'{}'
+        mock_response.__enter__.return_value = mock_response
+        mock_urlopen.return_value = mock_response
+
+        chrome_releases.query_api('commits/e4b52fce', api_key='custom-key')
+        req = mock_urlopen.call_args[0][0]
+        self.assertEqual(req.get_header('X-goog-api-key'), 'custom-key')
+
+    @mock.patch('urllib.request.urlopen')
+    def test_no_api_key(self, mock_urlopen: mock.MagicMock) -> None:
+        mock_response = mock.MagicMock()
+        mock_response.read.return_value = b'{}'
+        mock_response.__enter__.return_value = mock_response
+        mock_urlopen.return_value = mock_response
+
+        chrome_releases.query_api('commits/e4b52fce', api_key=None)
+        req = mock_urlopen.call_args[0][0]
+        self.assertFalse(req.has_header('X-goog-api-key'))
 
     @mock.patch('urllib.request.urlopen')
     def test_http_error(self, mock_urlopen: mock.MagicMock) -> None:

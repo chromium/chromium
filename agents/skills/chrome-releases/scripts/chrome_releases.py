@@ -6,12 +6,16 @@
 
 import argparse
 import json
+import os
 import sys
 from typing import Any, Optional, Sequence
 import urllib.error
 import urllib.request
 
 API_BASE_URL = 'https://developergraph.googleapis.com/v1alpha'
+API_KEY = os.environ.get(
+    'DEVELOPER_GRAPH_API_KEY', 'AIzaSyCMt9ORpz5YXh8b5Jt_wQY7u78dHHjhL3w'
+)
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -78,11 +82,17 @@ def get_resource_name(args: argparse.Namespace) -> str:
     raise ValueError(f'Unknown command: {args.command}')
 
 
-def query_api(resource_name: str) -> tuple[Optional[Any], Optional[str]]:
+def query_api(
+    resource_name: str, api_key: Optional[str] = API_KEY
+) -> tuple[Optional[Any], Optional[str]]:
     """Queries the Developer Graph REST API."""
     url = f'{API_BASE_URL}/{resource_name}'
+    headers = {}
+    if api_key:
+        headers['X-Goog-Api-Key'] = api_key
+    req = urllib.request.Request(url, headers=headers)
     try:
-        with urllib.request.urlopen(url, timeout=30) as resp:
+        with urllib.request.urlopen(req, timeout=30) as resp:
             return json.loads(resp.read().decode('utf-8')), None
     except urllib.error.HTTPError as e:
         return None, (
