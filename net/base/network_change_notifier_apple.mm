@@ -381,7 +381,6 @@ NetworkChangeNotifierApple::CalculateConnectionType(
       // Default to CONNECTION_3G to not change existing behavior.
       return CONNECTION_3G;
   }
-  return CONNECTION_UNKNOWN;
 #endif
 }
 #endif  // defined(COMPILE_OLD_NOTIFIER_IMPL)
