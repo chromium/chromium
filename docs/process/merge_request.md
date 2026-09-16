@@ -348,6 +348,8 @@ through during its release cycle; this data is available via the Chromium Dash
 | stable | M(X) Stable Cut | M(X+1) Stable | Urgent new regressions (especially user reports), urgent release blockers, important security issues (medium severity or higher) requested by the security team |
 | extended (if applicable) | M(X+1) Stable | M(X+2) Stable | Important security issues (medium severity or higher) applicable to any platform supported by Chrome Browser requested by the security team |
 
+**NOTE:** Merge requests for changes introducing or modifying flag definitions will not be accepted for release branches; all flag changes must land before the branch cut date.
+
 ### Merge states and labels
 
 The table below describes the different merge states applied via a bug's
