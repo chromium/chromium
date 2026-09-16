@@ -627,6 +627,7 @@ VideoEncoderInfo GetVideoEncoderInfo(
   }
   if (config.HasSpatialLayer() || config.HasTemporalLayer()) {
     CHECK(!config.spatial_layers.empty());
+    CHECK_LE(config.spatial_layers.size(), VideoEncoderInfo::kMaxSpatialLayers);
     for (size_t i = 0; i < config.spatial_layers.size(); ++i) {
       // Only L1T1, L1T2 are supported.
       CHECK_LE(config.spatial_layers[i].num_of_temporal_layers, 2);

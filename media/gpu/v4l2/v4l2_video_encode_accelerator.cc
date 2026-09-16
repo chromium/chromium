@@ -471,6 +471,7 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config) {
   // V4L2VideoEncodeAccelerator only supports temporal-SVC.
   if (config.HasTemporalLayer()) {
     CHECK(!config.spatial_layers.empty());
+    CHECK_LE(config.spatial_layers.size(), VideoEncoderInfo::kMaxSpatialLayers);
     for (size_t i = 0; i < config.spatial_layers.size(); ++i) {
       encoder_info.fps_allocation[i] =
           GetFpsAllocation(config.spatial_layers[i].num_of_temporal_layers);

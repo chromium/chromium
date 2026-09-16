@@ -885,6 +885,8 @@ void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {
 
   if (config_.HasSpatialLayer() || config_.HasTemporalLayer()) {
     DCHECK(!config_.spatial_layers.empty());
+    CHECK_LE(config_.spatial_layers.size(),
+             VideoEncoderInfo::kMaxSpatialLayers);
     for (size_t i = 0; i < config_.spatial_layers.size(); ++i) {
       encoder_info_.fps_allocation[i] =
           GetFpsAllocation(config_.spatial_layers[i].num_of_temporal_layers);

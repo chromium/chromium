@@ -460,6 +460,7 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
 
   if (config.HasSpatialLayer() || config.HasTemporalLayer()) {
     DCHECK(!config.spatial_layers.empty());
+    CHECK_LE(config.spatial_layers.size(), VideoEncoderInfo::kMaxSpatialLayers);
     for (size_t i = 0; i < config.spatial_layers.size(); ++i) {
       encoder_info_.fps_allocation[i] =
           GetFpsAllocation(config.spatial_layers[i].num_of_temporal_layers);

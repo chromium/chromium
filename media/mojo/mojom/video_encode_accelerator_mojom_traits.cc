@@ -544,6 +544,9 @@ bool StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
       spatial_layers;
   if (!input.ReadSpatialLayers(&spatial_layers))
     return false;
+  if (spatial_layers.size() > media::VideoEncoderInfo::kMaxSpatialLayers) {
+    return false;
+  }
 
   media::SVCInterLayerPredMode inter_layer_pred;
   if (!input.ReadInterLayerPred(&inter_layer_pred))
