@@ -83,7 +83,11 @@ BASE_FEATURE_PARAM(std::string,
                    kRecordLockAcquisitionTimeAllowedThreads,
                    &kRecordLockAcquisitionTime,
                    "RecordLockAcquisitionTimeAllowedThreads",
-                   "CrBrowserMain,CrRendererMain");
+                   "CrBrowserMain,CrRendererMain,CrGpuMain,"
+                   "VizCompositor,Compositor,BrowserIO,NetworkService,"
+                   "GPU.ForegroundWorker,GPU.BackgroundWorker,"
+                   "Renderer.ForegroundWorker,Renderer.BackgroundWorker,"
+                   "Browser.ForegroundWorker,Browser.BackgroundWorker");
 
 // Apply base::ScopedBestEffortExecutionFence to registered task queues as well
 // as the thread pool.
