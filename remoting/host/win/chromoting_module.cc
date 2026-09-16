@@ -77,9 +77,11 @@ bool LowerProcessIntegrityLevel(DWORD max_level) {
 
 }  // namespace
 
-ChromotingModule::ChromotingModule(ATL::_ATL_OBJMAP_ENTRY* classes,
-                                   ATL::_ATL_OBJMAP_ENTRY* classes_end)
-    : classes_(classes), classes_end_(classes_end) {
+ChromotingModule::ChromotingModule()
+    : classes_({
+          {OBJECT_ENTRY(__uuidof(remoting::RdpDesktopSession),
+                        remoting::RdpDesktopSession)},
+      }) {
   // Don't do anything if COM initialization failed.
   if (!com_initializer_.Succeeded()) {
     return;
@@ -163,21 +165,18 @@ LONG ChromotingModule::Unlock() {
 
 HRESULT ChromotingModule::RegisterClassObjects(DWORD class_context,
                                                DWORD flags) {
-  for (ATL::_ATL_OBJMAP_ENTRY* i = classes_; i != classes_end_;
-       UNSAFE_TODO(++i)) {
-    HRESULT result = i->RegisterClassObject(class_context, flags);
+  for (auto& i : classes_) {
+    HRESULT result = i.RegisterClassObject(class_context, flags);
     if (FAILED(result)) {
       return result;
     }
   }
-
   return S_OK;
 }
 
 HRESULT ChromotingModule::RevokeClassObjects() {
-  for (ATL::_ATL_OBJMAP_ENTRY* i = classes_; i != classes_end_;
-       UNSAFE_TODO(++i)) {
-    HRESULT result = i->RevokeClassObject();
+  for (auto& i : classes_) {
+    HRESULT result = i.RevokeClassObject();
     if (FAILED(result)) {
       return result;
     }
@@ -194,10 +193,7 @@ int RdpDesktopSessionMain() {
     return kInitializationFailed;
   }
 
-  ATL::_ATL_OBJMAP_ENTRY rdp_client_entry[] = {
-      OBJECT_ENTRY(__uuidof(RdpDesktopSession), RdpDesktopSession)};
-
-  ChromotingModule module(rdp_client_entry, UNSAFE_TODO(rdp_client_entry + 1));
+  ChromotingModule module;
   return module.Run() ? kSuccessExitCode : kInitializationFailed;
 }
 

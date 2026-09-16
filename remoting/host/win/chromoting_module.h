@@ -5,6 +5,8 @@
 #ifndef REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 #define REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/win/atl.h"
@@ -30,9 +32,7 @@ class AutoThreadTaskRunner;
 // the last COM object is released.
 class ChromotingModule : public ATL::CAtlModuleT<ChromotingModule> {
  public:
-  // Initializes the module. |classes| and |classes_end| must outlive |this|.
-  ChromotingModule(ATL::_ATL_OBJMAP_ENTRY* classes,
-                   ATL::_ATL_OBJMAP_ENTRY* classes_end);
+  ChromotingModule();
 
   ChromotingModule(const ChromotingModule&) = delete;
   ChromotingModule& operator=(const ChromotingModule&) = delete;
@@ -53,16 +53,15 @@ class ChromotingModule : public ATL::CAtlModuleT<ChromotingModule> {
   DECLARE_LIBID(LIBID_ChromotingLib)
 
  private:
-  // Registers/unregisters class objects from |classes_| - |classes_end_|.
+  // Registers/unregisters class objects from `classes_`.
   HRESULT RegisterClassObjects(DWORD class_context, DWORD flags);
   HRESULT RevokeClassObjects();
 
   // Used to initialize COM library.
   base::win::ScopedCOMInitializer com_initializer_;
 
-  // Point to the vector of classes registered by this module.
-  raw_ptr<ATL::_ATL_OBJMAP_ENTRY> classes_;
-  raw_ptr<ATL::_ATL_OBJMAP_ENTRY> classes_end_;
+  // Classes registered by this module.
+  std::array<ATL::_ATL_OBJMAP_ENTRY, 1> classes_;
 };
 
 }  // namespace remoting

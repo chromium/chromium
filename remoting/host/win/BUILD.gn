@@ -228,6 +228,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "chromoting_module_unittest.cc",
     "default_audio_device_change_detector_unittest.cc",
     "desktop_event_handler_unittest.cc",
     "event_trace_data.cc",
@@ -241,6 +242,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":chromoting_module",
     ":win",
     "//base/test:test_support",
     "//ipc",
@@ -397,6 +399,38 @@ executable("remoting_me2me_host") {
   }
 }
 
+config("rdp_desktop_session_clsid_config") {
+  defines = [ "RDP_DESKTOP_SESSION_CLSID=\"$rdp_desktop_session_clsid\"" ]
+}
+
+source_set("chromoting_module") {
+  sources = [
+    "chromoting_module.cc",
+    "chromoting_module.h",
+    "rdp_desktop_session.cc",
+    "rdp_desktop_session.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//remoting/build/config:host_implementation",
+    "//remoting/build/config:version",
+  ]
+
+  public_configs = [ ":rdp_desktop_session_clsid_config" ]
+
+  public_deps = [ ":remoting_lib_idl" ]
+
+  deps = [
+    ":acl_util",
+    ":win",
+    "//base",
+    "//remoting/base",
+    "//remoting/host/base",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+}
+
 shared_library("remoting_core") {
   configs += [
     "//build/config/compiler:wexit_time_destructors",
@@ -409,8 +443,6 @@ shared_library("remoting_core") {
     "$root_gen_dir/remoting/host/win/remoting_host_messages.rc",
     "$root_gen_dir/remoting/version.rc",
     "chromoting_lib.rc",
-    "chromoting_module.cc",
-    "chromoting_module.h",
     "core.cc",
     "etw_trace_consumer.cc",
     "etw_trace_controller.cc",
@@ -420,11 +452,10 @@ shared_library("remoting_core") {
     "host_event_file_logger.cc",
     "host_event_windows_event_logger.cc",
     "host_service.cc",
-    "rdp_desktop_session.cc",
-    "rdp_desktop_session.h",
   ]
   deps = [
     ":acl_util",
+    ":chromoting_module",
     ":messages",
     ":remoting_lib_idl",
     ":remoting_lib_ps",
