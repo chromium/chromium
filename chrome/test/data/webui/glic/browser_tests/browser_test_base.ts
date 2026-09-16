@@ -59,13 +59,26 @@ export class SequencedSubscriber<T> {
   // A promise that resolves when the observable is completed.
   readonly completed: Promise<void>;
 
+  // A promise that resolves when the observable emits an error.
+  readonly errorPromise: Promise<unknown>;
+
   constructor(observable: Observable<T>) {
     const completedResolvers = Promise.withResolvers<void>();
+    const errorResolvers = Promise.withResolvers<unknown>();
     this.completed = completedResolvers.promise;
-    this.subscriber = observable.subscribeObserver!({
-      next: this.change.bind(this),
-      complete: completedResolvers.resolve,
-    });
+    this.errorPromise = errorResolvers.promise;
+    if (observable.subscribeObserver) {
+      this.subscriber = observable.subscribeObserver({
+        next: this.change.bind(this),
+        error: (err: unknown) => {
+          this.error(err);
+          errorResolvers.resolve(err);
+        },
+        complete: completedResolvers.resolve,
+      });
+    } else {
+      this.subscriber = observable.subscribe(this.change.bind(this));
+    }
   }
   async next(): Promise<T> {
     // Wrapping the returned value with `waitFor` improves failure logs
@@ -88,6 +101,9 @@ export class SequencedSubscriber<T> {
   }
   waitForComplete(): Promise<void> {
     return waitFor(this.completed, undefined, 'waitForComplete timed out');
+  }
+  waitForError(): Promise<unknown> {
+    return waitFor(this.errorPromise, undefined, 'waitForError timed out');
   }
 
   // Waits for `condition` to return true.
@@ -145,6 +161,9 @@ export class SequencedSubscriber<T> {
   }
   private change(val: T) {
     this.getSignal(this.writeIndex++).resolve(val);
+  }
+  private error(err: unknown) {
+    this.getSignal(this.writeIndex++).reject(err);
   }
   private getSignal(index: number) {
     while (this.signals.length <= index) {

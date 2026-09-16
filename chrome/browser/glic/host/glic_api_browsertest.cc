@@ -4605,6 +4605,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testSetAudioDucking) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testCaptureRegionError) {
+  base::HistogramTester histogram_tester;
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  histogram_tester.ExpectBucketCount(
+      "Glic.Api.StatusCounts.Received",
+      glic::GlicHostApiRequestId::kSubscribeToCaptureRegion, 1);
+}
+
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetDisplayMedia) {
   // getDisplayMedia() (tab capture) is not supported on standard mobile
   // Android.

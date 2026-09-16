@@ -20,7 +20,6 @@ import type {InterfaceDef, PostMessageLifecycleObserver, PostMessageRemote, Post
 
 import {conversionSettings, urlFromClient} from './conversions.js';
 import {HostMessageHandler} from './host_from_client.js';
-import type {CaptureRegionObserverImpl} from './host_from_client.js';
 import {PanelOpenState} from './types.js';
 
 
@@ -62,7 +61,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   // processing is async.
   private panelOpenState = PanelOpenState.CLOSED;
   private instanceIsActive = true;
-  captureRegionObserver?: CaptureRegionObserverImpl;
 
   readonly router: PostMessageRouter;
   private isDestroyed = false;
@@ -98,7 +96,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     this.webClientState = ObservableValue.withValue<WebClientState>(
         WebClientState.ERROR);  // Final state
     this.hostMessageHandler.destroy();
-    this.captureRegionObserver?.destroy();
   }
 
   setInitialState(

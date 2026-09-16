@@ -1044,6 +1044,7 @@ class GlicWebClientHandler
 
   void CaptureRegion(mojo::PendingRemote<mojom::CaptureRegionObserver> observer,
                      mojom::CaptureRegionParamsPtr params) override {
+    LogApiRequest(GlicHostApiRequestId::kSubscribeToCaptureRegion);
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL: CaptureRegion (b/494315475)
     std::optional<int32_t> tab_id =
         params ? std::optional<int32_t>(params->tab_id) : std::nullopt;

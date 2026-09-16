@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PageMetadata, PdfDocumentData, PinTabsOptions, PromptType, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
+import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PageMetadata, PdfDocumentData, PinTabsOptions, PromptType, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 
 import type {InterfaceDef, InterfaceDefMethods} from './transport/messaging.js';
 import {defInterface, defMessage} from './transport/messaging.js';
@@ -311,14 +311,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 104},
     },
     {
-      name: 'subscribeToCaptureRegion',
-      request: defMessage<{
-        remote: PendingRemote<WebClientRegionCapture>,
-        params?: CaptureRegionParams,
-      }>(),
-      histogram: {id: 71},
-    },
-    {
       name: 'deleteCapturedRegion',
       request: defMessage<{
         tabId: string,
@@ -427,20 +419,6 @@ export const WebClientDef = defInterface({
 
 export type WebClient = typeof WebClientDef;
 
-export const WebClientRegionCaptureDef = defInterface({
-  name: 'WebClientRegionCapture',
-  methods: [
-    {
-      name: 'captureRegionUpdate',
-      request: defMessage<{
-        result?: CaptureRegionResult,
-        reason?: CaptureRegionErrorReason,
-      }>(),
-    },
-  ],
-});
-export type WebClientRegionCapture = typeof WebClientRegionCaptureDef;
-
 export const WebClientTabDataObserverDef = defInterface({
   name: 'WebClientTabDataObserver',
   methods: [
@@ -467,8 +445,7 @@ export const WebClientTabFaviconObserverDef = defInterface({
 });
 export type WebClientTabFaviconObserver = typeof WebClientTabFaviconObserverDef;
 
-export type WebClientRequestTypes =
-    InterfaceDefMethods<WebClient>&InterfaceDefMethods<WebClientRegionCapture>&
+export type WebClientRequestTypes = InterfaceDefMethods<WebClient>&
     InterfaceDefMethods<WebClientTabDataObserver>&
     InterfaceDefMethods<WebClientTabFaviconObserver>;
 
@@ -556,7 +533,7 @@ export const RECORDED_REQUEST_IDS = {
   OnContextUploadStarted: 68,
   SetActuationOnWebSetting: 69,
   OnModeChange: 70,
-  SubscribeToCaptureRegion: 71,
+  // Do not reuse deleted request ID: 71,
   // Do not reuse deleted request ID: 72,
   // Do not reuse deleted request ID: 73,
   // Do not reuse deleted request ID: 74,

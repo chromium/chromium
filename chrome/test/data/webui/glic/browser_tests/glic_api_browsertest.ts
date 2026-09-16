@@ -2366,6 +2366,18 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.setAudioDucking(true);
   }
 
+  async testCaptureRegionError() {
+    assertDefined(this.host.captureRegion);
+    const observable = this.host.captureRegion({
+      tabId: '999999',
+      options: {},
+    });
+    assertDefined(observable);
+    const sequence = observeSequence(observable);
+    const err = await assertRejects(sequence.next());
+    assertDefined(err);
+  }
+
   async testGeminiEnterpriseSettings() {
     assertDefined(this.host.getGeminiEnterpriseSettings);
     const settingsObservable = this.host.getGeminiEnterpriseSettings();

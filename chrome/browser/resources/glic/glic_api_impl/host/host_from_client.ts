@@ -8,18 +8,18 @@
 import {assertNotReached} from '//resources/js/assert.js';
 import type {BitmapN32} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 
-import {enumFromClient, enumToClient} from '../../enum_conversions.js';
-import {CaptureRegionObserverReceiver, PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo, TabDataHandlerReceiver, TabFaviconHandlerReceiver} from '../../glic.mojom-webui.js';
-import type {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, TabDataHandlerInterface, TabDataMojoType, TabFaviconHandlerInterface, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
+import {enumFromClient} from '../../enum_conversions.js';
+import {PromptType as PromptTypeMojo, ResponseStopCause as ResponseStopCauseMojo, TabDataHandlerReceiver, TabFaviconHandlerReceiver} from '../../glic.mojom-webui.js';
+import type {TabDataHandlerInterface, TabDataMojoType, TabFaviconHandlerInterface, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureScreenshotErrorReason, ResponseStopCause} from '../../glic_api/glic_api.js';
-import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PinTabsOptions, PromptType, Screenshot, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
+import type {ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PinTabsOptions, PromptType, Screenshot, TabContextOptions, UnpinTabsOptions, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
-import type {GlicException, ImageBytesResultPrivate, RgbaImage, TabContextResultPrivate, WebClientHost, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver} from '../request_types.js';
+import type {GlicException, ImageBytesResultPrivate, RgbaImage, TabContextResultPrivate, WebClientHost, WebClientTabDataObserver, WebClientTabFaviconObserver} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable} from '../request_types.js';
 import {ResponseExtras} from '../transport/messaging.js';
 import type {PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
 
-import {bitmapN32ToRGBAImage, captureRegionResultToClient, conversationInfoFromClient, counterAbuseVerdictFromClient, idFromClient, idToClient, imageBytesResultToClient, microphoneStatusToMojo, openPinnedTabPickerOptionsToMojo, optionalFromClient, pinTabsOptionsToMojo, tabContextOptionsFromClient, tabContextToClient, tabDataToPrivate, timeDeltaFromClient, unpinTabsOptionsToMojo, urlToClient, webClientModeToMojo} from './conversions.js';
+import {bitmapN32ToRGBAImage, conversationInfoFromClient, counterAbuseVerdictFromClient, idFromClient, idToClient, imageBytesResultToClient, microphoneStatusToMojo, openPinnedTabPickerOptionsToMojo, optionalFromClient, pinTabsOptionsToMojo, tabContextOptionsFromClient, tabContextToClient, tabDataToPrivate, timeDeltaFromClient, unpinTabsOptionsToMojo, urlToClient, webClientModeToMojo} from './conversions.js';
 import type {GlicApiHost} from './glic_api_host.js';
 import {linkPipeClosure} from './host_utils.js';
 
@@ -168,24 +168,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
 
   enableDragResize(request: {enabled: boolean}) {
     return this.handler.enableDragResize(request.enabled);
-  }
-
-  subscribeToCaptureRegion(request: {
-    remote: PendingRemote<WebClientRegionCapture>,
-    params?: CaptureRegionParams,
-  }): void {
-    this.host.captureRegionObserver?.destroy();
-    const remote: PostMessageRemote<WebClientRegionCapture> =
-        this.host.router.newRemote(request.remote);
-    const observer =
-        new CaptureRegionObserverImpl(remote, this.handler, request.params);
-    remote.addCloseHandler(() => {
-      observer.destroy();
-      if (this.host.captureRegionObserver === observer) {
-        this.host.captureRegionObserver = undefined;
-      }
-    });
-    this.host.captureRegionObserver = observer;
   }
 
   deleteCapturedRegion(request: {tabId: string, regionId: string}) {
@@ -453,54 +435,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
   }
 }
 
-
-export class CaptureRegionObserverImpl implements CaptureRegionObserver {
-  private mojoReceiver?: CaptureRegionObserverReceiver;
-  constructor(
-      public readonly pmRemote: PostMessageRemote<WebClientRegionCapture>,
-      private handler: WebClientHandlerInterface,
-      private params?: CaptureRegionParams) {
-    this.mojoReceiver = new CaptureRegionObserverReceiver(this);
-    linkPipeClosure(this.pmRemote, this.mojoReceiver);
-    const remote = this.mojoReceiver.$.bindNewPipeAndPassRemote();
-    this.handler.captureRegion(
-        remote,
-        this.params ? {
-          tabId: idFromClient(this.params.tabId),
-          options: tabContextOptionsFromClient(this.params.options),
-        } :
-                      null);
-  }
-
-  // Stops requesting updates.
-  destroy() {
-    if (!this.mojoReceiver) {
-      return;
-    }
-    this.mojoReceiver.$.close();
-    this.mojoReceiver = undefined;
-  }
-
-  onUpdate(
-      result: CaptureRegionResultMojo|null,
-      reason: CaptureRegionErrorReasonMojo|null): void {
-    const captureResult = captureRegionResultToClient(result);
-    if (captureResult) {
-      this.pmRemote.requestNoResponse('captureRegionUpdate', {
-        result: captureResult,
-      });
-    } else {
-      // If the capture update failed, notify the client of the error reason
-      // if provided and destroy the observer to close the pipe.
-      if (reason !== null) {
-        this.pmRemote.requestNoResponse('captureRegionUpdate', {
-          reason: enumToClient(reason),
-        });
-      }
-      this.destroy();
-    }
-  }
-}
 
 class TabDataHandlerImpl implements TabDataHandlerInterface {
   mojoReceiver?: TabDataHandlerReceiver;

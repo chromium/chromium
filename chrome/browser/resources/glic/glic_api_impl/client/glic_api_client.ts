@@ -5,8 +5,8 @@
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
 import {enumFromClient, enumToClient} from '../../enum_conversions.js';
-import {PinCandidatesObserverReceiver, SettingsPageField as SettingsPageFieldMojo, WebClientReceiver} from '../../glic.mojom-webui.js';
-import type {AdditionalContext as AdditionalContextMojo, FileUploadPolicyState as FileUploadPolicyStateMojo, FocusedTabData as FocusedTabDataMojo, GeminiEnterpriseSettings as GeminiEnterpriseSettingsMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserverInterface, TabData as TabDataMojo, WebClientHandlerRemote, WebClientInterface} from '../../glic.mojom-webui.js';
+import {CaptureRegionObserverReceiver, PinCandidatesObserverReceiver, SettingsPageField as SettingsPageFieldMojo, WebClientReceiver} from '../../glic.mojom-webui.js';
+import type {AdditionalContext as AdditionalContextMojo, CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverInterface, CaptureRegionResult as CaptureRegionResultMojo, FileUploadPolicyState as FileUploadPolicyStateMojo, FocusedTabData as FocusedTabDataMojo, GeminiEnterpriseSettings as GeminiEnterpriseSettingsMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserverInterface, TabData as TabDataMojo, WebClientHandlerRemote, WebClientInterface} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason, ClientCapabilities, HostCapability} from '../../glic_api/glic_api.js';
 import type {ActivateTabOptions, AdditionalContext, AnnotatedPageData, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, CreateTabOptions, FileUploadPolicyState, FocusedTabData, FormFactor, GeicBrowserHost, GeminiEnterpriseSettings, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ImageBytesResult, ImageInfo, InvokeOptions, MicrophoneStatus, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, PromptType, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
@@ -14,18 +14,18 @@ import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
 import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
 import {GlicBrowserHostGeic} from '../geic/geic_client.js';
-import {additionalContextToClient, conversionSettings, createTabOptionsFromClient, fileUploadPolicyStateToClient, focusedTabDataToClient, getPinCandidatesOptionsFromClient, idFromClient, idToClient, invokeOptionsToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, pinCandidateToClient, tabDataToClient, timeDeltaFromClient, urlFromClient, webClientModeToMojo} from '../host/conversions.js';
+import {additionalContextToClient, captureRegionResultToClient, conversionSettings, createTabOptionsFromClient, fileUploadPolicyStateToClient, focusedTabDataToClient, getPinCandidatesOptionsFromClient, idFromClient, idToClient, invokeOptionsToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, pinCandidateToClient, tabContextOptionsFromClient, tabDataToClient, timeDeltaFromClient, urlFromClient, webClientModeToMojo} from '../host/conversions.js';
 import type {GlicApiHost} from '../host/glic_api_host.js';
 import {PanelOpenState} from '../host/types.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {GlicBrowserHostTools} from '../tools/tools_client.js';
 import {assertNever, ResponseExtras} from '../transport/messaging.js';
-import type {createDirectMessagingPair, PendingRemote, PostMessageHandler, PostMessageReceiver, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
+import type {createDirectMessagingPair, PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
 import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
 
 import {replaceProperties} from './../conversions.js';
-import {ErrorWithReasonImpl, newTransferableException, WebClientRegionCaptureDef, WebClientTabDataObserverDef, WebClientTabFaviconObserverDef} from './../request_types.js';
-import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, GlicException, ImageBytesResultPrivate, ImageInfoPrivate, InvokeOptionsPrivate, PdfDocumentDataPrivate, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClient, WebClientHost, WebClientRegionCapture, WebClientTabDataObserver, WebClientTabFaviconObserver} from './../request_types.js';
+import {ErrorWithReasonImpl, newTransferableException, WebClientTabDataObserverDef, WebClientTabFaviconObserverDef} from './../request_types.js';
+import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, GlicException, ImageBytesResultPrivate, ImageInfoPrivate, InvokeOptionsPrivate, PdfDocumentDataPrivate, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, WebClient, WebClientHost, WebClientTabDataObserver, WebClientTabFaviconObserver} from './../request_types.js';
 import type {GlicBrowserHostBaseContext} from './glic_client_common.js';
 import {createDelegationProxy} from './glic_client_common.js';
 import {rgbaImageToBlob} from './image_utils.js';
@@ -61,22 +61,6 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
     }
     if (this.host) {
       this.host.webClientInitialized(success, exception);
-    }
-  }
-}
-
-class WebClientRegionCaptureHandler implements
-    PostMessageHandler<WebClientRegionCapture> {
-  constructor(private observable: CaptureRegionObservable) {}
-
-  captureRegionUpdate(payload: {
-    result?: CaptureRegionResult,
-    reason?: CaptureRegionErrorReason,
-  }): void {
-    if (payload.result) {
-      this.observable.processUpdate(payload.result);
-    } else if (payload.reason !== undefined) {
-      this.observable.processError(payload.reason);
     }
   }
 }
@@ -751,7 +735,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
       this.captureRegionObservable.complete();
     }
     this.captureRegionObservable =
-        new CaptureRegionObservable(this.clientRemote, this.router, params);
+        new CaptureRegionObservable(this.handler, params);
     return this.captureRegionObservable;
   }
 
@@ -1136,16 +1120,17 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
 
 
 export class CaptureRegionObservable extends
-    ObservableValueImpl<CaptureRegionResult> {
-  private receiver?: PostMessageReceiver;
+    ObservableValueImpl<CaptureRegionResult> implements
+        CaptureRegionObserverInterface {
+  private receiver?: CaptureRegionObserverReceiver;
   constructor(
-      private remote: PostMessageRemote<WebClientHost>,
-      private router: PostMessageRouter, private params?: CaptureRegionParams) {
+      private handler: WebClientHandlerRemote,
+      private params?: CaptureRegionParams) {
     super(false);
   }
 
   private close() {
-    this.receiver?.close();
+    this.receiver?.$.close();
     this.receiver = undefined;
   }
 
@@ -1155,18 +1140,21 @@ export class CaptureRegionObservable extends
       return;
     }
     if (hasActiveSubscription) {
-      const {receiver, remote} =
-          this.router.newPipeWithReceiver<WebClientRegionCapture>(
-              new WebClientRegionCaptureHandler(this),
-              WebClientRegionCaptureDef);
-      this.receiver = receiver;
-      this.receiver.addCloseHandler(() => {
-        this.processError(CaptureRegionErrorReason.UNKNOWN);
+      this.close();
+      this.receiver = new CaptureRegionObserverReceiver(this);
+      this.receiver.onConnectionError.addListener(() => {
+        if (!this.isStopped()) {
+          this.processError(CaptureRegionErrorReason.UNKNOWN);
+        }
       });
-      this.remote.requestNoResponse('subscribeToCaptureRegion', {
-        remote,
-        params: this.params,
-      });
+      const remote = this.receiver.$.bindNewPipeAndPassRemote();
+      this.handler.captureRegion(
+          remote,
+          this.params ? {
+            tabId: idFromClient(this.params.tabId),
+            options: tabContextOptionsFromClient(this.params.options),
+          } :
+                        null);
     } else {
       this.complete();
     }
@@ -1187,11 +1175,27 @@ export class CaptureRegionObservable extends
     this.close();
   }
 
-  processUpdate(result: CaptureRegionResult) {
-    this.assignAndSignal(result);
+  onUpdate(
+      result: CaptureRegionResultMojo|null,
+      reason: CaptureRegionErrorReasonMojo|null): void {
+    if (this.isStopped()) {
+      return;
+    }
+    const captureResult = captureRegionResultToClient(result);
+    if (captureResult) {
+      this.assignAndSignal(captureResult);
+    } else {
+      const errorReason = reason !== null ?
+          enumToClient(reason) as CaptureRegionErrorReason :
+          CaptureRegionErrorReason.UNKNOWN;
+      this.processError(errorReason);
+    }
   }
 
   processError(reason: CaptureRegionErrorReason) {
+    if (this.isStopped()) {
+      return;
+    }
     this.error(new ErrorWithReasonImpl('captureRegion', reason));
     this.close();
   }
