@@ -286,8 +286,25 @@ class InteractiveGlicTestMixin : public T {
     Api::MultiStep steps;
     switch (instrument_mode) {
       case GlicInstrumentMode::kHostAndContents:
-        steps = Api::Steps(WaitForGlicOpen(),
-                           WaitForWebUIState(mojom::WebUiState::kReady));
+        if (features::IsGlicNoWebviewEnabled()) {
+          steps = Api::Steps(
+              WaitForGlicOpen(),
+              WaitUntil(
+                  [this]() -> std::string {
+                    GlicInstanceImpl* instance = GetGlicInstanceImpl();
+                    if (!instance) {
+                      return "No glic instance";
+                    }
+                    if (!instance->host().IsWebClientConnected()) {
+                      return "Glic host not ready";
+                    }
+                    return "ready";
+                  },
+                  "ready", "WaitForWebClientConnected"));
+        } else {
+          steps = Api::Steps(WaitForGlicOpen(),
+                             WaitForWebUIState(mojom::WebUiState::kReady));
+        }
         break;
       case GlicInstrumentMode::kHostOnly:
         steps = Api::Steps(WaitForGlicOpen());
@@ -665,7 +682,7 @@ class InteractiveGlicTestMixin : public T {
     auto steps = Api::Steps();
     if (!use_element_identifiers_) {
       steps = Api::Steps(
-          WaitForGlicOpen(), WaitForWebUIState(mojom::WebUiState::kReady),
+          WaitForGlic(GlicInstrumentMode::kHostAndContents),
           WaitUntil(
               [this]() -> std::string {
                 auto* host = GetHost();
