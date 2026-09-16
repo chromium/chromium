@@ -23,7 +23,9 @@ class IOSProfileSessionMetricsProvider : public metrics::MetricsProvider {
     const bool session_is_active = std::ranges::any_of(
         GetLoadedProfiles(), &IOSProfileSessionMetricsProvider::IsSessionActive,
         &IOSProfileSessionDurationsServiceFactory::GetForProfile);
+    // TODO(crbug.com/560014755): Stop reporting Session.IsActive.
     base::UmaHistogramBoolean("Session.IsActive", session_is_active);
+    base::UmaHistogramBoolean("Session.IsActive2", session_is_active);
     if (session_is_active) {
       GetApplicationContext()->GetActivityReporter()->ReportActive();
     }

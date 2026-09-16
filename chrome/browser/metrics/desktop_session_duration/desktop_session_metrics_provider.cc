@@ -19,7 +19,9 @@ class DesktopSessionMetricsProvider : public MetricsProvider {
       ChromeUserMetricsExtension* /*uma_proto*/) override {
     const bool in_session = DesktopSessionDurationTracker::Get()->in_session();
     if (DesktopSessionDurationTracker::IsInitialized()) {
+      // TODO(crbug.com/560014755): Stop reporting Session.IsActive.
       base::UmaHistogramBoolean("Session.IsActive", in_session);
+      base::UmaHistogramBoolean("Session.IsActive2", in_session);
     }
     if (in_session) {
       g_browser_process->activity_reporter()->ReportActive();
