@@ -561,7 +561,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &lens::features::kLensBypassCompressionForC2pa,
     &lens::features::kLensOverlayAndroid,
     &lens::features::kLensSendRawFileMediaTypes,
-    &media::kAutoDocPiPPermissionPromptAndroid,
     &media::kAutoPictureInPictureAndroid,
     &media::kContextMenuCopyVideoFrame,
     &media::kContextMenuPictureInPictureAndroid,

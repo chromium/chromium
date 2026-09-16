@@ -42,7 +42,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderCoordinator;
 import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderDelegate;
@@ -361,18 +360,16 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
                         mParentWebContents,
                         mWebContents);
 
-        if (ChromeFeatureList.sAutoDocPipPermissionPromptAndroid.isEnabled()) {
-            WebContents webContents = mParentWebContents;
-            if (webContents != null
-                    && AutoPictureInPicturePermissionController.isAutoPictureInPictureInUse(
-                            webContents)) {
-                mThinWebView
-                        .getView()
-                        .post(
-                                () ->
-                                        AutoPictureInPicturePermissionController.showPromptIfNeeded(
-                                                this, mInitiatorTab, this::finish));
-            }
+        WebContents webContents = mParentWebContents;
+        if (webContents != null
+                && AutoPictureInPicturePermissionController.isAutoPictureInPictureInUse(
+                        webContents)) {
+            mThinWebView
+                    .getView()
+                    .post(
+                            () ->
+                                    AutoPictureInPicturePermissionController.showPromptIfNeeded(
+                                            this, mInitiatorTab, this::finish));
         }
 
         setupInitialBoundsListener(contentLayout);
@@ -409,12 +406,9 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         int height = windowBounds.height();
 
         // Check if we need to show the permission prompt and thus might need to enlarge the window.
-        boolean isPermissionPromptNeeded = false;
-        if (ChromeFeatureList.sAutoDocPipPermissionPromptAndroid.isEnabled()) {
-            isPermissionPromptNeeded =
-                    AutoPictureInPicturePermissionController.isPermissionPromptNeeded(
-                            mParentWebContents);
-        }
+        boolean isPermissionPromptNeeded =
+                AutoPictureInPicturePermissionController.isPermissionPromptNeeded(
+                        mParentWebContents);
 
         // Enforce minimum dimensions if the prompt is needed and requested bounds are too small.
         if (isPermissionPromptNeeded) {
@@ -710,10 +704,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             }
         }
 
-        if (ChromeFeatureList.sAutoDocPipPermissionPromptAndroid.isEnabled()
-                && mParentWebContents != null
-                && !mParentWebContents.isDestroyed()
-                && !mIsRecreating) {
+        if (mParentWebContents != null && !mParentWebContents.isDestroyed() && !mIsRecreating) {
             AutoPictureInPicturePermissionController.handleWindowDestruction(mParentWebContents);
         }
 

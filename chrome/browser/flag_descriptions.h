@@ -869,12 +869,6 @@ inline constexpr char kIsolatedSandboxedIframesDescription[] =
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
 
-inline constexpr char kAutoDocPiPPermissionPromptAndroidName[] =
-    "Auto Document Picture-in-Picture Permission Prompt on Android";
-inline constexpr char kAutoDocPiPPermissionPromptAndroidDescription[] =
-    "Enables the Auto Document Picture-in-Picture permission prompt on "
-    "Android.";
-
 inline constexpr char kAutofillAddChromeUserContextFieldsName[] =
     "Add client type and version to request context in Payments calls";
 inline constexpr char kAutofillAddChromeUserContextFieldsDescription[] =
