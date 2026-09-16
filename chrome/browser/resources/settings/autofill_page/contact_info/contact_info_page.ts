@@ -706,6 +706,13 @@ export class SettingsContactInfoPageElement extends
     }
   }
 
+  private onGmailOtpConsentBackendNetworkError_() {
+    // If fetching consent fails (e.g., due to a network error or API
+    // timeout), fall back to enabling the UI toggle to avoid blocking users and
+    // rely on backend enforcement when autofill is performed.
+    this.setOtpFillingToggleChecked_(true);
+  }
+
   private onGmailOtpFillingPrefOrAccountChange_(
       showToggle: boolean,
       accountInfo: chrome.autofillPrivate.AccountInfo|null) {
@@ -770,9 +777,7 @@ export class SettingsContactInfoPageElement extends
               this.lastCheckedAccountEmail_ !== fetchEmail) {
             return;
           }
-          this.setOtpFillingToggleChecked_(
-              this.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF)
-                  .value);
+          this.onGmailOtpConsentBackendNetworkError_();
         })
         .finally(() => {
           if (!this.isConnected ||
@@ -842,10 +847,7 @@ export class SettingsContactInfoPageElement extends
       if (!this.isConnected || this.accountInfo_?.email !== currentEmail) {
         return;
       }
-      // If fetching consent fails (e.g., due to a network error or API
-      // timeout), fall back to enabling the feature to avoid blocking users and
-      // rely on backend enforcement when autofill is performed.
-      this.enableOtpFilling_(currentEmail);
+      this.onGmailOtpConsentBackendNetworkError_();
     } finally {
       this.isOtpConsentLoading_ = false;
       // Restore focus to the toggle once it is restamped if no disclaimer

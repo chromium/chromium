@@ -1529,12 +1529,12 @@ suite('ContactInfoPageUiTest', function() {
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
             '#autofillOtpFillingToggle');
     assertTrue(!!updatedToggle);
-    // Toggle is switched on in UI and pref is saved.
+    // Toggle is switched on in UI, but pref is not saved.
     assertTrue(updatedToggle.checked);
-    assertTrue(
+    assertFalse(
         page.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF).value);
     assertEquals(
-        1,
+        0,
         metricsTracker.count(
             AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true));
     assertFalse(
