@@ -192,6 +192,7 @@ class TestVariationsService : public VariationsService {
   bool delta_compressed_seed() const { return delta_compressed_seed_; }
   bool gzip_compressed_seed() const { return gzip_compressed_seed_; }
   bool runtime_simulation_called() const { return runtime_simulation_called_; }
+  base::Time stored_date() const { return stored_date_; }
 
   bool CallMaybeRetryOverHTTP() { return CallMaybeRetryOverHTTPForTesting(); }
   void SimulateAndApplyRuntimeMutableChanges(
@@ -247,6 +248,7 @@ class TestVariationsService : public VariationsService {
     stored_seed_data_ = seed_data;
     stored_country_ = country_code;
     stored_geo_level_ = geo_level1;
+    stored_date_ = date_fetched;
     delta_compressed_seed_ = is_delta_compressed;
     gzip_compressed_seed_ = is_gzip_compressed;
     OnSeedStoreResult(is_delta_compressed, seed_stores_succeed_,
@@ -277,6 +279,7 @@ class TestVariationsService : public VariationsService {
   bool runtime_simulation_called_ = false;
   base::OnceClosure fetch_intercepted_callback_;
   std::string last_header_serial_number_;
+  base::Time stored_date_;
 };
 
 class TestVariationsServiceObserver : public VariationsService::Observer {
@@ -1093,6 +1096,88 @@ TEST_F(VariationsServiceTest, SafeMode_NotModifiedFetchClearsFailureStreaks) {
 
   EXPECT_EQ(0, prefs_.GetInteger(prefs::kVariationsCrashStreak));
   EXPECT_EQ(0, prefs_.GetInteger(prefs::kVariationsFailedToFetchSeedStreak));
+}
+
+TEST_F(VariationsServiceTest, NotModifiedOverHttpRetryDoesNotUpdateState) {
+  // Set a fixed past reference date (2024-01-01 00:00:00 UTC).
+  base::Time initial_time;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2024-01-01 00:00:00 UTC", &initial_time));
+  prefs_.SetInteger(prefs::kVariationsCrashStreak, 2);
+  prefs_.SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 1);
+  prefs_.SetTime(prefs::kVariationsSeedDate, initial_time);
+  prefs_.SetTime(prefs::kVariationsLastFetchTime, initial_time);
+  VariationsService::EnableFetchForTesting();
+
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), /*use_secure_url=*/false);
+  service.set_intercepts_fetch(false);
+
+  std::string headers("HTTP/1.1 304 Not Modified\n\n");
+  auto head = network::mojom::URLResponseHead::New();
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
+  // Set a spoofed Date header in the future relative to initial_time.
+  head->headers->SetHeader(
+      "Date", net::HttpUtil::TimeFormatHTTP(initial_time + base::Days(30)));
+  network::URLLoaderCompletionStatus status;
+  service.test_url_loader_factory()->AddResponse(service.interception_url(),
+                                                 std::move(head), "", status);
+
+  service.set_last_request_was_retry(false);
+  service.set_insecure_url(service.interception_url());
+  EXPECT_TRUE(service.CallMaybeRetryOverHTTP());
+  base::RunLoop().RunUntilIdle();
+
+  // A 304 received over the HTTP retry should not be treated as confirmation
+  // that the stored seed is current, so the seed date should not be updated.
+  // However, since we successfully reached the server, the last fetch time
+  // and failure streaks should be updated (using the local time, which cannot
+  // be spoofed).
+  EXPECT_EQ(0, prefs_.GetInteger(prefs::kVariationsCrashStreak));
+  EXPECT_EQ(0, prefs_.GetInteger(prefs::kVariationsFailedToFetchSeedStreak));
+  EXPECT_EQ(initial_time, prefs_.GetTime(prefs::kVariationsSeedDate));
+  EXPECT_NE(initial_time, prefs_.GetTime(prefs::kVariationsLastFetchTime));
+}
+
+TEST_F(VariationsServiceTest, SeedDateIgnoredOverHttpRetry) {
+  // Set a fixed past reference date (2024-01-01 00:00:00 UTC).
+  base::Time initial_time;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2024-01-01 00:00:00 UTC", &initial_time));
+  prefs_.SetTime(prefs::kVariationsSeedDate, initial_time);
+  prefs_.SetTime(prefs::kVariationsLastFetchTime, initial_time);
+  VariationsService::EnableFetchForTesting();
+
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), /*use_secure_url=*/false);
+  service.set_intercepts_fetch(false);
+
+  // Return 200 OK with a spoofed Date header in the future.
+  std::string headers("HTTP/1.1 200 OK\n\n");
+  auto head = network::mojom::URLResponseHead::New();
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
+  // Set a spoofed Date header in the future relative to initial_time.
+  head->headers->SetHeader(
+      "Date", net::HttpUtil::TimeFormatHTTP(initial_time + base::Days(30)));
+  network::URLLoaderCompletionStatus status;
+  std::string seed_body = SerializeSeed(CreateTestSeed());
+  service.test_url_loader_factory()->AddResponse(
+      service.interception_url(), std::move(head), seed_body, status);
+
+  service.set_last_request_was_retry(false);
+  service.set_insecure_url(service.interception_url());
+  EXPECT_TRUE(service.CallMaybeRetryOverHTTP());
+  base::RunLoop().RunUntilIdle();
+
+  // The seed date should NOT be set to the future date. It should be
+  // base::Time() because the fetch was insecure.
+  EXPECT_EQ(base::Time(), service.stored_date());
 }
 
 TEST_F(VariationsServiceTest, FieldTrialCreatorInitializedCorrectly) {

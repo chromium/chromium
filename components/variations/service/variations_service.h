@@ -378,10 +378,11 @@ class VariationsService
   // streaks.
   void RecordSuccessfulFetchNewSeed();
 
-  // Like VariationsService::RecordSuccessfulFetchNewSeed(), but intended to be
-  // called for 304 responses from the variations server. Also, updates the seed
-  // date and client fetch time.
-  void RecordSuccessfulFetchSeedNotModified(base::Time response_date);
+  // Records a 304 response from the variations server. Updates the client fetch
+  // time and clears failure streaks. If `response_date` has a value (present on
+  // secure HTTPS responses), updates the stored seed date.
+  void RecordSuccessfulFetchSeedNotModified(
+      std::optional<base::Time> response_date);
 
   // Performs a simulation of the given `seed` to find any runtime mutable
   // changes that need to be applied to the current session, and apply them.
