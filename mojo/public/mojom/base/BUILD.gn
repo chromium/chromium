@@ -6,6 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 mojom_component("base") {
+  generate_rust = true
   generate_blink = true
   generate_java = true
   sources = [
@@ -792,6 +793,7 @@ mojom_component("base") {
 }
 
 mojom_component("protobuf_support") {
+  generate_rust = true
   generate_blink = true
   sources = [ "proto_wrapper.mojom" ]
   generate_java = true

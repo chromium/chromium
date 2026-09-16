@@ -571,6 +571,7 @@ mojom("mojom_origin_or_wildcard_header_value") {
 }
 
 mojom("mojom_http_request_headers") {
+  generate_rust = true
   generate_blink = true
   generate_java = true
   sources = [ "http_request_headers.mojom" ]

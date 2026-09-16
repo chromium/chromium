@@ -151,6 +151,7 @@ source_set("features") {
 }
 
 mojom("interfaces") {
+  generate_rust = true
   sources = [ "safe_browsing_url_checker.mojom" ]
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
