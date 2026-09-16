@@ -26,7 +26,6 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteResult.VerificationPoint;
 import org.chromium.components.omnibox.AutocompleteStopReason;
-import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -469,7 +468,7 @@ public class AutocompleteController {
                 @JniType("GURL") GURL currentUrl,
                 @PageClassification @JniType("metrics::OmniboxEventProto::PageClassification")
                         int pageClassification,
-                @ToolMode @JniType("omnibox::ToolMode") int toolMode,
+                @JniType("omnibox::ToolMode") int toolMode,
                 boolean preventInlineAutocomplete,
                 boolean inKeywordMode,
                 boolean allowExactKeywordMatch,
@@ -510,7 +509,7 @@ public class AutocompleteController {
                 @JniType("GURL") GURL currentUrl,
                 @PageClassification @JniType("metrics::OmniboxEventProto::PageClassification")
                         int pageClassification,
-                @ToolMode @JniType("omnibox::ToolMode") int toolMode,
+                @JniType("omnibox::ToolMode") int toolMode,
                 @JniType("std::u16string") String currentTitle);
 
         void deleteMatchElement(

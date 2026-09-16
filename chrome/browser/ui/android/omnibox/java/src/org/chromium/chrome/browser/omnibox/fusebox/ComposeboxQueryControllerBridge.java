@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.contextual_search.InputState;
-import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -208,7 +207,7 @@ public class ComposeboxQueryControllerBridge {
     /**
      * @param toolMode The active tool to set.
      */
-    public void setActiveTool(@ToolMode int toolMode) {
+    public void setActiveTool(int toolMode) {
         ComposeboxQueryControllerBridgeJni.get().setActiveTool(mNativeInstance, toolMode);
     }
 
@@ -308,7 +307,7 @@ public class ComposeboxQueryControllerBridge {
 
         void setActiveTool(
                 long nativeComposeboxQueryControllerBridge,
-                @ToolMode @JniType("omnibox::ToolMode") int toolMode);
+                @JniType("omnibox::ToolMode") int toolMode);
 
         void setActiveModel(
                 long nativeComposeboxQueryControllerBridge,

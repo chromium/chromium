@@ -37,7 +37,7 @@ import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassificati
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
-import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
+import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.url.GURL;
 
 /** Unit tests for {@link FuseboxSessionState}. */
@@ -75,7 +75,7 @@ public class FuseboxSessionStateUnitTest {
                     AutocompleteInput input = session.getAutocompleteInput();
                     input.setRequestType(AutocompleteRequestType.IMAGE_GENERATION);
                     verify(mComposeboxQueryControllerBridge)
-                            .setActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN);
+                            .setActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
 
                     clearInvocations(mComposeboxQueryControllerBridge);
                     input.setHasAttachments(true);

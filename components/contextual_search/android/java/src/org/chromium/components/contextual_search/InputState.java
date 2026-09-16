@@ -17,7 +17,7 @@ import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
-import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
+import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,9 +41,9 @@ public class InputState {
     public final List<Integer> disabledInputTypes;
     public final int maxTotalInputs;
     public final Map<Integer, Integer> maxInputsByType;
-    public final @ToolMode int activeTool;
-    public final List<@ToolMode Integer> allowedTools;
-    public final List<@ToolMode Integer> disabledTools;
+    public final int activeTool;
+    public final List<Integer> allowedTools;
+    public final List<Integer> disabledTools;
     public final boolean imageGenUploadActive;
     public final int activeModel;
     public final int defaultModel;
@@ -72,9 +72,9 @@ public class InputState {
             int maxTotalInputs,
             @JniType("std::map<omnibox::InputType, int>") Map<Integer, Integer> maxInputsByType,
             byte @Nullable [][] inputTypeConfigs,
-            @JniType("omnibox::ToolMode") @ToolMode int activeTool,
-            @JniType("std::vector<omnibox::ToolMode>") @ToolMode int[] allowedTools,
-            @JniType("std::vector<omnibox::ToolMode>") @ToolMode int[] disabledTools,
+            @JniType("omnibox::ToolMode") int activeTool,
+            @JniType("std::vector<omnibox::ToolMode>") int[] allowedTools,
+            @JniType("std::vector<omnibox::ToolMode>") int[] disabledTools,
             boolean imageGenUploadActive,
             byte @Nullable [][] toolConfigs,
             @JniType("std::vector<uint8_t>") byte @Nullable [] toolsSectionConfig,
@@ -199,7 +199,7 @@ public class InputState {
      * @param toolMode The tool mode to check.
      * @return Whether the tool should be visible in the UI.
      */
-    public boolean isToolVisible(@ToolMode int toolMode) {
+    public boolean isToolVisible(int toolMode) {
         return activeTool == toolMode || allowedTools.contains(toolMode);
     }
 
@@ -207,21 +207,21 @@ public class InputState {
      * @param toolMode The tool mode to check.
      * @return Whether the tool should be enabled in the UI.
      */
-    public boolean isToolEnabled(@ToolMode int toolMode) {
+    public boolean isToolEnabled(int toolMode) {
         return activeTool == toolMode
                 || (allowedTools.contains(toolMode) && !disabledTools.contains(toolMode));
     }
 
     /** Returns whether the image gen tool should be visible, by checking both tool modes. */
     public boolean isImageGenToolVisible() {
-        return isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN)
-                || isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD);
+        return isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                || isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE);
     }
 
     /** Returns whether the image gen tool should be enabled, by checking both tool modes. */
     public boolean isImageGenToolEnabled() {
-        return isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN)
-                || isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD);
+        return isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                || isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE);
     }
 
     /**
@@ -307,9 +307,9 @@ public class InputState {
         private int mMaxTotalInputs;
         private Map<Integer, Integer> mMaxInputsByType = Collections.emptyMap();
         private byte @Nullable [][] mInputTypeConfigs;
-        private @ToolMode int mActiveTool;
-        private @ToolMode int[] mAllowedTools = new int[0];
-        private @ToolMode int[] mDisabledTools = new int[0];
+        private int mActiveTool;
+        private int[] mAllowedTools = new int[0];
+        private int[] mDisabledTools = new int[0];
         private boolean mImageGenUploadActive;
         private byte @Nullable [][] mToolConfigs;
         private byte @Nullable [] mToolsSectionConfig;
@@ -350,17 +350,17 @@ public class InputState {
             return this;
         }
 
-        public Builder withActiveTool(@ToolMode int activeTool) {
+        public Builder withActiveTool(int activeTool) {
             mActiveTool = activeTool;
             return this;
         }
 
-        public Builder withAllowedTools(@ToolMode int... allowedTools) {
+        public Builder withAllowedTools(int... allowedTools) {
             mAllowedTools = allowedTools;
             return this;
         }
 
-        public Builder withDisabledTools(@ToolMode int... disabledTools) {
+        public Builder withDisabledTools(int... disabledTools) {
             mDisabledTools = disabledTools;
             return this;
         }

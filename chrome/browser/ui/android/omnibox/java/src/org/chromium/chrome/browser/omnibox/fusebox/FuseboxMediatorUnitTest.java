@@ -120,7 +120,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
-import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
+import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -313,36 +313,36 @@ public class FuseboxMediatorUnitTest {
         mMediator.beginInput(mSession);
     }
 
-    private void clickToolButton(@ToolMode int toolMode) {
+    private void clickToolButton(int protoId) {
         List<PopupButtonData> toolButtons =
                 mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
         for (PopupButtonData data : toolButtons) {
-            if (data.protoId == toolMode) {
+            if (data.protoId == protoId) {
                 data.onClicked.run();
                 return;
             }
         }
-        throw new IllegalArgumentException("Tool button not found for toolMode: " + toolMode);
+        throw new IllegalArgumentException("Tool button not found for protoId: " + protoId);
     }
 
-    private boolean isToolVisible(@ToolMode int toolMode) {
+    private boolean isToolVisible(int protoId) {
         List<PopupButtonData> toolButtons =
                 mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
         if (toolButtons == null) return false;
         for (PopupButtonData data : toolButtons) {
-            if (data.protoId == toolMode) {
+            if (data.protoId == protoId) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean isToolEnabled(@ToolMode int toolMode) {
+    private boolean isToolEnabled(int protoId) {
         List<PopupButtonData> toolButtons =
                 mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
         if (toolButtons == null) return false;
         for (PopupButtonData data : toolButtons) {
-            if (data.protoId == toolMode) {
+            if (data.protoId == protoId) {
                 return data.enabled;
             }
         }
@@ -1123,8 +1123,9 @@ public class FuseboxMediatorUnitTest {
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.MobileFusebox.ToolButtonSelected", ToolMode.TOOL_MODE_UNSPECIFIED);
-        clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED);
+                        "Omnibox.MobileFusebox.ToolButtonSelected",
+                        ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
+        clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
         histogramWatcher.assertExpected();
     }
 
@@ -1137,12 +1138,12 @@ public class FuseboxMediatorUnitTest {
         assertEquals(
                 AutocompleteRequestType.SEARCH, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
 
-        clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED);
+        clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
         assertEquals(
                 AutocompleteRequestType.AI_MODE, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
 
         mMediator.onPlusButtonClicked();
-        clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED);
+        clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
         assertEquals(
                 AutocompleteRequestType.SEARCH, (int) mModel.get(FuseboxProperties.REQUEST_TYPE));
     }
@@ -1327,12 +1328,12 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig canvasConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
@@ -1340,9 +1341,10 @@ public class FuseboxMediatorUnitTest {
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.MobileFusebox.ToolButtonSelected", ToolMode.TOOL_MODE_CANVAS);
+                        "Omnibox.MobileFusebox.ToolButtonSelected",
+                        ToolMode.TOOL_MODE_CANVAS_VALUE);
 
-        clickToolButton(ToolMode.TOOL_MODE_CANVAS);
+        clickToolButton(ToolMode.TOOL_MODE_CANVAS_VALUE);
 
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
         assertEquals(AutocompleteRequestType.CANVAS, mInput.getRequestType());
@@ -1355,12 +1357,12 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig deepSearchConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setMenuLabel("Deep Search")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
                         .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
@@ -1368,9 +1370,10 @@ public class FuseboxMediatorUnitTest {
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.MobileFusebox.ToolButtonSelected", ToolMode.TOOL_MODE_DEEP_SEARCH);
+                        "Omnibox.MobileFusebox.ToolButtonSelected",
+                        ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
 
-        clickToolButton(ToolMode.TOOL_MODE_DEEP_SEARCH);
+        clickToolButton(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
 
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
         assertEquals(AutocompleteRequestType.DEEP_SEARCH, mInput.getRequestType());
@@ -1542,13 +1545,13 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig toolConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
                         .setMenuLabel("Create")
                         .build();
         SectionConfig sectionConfig = SectionConfig.newBuilder().setHeader("Tools").build();
         InputState state1 =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
                         .withToolConfigs(new byte[][] {toolConfig.toByteArray()})
                         .withToolsSectionConfig(sectionConfig.toByteArray())
                         .build();
@@ -1592,12 +1595,12 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig canvasConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
@@ -1607,7 +1610,7 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Omnibox.MobileFusebox.AiModeActivationSource")
                         .build()) {
-            clickToolButton(ToolMode.TOOL_MODE_CANVAS);
+            clickToolButton(ToolMode.TOOL_MODE_CANVAS_VALUE);
         }
     }
 
@@ -1616,12 +1619,12 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig deepSearchConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setMenuLabel("Deep Search")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
                         .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
@@ -1631,7 +1634,7 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AiModeActivationSource",
                         FuseboxMetrics.AiModeActivationSource.TOOL_MENU)) {
-            clickToolButton(ToolMode.TOOL_MODE_DEEP_SEARCH);
+            clickToolButton(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
         }
     }
 
@@ -1640,12 +1643,12 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig canvasConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
@@ -1655,7 +1658,7 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Omnibox.MobileFusebox.AiModeActivationSource",
                         FuseboxMetrics.AiModeActivationSource.TOOL_MENU)) {
-            clickToolButton(ToolMode.TOOL_MODE_CANVAS);
+            clickToolButton(ToolMode.TOOL_MODE_CANVAS_VALUE);
         }
     }
 
@@ -1927,18 +1930,18 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig config =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withToolConfigs(new byte[][] {config.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
         mMediator.onPlusButtonClicked();
 
-        clickToolButton(ToolMode.TOOL_MODE_CANVAS);
+        clickToolButton(ToolMode.TOOL_MODE_CANVAS_VALUE);
 
         mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
 
@@ -2037,25 +2040,29 @@ public class FuseboxMediatorUnitTest {
                         .build();
         ToolConfig deepSearchConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setMenuLabel("Deep Search")
                         .build();
         ToolConfig canvasConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH, ToolMode.TOOL_MODE_CANVAS)
-                        .withDisabledTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withAllowedTools(
+                                ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE,
+                                ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withDisabledTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
                         .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
                         .withAllowedModels(
                                 ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
                                 ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH, ToolMode.TOOL_MODE_CANVAS)
+                        .withAllowedTools(
+                                ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE,
+                                ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withModelConfigs(
                                 new byte[][] {configAuto.toByteArray(), configPro.toByteArray()})
                         .withToolConfigs(
@@ -2066,11 +2073,11 @@ public class FuseboxMediatorUnitTest {
         mInputStateSupplier.set(state);
         mMediator.onPlusButtonClicked();
 
-        assertTrue(isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH));
-        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_DEEP_SEARCH));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
 
-        assertTrue(isToolVisible(ToolMode.TOOL_MODE_CANVAS));
-        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_CANVAS));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_CANVAS_VALUE));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
 
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertEquals(2, models.size());
@@ -2107,14 +2114,14 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig canvasConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS)
-                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
-                        .withDisabledTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withDisabledTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .withAllowedModels(
                                 ModelMode.MODEL_MODE_GEMINI_PRO_VALUE,
@@ -2127,7 +2134,7 @@ public class FuseboxMediatorUnitTest {
         mInputStateSupplier.set(state);
         mMediator.onPlusButtonClicked();
 
-        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertEquals(2, models.size());
         assertTrue(models.get(0).enabled);
@@ -2149,18 +2156,18 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig canvasConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas")
                         .build();
         ToolConfig deepSearchConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setMenuLabel("Deep Search")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS)
-                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .withAllowedModels(
                                 ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
@@ -2175,7 +2182,7 @@ public class FuseboxMediatorUnitTest {
         mInputStateSupplier.set(state);
         mMediator.onPlusButtonClicked();
 
-        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
         List<PopupButtonData> modelButtons =
                 mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
         assertEquals(2, modelButtons.size());
@@ -2336,26 +2343,26 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig canvasConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas")
                         .build();
 
         InputState state =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
 
         mInputStateSupplier.set(state);
         mMediator.onPlusButtonClicked();
 
-        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_CANVAS));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
 
         mMediator.onPlusButtonClicked();
         mAttachments.remove(attachment, /* isFailure= */ false);
         mMediator.onPlusButtonClicked();
 
-        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
     }
 
     @Test
@@ -2367,20 +2374,20 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig canvasConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas")
                         .build();
 
         InputState state =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
 
         mInputStateSupplier.set(state);
         mMediator.onPlusButtonClicked();
 
-        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_CANVAS_VALUE));
     }
 
     @Test
@@ -2407,58 +2414,58 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig imageGenConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setTool(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .setMenuLabel("Image Gen")
                         .build();
         ToolConfig imageGenUploadConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
+                        .setTool(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
                         .setMenuLabel("Image Gen Upload")
                         .build();
 
         InputState bothHidden = new InputState.Builder().build();
         mInputStateSupplier.set(bothHidden);
         mMediator.onPlusButtonClicked();
-        assertFalse(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN));
-        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
+        assertFalse(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         InputState imageGenVisibleDisabled =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN)
-                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
+                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
                         .withToolConfigs(new byte[][] {imageGenConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(imageGenVisibleDisabled);
-        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN));
-        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         InputState imageGenUploadVisibleDisabled =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
-                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
+                        .withDisabledTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
                         .withToolConfigs(new byte[][] {imageGenUploadConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(imageGenUploadVisibleDisabled);
-        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD));
-        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE));
+        assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE));
 
         InputState imageGenEnabled =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
                         .withToolConfigs(new byte[][] {imageGenConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(imageGenEnabled);
-        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN));
-        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         InputState imageGenUploadEnabled =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD)
+                        .withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE)
                         .withToolConfigs(new byte[][] {imageGenUploadConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(imageGenUploadEnabled);
-        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD));
-        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD));
+        assertTrue(isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE));
+        assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE));
     }
 
     @Test
@@ -2613,14 +2620,14 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig canvasConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas Menu")
                         .setChipLabel("Canvas Chip")
                         .build();
         InputState stateWithTool =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS)
-                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
 
@@ -2630,14 +2637,14 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         ToolConfig secondConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas Menu")
                         .setChipLabel("Canvas Chip")
                         .build();
         InputState secondInputState =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_UNSPECIFIED)
-                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withActiveTool(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withToolConfigs(new byte[][] {secondConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(secondInputState);
@@ -2652,12 +2659,12 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig deepSearchConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setMenuLabel("Deep Search")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
                         .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
@@ -2666,7 +2673,7 @@ public class FuseboxMediatorUnitTest {
         List<PopupButtonData> tools = mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
         assertEquals(1, tools.size());
         assertEquals("Deep Search", tools.get(0).text);
-        assertFalse(isToolVisible(ToolMode.TOOL_MODE_UNSPECIFIED));
+        assertFalse(isToolVisible(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE));
     }
 
     @Test
@@ -2676,13 +2683,13 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig toolWithTooltip =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setMenuLabel("Deep Search")
                         .setMenuTooltip("Deep Search Tooltip")
                         .build();
         ToolConfig toolNoTooltip =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas")
                         .build();
 
@@ -2700,7 +2707,9 @@ public class FuseboxMediatorUnitTest {
 
         InputState state =
                 new InputState.Builder()
-                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH, ToolMode.TOOL_MODE_CANVAS)
+                        .withAllowedTools(
+                                ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE,
+                                ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withToolConfigs(
                                 new byte[][] {
                                     toolWithTooltip.toByteArray(), toolNoTooltip.toByteArray()
@@ -2786,15 +2795,15 @@ public class FuseboxMediatorUnitTest {
                         .build();
         ToolConfig deepSearchConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setMenuLabel("Deep Search")
                         .setChipLabel("Deep Search Chip")
                         .build();
 
         InputState state =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
-                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
                         .withAllowedModels(
                                 ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
@@ -2846,15 +2855,15 @@ public class FuseboxMediatorUnitTest {
                         .build();
         ToolConfig deepSearchConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setMenuLabel("Deep Search")
                         .setIcon(Icon.newBuilder().setIconIdValue(unknownIconId).build())
                         .build();
 
         InputState state =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
-                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
                         .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
                         .withAllowedModels(
                                 ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
@@ -2950,14 +2959,14 @@ public class FuseboxMediatorUnitTest {
 
         ToolConfig canvasConfig =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_CANVAS)
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
                         .setMenuLabel("Canvas Menu")
                         .setChipLabel("Canvas Chip")
                         .build();
         InputState state1 =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS)
-                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
 
@@ -2969,8 +2978,8 @@ public class FuseboxMediatorUnitTest {
         // Emit another InputState with the same active tool / button text.
         InputState state2 =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS)
-                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
+                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state2);
@@ -3071,14 +3080,14 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         ToolConfig config =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .setChipLabel("Deep Search Chip")
                         .setIcon(
                                 Icon.newBuilder().setIconId(IconResourceIds.TRAVEL_EXPLORE).build())
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
                         .withToolConfigs(new byte[][] {config.toByteArray()})
                         .build();
 
@@ -3099,13 +3108,13 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         ToolConfig config =
                 ToolConfig.newBuilder()
-                        .setToolValue(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .setTool(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .setChipLabel("Create Image Chip")
                         .setIcon(Icon.newBuilder().setIconId(IconResourceIds.BANANA).build())
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN)
+                        .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
                         .withToolConfigs(new byte[][] {config.toByteArray()})
                         .build();
 
@@ -3191,7 +3200,9 @@ public class FuseboxMediatorUnitTest {
     public void testOnInputStateChange_activeToolUnspecified() {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         InputState state =
-                new InputState.Builder().withActiveTool(ToolMode.TOOL_MODE_UNSPECIFIED).build();
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE)
+                        .build();
 
         mInputStateSupplier.set(state);
 
@@ -3209,7 +3220,9 @@ public class FuseboxMediatorUnitTest {
     public void testOnInputStateChange_searchRequestType() {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         InputState state =
-                new InputState.Builder().withActiveTool(ToolMode.TOOL_MODE_UNSPECIFIED).build();
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE)
+                        .build();
         mInputStateSupplier.set(state);
 
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
@@ -3223,7 +3236,9 @@ public class FuseboxMediatorUnitTest {
     public void testOnInputStateChange_activeTool_fallback() {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         InputState state =
-                new InputState.Builder().withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH).build();
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .build();
 
         mInputStateSupplier.set(state);
 

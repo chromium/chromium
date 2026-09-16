@@ -25,7 +25,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
+import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -148,9 +148,10 @@ public class FuseboxMetricsUnitTest {
     public void testNotifyToolButtonSelected() {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.MobileFusebox.ToolButtonSelected", ToolMode.TOOL_MODE_IMAGE_GEN);
+                        "Omnibox.MobileFusebox.ToolButtonSelected",
+                        ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
 
-        FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_IMAGE_GEN);
+        FuseboxMetrics.notifyToolButtonSelected(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
 
         histogramWatcher.assertExpected();
     }
@@ -159,7 +160,10 @@ public class FuseboxMetricsUnitTest {
     public void testToolModeHistogramBound() {
         // When this test fails, it means the proto added a new tool mode, and
         // TOOL_MODE_HISTOGRAM_BOUND needs to be updated.
-        assertThat(ToolMode.MAX_VALUE).isLessThan(FuseboxMetrics.TOOL_MODE_HISTOGRAM_BOUND);
+        for (ToolMode mode : ToolMode.values()) {
+            if (mode == ToolMode.UNRECOGNIZED) continue;
+            assertThat(mode.getNumber()).isLessThan(FuseboxMetrics.TOOL_MODE_HISTOGRAM_BOUND);
+        }
     }
 
     @Test
@@ -262,7 +266,7 @@ public class FuseboxMetricsUnitTest {
                         /* enabled= */ true,
                         /* selected= */ false,
                         PopupButtonType.TOOL,
-                        ToolMode.TOOL_MODE_UNSPECIFIED,
+                        ToolMode.TOOL_MODE_UNSPECIFIED_VALUE,
                         /* hasColor= */ false,
                         /* tooltip= */ "");
         PopupButtonData dataImage =
@@ -273,7 +277,7 @@ public class FuseboxMetricsUnitTest {
                         /* enabled= */ true,
                         /* selected= */ false,
                         PopupButtonType.TOOL,
-                        ToolMode.TOOL_MODE_IMAGE_GEN,
+                        ToolMode.TOOL_MODE_IMAGE_GEN_VALUE,
                         /* hasColor= */ false,
                         /* tooltip= */ "");
         PopupButtonData dataDeep =
@@ -284,7 +288,7 @@ public class FuseboxMetricsUnitTest {
                         /* enabled= */ true,
                         /* selected= */ false,
                         PopupButtonType.TOOL,
-                        ToolMode.TOOL_MODE_DEEP_SEARCH,
+                        ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE,
                         /* hasColor= */ false,
                         /* tooltip= */ "");
         mPropertyModel.set(
@@ -296,13 +300,13 @@ public class FuseboxMetricsUnitTest {
                         .expectBooleanRecord("Omnibox.MobileFusebox.AttachmentsPopupToggled", true)
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.ToolButtonShown",
-                                ToolMode.TOOL_MODE_UNSPECIFIED)
+                                ToolMode.TOOL_MODE_UNSPECIFIED_VALUE)
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.ToolButtonShown",
-                                ToolMode.TOOL_MODE_IMAGE_GEN)
+                                ToolMode.TOOL_MODE_IMAGE_GEN_VALUE)
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.ToolButtonShown",
-                                ToolMode.TOOL_MODE_DEEP_SEARCH)
+                                ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
                         .build();
 
         mMetrics.notifyAttachmentsPopupToggled(/* toShowPopup= */ true, mPropertyModel, mTracker);
