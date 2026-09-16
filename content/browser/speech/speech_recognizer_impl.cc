@@ -379,7 +379,9 @@ void SpeechRecognizerImpl::OnSpeechRecognitionEngineResults(
 }
 
 void SpeechRecognizerImpl::OnSpeechRecognitionEngineEndOfUtterance() {
-  CHECK(!end_of_utterance_, base::NotFatalUntil::M159);
+  // TODO(crbug.com/562174100): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!end_of_utterance_);
   end_of_utterance_ = true;
 }
 
