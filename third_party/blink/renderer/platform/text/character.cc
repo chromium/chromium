@@ -184,39 +184,37 @@ bool Character::CanReceiveTextEmphasis(UChar32 c) {
     return false;
   }
 
-  if (RuntimeEnabledFeatures::TextEmphasisPunctuationExceptionsEnabled()) {
-    // A set of exceptions for punctuation.
-    switch (c) {
-      // List from
-      // https://drafts.csswg.org/css-text-decor/#text-emphasis-style-property
-      case uchar::kNumberSign:
-      case uchar::kPercentSign:
-      case uchar::kAmpersand:
-      case uchar::kCommercialAt:
-      case uchar::kSectionSign:
-      case uchar::kPilcrowSign:
-      case uchar::kArabicIndicPerMilleSign:
-      case uchar::kArabicIndicPerTenThousandSign:
-      case uchar::kArabicPercentSign:
-      case uchar::kPerMilleSign:
-      case uchar::kPerTenThousandSign:
-      case uchar::kTironianSignEt:
-      case uchar::kReversedPilcrowSign:
-      case uchar::kSwungDash:
-      case uchar::kPartAlternationMark:
-      // Characters with NFKD equivalence to the above.
-      case uchar::kSmallNumberSign:
-      case uchar::kSmallAmpersand:
-      case uchar::kSmallPercentSign:
-      case uchar::kSmallCommercialAt:
-      case uchar::kFullwidthNumberSign:
-      case uchar::kFullwidthPercentSign:
-      case uchar::kFullwidthAmpersand:
-      case uchar::kFullwidthCommercialAt:
-        return true;
-      default:
-        break;
-    }
+  // A set of exceptions for punctuation.
+  switch (c) {
+    // List from
+    // https://drafts.csswg.org/css-text-decor/#text-emphasis-style-property
+    case uchar::kNumberSign:
+    case uchar::kPercentSign:
+    case uchar::kAmpersand:
+    case uchar::kCommercialAt:
+    case uchar::kSectionSign:
+    case uchar::kPilcrowSign:
+    case uchar::kArabicIndicPerMilleSign:
+    case uchar::kArabicIndicPerTenThousandSign:
+    case uchar::kArabicPercentSign:
+    case uchar::kPerMilleSign:
+    case uchar::kPerTenThousandSign:
+    case uchar::kTironianSignEt:
+    case uchar::kReversedPilcrowSign:
+    case uchar::kSwungDash:
+    case uchar::kPartAlternationMark:
+    // Characters with NFKD equivalence to the above.
+    case uchar::kSmallNumberSign:
+    case uchar::kSmallAmpersand:
+    case uchar::kSmallPercentSign:
+    case uchar::kSmallCommercialAt:
+    case uchar::kFullwidthNumberSign:
+    case uchar::kFullwidthPercentSign:
+    case uchar::kFullwidthAmpersand:
+    case uchar::kFullwidthCommercialAt:
+      return true;
+    default:
+      break;
   }
 
   // Punctuation
