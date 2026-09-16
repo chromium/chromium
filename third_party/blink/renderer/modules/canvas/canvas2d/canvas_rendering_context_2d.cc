@@ -520,13 +520,6 @@ const MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() const {
   return recorder_.get();
 }
 
-MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() {
-  if (!canvas()) {
-    return nullptr;
-  }
-  return recorder_.get();
-}
-
 std::unique_ptr<MemoryManagedPaintRecorder>
 CanvasRenderingContext2D::ReleaseRecorder() {
   if (recorder_) {
