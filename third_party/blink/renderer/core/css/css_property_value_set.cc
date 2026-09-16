@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/property_bitsets.h"
 #include "third_party/blink/renderer/core/css/style_property_serializer.h"
@@ -851,23 +852,73 @@ void MutableCSSPropertyValueSet::RemoveEquivalentProperties(
 
 void MutableCSSPropertyValueSet::RemoveEquivalentPropertiesPreservingShorthands(
     const CSSStyleDeclaration* style) {
-  HashSet<CSSPropertyID> properties_to_remove;
+  CSSBitset properties_to_remove;
   for (const CSSPropertyValue& property : property_vector_) {
+    // CssPropertyMatches() cannot distinguish custom properties by name.
+    if (property.PropertyID() == CSSPropertyID::kVariable) {
+      continue;
+    }
     auto shorthand_id = property.ShorthandID();
     if (shorthand_id != CSSPropertyID::kInvalid) {
-      if (!properties_to_remove.Contains(shorthand_id) &&
+      if (!properties_to_remove.Has(shorthand_id) &&
           ShorthandPropertyMatches(shorthand_id, *style)) {
-        properties_to_remove.insert(shorthand_id);
+        properties_to_remove.Set(shorthand_id);
       }
       continue;
     }
     if (style->CssPropertyMatches(property.PropertyID(), property.Value())) {
-      properties_to_remove.insert(property.PropertyID());
+      properties_to_remove.Set(property.PropertyID());
     }
   }
-  // TODO(crbug.com/483903178): This should use mass removal.
+  if (!properties_to_remove.HasAny()) {
+    return;
+  }
+
+  // Shorthands are stored as longhands, so expand the IDs before removal.
+  // 'all' has no fixed longhand list and is handled below.
+  bool has_all = properties_to_remove.Has(CSSPropertyID::kAll);
+  CSSBitset ids_to_strike;
   for (CSSPropertyID id : properties_to_remove) {
-    RemoveProperty(id);
+    if (id == CSSPropertyID::kAll) {
+      continue;
+    }
+    const StylePropertyShorthand& shorthand = shorthandForProperty(id);
+    if (shorthand.length()) {
+      for (const CSSProperty* longhand : shorthand.properties()) {
+        ids_to_strike.Set(longhand->PropertyID());
+      }
+    } else {
+      ids_to_strike.Set(id);
+    }
+  }
+
+  if (has_all) {
+    bits_.set<HasAllField>(false);
+  }
+
+  base::span<CSSPropertyValue> properties(property_vector_);
+  unsigned old_size = property_vector_.size();
+  unsigned new_index = 0;
+  for (unsigned old_index = 0; old_index < old_size; ++old_index) {
+    const CSSPropertyValue& property = properties[old_index];
+    CSSPropertyID id = property.PropertyID();
+    if (id == CSSPropertyID::kAll) {
+      if (has_all) {
+        continue;
+      }
+    } else if (has_all && property.IsAffectedByAll()) {
+      continue;
+    } else if (ids_to_strike.Has(id)) {
+      continue;
+    }
+    if (new_index != old_index) {
+      properties[new_index] = property;
+    }
+    ++new_index;
+  }
+  if (new_index != old_size) {
+    property_vector_.Shrink(new_index);
+    InvalidateHashIfComputed();
   }
 }
 
