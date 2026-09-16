@@ -104,7 +104,7 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
                              uint32_t janky_frames) override;
 #endif
 
-  base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observers_;
+  base::ObserverList<Observer> observers_;
 
   cc::RenderFrameMetadata last_render_frame_metadata_;
 
