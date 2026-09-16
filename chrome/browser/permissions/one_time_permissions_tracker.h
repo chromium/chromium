@@ -47,45 +47,16 @@ class OneTimePermissionsTracker : public KeyedService {
 
   std::unique_ptr<Condition> NewActivePage(const url::Origin& origin);
   std::unique_ptr<Condition> NewForegroundPage(const url::Origin& origin);
-
-  // Handles primary page changes to `origin` and pages of `origin` being
-  // undiscarded.
-  void WebContentsLoadedOrigin(const url::Origin& origin);
-
-  // Handles primary page changes from `origin`, pages of `origin` getting
-  // discarded and other WebContent destroy events.
-  void WebContentsUnloadedOrigin(const url::Origin& origin);
-
   // Adds observer implementing `OneTimePermissionsTrackerObserver`.
   void AddObserver(OneTimePermissionsTrackerObserver* observer);
 
   // Removes observer implementing `OneTimePermissionsTrackerObserver`.
   void RemoveObserver(OneTimePermissionsTrackerObserver* observer);
 
-  // Handles visibility changes.
-  void WebContentsBackgrounded(const url::Origin& origin);
-  void WebContentsUnbackgrounded(const url::Origin& origin);
-
-  // Handles changes in video capturing state.
-  void CapturingVideoChanged(const url::Origin& origin,
-                             bool is_capturing_video);
-
-  // Handles changes in audio capturing state.
-  void CapturingAudioChanged(const url::Origin& origin,
-                             bool is_capturing_audio);
+  std::unique_ptr<Condition> NewVideoCapturing(const url::Origin& origin);
+  std::unique_ptr<Condition> NewAudioCapturing(const url::Origin& origin);
 
   void Shutdown() override;
-
-  // When the provider expires content settings, this function clears the
-  // associated state in the tracker. This prevents unnecessary calls to the
-  // provider for already expired content settings.
-  void CleanupStateForExpiredContentSetting(
-      ContentSettingsType type,
-      ContentSettingsPattern primary_pattern,
-      ContentSettingsPattern secondary_pattern);
-
-  // Fires all running timers for testing purposes.
-  void FireRunningTimersForTesting();
 
   void NotifyLastPageFromOriginClosed(const url::Origin& origin);
 
@@ -99,50 +70,10 @@ class OneTimePermissionsTracker : public KeyedService {
       const url::Origin& origin);
 
  private:
-  // Struct to hold the state of an origin
-  struct OriginTrackEntry {
-    OriginTrackEntry();
-    ~OriginTrackEntry();
-
-    // Tracks how many tabs of this origin are open and undiscarded at any
-    // given time.
-    int undiscarded_tab_counter = 0;
-
-    // Tracks how many tabs of this origin are in the background.
-    // Background is defined as either hidden or minimized.
-    int background_tab_counter = 0;
-
-    // Tracks how many active permission uses for a specific content setting
-    // for this origin are in progress. Currently only used for camera
-    // and microphone permissions.
-    std::map<ContentSettingsType, int> content_setting_specific_counter_map;
-
-    // Keeps track of which user-media one-time content settings have been used
-    // for this origin.
-    std::set<ContentSettingsType> used_content_settings_set;
-
-    // One shot timer for user-media one-time permissions for this origin.
-    std::map<ContentSettingsType, std::unique_ptr<base::OneShotTimer>>
-        content_setting_specific_expiration_timer_map;
-  };
-
-  bool AreAllTabsToOriginBackgroundedOrDiscarded(const url::Origin& origin);
-  void RemoveContentSettingUsedFromOrigin(const url::Origin& origin,
-                                          ContentSettingsType content_setting);
-
-  void HandleUserMediaState(const url::Origin& origin,
-                            ContentSettingsType content_setting);
-
-  void StartContentSpecificExpirationTimer(const url::Origin& origin,
-                                           ContentSettingsType content_setting,
-                                           NotifyFunction notify_callback);
-
   void NotifyCapturingVideoExpired(const url::Origin& origin);
   void NotifyCapturingAudioExpired(const url::Origin& origin);
 
   base::ObserverList<OneTimePermissionsTrackerObserver> observer_list_;
-
-  std::map<url::Origin, OriginTrackEntry> origin_tracker_;
 
   std::unique_ptr<OneTimePermissionsConditionTracker::Factory>
       active_page_tracker_factory_;
@@ -150,6 +81,10 @@ class OneTimePermissionsTracker : public KeyedService {
       short_background_page_tracker_factory_;
   std::unique_ptr<OneTimePermissionsConditionTracker::Factory>
       long_background_page_tracker_factory_;
+  std::unique_ptr<OneTimePermissionsConditionTracker::Factory>
+      video_capturing_tracker_factory_;
+  std::unique_ptr<OneTimePermissionsConditionTracker::Factory>
+      audio_capturing_tracker_factory_;
 
   base::WeakPtrFactory<OneTimePermissionsTracker> weak_factory_{this};
 };

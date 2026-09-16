@@ -360,18 +360,6 @@ void OneTimePermissionProvider::DeleteEntriesAndNotify(
     for (const auto& pattern : entries_to_delete) {
       value_map_.DeleteValue(pattern.primary_pattern, pattern.secondary_pattern,
                              pattern.type);
-
-      // In all the observable `OneTimePermissionsTrackerObserver` events
-      // which are emitted from the tracker, the tracker knows for which
-      // origins and content settings it can halt bookkeeping. However, the
-      // tracker isn't aware of externally deleted content settings. To
-      // prevent it from triggering observers for an already deleted content
-      // setting, we need to inform it about the deletion here (and only
-      // here).
-      if (one_time_permissions_tracker_) {
-        one_time_permissions_tracker_->CleanupStateForExpiredContentSetting(
-            pattern.type, pattern.primary_pattern, pattern.secondary_pattern);
-      }
     }
   }
 

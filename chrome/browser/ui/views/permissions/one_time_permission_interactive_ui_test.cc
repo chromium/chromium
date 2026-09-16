@@ -122,11 +122,13 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
     command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
   }
 
-  // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+    OneTimePermissionsTrackerFactory::GetForBrowserContext(
+        browser()->GetProfile())
+        ->SetTaskRunnerForTesting(task_runner_);
   }
 
   void TearDownOnMainThread() override {
@@ -176,15 +178,6 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
     WebRtcTestBase::CloseLastLocalStream(
         current_browser()->GetTabStripModel()->GetWebContentsAt(index));
     observer.Wait();
-  }
-
-  void FireRunningExpirationTimers() {
-    OneTimePermissionsTrackerFactory::GetForBrowserContext(
-        current_browser()
-            ->GetTabStripModel()
-            ->GetActiveWebContents()
-            ->GetBrowserContext())
-        ->FireRunningTimersForTesting();
   }
 
   void WatchPositionAndExpectGrantedPermission(
@@ -471,10 +464,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
                        GeolocationIsRevokedAfterFiveMinutesInBackground) {
-  auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
-      browser()->GetProfile());
-  tracker->SetTaskRunnerForTesting(task_runner_);
-
   ASSERT_NO_FATAL_FAILURE(
       Initialize(INITIALIZATION_DEFAULT, GetGeolocationGurl()));
 
@@ -503,9 +492,6 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   OtpEventExpectBucketCount(
       ContentSettingsType::GEOLOCATION,
       permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
-
-  tracker->SetTaskRunnerForTesting(
-      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
@@ -520,10 +506,8 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // web contents).
   CloseLastLocalStreamAt(0);
 
-  // Fire running timers. This means, that all one time permission
-  // expiration timers that are running at this point in time will fire
-  // their callbacks and are stopped.
-  FireRunningExpirationTimers();
+  // Fast forward time by the expiration timeout.
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
 
   // Request cam/mic permission, expect no prompt is triggered.
   GetUserMediaAndExpectGrantedPermission(
@@ -553,10 +537,8 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // within specified web contents).
   CloseLastLocalStreamAt(0);
 
-  // Fire running timers. This means, that all one time permission
-  // expiration timers that are running at this point in time will fire
-  // their callbacks and are stopped.
-  FireRunningExpirationTimers();
+  // Fast forward time to expire the permissions in the background.
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
 
   // Switch back to previous tab
   browser()->GetTabStripModel()->ActivateTabAt(0);
@@ -592,10 +574,8 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // Open new tab, this puts the first tab in the background.
   Initialize(INITIALIZATION_NEWTAB, GetDifferentOriginUrl());
 
-  // Fire running timers. This means, that all one time permission expiration
-  // timers that are running at this point in time will fire their callbacks and
-  // are stopped.
-  FireRunningExpirationTimers();
+  // Fast forward time by the expiration timeout.
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
 
   // Switch back to previous tab
   browser()->GetTabStripModel()->ActivateTabAt(0);
@@ -625,10 +605,8 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   // web contents).
   CloseLastLocalStreamAt(0);
 
-  // Fire running timers. This means, that all one time permission
-  // expiration timers that are running at this point in time will fire
-  // their callbacks and are stopped.
-  FireRunningExpirationTimers();
+  // Fast forward time by the expiration timeout.
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
 
   // Request cam/mic permission, expect no prompt is triggered.
   GetUserMediaAndExpectGrantedPermission(
@@ -658,9 +636,10 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
   ASSERT_NO_FATAL_FAILURE(
       Initialize(INITIALIZATION_DEFAULT, GetDifferentOriginUrl()));
 
-  // Fire running timers. Since capturing has stopped and the remaining tab to
-  // the origin is in the background, the one-time permissions should expire.
-  FireRunningExpirationTimers();
+  // Fast forward time by the expiration timeout. Since capturing has stopped
+  // and the remaining tab to the origin is in the background, the one-time
+  // permissions should expire.
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
 
   // Switch back to the background tab.
   browser()->GetTabStripModel()->ActivateTabAt(0);

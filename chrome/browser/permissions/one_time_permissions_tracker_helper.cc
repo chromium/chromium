@@ -4,9 +4,8 @@
 
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/permissions/one_time_permissions_condition_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
@@ -53,14 +52,15 @@ class OneTimePermissionsPageTracker
   friend PageUserData;
   PAGE_USER_DATA_KEY_DECL();
 
+  raw_ptr<OneTimePermissionsTracker> tracker_ = nullptr;
   url::Origin origin_;
-  base::WeakPtr<OneTimePermissionsTracker> tracker_;
   std::unique_ptr<OneTimePermissionsTracker::Condition> active_page_tracker_;
   std::unique_ptr<OneTimePermissionsTracker::Condition>
       foreground_page_tracker_;
-  bool is_backgrounded_ = false;
-  bool is_capturing_video_ = false;
-  bool is_capturing_audio_ = false;
+  std::unique_ptr<OneTimePermissionsTracker::Condition>
+      video_capturing_tracker_;
+  std::unique_ptr<OneTimePermissionsTracker::Condition>
+      audio_capturing_tracker_;
 };
 
 PAGE_USER_DATA_KEY_IMPL(OneTimePermissionsPageTracker);
@@ -71,44 +71,21 @@ OneTimePermissionsPageTracker::OneTimePermissionsPageTracker(
       origin_(page.GetMainDocument().GetLastCommittedOrigin()) {
   auto* tracker = OneTimePermissionsTrackerFactory::GetForBrowserContext(
       page.GetMainDocument().GetBrowserContext());
-  if (tracker) {
-    tracker_ = tracker->GetWeakPtr();
-    active_page_tracker_ = tracker->NewActivePage(origin_);
-    tracker_->WebContentsLoadedOrigin(origin_);
-    if (content::WebContents::FromRenderFrameHost(&page.GetMainDocument())
-            ->GetVisibility() == content::Visibility::HIDDEN) {
-      is_backgrounded_ = true;
-      tracker_->WebContentsBackgrounded(origin_);
-
-      // Make sure we track this page being in background.
-      tracker_->NewForegroundPage(origin_);
-    } else {
-      foreground_page_tracker_ = tracker_->NewForegroundPage(origin_);
-    }
+  if (!tracker) {
+    return;
+  }
+  tracker_ = tracker;
+  active_page_tracker_ = tracker_->NewActivePage(origin_);
+  if (content::WebContents::FromRenderFrameHost(&page.GetMainDocument())
+          ->GetVisibility() == content::Visibility::HIDDEN) {
+    // Make sure we track this page being in background.
+    tracker_->NewForegroundPage(origin_);
+  } else {
+    foreground_page_tracker_ = tracker_->NewForegroundPage(origin_);
   }
 }
 
-OneTimePermissionsPageTracker::~OneTimePermissionsPageTracker() {
-  // We call WebContentsUnloadedOrigin asynchronously to preserve one-time
-  // grants on same-origin navigations (allowing for the
-  // OneTimepermissionsPageTracker for the new page to be created before
-  // WebContentsUnloadedOrigin runs).
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OneTimePermissionsTracker::WebContentsUnloadedOrigin,
-                     tracker_, origin_));
-  if (tracker_) {
-    if (is_capturing_video_) {
-      tracker_->CapturingVideoChanged(origin_, false);
-    }
-    if (is_capturing_audio_) {
-      tracker_->CapturingAudioChanged(origin_, false);
-    }
-    if (is_backgrounded_) {
-      tracker_->WebContentsUnbackgrounded(origin_);
-    }
-  }
-}
+OneTimePermissionsPageTracker::~OneTimePermissionsPageTracker() = default;
 
 void OneTimePermissionsPageTracker::OnVisibilityChanged(
     content::Visibility visibility) {
@@ -116,38 +93,34 @@ void OneTimePermissionsPageTracker::OnVisibilityChanged(
     return;
   }
   const bool is_hidden = (visibility == content::Visibility::HIDDEN);
-  if (is_backgrounded_ == is_hidden) {
-    return;
-  }
-  is_backgrounded_ = is_hidden;
-  if (is_backgrounded_) {
+  if (is_hidden && foreground_page_tracker_) {
     foreground_page_tracker_.reset();
-    tracker_->WebContentsBackgrounded(origin_);
-  } else {
+  } else if (!is_hidden && !foreground_page_tracker_) {
     foreground_page_tracker_ = tracker_->NewForegroundPage(origin_);
-    tracker_->WebContentsUnbackgrounded(origin_);
   }
 }
 
 void OneTimePermissionsPageTracker::OnIsCapturingVideoChanged(
     bool is_capturing_video) {
-  if (is_capturing_video_ == is_capturing_video) {
+  if (!tracker_) {
     return;
   }
-  is_capturing_video_ = is_capturing_video;
-  if (tracker_) {
-    tracker_->CapturingVideoChanged(origin_, is_capturing_video);
+  if (is_capturing_video && !video_capturing_tracker_) {
+    video_capturing_tracker_ = tracker_->NewVideoCapturing(origin_);
+  } else if (!is_capturing_video && video_capturing_tracker_) {
+    video_capturing_tracker_.reset();
   }
 }
 
 void OneTimePermissionsPageTracker::OnIsCapturingAudioChanged(
     bool is_capturing_audio) {
-  if (is_capturing_audio_ == is_capturing_audio) {
+  if (!tracker_) {
     return;
   }
-  is_capturing_audio_ = is_capturing_audio;
-  if (tracker_) {
-    tracker_->CapturingAudioChanged(origin_, is_capturing_audio);
+  if (is_capturing_audio && !audio_capturing_tracker_) {
+    audio_capturing_tracker_ = tracker_->NewAudioCapturing(origin_);
+  } else if (!is_capturing_audio && audio_capturing_tracker_) {
+    audio_capturing_tracker_.reset();
   }
 }
 
