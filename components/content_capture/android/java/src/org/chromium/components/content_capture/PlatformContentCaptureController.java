@@ -140,14 +140,34 @@ public class PlatformContentCaptureController {
         Log.i(TAG, msg);
     }
 
+    /**
+     * Whether data removal requests may be sent to the current ContentCaptureService.
+     *
+     * <p>A removal request names the data to delete, and {@link #clearContentCaptureDataForURLs}
+     * puts the full spec of every deleted URL into it. It must therefore only be sent to a service
+     * that could have received captured content in the first place; sending it to any other service
+     * would disclose the user's browsing history to a service that never had it, with no data to
+     * delete in return.
+     *
+     * <p>This is deliberately weaker than {@link #shouldStartCapture()}. AiAi may still hold
+     * content captured while content capture was enabled, so it has to keep receiving deletions
+     * after capture is turned off, otherwise deleting history would silently leave the captured
+     * copy behind. {@code mShouldStartCapture} additionally covers debug and dump-for-testing
+     * builds, where a non-AiAi service is intentionally allowed to capture.
+     */
+    private boolean canRemoveData() {
+        if (mContentCaptureManager == null) return false;
+        return mIsAiai || mShouldStartCapture;
+    }
+
     public void clearAllContentCaptureData() {
-        if (mContentCaptureManager == null) return;
+        if (!canRemoveData()) return;
 
         mContentCaptureManager.removeData(new DataRemovalRequest.Builder().forEverything().build());
     }
 
     public void clearContentCaptureDataForURLs(String[] urlsToDelete) {
-        if (mContentCaptureManager == null) return;
+        if (!canRemoveData()) return;
 
         DataRemovalRequest.Builder builder = new DataRemovalRequest.Builder();
         for (String url : urlsToDelete) {
