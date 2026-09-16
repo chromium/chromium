@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -1073,6 +1074,65 @@ TEST_P(SelectAudioOutputTest, SelectAudioOutputSuccess) {
 
   EXPECT_EQ(result->status, blink::mojom::AudioOutputStatus::kSuccess);
   EXPECT_EQ(result->device_info.device_id, last_audio_output_device_id);
+}
+
+TEST_P(SelectAudioOutputTest, SelectAudioOutputForwardsRequestToUIProxy) {
+  // When no authorized device ID is provided, MediaDevicesDispatcherHost
+  // delegates the selection request to MediaStreamUIProxy on the UI thread.
+  //
+  // To avoid cross-thread Use-After-Free races where the host is destroyed on
+  // the IO thread while the UI thread executes the callback, the reply must be
+  // posted back to the IO task runner via BindPostTaskToCurrentDefault rather
+  // than executed synchronously within the UI proxy's call stack.
+  //
+  // In this single-threaded test harness, we verify this asynchronous contract:
+  // We post a probe task to the task runner during the salt/origin lookup. At
+  // that moment, the SelectAudioOutput result must NOT be ready yet (it should
+  // only arrive after subsequent posted tasks run).
+  render_frame_host_->SimulateUserActivation();
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kUseFakeUIForMediaStream);
+
+  MediaDevicesManager* const devices_manager =
+      media_stream_manager_->media_devices_manager();
+  devices_manager->SetPermissionChecker(
+      std::make_unique<MediaDevicesPermissionChecker>(true));
+
+  base::test::TestFuture<blink::mojom::SelectAudioOutputResultPtr> future;
+  std::optional<bool> result_ready_before_reply;
+
+  // Intercept the salt/origin lookup—the earliest asynchronous checkpoint in
+  // device selection—to schedule a probe task into the sequence queue ahead
+  // of any posted reply from the UI proxy.
+  devices_manager->set_get_salt_and_origin_cb_for_testing(
+      base::BindLambdaForTesting(
+          [&](GlobalRenderFrameHostId, MediaDeviceSaltAndOriginCallback cb) {
+            // 1. Complete the expected salt and origin lookup.
+            GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId(-1, -1),
+                                        std::move(cb));
+
+            // 2. Post a probe task to check if the SelectAudioOutput result was
+            //    delivered synchronously.
+            auto check_readiness = base::BindLambdaForTesting([&]() {
+              result_ready_before_reply = future.IsReady();
+            });
+
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, std::move(check_readiness));
+          }));
+
+  // Trigger the audio output selection request.
+  host_->SelectAudioOutput(std::string(), future.GetCallback());
+
+  // Wait for the result and verify the async contract and outcome.
+  blink::mojom::SelectAudioOutputResultPtr result = future.Take();
+  EXPECT_EQ(result->status, blink::mojom::AudioOutputStatus::kNoPermission);
+  EXPECT_TRUE(result->device_info.device_id.empty());
+
+  // Confirm that the result was delivered via posted task (not synchronously).
+  ASSERT_TRUE(result_ready_before_reply.has_value());
+  EXPECT_FALSE(*result_ready_before_reply);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

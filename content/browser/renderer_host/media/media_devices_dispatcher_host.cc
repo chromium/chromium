@@ -680,11 +680,17 @@ void MediaDevicesDispatcherHost::OnEnumeratedAudioOutputDevices(
                 /*tests_use_fake_render_frame_hosts=*/false)
           : MediaStreamUIProxy::Create();
 
+  // Post the reply back to the IO sequence via BindPostTaskToCurrentDefault
+  // because embedders may execute the callback synchronously on the UI thread.
+  // This guarantees the WeakPtr dereference inside OnSelectedDeviceInfo is
+  // serialized with host destruction on the IO thread, preventing a
+  // cross-thread Use-After-Free.
   ui_proxy->RequestSelectAudioOutput(
       std::make_unique<SelectAudioOutputRequest>(
           render_frame_host_id_, std::move(audio_output_devices)),
-      base::BindOnce(&MediaDevicesDispatcherHost::OnSelectedDeviceInfo,
-                     weak_factory_.GetWeakPtr(), std::move(enumeration)));
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&MediaDevicesDispatcherHost::OnSelectedDeviceInfo,
+                         weak_factory_.GetWeakPtr(), std::move(enumeration))));
 }
 
 void MediaDevicesDispatcherHost::OnSelectedDeviceInfo(

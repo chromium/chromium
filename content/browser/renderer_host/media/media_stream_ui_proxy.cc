@@ -182,10 +182,8 @@ void MediaStreamUIProxy::Core::RequestSelectAudioOutput(
       request->render_frame_host_id().child_id,
       request->render_frame_host_id().frame_routing_id);
   if (!render_delegate) {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  base::unexpected(
-                                      SelectAudioOutputError::kNotSupported)));
+    std::move(callback).Run(
+        base::unexpected(SelectAudioOutputError::kNotSupported));
     return;
   }
 
