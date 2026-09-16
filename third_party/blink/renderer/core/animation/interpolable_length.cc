@@ -173,25 +173,6 @@ bool InterpolableLength::IsCalcSize() const {
   return operation && operation->IsCalcSize();
 }
 
-namespace {
-
-const CSSMathExpressionNode& ExtractCalcSizeBasis(
-    const CSSMathExpressionNode& node) {
-  const auto* operation = DynamicTo<CSSMathExpressionOperation>(node);
-  if (!operation || !operation->IsCalcSize()) {
-    return node;
-  }
-
-  // The outer calc-size() operation has two operands: its basis and
-  // calculation. Either operand may itself contain nested operations.
-  const auto& operands = operation->GetOperands();
-  DCHECK_EQ(operands.size(), 2u);
-  DCHECK(operands.front());
-  return ExtractCalcSizeBasis(*operands.front());
-}
-
-}  // namespace
-
 // static
 bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
                                         const InterpolableValue* end) {
@@ -226,7 +207,8 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
   const bool end_is_keyword = end_length.IsKeyword();
   if (start_is_keyword || end_is_keyword) {
     // Only animate to or from width keywords if the other endpoint of the
-    // animation is a calc-size() expression.
+    // animation is a compatible calc-size() expression, or if the
+    // interpolate-size property says we can.
     const InterpolableLength* keyword;
     const InterpolableLength* non_keyword;
     if (start_is_keyword) {
@@ -244,16 +226,22 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
       // Check the 'interpolate-size' value stored with the keyword.
       return keyword->IsKeywordFullyInterpolable();
     }
-    const CSSMathExpressionNode& basis =
-        ExtractCalcSizeBasis(*non_keyword->expression_);
 
-    if (const auto* basis_literal =
-            DynamicTo<CSSMathExpressionKeywordLiteral>(basis)) {
-      return basis_literal->GetValue() == keyword->keyword_ ||
-             basis_literal->GetValue() == CSSValueID::kAny;
-    }
-
-    return false;
+    const auto* keyword_calc_size_basis =
+        CSSMathExpressionKeywordLiteral::Create(
+            keyword->keyword_,
+            CSSMathExpressionKeywordLiteral::Context::kCalcSize);
+    const auto* keyword_calc_size_calculation =
+        CSSMathExpressionKeywordLiteral::Create(
+            CSSValueID::kSize,
+            CSSMathExpressionKeywordLiteral::Context::kCalcSize);
+    const auto* keyword_calc_size =
+        CSSMathExpressionOperation::CreateCalcSizeOperation(
+            keyword_calc_size_basis, keyword_calc_size_calculation);
+    return CSSMathExpressionOperation::
+               CreateArithmeticOperationAndSimplifyCalcSize(
+                   non_keyword->expression_, keyword_calc_size,
+                   CSSMathOperator::kAdd) != nullptr;
   }
 
   // Only animate between calc-size() expressions if they have compatible
