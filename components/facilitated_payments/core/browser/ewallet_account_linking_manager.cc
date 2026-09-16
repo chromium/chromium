@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/facilitated_payments/core/browser/account_linking_params.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
@@ -63,7 +64,7 @@ void EwalletAccountLinkingManager::DoOnClientTokenReceived(
 std::optional<AccountLinkingParams>
 EwalletAccountLinkingManager::CreateAccountLinkingParams() {
   AccountLinkingParams params(FacilitatedPaymentsType::kEwallet);
-  params.fop_display_name = ewallet_creation_option_.ewallet_name();
+  params.fop_display_name = ewallet_creation_option_.account_display_name();
   params.strike_count =
       GetStrikeDatabase() ? GetStrikeDatabase()->GetStrikes() : 0;
   return params;
@@ -116,9 +117,11 @@ void EwalletAccountLinkingManager::DoOnAccountLinkingResult(
 
 base::DictValue EwalletAccountLinkingManager::
     GetPayloadForGetDetailsForCreatePaymentInstrument() {
-  // TODO(b:505507305): Populate the payload when the generic network interface
-  // supports it.
-  return base::DictValue();
+  return base::DictValue().Set(
+      "ewallet_account_linking_info",
+      base::DictValue().Set(
+          "issuer_id",
+          base::UTF16ToUTF8(ewallet_creation_option_.ewallet_name())));
 }
 
 std::string_view EwalletAccountLinkingManager::GetHistogramSuffix() const {

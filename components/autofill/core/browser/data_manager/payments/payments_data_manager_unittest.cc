@@ -4014,6 +4014,7 @@ TEST_P(PaymentsDataManagerServerTest,
 
   sync_pb::EwalletCreationOption* ewallet_option =
       creation_option.mutable_ewallet_creation_option();
+  ewallet_option->set_issuer_id("shopeepay");
   ewallet_option->set_issuer_display_name("ShopeePay");
   ewallet_option->add_supported_payment_link_uris("shopeepay://.*");
 
@@ -4031,8 +4032,8 @@ TEST_P(PaymentsDataManagerServerTest,
   EXPECT_THAT(payments_data_manager().GetEwalletCreationOptions(),
               testing::UnorderedElementsAre(Ewallet(
                   /*instrument_id=*/0, /*nickname=*/u"",
-                  /*display_icon_url=*/GURL(), /*ewallet_name=*/u"ShopeePay",
-                  /*account_display_name=*/u"",
+                  /*display_icon_url=*/GURL(), /*ewallet_name=*/u"shopeepay",
+                  /*account_display_name=*/u"ShopeePay",
                   /*supported_payment_link_uris=*/{u"shopeepay://.*"},
                   /*is_fido_enrolled=*/false)));
 }
@@ -4100,6 +4101,7 @@ TEST_P(PaymentsDataManagerServerTest,
 
   sync_pb::EwalletCreationOption* ewallet_option =
       creation_option.mutable_ewallet_creation_option();
+  ewallet_option->set_issuer_id("shopeepay");
   ewallet_option->set_issuer_display_name("ShopeePay");
   ewallet_option->add_supported_payment_link_uris("shopeepay://.*");
 
@@ -4115,8 +4117,8 @@ TEST_P(PaymentsDataManagerServerTest,
   EXPECT_THAT(payments_data_manager().GetEwalletCreationOptions(),
               testing::UnorderedElementsAre(Ewallet(
                   /*instrument_id=*/0, /*nickname=*/u"",
-                  /*display_icon_url=*/GURL(), /*ewallet_name=*/u"ShopeePay",
-                  /*account_display_name=*/u"",
+                  /*display_icon_url=*/GURL(), /*ewallet_name=*/u"shopeepay",
+                  /*account_display_name=*/u"ShopeePay",
                   /*supported_payment_link_uris=*/{u"shopeepay://.*"},
                   /*is_fido_enrolled=*/false)));
 }

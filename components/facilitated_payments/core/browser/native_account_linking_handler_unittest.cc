@@ -102,8 +102,10 @@ class TestNativeAccountLinkingHandler : public NativeAccountLinkingHandler {
   std::string_view GetHistogramSuffix() const override { return "TestFop"; }
 
   base::DictValue GetPayloadForGetDetailsForCreatePaymentInstrument() override {
-    return base::DictValue();
+    return payload_.Clone();
   }
+
+  void set_payload(base::DictValue payload) { payload_ = std::move(payload); }
 
   base::WeakPtr<NativeAccountLinkingHandler> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -123,6 +125,7 @@ class TestNativeAccountLinkingHandler : public NativeAccountLinkingHandler {
   raw_ptr<strike_database::StrikeDatabaseIntegratorBase> strike_database_ =
       nullptr;
   bool is_user_pref_enabled_ = true;
+  base::DictValue payload_;
   base::WeakPtrFactory<TestNativeAccountLinkingHandler> weak_ptr_factory_{this};
 };
 
@@ -259,9 +262,10 @@ TEST_F(NativeAccountLinkingHandlerTest,
        InitiateAccountLinkingNetworkCall_Success) {
   std::vector<uint8_t> client_token = {1, 2, 3};
   EXPECT_CALL(payments_network_interface_,
-              GetDetailsForCreatePaymentInstrument(_, client_token, _, _))
+              GetDetailsForCreatePaymentInstrument(_, client_token, _, _, _))
       .WillOnce([](long billing_customer_id, const std::vector<uint8_t>& token,
-                   auto callback, const std::string& app_locale) {
+                   base::DictValue payload, auto callback,
+                   const std::string& app_locale) {
         std::move(callback).Run(
             autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
                 kSuccess,
@@ -287,12 +291,33 @@ TEST_F(NativeAccountLinkingHandlerTest,
 }
 
 TEST_F(NativeAccountLinkingHandlerTest,
+       InitiateAccountLinkingNetworkCall_PipesCustomPayload) {
+  std::vector<uint8_t> client_token = {1, 2, 3};
+  base::DictValue test_payload =
+      base::DictValue().Set("custom_key", "custom_value");
+  handler_->set_payload(test_payload.Clone());
+
+  EXPECT_CALL(payments_network_interface_,
+              GetDetailsForCreatePaymentInstrument(_, client_token, _, _, _))
+      .WillOnce([&test_payload](long, const std::vector<uint8_t>&,
+                                base::DictValue payload, auto,
+                                const std::string&) {
+        EXPECT_EQ(payload, test_payload);
+        return base::StrongAlias<autofill::payments::RequestIdTag,
+                                 std::string>();
+      });
+
+  handler_->InitiateAccountLinkingNetworkCall(client_token);
+}
+
+TEST_F(NativeAccountLinkingHandlerTest,
        InitiateAccountLinkingNetworkCall_Failure) {
   std::vector<uint8_t> client_token = {1, 2, 3};
   EXPECT_CALL(payments_network_interface_,
-              GetDetailsForCreatePaymentInstrument(_, client_token, _, _))
+              GetDetailsForCreatePaymentInstrument(_, client_token, _, _, _))
       .WillOnce([](long billing_customer_id, const std::vector<uint8_t>& token,
-                   auto callback, const std::string& app_locale) {
+                   base::DictValue account_linking_payload, auto callback,
+                   const std::string& app_locale) {
         std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
                                     PaymentsRpcResult::kPermanentFailure,
                                 /*is_eligible=*/false,
@@ -325,9 +350,10 @@ TEST_F(NativeAccountLinkingHandlerTest,
        InitiateAccountLinkingNetworkCall_Success_NotEligible) {
   std::vector<uint8_t> client_token = {1, 2, 3};
   EXPECT_CALL(payments_network_interface_,
-              GetDetailsForCreatePaymentInstrument(_, client_token, _, _))
+              GetDetailsForCreatePaymentInstrument(_, client_token, _, _, _))
       .WillOnce([](long billing_customer_id, const std::vector<uint8_t>& token,
-                   auto callback, const std::string& app_locale) {
+                   base::DictValue account_linking_payload, auto callback,
+                   const std::string& app_locale) {
         std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
                                     PaymentsRpcResult::kSuccess,
                                 /*is_eligible=*/false,
@@ -360,9 +386,10 @@ TEST_F(NativeAccountLinkingHandlerTest, OnAccepted_Success) {
   std::vector<uint8_t> client_token = {1, 2, 3};
   std::vector<uint8_t> expected_action_token = {'t', 'o', 'k', 'e', 'n'};
   EXPECT_CALL(payments_network_interface_,
-              GetDetailsForCreatePaymentInstrument(_, client_token, _, _))
+              GetDetailsForCreatePaymentInstrument(_, client_token, _, _, _))
       .WillOnce([&](long billing_customer_id, const std::vector<uint8_t>& token,
-                    auto callback, const std::string& app_locale) {
+                    base::DictValue account_linking_payload, auto callback,
+                    const std::string& app_locale) {
         std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
                                     PaymentsRpcResult::kSuccess,
                                 /*is_eligible=*/true, expected_action_token);
@@ -392,9 +419,10 @@ TEST_F(NativeAccountLinkingHandlerTest, OnAccepted_InstrumentManagerFails) {
   std::vector<uint8_t> client_token = {1, 2, 3};
   std::vector<uint8_t> expected_action_token = {'t', 'o', 'k', 'e', 'n'};
   EXPECT_CALL(payments_network_interface_,
-              GetDetailsForCreatePaymentInstrument(_, client_token, _, _))
+              GetDetailsForCreatePaymentInstrument(_, client_token, _, _, _))
       .WillOnce([&](long billing_customer_id, const std::vector<uint8_t>& token,
-                    auto callback, const std::string& app_locale) {
+                    base::DictValue account_linking_payload, auto callback,
+                    const std::string& app_locale) {
         std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
                                     PaymentsRpcResult::kSuccess,
                                 /*is_eligible=*/true, expected_action_token);
@@ -429,9 +457,10 @@ TEST_F(NativeAccountLinkingHandlerTest, OnAccepted_InstrumentManagerCanceled) {
   std::vector<uint8_t> client_token = {1, 2, 3};
   std::vector<uint8_t> expected_action_token = {'t', 'o', 'k', 'e', 'n'};
   EXPECT_CALL(payments_network_interface_,
-              GetDetailsForCreatePaymentInstrument(_, client_token, _, _))
+              GetDetailsForCreatePaymentInstrument(_, client_token, _, _, _))
       .WillOnce([&](long billing_customer_id, const std::vector<uint8_t>& token,
-                    auto callback, const std::string& app_locale) {
+                    base::DictValue account_linking_payload, auto callback,
+                    const std::string& app_locale) {
         std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
                                     PaymentsRpcResult::kSuccess,
                                 /*is_eligible=*/true, expected_action_token);
@@ -468,9 +497,10 @@ TEST_F(NativeAccountLinkingHandlerTest,
   std::vector<uint8_t> client_token = {1, 2, 3};
   std::vector<uint8_t> expected_action_token = {'t', 'o', 'k', 'e', 'n'};
   EXPECT_CALL(payments_network_interface_,
-              GetDetailsForCreatePaymentInstrument(_, client_token, _, _))
+              GetDetailsForCreatePaymentInstrument(_, client_token, _, _, _))
       .WillOnce([&](long billing_customer_id, const std::vector<uint8_t>& token,
-                    auto callback, const std::string& app_locale) {
+                    base::DictValue account_linking_payload, auto callback,
+                    const std::string& app_locale) {
         std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
                                     PaymentsRpcResult::kSuccess,
                                 /*is_eligible=*/true, expected_action_token);
@@ -498,9 +528,10 @@ TEST_F(NativeAccountLinkingHandlerTest, OnAccepted_ApiClientNull) {
   std::vector<uint8_t> client_token = {1, 2, 3};
   std::vector<uint8_t> expected_action_token = {'t', 'o', 'k', 'e', 'n'};
   EXPECT_CALL(payments_network_interface_,
-              GetDetailsForCreatePaymentInstrument(_, client_token, _, _))
+              GetDetailsForCreatePaymentInstrument(_, client_token, _, _, _))
       .WillOnce([&](long billing_customer_id, const std::vector<uint8_t>& token,
-                    auto callback, const std::string& app_locale) {
+                    base::DictValue account_linking_payload, auto callback,
+                    const std::string& app_locale) {
         std::move(callback).Run(autofill::payments::PaymentsAutofillClient::
                                     PaymentsRpcResult::kSuccess,
                                 /*is_eligible=*/true, expected_action_token);
@@ -544,9 +575,10 @@ TEST_F(NativeAccountLinkingHandlerTest, OnAccepted_NoToken) {
 TEST_F(NativeAccountLinkingHandlerTest, OnDeclined) {
   std::vector<uint8_t> client_token = {1, 2, 3};
   EXPECT_CALL(payments_network_interface_,
-              GetDetailsForCreatePaymentInstrument(_, client_token, _, _))
+              GetDetailsForCreatePaymentInstrument(_, client_token, _, _, _))
       .WillOnce([](long billing_customer_id, const std::vector<uint8_t>& token,
-                   auto callback, const std::string& app_locale) {
+                   base::DictValue account_linking_payload, auto callback,
+                   const std::string& app_locale) {
         std::move(callback).Run(
             autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
                 kSuccess,

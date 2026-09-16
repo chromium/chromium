@@ -61,9 +61,12 @@ class FacilitatedPaymentsNetworkInterfaceTest
   }
 
   void SendGetDetailsForCreatePaymentInstrumentRequest(
-      std::vector<uint8_t> client_token = {}) {
+      std::vector<uint8_t> client_token = {},
+      base::DictValue account_linking_payload =
+          base::DictValue().Set("pix_account_linking_info",
+                                base::DictValue())) {
     id_ = payments_network_interface_->GetDetailsForCreatePaymentInstrument(
-        123, client_token,
+        123, client_token, std::move(account_linking_payload),
         base::BindOnce(
             &FacilitatedPaymentsNetworkInterfaceTest::
                 OnGetDetailsForCreatePaymentInstrumentResponseReceived,
@@ -87,7 +90,7 @@ class FacilitatedPaymentsNetworkInterfaceTest
       response_details_;
   std::unique_ptr<FacilitatedPaymentsNetworkInterface>
       payments_network_interface_;
-  bool is_eligible_for_pix_account_linking_ = false;
+  bool is_eligible_for_account_linking_ = false;
   std::vector<uint8_t> action_token_;
 
  private:
@@ -101,10 +104,10 @@ class FacilitatedPaymentsNetworkInterfaceTest
 
   void OnGetDetailsForCreatePaymentInstrumentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      bool is_eligible_for_pix_account_linking,
+      bool is_eligible_for_account_linking,
       const std::vector<uint8_t>& action_token) {
     result_ = result;
-    is_eligible_for_pix_account_linking_ = is_eligible_for_pix_account_linking;
+    is_eligible_for_account_linking_ = is_eligible_for_account_linking;
     action_token_ = action_token;
   }
 
@@ -173,7 +176,7 @@ TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
   EXPECT_EQ(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       result_);
-  EXPECT_FALSE(is_eligible_for_pix_account_linking_);
+  EXPECT_FALSE(is_eligible_for_account_linking_);
   EXPECT_TRUE(action_token_.empty());
 }
 
@@ -188,7 +191,7 @@ TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
   EXPECT_EQ(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       result_);
-  EXPECT_TRUE(is_eligible_for_pix_account_linking_);
+  EXPECT_TRUE(is_eligible_for_account_linking_);
   std::vector<uint8_t> expected_action_token = {'a', 'b', 'c'};
   EXPECT_EQ(expected_action_token, action_token_);
 }
@@ -204,7 +207,7 @@ TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
   EXPECT_EQ(autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
                 kPermanentFailure,
             result_);
-  EXPECT_FALSE(is_eligible_for_pix_account_linking_);
+  EXPECT_FALSE(is_eligible_for_account_linking_);
 }
 
 TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
@@ -219,5 +222,58 @@ TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
   EXPECT_TRUE(GetUploadData().find(base::Base64Encode(client_token)) !=
               std::string::npos);
 }
+
+TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
+       GetDetailsForCreatePaymentInstrument_EwalletPayload) {
+  base::DictValue ewallet_payload;
+  ewallet_payload.Set("ewallet_account_linking_info",
+                      base::DictValue().Set("issuer_id", "shopeepay"));
+  SendGetDetailsForCreatePaymentInstrumentRequest({},
+                                                  std::move(ewallet_payload));
+  IssueOAuthToken();
+  ReturnResponse(
+      net::HTTP_OK,
+      "{\"ewallet_account_linking_details\":{\"action_token\":\"YWJj\"}}");
+
+  // Verify that the upload data contains ewallet_account_linking_info and
+  // issuer_id.
+  EXPECT_TRUE(GetUploadData().find("ewallet_account_linking_info") !=
+              std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("shopeepay") != std::string::npos);
+
+  // Verify that response was parsed and callback invoked with success.
+  EXPECT_EQ(
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      result_);
+  EXPECT_TRUE(is_eligible_for_account_linking_);
+  EXPECT_EQ(action_token_, (std::vector<uint8_t>{'a', 'b', 'c'}));
+}
+
+TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
+       GetDetailsForCreatePaymentInstrument_EwalletFailure) {
+  base::DictValue ewallet_payload;
+  ewallet_payload.Set("ewallet_account_linking_info",
+                      base::DictValue().Set("issuer_id", "shopeepay"));
+  SendGetDetailsForCreatePaymentInstrumentRequest({},
+                                                  std::move(ewallet_payload));
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{\"error\":{\"code\":\"invalid_argument\"}}");
+
+  EXPECT_EQ(autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
+                kPermanentFailure,
+            result_);
+  EXPECT_FALSE(is_eligible_for_account_linking_);
+}
+
+#if DCHECK_IS_ON()
+TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
+       GetDetailsForCreatePaymentInstrument_UnsupportedPayload_DeathTest) {
+  base::DictValue unsupported_payload;
+  unsupported_payload.Set("unsupported_info", base::DictValue());
+  EXPECT_DEATH_IF_SUPPORTED(SendGetDetailsForCreatePaymentInstrumentRequest(
+                                {}, std::move(unsupported_payload)),
+                            "Unsupported account linking payload provided.");
+}
+#endif
 
 }  // namespace payments::facilitated

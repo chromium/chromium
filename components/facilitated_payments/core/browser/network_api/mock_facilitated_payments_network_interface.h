@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/values.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,6 +33,7 @@ class MockFacilitatedPaymentsNetworkInterface
               GetDetailsForCreatePaymentInstrument,
               (int64_t,
                const std::vector<uint8_t>&,
+               base::DictValue,
                GetDetailsForCreatePaymentInstrumentResponseCallback,
                const std::string&),
               (override));

@@ -38,7 +38,7 @@ std::string_view PixAccountLinkingManager::GetHistogramSuffix() const {
 
 base::DictValue
 PixAccountLinkingManager::GetPayloadForGetDetailsForCreatePaymentInstrument() {
-  return base::DictValue();
+  return base::DictValue().Set("pix_account_linking_info", base::DictValue());
 }
 
 base::WeakPtr<NativeAccountLinkingHandler>

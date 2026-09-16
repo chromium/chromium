@@ -134,6 +134,7 @@ void NativeAccountLinkingHandler::InitiateAccountLinkingNetworkCall(
 
   payments_network_interface->GetDetailsForCreatePaymentInstrument(
       billing_customer_id, client_token,
+      GetPayloadForGetDetailsForCreatePaymentInstrument(),
       base::BindOnce(&NativeAccountLinkingHandler::
                          OnGetDetailsForCreatePaymentInstrumentResponseReceived,
                      GetWeakPtr(), base::TimeTicks::Now()),

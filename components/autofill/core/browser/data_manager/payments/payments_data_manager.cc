@@ -2510,25 +2510,28 @@ void PaymentsDataManager::CacheIfEwalletCreationOption(
   const sync_pb::EwalletCreationOption& ewallet_creation_option =
       payment_instrument_creation_option.ewallet_creation_option();
 
-  std::u16string ewallet_issuer_display_name =
-      base::UTF8ToUTF16(ewallet_creation_option.issuer_display_name());
-  if (std::ranges::contains(ewallet_creation_options_,
-                            ewallet_issuer_display_name,
+  std::u16string ewallet_issuer_id =
+      base::UTF8ToUTF16(ewallet_creation_option.issuer_id());
+  if (std::ranges::contains(ewallet_creation_options_, ewallet_issuer_id,
                             &Ewallet::ewallet_name)) {
     return;
   }
+
+  std::u16string ewallet_issuer_display_name =
+      base::UTF8ToUTF16(ewallet_creation_option.issuer_display_name());
 
   std::vector<std::u16string> supported_payment_link_uris = base::ToVector(
       ewallet_creation_option.supported_payment_link_uris(),
       [](const std::string& uri) { return base::UTF8ToUTF16(uri); });
 
-  ewallet_creation_options_.emplace_back(0,       // instrument_id = 0
-                                         u"",     // nickname
-                                         GURL(),  // display_icon_url
-                                         ewallet_issuer_display_name,
-                                         u"",  // account_display_name
-                                         supported_payment_link_uris,
-                                         false  // is_fido_enrolled
+  ewallet_creation_options_.emplace_back(
+      0,                            // instrument_id = 0
+      u"",                          // nickname
+      GURL(),                       // display_icon_url
+      ewallet_issuer_id,            // ewallet_name
+      ewallet_issuer_display_name,  // account_display_name
+      supported_payment_link_uris,
+      false  // is_fido_enrolled
   );
 }
 

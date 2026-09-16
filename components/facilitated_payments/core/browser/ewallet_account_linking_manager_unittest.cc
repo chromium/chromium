@@ -43,8 +43,8 @@ class EwalletAccountLinkingManagerTest : public testing::Test {
             }),
         autofill::Ewallet(/*instrument_id=*/0, /*nickname=*/u"",
                           /*display_icon_url=*/GURL(),
-                          /*ewallet_name=*/u"eWallet",
-                          /*account_display_name=*/u"",
+                          /*ewallet_name=*/u"shopeepay",
+                          /*account_display_name=*/u"eWallet",
                           /*supported_payment_link_uris=*/{},
                           /*is_fido_enrolled=*/false));
 
@@ -86,9 +86,14 @@ TEST_F(EwalletAccountLinkingManagerTest, GetHistogramSuffix) {
 
 TEST_F(EwalletAccountLinkingManagerTest,
        GetPayloadForGetDetailsForCreatePaymentInstrument) {
-  EXPECT_TRUE(test_api(*manager_)
-                  .GetPayloadForGetDetailsForCreatePaymentInstrument()
-                  .empty());
+  base::DictValue payload =
+      test_api(*manager_).GetPayloadForGetDetailsForCreatePaymentInstrument();
+  const base::DictValue* ewallet_info =
+      payload.FindDict("ewallet_account_linking_info");
+  ASSERT_TRUE(ewallet_info);
+  const std::string* issuer_id = ewallet_info->FindString("issuer_id");
+  ASSERT_TRUE(issuer_id);
+  EXPECT_EQ(*issuer_id, "shopeepay");
 }
 
 TEST_F(EwalletAccountLinkingManagerTest,
@@ -157,10 +162,19 @@ TEST_F(EwalletAccountLinkingManagerTest, DismissAndCancelClearsState) {
 
 TEST_F(EwalletAccountLinkingManagerTest, DoOnClientTokenReceived) {
   std::vector<uint8_t> client_token = {'t', 'o', 'k', 'e', 'n'};
+  base::DictValue expected_payload =
+      test_api(*manager_).GetPayloadForGetDetailsForCreatePaymentInstrument();
 
   EXPECT_CALL(
       *payments_network_interface_,
-      GetDetailsForCreatePaymentInstrument(0, client_token, _, "en-US"));
+      GetDetailsForCreatePaymentInstrument(0, client_token, _, _, "en-US"))
+      .WillOnce([&expected_payload](long, const std::vector<uint8_t>&,
+                                    base::DictValue payload, auto,
+                                    const std::string&) {
+        EXPECT_EQ(payload, expected_payload);
+        return base::StrongAlias<autofill::payments::RequestIdTag,
+                                 std::string>();
+      });
   test_api(*manager_).DoOnClientTokenReceived(client_token);
 }
 
@@ -456,8 +470,8 @@ TEST_F(EwalletAccountLinkingManagerTest,
           }),
       autofill::Ewallet(/*instrument_id=*/0, /*nickname=*/u"",
                         /*display_icon_url=*/GURL(),
-                        /*ewallet_name=*/u"eWallet",
-                        /*account_display_name=*/u"",
+                        /*ewallet_name=*/u"shopeepay",
+                        /*account_display_name=*/u"eWallet",
                         /*supported_payment_link_uris=*/{},
                         /*is_fido_enrolled=*/false));
 
@@ -486,8 +500,8 @@ TEST_F(EwalletAccountLinkingManagerTest,
           }),
       autofill::Ewallet(/*instrument_id=*/0, /*nickname=*/u"",
                         /*display_icon_url=*/GURL(),
-                        /*ewallet_name=*/u"eWallet",
-                        /*account_display_name=*/u"",
+                        /*ewallet_name=*/u"shopeepay",
+                        /*account_display_name=*/u"eWallet",
                         /*supported_payment_link_uris=*/{},
                         /*is_fido_enrolled=*/false));
 

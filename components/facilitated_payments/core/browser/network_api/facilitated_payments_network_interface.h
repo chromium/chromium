@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/types/strong_alias.h"
+#include "base/values.h"
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface_base.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -76,6 +77,7 @@ class FacilitatedPaymentsNetworkInterface
   virtual RequestId GetDetailsForCreatePaymentInstrument(
       int64_t billing_customer_number,
       const std::vector<uint8_t>& client_token,
+      base::DictValue account_linking_payload,
       GetDetailsForCreatePaymentInstrumentResponseCallback response_callback,
       const std::string& app_locale);
 

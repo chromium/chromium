@@ -4,8 +4,10 @@
 
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 
+#include "base/notreached.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request.h"
+#include "components/facilitated_payments/core/browser/network_api/get_details_for_ewallet_account_linking_request.h"
 #include "components/facilitated_payments/core/browser/network_api/get_details_for_pix_account_linking_request.h"
 
 namespace payments::facilitated {
@@ -41,12 +43,25 @@ FacilitatedPaymentsNetworkInterface::RequestId
 FacilitatedPaymentsNetworkInterface::GetDetailsForCreatePaymentInstrument(
     int64_t billing_customer_number,
     const std::vector<uint8_t>& client_token,
+    base::DictValue account_linking_payload,
     GetDetailsForCreatePaymentInstrumentResponseCallback response_callback,
     const std::string& app_locale) {
-  return IssueRequest(std::make_unique<GetDetailsForPixAccountLinkingRequest>(
-      billing_customer_number, client_token, std::move(response_callback),
-      app_locale,
-      account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()));
+  if (account_linking_payload.FindDict("ewallet_account_linking_info")) {
+    return IssueRequest(
+        std::make_unique<GetDetailsForEwalletAccountLinkingRequest>(
+            billing_customer_number, client_token, std::move(response_callback),
+            app_locale,
+            account_info_getter_
+                ->IsSyncFeatureEnabledForPaymentsServerMetrics(),
+            std::move(account_linking_payload)));
+  } else if (account_linking_payload.FindDict("pix_account_linking_info")) {
+    return IssueRequest(std::make_unique<GetDetailsForPixAccountLinkingRequest>(
+        billing_customer_number, client_token, std::move(response_callback),
+        app_locale,
+        account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()));
+  }
+
+  NOTREACHED() << "Unsupported account linking payload provided.";
 }
 
 }  // namespace payments::facilitated

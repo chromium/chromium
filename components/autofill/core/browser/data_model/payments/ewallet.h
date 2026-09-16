@@ -40,8 +40,8 @@ namespace autofill {
 //    (possessing a non-zero server `instrument_id` and `account_display_name`).
 // 2. **Unlinked Creation Option**: An eligible provider that the user can link
 // to
-//    (where `instrument_id` is `0`, and fields like `account_display_name` and
-//    `nickname` are empty placeholder defaults).
+//    (where `instrument_id` is `0`, `ewallet_name` stores the issuer ID, and
+//    `account_display_name` stores the issuer display name).
 class Ewallet {
  public:
   Ewallet(int64_t instrument_id,
@@ -78,11 +78,11 @@ class Ewallet {
 
  private:
   // Name of the eWallet provider. For unlinked creation options, this
-  // represents the issuer's display name (e.g., "ShopeePay").
+  // represents the issuer ID (e.g., "shopeepay").
   std::u16string ewallet_name_;
 
-  // Display name of the eWallet account. Empty/ignored for unlinked creation
-  // options.
+  // Display name of the eWallet account. For unlinked creation options, this
+  // represents the issuer's display name (e.g., "ShopeePay").
   std::u16string account_display_name_;
 
   // Chrome matches the payment links on web pages against the list of payment
