@@ -421,7 +421,7 @@ TEST_F(LoopbackReferenceManagerTest, StreamCreateError) {
   EXPECT_EQ(outcome, ReferenceOpenOutcome::STREAM_CREATE_ERROR);
   histogram_tester.ExpectUniqueSample(
       "Media.Audio.LoopbackReference.OpenResult2",
-      static_cast<int>(ReferenceOpenOutcome::STREAM_CREATE_ERROR), 1);
+      ReferenceOpenOutcome::STREAM_CREATE_ERROR, 1);
   histogram_tester.ExpectTotalCount(
       "Media.Audio.LoopbackReference.HadRuntimeError", 0);
   // Destroy the loopback manager explicitly to trigger the destructor which
@@ -463,7 +463,7 @@ void LoopbackReferenceManagerTest::TestStreamOpenError(
   EXPECT_EQ(outcome, expected_reference_open_outcome);
   histogram_tester.ExpectUniqueSample(
       "Media.Audio.LoopbackReference.OpenResult2",
-      static_cast<int>(expected_reference_open_outcome), 1);
+      expected_reference_open_outcome, 1);
   histogram_tester.ExpectTotalCount(
       "Media.Audio.LoopbackReference.HadRuntimeError", 0);
 }
@@ -554,10 +554,10 @@ TEST_F(LoopbackReferenceManagerTest, OnReferenceStreamError) {
 
   histogram_tester.ExpectBucketCount(
       "Media.Audio.LoopbackReference.OpenResult2",
-      static_cast<int>(ReferenceOpenOutcome::SUCCESS), 3);
+      ReferenceOpenOutcome::SUCCESS, 3);
   histogram_tester.ExpectBucketCount(
       "Media.Audio.LoopbackReference.OpenResult2",
-      static_cast<int>(ReferenceOpenOutcome::STREAM_PREVIOUS_ERROR), 1);
+      ReferenceOpenOutcome::STREAM_PREVIOUS_ERROR, 1);
   histogram_tester.ExpectUniqueSample(
       "Media.Audio.LoopbackReference.HadRuntimeError", true, 1);
 }

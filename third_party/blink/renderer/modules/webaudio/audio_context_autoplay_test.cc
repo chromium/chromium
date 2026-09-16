@@ -120,12 +120,11 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateNoGesture_Child) {
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kFailed), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kFailed, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayCrossOriginMetric, static_cast<int>(AutoplayStatus::kFailed),
-          1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayCrossOriginMetric,
+                                              AutoplayStatus::kFailed, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 1);
       break;
   }
@@ -144,8 +143,8 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateNoGesture_Main) {
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kFailed), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kFailed, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
@@ -172,12 +171,11 @@ TEST_P(AudioContextAutoplayTest,
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kFailed), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kFailed, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayCrossOriginMetric, static_cast<int>(AutoplayStatus::kFailed),
-          1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayCrossOriginMetric,
+                                              AutoplayStatus::kFailed, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 1);
       break;
   }
@@ -201,8 +199,8 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CallResumeNoGesture_Main) {
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kFailed), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kFailed, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
@@ -225,12 +223,11 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateGesture_Child) {
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayCrossOriginMetric,
-          static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayCrossOriginMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 1);
       break;
   }
@@ -252,8 +249,8 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CreateGesture_Main) {
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
@@ -283,12 +280,11 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CallResumeGesture_Child) {
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayCrossOriginMetric,
-          static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayCrossOriginMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 1);
       break;
   }
@@ -317,8 +313,8 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_CallResumeGesture_Main) {
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
@@ -340,12 +336,11 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartNoGesture_Child) {
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kFailed), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kFailed, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayCrossOriginMetric, static_cast<int>(AutoplayStatus::kFailed),
-          1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayCrossOriginMetric,
+                                              AutoplayStatus::kFailed, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 1);
       break;
   }
@@ -366,8 +361,8 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartNoGesture_Main) {
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kFailed), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kFailed, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
@@ -392,12 +387,11 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartGesture_Child) {
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayCrossOriginMetric,
-          static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayCrossOriginMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 1);
       break;
   }
@@ -421,8 +415,8 @@ TEST_P(AudioContextAutoplayTest, AutoplayMetrics_NodeStartGesture_Main) {
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
@@ -453,12 +447,11 @@ TEST_P(AudioContextAutoplayTest,
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayCrossOriginMetric,
-          static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayCrossOriginMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 1);
       break;
   }
@@ -488,8 +481,8 @@ TEST_P(AudioContextAutoplayTest,
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
@@ -520,12 +513,11 @@ TEST_P(AudioContextAutoplayTest,
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayCrossOriginMetric,
-          static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayCrossOriginMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 1);
       break;
   }
@@ -555,8 +547,8 @@ TEST_P(AudioContextAutoplayTest,
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
@@ -580,21 +572,19 @@ TEST_P(AudioContextAutoplayTest,
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
     case AutoplayPolicy::Type::kUserGestureRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayCrossOriginMetric,
-          static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayCrossOriginMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 1);
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayCrossOriginMetric,
-          static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayCrossOriginMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 1);
       break;
   }
@@ -618,8 +608,8 @@ TEST_P(AudioContextAutoplayTest,
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
@@ -643,8 +633,8 @@ TEST_P(AudioContextAutoplayTest,
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
-      GetHistogramTester()->ExpectBucketCount(
-          kAutoplayMetric, static_cast<int>(AutoplayStatus::kSucceeded), 1);
+      GetHistogramTester()->ExpectBucketCount(kAutoplayMetric,
+                                              AutoplayStatus::kSucceeded, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayMetric, 1);
       GetHistogramTester()->ExpectTotalCount(kAutoplayCrossOriginMetric, 0);
       break;
