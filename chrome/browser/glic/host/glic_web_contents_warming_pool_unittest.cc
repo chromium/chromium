@@ -319,12 +319,19 @@ TEST_F(GlicWebContentsWarmingPoolTest, WarmingDelayTooLongAndNotScheduled) {
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerBeforeWarmingComplete) {
+  base::HistogramTester histogram_tester;
   TestGlicWebContentsWarmingPool warming_pool(&profile_,
                                               &web_contents_factory_);
   EXPECT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kCold, 1);
 
-  // Call it again quickly.
+  // Call it again quickly while the backfill delay timer is running.
   EXPECT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.HitStatus",
+                                     WarmingPoolStatus::kCold, 1);
+  histogram_tester.ExpectBucketCount("Glic.WarmingPool.HitStatus",
+                                     WarmingPoolStatus::kPendingBackfill, 1);
 
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   task_environment_.FastForwardBy(features::kGlicWebContentsWarmingDelay.Get() -
@@ -332,6 +339,32 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerBeforeWarmingComplete) {
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest,
+       TakeContainerRecordsPendingBackfillAfterMemoryPressureRelieved) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  EXPECT_TRUE(warming_pool.HasWarmedContainerForTesting());
+
+  // Trigger critical memory pressure to clear the container.
+  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  // Relieve memory pressure. Since the pool was active, it schedules a delayed
+  // backfill.
+  warming_pool.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE);
+  EXPECT_TRUE(warming_pool.GetDelayTimerForTesting().IsRunning());
+
+  // Taking container while the backfill timer is running records
+  // kPendingBackfill.
+  EXPECT_TRUE(warming_pool.TakeContainer());
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kPendingBackfill, 1);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, Shutdown) {

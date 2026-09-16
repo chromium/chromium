@@ -70,7 +70,8 @@ class GlicWebContentsWarmingPool::Metrics {
 
   GlicWebContentsWarmingPool::WarmingPoolStatus RecordTakeContainerStatus(
       const std::unique_ptr<GlicWebContentsManager>& warmed_container,
-      bool is_warming_allowed_by_memory_pressure) {
+      bool is_warming_allowed_by_memory_pressure,
+      bool has_pending_backfill) {
     WarmingPoolStatus status = WarmingPoolStatus::kCold;
     if (warmed_container) {
       status = warmed_container->ShouldReloadOnShow()
@@ -81,6 +82,8 @@ class GlicWebContentsWarmingPool::Metrics {
       }
     } else if (!is_warming_allowed_by_memory_pressure) {
       status = WarmingPoolStatus::kMemoryPressure;
+    } else if (has_pending_backfill) {
+      status = WarmingPoolStatus::kPendingBackfill;
     } else if (was_expired_) {
       status = WarmingPoolStatus::kExpired;
     }
@@ -152,8 +155,9 @@ GlicWebContentsWarmingPool::~GlicWebContentsWarmingPool() {
 
 std::unique_ptr<GlicWebContentsManager>
 GlicWebContentsWarmingPool::TakeContainer() {
-  metrics_->RecordTakeContainerStatus(warmed_container_,
-                                      IsWarmingAllowedByMemoryPressure());
+  metrics_->RecordTakeContainerStatus(
+      warmed_container_, IsWarmingAllowedByMemoryPressure(),
+      /*has_pending_backfill=*/delay_timer_.IsRunning());
   reload_count_ = 0;
   is_active_ = true;
 

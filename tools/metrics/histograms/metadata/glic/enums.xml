@@ -1281,6 +1281,9 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Memory Pressure: Container was not pre-warmed because the pool
              was disabled by memory pressure."/>
+  <int value="5"
+      label="Pending Backfill: Container was not pre-warmed because a
+             backfill preload was scheduled on the delay timer."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:GlicWarmingPoolStatus) -->

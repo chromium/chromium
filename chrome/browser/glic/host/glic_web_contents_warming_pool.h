@@ -75,7 +75,8 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
     kExpired = 2,
     kCrashed = 3,
     kMemoryPressure = 4,
-    kMaxValue = kMemoryPressure,
+    kPendingBackfill = 5,
+    kMaxValue = kPendingBackfill,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWarmingPoolStatus)
 
