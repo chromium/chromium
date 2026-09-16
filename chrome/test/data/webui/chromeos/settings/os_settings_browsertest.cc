@@ -654,11 +654,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPagePasspointRemoveDialog) {
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
-                       InternetPageSettingsTrafficCounters) {
-  RunSettingsTest("internet_page/settings_traffic_counters_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        InternetPageTetherConnectionDialog) {
   RunSettingsTest("internet_page/tether_connection_dialog_test.js");
 }

@@ -217,18 +217,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsCrosNetworkHealthTest, RoutineGroup) {
   RunTest("chromeos/network_health/routine_group_test.js", "mocha.run()");
 }
 
-// TrafficCounters
-class CrComponentsCrosTrafficCountersTest : public WebUIMochaBrowserTest {
- protected:
-  CrComponentsCrosTrafficCountersTest() {
-    set_test_loader_host(ash::kChromeUINetworkHost);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(CrComponentsCrosTrafficCountersTest, TrafficCounters) {
-  RunTest("chromeos/traffic_counters/traffic_counters_test.js", "mocha.run()");
-}
-
 // MultiDeviceSetup
 class CrComponentsCrosMultiDeviceSetupTest : public WebUIMochaBrowserTest {
  protected:

@@ -4,7 +4,6 @@
 
 import 'chrome://resources/ash/common/network_health/network_diagnostics.js';
 import 'chrome://resources/ash/common/network_health/network_health_summary.js';
-import 'chrome://resources/ash/common/traffic_counters/traffic_counters.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/ash/common/cr_elements/cr_tabs/cr_tabs.js';
@@ -146,7 +145,6 @@ class NetworkUiElement extends NetworkUiElementBase {
       this.i18n('networkLogsTab'),
       this.i18n('networkStateTab'),
       this.i18n('networkSelectTab'),
-      this.i18n('TrafficCountersTrafficCounters'),
       this.i18n('networkMetricsTab'),
       this.i18n('networkHotspotTab'),
       this.i18n('networkWifiDirectTab'),

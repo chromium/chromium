@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
 #include "chrome/browser/ash/system_logs/shill_log_source.h"
 #include "chrome/browser/ash/system_logs/touch_log_source.h"
-#include "chrome/browser/ash/system_logs/traffic_counters_log_source.h"
 #include "chrome/browser/ash/system_logs/ui_hierarchy_log_source.h"
 #include "chrome/browser/ash/system_logs/virtual_keyboard_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
@@ -85,7 +84,6 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
   fetcher->AddSource(std::make_unique<ConnectedInputDevicesLogSource>());
   fetcher->AddSource(
       std::make_unique<DeviceDataManagerInputDevicesLogSource>());
-  fetcher->AddSource(std::make_unique<TrafficCountersLogSource>());
 
   // Data sources that directly scrub itentifiable information.
   fetcher->AddSource(std::make_unique<DebugDaemonLogSource>(scrub_data));

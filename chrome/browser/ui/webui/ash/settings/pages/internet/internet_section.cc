@@ -1117,9 +1117,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
           features::kCellularBypassESimInstallationConnectivityCheck));
   html_source->AddBoolean("showTechnologyBadge",
                           !ash::features::IsSeparateNetworkIconsEnabled());
-  html_source->AddBoolean(
-      "trafficCountersForWifiTesting",
-      ash::features::IsTrafficCountersForWiFiTestingEnabled());
 
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
                          ash::external_urls::kGoogleNameserversLearnMoreURL);

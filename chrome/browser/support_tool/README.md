@@ -39,7 +39,6 @@ See [here](https://support.google.com/chrome/a?p=remote-log) for more details.
 | [ChromeOS Bluetooth](#chromeos-bluetooth)                                           | Fetches if Bluetooth floss is enabled on the device                                                                                                 |
 | [ChromeOS Connected Input Devices](#chromeos-connected-input-devices)               | Fetches the information about connected input devices to ChromeOS device.                                                                           |
 | [ChromeOS Virtual Keyboard](#chromeos-virtual-keyboard)                             | Fetches the virtual keyboard details on ChromeOS                                                                                                    |
-| [ChromeOS Traffic Counters](#chromeos-traffic-counters)                             | Fetches traffic counters for ChromeOS                                                                                                               |
 | [ChromeOS Network Health](#chromeos-network-health)                                 | Fetches network health entry.                                                                                                                       |
 | [Performance and Battery Status](#performance-and-battery-status)                   | Gathers performance relevant data such as battery saving mode on device or the active battery status                                                |
 | [Sign In Status](#sign-in-status)                                                   | Fetches signin tokens and details (the information on chrome://signin-internals)                                                                    |
@@ -274,13 +273,6 @@ Source code on [ConnectedInputDevicesLogSource](https://source.chromium.org/chro
 Virtual keyboard related information such as the touch screen type and keyboard name.
 
 Source code on [VirtualKeyboardLogSource](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_logs/virtual_keyboard_log_source.h).
-
-
-### ChromeOS Traffic Counters
-
-Network traffic counters of recent active networks on the device. This information can be used to monitor the amount of traffic on networks.
-
-Source code on [TrafficCountersLogSource](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_logs/traffic_counters_log_source.h).
 
 
 ### ChromeOS Network Health

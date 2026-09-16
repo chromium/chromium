@@ -42,10 +42,9 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_TabNames', function() {
     assertEquals('Network Logs', tabs[2].textContent.trim());
     assertEquals('Network State', tabs[3].textContent.trim());
     assertEquals('Network Select', tabs[4].textContent.trim());
-    assertEquals('Traffic Counters', tabs[5].textContent.trim());
-    assertEquals('Network Metrics', tabs[6].textContent.trim());
-    assertEquals('Hotspot', tabs[7].textContent.trim());
-    assertEquals('WiFi Direct', tabs[8].textContent.trim());
+    assertEquals('Network Metrics', tabs[5].textContent.trim());
+    assertEquals('Hotspot', tabs[6].textContent.trim());
+    assertEquals('WiFi Direct', tabs[7].textContent.trim());
   });
 
   mocha.run();
@@ -126,27 +125,6 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_State', function() {
   mocha.run();
 });
 
-TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Counters', function() {
-  test('check few items in the Counters tab', async function() {
-    const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
-    const root = document.querySelector('network-ui').shadowRoot
-
-    const tabs =
-        root.querySelector('cr-tabs').shadowRoot.querySelectorAll('.tab')
-
-    const countersTab = tabs[5]
-    countersTab.click()
-
-    const request_button = root.querySelector('#counters')
-                               .querySelector('traffic-counters')
-                               .shadowRoot.querySelector('#requestButton')
-
-    assertEquals('Request Traffic Counters', request_button.textContent.trim())
-  });
-
-  mocha.run();
-});
-
 TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Metrics', function() {
   test('check few items in the Metrics tab', async function() {
     const {assertEquals} = await import('chrome://webui-test/chai_assert.js');
@@ -155,7 +133,7 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Metrics', function() {
     const tabs =
         root.querySelector('cr-tabs').shadowRoot.querySelectorAll('.tab')
 
-    const metricsTab = tabs[6]
+    const metricsTab = tabs[5]
     metricsTab.click()
 
     const buttons = root.querySelector('#metrics')
@@ -180,7 +158,7 @@ TEST_F('NetworkDebugUIBrowserTest', 'NetworkDebugUI_Hotspot', function() {
     const tabs =
         root.querySelector('cr-tabs').shadowRoot.querySelectorAll('.tab')
 
-    const hotspotTab = tabs[7]
+    const hotspotTab = tabs[6]
     hotspotTab.click()
 
     const headers = root.querySelector('#hotspot').querySelectorAll('h2')

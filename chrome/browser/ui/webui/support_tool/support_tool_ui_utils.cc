@@ -93,9 +93,6 @@ std::string GetDataCollectorName(
     case support_tool::CHROMEOS_CONNECTED_INPUT_DEVICES:
       return l10n_util::GetStringUTF8(
           IDS_SUPPORT_TOOL_CHROMEOS_CONNECTED_INPUT_DEVICES);
-    case support_tool::CHROMEOS_TRAFFIC_COUNTERS:
-      return l10n_util::GetStringUTF8(
-          IDS_SUPPORT_TOOL_CHROMEOS_TRAFFIC_COUNTERS);
     case support_tool::CHROMEOS_VIRTUAL_KEYBOARD:
       return l10n_util::GetStringUTF8(
           IDS_SUPPORT_TOOL_CHROMEOS_VIRTUAL_KEYBOARD);
