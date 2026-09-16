@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/ttc_keyed_service.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
+#include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/test_utils.h"
-#include "chrome/browser/ttc/features.h"
-#include "chrome/browser/ttc/session_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

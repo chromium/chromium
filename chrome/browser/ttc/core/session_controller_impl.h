@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_SESSION_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_TTC_SESSION_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_IMPL_H_
 
 #include <memory>
 
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/ttc/core/session_controller.h"
+#include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
-#include "chrome/browser/ttc/session_controller.h"
-#include "chrome/browser/ttc/session_view_delegate.h"
 
 namespace content {
 class WebContents;
@@ -58,4 +58,4 @@ class SessionControllerImpl : public SessionController,
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_SESSION_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_IMPL_H_

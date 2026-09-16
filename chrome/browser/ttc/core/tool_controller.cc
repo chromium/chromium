@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/tool_controller.h"
+#include "chrome/browser/ttc/core/tool_controller.h"
 
 #include <memory>
 #include <string>

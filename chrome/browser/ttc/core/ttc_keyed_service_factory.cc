@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/ttc_keyed_service_factory.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ttc/features.h"
-#include "chrome/browser/ttc/ttc_keyed_service.h"
+#include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ttc {

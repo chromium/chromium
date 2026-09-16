@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_ENTRYPOINT_CONTROLLER_H_
-#define CHROME_BROWSER_TTC_ENTRYPOINT_CONTROLLER_H_
+#ifndef CHROME_BROWSER_TTC_CORE_ENTRYPOINT_CONTROLLER_H_
+#define CHROME_BROWSER_TTC_CORE_ENTRYPOINT_CONTROLLER_H_
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ttc/ttc_state.h"
+#include "chrome/browser/ttc/core/ttc_state.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -58,4 +58,4 @@ class EntrypointController {
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_ENTRYPOINT_CONTROLLER_H_
+#endif  // CHROME_BROWSER_TTC_CORE_ENTRYPOINT_CONTROLLER_H_

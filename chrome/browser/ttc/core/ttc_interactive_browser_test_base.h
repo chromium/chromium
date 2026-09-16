@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_TTC_INTERACTIVE_BROWSER_TEST_BASE_H_
-#define CHROME_BROWSER_TTC_TTC_INTERACTIVE_BROWSER_TEST_BASE_H_
+#ifndef CHROME_BROWSER_TTC_CORE_TTC_INTERACTIVE_BROWSER_TEST_BASE_H_
+#define CHROME_BROWSER_TTC_CORE_TTC_INTERACTIVE_BROWSER_TEST_BASE_H_
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -30,4 +30,4 @@ class TtcInteractiveBrowserTestBase : public InteractiveBrowserTest {
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_TTC_INTERACTIVE_BROWSER_TEST_BASE_H_
+#endif  // CHROME_BROWSER_TTC_CORE_TTC_INTERACTIVE_BROWSER_TEST_BASE_H_

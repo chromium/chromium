@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/ttc_interactive_browser_test_base.h"
+#include "chrome/browser/ttc/core/ttc_interactive_browser_test_base.h"
 
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ttc/features.h"
-#include "chrome/browser/ttc/ttc_keyed_service.h"
+#include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 namespace ttc {

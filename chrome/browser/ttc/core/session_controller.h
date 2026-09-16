@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_SESSION_CONTROLLER_H_
-#define CHROME_BROWSER_TTC_SESSION_CONTROLLER_H_
+#ifndef CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_H_
+#define CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_H_
 
 #include "chrome/browser/ttc/core/page_context.h"
 
@@ -25,4 +25,4 @@ class SessionController {
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_SESSION_CONTROLLER_H_
+#endif  // CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_H_

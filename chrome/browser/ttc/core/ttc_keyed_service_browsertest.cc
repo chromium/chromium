@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/ttc_keyed_service.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ttc/features.h"
-#include "chrome/browser/ttc/ttc_keyed_service_factory.h"
+#include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "content/public/test/browser_test.h"

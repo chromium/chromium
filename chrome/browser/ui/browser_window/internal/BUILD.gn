@@ -76,7 +76,7 @@ source_set("internal") {
       "//chrome/browser/prefs",
       "//chrome/browser/skills:public",
       "//chrome/browser/tab_group_sync:factories",
-      "//chrome/browser/ttc",
+      "//chrome/browser/ttc/core",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_content_setting_bubble_model_delegate",
       "//chrome/browser/ui:browser_init_state",

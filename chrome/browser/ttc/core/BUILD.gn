@@ -2,30 +2,77 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("features") {
+  public = [ "features.h" ]
+  sources = [ "features.cc" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("core") {
   public = [
+    "entrypoint_controller.h",
     "page_context.h",
+    "session_controller.h",
+    "session_view.h",
+    "tool_controller.h",
+    "ttc_keyed_service.h",
+    "ttc_keyed_service_factory.h",
     "ttc_page_context_monitor.h",
+    "ttc_state.h",
   ]
   public_deps = [
+    ":features",
     "//base",
+    "//chrome/browser/actor",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/content",
     "//content/public/browser",
+    "//url",
   ]
 }
 
 source_set("impl") {
   sources = [
+    "entrypoint_controller.cc",
     "page_context.cc",
+    "session_controller_impl.cc",
+    "session_controller_impl.h",
+    "session_view.cc",
+    "session_view_delegate.h",
+    "tool_controller.cc",
+    "ttc_keyed_service.cc",
+    "ttc_keyed_service_factory.cc",
     "ttc_page_context_monitor.cc",
   ]
   public_deps = [ ":core" ]
   deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ttc/app",
+    "//chrome/browser/ttc/app:impl",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
+    "//components/keyed_service/core",
     "//components/optimization_guide/content/browser",
+    "//components/tabs:public",
     "//content/public/browser",
+    "//ui/actions:actions_headers",
+    "//url",
   ]
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/tab_model" ]
+  } else {
+    deps += [
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/toolbar",
+    ]
+  }
 }
 
 source_set("test_support") {
@@ -37,13 +84,29 @@ source_set("test_support") {
   public_deps = [
     ":core",
     "//base",
-    "//chrome/browser/ttc",
     "//chrome/browser/ttc/app",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gmock",
     "//url",
   ]
   deps = [ "//base/test:test_support" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ttc_keyed_service_unittest.cc" ]
+  deps = [
+    ":core",
+    ":impl",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/ttc/app",
+    "//chrome/browser/ttc/app:unit_tests",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
 
 if (!is_android) {
@@ -57,15 +120,14 @@ if (!is_android) {
       ":core",
       ":test_support",
       "//base",
-      "//chrome/browser/ttc",
       "//chrome/test:test_support",
       "//content/public/browser",
       "//testing/gmock",
     ]
     deps = [
+      ":impl",
       "//base/test:test_support",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ttc:impl",
       "//components/keyed_service/core",
       "//net:test_support",
       "//testing/gtest",
@@ -75,16 +137,24 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "page_context_monitor_browsertest.cc" ]
+    sources = [
+      "page_context_monitor_browsertest.cc",
+      "tool_controller_browsertest.cc",
+      "ttc_keyed_service_browsertest.cc",
+    ]
     deps = [
       ":browser_test_support",
       ":core",
       ":impl",
       ":test_support",
       "//base",
-      "//chrome/browser/ttc",
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/common",
       "//chrome/test:test_support",
       "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/page_content_annotations/content",
       "//content/public/browser",
       "//content/public/common",
       "//content/test:browsertest_support",
@@ -92,8 +162,37 @@ if (!is_android) {
       "//net:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//third_party/blink/public/common",
       "//ui/base",
       "//url",
+    ]
+  }
+
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "entrypoint_controller_interactive_test.cc",
+      "ttc_interactive_browser_test_base.cc",
+      "ttc_interactive_browser_test_base.h",
+    ]
+    deps = [
+      ":core",
+      ":impl",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/interaction",
+      "//chrome/browser/ui/toolbar/pinned_toolbar",
+      "//chrome/browser/ui/views/toolbar",
+      "//chrome/test:test_support",
+      "//chrome/test/interaction",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base/interaction",
     ]
   }
 }

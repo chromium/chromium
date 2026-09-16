@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/check_deref.h"
-#include "chrome/browser/ttc/entrypoint_controller.h"
-#include "chrome/browser/ttc/ttc_interactive_browser_test_base.h"
-#include "chrome/browser/ttc/ttc_keyed_service.h"
+#include "chrome/browser/ttc/core/entrypoint_controller.h"
+#include "chrome/browser/ttc/core/ttc_interactive_browser_test_base.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/ttc_keyed_service.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 
 #include <memory>
 #include <utility>
@@ -10,8 +10,8 @@
 #include "base/check.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/app/public/make_conversation.h"
-#include "chrome/browser/ttc/session_controller_impl.h"
-#include "chrome/browser/ttc/ttc_keyed_service_factory.h"
+#include "chrome/browser/ttc/core/session_controller_impl.h"
+#include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 
 namespace ttc {
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_FEATURES_H_
-#define CHROME_BROWSER_TTC_FEATURES_H_
+#ifndef CHROME_BROWSER_TTC_CORE_FEATURES_H_
+#define CHROME_BROWSER_TTC_CORE_FEATURES_H_
 
 #include "base/feature_list.h"
 
@@ -14,4 +14,4 @@ BASE_DECLARE_FEATURE(kTtc);
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_FEATURES_H_
+#endif  // CHROME_BROWSER_TTC_CORE_FEATURES_H_

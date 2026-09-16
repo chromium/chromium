@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_TTC_KEYED_SERVICE_H_
-#define CHROME_BROWSER_TTC_TTC_KEYED_SERVICE_H_
+#ifndef CHROME_BROWSER_TTC_CORE_TTC_KEYED_SERVICE_H_
+#define CHROME_BROWSER_TTC_CORE_TTC_KEYED_SERVICE_H_
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ttc/ttc_state.h"
+#include "chrome/browser/ttc/core/ttc_state.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -79,4 +79,4 @@ class TtcKeyedService : public KeyedService {
 
 }  // namespace ttc
 
-#endif  // CHROME_BROWSER_TTC_TTC_KEYED_SERVICE_H_
+#endif  // CHROME_BROWSER_TTC_CORE_TTC_KEYED_SERVICE_H_
