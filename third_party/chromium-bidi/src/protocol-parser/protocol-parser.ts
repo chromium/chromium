@@ -449,6 +449,12 @@ export namespace Emulation {
       WebDriverBidi.Emulation.SetScrollbarTypeOverrideParametersSchema,
     ) as Protocol.Emulation.SetScrollbarTypeOverrideParameters;
   }
+  export function parseSetTextLayoutModeOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetTextLayoutModeOverrideParametersSchema,
+    ) as Protocol.Emulation.SetTextLayoutModeOverrideParameters;
+  }
   export function parseSetTimezoneOverrideParams(params: unknown) {
     return parseObject(
       params,

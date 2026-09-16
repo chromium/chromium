@@ -53,8 +53,8 @@
     "@types/node": "20.19.43",
     "@types/sinon": "22.0.0",
     "chai": "6.2.2",
-    "devtools-protocol": "0.0.1692173",
-    "eslint": "10.9.1",
+    "devtools-protocol": "0.0.1698617",
+    "eslint": "10.10.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-import": "2.32.0",
@@ -68,7 +68,7 @@
     "semver": "7.8.5",
     "sinon": "22.1.0",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.69.0"
+    "typescript-eslint": "8.70.0"
   },
   "overrides": {
     "eslint-plugin-import": {

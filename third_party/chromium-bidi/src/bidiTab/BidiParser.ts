@@ -254,6 +254,11 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Emulation.SetScrollbarTypeOverrideParameters {
     return Parser.Emulation.parseSetScrollbarTypeOverrideParams(params);
   }
+  parseSetTextLayoutModeOverrideParams(
+    params: unknown,
+  ): Emulation.SetTextLayoutModeOverrideParameters {
+    return Parser.Emulation.parseSetTextLayoutModeOverrideParams(params);
+  }
   parseSetTimezoneOverrideParams(
     params: unknown,
   ): Emulation.SetTimezoneOverrideParameters {

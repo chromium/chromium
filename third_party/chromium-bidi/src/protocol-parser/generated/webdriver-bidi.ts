@@ -842,8 +842,8 @@ export namespace BrowsingContext {
 export namespace BrowsingContext {
   export const ImageSizeSchema = z.lazy(() =>
     z.object({
-      maxWidth: JsUintSchema.gt(1).optional(),
-      maxHeight: JsUintSchema.gt(1).optional(),
+      maxWidth: JsUintSchema.gte(1).optional(),
+      maxHeight: JsUintSchema.gte(1).optional(),
     }),
   );
 }
@@ -1159,6 +1159,7 @@ export namespace BrowsingContext {
   export const StartScreencastParametersSchema = z.lazy(() =>
     z.object({
       context: BrowsingContext.BrowsingContextSchema,
+      destinationFolder: z.string().optional(),
       mimeType: z.string().optional(),
       video: BrowsingContext.MediaTrackConstraintsSchema.optional(),
       audio: z.boolean().default(false).optional(),
@@ -1422,6 +1423,7 @@ export const EmulationCommandSchema = z.lazy(() =>
     Emulation.SetScreenSettingsOverrideSchema,
     Emulation.SetScriptingEnabledSchema,
     Emulation.SetScrollbarTypeOverrideSchema,
+    Emulation.SetTextLayoutModeOverrideSchema,
     Emulation.SetTimezoneOverrideSchema,
     Emulation.SetTouchOverrideSchema,
     Emulation.SetUserAgentOverrideSchema,
@@ -1437,6 +1439,7 @@ export const EmulationResultSchema = z.lazy(() =>
     Emulation.SetScreenOrientationOverrideResultSchema,
     Emulation.SetScriptingEnabledResultSchema,
     Emulation.SetScrollbarTypeOverrideResultSchema,
+    Emulation.SetTextLayoutModeOverrideResultSchema,
     Emulation.SetTimezoneOverrideResultSchema,
     Emulation.SetTouchOverrideResultSchema,
     Emulation.SetUserAgentOverrideResultSchema,
@@ -1944,6 +1947,34 @@ export namespace Emulation {
 }
 export namespace Emulation {
   export const SetScrollbarTypeOverrideResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
+}
+export namespace Emulation {
+  export const SetTextLayoutModeOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setTextLayoutModeOverride'),
+      params: Emulation.SetTextLayoutModeOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetTextLayoutModeOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      textLayoutMode: z.union([Emulation.TextLayoutModeSchema, z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .nonempty()
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).nonempty().optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const TextLayoutModeSchema = z.literal('mobile');
+}
+export namespace Emulation {
+  export const SetTextLayoutModeOverrideResultSchema = z.lazy(
     () => EmptyResultSchema,
   );
 }
