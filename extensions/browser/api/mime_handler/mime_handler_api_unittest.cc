@@ -4,11 +4,14 @@
 
 #include "extensions/browser/api/mime_handler/mime_handler_api.h"
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -19,6 +22,8 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
+#include "extensions/browser/mime_handler/generic_mime_handler_stream_delegate.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/mock_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
@@ -37,12 +42,88 @@ namespace extensions {
 
 namespace {
 
+constexpr char kPdfMimeType[] = "application/pdf";
+constexpr char kOriginalUrl[] = "https://example.com/foo.pdf";
+constexpr char kStreamUrl[] = "stream://pdf";
+constexpr char kHandlerPage[] = "handler.html";
+constexpr char kCustomHeaderName[] = "X-Custom";
+constexpr char kCustomHeaderValue[] = "bar";
+constexpr char kCoepHeaderName[] = "Cross-Origin-Embedder-Policy";
+constexpr char kCoepHeaderValue[] = "require-corp";
+constexpr char kOtherExtensionId[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+constexpr int kTabId = 42;
+
 content::RenderFrameHost* AppendChildFrame(content::WebContents* web_contents,
                                            std::string_view name) {
   content::RenderFrameHost* embedder = web_contents->GetPrimaryMainFrame();
   auto* embedder_tester = content::RenderFrameHostTester::For(embedder);
   embedder_tester->InitializeRenderFrameIfNeeded();
   return embedder_tester->AppendChild(std::string(name));
+}
+
+// A PDF response head. `extra_headers` lets a test add the header names it
+// wants the API to expose or hide.
+network::mojom::URLResponseHeadPtr CreatePdfResponseHeadWithExtraHeaders(
+    const std::map<std::string, std::string>& extra_headers) {
+  auto head = network::mojom::URLResponseHead::New();
+  head->mime_type = kPdfMimeType;
+  auto builder =
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK");
+  builder.AddHeader("Content-Type", kPdfMimeType);
+  for (const auto& [name, value] : extra_headers) {
+    builder.AddHeader(name, value);
+  }
+  head->headers = builder.Build();
+  return head;
+}
+
+// A claimed MIME handler stream and the frames a chrome.mimeHandler API
+// function needs to run against it.
+struct ClaimedStreamSetup {
+  // Owns the frames below, so it must outlive them.
+  std::unique_ptr<content::WebContents> web_contents;
+  // Holds the stream. The API finds it from the extension frame's parent.
+  raw_ptr<content::RenderFrameHost> embedder;
+  // Stands in for the handler page that calls the API.
+  raw_ptr<content::RenderFrameHost> extension_rfh;
+  raw_ptr<mime_handler::MimeHandlerStreamManager> manager;
+  // The URL the stream was intercepted for.
+  GURL original_url;
+};
+
+ClaimedStreamSetup CreateAndSetUpClaimedStream(
+    content::BrowserContext* browser_context,
+    const ExtensionId& extension_id,
+    network::mojom::URLResponseHeadPtr response_head,
+    std::unique_ptr<MimeHandlerStreamDelegate> delegate) {
+  ClaimedStreamSetup result;
+  result.original_url = GURL(kOriginalUrl);
+  const GURL& original_url = result.original_url;
+  result.web_contents = content::WebContentsTester::CreateTestWebContents(
+      browser_context, content::SiteInstance::Create(browser_context));
+  content::WebContentsTester::For(result.web_contents.get())
+      ->NavigateAndCommit(original_url);
+  result.embedder = result.web_contents->GetPrimaryMainFrame();
+  result.extension_rfh =
+      AppendChildFrame(result.web_contents.get(), "extension");
+
+  mime_handler::MimeHandlerStreamManager::Create(result.web_contents.get());
+  result.manager = mime_handler::MimeHandlerStreamManager::FromWebContents(
+      result.web_contents.get());
+
+  auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
+  transferrable_loader->url = GURL(kStreamUrl);
+  transferrable_loader->head = std::move(response_head);
+  auto stream = std::make_unique<StreamContainer>(
+      kTabId, /*embedded=*/true,
+      Extension::GetResourceURL(
+          Extension::GetBaseURLFromExtensionId(extension_id), kHandlerPage),
+      extension_id, std::move(transferrable_loader), original_url);
+  result.manager->AddStreamContainer(result.embedder->GetFrameTreeNodeId(),
+                                     "internal_id", std::move(stream),
+                                     std::move(delegate));
+  result.manager->ClaimStreamInfoForTesting(result.embedder);
+  return result;
 }
 
 }  // namespace
@@ -67,50 +148,16 @@ TEST_F(MimeHandlerApiTest, GetStreamInfoFailsFromTopLevelFrame) {
 }
 
 TEST_F(MimeHandlerApiTest, GetStreamInfoSuccess) {
-  const GURL kOriginalUrl("https://example.com/foo.pdf");
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(
-          browser_context(), content::SiteInstance::Create(browser_context()));
-  ASSERT_TRUE(web_contents);
-  content::WebContentsTester::For(web_contents.get())
-      ->NavigateAndCommit(kOriginalUrl);
-
-  content::RenderFrameHost* embedder = web_contents->GetPrimaryMainFrame();
-  content::RenderFrameHost* extension_rfh =
-      AppendChildFrame(web_contents.get(), "extension");
-  ASSERT_TRUE(extension_rfh);
-
-  mime_handler::MimeHandlerStreamManager::Create(web_contents.get());
-  auto* manager = mime_handler::MimeHandlerStreamManager::FromWebContents(
-      web_contents.get());
-  ASSERT_TRUE(manager);
-
-  auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
-  transferrable_loader->url = GURL("stream://pdf");
-  transferrable_loader->head = network::mojom::URLResponseHead::New();
-  transferrable_loader->head->mime_type = "application/pdf";
-  transferrable_loader->head->headers =
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
-          .AddHeader("Content-Type", "application/pdf")
-          .AddHeader("X-Custom", "bar")
-          .Build();
-
-  auto stream = std::make_unique<StreamContainer>(
-      /*tab_id=*/42, /*embedded=*/true,
-      Extension::GetResourceURL(
-          Extension::GetBaseURLFromExtensionId(extension()->id()),
-          "handler.html"),
-      extension()->id(), std::move(transferrable_loader), kOriginalUrl);
-
-  manager->AddStreamContainer(
-      embedder->GetFrameTreeNodeId(), "internal_id", std::move(stream),
+  ClaimedStreamSetup setup = CreateAndSetUpClaimedStream(
+      browser_context(), extension()->id(),
+      CreatePdfResponseHeadWithExtraHeaders(
+          {{kCustomHeaderName, kCustomHeaderValue}}),
       std::make_unique<
           testing::NiceMock<mime_handler::MockMimeHandlerStreamDelegate>>());
-  manager->ClaimStreamInfoForTesting(embedder);
 
   auto function = base::MakeRefCounted<MimeHandlerGetStreamInfoFunction>();
   function->set_extension(extension());
-  function->SetRenderFrameHost(extension_rfh);
+  function->SetRenderFrameHost(setup.extension_rfh);
   std::optional<base::Value> result =
       api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                        browser_context());
@@ -118,15 +165,40 @@ TEST_F(MimeHandlerApiTest, GetStreamInfoSuccess) {
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_dict());
   const base::DictValue& info = result->GetDict();
-  EXPECT_EQ(*info.FindString("mimeType"), "application/pdf");
-  EXPECT_EQ(*info.FindString("originalUrl"), "https://example.com/foo.pdf");
-  EXPECT_EQ(*info.FindString("streamUrl"), "stream://pdf");
-  EXPECT_EQ(info.FindInt("tabId"), 42);
+  EXPECT_EQ(*info.FindString("mimeType"), kPdfMimeType);
+  EXPECT_EQ(*info.FindString("originalUrl"), kOriginalUrl);
+  EXPECT_EQ(*info.FindString("streamUrl"), kStreamUrl);
+  EXPECT_EQ(info.FindInt("tabId"), kTabId);
   EXPECT_EQ(info.FindBool("embedded"), true);
   const base::DictValue* headers = info.FindDict("responseHeaders");
   ASSERT_TRUE(headers);
-  EXPECT_EQ(*headers->FindString("Content-Type"), "application/pdf");
-  EXPECT_EQ(*headers->FindString("X-Custom"), "bar");
+  EXPECT_EQ(*headers->FindString("Content-Type"), kPdfMimeType);
+  EXPECT_EQ(*headers->FindString(kCustomHeaderName), kCustomHeaderValue);
+}
+
+// A generic (third-party) handler sees only the CORS-safelisted response
+// header names through getStreamInfo().
+TEST_F(MimeHandlerApiTest, GetStreamInfoFiltersHeadersForGenericHandler) {
+  ClaimedStreamSetup setup = CreateAndSetUpClaimedStream(
+      browser_context(), extension()->id(),
+      CreatePdfResponseHeadWithExtraHeaders(
+          {{kCoepHeaderName, kCoepHeaderValue}}),
+      std::make_unique<mime_handler::GenericMimeHandlerStreamDelegate>());
+
+  auto function = base::MakeRefCounted<MimeHandlerGetStreamInfoFunction>();
+  function->set_extension(extension());
+  function->SetRenderFrameHost(setup.extension_rfh);
+  std::optional<base::Value> result =
+      api_test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
+                                                       browser_context());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_dict());
+  const base::DictValue* headers =
+      result->GetDict().FindDict("responseHeaders");
+  ASSERT_TRUE(headers);
+  EXPECT_TRUE(headers->FindString("Content-Type"));
+  EXPECT_FALSE(headers->FindString(kCoepHeaderName));
 }
 
 // Called without a bound RenderFrameHost -- the function has no way
@@ -151,13 +223,12 @@ TEST_F(MimeHandlerApiTest, AbortAndFallbackFailsFromTopLevelFrame) {
 // Called from a child frame whose embedder has no MIME-handler stream:
 // the function reports the missing stream rather than silently no-oping.
 TEST_F(MimeHandlerApiTest, AbortAndFallbackFailsWithoutStream) {
-  const GURL kOriginalUrl("https://example.com/foo.pdf");
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(
           browser_context(), content::SiteInstance::Create(browser_context()));
   ASSERT_TRUE(web_contents);
   content::WebContentsTester::For(web_contents.get())
-      ->NavigateAndCommit(kOriginalUrl);
+      ->NavigateAndCommit(GURL(kOriginalUrl));
 
   content::RenderFrameHost* extension_rfh =
       AppendChildFrame(web_contents.get(), "extension");
@@ -175,48 +246,18 @@ TEST_F(MimeHandlerApiTest, AbortAndFallbackFailsWithoutStream) {
 // Called from a child frame whose embedder is claimed by a different
 // extension: the function rejects the call.
 TEST_F(MimeHandlerApiTest, AbortAndFallbackFailsForOtherExtension) {
-  const GURL kOriginalUrl("https://example.com/foo.pdf");
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(
-          browser_context(), content::SiteInstance::Create(browser_context()));
-  ASSERT_TRUE(web_contents);
-  content::WebContentsTester::For(web_contents.get())
-      ->NavigateAndCommit(kOriginalUrl);
-
-  content::RenderFrameHost* embedder = web_contents->GetPrimaryMainFrame();
-  content::RenderFrameHost* extension_rfh =
-      AppendChildFrame(web_contents.get(), "extension");
-  ASSERT_TRUE(extension_rfh);
-
-  mime_handler::MimeHandlerStreamManager::Create(web_contents.get());
-  auto* manager = mime_handler::MimeHandlerStreamManager::FromWebContents(
-      web_contents.get());
-  ASSERT_TRUE(manager);
-
   // Stream belongs to a different extension.
-  constexpr char kOtherExtensionId[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
-  auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
-  transferrable_loader->url = GURL("stream://pdf");
-  transferrable_loader->head = network::mojom::URLResponseHead::New();
-  transferrable_loader->head->mime_type = "application/pdf";
-  transferrable_loader->head->headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-  auto stream = std::make_unique<StreamContainer>(
-      /*tab_id=*/42, /*embedded=*/true,
-      Extension::GetResourceURL(
-          Extension::GetBaseURLFromExtensionId(kOtherExtensionId),
-          "handler.html"),
-      kOtherExtensionId, std::move(transferrable_loader), kOriginalUrl);
-  manager->AddStreamContainer(
-      embedder->GetFrameTreeNodeId(), "internal_id", std::move(stream),
+  ClaimedStreamSetup setup = CreateAndSetUpClaimedStream(
+      browser_context(), kOtherExtensionId,
+      CreatePdfResponseHeadWithExtraHeaders(
+          {{kCoepHeaderName, kCoepHeaderValue}}),
       std::make_unique<
           testing::NiceMock<mime_handler::MockMimeHandlerStreamDelegate>>());
-  manager->ClaimStreamInfoForTesting(embedder);
 
   auto function = base::MakeRefCounted<
       MimeHandlerAbortAndFallbackToNativeHandlerFunction>();
   function->set_extension(extension());
-  function->SetRenderFrameHost(extension_rfh);
+  function->SetRenderFrameHost(setup.extension_rfh);
   EXPECT_EQ("Stream does not belong to this extension.",
             api_test_utils::RunFunctionAndReturnError(function.get(), "[]",
                                                       browser_context()));
@@ -225,59 +266,34 @@ TEST_F(MimeHandlerApiTest, AbortAndFallbackFailsForOtherExtension) {
 // Successful abort from a third-party handler: the function reports
 // no error, and the embedder frame is marked pending native fallback.
 TEST_F(MimeHandlerApiTest, AbortAndFallbackSuccess) {
-  const GURL kOriginalUrl("https://example.com/foo.pdf");
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(
-          browser_context(), content::SiteInstance::Create(browser_context()));
-  ASSERT_TRUE(web_contents);
-  content::WebContentsTester::For(web_contents.get())
-      ->NavigateAndCommit(kOriginalUrl);
-
-  content::RenderFrameHost* embedder = web_contents->GetPrimaryMainFrame();
-  content::RenderFrameHost* extension_rfh =
-      AppendChildFrame(web_contents.get(), "extension");
-  ASSERT_TRUE(extension_rfh);
-
-  mime_handler::MimeHandlerStreamManager::Create(web_contents.get());
-  auto* manager = mime_handler::MimeHandlerStreamManager::FromWebContents(
-      web_contents.get());
-  ASSERT_TRUE(manager);
-
-  auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
-  transferrable_loader->url = GURL("stream://pdf");
-  transferrable_loader->head = network::mojom::URLResponseHead::New();
-  transferrable_loader->head->mime_type = "application/pdf";
-  transferrable_loader->head->headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-  auto stream = std::make_unique<StreamContainer>(
-      /*tab_id=*/42, /*embedded=*/true,
-      Extension::GetResourceURL(
-          Extension::GetBaseURLFromExtensionId(extension()->id()),
-          "handler.html"),
-      extension()->id(), std::move(transferrable_loader), kOriginalUrl);
-  manager->AddStreamContainer(
-      embedder->GetFrameTreeNodeId(), "internal_id", std::move(stream),
+  ClaimedStreamSetup setup = CreateAndSetUpClaimedStream(
+      browser_context(), extension()->id(),
+      CreatePdfResponseHeadWithExtraHeaders(
+          {{kCoepHeaderName, kCoepHeaderValue}}),
       std::make_unique<
           testing::NiceMock<mime_handler::MockMimeHandlerStreamDelegate>>());
-  manager->ClaimStreamInfoForTesting(embedder);
 
   // `AbortAndFallbackToNativeHandler` CHECKs that the extension frame
   // has finished navigating before the abort lands.
-  auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder);
+  auto* stream_info =
+      setup.manager->GetClaimedStreamInfoForTesting(setup.embedder);
   ASSERT_TRUE(stream_info);
   stream_info->SetDidExtensionFinishNavigation();
 
-  const content::FrameTreeNodeId embedder_ftn = embedder->GetFrameTreeNodeId();
-  ASSERT_FALSE(manager->IsPendingNativeFallback(embedder_ftn, kOriginalUrl));
+  const content::FrameTreeNodeId embedder_ftn =
+      setup.embedder->GetFrameTreeNodeId();
+  ASSERT_FALSE(
+      setup.manager->IsPendingNativeFallback(embedder_ftn, setup.original_url));
 
   auto function = base::MakeRefCounted<
       MimeHandlerAbortAndFallbackToNativeHandlerFunction>();
   function->set_extension(extension());
-  function->SetRenderFrameHost(extension_rfh);
+  function->SetRenderFrameHost(setup.extension_rfh);
   EXPECT_TRUE(
       api_test_utils::RunFunction(function.get(), "[]", browser_context()));
   EXPECT_TRUE(function->GetError().empty()) << function->GetError();
-  EXPECT_TRUE(manager->IsPendingNativeFallback(embedder_ftn, kOriginalUrl));
+  EXPECT_TRUE(
+      setup.manager->IsPendingNativeFallback(embedder_ftn, setup.original_url));
 }
 
 // Built-in MIME handler extensions (e.g. the PDF viewer) are blocked

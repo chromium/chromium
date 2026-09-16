@@ -42,6 +42,12 @@ using extensions::mime_handler::MockMimeHandlerStreamDelegate;
 
 }  // namespace
 
+// The built-in PDF viewer sees the response headers unfiltered.
+TEST(PdfHandlerStreamDelegateTest, DoesNotFilterResponseHeaders) {
+  PdfHandlerStreamDelegate delegate;
+  EXPECT_FALSE(delegate.ShouldFilterResponseHeadersForHandler());
+}
+
 class MimeHandlerStreamManagerPdfTest : public ChromeRenderViewHostTestHarness {
  protected:
   void SetUp() override {

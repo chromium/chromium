@@ -231,6 +231,12 @@ class MimeHandlerStreamManager
       content::FrameTreeNodeId frame_tree_node_id,
       const GURL& response_url);
 
+  // Returns true if the handler that claimed `embedder_host`'s stream may
+  // only see the CORS-safelisted response header names. Returns false when
+  // there is no claimed stream.
+  bool ShouldFilterResponseHeadersForHandler(
+      const content::RenderFrameHost* embedder_host) const;
+
   // Returns whether the handler plugin should handle save events.
   bool PluginCanSave(const content::RenderFrameHost* embedder_host) const;
 

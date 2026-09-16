@@ -8,13 +8,15 @@
 
 namespace extensions {
 
-// Verify the base delegate save-state defaults are stable and harmless.
+// A subclass that forgets to override a method must still get a safe
+// default, not a permissive one.
 TEST(MimeHandlerStreamDelegateTest, DefaultMethods) {
   MimeHandlerStreamDelegate delegate;
 
   EXPECT_FALSE(delegate.PluginCanSave());
   delegate.SetPluginCanSave(true);
   EXPECT_FALSE(delegate.PluginCanSave());
+  EXPECT_TRUE(delegate.ShouldFilterResponseHeadersForHandler());
 }
 
 }  // namespace extensions

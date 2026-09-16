@@ -42,4 +42,8 @@ bool MimeHandlerStreamDelegate::RequiresPerInstanceProcessIsolation() const {
   return false;
 }
 
+bool MimeHandlerStreamDelegate::ShouldFilterResponseHeadersForHandler() const {
+  return true;
+}
+
 }  // namespace extensions

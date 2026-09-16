@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "base/test/gtest_util.h"
 #include "base/test/run_until.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/global_routing_id.h"
@@ -19,6 +20,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/mime_handler/generic_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/mime_handler_body_cache.h"
 #include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 #include "extensions/browser/mime_handler/mock_mime_handler_stream_delegate.h"
@@ -30,6 +32,8 @@
 #include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
+#include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
@@ -46,6 +50,28 @@ using ::testing::SaveArg;
 
 constexpr char kOriginalUrl1[] = "https://original_url1";
 constexpr char kOriginalUrl2[] = "https://original_url2";
+constexpr char kAuthTokenHeaderName[] = "X-Auth-Token";
+constexpr char kAuthTokenHeaderValue[] = "s3cr3t";
+constexpr char kContentTypeHeaderName[] = "Content-Type";
+constexpr char kPdfMimeType[] = "application/pdf";
+constexpr char kStreamUrl1[] = "stream://url1";
+constexpr char kHandlerUrl1[] = "https://handler_url1";
+constexpr char kExtensionId1[] = "extension_id1";
+
+std::unique_ptr<StreamContainer> MakeStreamContainerWithAuthTokenHeader() {
+  auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
+  transferrable_loader->url = GURL(kStreamUrl1);
+  transferrable_loader->head = network::mojom::URLResponseHead::New();
+  transferrable_loader->head->mime_type = kPdfMimeType;
+  transferrable_loader->head->headers =
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
+          .AddHeader(kContentTypeHeaderName, kPdfMimeType)
+          .AddHeader(kAuthTokenHeaderName, kAuthTokenHeaderValue)
+          .Build();
+  return std::make_unique<StreamContainer>(
+      /*tab_id=*/1, /*embedded=*/false, GURL(kHandlerUrl1), kExtensionId1,
+      std::move(transferrable_loader), GURL(kOriginalUrl1));
+}
 
 }  // namespace
 
@@ -185,6 +211,93 @@ TEST_F(MimeHandlerStreamManagerTest, AddAndGetStreamContainer) {
   EXPECT_EQ(transferrable_loader->head->mime_type, "application/pdf");
   EXPECT_EQ(result->original_url(), GURL("https://original_url1"));
   EXPECT_TRUE(mime_handler_stream_manager());
+}
+
+TEST_F(MimeHandlerStreamManagerTest, ShouldFilterResponseHeadersForHandler) {
+  for (const bool should_filter : {false, true}) {
+    SCOPED_TRACE(should_filter);
+    content::RenderFrameHost* embedder_host =
+        NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+    auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
+    ON_CALL(*delegate, ShouldFilterResponseHeadersForHandler())
+        .WillByDefault(Return(should_filter));
+
+    MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+    manager->AddStreamContainer(embedder_host->GetFrameTreeNodeId(),
+                                "internal_id", GenerateSampleStreamContainer(1),
+                                std::move(delegate));
+    manager->ClaimStreamInfoForTesting(embedder_host);
+
+    EXPECT_EQ(should_filter,
+              manager->ShouldFilterResponseHeadersForHandler(embedder_host));
+  }
+}
+
+// A third-party handler's loader carries only the CORS-safelisted headers.
+// The browser's stored head keeps all of them.
+TEST_F(MimeHandlerStreamManagerTest, ExtensionFrameGetsFilteredResponseHead) {
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  content::RenderFrameHost* extension_host =
+      CreateChildRenderFrameHost(embedder_host);
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      MakeStreamContainerWithAuthTokenHeader(),
+      std::make_unique<GenericMimeHandlerStreamDelegate>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  manager->SetExtensionFrameTreeNodeIdForTesting(
+      embedder_host, extension_host->GetFrameTreeNodeId());
+
+  NiceMock<content::MockNavigationHandle> navigation_handle(
+      GURL("https://handler_url1"), extension_host);
+  blink::mojom::TransferrableURLLoaderPtr registered_loader;
+  EXPECT_CALL(navigation_handle, RegisterSubresourceOverride)
+      .WillOnce(
+          [&registered_loader](blink::mojom::TransferrableURLLoaderPtr loader) {
+            registered_loader = std::move(loader);
+          });
+
+  manager->ReadyToCommitNavigation(&navigation_handle);
+
+  ASSERT_TRUE(registered_loader);
+  ASSERT_TRUE(registered_loader->head->headers);
+  EXPECT_TRUE(
+      registered_loader->head->headers->HasHeader(kContentTypeHeaderName));
+  EXPECT_FALSE(
+      registered_loader->head->headers->HasHeader(kAuthTokenHeaderName));
+
+  base::WeakPtr<StreamContainer> stream =
+      manager->GetStreamContainer(embedder_host);
+  ASSERT_TRUE(stream);
+  ASSERT_TRUE(stream->response_head()->headers);
+  EXPECT_TRUE(
+      stream->response_head()->headers->HasHeader(kAuthTokenHeaderName));
+}
+
+// The built-in viewer's content frame gets unfiltered headers, so a
+// third-party handler's stream must never reach it.
+TEST_F(MimeHandlerStreamManagerTest, FilteredStreamNeverReachesContentFrame) {
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  content::RenderFrameHost* extension_host =
+      CreateChildRenderFrameHost(embedder_host);
+  content::RenderFrameHost* content_host =
+      CreateChildRenderFrameHost(extension_host);
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      MakeStreamContainerWithAuthTokenHeader(),
+      std::make_unique<GenericMimeHandlerStreamDelegate>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+
+  NiceMock<content::MockNavigationHandle> navigation_handle(GURL(kOriginalUrl1),
+                                                            content_host);
+  ON_CALL(navigation_handle, IsPdf).WillByDefault(Return(true));
+
+  EXPECT_CHECK_DEATH(manager->ReadyToCommitNavigation(&navigation_handle));
 }
 
 // Verify adding a `StreamContainer` under the same frame tree node ID replaces

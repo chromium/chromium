@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "extensions/browser/mime_handler/mime_handler_body_cache.h"
 #include "net/http/http_response_headers.h"
 
@@ -26,7 +27,15 @@ StreamContainer::StreamContainer(
       mime_type_(transferrable_loader_->head->mime_type),
       original_url_(original_url),
       stream_url_(transferrable_loader_->url),
-      response_headers_(transferrable_loader_->head->headers) {}
+      response_head_(transferrable_loader_->head->Clone()) {
+  // Clone() above shares this HttpResponseHeaders object rather than
+  // deep-copying it, so later reducing the handler's copy to what a third
+  // party may see would reduce this one too. Rebuild an independent copy.
+  if (response_head_->headers) {
+    response_head_->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        response_head_->headers->raw_headers());
+  }
+}
 
 StreamContainer::~StreamContainer() = default;
 

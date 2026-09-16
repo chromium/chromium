@@ -64,6 +64,11 @@ class MimeHandlerStreamDelegate {
   virtual bool PluginCanSave() const;
   virtual void SetPluginCanSave(bool plugin_can_save);
 
+  // Returns true if this handler is allowed to see only the CORS-safelisted
+  // response header names. True by default; a handler that needs the full,
+  // unfiltered header set must override this to return false explicitly.
+  virtual bool ShouldFilterResponseHeadersForHandler() const;
+
   // Returns true if each navigation through this delegate must run in its
   // own process, isolated from other instances.
   virtual bool RequiresPerInstanceProcessIsolation() const;

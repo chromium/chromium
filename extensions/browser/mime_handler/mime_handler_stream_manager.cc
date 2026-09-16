@@ -405,6 +405,13 @@ MimeHandlerStreamManager::TakeCachedFallbackBody(
   return std::move(it->second.body);
 }
 
+bool MimeHandlerStreamManager::ShouldFilterResponseHeadersForHandler(
+    const content::RenderFrameHost* embedder_host) const {
+  const auto* stream_info = GetClaimedStreamInfo(embedder_host);
+  return stream_info &&
+         stream_info->delegate()->ShouldFilterResponseHeadersForHandler();
+}
+
 bool MimeHandlerStreamManager::PluginCanSave(
     const content::RenderFrameHost* embedder_host) const {
   const auto* stream_info = GetClaimedStreamInfo(embedder_host);
@@ -886,6 +893,11 @@ bool MimeHandlerStreamManager::MaybeRegisterPdfSubresourceOverride(
   if (!claimed_stream_info) {
     return false;
   }
+
+  // Only the built-in viewer has a content frame, and its response headers
+  // must not be filtered. CORS does not apply to it.
+  CHECK(!claimed_stream_info->delegate()
+             ->ShouldFilterResponseHeadersForHandler());
 
   navigation_handle->RegisterSubresourceOverride(
       claimed_stream_info->stream()->TakeTransferrableURLLoader());

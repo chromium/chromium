@@ -39,6 +39,10 @@ class MockMimeHandlerStreamDelegate
               (override));
   MOCK_METHOD(bool, PluginCanSave, (), (const, override));
   MOCK_METHOD(void, SetPluginCanSave, (bool), (override));
+  MOCK_METHOD(bool,
+              ShouldFilterResponseHeadersForHandler,
+              (),
+              (const, override));
 };
 
 }  // namespace extensions::mime_handler

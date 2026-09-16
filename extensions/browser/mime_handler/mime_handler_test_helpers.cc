@@ -35,7 +35,10 @@ std::unique_ptr<extensions::StreamContainer> GenerateSampleStreamContainer(
   transferrable_loader->head = network::mojom::URLResponseHead::New();
   transferrable_loader->head->mime_type = "application/pdf";
   transferrable_loader->head->headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK");
+      net::HttpResponseHeaders::Builder(net::HttpVersion(2, 0), "200 OK")
+          .AddHeader("Content-Type", "application/pdf")
+          .AddHeader("Cross-Origin-Embedder-Policy", "require-corp")
+          .Build();
 
   return std::make_unique<extensions::StreamContainer>(
       /*tab_id=*/container_number, embedded, handler_url, extension_id,

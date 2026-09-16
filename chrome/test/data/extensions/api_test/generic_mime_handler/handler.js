@@ -24,6 +24,11 @@ chrome.test.runTests([
 
     const response = await fetch(info.streamUrl);
     chrome.test.assertEq(200, response.status);
+
+    // Record what the stream fetch exposed. The browser-side test decides
+    // which names are allowed.
+    window.streamFetchHeaderNames = [...response.headers.keys()];
+
     const buffer = await response.arrayBuffer();
     const header = new Uint8Array(buffer, 0, 5);
     const magic = String.fromCharCode(...header);

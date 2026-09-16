@@ -40,6 +40,7 @@ source_set("browser_tests") {
     "//extensions:test_support",
     "//extensions/browser/mime_handler",
     "//extensions/browser/mime_handler:mime_handler_registry",
+    "//extensions/browser/mime_handler:stream_container",
     "//extensions/common",
     "//mojo/public/cpp/bindings",
     "//net:test_support",

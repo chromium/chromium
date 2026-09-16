@@ -27,6 +27,7 @@ class PdfHandlerStreamDelegate : public extensions::MimeHandlerStreamDelegate {
   void OnPostMessageSetUp(content::RenderFrameHost* embedder_host) override;
   bool PluginCanSave() const override;
   void SetPluginCanSave(bool plugin_can_save) override;
+  bool ShouldFilterResponseHeadersForHandler() const override;
 
  private:
   bool plugin_can_save_ = false;

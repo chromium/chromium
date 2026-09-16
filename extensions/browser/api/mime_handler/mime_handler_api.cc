@@ -19,6 +19,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/cors/cors.h"
 
 namespace extensions {
 
@@ -28,6 +29,9 @@ struct ResolvedStream {
   raw_ptr<content::RenderFrameHost> embedder_rfh;
   raw_ptr<mime_handler::MimeHandlerStreamManager> stream_manager;
   base::WeakPtr<StreamContainer> stream;
+  // Resolved together with the stream so callers cannot pair a stream with
+  // the filtering decision of a different frame.
+  bool should_filter_response_headers = true;
 };
 
 // Validates that `extension_rfh` is a child frame whose embedder owns a
@@ -57,7 +61,10 @@ base::expected<ResolvedStream, std::string> ResolveStreamForExtensionFrame(
   if (stream->extension_id() != expected_extension_id) {
     return base::unexpected("Stream does not belong to this extension.");
   }
-  return ResolvedStream{embedder_rfh, stream_manager, std::move(stream)};
+  const bool should_filter_response_headers =
+      stream_manager->ShouldFilterResponseHeadersForHandler(embedder_rfh);
+  return ResolvedStream{embedder_rfh, stream_manager, std::move(stream),
+                        should_filter_response_headers};
 }
 
 }  // namespace
@@ -87,6 +94,12 @@ ExtensionFunction::ResponseAction MimeHandlerGetStreamInfoFunction::Run() {
     while (
         stream.response_headers()->EnumerateHeaderLines(&iter, &name, &value)) {
       if (!base::IsStringASCII(name) || !base::IsStringASCII(value)) {
+        continue;
+      }
+      // Restrict a generic (third-party) MIME handler extension to the
+      // response headers that fetch() would expose to script cross-origin.
+      if (resolved->should_filter_response_headers &&
+          !network::cors::IsCorsSafelistedResponseHeaderName(name)) {
         continue;
       }
       const std::string* existing =

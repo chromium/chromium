@@ -12,6 +12,7 @@
 #include "extensions/common/api/mime_handler.mojom.h"
 #include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "url/gurl.h"
 
@@ -51,8 +52,12 @@ class StreamContainer {
   const std::string& mime_type() const { return mime_type_; }
   const GURL& original_url() const { return original_url_; }
   const GURL& stream_url() const { return stream_url_; }
-  net::HttpResponseHeaders* response_headers() const {
-    return response_headers_.get();
+  const net::HttpResponseHeaders* response_headers() const {
+    return response_head_->headers.get();
+  }
+
+  const network::mojom::URLResponseHead* response_head() const {
+    return response_head_.get();
   }
 
   const mime_handler::PdfPluginAttributesPtr& pdf_plugin_attributes() const {
@@ -87,7 +92,8 @@ class StreamContainer {
   std::string mime_type_;
   GURL original_url_;
   GURL stream_url_;
-  scoped_refptr<net::HttpResponseHeaders> response_headers_;
+  // The original response head.
+  network::mojom::URLResponseHeadPtr response_head_;
   mime_handler::PdfPluginAttributesPtr pdf_plugin_attributes_;
   scoped_refptr<MimeHandlerBodyCache> body_cache_;
 

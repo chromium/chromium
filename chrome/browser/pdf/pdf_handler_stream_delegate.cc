@@ -95,4 +95,10 @@ void PdfHandlerStreamDelegate::SetPluginCanSave(bool plugin_can_save) {
   plugin_can_save_ = plugin_can_save;
 }
 
+bool PdfHandlerStreamDelegate::ShouldFilterResponseHeadersForHandler() const {
+  // The built-in PDF viewer is first-party and needs the full response
+  // head, unlike a third-party MIME handler extension.
+  return false;
+}
+
 }  // namespace pdf
