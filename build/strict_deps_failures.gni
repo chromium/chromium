@@ -10,7 +10,15 @@
 
 # TODO(crbug.com/555455099): Remove this once we've finished the migration and
 # have no remaining usages.
+# Set this flag when check_includes_strict is failing for a reason that hasn't
+# been triaged yet.
 CHECK_INCLUDES_STRICT_UNTRIAGED = false
+
+# TODO(crbug.com/555455099): Remove this once we've finished the migration and
+# have no remaining usages.
+# Set this when check_includes_strict is failing due to public headers including
+# private headers.
+CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE = false
 
 # A list of directories for which strict_deps is enabled.
 CHECK_INCLUDES_STRICT_ALLOWLIST = [

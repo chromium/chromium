@@ -37,6 +37,7 @@ static_library("dom_keycode_converter") {
   if (!is_ios) {
     deps += [ "//ipc:param_traits" ]
   }
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 static_library("dom_keyboard_layout") {

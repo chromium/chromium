@@ -57,4 +57,5 @@ component("switches") {
   ]
   public_deps = [ "//base" ]
   defines = [ "GAMEPAD_FEATURES_IMPLEMENTATION" ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }

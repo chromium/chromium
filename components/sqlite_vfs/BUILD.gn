@@ -58,6 +58,7 @@ component("sqlite_vfs") {
   }
 
   defines = [ "IS_SQLITE_VFS_IMPL" ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 if (use_blink && !is_android) {

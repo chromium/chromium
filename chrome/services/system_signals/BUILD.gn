@@ -52,6 +52,7 @@ source_set("system_signals") {
 
     deps += [ "//components/device_signals/core/system_signals/posix" ]
   }
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 source_set("unit_tests") {

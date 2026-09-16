@@ -328,6 +328,7 @@ source_set("fl_runner") {
     "//third_party/protobuf:timestamp_proto",
     "//third_party/re2",
   ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 source_set("confidential_compute_crypto_test_util") {

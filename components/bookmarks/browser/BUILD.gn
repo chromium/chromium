@@ -109,6 +109,7 @@ static_library("browser") {
   if (is_ios) {
     sources += [ "bookmark_node_data_ios.cc" ]
   }
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 static_library("test_support") {

@@ -33,6 +33,7 @@ source_set("prefs") {
     "//base",
     "//chrome/common:constants",
   ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 source_set("unit_tests") {

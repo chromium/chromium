@@ -101,6 +101,7 @@ template("rust_bindgen_generator") {
     # script's args and are populated using deps and configs.
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
+                                 "check_includes_strict",
                                  "configs",
                                  "deps",
                                  "public_configs",

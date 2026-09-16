@@ -50,6 +50,7 @@ if (!is_android) {
       "//ui/actions:actions_headers",
       "//ui/base",
     ]
+    check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
   }
 
   source_set("page_action_impl") {

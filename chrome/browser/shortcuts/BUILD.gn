@@ -86,6 +86,7 @@ source_set("shortcuts") {
     ]
     deps += [ "//chrome/browser:shell_integration_linux" ]
   }
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 source_set("test_support") {

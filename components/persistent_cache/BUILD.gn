@@ -62,6 +62,7 @@ component("persistent_cache") {
     ":test_support",
     ":unit_tests",
   ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 static_library("test_support") {

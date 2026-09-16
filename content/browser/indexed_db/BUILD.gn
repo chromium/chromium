@@ -125,6 +125,7 @@ source_set("indexed_db") {
     ":*",
     "//content/test/*",
   ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 source_set("indexed_db_fuzzer_support") {

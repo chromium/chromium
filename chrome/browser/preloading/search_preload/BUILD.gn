@@ -35,6 +35,7 @@ source_set("search_preload") {
     "//components/pref_registry",
     "//components/search_engines",
   ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 source_set("feature") {

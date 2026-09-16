@@ -391,6 +391,7 @@ if (!is_cronet_build || is_ios) {
         "motherboard_metrics_provider.h",
       ]
     }
+    check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
   }
 
   static_library("test_support") {

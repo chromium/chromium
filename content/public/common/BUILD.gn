@@ -48,6 +48,7 @@ component("result_codes") {
   deps = [ "//base" ]
 
   configs += [ "//content:content_implementation" ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 # This target allows other targets to depend on content_descriptors.h which is
@@ -107,6 +108,7 @@ source_set("static_switches") {
     "//media:media_buildflags",
     "//tools/v8_context_snapshot:buildflags",
   ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 # This target allowing depending on content_switches without depending on the
@@ -133,6 +135,7 @@ source_set("switches") {
   if (enable_ipc_fuzzer) {
     configs += [ "//tools/ipc_fuzzer:ipc_fuzzer_config" ]
   }
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 # This target allows you to use the content MainFunctionParams struct and
@@ -148,6 +151,7 @@ source_set("static_main_function_params") {
   public_deps = [ "//base" ]
 
   public_configs = [ ":static_switches_defines" ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 # Target for depending on main_function_params.h. This can be included without
@@ -164,6 +168,7 @@ component("main_function_params") {
   deps = [ "//base" ]
 
   configs += [ "//content:content_implementation" ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
 
 source_set("memory_consumer_update") {

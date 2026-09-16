@@ -21,4 +21,5 @@ component("features") {
   ]
   deps = [ "//base" ]
   defines = [ "BLUETOOTH_FEATURES_IMPLEMENTATION" ]
+  check_includes_strict = CHECK_INCLUDES_STRICT_PUBLIC_INCLUDES_PRIVATE
 }
