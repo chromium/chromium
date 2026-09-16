@@ -16,6 +16,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 #include "content/common/zygote/zygote_handle_impl_linux.h"
 #include "content/public/browser/zygote_host/zygote_host_linux.h"
@@ -81,10 +82,9 @@ class CONTENT_EXPORT ZygoteHostImpl : public ZygoteHost {
   bool use_suid_sandbox_for_adj_oom_score_;
   std::string sandbox_binary_;
 
-  // This lock protects the |zygote_pids_| set.
   base::Lock zygote_pids_lock_;
   // This is a set of PIDs representing all the running zygotes.
-  std::set<pid_t> zygote_pids_;
+  std::set<pid_t> zygote_pids_ GUARDED_BY(zygote_pids_lock_);
 };
 
 }  // namespace content
