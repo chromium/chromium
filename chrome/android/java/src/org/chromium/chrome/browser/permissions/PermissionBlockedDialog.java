@@ -41,6 +41,7 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -115,6 +116,12 @@ public class PermissionBlockedDialog implements ModalDialogProperties.Controller
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonLabel)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButtonLabel)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        // Either button may grant the permission, so protect against tapjacking
+                        // in the same way as the regular permission prompt.
+                        .with(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY, true)
+                        .with(
+                                ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS,
+                                UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS)
                         .build();
         mModalDialogManager.showDialog(mPropertyModel, ModalDialogType.APP);
     }
