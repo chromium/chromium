@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/permissions/one_time_permissions_condition_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -21,12 +23,56 @@
 #include "content/public/browser/visibility.h"
 #include "url/gurl.h"
 
-OneTimePermissionsTracker::OneTimePermissionsTracker() = default;
+namespace {
+
+class ActivePageCondition : public OneTimePermissionsTracker::Condition {
+ public:
+  ActivePageCondition(scoped_refptr<OneTimePermissionsConditionTracker>
+                          internal_active_page_tracker,
+                      scoped_refptr<base::SequencedTaskRunner> task_runner)
+      : internal_active_page_tracker_(std::move(internal_active_page_tracker)),
+        task_runner_(std::move(task_runner)) {
+    CHECK(task_runner_);
+  }
+  ~ActivePageCondition() override {
+    // Post a task so that the internal_active_page_tracker_ is destroyed
+    // asynchronously. That ensures that, in the case of a same-origin
+    // navigation, the active page tracker for the new page is created before
+    // the one for the old page is destroyed, and the one-time permission is not
+    // expired.
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::DoNothingWithBoundArgs(std::move(internal_active_page_tracker_)));
+  }
+
+ private:
+  scoped_refptr<OneTimePermissionsConditionTracker>
+      internal_active_page_tracker_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+};
+
+}  // namespace
+
+OneTimePermissionsTracker::OneTimePermissionsTracker()
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
+  active_page_tracker_factory_ =
+      std::make_unique<OneTimePermissionsConditionTracker::Factory>(
+          base::BindRepeating(
+              &OneTimePermissionsTracker::NotifyLastPageFromOriginClosed,
+              weak_factory_.GetWeakPtr()));
+}
+
 OneTimePermissionsTracker::~OneTimePermissionsTracker() = default;
 
 base::WeakPtr<OneTimePermissionsTracker>
 OneTimePermissionsTracker::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+std::unique_ptr<OneTimePermissionsTracker::Condition>
+OneTimePermissionsTracker::NewActivePage(const url::Origin& origin) {
+  return std::make_unique<ActivePageCondition>(
+      active_page_tracker_factory_->New(origin), task_runner_);
 }
 
 OneTimePermissionsTracker::OriginTrackEntry::OriginTrackEntry() = default;
@@ -112,9 +158,7 @@ void OneTimePermissionsTracker::WebContentsUnloadedOrigin(
     const url::Origin& origin) {
   origin_tracker_[origin].undiscarded_tab_counter--;
   DCHECK(!(origin_tracker_[origin].undiscarded_tab_counter < 0));
-  if (origin_tracker_[origin].undiscarded_tab_counter == 0) {
-    NotifyLastPageFromOriginClosed(origin);
-  } else if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
+  if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
     StartBackgroundExpirationTimersAndHandleMediaState(origin);
   }
 }
@@ -254,6 +298,12 @@ void OneTimePermissionsTracker::FireRunningTimersForTesting() {
       }
     }
   }
+}
+
+void OneTimePermissionsTracker::SetTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  CHECK(task_runner);
+  task_runner_ = std::move(task_runner);
 }
 
 void OneTimePermissionsTracker::NotifyLastPageFromOriginClosed(

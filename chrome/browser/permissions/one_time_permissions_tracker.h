@@ -9,13 +9,20 @@
 #include <set>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/permissions/one_time_permissions_condition_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/origin.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 // This observable class keeps track of one-time permission related browsing
 // states.
@@ -31,7 +38,14 @@ class OneTimePermissionsTracker : public KeyedService {
   OneTimePermissionsTracker& operator=(const OneTimePermissionsTracker&) =
       delete;
 
+  class Condition {
+   public:
+    virtual ~Condition() = default;
+  };
+
   base::WeakPtr<OneTimePermissionsTracker> GetWeakPtr();
+
+  std::unique_ptr<Condition> NewActivePage(const url::Origin& origin);
 
   // Handles primary page changes to `origin` and pages of `origin` being
   // undiscarded.
@@ -74,8 +88,12 @@ class OneTimePermissionsTracker : public KeyedService {
   // Fires all running timers for testing purposes.
   void FireRunningTimersForTesting();
 
- protected:
   void NotifyLastPageFromOriginClosed(const url::Origin& origin);
+
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+ protected:
   void NotifyBackgroundTimerExpired(
       const url::Origin& origin,
       const OneTimePermissionsTrackerObserver::BackgroundExpiryType&
@@ -138,9 +156,14 @@ class OneTimePermissionsTracker : public KeyedService {
   void NotifyCapturingVideoExpired(const url::Origin& origin);
   void NotifyCapturingAudioExpired(const url::Origin& origin);
 
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   base::ObserverList<OneTimePermissionsTrackerObserver> observer_list_;
 
   std::map<url::Origin, OriginTrackEntry> origin_tracker_;
+
+  std::unique_ptr<OneTimePermissionsConditionTracker::Factory>
+      active_page_tracker_factory_;
 
   base::WeakPtrFactory<OneTimePermissionsTracker> weak_factory_{this};
 };

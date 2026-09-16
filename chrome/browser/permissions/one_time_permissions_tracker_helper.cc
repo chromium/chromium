@@ -4,10 +4,11 @@
 
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 
-#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/permissions/one_time_permissions_condition_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
 #include "content/public/browser/page.h"
@@ -54,6 +55,7 @@ class OneTimePermissionsPageTracker
 
   url::Origin origin_;
   base::WeakPtr<OneTimePermissionsTracker> tracker_;
+  std::unique_ptr<OneTimePermissionsTracker::Condition> active_page_tracker_;
   bool is_backgrounded_ = false;
   bool is_capturing_video_ = false;
   bool is_capturing_audio_ = false;
@@ -69,6 +71,7 @@ OneTimePermissionsPageTracker::OneTimePermissionsPageTracker(
       page.GetMainDocument().GetBrowserContext());
   if (tracker) {
     tracker_ = tracker->GetWeakPtr();
+    active_page_tracker_ = tracker->NewActivePage(origin_);
     tracker_->WebContentsLoadedOrigin(origin_);
     if (content::WebContents::FromRenderFrameHost(&page.GetMainDocument())
             ->GetVisibility() == content::Visibility::HIDDEN) {
