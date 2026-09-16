@@ -388,6 +388,7 @@ source_set("impl") {
       "//chrome/browser/ash/tpm",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/smart_card",
+      "//chrome/browser/ui:settings_window_manager_chromeos",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/webui:plural_string_handler",
       "//chrome/browser/ui/webui/ash/extended_updates",

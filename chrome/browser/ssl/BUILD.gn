@@ -186,6 +186,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/profiles",
+      "//chrome/browser/ui:settings_window_manager_chromeos",
     ]
   }
 }

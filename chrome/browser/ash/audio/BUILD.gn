@@ -68,6 +68,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/audio",
     "//chrome/browser/ash/hats",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:settings_window_manager_chromeos",
     "//chrome/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

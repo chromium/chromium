@@ -146,6 +146,7 @@ source_set("isolated_web_app_installer_view_controller") {
       "//ash/public/cpp",
       "//ash/webui/settings/public/constants:mojom",
       "//chrome/browser:browser_public_dependencies",
+      "//chrome/browser/ui:settings_window_manager_chromeos",
       "//chrome/browser/ui/ash/shelf",
       "//components/services/app_service",
       "//ui/events",

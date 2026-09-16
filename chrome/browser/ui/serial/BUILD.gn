@@ -35,7 +35,10 @@ source_set("impl") {
     "//ui/base",
   ]
   if (is_chromeos) {
-    deps += [ "//ash/webui/settings/public/constants:mojom" ]
+    deps += [
+      "//ash/webui/settings/public/constants:mojom",
+      "//chrome/browser/ui:settings_window_manager_chromeos",
+    ]
   }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

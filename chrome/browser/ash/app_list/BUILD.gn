@@ -205,6 +205,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/search/ranking:unit_tests",
     "//chrome/browser/ash/app_list/search/system_info:unit_tests",
     "//chrome/browser/ash/app_list/search/util:unit_tests",
+    "//chrome/browser/ui:settings_window_manager_chromeos",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -261,6 +262,7 @@ source_set("browser_tests") {
     "//chrome/browser/signin",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_window_header",
+    "//chrome/browser/ui:settings_window_manager_chromeos",
     "//chrome/browser/ui/ash/assistant",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/shelf",

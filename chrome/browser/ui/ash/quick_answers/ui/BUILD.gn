@@ -84,6 +84,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:settings_window_manager_chromeos",
     "//chrome/browser/ui/ash/quick_answers",
     "//chrome/browser/ui/ash/quick_answers/test:mock_quick_answers_client",
     "//chrome/browser/ui/ash/quick_answers/test:test_support",

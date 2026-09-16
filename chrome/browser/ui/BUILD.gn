@@ -2076,18 +2076,14 @@ static_library("ui") {
     assert(enable_supervised_users)
     assert(toolkit_views)
     sources += [
-      "settings_window_manager_chromeos.cc",
-      "settings_window_manager_chromeos.h",
       "views/frame/browser_frame_view_chromeos.cc",
       "views/frame/browser_frame_view_chromeos.h",
-      "views/frame/browser_view_ash.cc",
-      "views/frame/browser_view_ash.h",
-      "views/frame/immersive_mode_controller_chromeos.cc",
-      "views/frame/immersive_mode_controller_chromeos.h",
     ]
 
     deps += [
       ":browser_commands_chromeos",
+      ":settings_window_manager_chromeos",
+      ":settings_window_manager_chromeos_impl",
       "//ash",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
@@ -2237,6 +2233,9 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:browser_native_widget_ash",
       "//chrome/browser/ui/views/frame:browser_native_widget_ash_impl",
       "//chrome/browser/ui/views/frame:browser_native_widget_factory_chromeos",
+      "//chrome/browser/ui/views/frame:browser_view_ash",
+      "//chrome/browser/ui/views/frame:immersive_mode_controller_chromeos",
+      "//chrome/browser/ui/views/frame:immersive_mode_controller_chromeos_impl",
       "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view_ash",
       "//chrome/browser/ui/views/frame:top_controls_slide_controller_chromeos",
       "//chrome/browser/ui/views/frame:top_controls_slide_controller_chromeos_impl",
@@ -2362,10 +2361,23 @@ static_library("ui") {
       # views/frame/browser_widget.h which cannot be split out yet.
       "//chrome/browser/ui/views/frame:browser_native_widget_ash_impl",
 
+      # browser_view_ash.h includes views/frame/browser_view.h which cannot be
+      # split out yet.
+      "//chrome/browser/ui/views/frame:browser_view_ash",
+
+      # immersive_mode_controller_chromeos.cc includes
+      # browser_element_identifiers.h, views/frame/browser_view.h, and
+      # views/frame/top_container_view.h from //chrome/browser/ui:ui.
+      "//chrome/browser/ui/views/frame:immersive_mode_controller_chromeos_impl",
+
       # picture_in_picture_browser_frame_view_ash.h includes
       # views/frame/picture_in_picture_browser_frame_view.h which cannot be
       # split out yet.
       "//chrome/browser/ui/views/frame:picture_in_picture_browser_frame_view_ash",
+
+      # settings_window_manager_chromeos.cc includes browser_window.h from
+      # //chrome/browser/ui:ui.
+      ":settings_window_manager_chromeos_impl",
       "//chrome/browser/ui/views/frame:top_controls_slide_controller_chromeos_impl",
       "//chrome/browser/ui/webui/ash/add_supervision",
       "//chrome/browser/ui/webui/ash/cloud_upload",
@@ -2566,8 +2578,6 @@ static_library("ui") {
     sources += [
       "views/frame/browser_frame_view_mac.h",
       "views/frame/browser_frame_view_mac.mm",
-      "views/frame/browser_native_widget_mac.h",
-      "views/frame/browser_native_widget_mac.mm",
     ]
 
     deps += [
@@ -2580,6 +2590,8 @@ static_library("ui") {
       "//chrome/browser/ui/views:certificate_viewer_mac_views",
       "//chrome/browser/ui/views/frame:browser_frame_view_factory_mac",
       "//chrome/browser/ui/views/frame:browser_native_widget_factory_mac",
+      "//chrome/browser/ui/views/frame:browser_native_widget_mac",
+      "//chrome/browser/ui/views/frame:browser_native_widget_mac_impl",
       "//chrome/browser/ui/views/frame:immersive_mode_controller_mac",
       "//chrome/browser/ui/views/frame:immersive_mode_controller_mac_impl",
       "//chrome/browser/ui/views/frame:immersive_mode_overlay_views_mac",
@@ -2598,9 +2610,12 @@ static_library("ui") {
       # //chrome/browser/ui:ui.
       "//chrome/browser/ui/views/frame:browser_frame_view_factory_mac",
 
-      # browser_native_widget_factory_mac.mm includes
-      # views/frame/browser_native_widget_mac.h which cannot be split out yet.
-      "//chrome/browser/ui/views/frame:browser_native_widget_factory_mac",
+      # browser_native_widget_mac.mm includes browser_commands.h,
+      # views/frame/browser_frame_view.h, views/frame/browser_view.h,
+      # views/frame/browser_widget.h, and
+      # views/frame/vertical_tab_strip_region_view.h which cannot be split out
+      # yet.
+      "//chrome/browser/ui/views/frame:browser_native_widget_mac_impl",
 
       # immersive_mode_controller_mac.mm includes browser_frame_view_mac.h,
       # browser_view.h, and top_container_view.h from //chrome/browser/ui:ui.
@@ -4217,6 +4232,7 @@ if (!is_android) {
       ]
       deps += [
         ":chrome_pages",
+        ":settings_window_manager_chromeos",
         "//chrome/browser/ash/boca/on_task",
         "//chrome/browser/ash/policy/core:test_support",
         "//chrome/browser/ui/ash/session",
@@ -4744,6 +4760,58 @@ if (is_chromeos) {
     public_deps = [
       "//base",
       "//net",
+    ]
+  }
+
+  source_set("settings_window_manager_chromeos") {
+    public = [ "settings_window_manager_chromeos.h" ]
+    public_deps = [
+      "//ash/webui/settings/public/constants:mojom",
+      "//base",
+      "//chromeos/ash/experiences/settings_ui",
+      "//components/services/app_service/public/cpp:app_types",
+      "//components/sessions",
+      "//ui/display/types",
+    ]
+  }
+
+  source_set("settings_window_manager_chromeos_impl") {
+    sources = [ "settings_window_manager_chromeos.cc" ]
+    public_deps = [
+      ":settings_window_manager_chromeos",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":browser_window_header",
+      "//ash",
+      "//ash/public/cpp",
+      "//ash/public/cpp/resources:ash_public_unscaled_resources",
+      "//ash/webui/settings/public/constants",
+      "//ash/webui/settings/public/constants:mojom",
+      "//base",
+      "//chrome/browser/app_mode",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/ash/system_web_apps",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/window_feature_controller",
+      "//chrome/browser/web_applications",
+      "//chrome/common:constants",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/browser_delegate",
+      "//chromeos/ash/components/system_web_apps:system_web_app_type",
+      "//chromeos/ui/base",
+      "//components/services/app_service/public/cpp:app_types",
+      "//components/sessions",
+      "//components/strings:components_strings",
+      "//content/public/browser",
+      "//ui/aura",
+      "//ui/base",
+      "//url",
     ]
   }
 }

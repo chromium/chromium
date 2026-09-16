@@ -99,6 +99,7 @@ if (is_chromeos) {
       "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
       "//chrome/browser/renderer_context_menu:test_support",
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui:settings_window_manager_chromeos",
       "//chrome/browser/ui/ash/multi_user",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/location_bar",

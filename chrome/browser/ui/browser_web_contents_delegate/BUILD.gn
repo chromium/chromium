@@ -46,5 +46,8 @@ if (!is_android) {
     if (use_aura) {
       deps += [ "//chrome/browser/ui:overscroll_pref_manager" ]
     }
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/ui:settings_window_manager_chromeos" ]
+    }
   }
 }

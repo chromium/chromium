@@ -297,6 +297,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/system_web_apps/apps/personalization_app:browser_tests",
     "//chrome/browser/ash/system_web_apps/apps/projector_app:browser_tests",
     "//chrome/browser/ash/system_web_apps/apps/vc_background_ui:browser_tests",
+    "//chrome/browser/ui:settings_window_manager_chromeos",
   ]
 
   if (!is_official_build) {

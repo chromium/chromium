@@ -165,6 +165,7 @@ source_set("impl") {
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/arc/accessibility",
       "//chrome/browser/extensions",
+      "//chrome/browser/ui:settings_window_manager_chromeos",
       "//components/infobars/content",
     ]
   }

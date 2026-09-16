@@ -219,6 +219,7 @@ if (!is_chromeos_device) {
         "//ash:test_support",
         "//chrome/browser/ash/boca/on_task",
         "//chrome/browser/ash/system_web_apps/test_support",
+        "//chrome/browser/ui/views/frame:immersive_mode_controller_chromeos",
         "//chromeos/ui/base",
         "//chromeos/ui/frame:test_support",
         "//ui/display:test_support",

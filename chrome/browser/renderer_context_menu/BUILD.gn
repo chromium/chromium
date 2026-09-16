@@ -206,6 +206,7 @@ source_set("impl") {
       "//chrome/browser/ash/input_method",
       "//chrome/browser/chromeos/arc",
       "//chrome/browser/chromeos/policy/dlp",
+      "//chrome/browser/ui:settings_window_manager_chromeos",
       "//chrome/browser/ui/ash/read_write_cards",
       "//chrome/browser/ui/ash/read_write_cards:read_write_cards_manager",
       "//chrome/browser/ui/ash/system_web_apps",

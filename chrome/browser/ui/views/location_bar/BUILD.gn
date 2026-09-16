@@ -311,7 +311,10 @@ source_set("browser_tests") {
     deps += [ "//ui/ozone" ]
   }
   if (is_chromeos) {
-    deps += [ "//chromeos/ui/frame:test_support" ]
+    deps += [
+      "//chrome/browser/ui/views/frame:immersive_mode_controller_chromeos",
+      "//chromeos/ui/frame:test_support",
+    ]
   }
   if (is_mac) {
     deps += [ "//chrome/browser/ui:browser_commands_mac" ]

@@ -324,6 +324,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_init_state",
     "//chrome/browser/ui:browser_window_header",
+    "//chrome/browser/ui:settings_window_manager_chromeos",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/ash/shelf/app_service",
     "//chrome/browser/ui/ash/system_web_apps",
