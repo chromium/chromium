@@ -145,8 +145,7 @@ bool AdvanceEnumeratorWithStat(FileEnumerator* traversal,
 
 bool DoCopyDirectory(const FilePath& from_path,
                      const FilePath& to_path,
-                     bool recursive,
-                     bool open_exclusive) {
+                     bool recursive) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   // Some old callers of CopyDirectory want it to support wildcards.
   // After some discussion, we decided to fix those callers.
@@ -218,7 +217,7 @@ bool DoCopyDirectory(const FilePath& from_path,
       if (mkdir(target_path.value().c_str(), mode) == 0) {
         continue;
       }
-      if (errno == EEXIST && !open_exclusive) {
+      if (errno == EEXIST) {
         continue;
       }
 
@@ -252,17 +251,7 @@ bool DoCopyDirectory(const FilePath& from_path,
       continue;
     }
 
-    int open_flags = O_WRONLY | O_CREAT;
-    // If |open_exclusive| is set then we should always create the destination
-    // file, so O_NONBLOCK is not necessary to ensure we don't block on the
-    // open call for the target file below, and since the destination will
-    // always be a regular file it wouldn't affect the behavior of the
-    // subsequent write calls anyway.
-    if (open_exclusive) {
-      open_flags |= O_EXCL;
-    } else {
-      open_flags |= O_TRUNC | O_NONBLOCK;
-    }
+    int open_flags = O_WRONLY | O_CREAT | O_TRUNC | O_NONBLOCK;
     // Each platform has different default file opening modes for CopyFile which
     // we want to replicate here. On OS X, we use copyfile(3) which takes the
     // source file's permissions into account. On the other platforms, we just
@@ -542,13 +531,7 @@ bool ReplaceFile(const FilePath& from_path,
 bool CopyDirectory(const FilePath& from_path,
                    const FilePath& to_path,
                    bool recursive) {
-  return DoCopyDirectory(from_path, to_path, recursive, false);
-}
-
-bool CopyDirectoryExcl(const FilePath& from_path,
-                       const FilePath& to_path,
-                       bool recursive) {
-  return DoCopyDirectory(from_path, to_path, recursive, true);
+  return DoCopyDirectory(from_path, to_path, recursive);
 }
 
 bool CreatePipe(ScopedFD* read_fd, ScopedFD* write_fd, bool non_blocking) {

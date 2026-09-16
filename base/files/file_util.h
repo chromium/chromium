@@ -220,12 +220,6 @@ BASE_EXPORT bool CopyDirectory(const FilePath& from_path,
                                const FilePath& to_path,
                                bool recursive);
 
-// Like CopyDirectory() except trying to overwrite an existing file will not
-// work and will return false.
-BASE_EXPORT bool CopyDirectoryExcl(const FilePath& from_path,
-                                   const FilePath& to_path,
-                                   bool recursive);
-
 // Returns true if the given path exists on the local filesystem,
 // false otherwise.
 BASE_EXPORT bool PathExists(const FilePath& path);
