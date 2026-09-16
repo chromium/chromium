@@ -2793,6 +2793,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kBrowsingHistoryFilterByDeviceDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(history::kBrowsingHistoryFilterByDevice)},
+    {"browsing-history-similar-visits-grouping",
+     flag_descriptions::kBrowsingHistorySimilarVisitsGroupingName,
+     flag_descriptions::kBrowsingHistorySimilarVisitsGroupingDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(history::kBrowsingHistorySimilarVisitsGrouping)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -1562,9 +1562,10 @@
     "name": "browsing-history-similar-visits-grouping",
     "owners": [
       "rainhard@google.com",
+      "alimariam@google.com",
       "zalmashni@google.com",
       "chrome-browser-privacy-team@google.com"],
-    "expiry_milestone": 152
+    "expiry_milestone": 160
   },
   {
     "name": "build-external-privacy-context",

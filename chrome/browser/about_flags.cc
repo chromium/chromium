@@ -12119,13 +12119,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBrowsingHistoryActorIntegrationM3Description,
      kOsDesktop,
      FEATURE_VALUE_TYPE(history::kBrowsingHistoryActorIntegrationM3)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     {"browsing-history-similar-visits-grouping",
      flag_descriptions::kBrowsingHistorySimilarVisitsGroupingName,
      flag_descriptions::kBrowsingHistorySimilarVisitsGroupingDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(history::kBrowsingHistorySimilarVisitsGrouping)},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"incognito-theme-overlay-testing",

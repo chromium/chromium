@@ -375,6 +375,11 @@ inline constexpr char kBrowsingHistoryFilterByDeviceName[] =
 inline constexpr char kBrowsingHistoryFilterByDeviceDescription[] =
     "Enables browser history filtering by device.";
 
+inline constexpr char kBrowsingHistorySimilarVisitsGroupingName[] =
+    "Browsing History Grouping Improvements";
+inline constexpr char kBrowsingHistorySimilarVisitsGroupingDescription[] =
+    "Enables improvements to grouping of similar browsing history.";
+
 inline constexpr char kBuildExternalPrivacyContextName[] =
     "Build external privacy context";
 inline constexpr char kBuildExternalPrivacyContextDescription[] =

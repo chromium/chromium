@@ -11947,6 +11947,8 @@ from previous Chrome versions.
   <int value="-881586518"
       label="UseDefaultDeadlineWhenAnimatingBounds:enabled"/>
   <int value="-881569502" label="VcRetouchInferenceBackend:disabled"/>
+  <int value="-881479383"
+      label="kBrowsingHistorySimilarVisitsGrouping:enabled"/>
   <int value="-881477103" label="PageInfoAboutThisSiteNonEn:enabled"/>
   <int value="-881447505" label="ash-disable-shelf-model-synchronization"/>
   <int value="-881054479" label="WebAssemblyStreaming:disabled"/>
@@ -15758,6 +15760,8 @@ from previous Chrome versions.
       label="AutofillEnableBuyNowPayLaterForAffirm:disabled"/>
   <int value="294194537" label="ChromeOSAmbientModeAnimation:disabled"/>
   <int value="294691532" label="PrivateStateTokensDevUI:enabled"/>
+  <int value="294773107"
+      label="kBrowsingHistorySimilarVisitsGrouping:disabled"/>
   <int value="294946885" label="WebViewThrottleBackgroundBeginFrame:disabled"/>
   <int value="295094635" label="ReadAnythingLocalSidePanel:disabled"/>
   <int value="295661985" label="video-capture-use-gpu-memory-buffer"/>
