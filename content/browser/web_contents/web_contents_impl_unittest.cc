@@ -4086,6 +4086,47 @@ TEST_F(WebContentsImplTest, RegisterFocusSelectionBoundsChanged) {
   EXPECT_FALSE(text_input_manager->HasObserver(contents()));
 }
 
+// The renderer-supplied selection bounding box is stored unclamped, but
+// GetTextSelectionBounds() is used to position UI, so the rect it returns must
+// lie inside the view even when the reported selection does not.
+TEST_F(WebContentsImplTest, GetTextSelectionBoundsIsClampedToView) {
+  TestRenderFrameHost* rfh = main_test_rfh();
+  auto* view = static_cast<RenderWidgetHostViewBase*>(rfh->GetView());
+  ASSERT_TRUE(view);
+  view->SetBounds(gfx::Rect(0, 0, 800, 600));
+
+  // Fetching the manager through the view is what registers the view with it.
+  TextInputManager* text_input_manager = view->GetTextInputManager();
+  ASSERT_TRUE(text_input_manager);
+  ASSERT_EQ(text_input_manager, contents()->GetTextInputManager());
+
+  ui::mojom::TextInputState state;
+  state.type = ui::TEXT_INPUT_TYPE_TEXT;
+  text_input_manager->UpdateTextInputState(view, state);
+
+  // A bounding box whose large negative y places it above the top of the view.
+  const gfx::Rect anchor_rect(8, 16, 0, 19);
+  const gfx::Rect out_of_view_bounding_box(200, -120, 40, 20);
+  text_input_manager->SelectionBoundsChanged(
+      view, anchor_rect, base::i18n::LEFT_TO_RIGHT, anchor_rect,
+      base::i18n::LEFT_TO_RIGHT, out_of_view_bounding_box,
+      /*is_anchor_first=*/true);
+
+  // The stored region keeps the unclamped extent.
+  const TextInputManager::SelectionRegion* region =
+      text_input_manager->GetSelectionRegion(view);
+  ASSERT_TRUE(region);
+  EXPECT_EQ(region->bounding_box, out_of_view_bounding_box);
+
+  // The bounds handed to callers are clamped into the view, then offset into
+  // screen coordinates.
+  const std::optional<gfx::Rect> bounds =
+      contents()->GetTextSelectionBounds(rfh);
+  ASSERT_TRUE(bounds.has_value());
+  const gfx::Vector2d offset = view->GetViewBounds().OffsetFromOrigin();
+  EXPECT_EQ(*bounds, gfx::Rect(gfx::Point(200, 0) + offset, gfx::Size(40, 20)));
+}
+
 class WebContentsImplTestKeyboardEvents
     : public WebContentsImplTest,
       public testing::WithParamInterface<blink::WebInputEvent::Type> {};
