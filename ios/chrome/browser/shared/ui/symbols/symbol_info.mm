@@ -105,6 +105,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"enterprise", SymbolType::kCustom};
     case SymbolFamilylink:
       return {@"familylink", SymbolType::kCustom};
+    case SymbolImageCreate:
+      return {@"image_create", SymbolType::kCustom};
     case SymbolIncognito:
       return {@"incognito", SymbolType::kCustom};
     case SymbolIncognitoCircleFill:

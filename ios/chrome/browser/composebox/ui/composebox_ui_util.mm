@@ -8,26 +8,6 @@
 #import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
-UIImage* GetBananaIcon(CGFloat size) {
-  CGFloat iconPadding = 4.0;
-  CGSize imageSize = CGSizeMake(size + iconPadding, size + iconPadding);
-
-  UIGraphicsImageRenderer* renderer =
-      [[UIGraphicsImageRenderer alloc] initWithSize:imageSize];
-  UIImage* image = [renderer
-      imageWithActions:^(UIGraphicsImageRendererContext* rendererContext) {
-        CGRect rect = CGRectMake(0, 0, imageSize.width, imageSize.height);
-        UIFont* font = [UIFont systemFontOfSize:size];
-        NSDictionary* attributes = @{
-          NSFontAttributeName : font,
-          NSForegroundColorAttributeName : UIColor.blackColor
-        };
-        [@"🍌" drawInRect:rect withAttributes:attributes];
-      }];
-
-  return image;
-}
-
 UIImage* ImageForIconResourceId(omnibox::IconResourceIds icon_id,
                                 CGFloat point_size) {
   switch (icon_id) {
@@ -58,7 +38,7 @@ UIImage* ImageForIconResourceId(omnibox::IconResourceIds icon_id,
     case omnibox::IconResourceIds::LENS_CAMERA:
       return SymbolWithPointSize(SymbolCameraLens, point_size);
     case omnibox::IconResourceIds::BANANA:
-      return GetBananaIcon(point_size);
+      return SymbolWithPointSize(SymbolImageCreate, point_size);
     case omnibox::IconResourceIds::CHECK_SMALL:
       return SymbolWithPointSize(SymbolCheckmark, point_size);
     case omnibox::IconResourceIds::PHOTO_PRINTS:

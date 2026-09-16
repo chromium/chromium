@@ -9,9 +9,6 @@
 
 #import "third_party/omnibox_proto/icon_resource_ids.pb.h"
 
-// Returns a banana icon image with the given size.
-UIImage* GetBananaIcon(CGFloat size);
-
 // Returns an image for the given icon resource ID with the given point size, or
 // nil if the ID is unspecified or unknown.
 UIImage* ImageForIconResourceId(omnibox::IconResourceIds icon_id,
