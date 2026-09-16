@@ -4856,6 +4856,10 @@ void WebContentsImpl::GetRenderWidgetHostAtPointAsynchronously(
     const gfx::PointF& point,
     base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewBase>,
                             std::optional<gfx::PointF>)> callback) {
+  if (!root_view) {
+    std::move(callback).Run(nullptr, std::nullopt);
+    return;
+  }
   GetInputEventRouter()->GetRenderWidgetHostAtPointAsynchronously(
       root_view, point, base::BindOnce(&RunCallback, std::move(callback)));
 }

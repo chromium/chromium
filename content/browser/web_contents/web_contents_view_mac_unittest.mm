@@ -12,10 +12,12 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#import "content/browser/web_contents/web_drag_dest_mac.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test_utils.h"
@@ -96,6 +98,31 @@ TEST_F(WebContentsViewMacTest, StartDragging_DisallowedByPolicy) {
                         CreateValidDragImage(), gfx::Vector2d(), gfx::Rect(),
                         blink::mojom::DragEventSourceInfo());
 
+  EXPECT_TRUE(fake_client().was_called());
+}
+
+TEST_F(WebContentsViewMacTest, StartDragging_RejectedWhileDragInProgress) {
+  DropData drop_data;
+  drop_data.text = u"test data";
+
+  // Record that the drag destination has an in-progress drag, as would happen
+  // for a previously started drag whose dragging session is still active.
+  [view()->drag_dest() initiateDragWithRenderWidgetHost:GetRenderWidgetHost()
+                                               dropData:drop_data];
+
+  // A second StartDragging must be rejected before consulting the policy
+  // delegate or otherwise touching drag state.
+  view()->StartDragging(*main_rfh(), drop_data, blink::kDragOperationCopy,
+                        CreateValidDragImage(), gfx::Vector2d(), gfx::Rect(),
+                        blink::mojom::DragEventSourceInfo());
+  EXPECT_FALSE(fake_client().was_called());
+
+  // Once the in-progress drag has ended, StartDragging proceeds as normal.
+  [view()->drag_dest() endDrag:base::DoNothing()];
+
+  view()->StartDragging(*main_rfh(), drop_data, blink::kDragOperationCopy,
+                        CreateValidDragImage(), gfx::Vector2d(), gfx::Rect(),
+                        blink::mojom::DragEventSourceInfo());
   EXPECT_TRUE(fake_client().was_called());
 }
 

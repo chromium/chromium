@@ -223,8 +223,9 @@ void WebContentsViewMac::StartDragging(
     const blink::mojom::DragEventSourceInfo& event_info) {
   RenderWidgetHostImpl* source_rwh =
       static_cast<RenderWidgetHostImpl*>(source_rfh.GetRenderWidgetHost());
-  // Disallow reentrant drag which could be an attempt to exploit drag state.
-  if (drag_source_start_rwh_) {
+  // Disallow reentrant drags. This uses the destination's state because
+  // the source frame might be destroyed during an active drag session.
+  if ([drag_dest_ didInitiateDrag] || drag_source_start_rwh_) {
     return;
   }
   // A window move loop already owns the held mouse button; refuse to start a
@@ -693,7 +694,7 @@ void WebContentsViewMac::PerformEndDrag(uint32_t drag_operation,
                                         const gfx::PointF& screen_point) {
   // Validate internal members are non-null as this method can be called
   // asynchronously.
-  if (!web_contents_ || !drag_source_start_rwh_) {
+  if (!web_contents_) {
     return;
   }
 
@@ -703,17 +704,19 @@ void WebContentsViewMac::PerformEndDrag(uint32_t drag_operation,
   // non-root RenderWidgetHosts they need to be transformed.
   gfx::PointF transformed_point = local_point;
   gfx::PointF transformed_screen_point = screen_point;
-  if (web_contents_->GetRenderWidgetHostView()) {
+  if (drag_source_start_rwh_ && web_contents_->GetRenderWidgetHostView()) {
     content::RenderWidgetHostViewBase* contentsViewBase =
         static_cast<content::RenderWidgetHostViewBase*>(
             web_contents_->GetRenderWidgetHostView());
     content::RenderWidgetHostViewBase* dragStartViewBase =
         static_cast<content::RenderWidgetHostViewBase*>(
             drag_source_start_rwh_->GetView());
-    contentsViewBase->TransformPointToCoordSpaceForView(
-        local_point, dragStartViewBase, &transformed_point);
-    contentsViewBase->TransformPointToCoordSpaceForView(
-        screen_point, dragStartViewBase, &transformed_screen_point);
+    if (dragStartViewBase) {
+      contentsViewBase->TransformPointToCoordSpaceForView(
+          local_point, dragStartViewBase, &transformed_point);
+      contentsViewBase->TransformPointToCoordSpaceForView(
+          screen_point, dragStartViewBase, &transformed_screen_point);
+    }
   }
 
   web_contents_->DragSourceEndedAt(

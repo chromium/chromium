@@ -505,10 +505,12 @@ void OnWebContentsViewDelegatePerformingDropComplete(
       content::RenderWidgetHostViewBase* currentDragView =
           static_cast<content::RenderWidgetHostViewBase*>(
               _currentRWHForDrag->GetView());
-      rootView->TransformPointToCoordSpaceForView(
-          transformedLeavePoint, currentDragView, &transformedLeavePoint);
-      rootView->TransformPointToCoordSpaceForView(
-          transformedScreenPoint, currentDragView, &transformedScreenPoint);
+      if (rootView && currentDragView) {
+        rootView->TransformPointToCoordSpaceForView(
+            transformedLeavePoint, currentDragView, &transformedLeavePoint);
+        rootView->TransformPointToCoordSpaceForView(
+            transformedScreenPoint, currentDragView, &transformedScreenPoint);
+      }
       _currentRWHForDrag->DragTargetDragLeave(transformedLeavePoint,
                                               transformedScreenPoint);
     }
@@ -734,6 +736,10 @@ void OnWebContentsViewDelegatePerformingDropComplete(
 - (void)initiateDragWithRenderWidgetHost:(content::RenderWidgetHostImpl*)rwhi
                                 dropData:(const content::DropData&)dropData {
   _dragSecurityInfo.OnDragInitiated(rwhi, dropData);
+}
+
+- (bool)didInitiateDrag {
+  return _dragSecurityInfo.did_initiate();
 }
 
 - (void)endDrag:(base::OnceClosure)closure {

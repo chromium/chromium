@@ -102,6 +102,11 @@ CONTENT_EXPORT
 - (void)initiateDragWithRenderWidgetHost:(content::RenderWidgetHostImpl*)rwhi
                                 dropData:(const content::DropData&)dropData;
 
+// Returns whether the owning WebContents has an in-progress drag (i.e.
+// `initiateDragWithRenderWidgetHost:dropData:` has been called without a
+// matching `endDrag:`).
+- (bool)didInitiateDrag;
+
 // Called to indicate that, if the owning WebContents has initiated a drag, that
 // drag has ended. The closure will be called synchronously if the "dragend"
 // event can be fired, or asynchronously if a "drop" event is still pending

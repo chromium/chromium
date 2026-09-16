@@ -671,6 +671,11 @@ void TestWebContents::GetRenderWidgetHostAtPointAsynchronously(
     const gfx::PointF& point,
     base::OnceCallback<void(base::WeakPtr<RenderWidgetHostViewBase>,
                             std::optional<gfx::PointF>)> callback) {
+  if (!root_view) {
+    std::move(callback).Run(nullptr, std::nullopt);
+    return;
+  }
+
   // If defer flag is disabled, call base implementation synchronously.
   if (!defer_get_render_widget_host_at_point_) {
     WebContentsImpl::GetRenderWidgetHostAtPointAsynchronously(
