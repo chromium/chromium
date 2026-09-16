@@ -252,7 +252,7 @@ public class AutocompleteInputUnitTest {
         mInput.setUserText("");
         assertTrue(mInput.isInZeroPrefixContext());
 
-        mInput.setSiteSearchData(new AutocompleteInput.SiteSearchData("example.com", "Example"));
+        mInput.setSiteSearchData(new SiteSearchData("example.com", "Example"));
         // Even with empty user text, it shouldn't be zero-prefix context if site search is active.
         assertFalse(mInput.isInZeroPrefixContext());
     }
@@ -608,7 +608,7 @@ public class AutocompleteInputUnitTest {
         assertEquals("user query", mInput.getTextForAutocomplete());
 
         // With Site Search data, should prepend the keyword and a space.
-        mInput.setSiteSearchData(new AutocompleteInput.SiteSearchData("example.com", "Example"));
+        mInput.setSiteSearchData(new SiteSearchData("example.com", "Example"));
         assertEquals("example.com user query", mInput.getTextForAutocomplete());
     }
 
@@ -625,7 +625,7 @@ public class AutocompleteInputUnitTest {
 
         // With Site Search data, should offset by keyword length + 1 (for space).
         // Keyword "example.com" length is 11. Offset is 12.
-        mInput.setSiteSearchData(new AutocompleteInput.SiteSearchData("example.com", "Example"));
+        mInput.setSiteSearchData(new SiteSearchData("example.com", "Example"));
 
         assertEquals(12, mInput.getCursorPositionForAutocomplete(0)); // 0 + 12
         assertEquals(17, mInput.getCursorPositionForAutocomplete(5)); // 5 + 12
