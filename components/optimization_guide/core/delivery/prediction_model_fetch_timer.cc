@@ -53,11 +53,6 @@ base::Time PredictionModelFetchTimer::GetLastFetchSuccessTime() const {
   return local_state_->GetTime(prefs::localstate::kModelLastFetchSuccess);
 }
 
-bool PredictionModelFetchTimer::IsFirstModelFetch() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return state_ == PredictionModelFetchTimerState::kFirstFetch;
-}
-
 void PredictionModelFetchTimer::OnFetchTimerFired() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(PredictionModelFetchTimerState::kNone, state_);

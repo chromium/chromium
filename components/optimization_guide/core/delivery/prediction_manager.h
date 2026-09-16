@@ -217,21 +217,6 @@ class PredictionManager : public PredictionModelDownloadObserver,
   void StoreLoadedModelInfo(proto::OptimizationTarget optimization_target,
                             ModelInfo model_info);
 
-  // Return the time when a prediction model fetch was last attempted.
-  base::Time GetLastFetchAttemptTime() const;
-
-  // Set the last time when a prediction model fetch was last attempted to
-  // |last_attempt_time|.
-  void SetLastModelFetchAttemptTime(base::Time last_attempt_time);
-
-  // Return the time when a prediction model fetch was last successfully
-  // completed.
-  base::Time GetLastFetchSuccessTime() const;
-
-  // Set the last time when a fetch for prediction models last succeeded to
-  // |last_success_time|.
-  void SetLastModelFetchSuccessTime(base::Time last_success_time);
-
   // Schedule first fetch for models if enabled for this profile.
   void MaybeScheduleFirstModelFetch();
 
@@ -312,11 +297,6 @@ class PredictionManager : public PredictionModelDownloadObserver,
   base::flat_map<proto::OptimizationTarget,
                  scoped_refptr<base::SequencedTaskRunner>>
       optimization_target_model_task_runner_;
-
-  // Time the prediction manager got initialized.
-  // TODO(crbug.com/40861855): Remove this old model store once the new model
-  // store is launched.
-  base::TimeTicks init_time_;
 
   PredictionModelFetchTimer prediction_model_fetch_timer_
       GUARDED_BY_CONTEXT(sequence_checker_);

@@ -27,7 +27,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
@@ -176,7 +175,6 @@ void PredictionManager::SetPredictionModelDownloadManagerForTesting(
         prediction_model_download_manager) {
   prediction_model_download_manager_ =
       std::move(prediction_model_download_manager);
-  init_time_ = base::TimeTicks::Now();
 }
 
 void PredictionManager::FetchModels() {
@@ -205,13 +203,6 @@ void PredictionManager::FetchModels() {
   if (!prediction_model_download_manager_ ||
       !prediction_model_download_manager_->ShouldFetchModels()) {
     return;
-  }
-
-  if (prediction_model_fetch_timer_.IsFirstModelFetch()) {
-    DCHECK(!init_time_.is_null());
-    base::UmaHistogramMediumTimes(
-        "OptimizationGuide.PredictionManager.FirstModelFetchSinceServiceInit",
-        base::TimeTicks::Now() - init_time_);
   }
 
   // Models should not be fetched if there are no optimization targets
@@ -581,7 +572,6 @@ void PredictionManager::MaybeInitializeModelDownloads(
     ProfileDownloadServiceTracker& download_service_tracker,
     PrefService* local_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  init_time_ = base::TimeTicks::Now();
   if (!prediction_model_download_manager_) {
     prediction_model_download_manager_ =
         std::make_unique<PredictionModelDownloadManager>(

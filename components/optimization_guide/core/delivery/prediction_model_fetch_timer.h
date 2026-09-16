@@ -52,9 +52,6 @@ class PredictionModelFetchTimer {
   void Stop();
   void SchedulePeriodicModelsFetch();
 
-  // Returns if the first model fetch is happening.
-  bool IsFirstModelFetch() const;
-
   PredictionModelFetchTimerState GetStateForTesting() const;
 
   const base::OneShotTimer* GetFetchTimerForTesting() const;
