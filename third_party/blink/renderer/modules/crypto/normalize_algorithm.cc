@@ -1139,6 +1139,8 @@ const char* OperationToString(WebCryptoOperation op) {
       return "decapsulate";
     case kWebCryptoOperationGetPublicKey:
       return "getPublicKey";
+    case kWebCryptoOperationExportKey:
+      return "exportKey";
   }
   return nullptr;
 }

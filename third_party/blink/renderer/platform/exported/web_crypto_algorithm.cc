@@ -63,6 +63,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,                // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,                // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,                 // ExportKey
      }},
     {// Index 1
      "HMAC",
@@ -81,6 +82,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,             // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,             // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,             // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,              // ExportKey
      }},
     {// Index 2
      "RSASSA-PKCS1-v1_5",
@@ -99,6 +101,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                  // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,                  // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,                   // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,                   // ExportKey
      }},
     {// Index 3
      "SHA-1",
@@ -117,6 +120,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,  // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,  // GetPublicKey
+         WebCryptoAlgorithmInfo::kUndefined,  // ExportKey
      }},
     {// Index 4
      "SHA-256",
@@ -135,6 +139,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,  // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,  // GetPublicKey
+         WebCryptoAlgorithmInfo::kUndefined,  // ExportKey
      }},
     {// Index 5
      "SHA-384",
@@ -153,6 +158,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,  // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,  // GetPublicKey
+         WebCryptoAlgorithmInfo::kUndefined,  // ExportKey
      }},
     {// Index 6
      "SHA-512",
@@ -171,6 +177,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,  // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,  // GetPublicKey
+         WebCryptoAlgorithmInfo::kUndefined,  // ExportKey
      }},
     {// Index 7
      "AES-GCM",
@@ -189,6 +196,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,                // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,                // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,                 // ExportKey
      }},
     {// Index 8
      "RSA-OAEP",
@@ -207,6 +215,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                  // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,                  // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,                   // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,                   // ExportKey
      }},
     {// Index 9
      "AES-CTR",
@@ -225,6 +234,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,                // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,                // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,                 // ExportKey
      }},
     {// Index 10
      "AES-KW",
@@ -243,6 +253,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,                // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,                // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,                 // ExportKey
      }},
     {// Index 11
      "RSA-PSS",
@@ -261,6 +272,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                  // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,                  // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,                   // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,                   // ExportKey
      }},
     {// Index 12
      "ECDSA",
@@ -279,6 +291,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,              // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,              // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,               // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,               // ExportKey
      }},
     {// Index 13
      "ECDH",
@@ -297,6 +310,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,                // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,                 // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,                 // ExportKey
      }},
     {// Index 14
      "HKDF",
@@ -315,6 +329,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,       // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,       // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,       // GetPublicKey
+         WebCryptoAlgorithmInfo::kUndefined,       // ExportKey
      }},
     {// Index 15
      "PBKDF2",
@@ -333,6 +348,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,         // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,         // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,         // GetPublicKey
+         WebCryptoAlgorithmInfo::kUndefined,         // ExportKey
      }},
     {// Index 16
      "Ed25519",
@@ -351,6 +367,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,  // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,   // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,   // ExportKey
      }},
     {// Index 17
      "X25519",
@@ -369,6 +386,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,                // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,                 // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,                 // ExportKey
      }},
     {// Index 18
      // TODO(crbug.com/450627018): ChaCha20-Poly1305 is experimental behind
@@ -389,6 +407,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,       // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,       // Decapsulate
          WebCryptoAlgorithmInfo::kUndefined,       // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,        // ExportKey
      }},
     {// Index 19
      // TODO(crbug.com/450848555): ML-DSA-44 is experimental behind
@@ -409,6 +428,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,          // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,          // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,           // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,           // ExportKey
      }},
     {// Index 20
      // TODO(crbug.com/450848555): ML-DSA-65 is experimental behind
@@ -429,6 +449,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,          // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,          // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,           // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,           // ExportKey
      }},
     {// Index 21
      // TODO(crbug.com/450848555): ML-DSA-87 is experimental behind
@@ -449,6 +470,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,          // Encapsulate
          WebCryptoAlgorithmInfo::kUndefined,          // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,           // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,           // ExportKey
      }},
     {// Index 22
      // TODO(crbug.com/450627019): ML-KEM-768 is experimental behind
@@ -469,6 +491,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeNone,   // Encapsulate
          kWebCryptoAlgorithmParamsTypeNone,   // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,   // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,   // ExportKey
      }},
     {// Index 23
      // TODO(crbug.com/450627019): ML-KEM-1024 is experimental behind a flag.
@@ -489,6 +512,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeNone,   // Encapsulate
          kWebCryptoAlgorithmParamsTypeNone,   // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,   // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,   // ExportKey
      }},
     {// Index 24
      // TODO(crbug.com/450627019): MLKEM768-X25519 is experimental behind a
@@ -509,6 +533,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeNone,   // Encapsulate
          kWebCryptoAlgorithmParamsTypeNone,   // Decapsulate
          kWebCryptoAlgorithmParamsTypeNone,   // GetPublicKey
+         kWebCryptoAlgorithmParamsTypeNone,   // ExportKey
      }},
 });
 
@@ -545,7 +570,7 @@ static_assert(kWebCryptoAlgorithmIdMlKem1024 == 23,
 static_assert(kWebCryptoAlgorithmIdMlKem768X25519 == 24,
               "MLKEM768-X25519 id must match");
 static_assert(kWebCryptoAlgorithmIdLast == 24, "last id must match");
-static_assert(13 == kWebCryptoOperationLast,
+static_assert(14 == kWebCryptoOperationLast,
               "the parameter mapping needs to be updated");
 
 }  // namespace

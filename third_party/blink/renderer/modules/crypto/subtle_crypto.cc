@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/modules/crypto/normalize_algorithm.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -149,6 +150,8 @@ std::optional<WebCryptoOperation> StringToWebCryptoOperation(const String& op) {
   if (op == "deriveKey" || op == "deriveBits") {
     return kWebCryptoOperationDeriveBits;
   }
+  // TODO(crbug.com/41264071): Add "exportKey" here. It is listed as an
+  // operation for supports(), and should land together with its WPTs.
   if (op == "wrapKey") {
     return kWebCryptoOperationWrapKey;
   }
@@ -220,6 +223,7 @@ bool supportsInternal(ScriptState* script_state,
     case kWebCryptoOperationDecapsulate:
     case kWebCryptoOperationGenerateKey:
     case kWebCryptoOperationGetPublicKey:
+    case kWebCryptoOperationExportKey:
       if (normalized_algorithm.ParamsType() ==
           kWebCryptoAlgorithmParamsTypeNone) {
         return true;
@@ -640,7 +644,20 @@ ScriptPromise<V8UnionArrayBufferOrJsonWebKey> SubtleCrypto::exportKey(
     return EmptyPromise();
   }
 
-  // 14.3.10.6: If the [[extractable]] internal slot of key is false, then
+  // 14.3.10.6: If the name member of the [[algorithm]] internal slot of key
+  //            does not identify a registered algorithm that supports the
+  //            export key operation, then throw a NotSupportedError.
+  const WebCryptoAlgorithmInfo* algorithm_info =
+      WebCryptoAlgorithm::LookupAlgorithmInfo(key->Key().Algorithm().Id());
+  if (algorithm_info->operation_to_params_type[kWebCryptoOperationExportKey] ==
+      WebCryptoAlgorithmInfo::kUndefined) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        StrCat({algorithm_info->name, ": Unsupported operation: exportKey"}));
+    return EmptyPromise();
+  }
+
+  // 14.3.10.7: If the [[extractable]] internal slot of key is false, then
   //            throw an InvalidAccessError.
   if (!key->extractable()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
@@ -706,9 +723,18 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::wrapKey(
                                            kWebCryptoKeyUsageWrapKey, result))
     return promise;
 
-  // TODO(crbug.com/628416): The error from step 11
-  // (NotSupportedError) is thrown after step 12 which does not match
-  // the spec order.
+  // 14.3.11.11: If the algorithm identified by the [[algorithm]] internal
+  //             slot of key does not support the export key operation, then
+  //             throw a NotSupportedError.
+  const WebCryptoAlgorithmInfo* algorithm_info =
+      WebCryptoAlgorithm::LookupAlgorithmInfo(key->Key().Algorithm().Id());
+  if (algorithm_info->operation_to_params_type[kWebCryptoOperationExportKey] ==
+      WebCryptoAlgorithmInfo::kUndefined) {
+    result->CompleteWithError(
+        kWebCryptoErrorTypeNotSupported,
+        StrCat({algorithm_info->name, ": Unsupported operation: exportKey"}));
+    return promise;
+  }
 
   // 14.3.11.12: If the [[extractable]] internal slot of key is false, then
   //             throw an InvalidAccessError.
@@ -1290,7 +1316,10 @@ bool SubtleCrypto::supports(ScriptState* script_state,
   //           an algorithm with op set to "exportKey" and alg set to
   //           additionalAlgorithm is false, return false.
   //
-  // importKey and exportKey are always supported, so we skip these checks.
+  // importKey is always supported, so that check is skipped.
+  //
+  // TODO(crbug.com/41264071): exportKey is no longer supported by every
+  // algorithm, so the wrapKey case needs a real check.
 
   if (operation == "deriveKey") {
     // 3.2.6.4.1 If the result of checking support for an algorithm with op set
