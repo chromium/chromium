@@ -53,13 +53,12 @@ export function getHtml(this: FreChinElement) {
               </div>
             </div>
 
-            <span class="to-search-label">
+            <span class="to-search-label"
+                @click="${this.onLabelClick_}">
               ${this.i18n('loomniboxFreReminderToSearch')}
-            </span>
-
-            <span class="change-shortcut-label"
-                @click="${this.onLabelClick_}"
-                .innerHTML="${this.getChangeShortcutLabelHtml_()}">
+              <span class="change-shortcut-label"
+                  .innerHTML="${this.getChangeShortcutLabelHtml_()}">
+              </span>
             </span>
           </div>
         `}
