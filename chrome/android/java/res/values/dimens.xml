@@ -540,10 +540,6 @@ found in the LICENSE file.
     <dimen name="view_list_item_large_radius">24dp</dimen>
     <dimen name="view_list_item_small_radius">3dp</dimen>
 
-    <!-- Caret browsing dimensions -->
-    <dimen name="caret_top_padding">18dp</dimen>
-    <dimen name="caret_external_margin">16dp</dimen>
-
     <!-- Auto PiP permission dialog dimensions -->
     <dimen name="auto_pip_permission_dialog_width">320dp</dimen>
     <dimen name="auto_pip_permission_dialog_padding">24dp</dimen>

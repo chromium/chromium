@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser.accessibility.settings;
 
 import android.app.Activity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.CheckBox;
+import android.content.res.Resources;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -27,7 +25,6 @@ public class CaretBrowsingDialog implements ModalDialogProperties.Controller {
     private final ModalDialogManager mModalDialogManager;
     private final PropertyModel mModel;
     private final Profile mProfile;
-    private final CheckBox mDontAskAgainCheckBox;
 
     /**
      * Constructs the caret browsing dialog.
@@ -41,28 +38,26 @@ public class CaretBrowsingDialog implements ModalDialogProperties.Controller {
         mModalDialogManager = modalDialogManager;
         mProfile = profile;
 
-        View dialogView =
-                LayoutInflater.from(activity).inflate(R.layout.caret_browsing_ask_again_view, null);
-        mDontAskAgainCheckBox = (CheckBox) dialogView.findViewById(R.id.dont_ask_again);
-
+        Resources resources = activity.getResources();
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(
                                 ModalDialogProperties.TITLE,
-                                activity.getResources(),
+                                resources,
                                 R.string.caret_browsing_dialog_title)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, dialogView)
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                activity.getResources()
-                                        .getString(R.string.caret_browsing_dialog_message))
+                                resources.getString(R.string.caret_browsing_dialog_message))
+                        .with(
+                                ModalDialogProperties.CHECKBOX_TEXT,
+                                resources.getString(R.string.dont_ask_again))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                activity.getResources(),
+                                resources,
                                 R.string.turn_on)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                activity.getResources(),
+                                resources,
                                 android.R.string.cancel)
                         .with(ModalDialogProperties.CONTROLLER, this)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true);
@@ -83,7 +78,7 @@ public class CaretBrowsingDialog implements ModalDialogProperties.Controller {
     @Override
     public void onClick(PropertyModel model, int buttonType) {
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-            boolean checked = mDontAskAgainCheckBox.isChecked();
+            boolean checked = mModel.get(ModalDialogProperties.CHECKBOX_CHECKED);
             AccessibilitySettingsBridge.setShowCaretBrowsingDialogPreference(mProfile, !checked);
             AccessibilitySettingsBridge.setCaretBrowsingEnabled(mProfile, true);
             mModalDialogManager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
@@ -113,11 +108,6 @@ public class CaretBrowsingDialog implements ModalDialogProperties.Controller {
     /** Returns the {@link PropertyModel} for this dialog. */
     PropertyModel getModelForTesting() {
         return mModel;
-    }
-
-    /** Returns the custom {@link View} for this dialog. */
-    View getCustomViewForTesting() {
-        return mModel.get(ModalDialogProperties.CUSTOM_VIEW);
     }
 
     /**

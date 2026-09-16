@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.widget.CheckBox;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -85,6 +84,17 @@ public class CaretBrowsingDialogTest {
                 "Negative button text should be correct.",
                 mActivity.getString(android.R.string.cancel),
                 model.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+        Assert.assertEquals(
+                "Checkbox text should be correct.",
+                mActivity.getString(R.string.dont_ask_again),
+                model.get(ModalDialogProperties.CHECKBOX_TEXT));
+        // The checkbox must come from CHECKBOX_TEXT rather than a custom view. ModalDialogView
+        // gives the custom view container layout_weight 1 when the title is not scrollable, which
+        // leaves it competing with the message container for half of the dialog and truncates the
+        // message. See crbug.com/493805713.
+        Assert.assertNull(
+                "Dialog should not use a custom view.",
+                model.get(ModalDialogProperties.CUSTOM_VIEW));
     }
 
     @Test
@@ -120,15 +130,9 @@ public class CaretBrowsingDialogTest {
 
     @Test
     public void testDontAskAgain() {
-        CheckBox checkbox =
-                (CheckBox)
-                        mCaretBrowsingDialog
-                                .getCustomViewForTesting()
-                                .findViewById(R.id.dont_ask_again);
-        checkbox.setChecked(true);
-        mCaretBrowsingDialog.onClick(
-                mCaretBrowsingDialog.getModelForTesting(),
-                ModalDialogProperties.ButtonType.POSITIVE);
+        PropertyModel model = mCaretBrowsingDialog.getModelForTesting();
+        model.set(ModalDialogProperties.CHECKBOX_CHECKED, true);
+        mCaretBrowsingDialog.onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
         verify(mAccessibilitySettingsBridge).setCaretBrowsingEnabled(mProfile, true);
         verify(mAccessibilitySettingsBridge).setShowCaretBrowsingDialogPreference(mProfile, false);
     }
