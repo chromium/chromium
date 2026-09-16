@@ -30,6 +30,7 @@ bool IsRemoteActorCredentialSharingAllowedForOrigin(const url::Origin& origin) {
   static const base::NoDestructor<std::vector<url::Origin>> kAllowedOrigins([] {
     return std::vector<url::Origin>{
         url::Origin::Create(GURL("https://gemini.google.com")),
+        url::Origin::Create(GURL("https://gemini.corp.google.com")),
         url::Origin::Create(GURL("https://gemini-preprod.corp.google.com")),
         url::Origin::Create(GURL("https://gemini-staging.corp.google.com")),
         url::Origin::Create(GURL("https://gemini-autopush.corp.google.com")),
