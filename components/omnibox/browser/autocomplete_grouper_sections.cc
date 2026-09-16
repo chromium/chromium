@@ -737,6 +737,10 @@ DesktopComposeboxZpsSection::DesktopComposeboxZpsSection(
                         {omnibox::GROUP_CONTEXTUAL_SEARCH,
                          max_contextual_suggestions},
                     }),
+              Group(max_suggestions,
+                    {
+                        {omnibox::GROUP_RICH_IMAGE_ACTION, max_aim_suggestions},
+                    }),
           },
           group_configs) {}
 
