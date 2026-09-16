@@ -117,7 +117,8 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   bool ShouldShowQuickMenu(bool can_paste) override;
   std::u16string GetSelectedText() override;
 
-  // Not owned, non-null for the lifetime of this object.
+  // Not owned. Non-null until `Detach()` is called when the owning
+  // RenderWidgetHostViewAura tears down; null afterwards.
   raw_ptr<RenderWidgetHostViewAura> rwhva_;
 
   class InternalClient final : public TouchSelectionControllerClient {
@@ -140,7 +141,9 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
     void DidScroll() override;
 
    private:
-    raw_ptr<RenderWidgetHostViewAura, DanglingUntriaged> rwhva_;
+    // Cleared by `Detach()` when the owning RenderWidgetHostViewAura tears
+    // down, so it never dangles. All dereferences below are null-guarded.
+    raw_ptr<RenderWidgetHostViewAura> rwhva_;
   } internal_client_;
 
   // Keep track of which client interface to use.
