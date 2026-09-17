@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
+import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
 import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.url.GURL;
@@ -192,7 +193,7 @@ public class AutocompleteInput implements UserData {
     private @RefineActionUsage int mRefineActionUsage;
     private boolean mSuggestionsListScrolled;
     private @OmniboxFocusReason int mFocusReason;
-    private /* ModelMode */ int mModelMode;
+    private @ModelMode int mModelMode;
 
     private String mInitialUserText = "";
     private @Nullable GURL mInitialPreviewMatchUrl;
@@ -776,12 +777,12 @@ public class AutocompleteInput implements UserData {
     }
 
     /** Returns the current model mode or MODEL_MODE_UNSPECIFIED if never set. */
-    public /* ModelMode */ int getModelMode() {
+    public @ModelMode int getModelMode() {
         return mModelMode;
     }
 
     /** Sets the ModelMode that should be used. */
-    public void setModelMode(int modelMode) {
+    public void setModelMode(@ModelMode int modelMode) {
         mModelMode = modelMode;
     }
 

@@ -24,7 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
-import org.chromium.components.omnibox.AimModelsProto.ModelMode;
+import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.ToolModeProtoIntDef.ToolMode;
@@ -534,7 +534,7 @@ public class AutocompleteInputUnitTest {
         int selectionEnd = 2;
         int refineActionUsage = AutocompleteInput.RefineActionUsage.SEARCH_WITH_PREFIX;
         int focusReason = OmniboxFocusReason.OMNIBOX_TAP;
-        int modelMode = ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE;
+        @ModelMode int modelMode = ModelMode.MODEL_MODE_GEMINI_REGULAR;
         int requestType = AutocompleteRequestType.IMAGE_GENERATION;
         SiteSearchData siteSearchData = new SiteSearchData("keyword", "name");
 

@@ -68,7 +68,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.omnibox.AimModelsProto.ModelMode;
+import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
@@ -444,8 +444,7 @@ import java.util.function.Supplier;
                 if (inputState != null) {
                     boolean inputHasNonDefaultModel =
                             mInput != null
-                                    && mInput.getModelMode()
-                                            != ModelMode.MODEL_MODE_UNSPECIFIED_VALUE
+                                    && mInput.getModelMode() != ModelMode.MODEL_MODE_UNSPECIFIED
                                     && mInput.getModelMode() != inputState.defaultModel;
                     boolean modelNeedsReset =
                             inputState.activeModel != inputState.defaultModel
@@ -1482,7 +1481,7 @@ import java.util.function.Supplier;
         }
     }
 
-    private void setModelMode(int modelMode) {
+    private void setModelMode(@ModelMode int modelMode) {
         if (!isInInputSession()) return;
 
         hidePopup();

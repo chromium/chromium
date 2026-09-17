@@ -104,7 +104,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
-import org.chromium.components.omnibox.AimModelsProto.ModelMode;
+import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
@@ -1383,20 +1383,20 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig config1 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
         ModelConfig config2 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Flash")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(
                                 new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
@@ -1409,9 +1409,9 @@ public class FuseboxMediatorUnitTest {
 
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
         assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
-        assertEquals(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE, mInput.getModelMode());
+        assertEquals(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE, mInput.getModelMode());
         verify(mComposeboxQueryControllerBridge)
-                .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
+                .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE);
     }
 
     @Test
@@ -1419,20 +1419,20 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig config1 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
         ModelConfig config2 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Flash")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(
                                 new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
@@ -1443,7 +1443,7 @@ public class FuseboxMediatorUnitTest {
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.ModelButtonSelected",
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .build();
 
         List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
@@ -1465,12 +1465,12 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig config1 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
         InputState state1 =
                 new InputState.Builder()
-                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .withModelConfigs(new byte[][] {config1.toByteArray()})
                         .build();
         mInputStateSupplier.set(state1);
@@ -1480,14 +1480,14 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig config2 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .build();
         InputState state2 =
                 new InputState.Builder()
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(
                                 new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
@@ -1505,19 +1505,19 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig config1 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
         ModelConfig config2 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .build();
         InputState state =
                 new InputState.Builder()
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(
                                 new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
@@ -1664,20 +1664,20 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig config1 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
         ModelConfig config2 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Flash")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(
                                 new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
@@ -1952,20 +1952,20 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig config1 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
         ModelConfig config2 =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Flash")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(
                                 new byte[][] {config1.toByteArray(), config2.toByteArray()})
                         .build();
@@ -2025,13 +2025,13 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig configAuto =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .setIcon(Icon.newBuilder().setIconId(IconResourceIds.AUTORENEW).build())
                         .build();
         ModelConfig configPro =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .setIcon(Icon.newBuilder().setIconId(IconResourceIds.TIMER).build())
                         .build();
@@ -2049,12 +2049,12 @@ public class FuseboxMediatorUnitTest {
                 new InputState.Builder()
                         .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH, ToolMode.TOOL_MODE_CANVAS)
                         .withDisabledTools(ToolMode.TOOL_MODE_CANVAS)
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
-                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
+                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO)
+                        .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH, ToolMode.TOOL_MODE_CANVAS)
                         .withModelConfigs(
                                 new byte[][] {configAuto.toByteArray(), configPro.toByteArray()})
@@ -2096,12 +2096,12 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig configPro =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .build();
         ModelConfig configAuto =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
 
@@ -2115,11 +2115,11 @@ public class FuseboxMediatorUnitTest {
                         .withActiveTool(ToolMode.TOOL_MODE_CANVAS)
                         .withAllowedTools(ToolMode.TOOL_MODE_CANVAS)
                         .withDisabledTools(ToolMode.TOOL_MODE_CANVAS)
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
-                        .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
+                        .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(
                                 new byte[][] {configPro.toByteArray(), configAuto.toByteArray()})
                         .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
@@ -2138,12 +2138,12 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig configPro =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .build();
         ModelConfig configAuto =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
 
@@ -2161,10 +2161,10 @@ public class FuseboxMediatorUnitTest {
                 new InputState.Builder()
                         .withActiveTool(ToolMode.TOOL_MODE_CANVAS)
                         .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(
                                 new byte[][] {configPro.toByteArray(), configAuto.toByteArray()})
                         .withToolConfigs(
@@ -2187,21 +2187,21 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig configPro =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .build();
         ModelConfig configAuto =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
 
         InputState inputState =
                 new InputState.Builder()
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .withModelConfigs(
                                 new byte[][] {configPro.toByteArray(), configAuto.toByteArray()})
                         .build();
@@ -2466,21 +2466,21 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig proConfig =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .build();
         ModelConfig autoConfig =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
+                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .withModelConfigs(
                                 new byte[][] {proConfig.toByteArray(), autoConfig.toByteArray()})
                         .build();
@@ -2495,14 +2495,13 @@ public class FuseboxMediatorUnitTest {
         models.get(1).onClicked.run();
 
         verify(mComposeboxQueryControllerBridge)
-                .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
+                .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE);
         assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
         clearInvocations(mComposeboxQueryControllerBridge);
 
         // The active model should be reset to the default (Pro).
         mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_CLICKED).run();
-        verify(mComposeboxQueryControllerBridge)
-                .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
+        verify(mComposeboxQueryControllerBridge).setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO);
         assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
     }
 
@@ -2688,13 +2687,13 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig modelWithTooltip =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .setMenuTooltip("Auto Tooltip")
                         .build();
         ModelConfig modelNoTooltip =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Flash")
                         .build();
 
@@ -2706,8 +2705,8 @@ public class FuseboxMediatorUnitTest {
                                     toolWithTooltip.toByteArray(), toolNoTooltip.toByteArray()
                                 })
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(
                                 new byte[][] {
                                     modelWithTooltip.toByteArray(), modelNoTooltip.toByteArray()
@@ -2776,12 +2775,12 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig configAuto =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
         ModelConfig configPro =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .build();
         ToolConfig deepSearchConfig =
@@ -2795,10 +2794,10 @@ public class FuseboxMediatorUnitTest {
                 new InputState.Builder()
                         .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(
                                 new byte[][] {configAuto.toByteArray(), configPro.toByteArray()})
                         .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
@@ -2835,13 +2834,13 @@ public class FuseboxMediatorUnitTest {
         int unknownIconId = 9999;
         ModelConfig configAuto =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .setIcon(Icon.newBuilder().setIconIdValue(unknownIconId).build())
                         .build();
         ModelConfig configPro =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .build();
         ToolConfig deepSearchConfig =
@@ -2855,10 +2854,10 @@ public class FuseboxMediatorUnitTest {
                 new InputState.Builder()
                         .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(
                                 new byte[][] {configAuto.toByteArray(), configPro.toByteArray()})
                         .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
@@ -2878,14 +2877,14 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig proConfig =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
+                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO)
+                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withModelConfigs(new byte[][] {proConfig.toByteArray()})
                         .build();
         mInputStateSupplier.set(state);
@@ -2913,21 +2912,21 @@ public class FuseboxMediatorUnitTest {
 
         ModelConfig proConfig =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .build();
         ModelConfig autoConfig =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .setMenuLabel("Auto")
                         .build();
         InputState state =
                 new InputState.Builder()
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
+                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE)
                         .withModelConfigs(
                                 new byte[][] {proConfig.toByteArray(), autoConfig.toByteArray()})
                         .build();

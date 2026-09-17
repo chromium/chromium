@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.omnibox.AimModelsProto.ModelMode;
+import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
 import org.chromium.components.omnibox.InputTypeConfigProto.InputTypeConfig;
 import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
@@ -48,12 +48,12 @@ public class InputStateTest {
                         .withToolConfigs(
                                 new byte[][] {ToolConfig.getDefaultInstance().toByteArray()})
                         .withToolsSectionConfig(SectionConfig.getDefaultInstance().toByteArray())
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
+                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_REGULAR)
                         .withAllowedModels(
-                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE,
-                                ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
-                        .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
+                                ModelMode.MODEL_MODE_GEMINI_PRO,
+                                ModelMode.MODEL_MODE_GEMINI_REGULAR)
+                        .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_REGULAR)
                         .withModelConfigs(
                                 new byte[][] {ModelConfig.getDefaultInstance().toByteArray()})
                         .withModelSectionConfig(SectionConfig.getDefaultInstance().toByteArray());
@@ -80,9 +80,9 @@ public class InputStateTest {
                         .withActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN)
                         .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
                         .withDisabledTools(ToolMode.TOOL_MODE_DEEP_SEARCH)
-                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
-                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
-                        .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO)
+                        .withAllowedModels(ModelMode.MODEL_MODE_GEMINI_REGULAR)
+                        .withDisabledModels(ModelMode.MODEL_MODE_GEMINI_REGULAR)
                         .build();
 
         assertTrue(state.isToolVisible(ToolMode.TOOL_MODE_IMAGE_GEN));
@@ -94,14 +94,14 @@ public class InputStateTest {
         assertFalse(state.isToolVisible(ToolMode.TOOL_MODE_CANVAS));
         assertFalse(state.isToolEnabled(ToolMode.TOOL_MODE_CANVAS));
 
-        assertTrue(state.isModelVisible(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE));
-        assertTrue(state.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE));
+        assertTrue(state.isModelVisible(ModelMode.MODEL_MODE_GEMINI_PRO));
+        assertTrue(state.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO));
 
-        assertTrue(state.isModelVisible(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE));
-        assertFalse(state.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE));
+        assertTrue(state.isModelVisible(ModelMode.MODEL_MODE_GEMINI_REGULAR));
+        assertFalse(state.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_REGULAR));
 
-        assertFalse(state.isModelVisible(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE));
-        assertFalse(state.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE));
+        assertFalse(state.isModelVisible(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE));
+        assertFalse(state.isModelEnabled(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE));
     }
 
     @Test
@@ -187,7 +187,7 @@ public class InputStateTest {
                 SectionConfig.newBuilder().setHeader("Tools Header").build();
         ModelConfig modelConfig =
                 ModelConfig.newBuilder()
-                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO)
                         .setMenuLabel("Pro")
                         .build();
         SectionConfig modelSectionConfig =
