@@ -173,6 +173,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/fullscreen",
     "//chrome/browser/ui/tabs:tab_menu",
     "//chrome/browser/ui/views/bookmarks",
     "//chrome/browser/ui/views/bookmarks/saved_tab_groups",
