@@ -406,6 +406,7 @@ void SymphoniaAudioDecoder::Reset(base::OnceClosure closure) {
   ConfigureDecoder(config_);  // Re-create the decoder instance.
 
   state_ = DecoderState::kNormal;
+  consecutive_error_count_ = 0;
   ResetTimestampState(config_);
 
   if (mode_ == ExecutionMode::kAsynchronous) {
@@ -457,26 +458,43 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
   SymphoniaDecodeResult result = symphonia_decoder_.value()->decode(
       ToSymphoniaPacket(buffer, first_frame_timestamp_));
 
-  // Record status for every decode attempt.
   if (result.status != SymphoniaDecodeStatus::Ok) {
     base::UmaHistogramEnumeration("Media.Audio.Symphonia.DecodeError",
                                   result.status);
+    switch (result.status) {
+      case SymphoniaDecodeStatus::DecodeError:
+      case SymphoniaDecodeStatus::UnexpectedEndOfStream:
+        // Forbid back-to-back decode errors to prevent runaway packet drops and
+        // excessive A/V desync.
+        if (++consecutive_error_count_ > 1) {
+          MEDIA_LOG(ERROR, media_log_)
+              << "Stopping playback due to consecutive audio buffer decoding "
+                 "failures: "
+              << result.error_str.c_str() << ", at "
+              << buffer.AsHumanReadableString();
+          return ToDecoderStatus(result);
+        }
+        LIMITED_MEDIA_LOG(DEBUG, media_log_, num_decode_errors_, 5)
+            << "Dropping audio buffer which failed decoding: "
+            << result.error_str.c_str() << ", at "
+            << buffer.AsHumanReadableString();
+        break;
+      default:
+        MEDIA_LOG(ERROR, media_log_)
+            << "Symphonia error occurred: " << result.error_str.c_str();
+        return ToDecoderStatus(result);
+    }
+  } else {
+    consecutive_error_count_ = 0;
   }
 
-  if (result.status != SymphoniaDecodeStatus::Ok) {
-    MEDIA_LOG(ERROR, media_log_)
-        << "Symphonia error occurred: " << result.error_str.c_str();
-    return ToDecoderStatus(result);
-  }
-
-  // The Symphonia glue will return an empty buffer if 0 frames were decoded.
+  // If 0 frames were decoded (either due to a non-fatal decode error or an
+  // empty frame), forward the buffer metadata to the discard helper for
+  // caching.
   if (result.buffer->data.empty()) {
-    // Even if we didn't decode a frame, we should still send the packet
-    // to the discard helper for caching.
     const bool processed = discard_helper_->ProcessBuffers(
         AudioDiscardHelper::TimeInfo::FromBuffer(buffer), nullptr);
     DCHECK(!processed);
-
     return DecoderStatus::Codes::kOk;
   }
   // Sanity check: if Symphonia thinks things are OK and returned a valid
