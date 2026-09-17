@@ -16,6 +16,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -204,15 +205,24 @@ void RemoteDisplaySessionManager::QuerySessionInfo(
 void RemoteDisplaySessionManager::HandleSessionInfoQueriesBlockingStartup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (start_state_ == StartState::STARTED) {
+  if (start_state_ != StartState::STARTING) {
     return;
   }
 
-  DCHECK_EQ(start_state_, StartState::STARTING);
   if (session_info_queries_blocking_startup_.empty()) {
     start_state_ = StartState::STARTED;
-    std::move(init_callback_).Run(base::ok());
+    if (init_callback_) {
+      std::move(init_callback_).Run(base::ok());
+    }
   }
+}
+
+void RemoteDisplaySessionManager::FinalizeSessionInfoQuery(
+    const gvariant::ObjectPath& display_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  session_info_queries_blocking_startup_.erase(display_path);
+  HandleSessionInfoQueriesBlockingStartup();
 }
 
 void RemoteDisplaySessionManager::OnCreateDbusConnectionResult(
@@ -296,11 +306,17 @@ void RemoteDisplaySessionManager::OnRemoteDisplayRemoved(
   }
   HOST_LOG << "GDM remote display session removed: " << display_path.value()
            << ", remote id: " << remote_id.value();
+
+  base::ScopedClosureRunner finalize_query(
+      base::BindOnce(&RemoteDisplaySessionManager::FinalizeSessionInfoQuery,
+                     weak_ptr_factory_.GetWeakPtr(), display_path));
+
   auto it = remote_displays_.find(display_name);
   if (it == remote_displays_.end()) {
     LOG(WARNING) << "Cannot find remote display with name: " << display_name;
     return;
   }
+
   RemoteDisplayInfo& display_info = it->second;
   display_info.sessions.erase(display_path);
   if (!display_info.sessions.empty()) {
@@ -457,19 +473,32 @@ void RemoteDisplaySessionManager::OnSessionInfoReady(
     base::expected<LoginSessionManager::SessionInfo, Loggable> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  base::ScopedClosureRunner finalize_query(
+      base::BindOnce(&RemoteDisplaySessionManager::FinalizeSessionInfoQuery,
+                     weak_ptr_factory_.GetWeakPtr(), display_path));
+
   if (!result.has_value()) {
     LOG(ERROR) << "Failed to get session info for " << display_name << ": "
                << result.error();
-    session_info_queries_blocking_startup_.erase(display_path);
-    HandleSessionInfoQueriesBlockingStartup();
     return;
   }
   DCHECK(result->is_remote);
 
   auto remote_display_it = remote_displays_.find(display_name);
-  DCHECK(remote_display_it != remote_displays_.end());
+  if (remote_display_it == remote_displays_.end()) {
+    LOG(WARNING) << "Cannot find remote display with name: " << display_name;
+    return;
+  }
+
   auto& remote_display_info = remote_display_it->second;
-  auto& session = remote_display_info.sessions[display_path];
+  auto session_it = remote_display_info.sessions.find(display_path);
+  if (session_it == remote_display_info.sessions.end()) {
+    LOG(WARNING) << "Cannot find remote display session with display path: "
+                 << display_path.value();
+    return;
+  }
+
+  auto& session = session_it->second;
   session.session_info = std::move(*result);
   auto user_info_expected = GetPasswdUserInfo(session.session_info->username);
   if (user_info_expected.has_value()) {
@@ -481,9 +510,6 @@ void RemoteDisplaySessionManager::OnSessionInfoReady(
   if (start_state_ == StartState::STARTED) {
     delegate_->OnRemoteDisplayChanged(display_name, remote_display_info);
   }
-
-  session_info_queries_blocking_startup_.erase(display_path);
-  HandleSessionInfoQueriesBlockingStartup();
 }
 
 }  // namespace remoting
