@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
-
+#include "base/feature_list.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -273,10 +274,16 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterFencedFrameBrowserTest,
 
   EXPECT_FALSE(WasParsedScriptElementLoaded(subframe));
   EXPECT_TRUE(subframe->IsErrorDocument());
-  // We expect the URL to be sanitized, per https://crbug.com/517156678.
+  // The failed navigation's URL is only reduced to its origin when the error
+  // page commits in the initiator's process, per https://crbug.com/517156678.
+  // With subframe error page isolation, the error page commits in a dedicated
+  // error page process instead, and the full URL is committed.
   // TODO(crbug.com/40134629): Remove the sanitization once Subframe Error Page
   // Isolation ships.
-  GURL expected_url = url::Origin::Create(kUrlWithIncludedScript).GetURL();
+  GURL expected_url =
+      base::FeatureList::IsEnabled(features::kIsolateSubframeErrorPages)
+          ? kUrlWithIncludedScript
+          : url::Origin::Create(kUrlWithIncludedScript).GetURL();
   EXPECT_EQ(expected_url, subframe->GetLastCommittedURL());
 }
 

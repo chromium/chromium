@@ -55,6 +55,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -393,11 +394,18 @@ IN_PROC_BROWSER_TEST_P(SubresourceFilterBrowserTestWithV4V5Param,
 
   content::RenderFrameHost* frame = FindFrameByName(kSubframeNames[0]);
   ASSERT_TRUE(frame);
-  // We expect the URL to be sanitized, per https://crbug.com/517156678.
+  // The failed navigation's URL is only reduced to its origin when the error
+  // page commits in the initiator's process, per https://crbug.com/517156678.
+  // With subframe error page isolation, the error page commits in a dedicated
+  // error page process instead, and the full URL is committed.
   // TODO(crbug.com/40134629): Remove the sanitization once Subframe Error Page
   // Isolation ships.
-  EXPECT_EQ(disallowed_subdocument_url.DeprecatedGetOriginAsURL(),
-            frame->GetLastCommittedURL());
+  GURL expected_url =
+      content::SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+          /*in_main_frame=*/false)
+          ? disallowed_subdocument_url
+          : disallowed_subdocument_url.DeprecatedGetOriginAsURL();
+  EXPECT_EQ(expected_url, frame->GetLastCommittedURL());
   ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
 }
 
