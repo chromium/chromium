@@ -282,8 +282,15 @@ void SearchBox::FocusChanged(OmniboxFocusState new_focus_state,
       is_key_capture_enabled_ = key_capture_enabled;
       DVLOG(1) << render_frame() << " KeyCaptureChange";
       if (can_run_js_in_renderframe_) {
+        base::WeakPtr<SearchBox> weak_this = weak_ptr_factory_.GetWeakPtr();
         SearchBoxExtension::DispatchKeyCaptureChange(
             render_frame()->GetWebFrame());
+        // The onkeycapturechange event may have destroyed the SearchBox. Exit
+        // early if that is the case to avoid UAF. See
+        // https://crbug.com/540499008 for additional details.
+        if (!weak_this) {
+          return;
+        }
       }
     }
   }
