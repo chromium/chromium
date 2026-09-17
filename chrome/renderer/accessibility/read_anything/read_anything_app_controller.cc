@@ -1463,10 +1463,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::GetHighlightForCurrentSegmentIndex)
       .SetMethod("getValidatedFontName",
                  &ReadAnythingAppController::GetValidatedFontName)
-      .SetMethod("onScrolledToBottom",
-                 &ReadAnythingAppController::OnScrolledToBottom)
-      .SetProperty("isDocsLoadMoreButtonVisible",
-                   &ReadAnythingAppController::IsDocsLoadMoreButtonVisible)
       .SetMethod("sendGetPresentationStateRequest",
                  &ReadAnythingAppController::SendGetPresentationStateRequest)
       .SetMethod("togglePresentation",
@@ -2936,20 +2932,6 @@ void ReadAnythingAppController::OnUrlInformationSet() {
   read_aloud_model_.LogSpeechStop(
       model_.IsReload() ? ReadAloudAppModel::ReadAloudStopSource::kReloadPage
                         : ReadAloudAppModel::ReadAloudStopSource::kChangePage);
-}
-
-void ReadAnythingAppController::OnScrolledToBottom() {
-  if (IsGoogleDocs()) {
-    // Scroll to the last display node shown on the Reading Mode side panel
-    // TODO (b/356935604): Investigate optimal scroll position
-    page_handler_->ScrollToTargetNode(
-        model_.active_tree_id(), *model_.GetCurrentlyVisibleNodes()->rbegin());
-  }
-}
-
-bool ReadAnythingAppController::IsDocsLoadMoreButtonVisible() const {
-  return (features::IsReadAnythingDocsLoadMoreButtonEnabled() &&
-          IsGoogleDocs());
 }
 
 void ReadAnythingAppController::UpdateDependencyParserModel(

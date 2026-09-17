@@ -82,14 +82,6 @@ export function getHtml(this: AppElement) {
           "user-select-disabled-when-speech-active-${this.isSpeechActive_}">
       </div>
     </div>
-    <!-- TODO: crbug.com/324143642- Localize the "Load More" string. -->
-    <cr-button id="docs-load-more-button" tabindex="0"
-        translate="no"
-        class="notranslate"
-        @click="${this.onDocsLoadMoreButtonClick_}"
-        ?hidden="${!this.isDocsLoadMoreButtonVisible_}">
-      Load More
-    </cr-button>
   </div>
   <div id="empty-state-container"
       class="sp-scroller notranslate"

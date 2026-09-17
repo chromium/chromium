@@ -343,19 +343,6 @@
   font-family: inherit;
 }
 
-#docs-load-more-button {
-  background: var(--color-sys-tonal-container);
-  margin: 0 auto;
-  border-width: 0;
-  width: 10em;
-  max-width: 100%;
-  height: 3em;
-  font-size: var(--font-size);
-  color: var(--cr-primary-text-color);
-  display: flex;
-  justify-content: center;
-}
-
 figure:has(img.distilled-full-width-img) {
   margin-inline: 0;
 }

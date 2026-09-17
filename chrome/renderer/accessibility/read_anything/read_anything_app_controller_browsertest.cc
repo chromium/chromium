@@ -2473,37 +2473,6 @@ TEST_F(ReadAnythingAppControllerTest, RequestImageData) {
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
-TEST_F(ReadAnythingAppControllerTest,
-       ScrollToTargetNode_DoesNotScrollIfNotGoogleDocs) {
-  ui::AXNodeData root;
-  ui::AXNodeData node;
-  ui::AXTreeUpdate update;
-  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  test::SetUpdateTreeID(&update, id_1);
-
-  root.id = 1;
-  root.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
-                          "https://www.google.com/");
-  node.id = 2;
-  root.child_ids = {node.id};
-  update.root_id = root.id;
-  update.nodes = {std::move(root), std::move(node)};
-
-  AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(
-      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
-  OnAXTreeDistilled(tree_id_, {1});
-  ExpectDistill(1);
-  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
-  EXPECT_FALSE(controller().IsGoogleDocs());
-
-  ui::AXNodeID ax_node_id = 4;
-  EXPECT_CALL(page_handler_, ScrollToTargetNode(id_1, ax_node_id)).Times(0);
-  controller().OnScrolledToBottom();
-  page_handler_.FlushForTesting();
-  Mock::VerifyAndClearExpectations(distiller_);
-}
-
 TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
   ui::AXNodeData node1 = test::TextNode(/* id= */ 2);
   ui::AXNodeData node2 = test::TextNode(/* id= */ 3);
@@ -5549,40 +5518,6 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
   // If distillation is in progress, OnLinkClicked should not be called.
   EXPECT_CALL(page_handler_, OnLinkClicked).Times(0);
   controller().OnLinkClicked(2);
-  page_handler_.FlushForTesting();
-  Mock::VerifyAndClearExpectations(distiller_);
-}
-
-TEST_F(ReadAnythingAppControllerScreen2xTest,
-       ScrollToTargetNode_ScrollsIfGoogleDocs) {
-  ui::AXNodeData root;
-  ui::AXNodeData node;
-  ui::AXTreeUpdate update;
-  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  test::SetUpdateTreeID(&update, id_1);
-
-  root.id = 1;
-  root.AddStringAttribute(
-      ax::mojom::StringAttribute::kUrl,
-      "https://docs.google.com/document/d/"
-      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
-      "edit?ouid=103677288878638916900&usp=docs_home&ths=true");
-  node.id = 2;
-  root.child_ids = {node.id};
-  update.root_id = root.id;
-  update.nodes = {std::move(root), std::move(node)};
-
-  AccessibilityEventReceived({std::move(update)});
-  EXPECT_TRUE(
-      model().tree_infos_for_testing().at(id_1)->is_url_information_set);
-  OnAXTreeDistilled(tree_id_, {1});
-  ExpectDistill(1);
-  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
-  EXPECT_TRUE(controller().IsGoogleDocs());
-
-  ui::AXNodeID ax_node_id = 4;
-  EXPECT_CALL(page_handler_, ScrollToTargetNode(id_1, ax_node_id)).Times(1);
-  controller().OnScrolledToBottom();
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
 }

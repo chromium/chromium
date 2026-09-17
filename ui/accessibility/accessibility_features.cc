@@ -432,13 +432,6 @@ bool IsReadAnythingDocsIntegrationEnabled() {
       ax::mojom::features::kReadAnythingDocsIntegration);
 }
 
-BASE_FEATURE(kReadAnythingDocsLoadMoreButton,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsReadAnythingDocsLoadMoreButtonEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kReadAnythingDocsLoadMoreButton);
-}
-
 BASE_FEATURE(kReadAnythingWithReadability, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingWithReadabilityEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingWithReadability);

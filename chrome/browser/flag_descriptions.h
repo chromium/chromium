@@ -6905,12 +6905,6 @@ inline constexpr char kReadAnythingDocsIntegrationName[] =
 inline constexpr char kReadAnythingDocsIntegrationDescription[] =
     "Allows Reading Mode to work on Google Docs.";
 
-inline constexpr char kReadAnythingDocsLoadMoreButtonName[] =
-    "Reading Mode Google Docs Load More Button";
-inline constexpr char kReadAnythingDocsLoadMoreButtonDescription[] =
-    "Adds a button to the end of the Reading Mode UI. When clicked, "
-    "the main page scrolls to show the next page's content.";
-
 inline constexpr char kReadAnythingReadabilitySelectTextName[] =
     "Reading Mode Select Text with Readability";
 inline constexpr char kReadAnythingReadabilitySelectTextDescription[] =

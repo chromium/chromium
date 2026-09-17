@@ -372,9 +372,6 @@ declare namespace chrome {
     // SidePanelWebUIView::ShowUI
     function shouldShowUi(): boolean;
 
-    // Called when the Read Anything panel is scrolled all the way down.
-    function onScrolledToBottom(): void;
-
     // Called by the Read Anything app to request the presentation state.
     function sendGetPresentationStateRequest(): void;
 
@@ -395,9 +392,6 @@ declare namespace chrome {
 
     // Called by the Read Anything app to toggle between presentation modes.
     function togglePresentation(): void;
-
-    // Whether the Google Docs load more button is visible.
-    let isDocsLoadMoreButtonVisible: boolean;
 
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.

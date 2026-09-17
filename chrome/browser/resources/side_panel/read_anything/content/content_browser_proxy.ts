@@ -73,7 +73,6 @@ export interface ContentBrowserProxy {
   isReadabilityEnabled(): boolean;
   isReadabilitySelectTextEnabled(): boolean;
   isGoogleDocs(): boolean;
-  isDocsLoadMoreButtonVisible(): boolean;
   isLeafNode(nodeId: number): boolean;
   isOverline(nodeId: number): boolean;
   shouldBold(nodeId: number): boolean;
@@ -91,7 +90,6 @@ export interface ContentBrowserProxy {
       anchorNodeId: number, anchorOffset: number, focusNodeId: number,
       focusOffset: number): void;
   onScroll(scrollingOnSelection: boolean): void;
-  onScrolledToBottom(): void;
 }
 
 export class ContentBrowserProxyImpl implements ContentBrowserProxy {
@@ -311,14 +309,6 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
   getAxTreeAnchors(): Record<string, AxTreeAnchorMetadata[]> {
     return chrome.readingMode.axTreeAnchors;
-  }
-
-  isDocsLoadMoreButtonVisible(): boolean {
-    return chrome.readingMode.isDocsLoadMoreButtonVisible;
-  }
-
-  onScrolledToBottom(): void {
-    chrome.readingMode.onScrolledToBottom();
   }
 
   onCopy(): void {

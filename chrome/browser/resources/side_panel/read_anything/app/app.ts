@@ -95,7 +95,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
       lineFocusStyle_: {type: Object},
       lineFocusEnabled_: {type: Boolean},
       lineFocusMovement_: {type: Number},
-      isDocsLoadMoreButtonVisible_: {type: Boolean},
       hasValidSelection_: {type: Boolean},
       isReadAnythingPinned_: {type: Boolean},
     };
@@ -108,7 +107,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor lineFocusEnabled_: boolean = false;
   protected accessor lineFocusMovement_: LineFocusMovement|null = null;
 
-  protected accessor isDocsLoadMoreButtonVisible_: boolean = false;
   protected accessor hasValidSelection_: boolean = false;
   protected accessor isReadAnythingPinned_: boolean = false;
   protected isReadAnythingImprovedUiEnabled_: boolean = false;
@@ -377,8 +375,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
 
   updateContent() {
     this.willDrawAgainSoon_ = this.contentBrowserProxy_.requiresDistillation();
-    this.isDocsLoadMoreButtonVisible_ =
-        this.contentBrowserProxy_.isDocsLoadMoreButtonVisible();
     this.hasValidSelection_ = this.contentBrowserProxy_.hasValidSelection();
 
     // Remove all children from container. Use `replaceChildren` rather than
@@ -459,10 +455,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.logger_.setHidden(
         presentationState ===
         this.visualBrowserProxy_.getInHiddenPresentationState());
-  }
-
-  protected onDocsLoadMoreButtonClick_() {
-    this.contentBrowserProxy_.onScrolledToBottom();
   }
 
   protected onLanguageMenuOpen_() {

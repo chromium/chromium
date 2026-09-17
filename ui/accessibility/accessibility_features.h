@@ -349,11 +349,6 @@ AX_BASE_EXPORT bool IsHatsReadingModeSurveyEnabled();
 
 AX_BASE_EXPORT bool IsReadAnythingDocsIntegrationEnabled();
 
-// Enable "load more" button to show at the end of Reading Mode panel.
-// Should be disabled by default.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingDocsLoadMoreButton);
-AX_BASE_EXPORT bool IsReadAnythingDocsLoadMoreButtonEnabled();
-
 // Enable ReadabilityJS as the distillation source for Reading Mode.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithReadability);
 AX_BASE_EXPORT bool IsReadAnythingWithReadabilityEnabled();

@@ -361,8 +361,6 @@ class ReadAnythingAppController
   void OnIsAudioCurrentlyPlayingChanged(bool is_audio_currently_playing);
   std::string GetValidatedFontName(const std::string& font) const;
   std::vector<std::string> GetAllFonts() const;
-  void OnScrolledToBottom();
-  bool IsDocsLoadMoreButtonVisible() const;
   void OnNoTextContent();
   void UpdateWordsSeen(int words_seen);
   void UpdateWordsHeard(int words_heard);
