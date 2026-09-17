@@ -12,6 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -26,12 +27,19 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactoryJni;
 import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab_bottom_sheet.LegacyResizingPlaceholderCoordinator;
+import org.chromium.chrome.browser.tab_bottom_sheet.ResizingPlaceholderCoordinator;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetSkeletonCoordinator;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
@@ -52,6 +60,7 @@ public class GlicBottomSheetContentUnitTest {
     private Context mContext;
     private View mContentView;
     private GlicBottomSheetContent mContent;
+    private GlicBottomSheetComponentProvider mProvider;
 
     @Before
     public void setUp() {
@@ -77,6 +86,7 @@ public class GlicBottomSheetContentUnitTest {
                         /* peekViewContainerId= */ 12345,
                         /* onBackPressed= */ () -> {},
                         mProfile);
+        mProvider = new GlicBottomSheetComponentProvider(mProfile);
     }
 
     @Test
@@ -161,13 +171,37 @@ public class GlicBottomSheetContentUnitTest {
 
     @Test
     public void testProvider_ConfiguresPlaceholderCorrectly() {
-        GlicBottomSheetComponentProvider provider = new GlicBottomSheetComponentProvider(mProfile);
         TextViewWithCompoundDrawables placeholder = new TextViewWithCompoundDrawables(mContext);
-        assertTrue(provider.setupPlaceholderView(placeholder));
+        assertTrue(mProvider.setupPlaceholderView(placeholder));
         assertEquals(
                 mContext.getString(R.string.glic_inactive_view_card_text),
                 placeholder.getText().toString());
         // Top compound drawable (index 1) must be set.
         assertNotNull(placeholder.getCompoundDrawablesRelative()[1]);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW)
+    public void testProvider_createResizingPlaceholderCoordinator_defaultLegacy() {
+        ResizingPlaceholderCoordinator coordinator =
+                mProvider.createResizingPlaceholderCoordinator(mContext, Color.WHITE);
+        assertTrue(coordinator instanceof LegacyResizingPlaceholderCoordinator);
+        coordinator.destroy();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_RESIZE_WEBVIEW
+                + ":"
+                + TabBottomSheetUtils.RESIZING_PLACEHOLDER_PARAM
+                + "/"
+                + TabBottomSheetUtils.PLACEHOLDER_SKELETON
+    })
+    public void testProvider_createResizingPlaceholderCoordinator_skeletonEnabled() {
+        ResizingPlaceholderCoordinator coordinator =
+                mProvider.createResizingPlaceholderCoordinator(mContext, Color.WHITE);
+        assertTrue(coordinator instanceof TabBottomSheetSkeletonCoordinator);
+        coordinator.destroy();
     }
 }

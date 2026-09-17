@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.glic;
 
+import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -23,9 +24,13 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseComponentProvider;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseComponentProvider.TabSelectionDelegate;
+import org.chromium.chrome.browser.tab_bottom_sheet.LegacyResizingPlaceholderCoordinator;
 import org.chromium.chrome.browser.tab_bottom_sheet.PeekViewManager;
+import org.chromium.chrome.browser.tab_bottom_sheet.ResizingPlaceholderCoordinator;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetContent;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetSkeletonCoordinator;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
 /**
@@ -61,6 +66,16 @@ public class GlicBottomSheetComponentProvider implements CoBrowseComponentProvid
     public boolean setupPlaceholderView(TextViewWithCompoundDrawables placeholder) {
         GlicUiUtils.setupPlaceholderView(placeholder);
         return true;
+    }
+
+    @Override
+    public ResizingPlaceholderCoordinator createResizingPlaceholderCoordinator(
+            Context context, @ColorInt int backgroundColor) {
+        if (TabBottomSheetUtils.PLACEHOLDER_SKELETON.equals(
+                TabBottomSheetUtils.getResizingPlaceholderType())) {
+            return new TabBottomSheetSkeletonCoordinator(context, backgroundColor);
+        }
+        return new LegacyResizingPlaceholderCoordinator(context, backgroundColor);
     }
 
     @Override
