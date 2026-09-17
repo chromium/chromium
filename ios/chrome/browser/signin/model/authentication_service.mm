@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/signin/model/authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer.h"
 #import "ios/chrome/browser/signin/model/refresh_access_token_error.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
@@ -111,11 +110,6 @@ void AuthenticationService::RegisterPrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kSigninShouldPromptForSigninAgain,
                                 false);
-}
-
-void AuthenticationService::Initialize(
-    std::unique_ptr<AuthenticationServiceDelegate> delegate) {
-  Initialize();
 }
 
 void AuthenticationService::Initialize() {

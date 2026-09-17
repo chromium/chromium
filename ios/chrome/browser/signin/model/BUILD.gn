@@ -130,7 +130,6 @@ source_set("authentication_service") {
   sources = [
     "authentication_service.h",
     "authentication_service.mm",
-    "authentication_service_delegate.h",
     "authentication_service_observer.h",
     "authentication_service_observer_bridge.h",
     "authentication_service_observer_bridge.mm",
@@ -416,8 +415,6 @@ source_set("test_constants") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "fake_authentication_service_delegate.h",
-    "fake_authentication_service_delegate.mm",
     "identity_test_environment_browser_state_adaptor.h",
     "identity_test_environment_browser_state_adaptor.mm",
   ]

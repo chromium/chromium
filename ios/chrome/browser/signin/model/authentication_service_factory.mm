@@ -5,30 +5,24 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 #import <memory>
-#import <utility>
 
 #import "base/check.h"
-#import "base/functional/callback.h"
-#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildAuthenticationService(
-    std::unique_ptr<AuthenticationServiceDelegate> delegate,
-    ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildAuthenticationService(ProfileIOS* profile) {
   auto service = std::make_unique<AuthenticationService>(
       profile, profile->GetPrefs(),
       ChromeAccountManagerServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile));
-  service->Initialize(std::move(delegate));
+  service->Initialize();
   DCHECK(service->initialized());
   return service;
 }
@@ -51,21 +45,7 @@ AuthenticationServiceFactory* AuthenticationServiceFactory::GetInstance() {
 // static
 AuthenticationServiceFactory::TestingFactory
 AuthenticationServiceFactory::GetDefaultFactory() {
-  return base::BindOnce(&BuildAuthenticationService, nullptr);
-}
-
-// static
-AuthenticationServiceFactory::TestingFactory
-AuthenticationServiceFactory::GetFactoryWithDelegate(
-    std::unique_ptr<AuthenticationServiceDelegate> delegate) {
-  return GetFactoryWithDelegateForTesting(std::move(delegate));
-}
-
-// static
-AuthenticationServiceFactory::TestingFactory
-AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
-    std::unique_ptr<AuthenticationServiceDelegate> delegate) {
-  return base::BindOnce(&BuildAuthenticationService, std::move(delegate));
+  return base::BindOnce(&BuildAuthenticationService);
 }
 
 AuthenticationServiceFactory::AuthenticationServiceFactory()
@@ -82,7 +62,7 @@ AuthenticationServiceFactory::~AuthenticationServiceFactory() {}
 std::unique_ptr<KeyedService>
 AuthenticationServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  return BuildAuthenticationService(nullptr, profile);
+  return BuildAuthenticationService(profile);
 }
 
 void AuthenticationServiceFactory::RegisterProfilePrefs(

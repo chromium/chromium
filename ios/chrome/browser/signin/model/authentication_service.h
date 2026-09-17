@@ -26,7 +26,6 @@ namespace syncer {
 class SyncService;
 }
 
-class AuthenticationServiceDelegate;
 class AuthenticationServiceObserver;
 class FakeAuthenticationService;
 class PrefService;
@@ -77,8 +76,6 @@ class AuthenticationService : public KeyedService,
 
   // Initializes the AuthenticationService.
   void Initialize();
-  // TODO(crbug.com/407498240): Remove this overload with the unused `delegate`.
-  void Initialize(std::unique_ptr<AuthenticationServiceDelegate> delegate);
 
   // KeyedService implementation.
   void Shutdown() override;

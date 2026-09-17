@@ -17,7 +17,6 @@ class PrefRegistrySyncable;
 }
 
 class AuthenticationService;
-class AuthenticationServiceDelegate;
 
 // Singleton that owns all `AuthenticationServices` and associates them with
 // profiles. Listens for the profile's destruction notification and cleans up
@@ -29,15 +28,6 @@ class AuthenticationServiceFactory : public ProfileKeyedServiceFactoryIOS {
 
   // Returns the default factory, useful in tests.
   static TestingFactory GetDefaultFactory();
-
-  // TODO(crbug.com/449708427): Remove after migrating internal usage.
-  static TestingFactory GetFactoryWithDelegate(
-      std::unique_ptr<AuthenticationServiceDelegate> delegate);
-
-  // Returns a factory that builds an AuthenticationService using a custom
-  // delegate instance (needs to be constructible before the profile).
-  static TestingFactory GetFactoryWithDelegateForTesting(
-      std::unique_ptr<AuthenticationServiceDelegate> delegate);
 
  private:
   friend class base::NoDestructor<AuthenticationServiceFactory>;

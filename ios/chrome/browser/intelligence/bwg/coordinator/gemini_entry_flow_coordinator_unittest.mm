@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -54,8 +53,7 @@ class GeminiEntryFlowCoordinatorTest : public PlatformTest {
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
-            std::make_unique<FakeAuthenticationServiceDelegate>()));
+        AuthenticationServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
         base::BindRepeating(
@@ -116,8 +114,8 @@ class GeminiEntryFlowCoordinatorTest : public PlatformTest {
 
     if ([identity.userEmail hasSuffix:@"@google.com"] ||
         [identity.userEmail hasSuffix:@"@foo.com"]) {
-      CoreAccountInfo account_info =
-          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+      CoreAccountInfo account_info = identity_manager->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
       signin::SimulateSuccessfulFetchOfAccountInfo(
           identity_manager, account_info.account_id,
           base::SysNSStringToUTF8(identity.userEmail), identity.gaiaId,
