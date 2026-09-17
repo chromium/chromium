@@ -10,11 +10,9 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 
 class GURL;
@@ -37,13 +35,10 @@ void ReadingListLocalDataBatchUploader::GetLocalDataDescription(
   syncer::LocalDataDescription local_data_description =
       syncer::LocalDataDescription(std::vector(keys.begin(), keys.end()));
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncReadingListBatchUploadSelectedItems)) {
-    local_data_description.type = syncer::DataType::READING_LIST;
-    for (const GURL& key : keys) {
-      local_data_description.local_data_models.push_back(
-          DataItemModelFromURL(key));
-    }
+  local_data_description.type = syncer::DataType::READING_LIST;
+  for (const GURL& key : keys) {
+    local_data_description.local_data_models.push_back(
+        DataItemModelFromURL(key));
   }
 
   std::move(callback).Run(local_data_description);
@@ -59,9 +54,6 @@ void ReadingListLocalDataBatchUploader::TriggerLocalDataMigration() {
 
 void ReadingListLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
     std::vector<syncer::LocalDataItemModel::DataId> items) {
-  CHECK(base::FeatureList::IsEnabled(
-      syncer::kSyncReadingListBatchUploadSelectedItems));
-
   if (!CanUpload()) {
     return;
   }
