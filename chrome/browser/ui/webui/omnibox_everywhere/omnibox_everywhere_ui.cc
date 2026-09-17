@@ -147,6 +147,9 @@ class OmniboxEverywhereMostVisitedPrefObserver
 void AddMostVisitedSourceStrings(content::WebUIDataSource* source) {
   source->AddBoolean("omniboxEverywhereMostVisitedEnabled",
                      omnibox::kOmniboxEverywhereMostVisitedParam.Get());
+  source->AddBoolean(
+      "omniboxEverywhereMostVisitedHideTitle",
+      !omnibox::kOmniboxEverywhereMostVisitedShowTitleParam.Get());
 
   static constexpr webui::LocalizedString kMostVisitedStrings[] = {
       {"addLinkTitle", IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TITLE},

@@ -1175,6 +1175,7 @@ suite('OmniboxEverywhereAppTest', () => {
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
       smallLoomnibox: true,
+      omniboxEverywhereMostVisitedHideTitle: true,
       initialFreStage: 0,
       composeboxCancelButtonTitle: 'Close AI Mode',
       composeboxCancelButtonTitleInput: 'Clear text',
@@ -1930,6 +1931,44 @@ suite('OmniboxEverywhereAppTest', () => {
     assertTrue(!!normalMv);
     assertEquals('7', normalMv.getAttribute('max-tiles'));
   });
+
+  test(
+      'most visited tiles hide-title reflects hideTitle_ property',
+      async () => {
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          omniboxEverywhereShowShortcuts: true,
+          omniboxEverywhereMostVisitedHideTitle: true,
+          initialFreStage: 0,
+        });
+        const appWithHiddenTitles =
+            document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(appWithHiddenTitles);
+        await microtasksFinished();
+
+        const mvHidden =
+            appWithHiddenTitles.shadowRoot.querySelector('cr-most-visited')!;
+        assertTrue(!!mvHidden);
+        assertTrue(mvHidden.hasAttribute('hide-title'));
+
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        loadTimeData.overrideValues({
+          omniboxEverywhereMostVisitedEnabled: true,
+          omniboxEverywhereShowShortcuts: true,
+          omniboxEverywhereMostVisitedHideTitle: false,
+          initialFreStage: 0,
+        });
+        const appWithVisibleTitles =
+            document.createElement('omnibox-everywhere-app');
+        document.body.appendChild(appWithVisibleTitles);
+        await microtasksFinished();
+
+        const mvShown =
+            appWithVisibleTitles.shadowRoot.querySelector('cr-most-visited')!;
+        assertTrue(!!mvShown);
+        assertFalse(mvShown.hasAttribute('hide-title'));
+      });
 
   test(
       'close-composebox event exits composebox mode and focuses searchbox',

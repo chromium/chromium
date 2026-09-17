@@ -162,7 +162,6 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
           var(--omnibox-inactive-hover-overlay, transparent),
           var(--omnibox-inactive-hover-overlay, transparent)),
       var(--color-sys-surface-container-high, #fff);
-  background-clip: padding-box;
   /* Preserves 2px border width parity with omnibox-everywhere-omnibox and
    * composebox. */
   border: 2px solid transparent;
@@ -171,10 +170,14 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
   box-sizing: border-box;
   display: flex;
   justify-content: center;
+  margin-inline: auto;
   margin-top: 10px;
+  max-width: 100%;
   min-height: 80px;
   padding: 8px 16px;
-  width: 100%;
+  width: fit-content;
+  position: relative;
+  z-index: 100;
 }
 
 cr-most-visited {
@@ -202,6 +205,22 @@ cr-most-visited {
    * 480px (small content width) - 32px (16px * 2 padding) - 4px (2px * 2 border) = 444px.
    * Distributed evenly across 4 gaps between 5 tiles. */
   --most-visited-gap: calc((444px - 5 * var(--most-visited-tile-size)) / 4);
+}
+
+cr-most-visited[hide-title] {
+  --most-visited-icon-size: 48px;
+  --most-visited-managed-icon-top: 32px;
+  --most-visited-tile-size: 68px;
+}
+
+cr-most-visited:not([hide-title]) {
+  --most-visited-icon-size: 40px;
+  --most-visited-managed-icon-top: 26px;
+  --most-visited-tile-size: 80px;
+  --most-visited-title-font-size: 11px;
+  --most-visited-title-height: 20px;
+  --most-visited-title-line-height: 20px;
+  --most-visited-title-margin-top: 4px;
 }
 
 :host([show-voice-search-overlay_]) {

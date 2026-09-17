@@ -107,6 +107,9 @@ const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedParam{
 // Controls whether small Loomnibox (480px width) is enabled.
 const base::FeatureParam<bool> kOmniboxEverywhereSmallLoomniboxParam{
     &kOmniboxEverywhere, "smallLoomnibox", true};
+// Controls showing titles under most visited tiles in OmniboxEverywhere.
+const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedShowTitleParam{
+    &kOmniboxEverywhere, "MostVisitedShowTitle", true};
 // Enables the WebUI for omnibox suggestions without modifying the popup UI.
 BASE_FEATURE(kWebUIOmniboxPopupDebug, DISABLED);
 // Enables side-by-side comparison omnibox suggestions in WebUI and Views.

@@ -98,6 +98,9 @@ extern const base::FeatureParam<bool> kShowContextMenu;
 extern const base::FeatureParam<bool> kOmniboxEverywhereMostVisitedParam;
 // Controls whether small Loomnibox (480px width) is enabled.
 extern const base::FeatureParam<bool> kOmniboxEverywhereSmallLoomniboxParam;
+// Controls showing titles under most visited tiles in OmniboxEverywhere.
+extern const base::FeatureParam<bool>
+    kOmniboxEverywhereMostVisitedShowTitleParam;
 // Whether or not to show a description in the context menu entrypoint, or just
 // the icon.
 // TODO (crbug.com/509939902): Remove this when finch experiment reference
