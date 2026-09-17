@@ -438,6 +438,45 @@ TEST_F(WebRtcVideoFrameAdapterTest, FrameFeedbackSetsRequireMappedFrame) {
         ->GetMappedFrameBuffer(kNv12);
   }
   EXPECT_TRUE(resources->GetFeedback().require_mapped_frame);
+  {
+    // Drop a frame without accessing it (even if soft-scaled). Feedback should
+    // not be updated and must remain true.
+    webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+        new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                              resources));
+    multi_buffer->Scale(kSize360p.width(), kSize360p.height());
+  }
+  EXPECT_TRUE(resources->GetFeedback().require_mapped_frame);
+  {
+    // Access the frame directly without conversion. Feedback should be updated
+    // to false.
+    webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+        new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                              resources));
+    multi_buffer->getMediaVideoFrame();
+  }
+  EXPECT_FALSE(resources->GetFeedback().require_mapped_frame);
+  {
+    // Access both directly and as a mapped buffer. Since it was adapted,
+    // feedback should be set to true.
+    webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+        new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                              resources));
+    multi_buffer->getMediaVideoFrame();
+    multi_buffer->GetMappedFrameBuffer(kNv12);
+  }
+  EXPECT_TRUE(resources->GetFeedback().require_mapped_frame);
+  {
+    // Access via ScaledBuffer::getMediaVideoFrame() without mapping. Feedback
+    // should be updated to false.
+    webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+        new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                              resources));
+    auto scaled = multi_buffer->Scale(kSize360p.width(), kSize360p.height());
+    static_cast<WebRtcVideoFrameAdapterInterface*>(scaled.get())
+        ->getMediaVideoFrame();
+  }
+  EXPECT_FALSE(resources->GetFeedback().require_mapped_frame);
 }
 
 }  // namespace blink
