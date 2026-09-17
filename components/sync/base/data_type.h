@@ -338,10 +338,9 @@ DataTypeSet ProtocolTypes();
 // preference flag, so not all of them are individually user-selectable.
 DataTypeSet UserTypes();
 
-// User types which are not user-controlled.
+// User types which are not user-controlled, or for which the user controls are
+// outside of sync settings.
 inline constexpr DataTypeSet AlwaysPreferredUserTypes() {
-  // TODO(crbug.com/477624427): add SKILL to a corresponding UserSelectableType
-  // or another toggle.
   return {ACCOUNT_SETTING,
           DEVICE_INFO,
           USER_CONSENTS,
