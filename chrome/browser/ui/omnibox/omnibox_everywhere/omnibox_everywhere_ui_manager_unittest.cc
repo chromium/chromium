@@ -296,11 +296,44 @@ TEST_F(OmniboxEverywhereUIManagerTest, MAYBE_InitialBoundsMatchRestingHeight) {
   views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
 
+  const int expected_width =
+      omnibox_everywhere::OmniboxEverywhereUIManager::GetPopupFixedWidth();
+  const int expected_x = (1920 - expected_width) / 2;
+  EXPECT_EQ(widget->GetWindowBoundsInScreen(),
+            gfx::Rect(expected_x, 464, expected_width,
+                      omnibox_everywhere::OmniboxEverywhereUIManager::
+                          kDefaultRestingHeight));
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, SmallLoomniboxBounds) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxEverywhere, {{"smallLoomnibox", "true"}});
+
+  EXPECT_EQ(
+      omnibox_everywhere::OmniboxEverywhereUIManager::GetPopupFixedWidth(),
+      omnibox_everywhere::OmniboxEverywhereUIManager::kPopupSmallFixedWidth);
+
+  display::test::TestScreen test_screen(/*create_display=*/false,
+                                        /*register_screen=*/false);
+  ScopedScreenOverride screen_override(&test_screen);
+
+  display::Display display1(1, gfx::Rect(0, 0, 1920, 1080));
+  test_screen.display_list().AddDisplay(display1,
+                                        display::DisplayList::Type::PRIMARY);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+
   EXPECT_EQ(
       widget->GetWindowBoundsInScreen(),
       gfx::Rect(
-          596, 464,
-          omnibox_everywhere::OmniboxEverywhereUIManager::kPopupFixedWidth,
+          696, 464,
+          omnibox_everywhere::OmniboxEverywhereUIManager::kPopupSmallFixedWidth,
           omnibox_everywhere::OmniboxEverywhereUIManager::
               kDefaultRestingHeight));
 
@@ -323,8 +356,11 @@ TEST_F(OmniboxEverywhereUIManagerTest,
                                         /*register_screen=*/false);
   ScopedScreenOverride screen_override(&test_screen);
 
-  // Display smaller than default popup width (700 < 728).
-  display::Display small_display(1, gfx::Rect(0, 0, 700, 600));
+  // Display smaller than default popup width.
+  const int popup_width =
+      omnibox_everywhere::OmniboxEverywhereUIManager::GetPopupFixedWidth();
+  const int small_display_width = popup_width - 28;
+  display::Display small_display(1, gfx::Rect(0, 0, small_display_width, 600));
   test_screen.display_list().AddDisplay(small_display,
                                         display::DisplayList::Type::PRIMARY);
 
@@ -333,9 +369,9 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
 
-  // Width is clamped to work area width (700) and x starts at 0 (non-negative).
+  // Width is clamped to work area width and x starts at 0 (non-negative).
   EXPECT_EQ(widget->GetWindowBoundsInScreen().x(), 0);
-  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), 700);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), small_display_width);
   EXPECT_EQ(
       widget->GetWindowBoundsInScreen().height(),
       omnibox_everywhere::OmniboxEverywhereUIManager::kDefaultRestingHeight);
@@ -1935,28 +1971,20 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   views::Widget* widget = ui_manager->widget();
   ASSERT_TRUE(widget);
 
-  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kPopupFixedWidth);
+  const int popup_width =
+      omnibox_everywhere::OmniboxEverywhereUIManager::GetPopupFixedWidth();
+
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), popup_width);
 
   // Resize above minimum height should resize the widget height directly.
-  ui_manager->ResizeDueToAutoResize(
-      nullptr,
-      gfx::Size(
-          omnibox_everywhere::OmniboxEverywhereUIManager::kPopupFixedWidth,
-          150));
+  ui_manager->ResizeDueToAutoResize(nullptr, gfx::Size(popup_width, 150));
   EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 150);
-  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kPopupFixedWidth);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), popup_width);
 
   // Resize below minimum height (56) should clamp to 56.
-  ui_manager->ResizeDueToAutoResize(
-      nullptr,
-      gfx::Size(
-          omnibox_everywhere::OmniboxEverywhereUIManager::kPopupFixedWidth,
-          30));
+  ui_manager->ResizeDueToAutoResize(nullptr, gfx::Size(popup_width, 30));
   EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 56);
-  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kPopupFixedWidth);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), popup_width);
 
   // Even if widget width was temporarily modified (e.g. edge clamping),
   // ResizeDueToAutoResize enforces the fixed width.
@@ -1965,22 +1993,13 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   widget->SetBounds(clamped_bounds);
   EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), 400);
 
-  ui_manager->ResizeDueToAutoResize(
-      nullptr,
-      gfx::Size(
-          omnibox_everywhere::OmniboxEverywhereUIManager::kPopupFixedWidth,
-          200));
+  ui_manager->ResizeDueToAutoResize(nullptr, gfx::Size(popup_width, 200));
   EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 200);
-  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(),
-            omnibox_everywhere::OmniboxEverywhereUIManager::kPopupFixedWidth);
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().width(), popup_width);
 
   // While dragging, AutoResize should be deferred.
   ui_manager->OnWidgetUserDragStarted(widget);
-  ui_manager->ResizeDueToAutoResize(
-      nullptr,
-      gfx::Size(
-          omnibox_everywhere::OmniboxEverywhereUIManager::kPopupFixedWidth,
-          300));
+  ui_manager->ResizeDueToAutoResize(nullptr, gfx::Size(popup_width, 300));
   // Size remains unchanged during drag.
   EXPECT_EQ(widget->GetWindowBoundsInScreen().height(), 200);
 

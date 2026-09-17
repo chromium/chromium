@@ -380,6 +380,8 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
                      omnibox::kShowComposeboxImageSuggestions.Get());
 
   AddMostVisitedSourceStrings(source);
+  source->AddBoolean("smallLoomnibox",
+                     omnibox::kOmniboxEverywhereSmallLoomniboxParam.Get());
 
   const bool is_fusebox_enabled = IsFuseboxEnabled(profile_);
   source->AddBoolean("searchboxShowComposeEntrypoint", is_fusebox_enabled);

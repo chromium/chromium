@@ -180,6 +180,9 @@ omnibox-everywhere-omnibox::part(dropdown-content) {
 cr-most-visited {
   -webkit-app-region: drag;
   --most-visited-focus-shadow: 0 0 0 2px var(--color-sys-primary, #1a73e8);
+  /* Total inner width for 7 tiles:
+   * 680px (default content width) - 32px (16px * 2 padding) - 4px (2px * 2 border) = 644px.
+   * Distributed evenly across 6 gaps between 7 tiles. */
   --most-visited-gap: calc((644px - 7 * var(--most-visited-tile-size)) / 6);
   --most-visited-icon-margin-top: 8px;
   --most-visited-icon-size: 48px;
@@ -192,6 +195,13 @@ cr-most-visited {
   display: flex;
   justify-content: center;
   width: max-content;
+}
+
+:host([small-loomnibox]) cr-most-visited {
+  /* Total inner width for 5 tiles:
+   * 480px (small content width) - 32px (16px * 2 padding) - 4px (2px * 2 border) = 444px.
+   * Distributed evenly across 4 gaps between 5 tiles. */
+  --most-visited-gap: calc((444px - 5 * var(--most-visited-tile-size)) / 4);
 }
 
 :host([show-voice-search-overlay_]) {
