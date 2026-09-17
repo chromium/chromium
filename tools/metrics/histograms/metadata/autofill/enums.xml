@@ -342,9 +342,10 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Failed: Missing date attribute for TTL"/>
   <int value="4" label="Failed: Malformed date string"/>
   <int value="5" label="Failed: Unsupported entity type"/>
+  <int value="6" label="Failed: Missing source"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h:PersonalContextPrefetchEntityValidationResult) -->
+<!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h:AutofillAiPersonalContextPrefetchEntityValidationResult) -->
 
 <!-- LINT.IfChange(AutofillAiPersonalContextPrefetchTriggerResult) -->
 

@@ -68,7 +68,9 @@ enum class PersonalContextPrefetchEntityValidationResult {
   // Entity type is not supported by Ambient Autofill (e.g. KTN or Redress
   // Number).
   kUnsupportedEntityType = 5,
-  kMaxValue = kUnsupportedEntityType,
+  // Entity does not have any source attached in its payload.
+  kFailedMissingSource = 6,
+  kMaxValue = kFailedMissingSource,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiPersonalContextPrefetchEntityValidationResult)
 

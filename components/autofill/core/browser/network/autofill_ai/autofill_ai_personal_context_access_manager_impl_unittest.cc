@@ -2434,5 +2434,62 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       Result::kUnsupportedEntityType, 1);
 }
 
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       Prefetch_FiltersEntitiesWithoutSourceWhenFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillAmbientAutofillFilterEntitiesWithoutSource};
+  SetClockToDate("2025-06-01 12:00:00");
+
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+
+  // 1. Order without any source_references -> kFailedMissingSource
+  *response.add_entities() = CreateOrderProto(
+      {.id = u"NO_SOURCE", .date = u"2025-06-01", .merchant_name = u"Store"});
+
+  // 2. Order with only an unsupported source reference (Drive) ->
+  // kFailedMissingSource
+  personal_context::proto::Entity drive_order =
+      CreateOrderProto({.id = u"DRIVE_SOURCE",
+                        .date = u"2025-06-01",
+                        .merchant_name = u"Store"});
+  drive_order.add_source_references()->mutable_drive();
+  *response.add_entities() = std::move(drive_order);
+
+  // 3. Order with a valid Gmail source reference -> kValid
+  personal_context::proto::Entity valid_order =
+      CreateOrderProto({.id = u"VALID_SOURCE",
+                        .date = u"2025-06-01",
+                        .merchant_name = u"Store"});
+  valid_order.add_source_references()->mutable_gmail()->set_message_url(
+      "https://mail.google.com/mail/u/0/#inbox/123");
+  *response.add_entities() = std::move(valid_order);
+
+  std::vector<EntityInstance> entities;
+  EXPECT_CALL(mock_observer(),
+              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
+      .WillOnce(SaveOptSpanToVector<1>(&entities));
+
+  PrefetchContextSync({kOrderType}, /*expected_spii_types=*/{}, response);
+
+  ASSERT_EQ(entities.size(), 1u);
+  EXPECT_THAT(entities[0], HasAttributeWithValue(AttributeTypeName::kOrderId,
+                                                 u"VALID_SOURCE"));
+
+  using Result = PersonalContextPrefetchEntityValidationResult;
+  static constexpr std::string_view kBaseMetric =
+      "Autofill.Ai.PersonalContext.Prefetch.EntityValidationResult";
+
+  histogram_tester().ExpectBucketCount(kBaseMetric, Result::kValid, 1);
+  histogram_tester().ExpectBucketCount(kBaseMetric,
+                                       Result::kFailedMissingSource, 2);
+  histogram_tester().ExpectTotalCount(kBaseMetric, 3);
+
+  histogram_tester().ExpectBucketCount(base::StrCat({kBaseMetric, ".Order"}),
+                                       Result::kValid, 1);
+  histogram_tester().ExpectBucketCount(base::StrCat({kBaseMetric, ".Order"}),
+                                       Result::kFailedMissingSource, 2);
+  histogram_tester().ExpectTotalCount(base::StrCat({kBaseMetric, ".Order"}), 3);
+}
+
 }  // namespace
 }  // namespace autofill

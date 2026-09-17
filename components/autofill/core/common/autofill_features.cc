@@ -461,6 +461,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "ambient_autofill_unmasked_spii_cache_ttl",
                    base::Minutes(1));
 
+// Controls whether Personal Context entities without attached sources are
+// filtered out during Ambient Autofill prefetch validation.
+BASE_FEATURE(kAutofillAmbientAutofillFilterEntitiesWithoutSource,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Personal Context Autofill AI suggestions display detailed
 // source info submenus on Desktop.
 BASE_FEATURE(kAutofillAmbientAutofillSourceAttribution,

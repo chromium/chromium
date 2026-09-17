@@ -21,6 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/data_model_util.h"
@@ -185,7 +186,25 @@ PersonalContextPrefetchEntityValidationResult ValidateAmbientAutofillEntity(
         kFailedImportConstraints;
   }
 
-  return ValidateTtl(entity);
+  PersonalContextPrefetchEntityValidationResult ttl_result =
+      ValidateTtl(entity);
+  if (ttl_result != PersonalContextPrefetchEntityValidationResult::kValid) {
+    return ttl_result;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillFilterEntitiesWithoutSource)) {
+    const auto& payload =
+        std::get<EntityInstance::PersonalContextRecordTypePayload>(
+            entity.record_type_data());
+    // TODO(crbug.com/541184524): Check for valid source URLs.
+    if (payload.sources.empty()) {
+      return PersonalContextPrefetchEntityValidationResult::
+          kFailedMissingSource;
+    }
+  }
+
+  return PersonalContextPrefetchEntityValidationResult::kValid;
 }
 
 // Logs the request latency of a personal context network request.
