@@ -148,6 +148,9 @@ message FeatureSpecificFields {
   // Tracks the experimental triggering version of Glic on the device.
   // Optional. If not set, the state is unavailable or unsupported.
   optional int32 glic_experimental_triggering_version = 8;
+
+  // Capabilities/sub-features supported for experimental triggering.
+  repeated string glic_experimental_triggering_capabilities = 9;
 }
 
 // Device specific information for Sharing feature. Used to send end-to-end

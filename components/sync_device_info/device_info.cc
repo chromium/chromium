@@ -87,6 +87,7 @@ DeviceInfo::DeviceInfo(
         desktop_to_ios_promo_receiving_types,
     GlicExperimentalTriggeringState glic_experimental_triggering_state,
     std::optional<int> glic_experimental_triggering_version,
+    base::flat_set<std::string> glic_experimental_triggering_capabilities,
     std::optional<std::string> android_os_build_fingerprint_prefix,
     std::optional<PersonalContextInfo> personal_context_info)
     : guid_(guid),
@@ -119,6 +120,8 @@ DeviceInfo::DeviceInfo(
       glic_experimental_triggering_state_(glic_experimental_triggering_state),
       glic_experimental_triggering_version_(
           glic_experimental_triggering_version),
+      glic_experimental_triggering_capabilities_(
+          std::move(glic_experimental_triggering_capabilities)),
       personal_context_info_(std::move(personal_context_info)) {}
 
 DeviceInfo::DeviceInfo(const DeviceInfo& other) = default;
@@ -217,6 +220,11 @@ std::optional<int> DeviceInfo::glic_experimental_triggering_version() const {
   return glic_experimental_triggering_version_;
 }
 
+const base::flat_set<std::string>&
+DeviceInfo::glic_experimental_triggering_capabilities() const {
+  return glic_experimental_triggering_capabilities_;
+}
+
 const std::optional<std::string>& DeviceInfo::server_determined_model_name()
     const {
   return server_determined_model_name_;
@@ -284,6 +292,11 @@ void DeviceInfo::set_glic_experimental_triggering_state(
 void DeviceInfo::set_glic_experimental_triggering_version(
     std::optional<int> version) {
   glic_experimental_triggering_version_ = version;
+}
+
+void DeviceInfo::set_glic_experimental_triggering_capabilities(
+    const base::flat_set<std::string>& capabilities) {
+  glic_experimental_triggering_capabilities_ = capabilities;
 }
 
 void DeviceInfo::set_sharing_info(

@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -194,6 +195,17 @@ std::optional<int> SpecificsToGlicExperimentalTriggeringVersion(
   return std::nullopt;
 }
 
+base::flat_set<std::string> SpecificsToGlicExperimentalTriggeringCapabilities(
+    const DeviceInfoSpecifics& specifics) {
+  return base::flat_set<std::string>(
+      specifics.feature_fields()
+          .glic_experimental_triggering_capabilities()
+          .begin(),
+      specifics.feature_fields()
+          .glic_experimental_triggering_capabilities()
+          .end());
+}
+
 std::optional<DeviceInfo::PersonalContextInfo>
 SpecificsToPersonalContextInfo(const DeviceInfoSpecifics& specifics) {
   if (!specifics.has_personal_context_fields() ||
@@ -250,6 +262,7 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       SpecificsToDesktopToIOSPromoReceivingTypes(specifics),
       SpecificsToGlicExperimentalTriggeringState(specifics),
       SpecificsToGlicExperimentalTriggeringVersion(specifics),
+      SpecificsToGlicExperimentalTriggeringCapabilities(specifics),
       android_os_build_fingerprint_prefix,
       SpecificsToPersonalContextInfo(specifics));
 }
@@ -358,6 +371,9 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
     // the synced proto.
     feature_fields->clear_glic_experimental_triggering_version();
   }
+  feature_fields->mutable_glic_experimental_triggering_capabilities()->Assign(
+      info.glic_experimental_triggering_capabilities().begin(),
+      info.glic_experimental_triggering_capabilities().end());
   const std::optional<DeviceInfo::SharingInfo>& sharing_info =
       info.sharing_info();
   if (sharing_info) {
@@ -453,8 +469,9 @@ bool IsStoredLocalDeviceInfoStillAccurate(const DeviceInfo* stored,
              stored->glic_experimental_triggering_state() &&
          current->glic_experimental_triggering_version() ==
              stored->glic_experimental_triggering_version() &&
-         current->personal_context_info() ==
-             stored->personal_context_info();
+         current->glic_experimental_triggering_capabilities() ==
+             stored->glic_experimental_triggering_capabilities() &&
+         current->personal_context_info() == stored->personal_context_info();
 }
 
 int CalculateMaxConcurrentEvents(const std::multimap<base::Time, int>& events) {

@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_util.h"
@@ -79,6 +80,10 @@ class MockDeviceInfoSyncClient : public DeviceInfoSyncClient {
               (const override));
   MOCK_METHOD(std::optional<int>,
               GetGlicExperimentalTriggeringVersion,
+              (),
+              (const override));
+  MOCK_METHOD(base::flat_set<std::string>,
+              GetGlicExperimentalTriggeringCapabilities,
               (),
               (const override));
   MOCK_METHOD(std::optional<DeviceInfo::PersonalContextInfo>,
@@ -313,6 +318,26 @@ TEST_F(LocalDeviceInfoProviderImplTest, ExperimentalTriggeringVersion) {
       std::optional<int>(42));
 }
 
+TEST_F(LocalDeviceInfoProviderImplTest, ExperimentalTriggeringCapabilities) {
+  ON_CALL(device_info_sync_client_, GetGlicExperimentalTriggeringCapabilities())
+      .WillByDefault(Return(base::flat_set<std::string>{}));
+
+  InitializeProvider();
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_TRUE(provider_->GetLocalDeviceInfo()
+                  ->glic_experimental_triggering_capabilities()
+                  .empty());
+
+  ON_CALL(device_info_sync_client_, GetGlicExperimentalTriggeringCapabilities())
+      .WillByDefault(Return(base::flat_set<std::string>{"screenshot"}));
+
+  ASSERT_THAT(provider_->GetLocalDeviceInfo(), NotNull());
+  EXPECT_EQ(provider_->GetLocalDeviceInfo()
+                ->glic_experimental_triggering_capabilities(),
+            base::flat_set<std::string>{"screenshot"});
+}
+
 TEST_F(LocalDeviceInfoProviderImplTest, SharingInfo) {
   ON_CALL(device_info_sync_client_, GetLocalSharingInfo())
       .WillByDefault(Return(std::nullopt));
@@ -422,6 +447,7 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       DeviceInfo::GlicExperimentalTriggeringState::kUnavailable,
       /*glic_experimental_triggering_version=*/
       std::nullopt,
+      /*glic_experimental_triggering_capabilities=*/{},
       /*android_os_build_fingerprint_prefix=*/std::nullopt,
       /*personal_context_info=*/std::nullopt);
 

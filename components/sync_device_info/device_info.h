@@ -13,6 +13,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/desktop_to_mobile_promos/features.h"
@@ -195,34 +196,36 @@ class DeviceInfo {
   // LINT.ThenChange(//components/sync/protocol/sync_enums.proto:GlicExperimentalTriggeringState,
   // //tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringState)
 
-  DeviceInfo(const std::string& guid,
-             const std::string& client_name,
-             const std::string& chrome_version,
-             const std::string& sync_user_agent,
-             DeviceType device_type,
-             OsType os_type,
-             FormFactor form_factor,
-             const std::string& signin_scoped_device_id,
-             const std::string& manufacturer_name,
-             const std::string& model_name,
-             std::optional<std::string> server_determined_model_name,
-             const std::string& full_hardware_class,
-             base::Time last_updated_timestamp,
-             base::TimeDelta pulse_interval,
-             bool send_tab_to_self_receiving_enabled,
-             SendTabReceivingType send_tab_to_self_receiving_type,
-             const std::optional<SharingInfo>& sharing_info,
-             const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
-             const std::string& fcm_registration_token,
-             const DataTypeSet& interested_data_types,
-             std::optional<base::Time> auto_sign_out_last_signin_timestamp,
-             bool desktop_to_ios_promo_receiving_enabled,
-             const MobilePromoOnDesktopPromoTypeSet&
-                 desktop_to_ios_promo_receiving_types,
-             GlicExperimentalTriggeringState glic_experimental_triggering_state,
-             std::optional<int> glic_experimental_triggering_version,
-             std::optional<std::string> android_os_build_fingerprint_prefix,
-             std::optional<PersonalContextInfo> personal_context_info);
+  DeviceInfo(
+      const std::string& guid,
+      const std::string& client_name,
+      const std::string& chrome_version,
+      const std::string& sync_user_agent,
+      DeviceType device_type,
+      OsType os_type,
+      FormFactor form_factor,
+      const std::string& signin_scoped_device_id,
+      const std::string& manufacturer_name,
+      const std::string& model_name,
+      std::optional<std::string> server_determined_model_name,
+      const std::string& full_hardware_class,
+      base::Time last_updated_timestamp,
+      base::TimeDelta pulse_interval,
+      bool send_tab_to_self_receiving_enabled,
+      SendTabReceivingType send_tab_to_self_receiving_type,
+      const std::optional<SharingInfo>& sharing_info,
+      const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
+      const std::string& fcm_registration_token,
+      const DataTypeSet& interested_data_types,
+      std::optional<base::Time> auto_sign_out_last_signin_timestamp,
+      bool desktop_to_ios_promo_receiving_enabled,
+      const MobilePromoOnDesktopPromoTypeSet&
+          desktop_to_ios_promo_receiving_types,
+      GlicExperimentalTriggeringState glic_experimental_triggering_state,
+      std::optional<int> glic_experimental_triggering_version,
+      base::flat_set<std::string> glic_experimental_triggering_capabilities,
+      std::optional<std::string> android_os_build_fingerprint_prefix,
+      std::optional<PersonalContextInfo> personal_context_info);
 
   DeviceInfo& operator=(const DeviceInfo&) = delete;
 
@@ -323,6 +326,10 @@ class DeviceInfo {
   // Glic, or std::nullopt if unavailable.
   std::optional<int> glic_experimental_triggering_version() const;
 
+  // Returns the capabilities supported for Glic experimental triggering.
+  const base::flat_set<std::string>& glic_experimental_triggering_capabilities()
+      const;
+
   const std::optional<std::string>& server_determined_model_name() const;
 
   // Apps can set ids for a device that is meaningful to them but
@@ -363,6 +370,10 @@ class DeviceInfo {
   // Sets the capability version of the experimental triggering protocol for
   // Glic. Pass std::nullopt if unavailable.
   void set_glic_experimental_triggering_version(std::optional<int> version);
+
+  // Sets the capabilities supported for Glic experimental triggering.
+  void set_glic_experimental_triggering_capabilities(
+      const base::flat_set<std::string>& capabilities);
 
  private:
   // Used by DeepCopyForTesting().
@@ -438,6 +449,9 @@ class DeviceInfo {
   // The version of the Glic experimental triggering protocol supported by the
   // device.
   std::optional<int> glic_experimental_triggering_version_;
+
+  // The capabilities supported for Glic experimental triggering.
+  base::flat_set<std::string> glic_experimental_triggering_capabilities_;
 
   std::optional<PersonalContextInfo> personal_context_info_;
 

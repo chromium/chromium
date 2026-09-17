@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync_device_info/device_info.h"
@@ -80,6 +81,8 @@ class TestDeviceInfoBuilder {
           glic_experimental_triggering_state);
   TestDeviceInfoBuilder& WithGlicExperimentalTriggeringVersion(
       std::optional<int> glic_experimental_triggering_version);
+  TestDeviceInfoBuilder& WithGlicExperimentalTriggeringCapabilities(
+      base::flat_set<std::string> glic_experimental_triggering_capabilities);
   TestDeviceInfoBuilder& WithServerDeterminedModelName(
       const std::optional<std::string>& server_determined_model_name);
   TestDeviceInfoBuilder& WithPersonalContextInfo(
@@ -115,6 +118,7 @@ class TestDeviceInfoBuilder {
       glic_experimental_triggering_state_ =
           DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
   std::optional<int> glic_experimental_triggering_version_;
+  base::flat_set<std::string> glic_experimental_triggering_capabilities_;
   std::optional<std::string> server_determined_model_name_;
   std::optional<DeviceInfo::PersonalContextInfo> personal_context_info_;
 };

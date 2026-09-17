@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -178,6 +179,13 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
           expected_specifics.feature_fields()
                   .glic_experimental_triggering_version() ==
               *arg.glic_experimental_triggering_version()) &&
+         base::flat_set<std::string>(
+             expected_specifics.feature_fields()
+                 .glic_experimental_triggering_capabilities()
+                 .begin(),
+             expected_specifics.feature_fields()
+                 .glic_experimental_triggering_capabilities()
+                 .end()) == arg.glic_experimental_triggering_capabilities() &&
          expected_specifics.has_android_os_build_fingerprint_prefix() ==
              arg.android_os_build_fingerprint_prefix().has_value() &&
          (!arg.android_os_build_fingerprint_prefix().has_value() ||
@@ -191,11 +199,10 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
          expected_specifics.personal_context_fields()
                  .serialized_tink_keyset() ==
              (arg.personal_context_info().has_value()
-                  ? std::string(
-                        arg.personal_context_info()
-                            ->serialized_tink_keyset.begin(),
-                        arg.personal_context_info()
-                            ->serialized_tink_keyset.end())
+                  ? std::string(arg.personal_context_info()
+                                    ->serialized_tink_keyset.begin(),
+                                arg.personal_context_info()
+                                    ->serialized_tink_keyset.end())
                   : "");
 }
 
@@ -492,7 +499,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         glic_experimental_triggering_state,
         /*glic_experimental_triggering_version=*/
         glic_experimental_triggering_version,
-        android_os_build_fingerprint_prefix,
+        /*glic_experimental_triggering_capabilities=*/
+        base::flat_set<std::string>(), android_os_build_fingerprint_prefix,
         personal_context_info_);
   }
 

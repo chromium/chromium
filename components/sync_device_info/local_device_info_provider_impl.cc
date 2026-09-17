@@ -46,6 +46,8 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
       sync_client_->GetGlicExperimentalTriggeringState());
   local_device_info_->set_glic_experimental_triggering_version(
       sync_client_->GetGlicExperimentalTriggeringVersion());
+  local_device_info_->set_glic_experimental_triggering_capabilities(
+      sync_client_->GetGlicExperimentalTriggeringCapabilities());
   local_device_info_->set_send_tab_to_self_receiving_type(
       sync_client_->GetSendTabToSelfReceivingType());
   local_device_info_->set_sharing_info(sync_client_->GetLocalSharingInfo());
@@ -163,6 +165,7 @@ void LocalDeviceInfoProviderImpl::Initialize(
       sync_client_->GetDesktopToIOSPromoReceivingTypes(),
       sync_client_->GetGlicExperimentalTriggeringState(),
       sync_client_->GetGlicExperimentalTriggeringVersion(),
+      sync_client_->GetGlicExperimentalTriggeringCapabilities(),
       android_os_build_fingerprint_prefix,
       sync_client_->GetLocalPersonalContextInfo());
 

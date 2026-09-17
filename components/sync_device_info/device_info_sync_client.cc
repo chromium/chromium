@@ -9,4 +9,9 @@ namespace syncer {
 DeviceInfoSyncClient::DeviceInfoSyncClient() = default;
 DeviceInfoSyncClient::~DeviceInfoSyncClient() = default;
 
+base::flat_set<std::string>
+DeviceInfoSyncClient::GetGlicExperimentalTriggeringCapabilities() const {
+  return {};
+}
+
 }  // namespace syncer

@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "components/desktop_to_mobile_promos/features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
@@ -63,6 +64,11 @@ class DeviceInfoSyncClient {
   // Returns the local Glic experimental triggering protocol version supported
   // by the current client, or std::nullopt if unavailable.
   virtual std::optional<int> GetGlicExperimentalTriggeringVersion() const = 0;
+
+  // Returns the local Glic experimental triggering capabilities supported by
+  // the current client.
+  virtual base::flat_set<std::string>
+  GetGlicExperimentalTriggeringCapabilities() const;
 
   // Returns Personal Context specific information for this device, or
   // std::nullopt if unavailable.
