@@ -8,19 +8,6 @@
 // This file defines specializations for the CrossThreadCopier that allow WebRTC
 // types to be passed across threads using their copy constructors.
 
-#include "base/functional/bind.h"
-#include "base/unguessable_token.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/webrtc/api/media_stream_interface.h"
-#include "third_party/webrtc/api/peer_connection_interface.h"
-#include "third_party/webrtc/api/rtc_error.h"
-#include "third_party/webrtc/api/rtp_transceiver_interface.h"
-#include "third_party/webrtc/api/scoped_refptr.h"
-#include "third_party/webrtc/api/transport/network_types.h"
-#include "third_party/webrtc/p2p/base/port_allocator.h"
-#include "third_party/webrtc/p2p/base/transport_description.h"
-#include "third_party/webrtc/rtc_base/socket_address.h"
 
 // TODO(crbug.com/460743390): Delete this file after CrossThreadCopier removal.
 

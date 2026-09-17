@@ -4,6 +4,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_DTLS_TRANSPORT_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_DTLS_TRANSPORT_PROXY_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -11,6 +13,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
+#include "third_party/webrtc/api/rtc_error.h"
 
 // The DtlsTransportProxy class takes care of thread-jumping when
 // connecting callbacks from a webrtc::DtlsTransport to a

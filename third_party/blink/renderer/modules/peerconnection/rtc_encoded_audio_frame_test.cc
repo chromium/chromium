@@ -4,16 +4,19 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 
+#include <array>
 #include <cstdint>
+#include <cstdlib>
+#include <memory>
 #include <optional>
+#include <utility>
+#include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_options.h"
@@ -27,8 +30,10 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc/api/frame_transformer_interface.h"
 #include "third_party/webrtc/api/test/mock_transformable_audio_frame.h"
 #include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc/api/units/timestamp.h"

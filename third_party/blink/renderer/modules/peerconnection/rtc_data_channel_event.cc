@@ -24,6 +24,13 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel_event.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel_event_init.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+
 namespace blink {
 
 RTCDataChannelEvent* RTCDataChannelEvent::Create(const AtomicString& type,

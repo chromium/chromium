@@ -5,9 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_TEST_MOCK_ICE_TRANSPORT_ADAPTER_CROSS_THREAD_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_TEST_MOCK_ICE_TRANSPORT_ADAPTER_CROSS_THREAD_FACTORY_H_
 
+#include <memory>
+#include <utility>
+
+#include "base/check.h"
 #include "base/check_op.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter_cross_thread_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/test/mock_ice_transport_adapter.h"
 
 namespace blink {
 

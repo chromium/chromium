@@ -4,7 +4,15 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
 
+#include <cstddef>
+#include <cstdint>
+
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/peerconnection/testing/fake_resource_listener.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"

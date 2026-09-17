@@ -9,16 +9,19 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
+#include "v8/include/v8-isolate.h"
 
 namespace webrtc {
 class TransformableVideoFrameInterface;

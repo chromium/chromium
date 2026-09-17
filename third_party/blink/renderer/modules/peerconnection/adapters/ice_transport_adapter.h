@@ -5,16 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_ICE_TRANSPORT_ADAPTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_ICE_TRANSPORT_ADAPTER_H_
 
+#include <utility>
 #include <vector>
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-
-// third_party/webrtc is not ready for -Wshorten-64-to-32.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshorten-64-to-32"
-#include "third_party/webrtc/p2p/base/p2p_transport_channel.h"
-#pragma clang diagnostic pop
+#include "third_party/webrtc/api/candidate.h"
+#include "third_party/webrtc/api/transport/enums.h"
+#include "third_party/webrtc/p2p/base/ice_transport_internal.h"
+#include "third_party/webrtc/p2p/base/port.h"
+#include "third_party/webrtc/p2p/base/port_allocator.h"
+#include "third_party/webrtc/p2p/base/transport_description.h"
 
 namespace blink {
 

@@ -11,7 +11,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/abseil-cpp/absl/functional/any_invocable.h"
+#include "third_party/webrtc/api/data_channel_interface.h"
+#include "third_party/webrtc/api/rtc_error.h"
 
 namespace blink {
 

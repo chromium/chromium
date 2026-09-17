@@ -7,12 +7,15 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "media/base/video_codecs.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 

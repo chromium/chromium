@@ -8,8 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -19,9 +22,11 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
-#include "third_party/webrtc/api/units/timestamp.h"
+#include "v8/include/v8-isolate.h"
 
 namespace blink {
 

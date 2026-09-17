@@ -4,9 +4,18 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error.h"
 
+#include <cstdint>
+#include <optional>
 #include <utility>
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_error_detail_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_error_init.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc/api/rtc_error.h"
 
 namespace blink {
 

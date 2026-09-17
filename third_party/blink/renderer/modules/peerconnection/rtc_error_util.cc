@@ -4,11 +4,15 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/webrtc/api/rtc_error.h"
 
 namespace blink {
 

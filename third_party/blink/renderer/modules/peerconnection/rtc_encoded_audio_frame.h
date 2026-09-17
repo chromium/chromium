@@ -7,8 +7,10 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <optional>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -16,8 +18,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "v8/include/v8-isolate.h"
 
 namespace webrtc {
 class TransformableAudioFrameInterface;

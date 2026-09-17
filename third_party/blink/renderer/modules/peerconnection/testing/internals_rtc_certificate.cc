@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/testing/internals_rtc_certificate.h"
 
+#include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
+
 namespace blink {
 
 bool InternalsRTCCertificate::rtcCertificateEquals(Internals& internals,

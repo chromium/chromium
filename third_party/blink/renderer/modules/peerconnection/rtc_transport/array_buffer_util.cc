@@ -4,6 +4,10 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/array_buffer_util.h"
 
+#include <cstdint>
+
+#include "base/containers/span.h"
+
 namespace blink {
 
 // Helper function for turning various DOMArray-like things into a span.

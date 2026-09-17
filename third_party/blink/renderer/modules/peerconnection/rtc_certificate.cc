@@ -30,8 +30,16 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 
-#include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
+#include <memory>
+#include <utility>
+
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_fingerprint.h"
+#include "third_party/blink/renderer/core/dom/dom_time_stamp.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/rtc_base/rtc_certificate.h"
 #include "third_party/webrtc/rtc_base/ssl_certificate.h"
 
 namespace blink {

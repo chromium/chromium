@@ -4,11 +4,23 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
 
+#include <cstddef>
+#include <string>
+#include <utility>
+
+#include "base/check.h"
+#include "base/feature_list.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
+#include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/webrtc/api/adaptation/resource.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace blink {

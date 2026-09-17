@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_ICE_TRANSPORT_ADAPTER_CROSS_THREAD_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_ICE_TRANSPORT_ADAPTER_CROSS_THREAD_FACTORY_H_
 
+#include <memory>
+
 #include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter.h"
 
 namespace blink {

@@ -4,7 +4,11 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
 
+#include <cstdint>
 #include <cstdlib>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -12,20 +16,29 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_type.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
-#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc/api/frame_transformer_interface.h"
 #include "third_party/webrtc/api/test/mock_transformable_video_frame.h"
+#include "third_party/webrtc/api/transport/rtp/dependency_descriptor.h"
 #include "third_party/webrtc/api/units/time_delta.h"
+#include "third_party/webrtc/api/units/timestamp.h"
+#include "third_party/webrtc/api/video/video_codec_type.h"
+#include "third_party/webrtc/api/video/video_frame_metadata.h"
+#include "third_party/webrtc/api/video/video_frame_type.h"
+#include "third_party/webrtc/modules/video_coding/codecs/vp8/include/vp8_globals.h"
+#include "third_party/webrtc/modules/video_coding/codecs/vp9/include/vp9_globals.h"
 
 using testing::_;
 using testing::Eq;

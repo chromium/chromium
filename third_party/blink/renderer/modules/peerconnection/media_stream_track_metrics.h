@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/remote.h"

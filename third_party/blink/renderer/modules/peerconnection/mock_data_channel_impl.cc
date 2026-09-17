@@ -4,7 +4,14 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/mock_data_channel_impl.h"
 
+#include <cstdint>
+#include <string>
+#include <utility>
+
 #include "base/notimplemented.h"
+#include "third_party/abseil-cpp/absl/functional/any_invocable.h"
+#include "third_party/webrtc/api/data_channel_interface.h"
+#include "third_party/webrtc/api/rtc_error.h"
 
 namespace blink {
 

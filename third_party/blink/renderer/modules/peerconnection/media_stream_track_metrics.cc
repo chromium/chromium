@@ -7,15 +7,24 @@
 #include <inttypes.h>
 
 #include <algorithm>
+#include <cstdint>
+#include <memory>
 #include <string>
+#include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
 #include "crypto/hash.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/webrtc/api/peer_connection_interface.h"
 
 namespace blink {
 

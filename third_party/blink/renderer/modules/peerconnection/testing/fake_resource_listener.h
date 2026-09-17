@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_TESTING_FAKE_RESOURCE_LISTENER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_TESTING_FAKE_RESOURCE_LISTENER_H_
 
-#include "base/memory/scoped_refptr.h"
+#include <cstddef>
+
 #include "third_party/webrtc/api/adaptation/resource.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace blink {
 

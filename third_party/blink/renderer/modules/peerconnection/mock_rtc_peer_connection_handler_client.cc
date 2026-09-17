@@ -3,8 +3,15 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_client.h"
 
+#include <memory>
+
 #include "base/check_op.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_receiver_platform.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc/api/peer_connection_interface.h"
 
 using testing::_;
 

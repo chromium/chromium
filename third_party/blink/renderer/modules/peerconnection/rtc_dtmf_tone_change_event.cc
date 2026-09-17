@@ -25,7 +25,13 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtmf_tone_change_event.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtmf_tone_change_event_init.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 

@@ -30,9 +30,14 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_void_request_impl.h"
 
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "base/check.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
+#include "third_party/webrtc/api/rtc_error.h"
 
 namespace blink {
 

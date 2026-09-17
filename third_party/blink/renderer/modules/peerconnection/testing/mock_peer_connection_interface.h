@@ -5,18 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_TESTING_MOCK_PEER_CONNECTION_INTERFACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_TESTING_MOCK_PEER_CONNECTION_INTERFACE_H_
 
-#include <memory>
-#include <optional>
-#include <string>
 #include <type_traits>
-#include <utility>
-#include <vector>
 
-#include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/webrtc/api/peer_connection_interface.h"
-#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/test/mock_peerconnectioninterface.h"
-#include "third_party/webrtc/rtc_base/ref_count.h"
+#include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace blink {
 

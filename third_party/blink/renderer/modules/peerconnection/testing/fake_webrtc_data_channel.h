@@ -5,7 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_TESTING_FAKE_WEBRTC_DATA_CHANNEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_TESTING_FAKE_WEBRTC_DATA_CHANNEL_H_
 
+#include <cstdint>
+#include <string>
+
 #include "third_party/webrtc/api/data_channel_interface.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace webrtc {
 class DataChannelObserver;

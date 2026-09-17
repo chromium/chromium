@@ -4,10 +4,17 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_video_perf_reporter.h"
 
+#include <utility>
+
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/base/video_codecs.h"
+#include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
+#include "third_party/blink/renderer/platform/peerconnection/stats_collector.h"
 
 namespace blink {
 

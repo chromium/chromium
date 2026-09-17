@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_TRANSPORT_ARRAY_BUFFER_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_TRANSPORT_ARRAY_BUFFER_UTIL_H_
 
+#include <cstdint>
+
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 
 namespace blink {
 

@@ -6,14 +6,33 @@
 
 #include <stddef.h>
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/functional/any_invocable.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
-#include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc/api/jsep.h"
+#include "third_party/webrtc/api/make_ref_counted.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/api/metronome/metronome.h"
+#include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/peer_connection_tracer_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/units/time_delta.h"
+#include "third_party/webrtc/api/video/recordable_encoded_frame.h"
+#include "third_party/webrtc/api/video/video_frame.h"
+#include "third_party/webrtc/api/video/video_sink_interface.h"
+#include "third_party/webrtc/api/video/video_source_interface.h"
+#include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 using webrtc::AudioSourceInterface;
 using webrtc::AudioTrackInterface;

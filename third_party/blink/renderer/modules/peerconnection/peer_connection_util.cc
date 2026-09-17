@@ -5,14 +5,18 @@
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 
 #include <cmath>
+#include <cstdint>
 
+#include "base/notreached.h"
 #include "base/time/time.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 

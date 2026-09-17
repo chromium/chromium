@@ -4,10 +4,11 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.h"
 
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_server_transport_protocol.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 

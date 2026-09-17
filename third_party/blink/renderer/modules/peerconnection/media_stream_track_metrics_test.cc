@@ -7,15 +7,20 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 
-#include "base/functional/bind.h"
-#include "base/run_loop.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
+#include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc/api/video/video_frame.h"
+#include "third_party/webrtc/api/video/video_sink_interface.h"
+#include "third_party/webrtc/api/video/video_source_interface.h"
+#include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 using webrtc::AudioSourceInterface;
 using webrtc::AudioTrackInterface;

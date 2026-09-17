@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_WEBRTC_VIDEO_PERF_REPORTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_WEBRTC_VIDEO_PERF_REPORTER_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "media/base/video_codecs.h"
 #include "media/mojo/mojom/webrtc_video_perf.mojom-blink.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

@@ -4,12 +4,18 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transform_event.h"
 
+#include <utility>
+
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
-#include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transformer.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 

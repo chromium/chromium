@@ -5,16 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_TRANSCEIVER_STATE_SURFACER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_TRANSCEIVER_STATE_SURFACER_H_
 
+#include <vector>
+
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transceiver_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_peer_connection_handler_client.h"
+#include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/rtp_transceiver_interface.h"
-#include "third_party/webrtc/api/sctp_transport_interface.h"
-#include "third_party/webrtc/rtc_base/ref_count.h"
-#include "third_party/webrtc/rtc_base/ref_counted_object.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace blink {
 

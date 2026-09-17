@@ -4,22 +4,25 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_underlying_source_wrapper.h"
 
-#include "base/memory/ptr_util.h"
+#include <utility>
+
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
+#include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_source.h"
-#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_source.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
 namespace blink {

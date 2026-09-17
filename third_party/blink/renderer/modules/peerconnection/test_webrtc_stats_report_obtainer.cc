@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/test_webrtc_stats_report_obtainer.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 

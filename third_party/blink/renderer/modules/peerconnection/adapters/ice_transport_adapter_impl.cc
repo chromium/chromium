@@ -4,11 +4,24 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter_impl.h"
 
+#include <optional>
 #include <utility>
+#include <vector>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/notreached.h"
-#include "third_party/webrtc/api/ice_transport_factory.h"
+#include "base/logging.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc/api/candidate.h"
+#include "third_party/webrtc/api/ice_transport_interface.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/p2p/base/candidate_pair_interface.h"
+#include "third_party/webrtc/p2p/base/ice_transport_internal.h"
+#include "third_party/webrtc/p2p/base/port.h"
+#include "third_party/webrtc/p2p/base/port_allocator.h"
+#include "third_party/webrtc/p2p/base/transport_description.h"
+#include "third_party/webrtc/rtc_base/network_route.h"
 
 namespace blink {
 

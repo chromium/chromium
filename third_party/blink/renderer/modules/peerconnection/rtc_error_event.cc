@@ -4,7 +4,13 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_event.h"
 
+#include "base/check.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_error_event_init.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_error.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/webrtc/api/rtc_error.h"
 
 namespace blink {
 

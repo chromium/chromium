@@ -4,7 +4,11 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/testing/fake_resource_listener.h"
 
+#include <cstddef>
+
 #include "base/check.h"
+#include "third_party/webrtc/api/adaptation/resource.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace blink {
 

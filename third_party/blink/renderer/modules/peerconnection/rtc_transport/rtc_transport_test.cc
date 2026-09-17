@@ -4,24 +4,59 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <memory>
+#include <utility>
+
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_candidate_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_server.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_send_packet_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_transport_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_transport_ice_candidate_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_transport_ssl_role.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_transport_wire_protocol.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/event_target_names.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_received_packet.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_ice_candidate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_ice_event.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/candidate.h"
+#include "third_party/webrtc/api/datagram_connection.h"
 #include "third_party/webrtc/api/make_ref_counted.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/test/mock_datagram_connection.h"
+#include "third_party/webrtc/api/units/time_delta.h"
+#include "third_party/webrtc/api/units/timestamp.h"
+#include "third_party/webrtc/rtc_base/socket_address.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 using testing::_;

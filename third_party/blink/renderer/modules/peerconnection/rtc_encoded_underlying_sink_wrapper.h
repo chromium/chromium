@@ -5,18 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_UNDERLYING_SINK_WRAPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_UNDERLYING_SINK_WRAPPER_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_source.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_source.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 class RTCEncodedAudioUnderlyingSink;

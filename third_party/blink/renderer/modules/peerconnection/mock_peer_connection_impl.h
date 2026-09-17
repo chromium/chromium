@@ -5,22 +5,46 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_MOCK_PEER_CONNECTION_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_MOCK_PEER_CONNECTION_IMPL_H_
 
+#include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <span>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc/api/adaptation/resource.h"
+#include "third_party/webrtc/api/crypto/frame_encryptor_interface.h"
+#include "third_party/webrtc/api/data_channel_interface.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
+#include "third_party/webrtc/api/dtmf_sender_interface.h"
+#include "third_party/webrtc/api/frame_transformer_interface.h"
+#include "third_party/webrtc/api/ice_transport_interface.h"
+#include "third_party/webrtc/api/jsep.h"
+#include "third_party/webrtc/api/media_stream_interface.h"
+#include "third_party/webrtc/api/media_types.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/peer_connection_tracer_interface.h"
+#include "third_party/webrtc/api/rtc_error.h"
+#include "third_party/webrtc/api/rtp_parameters.h"
+#include "third_party/webrtc/api/rtp_receiver_interface.h"
+#include "third_party/webrtc/api/rtp_sender_interface.h"
+#include "third_party/webrtc/api/rtp_transceiver_direction.h"
+#include "third_party/webrtc/api/rtp_transceiver_interface.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/sctp_transport_interface.h"
+#include "third_party/webrtc/api/set_local_description_observer_interface.h"
+#include "third_party/webrtc/api/set_remote_description_observer_interface.h"
+#include "third_party/webrtc/api/stats/rtc_stats_collector_callback.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
 #include "third_party/webrtc/api/test/mock_peerconnectioninterface.h"
+#include "third_party/webrtc/api/transport/rtp/rtp_source.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 
 namespace blink {
 
