@@ -38,15 +38,7 @@ import * as Main from 'devtools/entrypoints/main/main.js';
 
   function step2() {
     TestRunner.addResult('Remove listeners..');
-    var eventListenersWidget = ElementsTestRunner.eventListenersWidget();
-    var listenerTypes = eventListenersWidget.eventListenersView.treeOutline.rootElement().children();
-    var promises = [];
-    for (var i in listenerTypes) {
-      var listenersItems = listenerTypes[i].children();
-      for (var j in listenersItems)
-        promises.push(listenersItems[j].eventListener().remove());
-    }
+    ElementsTestRunner.removeAllEventListeners();
     ElementsTestRunner.expandAndDumpSelectedElementEventListeners(TestRunner.completeTest.bind(this));
-    Promise.all(promises).then(() => eventListenersWidget.doUpdate());
   }
 })();

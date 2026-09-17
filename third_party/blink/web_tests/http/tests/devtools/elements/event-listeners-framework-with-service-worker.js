@@ -16,7 +16,7 @@ import * as Main from 'devtools/entrypoints/main/main.js';
 
 (async function() {
   TestRunner.addResult(`Tests framework event listeners output in Sources panel when service worker is present.\n`);
-  await TestRunner.showPanel('elements');
+  await TestRunner.showPanel('sources');
 
   await TestRunner.evaluateInPage(`
     function testFunction() {}
@@ -53,7 +53,7 @@ import * as Main from 'devtools/entrypoints/main/main.js';
     TestRunner.addResult('Dumping listeners');
     await UI.ViewManager.ViewManager.instance().showView('sources.global-listeners').then(() => {
       objectEventListenersPane = UI.Context.Context.instance().flavor(BrowserDebugger.ObjectEventListenersSidebarPane.ObjectEventListenersSidebarPane);
-      objectEventListenersPane.update();
+      objectEventListenersPane.requestUpdate();
       ElementsTestRunner.expandAndDumpEventListeners(objectEventListenersPane.eventListenersView, step3);
     });
   }

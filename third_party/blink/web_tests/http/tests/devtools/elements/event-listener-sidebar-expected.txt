@@ -3,70 +3,70 @@ Tests event listeners output in the Elements sidebar panel.
 
 ======== click ========
 == Raw
-[expanded] documentRemoveevent-listener-sidebar.js:19
-    useCapture: false
-    passive: false
-    once: false
-    handler: function documentClickHandler(event) { console.log("click - document - attribute"); }
-== Raw
-[expanded] documentRemoveevent-listener-sidebar.js:44
-    useCapture: true
-    passive: false
-    once: false
-    handler: function() { console.log("click - document - handleEvent"); }
-== Raw
-[expanded] documentRemoveevent-listener-sidebar.js:32
-    useCapture: true
-    passive: false
-    once: false
-    handler: function(event) { console.log("click - document - capturing"); }
-== Raw
-[expanded] button#nodeRemoveevent-listener-sidebar.js:30
-    useCapture: false
-    passive: false
-    once: false
-    handler: function(event) { console.log("click - button - bubbling (registered after attribute)"); }
-== Raw
-[expanded] button#nodeRemoveevent-listener-sidebar.js:29
-    useCapture: false
-    passive: false
-    once: false
-    handler: function(event) { console.log("click - button - attribute"); }
-== Raw
-[expanded] button#nodeRemoveevent-listener-sidebar.js:25
-    useCapture: false
-    passive: false
-    once: false
-    handler: function clickHandler(event) { console.log("click - button - bubbling (registered before attribute)"); }
-== Raw
-[expanded] button#nodeRemoveevent-listener-sidebar.js:28
-    useCapture: true
-    passive: false
-    once: false
+[expanded] button#nodeevent-listener-sidebar.js:29
     handler: function(event) { console.log("click - button - capturing"); }
+    once: false
+    passive: false
+    useCapture: true
+== Raw
+[expanded] button#nodeevent-listener-sidebar.js:26
+    handler: function clickHandler(event) { console.log("click - button - bubbling (registered before attribute)"); }
+    once: false
+    passive: false
+    useCapture: false
+== Raw
+[expanded] button#nodeevent-listener-sidebar.js:30
+    handler: function(event) { console.log("click - button - attribute"); }
+    once: false
+    passive: false
+    useCapture: false
+== Raw
+[expanded] button#nodeevent-listener-sidebar.js:31
+    handler: function(event) { console.log("click - button - bubbling (registered after attribute)"); }
+    once: false
+    passive: false
+    useCapture: false
+== Raw
+[expanded] documentevent-listener-sidebar.js:33
+    handler: function(event) { console.log("click - document - capturing"); }
+    once: false
+    passive: false
+    useCapture: true
+== Raw
+[expanded] documentevent-listener-sidebar.js:45
+    handler: function() { console.log("click - document - handleEvent"); }
+    once: false
+    passive: false
+    useCapture: true
+== Raw
+[expanded] documentevent-listener-sidebar.js:20
+    handler: function documentClickHandler(event) { console.log("click - document - attribute"); }
+    once: false
+    passive: false
+    useCapture: false
 
 ======== custom event ========
 == Raw
-[expanded] bodyRemoveevent-listener-sidebar.js:23
-    useCapture: true
-    passive: false
-    once: true
+[expanded] bodyevent-listener-sidebar.js:24
     handler: function f() {}
+    once: true
+    passive: false
+    useCapture: true
 
 ======== hover ========
 == Raw
-[expanded] button#nodeRemoveevent-listener-sidebar.js:27
-    useCapture: false
-    passive: false
-    once: false
+[expanded] button#nodeevent-listener-sidebar.js:28
     handler: function hoverHandler(event) { console.log("hover - button - bubbling"); }
+    once: false
+    passive: false
+    useCapture: false
 
 ======== wheel ========
 == Raw
-[expanded] bodyRemoveToggle Passiveevent-listener-sidebar.js:23
-    useCapture: false
-    passive: true
-    once: false
+[expanded] bodyToggle passiveevent-listener-sidebar.js:24
     handler: function f() {}
+    once: false
+    passive: true
+    useCapture: false
 Listeners for selected node only(should be no listeners):
 

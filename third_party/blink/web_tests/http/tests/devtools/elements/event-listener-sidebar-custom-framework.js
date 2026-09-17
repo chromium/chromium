@@ -125,7 +125,7 @@ import * as Main from 'devtools/entrypoints/main/main.js';
   function step4() {
     TestRunner.addResult('== Exception in fetchers\' getter');
     ElementsTestRunner.expandAndDumpSelectedElementEventListeners(step5);
-    ElementsTestRunner.eventListenersWidget().doUpdate();
+    ElementsTestRunner.eventListenersWidget().requestUpdate();
   }
 
   async function step5() {

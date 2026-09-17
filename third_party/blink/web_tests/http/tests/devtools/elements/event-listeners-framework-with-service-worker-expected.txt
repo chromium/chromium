@@ -9,11 +9,11 @@ Dumping listeners
 
 ======== load ========
 == Raw
-[expanded] WindowRemoveinspected-page.html:1
-    useCapture: false
-    passive: false
-    once: false
+[expanded] Windowinspected-page.html:1
     handler: function onload(event) {
 testFunction()
 }
+    once: false
+    passive: false
+    useCapture: false
 
