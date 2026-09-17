@@ -560,7 +560,7 @@ ci.thin_tester(
                     "--disable-features=InitialWebUI,WebUIReloadButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit",
                 ],
                 swarming = targets.swarming(
-                    shards = 14,
+                    shards = 24,
                 ),
             ),
             "interactive_ui_tests": targets.mixin(

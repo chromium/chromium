@@ -799,7 +799,7 @@ ci.thin_tester(
                 # crbug.com/1508286
                 # crbug.com/404871436
                 swarming = targets.swarming(
-                    shards = 90,
+                    shards = 152,
                 ),
             ),
             "content_browsertests": targets.mixin(
@@ -827,7 +827,7 @@ ci.thin_tester(
                 ],
                 # Slow on certain debug builders, see crbug.com/1513713.
                 swarming = targets.swarming(
-                    shards = 25,
+                    shards = 41,
                 ),
             ),
             "leveldb_unittests": targets.mixin(
