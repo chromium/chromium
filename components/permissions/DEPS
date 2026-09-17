@@ -62,6 +62,7 @@ include_rules = [
   "+third_party/skia/include/core/SkBitmap.h",
   "+third_party/skia/include/core/SkColor.h",
   "+ui/display/screen.h",
+  "+ui/display/types/display_constants.h",
   "+ui/gfx",
   "+ui/strings/grit/ui_strings.h"
 ]

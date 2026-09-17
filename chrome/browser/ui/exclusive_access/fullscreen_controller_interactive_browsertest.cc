@@ -41,6 +41,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/fake_usb_chooser_controller.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/render_view_host.h"
@@ -795,25 +796,18 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = false}).Wait();
   ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
 
-  // While bubble is showing, tab fullscreen cannot be entered.
-  EXPECT_FALSE(content::ExecJs(web_contents,
-                               "document.documentElement.requestFullscreen()"));
-  ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
-
-  // Accept the permission request to close the bubble.
-  permissions::PermissionRequestObserver observer(web_contents);
-  permission_request_manager->Accept(/*prompt_options=*/std::monostate());
-  observer.Wait();
-
-  // Now we should be able to enter tab fullscreen again.
-  ToggleTabFullscreen(true);
+  // Entering tab fullscreen removes the bubble.
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.documentElement.requestFullscreen()"));
+  ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
   ASSERT_TRUE(fullscreen_controller->IsTabFullscreen());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !permission_request_manager->IsRequestInProgress(); }));
 }
 
-// Tests that fullscreen cannot be entered while a permission prompt bubble
-// exits.
+// Tests that entering fullscreen removes the permission prompt bubble.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
-                       PermissionPromptPreventsTabFullscreen) {
+                       PermissionPromptRemovedOnTabFullscreen) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -833,18 +827,104 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   observer.Wait();
   ASSERT_TRUE(observer.request_shown());
 
-  // While bubble is showing, tab fullscreen cannot be entered.
-  EXPECT_FALSE(content::ExecJs(web_contents,
-                               "document.documentElement.requestFullscreen()"));
-  ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
-
-  // Accept the permission request to close the bubble.
-  permission_request_manager->Accept(/*prompt_options=*/std::monostate());
-
-  // Now we should be able to enter tab fullscreen again.
+  // Entering tab fullscreen removes the permission prompt bubble.
   EXPECT_TRUE(content::ExecJs(web_contents,
                               "document.documentElement.requestFullscreen()"));
+  ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
   ASSERT_TRUE(fullscreen_controller->IsTabFullscreen());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !permission_request_manager->IsRequestInProgress(); }));
+}
+
+namespace {
+
+class FakeQuietUiSelector : public permissions::PermissionUiSelector {
+ public:
+  void SelectUiToUse(content::WebContents* web_contents,
+                     permissions::PermissionRequest* request,
+                     DecisionMadeCallback callback) override {
+    std::move(callback).Run(Decision::UseQuietUi(QuietUiReason::kEnabledInPrefs,
+                                                 Decision::ShowNoWarning()));
+  }
+
+  bool IsPermissionRequestSupported(
+      permissions::RequestType request_type) override {
+    return true;
+  }
+};
+
+}  // namespace
+
+// Tests that quiet permission prompts requested in fullscreen are ignored
+// right away and the page stays in fullscreen.
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       QuietPermissionPromptIgnoredInTabFullscreen) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
+
+  // Enter tab fullscreen.
+  ToggleTabFullscreen(true);
+  ASSERT_TRUE(fullscreen_controller->IsTabFullscreen());
+
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  permission_request_manager->set_permission_ui_selector_for_testing(
+      std::make_unique<FakeQuietUiSelector>());
+
+  permissions::PermissionRequestObserver observer(web_contents);
+
+  // Request a permission that uses quiet UI. Since we are in fullscreen, it
+  // should be ignored right away, without exiting fullscreen.
+  permissions::MockPermissionRequest::MockPermissionRequestState request_state;
+  permission_request_manager->AddRequest(
+      web_contents->GetPrimaryMainFrame(),
+      std::make_unique<permissions::MockPermissionRequest>(
+          permissions::RequestType::kNotifications,
+          request_state.GetWeakPtr()));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !permission_request_manager->IsRequestInProgress(); }));
+  EXPECT_TRUE(request_state.cancelled);
+  EXPECT_FALSE(request_state.granted);
+  EXPECT_TRUE(fullscreen_controller->IsTabFullscreen());
+  EXPECT_FALSE(observer.request_shown());
+}
+
+// Tests that entering fullscreen removes a quiet permission prompt.
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       QuietPermissionPromptRemovedOnTabFullscreen) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  FullscreenController* fullscreen_controller =
+      ExclusiveAccessManager::From(browser())->fullscreen_controller();
+
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  permission_request_manager->set_permission_ui_selector_for_testing(
+      std::make_unique<FakeQuietUiSelector>());
+
+  permissions::PermissionRequestObserver observer(web_contents);
+
+  permission_request_manager->AddRequest(
+      web_contents->GetPrimaryMainFrame(),
+      std::make_unique<permissions::MockPermissionRequest>(
+          permissions::RequestType::kNotifications));
+
+  observer.Wait();
+  ASSERT_TRUE(observer.request_shown());
+  EXPECT_TRUE(permission_request_manager->IsRequestInProgress());
+
+  // Entering tab fullscreen removes the quiet prompt.
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.documentElement.requestFullscreen()"));
+  ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = true}).Wait();
+  ASSERT_TRUE(fullscreen_controller->IsTabFullscreen());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !permission_request_manager->IsRequestInProgress(); }));
 }
 
 // Tests that showing a chooser bubble exits tab fullscreen.

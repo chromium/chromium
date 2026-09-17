@@ -60,6 +60,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/event.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -606,6 +607,14 @@ void PermissionRequestManager::OnVisibilityChanged(
   tab_is_active_ = visibility != content::Visibility::HIDDEN;
   if (prior_tab_is_active_ != tab_is_active_) {
     OnTabActiveChanged();
+  }
+}
+
+void PermissionRequestManager::DidToggleFullscreenModeForTab(
+    bool entered_fullscreen,
+    bool will_cause_resize) {
+  if (entered_fullscreen && view_) {
+    Ignore(/*prompt_options=*/std::monostate());
   }
 }
 
@@ -1193,6 +1202,24 @@ void PermissionRequestManager::ShowPrompt() {
   if (!tab_is_active_) {
     NotifyPromptCreationFailedHiddenTab();
     return;
+  }
+
+  if (web_contents()->IsFullscreen()) {
+    if (ShouldCurrentRequestUseQuietUI()) {
+      Ignore(/*prompt_options=*/std::monostate());
+      return;
+    }
+    base::WeakPtr<PermissionRequestManager> weak_this =
+        weak_factory_.GetWeakPtr();
+    if (!web_contents()->ForSecurityDropFullscreen(
+            display::kInvalidDisplayId)) {
+      return;
+    }
+    // The tab might have been destroyed or navigated away while dropping
+    // fullscreen, which could have deleted the current requests.
+    if (!weak_this || !IsRequestInProgress()) {
+      return;
+    }
   }
 
   // We check `requests_.empty()` after some following calls

@@ -184,6 +184,8 @@ class PermissionRequestManager
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
+  void DidToggleFullscreenModeForTab(bool entered_fullscreen,
+                                     bool will_cause_resize) override;
 
   // PermissionPrompt::Delegate:
   const std::vector<std::unique_ptr<PermissionRequest>>& Requests()

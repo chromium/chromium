@@ -45,6 +45,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
@@ -1724,6 +1725,152 @@ TEST_F(PermissionRequestManagerTest, SelectorRequestTypes) {
   WaitForBubbleToBeShown();
   EXPECT_TRUE(manager_->ShouldCurrentRequestUseQuietUI());
   Accept();
+}
+
+namespace {
+
+class TestFullscreenWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override {
+    return is_fullscreen_;
+  }
+
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
+    is_fullscreen_ = false;
+    if (exit_fullscreen_callback_) {
+      std::move(exit_fullscreen_callback_).Run();
+    }
+  }
+
+  void SetFullscreen(bool is_fullscreen) { is_fullscreen_ = is_fullscreen; }
+
+  void set_exit_fullscreen_callback(base::OnceClosure callback) {
+    exit_fullscreen_callback_ = std::move(callback);
+  }
+
+ private:
+  bool is_fullscreen_ = false;
+  base::OnceClosure exit_fullscreen_callback_;
+};
+
+}  // namespace
+
+TEST_F(PermissionRequestManagerTest,
+       DidToggleFullscreenModeForTabDismissesPrompt) {
+  MockPermissionRequest::MockPermissionRequestState request_camera_state;
+  auto request = std::make_unique<MockPermissionRequest>(
+      RequestType::kCameraStream, PermissionRequestGestureType::GESTURE,
+      request_camera_state.GetWeakPtr());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request));
+  WaitForBubbleToBeShown();
+
+  ASSERT_TRUE(prompt_factory_->is_visible());
+  EXPECT_TRUE(manager_->IsRequestInProgress());
+
+  // Exiting fullscreen should not dismiss the prompt.
+  manager_->DidToggleFullscreenModeForTab(/*entered_fullscreen=*/false,
+                                          /*will_cause_resize=*/false);
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_TRUE(manager_->IsRequestInProgress());
+
+  // Entering fullscreen should ignore the displaying prompt.
+  manager_->DidToggleFullscreenModeForTab(/*entered_fullscreen=*/true,
+                                          /*will_cause_resize=*/false);
+  EXPECT_FALSE(prompt_factory_->is_visible());
+  EXPECT_FALSE(manager_->IsRequestInProgress());
+  EXPECT_FALSE(request_camera_state.granted);
+  EXPECT_TRUE(request_camera_state.cancelled);
+}
+
+TEST_F(PermissionRequestManagerTest,
+       DidToggleFullscreenModeForTabDismissesQuietPrompt) {
+  MockNotificationGeolocationPermissionUiSelector::CreateForManager(
+      manager_,
+      Decision::UseQuietUi(PermissionUiSelector::QuietUiReason::kEnabledInPrefs,
+                           Decision::ShowNoWarning()),
+      /*async_delay=*/std::nullopt);
+
+  MockPermissionRequest::MockPermissionRequestState request_notification_state;
+  auto request = std::make_unique<MockPermissionRequest>(
+      RequestType::kNotifications, PermissionRequestGestureType::GESTURE,
+      request_notification_state.GetWeakPtr());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request));
+  WaitForBubbleToBeShown();
+
+  ASSERT_TRUE(prompt_factory_->is_visible());
+  EXPECT_TRUE(manager_->IsRequestInProgress());
+
+  // Entering fullscreen should ignore the displaying quiet prompt.
+  manager_->DidToggleFullscreenModeForTab(/*entered_fullscreen=*/true,
+                                          /*will_cause_resize=*/false);
+  EXPECT_FALSE(prompt_factory_->is_visible());
+  EXPECT_FALSE(manager_->IsRequestInProgress());
+  EXPECT_FALSE(request_notification_state.granted);
+  EXPECT_TRUE(request_notification_state.cancelled);
+}
+
+TEST_F(PermissionRequestManagerTest,
+       QuietPromptInFullscreenIsIgnoredRightAway) {
+  TestFullscreenWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  delegate.SetFullscreen(true);
+  ASSERT_TRUE(web_contents()->IsFullscreen());
+
+  MockNotificationGeolocationPermissionUiSelector::CreateForManager(
+      manager_,
+      Decision::UseQuietUi(PermissionUiSelector::QuietUiReason::kEnabledInPrefs,
+                           Decision::ShowNoWarning()),
+      /*async_delay=*/std::nullopt);
+
+  MockPermissionRequest::MockPermissionRequestState request_notification_state;
+  auto request = std::make_unique<MockPermissionRequest>(
+      RequestType::kNotifications, PermissionRequestGestureType::GESTURE,
+      request_notification_state.GetWeakPtr());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request));
+  WaitForBubbleToBeShown();
+
+  EXPECT_FALSE(prompt_factory_->is_visible());
+  EXPECT_FALSE(manager_->IsRequestInProgress());
+  EXPECT_FALSE(request_notification_state.granted);
+  EXPECT_TRUE(request_notification_state.cancelled);
+
+  web_contents()->SetDelegate(nullptr);
+}
+
+TEST_F(PermissionRequestManagerTest, RequestCancelledWhileExitingFullscreen) {
+  TestFullscreenWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  delegate.SetFullscreen(true);
+  ASSERT_TRUE(web_contents()->IsFullscreen());
+
+  bool exit_fullscreen_called = false;
+  delegate.set_exit_fullscreen_callback(base::BindLambdaForTesting([&]() {
+    exit_fullscreen_called = true;
+    // Simulate the request being cancelled (e.g. due to navigation) while
+    // dropping fullscreen.
+    manager_->Ignore(/*prompt_options=*/std::monostate());
+  }));
+
+  MockPermissionRequest::MockPermissionRequestState request_camera_state;
+  auto request = std::make_unique<MockPermissionRequest>(
+      RequestType::kCameraStream, PermissionRequestGestureType::GESTURE,
+      request_camera_state.GetWeakPtr());
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request));
+  WaitForBubbleToBeShown();
+
+  EXPECT_TRUE(exit_fullscreen_called);
+  EXPECT_FALSE(web_contents()->IsFullscreen());
+  EXPECT_FALSE(prompt_factory_->is_visible());
+  EXPECT_FALSE(manager_->IsRequestInProgress());
+  EXPECT_FALSE(request_camera_state.granted);
+  EXPECT_TRUE(request_camera_state.cancelled);
+
+  web_contents()->SetDelegate(nullptr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

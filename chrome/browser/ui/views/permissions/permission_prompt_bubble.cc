@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/features.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/display/types/display_constants.h"
 
 PermissionPromptBubble::PermissionPromptBubble(
     content::WebContents* web_contents,
@@ -39,13 +38,6 @@ PermissionPromptBubble::~PermissionPromptBubble() {
 }
 
 void PermissionPromptBubble::ShowBubble() {
-  auto blocker =
-      web_contents()->ForSecurityDropFullscreen(display::kInvalidDisplayId);
-  if (!blocker) {
-    return;
-  }
-  fullscreen_blocker_ = std::move(*blocker);
-
   raw_ptr<PermissionPromptBubbleBaseView> prompt_bubble =
       CreatePermissionPromptBubbleView(web_contents(), delegate()->GetWeakPtr(),
                                        PermissionPromptStyle::kBubbleOnly);
@@ -77,9 +69,9 @@ void PermissionPromptBubble::CleanUpPromptBubble() {
 
     views::Widget* widget = GetPromptBubble()->GetWidget();
     widget->RemoveObserver(this);
-    widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
     prompt_bubble_tracker_.SetView(nullptr);
     disallowed_custom_cursors_scope_.RunAndReset();
+    widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }
 }
 

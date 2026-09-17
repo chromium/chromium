@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 class WebContents;
@@ -49,11 +48,6 @@ class PermissionPromptBubble : public PermissionPromptDesktop,
   bool parent_was_visible_when_activation_changed_;
 
   base::ScopedClosureRunner disallowed_custom_cursors_scope_;
-
-  // Used to prevent the tab from entering content fullscreen mode while the
-  // permission prompt bubble is visible. The content fullscreen mode has no
-  // browser toolbar UI and therefore is prone to spoofing attacks.
-  base::ScopedClosureRunner fullscreen_blocker_;
 
   base::WeakPtrFactory<PermissionPromptBubble> weak_factory_{this};
 };
