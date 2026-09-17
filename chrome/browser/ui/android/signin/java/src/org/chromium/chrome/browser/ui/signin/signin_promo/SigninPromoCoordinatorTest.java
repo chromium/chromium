@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -92,7 +91,6 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -266,20 +264,9 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
-    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testPrimaryButtonClick_compactPromo(@SigninAccessPoint int accessPoint) {
-        testPrimaryButtonClick(accessPoint, R.id.signin_promo_primary_button);
-    }
-
-    @Test
-    @MediumTest
-    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testPrimaryButtonClick_seamlessSigninDisabled(@SigninAccessPoint int accessPoint) {
-        testPrimaryButtonClick(accessPoint, R.id.sync_promo_signin_button);
+    public void testPrimaryButtonClick(@SigninAccessPoint int accessPoint) {
+        testPrimaryButtonClickHelper(accessPoint);
     }
 
     @Test
@@ -339,8 +326,7 @@ public class SigninPromoCoordinatorTest {
         verify(mAccountPreviewDataServiceMock, never()).getPreferredAccountForPromo();
     }
 
-    private void testPrimaryButtonClick(
-            @SigninAccessPoint int accessPoint, @IdRes int primaryButtonId) {
+    private void testPrimaryButtonClickHelper(@SigninAccessPoint int accessPoint) {
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SyncPromo.Continued.Count."
@@ -351,22 +337,13 @@ public class SigninPromoCoordinatorTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
-        ViewUtils.waitForVisibleView(withId(primaryButtonId));
+        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_primary_button));
 
-        onView(withId(primaryButtonId)).perform(click());
+        onView(withId(R.id.signin_promo_primary_button)).perform(click());
 
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-            verify(mCoordinator).startSigninFlow(configCaptor.capture());
-        } else {
-            verify(mLauncher)
-                    .createBottomSheetSigninIntentOrShowError(
-                            eq(mActivityTestRule.getActivity()),
-                            eq(mProfile),
-                            configCaptor.capture(),
-                            eq(accessPoint));
-        }
+        verify(mCoordinator).startSigninFlow(configCaptor.capture());
 
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
@@ -379,8 +356,7 @@ public class SigninPromoCoordinatorTest {
                         : HistorySyncConfig.OptInMode.NONE;
         assertEquals(expectedHistoryOptInMode, config.historyOptInMode);
 
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-                && accessPoint != SigninAccessPoint.HISTORY_PAGE) {
+        if (accessPoint != SigninAccessPoint.HISTORY_PAGE) {
             assertEquals(WithAccountSigninMode.SEAMLESS_SIGNIN, config.withAccountSigninMode);
             assertNotNull(config.selectedCoreAccountId);
         } else {
@@ -396,32 +372,8 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/continueButton"
-    })
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testLoadingStateIsShownDuringSignIn_compactPromo(
-            @SigninAccessPoint int accessPoint) {
-        testLoadingStateIsShownDuringSignIn(accessPoint, R.id.account_picker_selected_account);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/twoButtons"
-                + "/seamless-signin-string-type/continueButton"
-    })
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testLoadingStateIsShownDuringSignIn_twoButtonsPromo(
-            @SigninAccessPoint int accessPoint) {
-        testLoadingStateIsShownDuringSignIn(accessPoint, R.id.signin_promo_secondary_button);
-    }
-
-    private void testLoadingStateIsShownDuringSignIn(
-            @SigninAccessPoint int accessPoint, @IdRes int secondaryCtaId) {
+    public void testLoadingStateIsShownDuringSignIn(@SigninAccessPoint int accessPoint) {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
             // Promo is only shown for signed-in users on the history page and does not support
             // seamless sign-in.
@@ -442,7 +394,8 @@ public class SigninPromoCoordinatorTest {
         // Before click: primary button and secondary CTA are enabled.
         onView(withId(R.id.signin_promo_primary_button))
                 .check(matches(allOf(isEnabled(), withText(expectedPrimaryButtonText))));
-        onView(withId(secondaryCtaId)).check(matches(allOf(isDisplayed(), isEnabled())));
+        onView(withId(R.id.account_picker_selected_account))
+                .check(matches(allOf(isDisplayed(), isEnabled())));
         if (mDelegate.canBeDismissedPermanently()) {
             onView(withId(R.id.signin_promo_dismiss_button))
                     .check(matches(allOf(isDisplayed(), isEnabled())));
@@ -466,7 +419,7 @@ public class SigninPromoCoordinatorTest {
 
         // 2. Primary CTA, secondary CTA, and dismiss button are disabled.
         onView(withId(R.id.signin_promo_primary_button)).check(matches(not(isEnabled())));
-        onView(withId(secondaryCtaId)).check(matches(not(isEnabled())));
+        onView(withId(R.id.account_picker_selected_account)).check(matches(not(isEnabled())));
         // 3. Dismiss button is hidden and disabled during loading state.
         onView(withId(R.id.signin_promo_dismiss_button))
                 .check(
@@ -483,7 +436,8 @@ public class SigninPromoCoordinatorTest {
 
         onView(withId(R.id.signin_promo_primary_button))
                 .check(matches(allOf(isEnabled(), withText(expectedPrimaryButtonText))));
-        onView(withId(secondaryCtaId)).check(matches(allOf(isDisplayed(), isEnabled())));
+        onView(withId(R.id.account_picker_selected_account))
+                .check(matches(allOf(isDisplayed(), isEnabled())));
         if (mDelegate.canBeDismissedPermanently()) {
             onView(withId(R.id.signin_promo_dismiss_button))
                     .check(matches(allOf(isDisplayed(), isEnabled())));
@@ -499,44 +453,18 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
-    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testSigninBottomSheetStrings_compactPromo(@SigninAccessPoint int accessPoint) {
-        testSigninBottomSheetStrings(accessPoint, R.id.signin_promo_primary_button);
-    }
-
-    @Test
-    @MediumTest
-    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testSigninBottomSheetStrings_seamlessSigninDisabled(
-            @SigninAccessPoint int accessPoint) {
-        testSigninBottomSheetStrings(accessPoint, R.id.sync_promo_signin_button);
-    }
-
-    private void testSigninBottomSheetStrings(
-            @SigninAccessPoint int accessPoint, @IdRes int primaryButtonId) {
+    public void testSigninBottomSheetStrings(@SigninAccessPoint int accessPoint) {
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
-        ViewUtils.waitForVisibleView(withId(primaryButtonId));
+        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_primary_button));
 
-        onView(withId(primaryButtonId)).perform(click());
+        onView(withId(R.id.signin_promo_primary_button)).perform(click());
 
         // Extract the config passed to the sign-in flow launcher.
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-            verify(mCoordinator).startSigninFlow(configCaptor.capture());
-        } else {
-            verify(mLauncher)
-                    .createBottomSheetSigninIntentOrShowError(
-                            eq(mActivityTestRule.getActivity()),
-                            eq(mProfile),
-                            configCaptor.capture(),
-                            eq(accessPoint));
-        }
+        verify(mCoordinator).startSigninFlow(configCaptor.capture());
 
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
 
@@ -572,21 +500,7 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
-    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
-    public void testBookmarksAccountSettingsPromoPrimaryButtonClick_compactPromo() {
-        testBookmarksAccountSettingsPromoPrimaryButtonClick(R.id.signin_promo_primary_button);
-    }
-
-    @Test
-    @MediumTest
-    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    public void testBookmarksAccountSettingsPromoPrimaryButtonClick_seamlessSigninDisabled() {
-        testBookmarksAccountSettingsPromoPrimaryButtonClick(R.id.sync_promo_signin_button);
-    }
-
-    private void testBookmarksAccountSettingsPromoPrimaryButtonClick(@IdRes int primaryButtonId) {
+    public void testBookmarksAccountSettingsPromoPrimaryButtonClick() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -608,9 +522,9 @@ public class SigninPromoCoordinatorTest {
         disableBookmarksAndReadingListDataTypes();
         setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
         ViewUtils.waitForVisibleView(withText(R.string.sync_promo_title_bookmarks));
-        ViewUtils.waitForVisibleView(withId(primaryButtonId));
+        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_primary_button));
 
-        onView(withId(primaryButtonId)).perform(click());
+        onView(withId(R.id.signin_promo_primary_button)).perform(click());
 
         verify(mOnOpenSettings).run();
         histogramWatcher.assertExpected();
@@ -619,27 +533,7 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/continueButton"
-    })
-    public void testLoadingStateNotShownForBookmarksSettingsPromo_compactPromo() {
-        testLoadingStateNotShownForBookmarksSettingsPromo();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/twoButtons"
-                + "/seamless-signin-string-type/continueButton"
-    })
-    public void testLoadingStateNotShownForBookmarksSettingsPromo_twoButtonsPromo() {
-        testLoadingStateNotShownForBookmarksSettingsPromo();
-    }
-
-    private void testLoadingStateNotShownForBookmarksSettingsPromo() {
+    public void testLoadingStateNotShownForBookmarksSettingsPromo() {
         initNativeIfNeeded();
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         disableBookmarksAndReadingListDataTypes();
@@ -668,9 +562,8 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/twoButtons"})
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testSecondaryButtonClick_twoButtonsPromo(@SigninAccessPoint int accessPoint) {
+    public void testAccountPickerClick(@SigninAccessPoint int accessPoint) {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
             // The history page promo is hidden for non-signed in accounts.
             return;
@@ -690,9 +583,9 @@ public class SigninPromoCoordinatorTest {
                 getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(accessPoint);
-        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_secondary_button));
+        ViewUtils.waitForVisibleView(withId(R.id.account_picker_selected_account));
 
-        onView(withId(R.id.signin_promo_secondary_button)).perform(click());
+        onView(withId(R.id.account_picker_selected_account)).perform(click());
 
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
@@ -713,97 +606,16 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
-    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testSecondaryButtonClick_seamlessSigninDisabled(
-            @SigninAccessPoint int accessPoint) {
-        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
-            // The history page promo is hidden for non-signed in accounts.
-            return;
-        }
-        var histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                "Signin.Promo.ImpressionsUntil.Continued."
-                                        + getAccessPointToHistogramName(accessPoint),
-                                1)
-                        .expectIntRecord(
-                                "Signin.SyncPromo.Continued.Count."
-                                        + getAccessPointToHistogramName(accessPoint),
-                                1)
-                        .build();
-        var impressionHistogramWatcher =
-                getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        setUpSignInPromo(accessPoint);
-
-        if (accessPoint == SigninAccessPoint.RECENT_TABS) {
-            // Recent tabs doesn't support secondary button for non seamless sign-in.
-            onView(withId(R.id.sync_promo_choose_account_button))
-                    .check(ViewAssertions.matches(not(isDisplayed())));
-            return;
-        }
-
-        onView(withId(R.id.sync_promo_choose_account_button)).perform(click());
-
-        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
-                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        verify(mLauncher)
-                .createBottomSheetSigninIntentOrShowError(
-                        eq(mActivityTestRule.getActivity()),
-                        eq(mProfile),
-                        configCaptor.capture(),
-                        eq(accessPoint));
-        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
-        assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
-        assertEquals(
-                WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
-        assertEquals(HistorySyncConfig.OptInMode.NONE, config.historyOptInMode);
-        assertNull(config.selectedCoreAccountId);
-        histogramWatcher.assertExpected();
-        impressionHistogramWatcher.assertExpected();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/twoButtons"})
-    public void testHistoryPagePromoSecondaryButtonHidden_twoButtonsPromo() {
+    public void testHistoryPagePromoAccountPickerHidden() {
         signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.HISTORY_PAGE);
         setUpSignInPromo(SigninAccessPoint.HISTORY_PAGE);
-        onView(withId(R.id.signin_promo_secondary_button))
+        onView(withId(R.id.account_picker_selected_account))
                 .check(ViewAssertions.matches(not(isDisplayed())));
     }
 
     @Test
     @MediumTest
-    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    public void testHistoryPagePromoSecondaryButtonHidden_seamlessSigninDisabled() {
-        signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.HISTORY_PAGE);
-        setUpSignInPromo(SigninAccessPoint.HISTORY_PAGE);
-        onView(withId(R.id.sync_promo_choose_account_button))
-                .check(ViewAssertions.matches(not(isDisplayed())));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/twoButtons"})
-    public void testBookmarksAccountSettingsPromoSecondaryButtonHidden_twoButtonsPromo() {
-        testBookmarksAccountSettingsPromoSecondaryButtonHidden(R.id.signin_promo_secondary_button);
-    }
-
-    @Test
-    @MediumTest
-    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    public void testBookmarksAccountSettingsPromoSecondaryButtonHidden_seamlessSigninDisabled() {
-        testBookmarksAccountSettingsPromoSecondaryButtonHidden(
-                R.id.sync_promo_choose_account_button);
-    }
-
-    private void testBookmarksAccountSettingsPromoSecondaryButtonHidden(
-            @IdRes int secondaryButtonId) {
+    public void testBookmarksAccountSettingsPromoAccountPickerHidden() {
         var histogramWatcher =
                 getPromoImpressionHistogramWatcher(
                         SigninAccessPoint.BOOKMARK_MANAGER, /* hasAccounts= */ true);
@@ -814,37 +626,25 @@ public class SigninPromoCoordinatorTest {
         setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
 
         ViewUtils.waitForVisibleView(withText(R.string.sync_promo_title_bookmarks));
-        onView(withId(secondaryButtonId)).check(ViewAssertions.matches(not(isDisplayed())));
+        onView(withId(R.id.account_picker_selected_account))
+                .check(ViewAssertions.matches(not(isDisplayed())));
         histogramWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
-    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testDismissButtonClick_compactPromo(@SigninAccessPoint int accessPoint) {
+    public void testDismissButtonClick(@SigninAccessPoint int accessPoint) {
         testPermanentDismissal(
                 accessPoint, R.id.signin_promo_dismiss_button, /* dueToUndoneSignin= */ false);
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testUndoButtonClick_compactPromo(@SigninAccessPoint int accessPoint) {
+    public void testUndoButtonClick(@SigninAccessPoint int accessPoint) {
         testPermanentDismissal(
                 accessPoint, R.id.signin_promo_dismiss_button, /* dueToUndoneSignin= */ true);
-    }
-
-    @Test
-    @MediumTest
-    // TODO(crbug.com/448227402): Remove this test once Seamless Sign-in is launched.
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
-    public void testDismissButtonClick_seamlessSigninDisabled(@SigninAccessPoint int accessPoint) {
-        testPermanentDismissal(
-                accessPoint, R.id.sync_promo_close_button, /* dueToUndoneSignin= */ false);
     }
 
     private void testPermanentDismissal(
@@ -1019,11 +819,6 @@ public class SigninPromoCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/continueButton"
-    })
     public void testHistorySyncOptIn_RecentTabs() {
         signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.RECENT_TABS);
         setUpSignInPromo(SigninAccessPoint.RECENT_TABS);
@@ -1048,42 +843,6 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    public void testRendering_noAccount(
-            @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
-        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
-            // Promo hidden for the history page.
-            return;
-        }
-
-        setUpSignInPromo(accessPoint);
-
-        mRenderTestRule.render(
-                mPromoView, "NoAccount_" + getParamToRenderId(accessPoint, nightModeEnabled));
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
-    public void testRendering_withAccount(
-            @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
-        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
-            // Promo hidden for the history page.
-            return;
-        }
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        setUpSignInPromo(accessPoint);
-
-        mRenderTestRule.render(
-                mPromoView, "WithAccount_" + getParamToRenderId(accessPoint, nightModeEnabled));
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRendering_withAccount_bookmarksAccountSettingsPromo(boolean nightModeEnabled)
             throws Exception {
@@ -1101,40 +860,6 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/twoButtons"
-                + "/seamless-signin-string-type/signinButton"
-    })
-    @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
-    public void testRendering_noAccountThenWithAccount_twoButtons(
-            @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
-        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
-            // Promo hidden for the history page.
-            return;
-        }
-
-        setUpSignInPromo(accessPoint);
-        mRenderTestRule.render(
-                mPromoView,
-                "NoAccountThenWithAccount_noAccount_twoButtons_"
-                        + getParamToRenderId(accessPoint, nightModeEnabled));
-
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        mRenderTestRule.render(
-                mPromoView,
-                "NoAccountThenWithAccount_withAccount_twoButtons_"
-                        + getParamToRenderId(accessPoint, nightModeEnabled));
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/signinButton"
-    })
     @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
     public void testRendering_noAccountThenWithAccount_compact(
             @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
@@ -1159,35 +884,6 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/twoButtons"
-                + "/seamless-signin-string-type/signinButton"
-    })
-    @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
-    public void testRendering_seamlessSigninPromo_twoButtons_noAccount(
-            @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
-        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
-            // Promo hidden for the history page.
-            return;
-        }
-
-        setUpSignInPromo(accessPoint);
-
-        mRenderTestRule.render(
-                mPromoView,
-                "NoAccount_SeamlessSigninPromo_twoButtons_"
-                        + getParamToRenderId(accessPoint, nightModeEnabled));
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/signinButton"
-    })
     @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
     public void testRendering_seamlessSigninPromo_compact_noAccount(
             @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
@@ -1207,35 +903,6 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/twoButtons"
-                + "/seamless-signin-string-type/signinButton"
-    })
-    @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
-    public void testRendering_seamlessSigninPromo_twoButtons_withAccount(
-            @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
-        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
-            // Promo hidden for the history page.
-            return;
-        }
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        setUpSignInPromo(accessPoint);
-
-        mRenderTestRule.render(
-                mPromoView,
-                "WithAccount_SeamlessSigninPromo_twoButtons_"
-                        + getParamToRenderId(accessPoint, nightModeEnabled));
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/signinButton"
-    })
     @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
     public void testRendering_seamlessSigninPromo_compact_withAccount(
             @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
@@ -1255,33 +922,6 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/twoButtons"
-                + "/seamless-signin-string-type/signinButton"
-    })
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testRendering_seamlessSigninPromo_twoButtons_signedIn_bookmarks(
-            boolean nightModeEnabled) throws Exception {
-        initNativeIfNeeded();
-        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
-        disableBookmarksAndReadingListDataTypes();
-        setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
-
-        mRenderTestRule.render(
-                mPromoView,
-                "WithAccount_SeamlessSigninPromo_twoButtons_SignedIn_"
-                        + getParamToRenderId(SigninAccessPoint.BOOKMARK_MANAGER, nightModeEnabled));
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/signinButton"
-    })
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRendering_seamlessSigninPromo_compact_signedIn_bookmarks(
             boolean nightModeEnabled) throws Exception {
@@ -1299,11 +939,6 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/signinButton"
-    })
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRendering_seamlessSigninPromo_signedInThenSignedOut_bookmarks(
             boolean nightModeEnabled) throws Exception {
@@ -1328,11 +963,6 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/signinButton"
-    })
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRendering_seamlessSigninPromo_signedOutThenSignedIn_bookmarks(
             boolean nightModeEnabled) throws Exception {
@@ -1355,11 +985,6 @@ public class SigninPromoCoordinatorTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/signinButton"
-    })
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRendering_loadingState_Compact(boolean nightModeEnabled) throws Exception {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -1373,31 +998,6 @@ public class SigninPromoCoordinatorTest {
         mRenderTestRule.render(
                 mPromoView,
                 "LoadingState_Compact_"
-                        + getParamToRenderId(
-                                SigninAccessPoint.NTP_FEED_TOP_PROMO, nightModeEnabled));
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/twoButtons"
-                + "/seamless-signin-string-type/signinButton"
-    })
-    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testRendering_loadingState_TwoButtons(boolean nightModeEnabled) throws Exception {
-        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
-        setUpSignInPromo(SigninAccessPoint.NTP_FEED_TOP_PROMO);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPromoCoordinator.setLoadingStateForTesting(true);
-                });
-
-        mRenderTestRule.render(
-                mPromoView,
-                "LoadingState_TwoButtons_"
                         + getParamToRenderId(
                                 SigninAccessPoint.NTP_FEED_TOP_PROMO, nightModeEnabled));
     }

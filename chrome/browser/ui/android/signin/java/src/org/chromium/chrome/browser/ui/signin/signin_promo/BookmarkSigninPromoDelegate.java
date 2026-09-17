@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -80,16 +79,8 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getTitle() {
-        @SigninFeatureMap.SeamlessSigninStringType
-        int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
         switch (mPromoState) {
             case PromoState.SIGNIN:
-                if (seamlessSigninStringType
-                                == SigninFeatureMap.SeamlessSigninStringType.NON_SEAMLESS
-                        || seamlessSigninStringType
-                                == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
-                    return mContext.getString(R.string.signin_promo_title_bookmarks);
-                }
                 return mContext.getString(R.string.signin_account_picker_bottom_sheet_title);
             case PromoState.ACCOUNT_SETTINGS:
                 return mContext.getString(R.string.sync_promo_title_bookmarks);
@@ -101,39 +92,12 @@ public class BookmarkSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getDescription(@Nullable String accountEmail) {
-        @SigninFeatureMap.SeamlessSigninPromoType
-        int seamlessSigninPromoType = SigninFeatureMap.getInstance().getSeamlessSigninPromoType();
-        @SigninFeatureMap.SeamlessSigninStringType
-        int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
         switch (mPromoState) {
             case PromoState.SIGNIN:
                 if (accountEmail == null) {
                     return mContext.getString(R.string.signin_promo_description_bookmarks);
                 }
-                if (seamlessSigninStringType
-                        == SigninFeatureMap.SeamlessSigninStringType.CONTINUE_BUTTON) {
-                    if (seamlessSigninPromoType
-                            == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
-                        return mContext.getString(
-                                R.string.signin_promo_description_bookmarks_group1, accountEmail);
-                    } else if (seamlessSigninPromoType
-                            == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
-                        return mContext.getString(
-                                R.string.signin_promo_description_bookmarks_group2);
-                    }
-                } else if (seamlessSigninStringType
-                        == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
-                    if (seamlessSigninPromoType
-                            == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
-                        return mContext.getString(
-                                R.string.signin_promo_description_bookmarks_group3, accountEmail);
-                    } else if (seamlessSigninPromoType
-                            == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
-                        return mContext.getString(
-                                R.string.signin_promo_description_bookmarks_group4);
-                    }
-                }
-                return mContext.getString(R.string.signin_promo_description_bookmarks);
+                return mContext.getString(R.string.signin_promo_description_bookmarks_with_account);
             case PromoState.ACCOUNT_SETTINGS:
                 return mContext.getString(R.string.account_settings_promo_description_bookmarks);
             case PromoState.NONE:

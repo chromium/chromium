@@ -104,53 +104,15 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getTitle() {
-        @SigninFeatureMap.SeamlessSigninStringType
-        int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
-        if (seamlessSigninStringType == SigninFeatureMap.SeamlessSigninStringType.NON_SEAMLESS) {
-            return mContext.getString(R.string.signin_promo_title_ntp_feed_top_promo);
-        }
-        if (seamlessSigninStringType == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
-            // We reuse the same title string as in the case with the "Sign in as" button
-            return mContext.getString(R.string.signin_promo_title_ntp_sign_in_as_button);
-        }
         return mContext.getString(R.string.signin_account_picker_bottom_sheet_title);
     }
 
     @Override
     String getDescription(@Nullable String accountEmail) {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
-            if (accountEmail == null) {
-                return mContext.getString(R.string.custom_tabs_signed_out_message_subtitle);
-            }
-            @SigninFeatureMap.SeamlessSigninPromoType
-            int seamlessSigninPromoType =
-                    SigninFeatureMap.getInstance().getSeamlessSigninPromoType();
-            @SigninFeatureMap.SeamlessSigninStringType
-            int seamlessSigninStringType =
-                    SigninFeatureMap.getInstance().getSeamlessSigninStringType();
-            if (seamlessSigninStringType
-                    == SigninFeatureMap.SeamlessSigninStringType.CONTINUE_BUTTON) {
-                if (seamlessSigninPromoType
-                        == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
-                    return mContext.getString(
-                            R.string.signin_promo_description_ntp_group1, accountEmail);
-                } else if (seamlessSigninPromoType
-                        == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
-                    return mContext.getString(R.string.signin_promo_description_ntp_group2);
-                }
-            } else if (seamlessSigninStringType
-                    == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
-                if (seamlessSigninPromoType
-                        == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
-                    return mContext.getString(
-                            R.string.signin_promo_description_ntp_group3, accountEmail);
-                } else if (seamlessSigninPromoType
-                        == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
-                    return mContext.getString(R.string.signin_promo_description_ntp_group4);
-                }
-            }
+        if (accountEmail == null) {
+            return mContext.getString(R.string.custom_tabs_signed_out_message_subtitle);
         }
-        return mContext.getString(R.string.signin_promo_description_ntp_feed_top_promo);
+        return mContext.getString(R.string.signin_promo_description_ntp_with_account);
     }
 
     @Override

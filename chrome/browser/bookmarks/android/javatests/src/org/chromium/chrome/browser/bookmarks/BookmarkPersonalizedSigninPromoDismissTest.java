@@ -36,7 +36,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -104,8 +103,6 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
-    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
     public void testPromoNotShownAfterBeingDismissed_compactPromo() {
         testPromoNotShownAfterBeingDismissed(R.id.signin_promo_dismiss_button);
     }
@@ -131,8 +128,6 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({"EnableSeamlessSignin" + ":seamless-signin-promo-type/compact"})
-    // TODO(crbug.com/468024353): Add coverage for two_buttons promo.
     public void testPromoDismissedHistogramRecordedAfterBeingDismissed_compactPromo() {
         testPromoDismissedHistogramRecordedAfterBeingDismissed(R.id.signin_promo_dismiss_button);
     }

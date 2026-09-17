@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
-import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.signin.SigninFeatureMap;
@@ -131,39 +130,20 @@ public abstract class SigninPromoDelegate {
     }
 
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
-        @SigninFeatureMap.SeamlessSigninStringType
-        int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
-        if (mPromoLoadingState == PromoLoadingState.LOADING
-                && seamlessSigninStringType
-                        != SigninFeatureMap.SeamlessSigninStringType.NON_SEAMLESS) {
+        if (mPromoLoadingState == PromoLoadingState.LOADING) {
             return mContext.getString(R.string.signin_account_picker_bottom_sheet_signin_title);
         }
-        if (seamlessSigninStringType == SigninFeatureMap.SeamlessSigninStringType.CONTINUE_BUTTON) {
-            if (profileData != null && !TextUtils.isEmpty(profileData.getGivenName())) {
+        if (profileData != null) {
+            if (!TextUtils.isEmpty(profileData.getGivenName())) {
                 return mContext.getString(
                         R.string.sync_promo_continue_as, profileData.getGivenName());
             }
-            if (profileData != null && !TextUtils.isEmpty(profileData.getFullName())) {
+            if (!TextUtils.isEmpty(profileData.getFullName())) {
                 return mContext.getString(
                         R.string.sync_promo_continue_as, profileData.getFullName());
             }
-            return mContext.getString(R.string.sync_promo_continue);
-        } else if (seamlessSigninStringType
-                == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
-            if (profileData != null && !TextUtils.isEmpty(profileData.getGivenName())) {
-                return mContext.getString(
-                        R.string.signin_promo_sign_in_as, profileData.getGivenName());
-            }
-            if (profileData != null && !TextUtils.isEmpty(profileData.getFullName())) {
-                return mContext.getString(
-                        R.string.signin_promo_sign_in_as, profileData.getFullName());
-            }
-            return mContext.getString(R.string.signin_promo_sign_in);
         }
-        if (profileData == null) {
-            return mContext.getString(R.string.signin_promo_signin);
-        }
-        return SigninUtils.getContinueAsButtonText(mContext, profileData);
+        return mContext.getString(R.string.sync_promo_continue);
     }
 
     String getTextForSecondaryButton() {

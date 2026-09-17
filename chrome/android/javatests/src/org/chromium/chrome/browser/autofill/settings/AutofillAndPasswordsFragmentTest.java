@@ -203,9 +203,7 @@ public class AutofillAndPasswordsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/continueButton",
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testSignInPromoVisible_noAccount() {
@@ -229,9 +227,7 @@ public class AutofillAndPasswordsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/continueButton",
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testSignInPromoNotSelectable() {
@@ -249,9 +245,7 @@ public class AutofillAndPasswordsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/continueButton",
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testSignInPromoVisible_withAccount() {
@@ -295,9 +289,7 @@ public class AutofillAndPasswordsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/continueButton",
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testSignInPromoDismiss() {
@@ -319,9 +311,7 @@ public class AutofillAndPasswordsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/continueButton",
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testSignInPromoClick() {
@@ -338,9 +328,7 @@ public class AutofillAndPasswordsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/continueButton",
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testSignInPromoMaxImpressions() {
@@ -360,9 +348,7 @@ public class AutofillAndPasswordsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures({
-        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/continueButton",
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testSignInPromoNotVisible_whenLaunchedFromSearch() {

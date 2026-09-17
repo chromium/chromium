@@ -71,19 +71,9 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getTitle() {
-        @SigninFeatureMap.SeamlessSigninStringType
-        int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
         switch (mPromoState) {
             case PromoState.SIGNIN:
-                if (seamlessSigninStringType
-                        == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
-                    return mContext.getString(R.string.signin_history_sync_promo_title_recent_tabs);
-                }
-                if (seamlessSigninStringType
-                        == SigninFeatureMap.SeamlessSigninStringType.CONTINUE_BUTTON) {
-                    return mContext.getString(R.string.signin_account_picker_bottom_sheet_title);
-                }
-                return mContext.getString(R.string.signin_promo_title_recent_tabs);
+                return mContext.getString(R.string.signin_account_picker_bottom_sheet_title);
             case PromoState.HISTORY_SYNC:
                 return mContext.getString(R.string.signin_history_sync_promo_title_recent_tabs);
             case PromoState.NONE:
@@ -94,42 +84,14 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getDescription(@Nullable String accountEmail) {
-        @SigninFeatureMap.SeamlessSigninPromoType
-        int seamlessSigninPromoType = SigninFeatureMap.getInstance().getSeamlessSigninPromoType();
-        @SigninFeatureMap.SeamlessSigninStringType
-        int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
         switch (mPromoState) {
             case PromoState.SIGNIN:
-                if (accountEmail == null
-                        && seamlessSigninStringType
-                                != SigninFeatureMap.SeamlessSigninStringType.NON_SEAMLESS) {
+                if (accountEmail == null) {
                     return mContext.getString(
                             R.string.signin_promo_description_recent_tabs_no_accounts);
                 }
-                if (seamlessSigninStringType
-                        == SigninFeatureMap.SeamlessSigninStringType.CONTINUE_BUTTON) {
-                    if (seamlessSigninPromoType
-                            == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
-                        return mContext.getString(
-                                R.string.signin_promo_description_recent_tabs_group1, accountEmail);
-                    } else if (seamlessSigninPromoType
-                            == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
-                        return mContext.getString(
-                                R.string.signin_promo_description_recent_tabs_group2);
-                    }
-                } else if (seamlessSigninStringType
-                        == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
-                    if (seamlessSigninPromoType
-                            == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
-                        return mContext.getString(
-                                R.string.signin_promo_description_recent_tabs_group3, accountEmail);
-                    } else if (seamlessSigninPromoType
-                            == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
-                        return mContext.getString(
-                                R.string.signin_promo_description_recent_tabs_group4);
-                    }
-                }
-                return mContext.getString(R.string.signin_promo_description_recent_tabs);
+                return mContext.getString(
+                        R.string.signin_promo_description_recent_tabs_with_account);
             case PromoState.HISTORY_SYNC:
                 return mContext.getString(R.string.signin_promo_description_recent_tabs);
             case PromoState.NONE:

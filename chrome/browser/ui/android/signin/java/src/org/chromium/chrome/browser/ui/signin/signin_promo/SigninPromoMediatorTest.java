@@ -288,11 +288,6 @@ public class SigninPromoMediatorTest {
     }
 
     @Test
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/signinButton"
-    })
     public void testModelValuesNtp_noAccountsOnDevice() {
         when(mSigninManager.isSigninAllowed()).thenReturn(true);
         when(mSigninManager.didAccountsFetchSucceed()).thenReturn(true);
@@ -309,23 +304,18 @@ public class SigninPromoMediatorTest {
 
         assertFalse(mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON));
         assertEquals(
-                mContext.getString(R.string.signin_promo_title_ntp_sign_in_as_button),
+                mContext.getString(R.string.signin_account_picker_bottom_sheet_title),
                 mMediator.getModel().get(SigninPromoProperties.TITLE_TEXT));
         assertEquals(
                 mContext.getString(R.string.custom_tabs_signed_out_message_subtitle),
                 mMediator.getModel().get(SigninPromoProperties.DESCRIPTION_TEXT));
         assertEquals(
-                mContext.getString(R.string.signin_promo_sign_in),
+                mContext.getString(R.string.sync_promo_continue),
                 mMediator.getModel().get(SigninPromoProperties.PRIMARY_BUTTON_TEXT));
         assertTrue(mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_SECONDARY_BUTTON));
     }
 
     @Test
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/signinButton"
-    })
     public void testModelValuesNtp_accountAvailableOnDevice() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mSigninManager.isSigninAllowed()).thenReturn(true);
@@ -342,14 +332,14 @@ public class SigninPromoMediatorTest {
 
         assertFalse(mMediator.getModel().get(SigninPromoProperties.SHOULD_HIDE_DISMISS_BUTTON));
         assertEquals(
-                mContext.getString(R.string.signin_promo_title_ntp_sign_in_as_button),
+                mContext.getString(R.string.signin_account_picker_bottom_sheet_title),
                 mMediator.getModel().get(SigninPromoProperties.TITLE_TEXT));
         assertEquals(
-                mContext.getString(R.string.signin_promo_description_ntp_group4),
+                mContext.getString(R.string.signin_promo_description_ntp_with_account),
                 mMediator.getModel().get(SigninPromoProperties.DESCRIPTION_TEXT));
         assertEquals(
                 mContext.getString(
-                        R.string.signin_promo_sign_in_as, TestAccounts.ACCOUNT1.getGivenName()),
+                        R.string.sync_promo_continue_as, TestAccounts.ACCOUNT1.getGivenName()),
                 mMediator.getModel().get(SigninPromoProperties.PRIMARY_BUTTON_TEXT));
         assertEquals(
                 mContext.getString(R.string.signin_promo_choose_another_account),
@@ -378,11 +368,6 @@ public class SigninPromoMediatorTest {
     }
 
     @Test
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/signinButton"
-    })
     public void testHideDismissButtonInLoadingState_Ntp() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mSigninManager.isSigninAllowed()).thenReturn(true);
@@ -404,7 +389,7 @@ public class SigninPromoMediatorTest {
                 mMediator.getModel().get(SigninPromoProperties.PRIMARY_BUTTON_TEXT);
         String expectedPrimaryButtonText =
                 mContext.getString(
-                        R.string.signin_promo_sign_in_as, TestAccounts.ACCOUNT1.getGivenName());
+                        R.string.sync_promo_continue_as, TestAccounts.ACCOUNT1.getGivenName());
         assertEquals(expectedPrimaryButtonText, primaryButtonText);
 
         mMediator.onFlowStarted();
@@ -426,11 +411,6 @@ public class SigninPromoMediatorTest {
     }
 
     @Test
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/signinButton"
-    })
     public void testHideDismissButtonInLoadingState_RecentTabs() {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mSigninManager.isSigninAllowed()).thenReturn(true);
@@ -448,7 +428,7 @@ public class SigninPromoMediatorTest {
                 mMediator.getModel().get(SigninPromoProperties.PRIMARY_BUTTON_TEXT);
         String expectedPrimaryButtonText =
                 mContext.getString(
-                        R.string.signin_promo_sign_in_as, TestAccounts.ACCOUNT1.getGivenName());
+                        R.string.sync_promo_continue_as, TestAccounts.ACCOUNT1.getGivenName());
         assertEquals(expectedPrimaryButtonText, primaryButtonText);
 
         mMediator.onFlowStarted();

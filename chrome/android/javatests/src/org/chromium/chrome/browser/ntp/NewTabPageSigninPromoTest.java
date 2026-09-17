@@ -28,7 +28,6 @@ import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 import android.text.format.DateUtils;
 import android.widget.TextView;
 
-import androidx.annotation.IdRes;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
@@ -229,32 +228,9 @@ public class NewTabPageSigninPromoTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/twoButtons"
-                + "/seamless-signin-string-type/continueButton"
-    })
     // TODO(crbug.com/483105856): Test is flaky on desktop bots.
     @DisableIf.Device(DeviceFormFactor.DESKTOP)
-    public void testSigninPromoLoadingState_twoButtonsPromo() {
-        testSigninPromoLoadingState(R.id.signin_promo_secondary_button);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"FeedNewTabPage"})
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/compact"
-                + "/seamless-signin-string-type/continueButton"
-    })
-    // TODO(crbug.com/483105856): Test is flaky on desktop bots.
-    @DisableIf.Device(DeviceFormFactor.DESKTOP)
-    public void testSigninPromoLoadingState_compactPromo() {
-        testSigninPromoLoadingState(R.id.account_picker_selected_account);
-    }
-
-    private void testSigninPromoLoadingState(@IdRes int secondaryCtaId) {
+    public void testSigninPromoLoadingState() {
         openNewTabPage();
         // An account with an unknown hosted domain emulates a long sign-in. This way the loading
         // state will be shown for a longer time.
@@ -278,7 +254,8 @@ public class NewTabPageSigninPromoTest {
                                         isDisplayed(),
                                         isEnabled(),
                                         withText(R.string.sync_promo_continue))));
-        onView(withId(secondaryCtaId)).check(matches(allOf(isDisplayed(), isEnabled())));
+        onView(withId(R.id.account_picker_selected_account))
+                .check(matches(allOf(isDisplayed(), isEnabled())));
         onView(withId(R.id.signin_promo_dismiss_button))
                 .check(matches(allOf(isDisplayed(), isEnabled())));
 
@@ -292,7 +269,7 @@ public class NewTabPageSigninPromoTest {
                                         withText(
                                                 R.string
                                                         .signin_account_picker_bottom_sheet_signin_title))));
-        onView(withId(secondaryCtaId)).check(matches(not(isEnabled())));
+        onView(withId(R.id.account_picker_selected_account)).check(matches(not(isEnabled())));
         onView(withId(R.id.signin_promo_dismiss_button))
                 .check(
                         matches(
@@ -304,11 +281,6 @@ public class NewTabPageSigninPromoTest {
     @Test
     @MediumTest
     @Feature({"FeedNewTabPage"})
-    @EnableFeatures({
-        "EnableSeamlessSignin"
-                + ":seamless-signin-promo-type/twoButtons"
-                + "/seamless-signin-string-type/signinButton"
-    })
     // TODO(crbug.com/483438567): Test is flaky on desktop bots.
     @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testSeamlessSigninFlow_WithFinalSnackbarUndoSignin() {
