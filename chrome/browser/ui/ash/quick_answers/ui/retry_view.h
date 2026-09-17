@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
-#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -29,7 +28,6 @@ class RetryView : public views::FlexLayoutView {
   void SetFirstLineText(std::u16string_view first_line_text);
   std::u16string_view GetFirstLineText() const;
   void SetRetryButtonCallback(RetryButtonCallback retry_button_callback);
-  void SetDesign(Design design);
 
   views::LabelButton* retry_label_button() const { return retry_label_button_; }
 
@@ -45,7 +43,6 @@ class RetryView : public views::FlexLayoutView {
 BEGIN_VIEW_BUILDER(/* no export */, RetryView, views::FlexLayoutView)
 VIEW_BUILDER_PROPERTY(std::u16string, FirstLineText)
 VIEW_BUILDER_PROPERTY(RetryView::RetryButtonCallback, RetryButtonCallback)
-VIEW_BUILDER_PROPERTY(Design, Design)
 END_VIEW_BUILDER
 
 }  // namespace quick_answers

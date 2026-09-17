@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/typography.h"
-#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -41,12 +40,9 @@ namespace {
 
 // Layout code automatically flips left/right margins for RTL.
 constexpr auto kPhoneticsAudioButtonMarginInsets =
-    gfx::Insets::TLBR(0, 4, 0, 4);
-constexpr auto kPhoneticsAudioButtonRefreshedMarginInsets =
     gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr int kPhoneticsAudioButtonSizeDip = 14;
-constexpr int kPhoneticsAudioButtonBorderDip = 3;
-constexpr int kPhoneticsAudioButtonRefreshedBorderDip = 5;
+constexpr int kPhoneticsAudioButtonBorderDip = 5;
 constexpr int kPhoneticsAudioButtonBackgroundRadiusDip = 12;
 
 constexpr int kItemSpacing = 4;
@@ -125,7 +121,27 @@ ResultView::ResultView() {
                            views::MaximumFlexSizeRule::kPreferred, true))
           .Build());
 
-  SetDesign(Design::kCurrent);
+  first_line_label_->SetFontList(GetFirstLineFontList());
+  first_line_label_->SetLineHeight(GetFirstLineHeight());
+  first_line_sub_label_->SetFontList(GetFirstLineFontList());
+  first_line_sub_label_->SetLineHeight(GetFirstLineHeight());
+
+  second_line_label_->SetFontList(GetSecondLineFontList());
+  second_line_label_->SetLineHeight(GetSecondLineHeight());
+
+  phonetics_audio_button_->SetImageModel(
+      views::Button::ButtonState::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? vector_icons::kVolumeUpFilledIcon
+                                            : vector_icons::kVolumeUpOldIcon,
+          ui::kColorSysOnSurface, kPhoneticsAudioButtonSizeDip));
+  phonetics_audio_button_->SetBorder(
+      views::CreateEmptyBorder(kPhoneticsAudioButtonBorderDip));
+  phonetics_audio_button_->SetBackground(views::CreateRoundedRectBackground(
+      ui::ColorIds::kColorSysStateHoverOnSubtle,
+      kPhoneticsAudioButtonBackgroundRadiusDip));
+  phonetics_audio_button_->SetProperty(views::kMarginsKey,
+                                       kPhoneticsAudioButtonMarginInsets);
 }
 
 ResultView::~ResultView() = default;
@@ -173,39 +189,6 @@ std::u16string_view ResultView::GetSecondLineText() const {
 void ResultView::SetGenerateTtsCallback(
     GenerateTtsCallback generate_tts_callback) {
   generate_tts_callback_ = generate_tts_callback;
-}
-
-void ResultView::SetDesign(Design design) {
-  first_line_label_->SetFontList(GetFirstLineFontList(design));
-  first_line_label_->SetLineHeight(GetFirstLineHeight(design));
-  first_line_sub_label_->SetFontList(GetFirstLineFontList(design));
-  first_line_sub_label_->SetLineHeight(GetFirstLineHeight(design));
-
-  second_line_label_->SetFontList(GetSecondLineFontList(design));
-  second_line_label_->SetLineHeight(GetSecondLineHeight(design));
-
-  phonetics_audio_button_->SetImageModel(
-      views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? vector_icons::kVolumeUpFilledIcon
-                                            : vector_icons::kVolumeUpOldIcon,
-          design == Design::kCurrent ? ui::kColorButtonBackgroundProminent
-                                     : ui::kColorSysOnSurface,
-          kPhoneticsAudioButtonSizeDip));
-  phonetics_audio_button_->SetBorder(
-      design == Design::kCurrent
-          ? views::CreateEmptyBorder(kPhoneticsAudioButtonBorderDip)
-          : views::CreateEmptyBorder(kPhoneticsAudioButtonRefreshedBorderDip));
-  phonetics_audio_button_->SetBackground(
-      design == Design::kCurrent
-          ? nullptr
-          : views::CreateRoundedRectBackground(
-                ui::ColorIds::kColorSysStateHoverOnSubtle,
-                kPhoneticsAudioButtonBackgroundRadiusDip));
-  phonetics_audio_button_->SetProperty(
-      views::kMarginsKey, design == Design::kCurrent
-                              ? kPhoneticsAudioButtonMarginInsets
-                              : kPhoneticsAudioButtonRefreshedMarginInsets);
 }
 
 void ResultView::OnPhoneticsAudioButtonPressed() {

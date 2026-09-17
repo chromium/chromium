@@ -8505,14 +8505,6 @@ inline constexpr char kQuickAnswersRichCardName[] =
 inline constexpr char kQuickAnswersRichCardDescription[] =
     "Enable rich card views of the Quick Answers feature.";
 
-inline constexpr char kQuickAnswersMaterialNextUIName[] =
-    "Enable Quick Answers Material Next UI";
-inline constexpr char kQuickAnswersMaterialNextUIDescription[] =
-    "Enable Material Next UI for the Quick Answers feature. This is effective "
-    "only if Magic Boost flag is off. Note that this will be changed as this "
-    "is effective only if a device is eligible to Magic Boost when the Magic "
-    "Boost flag gets flipped.";
-
 inline constexpr char kChromeOSHWVBREncodingName[] =
     "ChromeOS Hardware Variable Bitrate Encoding";
 inline constexpr char kChromeOSHWVBREncodingDescription[] =

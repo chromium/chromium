@@ -231,15 +231,6 @@
       <message name="IDS_QUICK_ANSWERS_DOGFOOD_FEEDBACK_BUTTON_TOOLTIP_TEXT" desc="Tootip text for the dogfood feedback button in Quick-Answers related views.">
         Send feedback
       </message>
-      <message name="IDS_QUICK_ANSWERS_DEFINITION_INTENT" desc="Display text of definition intent. This is used in the title of Quick Answers user consent dialog.">
-        definition
-      </message>
-      <message name="IDS_QUICK_ANSWERS_TRANSLATION_INTENT" desc="Display text of translation intent. This is used in the title of Quick Answers user consent dialog.">
-        translation
-      </message>
-      <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_INTENT" desc="Display text of unit conversion intent. This is used in the title of Quick Answers user consent dialog.">
-        conversion
-      </message>
       <message name="IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_TITLE_TEXT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature.">
         Get info related to your selection
       </message>
@@ -270,20 +261,11 @@
       <message name="IDS_QUICK_ANSWERS_MAGIC_BOOST_USER_CONSENT_UNIT_CONVERSION_INTENT_LABEL_BUTTON" desc="Button label for Unit Conversion intent in the magic boost user consent view which leads to the magic boost disclaimer UI when clicked upon.">
         Convert "<ph name="query">$1<ex>1kg</ex></ph>"
       </message>
-      <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_TITLE_TEXT_WITH_INTENT" desc="Title text of the dialog that opens up to seek user-consent for the Quick Answers feature when supported intent is generated.">
-        Get the <ph name="intent">$1<ex>definition</ex></ph> for "<ph name="query">$2<ex>unfathomable</ex></ph>" and more
-      </message>
-      <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT" desc="Description in the dialog that opens up to seek user-consent for the Quick Answers feature.">
-        Get definitions, translations, or unit conversions when you right-click or touch &amp; hold text
-      </message>
       <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESCRIPTION_TEXT" desc="Description in the dialog that opens up to seek user-consent for the Quick Answers feature. This string is used for a refreshed design.">
         Right-click or press and hold to get definitions, translations, or unit conversions
       </message>
       <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_NO_THANKS_BUTTON" desc="Display text on the no thanks button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
         No thanks
-      </message>
-      <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_ALLOW_BUTTON" desc="Display text on the allow button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
-        Allow
       </message>
       <message name="IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_TRY_IT_BUTTON" desc="Display text on the try it button in the dialog that opens up to seek user-consent for the Quick Answers feature.">
         Try it

@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
-#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
@@ -48,8 +47,6 @@ class ResultView : public views::FlexLayoutView {
   std::u16string_view GetSecondLineText() const;
   void SetGenerateTtsCallback(GenerateTtsCallback generate_tts_callback);
 
-  void SetDesign(Design design);
-
   views::ImageButton* phonetics_audio_button() const {
     return phonetics_audio_button_;
   }
@@ -73,7 +70,6 @@ VIEW_BUILDER_PROPERTY(std::u16string, FirstLineText)
 VIEW_BUILDER_PROPERTY(std::u16string, FirstLineSubText)
 VIEW_BUILDER_PROPERTY(const PhoneticsInfo&, PhoneticsInfo)
 VIEW_BUILDER_PROPERTY(std::u16string, SecondLineText)
-VIEW_BUILDER_PROPERTY(Design, Design)
 VIEW_BUILDER_PROPERTY(ResultView::GenerateTtsCallback, GenerateTtsCallback)
 END_VIEW_BUILDER
 

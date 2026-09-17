@@ -103,8 +103,7 @@ class QuickAnswersUiController {
                              const std::u16string& intent_text);
   void CreateUserConsentViewForPixelTest(const gfx::Rect& anchor_bounds,
                                          quick_answers::IntentType intent_type,
-                                         const std::u16string& intent_text,
-                                         bool use_refreshed_design);
+                                         const std::u16string& intent_text);
 
   // Closes the user consent view.
   void CloseUserConsentView();
@@ -169,11 +168,6 @@ class QuickAnswersUiController {
       const std::string& query,
       std::optional<quick_answers::Intent> intent,
       quick_answers::QuickAnswersView::Params params);
-  void CreateUserConsentViewInternal(Profile* profile,
-                                     const gfx::Rect& anchor_bounds,
-                                     quick_answers::IntentType intent_type,
-                                     const std::u16string& intent_text,
-                                     bool use_refreshed_design);
 
   // Constructs/resets the Quick Answers rich card view.
   void CreateRichAnswersView();

@@ -15,16 +15,6 @@ enum class Intent {
   kUnitConversion,
 };
 
-// An enum used to switch design of Quick Answers UI.
-enum class Design {
-  // Currently active UI.
-  kCurrent,
-  // Refreshed Quick Answers UI.
-  kRefresh,
-  // Design used if Quick Answers is shown as part of Magic Boost.
-  kMagicBoost,
-};
-
 }  // namespace quick_answers
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_CONSTANTS_H_

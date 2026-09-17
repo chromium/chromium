@@ -5,16 +5,15 @@
 #ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_TYPOGRAPHY_H_
 #define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_TYPOGRAPHY_H_
 
-#include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "ui/gfx/font_list.h"
 
 namespace quick_answers {
 
-const gfx::FontList GetFirstLineFontList(Design design);
-int GetFirstLineHeight(Design design);
+const gfx::FontList GetFirstLineFontList();
+int GetFirstLineHeight();
 
-const gfx::FontList GetSecondLineFontList(Design design);
-int GetSecondLineHeight(Design design);
+const gfx::FontList GetSecondLineFontList();
+int GetSecondLineHeight();
 
 }  // namespace quick_answers
 

@@ -54,7 +54,7 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   struct Params {
    public:
     std::string title;
-    Design design = Design::kCurrent;
+    bool is_magic_boost = false;
     // Set true to show a Google internal variant of Qucik Answers UI.
     bool is_internal = false;
   };
@@ -134,7 +134,7 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
 
   base::WeakPtr<QuickAnswersUiController> controller_;
   std::string title_;
-  const Design design_;
+  const bool is_magic_boost_;
   std::optional<Intent> intent_;
   const bool is_internal_;
 

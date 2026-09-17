@@ -22,7 +22,6 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -544,10 +543,7 @@ TEST_F(QuickAnswersViewsTest, Translation) {
   ResultView* result_view = GetQuickAnswersView()->GetResultViewForTesting();
   ASSERT_TRUE(result_view->GetVisible());
   EXPECT_EQ(result_view->GetFirstLineText(), kTextToTranslateU16);
-  EXPECT_EQ(result_view->GetFirstLineSubText(),
-            chromeos::features::IsQuickAnswersMaterialNextUIEnabled()
-                ? u"Japanese"
-                : u"");
+  EXPECT_EQ(result_view->GetFirstLineSubText(), u"Japanese");
   EXPECT_EQ(result_view->GetSecondLineText(), kTranslatedTextU16);
 }
 
@@ -629,9 +625,6 @@ TEST_F(QuickAnswersViewsTest, AccessibilityDescriptionMagicBoost) {
 }
 
 TEST_F(QuickAnswersViewsTest, AccessibilityDescriptionRefresh) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::features::kQuickAnswersMaterialNextUI);
-
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
                          QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
@@ -650,9 +643,6 @@ TEST_F(QuickAnswersViewsTest, AccessibilityDescriptionRefresh) {
 }
 
 TEST_F(QuickAnswersViewsTest, AccessibilityDescriptionSubTextRefresh) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      chromeos::features::kQuickAnswersMaterialNextUI);
-
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
                          QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);

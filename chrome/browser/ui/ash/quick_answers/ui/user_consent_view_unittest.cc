@@ -13,25 +13,7 @@ namespace quick_answers {
 TEST(UserConsentViewTest, A11yInfo) {
   views::test::TestLayoutProvider test_layout_provider;
   chromeos::ReadWriteCardsUiController read_write_cards_ui_controller;
-  UserConsentView user_consent_view(/*use_refreshed_design=*/false,
-                                    read_write_cards_ui_controller);
-  user_consent_view.SetIntentText(u"test");
-  user_consent_view.SetIntentType(IntentType::kDictionary);
-
-  EXPECT_EQ(u"Get the definition for \"test\" and more",
-            user_consent_view.GetAccessibleName());
-  EXPECT_EQ(
-      u"Get definitions, translations, or unit conversions when you "
-      u"right-click or touch & hold text Use Left or Right arrow keys to "
-      u"manage this feature.",
-      user_consent_view.GetAccessibleDescription());
-}
-
-TEST(UserConsentViewTest, A11yInfoRefreshed) {
-  views::test::TestLayoutProvider test_layout_provider;
-  chromeos::ReadWriteCardsUiController read_write_cards_ui_controller;
-  UserConsentView user_consent_view(/*use_refreshed_design=*/true,
-                                    read_write_cards_ui_controller);
+  UserConsentView user_consent_view(read_write_cards_ui_controller);
   user_consent_view.SetIntentText(u"test");
   user_consent_view.SetIntentType(IntentType::kDictionary);
 

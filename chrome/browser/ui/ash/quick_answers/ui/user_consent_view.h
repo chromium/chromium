@@ -45,7 +45,6 @@ class UserConsentView : public chromeos::ReadWriteCardsView {
   // TODO(b/340628664): remove `read_write_cards_ui_controller` arg once we stop
   // extending `ReadWriteCardsView`.
   explicit UserConsentView(
-      bool use_refreshed_design,
       chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
 
   // Disallow copy and assign.
@@ -80,7 +79,6 @@ class UserConsentView : public chromeos::ReadWriteCardsView {
 
   IntentType intent_type_ = IntentType::kUnknown;
   std::u16string intent_text_;
-  bool use_refreshed_design_ = false;
 
   // Owned by view hierarchy.
   raw_ptr<views::Label> title_ = nullptr;

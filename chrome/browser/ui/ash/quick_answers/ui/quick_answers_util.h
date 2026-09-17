@@ -25,8 +25,6 @@ inline constexpr int kSubContentViewIndent = 12;
 inline constexpr int kSubContentTextWidth =
     kContentTextWidth - kSubContentViewIndent;
 
-inline constexpr int kButtonsViewMarginDip = 4;
-
 // Google icon.
 inline constexpr int kGoogleIconSizeDip = 16;
 
@@ -124,11 +122,11 @@ void GenerateTTSAudio(content::BrowserContext* browser_context,
                       const std::string& text,
                       const std::string& locale);
 
-const gfx::Insets GetMainViewInsets(Design design);
+const gfx::Insets GetMainViewInsets();
 
-const gfx::Insets GetButtonsViewInsets(Design design);
+const gfx::Insets GetButtonsViewInsets();
 
-int GetButtonsViewOcclusion(Design design);
+int GetButtonsViewOcclusion();
 
 }  // namespace quick_answers
 

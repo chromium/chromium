@@ -33,6 +33,7 @@
 namespace quick_answers {
 namespace {
 
+constexpr char kScreenshotRevision[] = "rev_1";
 constexpr char kScreenshotPrefix[] = "quick_answers";
 constexpr char kTestTitle[] = "TestTitle. A selected text.";
 constexpr char kTestQuery[] = "TestQuery";
@@ -46,7 +47,11 @@ constexpr char kTranslatedText[] = "Translated text";
 constexpr gfx::Rect kContextMenuRectNarrow = {100, 100, 100, 200};
 constexpr gfx::Rect kContextMenuRectWide = {100, 100, 300, 200};
 
-using PixelTestParam = std::tuple<bool, bool, bool, Design, bool>;
+using PixelTestParam = std::tuple</*is_dark_mode=*/bool,
+                                  /*is_rtl=*/bool,
+                                  /*is_narrow=*/bool,
+                                  /*is_magic_boost=*/bool,
+                                  /*is_internal=*/bool>;
 
 bool IsDarkMode(const PixelTestParam& pixel_test_param) {
   return std::get<0>(pixel_test_param);
@@ -60,7 +65,7 @@ bool IsNarrowLayout(const PixelTestParam& pixel_test_param) {
   return std::get<2>(pixel_test_param);
 }
 
-Design GetDesign(const PixelTestParam& pixel_test_param) {
+bool IsMagicBoost(const PixelTestParam& pixel_test_param) {
   return std::get<3>(pixel_test_param);
 }
 
@@ -80,18 +85,12 @@ std::string GetNarrowLayoutParamValue(const PixelTestParam& pixel_test_param) {
   return IsNarrowLayout(pixel_test_param) ? "Narrow" : "Wide";
 }
 
-std::optional<std::string> MaybeGetDesignParamValue(
+std::optional<std::string> MaybeGetMagicBoostParamValue(
     const PixelTestParam& pixel_test_param) {
-  switch (GetDesign(pixel_test_param)) {
-    case Design::kCurrent:
-      return std::nullopt;
-    case Design::kRefresh:
-      return "Refresh";
-    case Design::kMagicBoost:
-      return "MagicBoost";
+  if (IsMagicBoost(pixel_test_param)) {
+    return "MagicBoost";
   }
-
-  NOTREACHED() << "Invalid design enum class value specified";
+  return std::nullopt;
 }
 
 std::optional<std::string> MaybeInternalParamValue(
@@ -109,10 +108,10 @@ std::string GetParamName(const PixelTestParam& param,
   param_names.push_back(GetDarkModeParamValue(param));
   param_names.push_back(GetRtlParamValue(param));
   param_names.push_back(GetNarrowLayoutParamValue(param));
-  std::optional<std::string> design_param_value =
-      MaybeGetDesignParamValue(param);
-  if (design_param_value) {
-    param_names.push_back(*design_param_value);
+  std::optional<std::string> magic_boost_param_value =
+      MaybeGetMagicBoostParamValue(param);
+  if (magic_boost_param_value) {
+    param_names.push_back(*magic_boost_param_value);
   }
   std::optional<std::string> internal_param_value =
       MaybeInternalParamValue(param);
@@ -129,7 +128,9 @@ std::string GenerateParamName(
 
 std::string GetScreenshotName(const std::string& test_name,
                               const PixelTestParam& param) {
-  return test_name + "." + GetParamName(param, /*separator=*/".");
+  return base::JoinString(
+      {test_name, GetParamName(param, /*separator=*/"."), kScreenshotRevision},
+      ".");
 }
 
 // To run a pixel test locally:
@@ -147,7 +148,7 @@ std::string GetScreenshotName(const std::string& test_name,
 // MESSAGE_ID=IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_TRY_IT_BUTTON && \
 // TEST_NAME=QuickAnswersPixelTestUserConsentView.Dictionary && \
 // SCREENSHOT_NAME=UserConsentIntentDictionary && \
-// VARIANT=Light.Ltr.Wide.Refresh.ash && \
+// VARIANT=Light.Ltr.Wide.rev_1.ash && \
 // autoninja -C out/Default browser_tests && \
 // testing/xvfb.py out/Default/browser_tests --gtest_filter=*${TEST_NAME}* \
 //   --enable-pixel-output-in-tests \
@@ -204,7 +205,7 @@ class QuickAnswersPixelTestBase
         browser()->GetProfile(), kTestQuery, intent,
         {
             .title = kTestTitle,
-            .design = GetDesign(GetParam()),
+            .is_magic_boost = IsMagicBoost(GetParam()),
             .is_internal = IsInternal(GetParam()),
         });
     read_write_cards_ui_controller.SetContextMenuBounds(GetContextMenuRect());
@@ -219,8 +220,7 @@ class QuickAnswersPixelTestBase
   }
 
   void CreateAndShowUserConsentView(IntentType intent_type,
-                                    const std::u16string& intent_text,
-                                    bool use_refreshed_design) {
+                                    const std::u16string& intent_text) {
     QuickAnswersUiController* quick_answers_ui_controller =
         GetQuickAnswersUiController();
     ASSERT_TRUE(quick_answers_ui_controller);
@@ -232,7 +232,7 @@ class QuickAnswersPixelTestBase
     ASSERT_TRUE(quick_answers_controller);
     quick_answers_controller->SetVisibility(QuickAnswersVisibility::kPending);
     quick_answers_ui_controller->CreateUserConsentViewForPixelTest(
-        GetContextMenuRect(), intent_type, intent_text, use_refreshed_design);
+        GetContextMenuRect(), intent_type, intent_text);
     read_write_cards_ui_controller.SetContextMenuBounds(GetContextMenuRect());
     ASSERT_TRUE(read_write_cards_ui_controller.widget_for_test())
         << "A widget must be created to show a UI.";
@@ -277,9 +277,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
-                     testing::Values(Design::kCurrent,
-                                     Design::kRefresh,
-                                     Design::kMagicBoost),
+                     /*is_magic_boost=*/testing::Bool(),
                      /*is_internal=*/testing::Values(false)),
     &GenerateParamName);
 
@@ -292,7 +290,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(/*is_dark_mode=*/testing::Values(false),
                      /*is_rtl=*/testing::Values(false),
                      /*is_narrow=*/testing::Values(false),
-                     testing::Values(Design::kRefresh, Design::kMagicBoost),
+                     /*is_magic_boost=*/testing::Bool(),
                      /*is_internal=*/testing::Values(false)),
     &GenerateParamName);
 
@@ -304,33 +302,30 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(/*is_dark_mode=*/testing::Values(false),
                      /*is_rtl=*/testing::Values(false),
                      /*is_narrow=*/testing::Values(false),
-                     testing::Values(Design::kCurrent,
-                                     Design::kRefresh,
-                                     Design::kMagicBoost),
+                     /*is_magic_boost=*/testing::Bool(),
                      /*is_internal=*/testing::Values(true)),
     &GenerateParamName);
 
 // `QuickAnswersPixelTestLoading` is for testing loading UI with `kUnknown`
-// intent. This is applicable only for `Design::kRefresh`.
+// intent.
 INSTANTIATE_TEST_SUITE_P(
     PixelTest,
     QuickAnswersPixelTestLoading,
     testing::Combine(/*is_dark_mode=*/testing::Values(false),
                      /*is_rtl=*/testing::Values(false),
                      /*is_narrow=*/testing::Bool(),
-                     testing::Values(Design::kRefresh),
+                     /*is_magic_boost=*/testing::Values(false),
                      /*is_internal=*/testing::Values(false)),
     &GenerateParamName);
 
 // `QuickAnswersPixelTestResultView` is for testing sub text in the result view.
-// Use `Design::kRefresh` as a sub text is not used in `Design::kCurrent`.
 INSTANTIATE_TEST_SUITE_P(
     PixelTest,
     QuickAnswersPixelTestResultView,
     testing::Combine(/*is_dark_mode=*/testing::Values(false),
                      /*is_rtl=*/testing::Values(false),
                      /*is_narrow=*/testing::Bool(),
-                     testing::Values(Design::kRefresh),
+                     /*is_magic_boost=*/testing::Values(false),
                      /*is_internal=*/testing::Values(false)),
     &GenerateParamName);
 
@@ -343,7 +338,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(/*is_dark_mode=*/testing::Values(false),
                      /*is_rtl=*/testing::Values(false),
                      /*is_narrow=*/testing::Values(false),
-                     testing::Values(Design::kCurrent, Design::kRefresh),
+                     /*is_magic_boost=*/testing::Values(false),
                      /*is_internal=*/testing::Values(false)),
     &GenerateParamName);
 
@@ -387,15 +382,12 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, Retry) {
 }
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, UserConsent) {
-  Design design = GetDesign(GetParam());
-  if (design == Design::kMagicBoost) {
+  if (IsMagicBoost(GetParam())) {
     GTEST_SKIP()
         << "User consent is handled by MagicBoost UI if MagicBoost is on";
   }
 
-  CreateAndShowUserConsentView(
-      IntentType::kDictionary, u"Test",
-      /*use_refreshed_design=*/design == Design::kRefresh);
+  CreateAndShowUserConsentView(IntentType::kDictionary, u"Test");
 
   // For Narrow layout, we intentionally let it overflow in x-axis. See comments
   // in user_consent_view.cc.
@@ -462,10 +454,7 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestResultTypes, Translate) {
 }
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Unknown) {
-  Design design = GetDesign(GetParam());
-  CreateAndShowUserConsentView(
-      IntentType::kUnknown, u"IntentText",
-      /*use_refreshed_design=*/design == Design::kRefresh);
+  CreateAndShowUserConsentView(IntentType::kUnknown, u"IntentText");
 
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
       GetScreenshotName("UserConsentIntentUnknown", GetParam()),
@@ -473,13 +462,11 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Unknown) {
 }
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Dictionary) {
-  Design design = GetDesign(GetParam());
-  if (design != Design::kRefresh) {
-    GTEST_SKIP() << "This test is for testing refreshed UI";
+  if (IsMagicBoost(GetParam())) {
+    GTEST_SKIP() << "This test is for testing non-MagicBoost UI";
   }
 
-  CreateAndShowUserConsentView(IntentType::kDictionary, u"unfathomable",
-                               /*use_refreshed_design=*/true);
+  CreateAndShowUserConsentView(IntentType::kDictionary, u"unfathomable");
 
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
       GetScreenshotName("UserConsentIntentDictionary", GetParam()),
@@ -487,13 +474,11 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Dictionary) {
 }
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Translation) {
-  Design design = GetDesign(GetParam());
-  if (design != Design::kRefresh) {
-    GTEST_SKIP() << "This test is for testing refreshed UI";
+  if (IsMagicBoost(GetParam())) {
+    GTEST_SKIP() << "This test is for testing non-MagicBoost UI";
   }
 
-  CreateAndShowUserConsentView(IntentType::kTranslation, u"信息",
-                               /*use_refreshed_design=*/true);
+  CreateAndShowUserConsentView(IntentType::kTranslation, u"信息");
 
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
       GetScreenshotName("UserConsentIntentTranslation", GetParam()),
@@ -501,13 +486,11 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Translation) {
 }
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestUserConsentView, Unit) {
-  Design design = GetDesign(GetParam());
-  if (design != Design::kRefresh) {
-    GTEST_SKIP() << "This test is for testing refreshed UI";
+  if (IsMagicBoost(GetParam())) {
+    GTEST_SKIP() << "This test is for testing non-MagicBoost UI";
   }
 
-  CreateAndShowUserConsentView(IntentType::kUnit, u"1kg",
-                               /*use_refreshed_design=*/true);
+  CreateAndShowUserConsentView(IntentType::kUnit, u"1kg");
 
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
       GetScreenshotName("UserConsentIntentUnit", GetParam()),
@@ -565,8 +548,8 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestResultView, NoSubText) {
 
 // On Linux-ChromeOS, text annotator is not used. It means that loading UI is
 // shown with `kUnknown` intent. Note that we are currently using an empty text
-// as a placeholder text for `Design::Refresh` on Linux-ChromeOS. Loading UI
-// should not be shown with `kUnknown` on prod.
+// as a placeholder text on Linux-ChromeOS. Loading UI should not be shown with
+// `kUnknown` on prod.
 IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestLoading, Unknown) {
   CreateAndShowQuickAnswersViewForLoading(std::nullopt);
 

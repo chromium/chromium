@@ -112,9 +112,6 @@ BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
 // Controls whether to enable Quick Answers Rich card.
 BASE_FEATURE(kQuickAnswersRichCard, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to enable Material Next UI for Quick Answers.
-BASE_FEATURE(kQuickAnswersMaterialNextUI, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables CloudFileSystem for FileSystemProvider extensions.
 BASE_FEATURE(kFileSystemProviderCloudFileSystem,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -201,10 +198,6 @@ bool IsOrcaEnabled() {
 bool ShouldDisableChromeComposeOnChromeOS() {
   return base::FeatureList::IsEnabled(kFeatureManagementDisableChromeCompose) ||
          IsOrcaEnabled();
-}
-
-bool IsQuickAnswersMaterialNextUIEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersMaterialNextUI);
 }
 
 bool IsQuickAnswersRichCardEnabled() {

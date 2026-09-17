@@ -34,6 +34,8 @@ LoadingView::LoadingView() {
           // Default is `ALIGN_CENTER`. See `Label::Init`.
           // `SetHorizontalAlignment` flips the value for RTL.
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+          .SetFontList(GetFirstLineFontList())
+          .SetLineHeight(GetFirstLineHeight())
           .SetProperty(
               views::kFlexBehaviorKey,
               views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -47,13 +49,13 @@ LoadingView::LoadingView() {
           .SetText(l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_LOADING))
           .SetEnabledColor(ui::kColorLabelForegroundSecondary)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+          .SetFontList(GetSecondLineFontList())
+          .SetLineHeight(GetSecondLineHeight())
           .SetProperty(
               views::kFlexBehaviorKey,
               views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                        views::MaximumFlexSizeRule::kPreferred))
           .Build());
-
-  SetDesign(Design::kCurrent);
 }
 
 void LoadingView::SetFirstLineText(std::u16string_view first_line_text) {
@@ -62,14 +64,6 @@ void LoadingView::SetFirstLineText(std::u16string_view first_line_text) {
 
 std::u16string_view LoadingView::GetFirstLineText() const {
   return first_line_label_->GetText();
-}
-
-void LoadingView::SetDesign(Design design) {
-  first_line_label_->SetFontList(GetFirstLineFontList(design));
-  first_line_label_->SetLineHeight(GetFirstLineHeight(design));
-
-  second_line_label_->SetFontList(GetSecondLineFontList(design));
-  second_line_label_->SetLineHeight(GetSecondLineHeight(design));
 }
 
 BEGIN_METADATA(LoadingView)

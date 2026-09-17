@@ -58,19 +58,6 @@ void OpenUrl(Profile* profile, const GURL& url) {
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
-quick_answers::Design GetDesign(QuickAnswersState::FeatureType feature_type) {
-  switch (feature_type) {
-    case QuickAnswersState::FeatureType::kQuickAnswers:
-      return chromeos::features::IsQuickAnswersMaterialNextUIEnabled()
-                 ? quick_answers::Design::kRefresh
-                 : quick_answers::Design::kCurrent;
-    case QuickAnswersState::FeatureType::kHmr:
-      return quick_answers::Design::kMagicBoost;
-  }
-
-  NOTREACHED() << "Invalid feature type enum value provided";
-}
-
 }  // namespace
 
 using chromeos::ReadWriteCardsUiController;
@@ -96,12 +83,14 @@ void QuickAnswersUiController::CreateQuickAnswersView(
     std::optional<quick_answers::Intent> intent,
     QuickAnswersState::FeatureType feature_type,
     bool is_internal) {
-  CreateQuickAnswersViewInternal(profile, query, intent,
-                                 {
-                                     .title = title,
-                                     .design = GetDesign(feature_type),
-                                     .is_internal = is_internal,
-                                 });
+  CreateQuickAnswersViewInternal(
+      profile, query, intent,
+      {
+          .title = title,
+          .is_magic_boost =
+              feature_type == QuickAnswersState::FeatureType::kHmr,
+          .is_internal = is_internal,
+      });
 }
 
 void QuickAnswersUiController::CreateQuickAnswersViewForPixelTest(
@@ -259,28 +248,6 @@ void QuickAnswersUiController::CreateUserConsentView(
     const gfx::Rect& anchor_bounds,
     quick_answers::IntentType intent_type,
     const std::u16string& intent_text) {
-  CreateUserConsentViewInternal(
-      profile, anchor_bounds, intent_type, intent_text,
-      /*use_refreshed_design=*/
-      chromeos::features::IsQuickAnswersMaterialNextUIEnabled());
-}
-
-void QuickAnswersUiController::CreateUserConsentViewForPixelTest(
-    const gfx::Rect& anchor_bounds,
-    quick_answers::IntentType intent_type,
-    const std::u16string& intent_text,
-    bool use_refreshed_design) {
-  CHECK_IS_TEST();
-  CreateUserConsentViewInternal(/*profile=*/nullptr, anchor_bounds, intent_type,
-                                intent_text, use_refreshed_design);
-}
-
-void QuickAnswersUiController::CreateUserConsentViewInternal(
-    Profile* profile,
-    const gfx::Rect& anchor_bounds,
-    quick_answers::IntentType intent_type,
-    const std::u16string& intent_text,
-    bool use_refreshed_design) {
   CHECK_EQ(controller_->GetQuickAnswersVisibility(),
            QuickAnswersVisibility::kPending);
 
@@ -310,7 +277,7 @@ void QuickAnswersUiController::CreateUserConsentViewInternal(
         GetReadWriteCardsUiController().SetQuickAnswersUi(
             views::Builder<quick_answers::UserConsentView>(
                 std::make_unique<quick_answers::UserConsentView>(
-                    use_refreshed_design, GetReadWriteCardsUiController()))
+                    GetReadWriteCardsUiController()))
                 .SetIntentType(intent_type)
                 .SetIntentText(intent_text)
                 // It is safe to do `base::Unretained(this)`. UIs are destructed
@@ -330,6 +297,15 @@ void QuickAnswersUiController::CreateUserConsentViewInternal(
   user_consent_view_.view()->GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16(
           IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT));
+}
+
+void QuickAnswersUiController::CreateUserConsentViewForPixelTest(
+    const gfx::Rect& anchor_bounds,
+    quick_answers::IntentType intent_type,
+    const std::u16string& intent_text) {
+  CHECK_IS_TEST();
+  CreateUserConsentView(/*profile=*/nullptr, anchor_bounds, intent_type,
+                        intent_text);
 }
 
 void QuickAnswersUiController::CloseUserConsentView() {
