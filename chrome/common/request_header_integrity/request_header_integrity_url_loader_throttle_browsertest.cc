@@ -345,6 +345,23 @@ IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
   EXPECT_TRUE(HasReceivedHeader(dynamic_script_url, COPYRIGHT_HEADER_NAME));
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// End-to-end coverage of the dynamic integrity header: the throttle can only
+// attach it if the renderer's ChromeCompaneroLoader has been bound to
+// ChromeCompaneroHost and has received a token. `dynamic_script.js` is fetched
+// by the renderer (page -> bootstrap.js -> dynamic_script.js), so it exercises
+// the renderer-side throttle rather than a browser-side navigation.
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       DynamicHeaderAddedForScriptRequest) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetGoogleScriptPageUrl()));
+  GURL dynamic_script_url = GetGoogleScriptDynamicScriptUrl();
+  WaitForRequest(dynamic_script_url);
+  EXPECT_TRUE(
+      HasReceivedHeader(dynamic_script_url, INTEGRITY_DYNAMIC_HEADER_1));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
                        RedirectFromChromiumToChromium) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
