@@ -20,7 +20,6 @@ export function getHtml(this: PinnedToolbarActionElement) {
       @dragstart="${this.onDragstart}"
       @dragend="${this.onDragend}"
       @keydown="${this.onKeydown}"
-      @pointerdown="${this.onPointerdown_}"
       @click="${this.onActionClick_}"
       @contextmenu="${this.onContextmenu_}">
   </cr-icon-button>

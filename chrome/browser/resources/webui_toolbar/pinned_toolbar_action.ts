@@ -108,16 +108,9 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase
     return style.length > 0 ? style : undefined;
   }
 
-  protected onPointerdown_(e: PointerEvent) {
-    if (e.button === 0) {
-      this.browserProxy_.toolbarUIHandler.onPinnedToolbarActionPointerDown(
-          this.state.action);
-    }
-  }
-
-  protected onActionClick_(e: PointerEvent) {
+  protected onActionClick_() {
     this.browserProxy_.toolbarUIHandler.invokePinnedToolbarAction(
-        this.state.action, e.pointerType !== '');
+        this.state.action);
   }
 
 

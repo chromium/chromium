@@ -219,17 +219,9 @@ void ToolbarUIService::OnPageActionChipShowingChanged(
 }
 
 void ToolbarUIService::InvokePinnedToolbarAction(
-    toolbar_ui_api::mojom::PinnedToolbarAction action_id,
-    bool is_pointer_interaction) {
-  if (delegate_) {
-    delegate_->InvokePinnedToolbarAction(action_id, is_pointer_interaction);
-  }
-}
-
-void ToolbarUIService::OnPinnedToolbarActionPointerDown(
     toolbar_ui_api::mojom::PinnedToolbarAction action_id) {
   if (delegate_) {
-    delegate_->OnPinnedToolbarActionPointerDown(action_id);
+    delegate_->InvokePinnedToolbarAction(action_id);
   }
 }
 
