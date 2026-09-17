@@ -664,6 +664,8 @@ chromium-metrics-reviews@google.com.
   <token key="Priority">
     <variant name="" summary="all priorities"/>
     <variant name=".BestEffort" summary="the BestEffort priority"/>
+    <variant name=".MinPriorityInternalUseOnly"
+        summary="the MinPriorityInternalUseOnly priority"/>
     <variant name=".UserBlocking" summary="the UserBlocking priority"/>
     <variant name=".UserVisible" summary="the UserVisible priority"/>
   </token>
@@ -691,6 +693,8 @@ chromium-metrics-reviews@google.com.
   <token key="Priority">
     <variant name="" summary="all priorities"/>
     <variant name=".BestEffort" summary="the BestEffort priority"/>
+    <variant name=".MinPriorityInternalUseOnly"
+        summary="the MinPriorityInternalUseOnly priority"/>
     <variant name=".UserBlocking" summary="the UserBlocking priority"/>
     <variant name=".UserVisible" summary="the UserVisible priority"/>
   </token>

@@ -98,6 +98,9 @@ EnumTraits<unexportable_keys::mojom::BackgroundTaskPriority,
   switch (priority) {
     case unexportable_keys::BackgroundTaskPriority::kBestEffort:
       return unexportable_keys::mojom::BackgroundTaskPriority::kBestEffort;
+    case unexportable_keys::BackgroundTaskPriority::kMinPriorityInternalUseOnly:
+      return unexportable_keys::mojom::BackgroundTaskPriority::
+          kMinPriorityInternalUseOnly;
     case unexportable_keys::BackgroundTaskPriority::kUserBlocking:
       return unexportable_keys::mojom::BackgroundTaskPriority::kUserBlocking;
     case unexportable_keys::BackgroundTaskPriority::kUserVisible:
@@ -110,6 +113,10 @@ EnumTraits<unexportable_keys::mojom::BackgroundTaskPriority,
            unexportable_keys::BackgroundTaskPriority>::
     FromMojom(unexportable_keys::mojom::BackgroundTaskPriority mojo_priority) {
   switch (mojo_priority) {
+    case unexportable_keys::mojom::BackgroundTaskPriority::
+        kMinPriorityInternalUseOnly:
+      return unexportable_keys::BackgroundTaskPriority::
+          kMinPriorityInternalUseOnly;
     case unexportable_keys::mojom::BackgroundTaskPriority::kBestEffort:
       return unexportable_keys::BackgroundTaskPriority::kBestEffort;
     case unexportable_keys::mojom::BackgroundTaskPriority::kUserVisible:
