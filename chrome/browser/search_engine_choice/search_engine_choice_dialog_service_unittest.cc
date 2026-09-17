@@ -52,17 +52,15 @@ namespace {
 MATCHER_P(RecordedChoiceScreenEvent, event, "") {
   return arg.GetBucketCount(
              search_engines::kSearchEngineChoiceScreenEventsHistogram, event) ==
-             1 &&
+             1
 #if !BUILDFLAG(IS_CHROMEOS)
-         arg.GetBucketCount(
-             base::StrCat(
-                 {search_engines::kSearchEngineChoiceScreenEventsHistogram,
-                  ".Profile1"}),
-             event) == 1 &&
+         && arg.GetBucketCount(
+                base::StrCat(
+                    {search_engines::kSearchEngineChoiceScreenEventsHistogram,
+                     ".Profile1"}),
+                event) == 1
 #endif
-         arg.GetBucketCount(
-             search_engines::kPumaSearchChoiceScreenEventsHistogram, event) ==
-             1;
+      ;
 }
 
 constexpr CountryId kBelgiumCountryId("BE");

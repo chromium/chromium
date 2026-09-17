@@ -80,7 +80,7 @@ const CountryId kBelgiumCountryId = CountryId("BE");
 const CountryId kJapanCountryId = CountryId("JP");
 #endif
 
-// Checks for the given histogram name and the Profile1 and PUMA variants.
+// Checks for the given histogram name and the Profile1 variant.
 template <typename T>
 void ExpectHistogramsSampleCount(const base::HistogramTester& histogram_tester,
                                  const std::string& base_histogram_name,
@@ -92,11 +92,6 @@ void ExpectHistogramsSampleCount(const base::HistogramTester& histogram_tester,
 
   std::string profile1_name = base::StrCat({base_histogram_name, ".Profile1"});
   histogram_tester.ExpectUniqueSample(profile1_name, sample, expected_count,
-                                      location);
-
-  std::string puma_name =
-      base::StrCat({"PUMA.RegionalCapabilities.", base_histogram_name});
-  histogram_tester.ExpectUniqueSample(puma_name, sample, expected_count,
                                       location);
 }
 
@@ -740,9 +735,6 @@ class SearchEngineChoiceServiceDisplayStateRecordTest
 
     CheckHistogramExpectation(
         histogram_tester, kSearchEngineChoiceScreenSelectedEngineIndexHistogram,
-        expectations.selected_index, location);
-    CheckHistogramExpectation(
-        histogram_tester, kPumaSearchChoiceScreenSelectedEngineIndexHistogram,
         expectations.selected_index, location);
 
     CheckHistogramExpectation(

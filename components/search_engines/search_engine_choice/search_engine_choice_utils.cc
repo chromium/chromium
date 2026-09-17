@@ -26,7 +26,6 @@
 #include "base/version_info/version_info.h"
 #include "build/branding_buildflags.h"
 #include "components/country_codes/country_codes.h"
-#include "components/metrics/private_metrics/puma_histogram_functions.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -185,30 +184,17 @@ void RecordChoiceScreenDefaultSearchProviderType(
   profile_metrics_service.UmaHistogramEnumeration(
       kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram, engine_type,
       SEARCH_ENGINE_MAX);
-  metrics::private_metrics::PumaHistogramEnumeration(
-      metrics::private_metrics::PumaType::kRc,
-      kPumaSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
-      engine_type, SEARCH_ENGINE_MAX);
   if (choice_location == ChoiceMadeLocation::kChoiceScreen ||
       choice_location == ChoiceMadeLocation::kDeviceChoiceImport) {
     profile_metrics_service.UmaHistogramEnumeration(
         kSearchEngineChoiceScreenDefaultSearchEngineType2Histogram, engine_type,
         SEARCH_ENGINE_MAX);
-    metrics::private_metrics::PumaHistogramEnumeration(
-        metrics::private_metrics::PumaType::kRc,
-        kPumaSearchEngineChoiceScreenDefaultSearchEngineType2Histogram,
-        engine_type, SEARCH_ENGINE_MAX);
   }
 }
 
 void RecordChoiceScreenSelectedIndex(int selected_engine_index) {
   base::UmaHistogramExactLinear(
       kSearchEngineChoiceScreenSelectedEngineIndexHistogram,
-      selected_engine_index,
-      TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines);
-  metrics::private_metrics::PumaHistogramExactLinear(
-      metrics::private_metrics::PumaType::kRc,
-      kPumaSearchChoiceScreenSelectedEngineIndexHistogram,
       selected_engine_index,
       TemplateURLPrepopulateData::kMaxEeaPrepopulatedEngines);
 }
