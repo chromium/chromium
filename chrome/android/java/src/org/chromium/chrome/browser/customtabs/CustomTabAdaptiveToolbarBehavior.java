@@ -8,7 +8,6 @@ import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE
 import static androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_OFF;
 
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.COUNT;
-import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.CPA_ONLY_MODE;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.DUPLICATED_ACTION;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.INVALID_VARIANT;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.OTHER_REASON;
@@ -27,7 +26,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
@@ -49,7 +47,6 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Drawable mOpenInBrowserButton;
     private final Runnable mOpenInBrowserRunnable;
-    private final Runnable mRegisterVoiceSearchRunnable;
     private final List<CustomButtonParams> mToolbarCustomButtons;
     private final Set<Integer> mValidButtons;
 
@@ -58,28 +55,18 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
             ActivityTabProvider activityTabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
             Drawable openInBrowserButton,
-            Runnable openInBrowserRunnable,
-            Runnable registerVoiceSearchRunnable) {
+            Runnable openInBrowserRunnable) {
         mContext = context;
         mActivityTabProvider = activityTabProvider;
         mIntentDataProvider = intentDataProvider;
         mToolbarCustomButtons = mIntentDataProvider.getCustomButtonsOnToolbar();
         mOpenInBrowserButton = openInBrowserButton;
         mOpenInBrowserRunnable = openInBrowserRunnable;
-        mRegisterVoiceSearchRunnable = registerVoiceSearchRunnable;
         mValidButtons = new HashSet<>(COMMON_BUTTONS);
         if (isOpenInBrowserButtonEnabled()) {
             mValidButtons.add(AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER);
         }
         if (!isShareButtonEnabled()) mValidButtons.remove(SHARE);
-        if (ChromeFeatureList.sCctAdaptiveButtonEnableVoice.getValue()) {
-            mValidButtons.add(AdaptiveToolbarButtonVariant.VOICE);
-        }
-    }
-
-    @Override
-    public boolean shouldInitialize() {
-        return ChromeFeatureList.sCctAdaptiveButton.isEnabled();
     }
 
     @Override
@@ -97,10 +84,6 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
     public void registerPerSurfaceButtons(
             AdaptiveToolbarButtonController controller,
             Supplier<@Nullable Tracker> trackerSupplier) {
-        if (ChromeFeatureList.sCctAdaptiveButtonEnableVoice.getValue()) {
-            mRegisterVoiceSearchRunnable.run();
-        }
-
         if (isOpenInBrowserButtonEnabled()) {
             var openInBrowserButton =
                     new OpenInBrowserButtonController(
@@ -146,9 +129,6 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
             } else if (isButtonDuplicated(result)) {
                 if (hiddenReason == OTHER_REASON) hiddenReason = DUPLICATED_ACTION;
                 isValid = false;
-            } else if (shouldSkipStaticAction(result)) {
-                if (hiddenReason == OTHER_REASON) hiddenReason = CPA_ONLY_MODE;
-                isValid = false;
             }
             if (isValid) {
                 RecordHistogram.recordEnumeratedHistogram(
@@ -163,32 +143,12 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         return AdaptiveToolbarButtonVariant.UNKNOWN;
     }
 
-    /** Whether some static action should be filtered out. */
-    private boolean shouldSkipStaticAction(@AdaptiveToolbarButtonVariant int variant) {
-        if (!AdaptiveToolbarFeatures.isDynamicAction(variant)) {
-            // |contextual_only| filters out all the static actions, unless 'open in browser'
-            // is explicitly enabled and developers wish to use it.
-            if (ChromeFeatureList.sCctAdaptiveButtonContextualOnly.getValue()) {
-                return !(isOpenInBrowserButtonEnabled() && variant == OPEN_IN_BROWSER);
-            }
-        }
-        return false;
-    }
-
     @Override
     public boolean canShowManualOverride(@AdaptiveToolbarButtonVariant int manualOverride) {
         // Manual override should not be shown if the developer specified the same type
-        // in the custom action buttons or Chrome Actions is set to off. Also, for the
-        // configuration CPA+OpenInBrowserDefault, the default should show over the manual
-        // override.
+        // in the custom action buttons or Chrome Actions is set to off.
         if (isButtonDuplicated(manualOverride)) return false;
         if (manualOverride == SHARE && !isShareButtonEnabled()) return false;
-        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CCT_ADAPTIVE_BUTTON, "contextual_only", false)
-                && ChromeFeatureList.sCctAdaptiveButtonDefaultVariant.getValue()
-                        == OPEN_IN_BROWSER) {
-            return false;
-        }
         return true;
     }
 
@@ -199,8 +159,7 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
 
     @Override
     public @AdaptiveToolbarButtonVariant int getSegmentationDefault(Profile profile) {
-        var defVariant = ChromeFeatureList.sCctAdaptiveButtonDefaultVariant.getValue();
-        return isButtonDuplicated(defVariant) ? UNKNOWN : defVariant;
+        return UNKNOWN;
     }
 
     private boolean isOpenInBrowserButtonEnabled() {

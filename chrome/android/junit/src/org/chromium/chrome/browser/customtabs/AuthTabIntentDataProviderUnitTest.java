@@ -31,14 +31,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TitleVisibility;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.ui.base.TestActivity;
 
@@ -197,7 +195,6 @@ public class AuthTabIntentDataProviderUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void testIsOptionalButtonSupported_normalAuthTab() {
         mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
         assertFalse(
@@ -206,7 +203,6 @@ public class AuthTabIntentDataProviderUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void testIsOptionalButtonSupported_ephemeralAuthTab() {
         mIntent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
         mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);

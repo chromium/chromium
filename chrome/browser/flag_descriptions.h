@@ -5941,18 +5941,6 @@ inline constexpr char kBrowsingDataModelName[] = "Browsing Data Model";
 inline constexpr char kBrowsingDataModelDescription[] =
     "Enables BDM on Android.";
 
-inline constexpr char kCCTAdaptiveButtonName[] =
-    "Adaptive button in Custom Tabs";
-inline constexpr char kCCTAdaptiveButtonDescription[] =
-    "Enables adaptive action button in Custom Tabs toolbar";
-
-inline constexpr char kCCTAdaptiveButtonTestSwitchName[] =
-    "Test flags for adaptive button in Custom Tabs";
-inline constexpr char kCCTAdaptiveButtonTestSwitchDescription[] =
-    "Enables adaptive action button in Custom Tabs toolbar, with some tweaks "
-    "to facilitate testing 1) simulate narrow toolbar to hide MTB 2) Always "
-    "show static action MTB chip animation";
-
 inline constexpr char kCCTAlwaysOpenInBrowserName[] =
     "Always Open Custom Tabs in Browser";
 inline constexpr char kCCTAlwaysOpenInBrowserDescription[] =

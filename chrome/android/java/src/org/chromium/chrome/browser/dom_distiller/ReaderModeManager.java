@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
@@ -159,12 +158,6 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
     /** Histogram name for the end distillability result. */
     public static final String PAGE_DISTILLATION_RESULT_HISTOGRAM =
             "DomDistiller.Android.OnDistillableResult.PageDistillationResult";
-
-    /**
-     * Field param for MTB-CCT indicating that the fallback UI for reader mode is overflow menu. If
-     * false, the fallback UI will be Message.
-     */
-    public static final String CPA_FALLBACK_MENU_PARAM = "reader_mode_fallback_menu";
 
     /** The url of the last page visited if the last page was reader mode page. Otherwise null. */
     private @Nullable GURL mReaderModePageUrl;
@@ -561,7 +554,7 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
     }
 
     private boolean shouldSuppressForCpa() {
-        if (mTab.isCustomTab() && ChromeFeatureList.sCctAdaptiveButton.isEnabled()) {
+        if (mTab.isCustomTab()) {
             // If the manager hasn't been notified of the CPA yet, don't show the prompt for now.
             // Later it will be shown if CPA is determined to be hidden.
             if (!mHasBeenNotifiedOfCpa) {
@@ -569,13 +562,8 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
                 return true;
             }
 
-            // Do not proceed to show Message UI if CPA is shown, or the fallback UI will be in
-            // the overflow menu.
-            if (mIsReaderModeButtonShowingOnToolbar
-                    || ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
-                            CPA_FALLBACK_MENU_PARAM,
-                            false)) {
+            // Do not proceed to show Message UI if CPA is shown.
+            if (mIsReaderModeButtonShowingOnToolbar) {
                 return true;
             }
         }
@@ -660,14 +648,7 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
 
                     navigateToReaderMode();
                     RecordUserAction.record("MobileReaderModeActivated");
-                    boolean isCpaFallbackMessage =
-                            !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                    ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
-                                    CPA_FALLBACK_MENU_PARAM,
-                                    false);
-                    if (mHasBeenNotifiedOfCpa
-                            && !mIsReaderModeButtonShowingOnToolbar
-                            && isCpaFallbackMessage) {
+                    if (mHasBeenNotifiedOfCpa && !mIsReaderModeButtonShowingOnToolbar) {
                         RecordHistogram.recordEnumeratedHistogram(
                                 "CustomTab.AdaptiveToolbarButton.FallbackUi",
                                 AdaptiveToolbarButtonVariant.READER_MODE,
@@ -931,11 +912,11 @@ public class ReaderModeManager implements TabObserver, UserData, NightModeStateP
      */
     public void onContextualPageActionShown(
             OneshotSupplier<Boolean> showCpaButton, boolean isReaderMode) {
-        // If the feature is enabled and the tab is a custom tab, the manager should be aware if the
-        // displayed contextual page action is the reader one. Once determined, #tryShowingPrompt
-        // can successfully decide between showing a message prompt or suppressing it in favor of
-        // the contextual page action's UI.
-        if (ChromeFeatureList.sCctAdaptiveButton.isEnabled() && mTab.isCustomTab()) {
+        // If the tab is a custom tab, the manager should be aware if the displayed contextual page
+        // action is the reader one. Once determined, #tryShowingPrompt can successfully decide
+        // between showing a message prompt or suppressing it in favor of the contextual page
+        // action's UI.
+        if (mTab.isCustomTab()) {
             mHasBeenNotifiedOfCpa = true;
             showCpaButton.runSyncOrOnAvailable(
                     show -> {

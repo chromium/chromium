@@ -220,7 +220,6 @@ public class WebappIntentDataProviderTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void testIsOptionalButtonSupported() {
         var intentDataProvider =
                 buildWebAppIntentDataProvider(mIntent, buildWebAppExtras(DisplayMode.STANDALONE));

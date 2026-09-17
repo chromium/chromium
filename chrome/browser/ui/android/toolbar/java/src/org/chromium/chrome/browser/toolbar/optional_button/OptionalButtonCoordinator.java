@@ -54,7 +54,6 @@ public class OptionalButtonCoordinator {
     private final MonotonicObservableSupplier<Tracker> mFeatureEngagementTrackerSupplier;
     private @Nullable Callback<Integer> mTransitionFinishedCallback;
     private @Nullable IphCommandBuilder mIphCommandBuilder;
-    private boolean mAlwaysShowActionChip;
     private boolean mActionChipTriggeredByTracker;
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
 
@@ -221,15 +220,6 @@ public class OptionalButtonCoordinator {
     }
 
     /**
-     * Set the flag that always enables chip animiation of contextual page action.
-     *
-     * @param show Whether the animation should be always enabled.
-     */
-    public void setAlwaysShowActionChip(boolean show) {
-        mAlwaysShowActionChip = show;
-    }
-
-    /**
      * Updates the button to replace the current action with a new one. If animations are allowed
      * (according to the BooleanSupplier set with setIsAnimationAllowedPredicate) then this update
      * will be animated. Otherwise it'll instantly switch to the new icon.
@@ -264,7 +254,7 @@ public class OptionalButtonCoordinator {
             boolean triggeredByTracker = false;
             boolean shouldShowActionChip = false;
 
-            if (mAlwaysShowActionChip || isGlic) {
+            if (isGlic) {
                 shouldShowActionChip = true;
             } else if (isActionChipVariant) {
                 Tracker tracker = mFeatureEngagementTrackerSupplier.get();

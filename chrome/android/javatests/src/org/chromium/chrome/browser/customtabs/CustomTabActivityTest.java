@@ -545,7 +545,6 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void testOptionalButton_supportedOnDefaultType() {
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -557,10 +556,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":open_in_browser/true",
-        ChromeFeatureList.ENABLE_DISCOUNT_INFO_API
-    })
+    @EnableFeatures({ChromeFeatureList.ENABLE_DISCOUNT_INFO_API})
     public void testOptionalButton_SupportedTypes() {
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);

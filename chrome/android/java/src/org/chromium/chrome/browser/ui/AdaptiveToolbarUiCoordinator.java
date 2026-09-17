@@ -137,8 +137,6 @@ public class AdaptiveToolbarUiCoordinator {
             Supplier<ScrimManager> scrimSupplier,
             Supplier<@Nullable ReaderModeIphController> readerModeIphControllerSupplier,
             View toolbarContainer) {
-        if (!toolbarBehavior.shouldInitialize()) return;
-
         mBottomSheetController = bottomSheetController;
         mProfileSupplier = profileSupplier;
         mScrimSupplier = scrimSupplier;

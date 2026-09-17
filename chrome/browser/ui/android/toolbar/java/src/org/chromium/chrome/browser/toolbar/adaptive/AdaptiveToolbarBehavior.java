@@ -36,11 +36,6 @@ public interface AdaptiveToolbarBehavior {
     /** Default list of valid button variants used for BrApp. */
     Set<Integer> sValidButtons = new HashSet<>();
 
-    /** Returns {@code true} if adaptive toolbar button feature is enabled. */
-    default boolean shouldInitialize() {
-        return true;
-    }
-
     /** Returns {@code true} if a long click on the button shows a popup menu for settings UI. */
     default boolean canShowSettings() {
         return true;

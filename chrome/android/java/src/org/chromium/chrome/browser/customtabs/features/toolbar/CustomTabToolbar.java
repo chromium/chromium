@@ -73,7 +73,6 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.Bu
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayCoordinator;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayProperties;
-import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -416,12 +415,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         View indicator = mMenuButton.findViewById(R.id.menu_dot);
         boolean show =
                 buttonVariant == AdaptiveToolbarButtonVariant.PRICE_TRACKING
-                        || buttonVariant == AdaptiveToolbarButtonVariant.PRICE_INSIGHTS
-                        || (buttonVariant == AdaptiveToolbarButtonVariant.READER_MODE
-                                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                        ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
-                                        ReaderModeManager.CPA_FALLBACK_MENU_PARAM,
-                                        false));
+                        || buttonVariant == AdaptiveToolbarButtonVariant.PRICE_INSIGHTS;
         Log.i(TAG, "fallback-ui-variant: " + buttonVariant + " show: " + show);
         if (!show) {
             resetOptionalButtonState();

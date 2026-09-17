@@ -435,8 +435,6 @@ public abstract class ChromeFeatureList {
     public static final String CACHE_IS_GOOGLE_SIGNED = "CacheIsGoogleSigned";
     public static final String CACHE_IS_MULTI_INSTANCE_API_31_ENABLED =
             "CacheIsMultiInstanceApi31Enabled";
-    public static final String CCT_ADAPTIVE_BUTTON = "CCTAdaptiveButton";
-    public static final String CCT_ADAPTIVE_BUTTON_TEST_SWITCH = "CCTAdaptiveButtonTestSwitch";
     public static final String CCT_ALWAYS_OPEN_IN_BROWSER = "CCTAlwaysOpenInBrowser";
     public static final String CCT_AUTO_TRANSLATE = "CCTAutoTranslate";
     public static final String CCT_BLOCK_TOUCHES_DURING_ENTER_ANIMATION =
@@ -1061,9 +1059,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CACHE_IS_GOOGLE_SIGNED, true, /* defaultValueInTests= */ true);
     public static final CachedFlag sCacheIsMultiInstanceApi31Enabled =
             newCachedFlag(CACHE_IS_MULTI_INSTANCE_API_31_ENABLED, true);
-    public static final CachedFlag sCctAdaptiveButton =
-            newCachedFlag(
-                    CCT_ADAPTIVE_BUTTON, /* defaultValue= */ true, /* defaultValueInTests= */ true);
     public static final CachedFlag sCctAlwaysOpenInBrowser =
             newCachedFlag(CCT_ALWAYS_OPEN_IN_BROWSER, false);
     public static final CachedFlag sCctAutoTranslate = newCachedFlag(CCT_AUTO_TRANSLATE, true);
@@ -1573,7 +1568,6 @@ public abstract class ChromeFeatureList {
                     sBrowserControlsHidingToken,
                     sCacheIsGoogleSigned,
                     sCacheIsMultiInstanceApi31Enabled,
-                    sCctAdaptiveButton,
                     sCctAlwaysOpenInBrowser,
                     sCctAutoTranslate,
                     sCctBlockTouchesDuringEnterAnimation,
@@ -1951,12 +1945,6 @@ public abstract class ChromeFeatureList {
                     ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER,
                     ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER_JUMP_TO_COMPLETION_NO_FADE,
                     false);
-    public static final BooleanCachedFeatureParam sCctAdaptiveButtonEnableVoice =
-            newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "voice", false);
-    public static final BooleanCachedFeatureParam sCctAdaptiveButtonContextualOnly =
-            newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "contextual_only", false);
-    public static final IntCachedFeatureParam sCctAdaptiveButtonDefaultVariant =
-            newIntCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "default_variant", 0);
     public static final BooleanCachedFeatureParam sLockTopControlsForceAdjustHeightOnStartup =
             newBooleanCachedFeatureParam(
                     LOCK_TOP_CONTROLS_ON_LARGE_TABLETS_V2, "adjust_tab_strip_on_startup", true);
@@ -2380,9 +2368,6 @@ public abstract class ChromeFeatureList {
                     sAndroidVerticalTabsBlockDrawOnColdStart,
                     sAndroidVerticalTabsEnableByDefault,
                     sBackgroundThreadPoolFieldTrialConfig,
-                    sCctAdaptiveButtonContextualOnly,
-                    sCctAdaptiveButtonDefaultVariant,
-                    sCctAdaptiveButtonEnableVoice,
                     sCctAutoTranslateAllowAllFirstParties,
                     sCctAutoTranslatePackageNamesAllowlist,
                     sCctGoogleBottomBarButtonList,

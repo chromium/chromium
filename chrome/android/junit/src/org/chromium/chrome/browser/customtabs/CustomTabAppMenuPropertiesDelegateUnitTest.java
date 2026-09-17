@@ -125,7 +125,6 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_ADAPTIVE_BUTTON})
     public void enablePriceTrackingItemRow() {
         mBookmarkModelSupplier.set(mBookmarkModel);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
@@ -181,7 +180,6 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_ADAPTIVE_BUTTON})
     public void enablePriceInsightsMenu() {
         ContextualPageActionController cpac = mock(ContextualPageActionController.class);
         doReturn(true).when(cpac).hasPriceInsights();

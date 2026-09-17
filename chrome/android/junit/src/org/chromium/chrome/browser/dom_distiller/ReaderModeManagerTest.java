@@ -38,7 +38,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -279,21 +278,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @DisableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
-    public void testUi_notTriggered_contextualPageActionUiEnabled_exceptOnCct() {
-        when(mTab.isCustomTab()).thenReturn(true);
-        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
-        assertEquals(
-                "Distillation should be possible.",
-                DistillationStatus.POSSIBLE,
-                mManager.getDistillationStatus());
-        verify(mMessageDispatcher)
-                .enqueueMessage(
-                        any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
-    }
-
-    @Test
-    @Feature("ReaderMode")
     public void testWebContentsObserver_distillerNavigationRemoved() {
         when(mNavController.getEntryAtIndex(0))
                 .thenReturn(createNavigationEntry(0, MOCK_DISTILLER_URL));
@@ -456,22 +440,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @DisableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
-    public void testTryShowingPrompt_CctCpaOff_ShouldShowPrompt() {
-        when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mTab.isCustomTab()).thenReturn(true);
-
-        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
-
-        verify(mMessageDispatcher)
-                .enqueueMessage(
-                        any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
-    }
-
-    @Test
-    @Feature("ReaderMode")
     @EnableFeatures({
-        ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
         DomDistillerFeatures.READER_MODE_DISTILL_IN_APP // Makes test mocking easier.
     })
     public void testTryShowingPrompt_CctCpaButtonShowing_ShouldNotShowPrompt() {
@@ -499,7 +468,6 @@ public class ReaderModeManagerTest {
     @Test
     @Feature("ReaderMode")
     @EnableFeatures({
-        ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
         DomDistillerFeatures.READER_MODE_DISTILL_IN_APP // Makes test mocking easier.
     })
     public void testTryShowingPrompt_CctCpaButtonShowingDelayed_ShouldNotShowPrompt() {
@@ -529,7 +497,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @EnableFeatures({ChromeFeatureList.CCT_ADAPTIVE_BUTTON})
     @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testTryShowingPrompt_CctCpaButtonNotShowing_FallbackMessage_ShouldShowPrompt() {
         when(mTab.getWebContents()).thenReturn(mWebContents);
@@ -557,40 +524,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @EnableFeatures({ChromeFeatureList.CCT_ADAPTIVE_BUTTON})
-    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
-    public void testTryShowingPrompt_CctCpaButtonNotShowing_FallbackMenu_ShouldNotShowPrompt() {
-        when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mTab.isCustomTab()).thenReturn(true);
-        when(mTab.isLoading()).thenReturn(false);
-        when(mWebContents.getLastCommittedUrl()).thenReturn(MOCK_URL);
-
-        mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
-
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
-                ReaderModeManager.CPA_FALLBACK_MENU_PARAM,
-                true);
-        // Simulate the button UI not being displayed.
-        mButtonVisibilitySupplier.set(false);
-        mManager.onContextualPageActionShown(mButtonVisibilitySupplier, /* isReaderMode= */ true);
-
-        verify(mMessageDispatcher, never())
-                .enqueueMessage(
-                        any(), eq(mWebContents), eq(MessageScopeType.NAVIGATION), eq(false));
-
-        // Verify the histogram for fallback UI is NOT recorded.
-        var watcher =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("CustomTab.AdaptiveToolbarButton.FallbackUi")
-                        .build();
-        mManager.activateReaderMode(EntryPoint.APP_MENU);
-        watcher.assertExpected();
-    }
-
-    @Test
-    @Feature("ReaderMode")
-    @EnableFeatures({ChromeFeatureList.CCT_ADAPTIVE_BUTTON})
     @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testTryShowingPrompt_CctCpaButtonNotShowingDelayed_ShouldShowPrompt() {
         when(mTab.getWebContents()).thenReturn(mWebContents);
@@ -621,7 +554,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void testTryShowingPrompt_CctCpaOn_IncognitoCct_ShouldShowPromptIfApplicable() {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.isIncognito()).thenReturn(true);

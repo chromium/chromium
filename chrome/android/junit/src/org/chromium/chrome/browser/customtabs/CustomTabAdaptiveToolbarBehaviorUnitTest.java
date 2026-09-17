@@ -18,9 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabMtbHiddenReason.CPA_ONLY_MODE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
-import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.READER_MODE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.SHARE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.TRANSLATE;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.UNKNOWN;
@@ -38,13 +36,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -55,13 +50,11 @@ import java.util.function.Supplier;
 
 /** Tests for {@link CustomTabAdaptiveToolbarBehavior}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
 public class CustomTabAdaptiveToolbarBehaviorUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
     @Mock private Runnable mOpenInBrowserRunnable;
-    @Mock private Runnable mRegisterVoiceSearchRunnable;
     @Mock private Drawable mOpenInBrowserButton;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock private Supplier<Tracker> mTrackerSupplier;
@@ -82,20 +75,7 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
                         mActivityTabProvider,
                         mIntentDataProvider,
                         mOpenInBrowserButton,
-                        mOpenInBrowserRunnable,
-                        mRegisterVoiceSearchRunnable);
-    }
-
-    @Test
-    public void registerPerSurfaceButtons_voiceSearch() {
-        AdaptiveToolbarButtonController controller =
-                Mockito.mock(AdaptiveToolbarButtonController.class);
-        mBehavior.registerPerSurfaceButtons(controller, mTrackerSupplier);
-        verify(mRegisterVoiceSearchRunnable, never()).run();
-
-        ChromeFeatureList.sCctAdaptiveButtonEnableVoice.setForTesting(true);
-        mBehavior.registerPerSurfaceButtons(controller, mTrackerSupplier);
-        verify(mRegisterVoiceSearchRunnable).run();
+                        mOpenInBrowserRunnable);
     }
 
     @Test
@@ -133,7 +113,6 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":open_in_browser/true")
     public void resultFilter_avoidDuplicationWithDeveloperCustomButtons() {
         CustomButtonParams openInBrowser = Mockito.mock(CustomButtonParams.class);
         when(openInBrowser.getType()).thenReturn(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
@@ -153,7 +132,6 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
     public void resultFilter_filterOutShareForDevOptionOff() {
         when(mIntentDataProvider.getShareButtonState()).thenReturn(SHARE_STATE_OFF);
         List<Integer> segmentationResults = List.of(SHARE, TRANSLATE);
@@ -162,77 +140,6 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.CCT_ADAPTIVE_BUTTON
-                    + ":open_in_browser/true/contextual_only/true/default_variant/15")
-    public void resultFilter_skipStaticActionOpenInBrowserCpaMode() {
-        List<Integer> segmentationResults = List.of(OPEN_IN_BROWSER, TRANSLATE);
-
-        when(mIntentDataProvider.getOpenInBrowserButtonState())
-                .thenReturn(OPEN_IN_BROWSER_STATE_ON);
-        var watcher1 =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("CustomTabs.AdaptiveToolbarButton.ChosenRanking", 0)
-                        .expectNoRecords("CustomTabs.AdaptiveToolbarButton.HiddenReason")
-                        .build();
-        assertEquals(OPEN_IN_BROWSER, mBehavior.resultFilter(segmentationResults));
-        watcher1.assertExpected();
-
-        when(mIntentDataProvider.getOpenInBrowserButtonState())
-                .thenReturn(OPEN_IN_BROWSER_STATE_OFF);
-        var watcher2 =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("CustomTabs.AdaptiveToolbarButton.ChosenRanking")
-                        .expectIntRecords(
-                                "CustomTabs.AdaptiveToolbarButton.HiddenReason", CPA_ONLY_MODE)
-                        .build();
-        assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
-        watcher2.assertExpected();
-
-        when(mIntentDataProvider.getOpenInBrowserButtonState())
-                .thenReturn(OPEN_IN_BROWSER_STATE_DEFAULT);
-        var watcher3 =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("CustomTabs.AdaptiveToolbarButton.ChosenRanking", 0)
-                        .expectNoRecords("CustomTabs.AdaptiveToolbarButton.HiddenReason")
-                        .build();
-        assertEquals(OPEN_IN_BROWSER, mBehavior.resultFilter(segmentationResults));
-        watcher3.assertExpected();
-
-        segmentationResults = List.of(SHARE, TRANSLATE);
-        var watcher4 =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("CustomTabs.AdaptiveToolbarButton.ChosenRanking")
-                        .expectIntRecords(
-                                "CustomTabs.AdaptiveToolbarButton.HiddenReason", CPA_ONLY_MODE)
-                        .build();
-        assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
-        watcher4.assertExpected();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":contextual_only/true")
-    public void resultFilter_skipStaticActionInContextualOnlyMode() {
-        List<Integer> segmentationResults = List.of(READER_MODE, SHARE, TRANSLATE);
-        var watcher1 =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords("CustomTabs.AdaptiveToolbarButton.ChosenRanking", 0)
-                        .build();
-        assertEquals(READER_MODE, mBehavior.resultFilter(segmentationResults));
-        watcher1.assertExpected();
-
-        segmentationResults = List.of(SHARE, TRANSLATE);
-        var watcher2 =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecords(
-                                "CustomTabs.AdaptiveToolbarButton.HiddenReason", CPA_ONLY_MODE)
-                        .build();
-        assertEquals(UNKNOWN, mBehavior.resultFilter(segmentationResults));
-        watcher1.assertExpected();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":open_in_browser/true")
     public void hideManuallySetButton() {
         // Initialize custom action button types.
         CustomButtonParams openInBrowser = Mockito.mock(CustomButtonParams.class);
@@ -256,39 +163,10 @@ public class CustomTabAdaptiveToolbarBehaviorUnitTest {
     }
 
     @Test
-    @EnableFeatures(
-            ChromeFeatureList.CCT_ADAPTIVE_BUTTON + ":open_in_browser/true/default_variant/15")
-    public void hideDefaultVariant() {
-        // Initialize custom action button types.
-        CustomButtonParams openInBrowser = Mockito.mock(CustomButtonParams.class);
-        when(openInBrowser.getType()).thenReturn(ButtonType.CCT_OPEN_IN_BROWSER_BUTTON);
-
+    public void getSegmentationDefault_returnsUnknown() {
         assertEquals(
-                "The default should be OPEN_IN_BROWSER",
-                OPEN_IN_BROWSER,
-                mBehavior.getSegmentationDefault(Mockito.mock(Profile.class)));
-
-        initBehavior(List.of(openInBrowser));
-        assertEquals(
-                "The default should be UNKNOWN after dedup",
+                "The default should be UNKNOWN",
                 UNKNOWN,
                 mBehavior.getSegmentationDefault(Mockito.mock(Profile.class)));
-    }
-
-    @Test
-    @EnableFeatures(
-            ChromeFeatureList.CCT_ADAPTIVE_BUTTON
-                    + ":open_in_browser/true/default_variant/15/contextual_only/true")
-    public void canShowManualOverride_openInBrowserDefaultWinsOverManual() {
-        // Initialize custom action button types.
-        CustomButtonParams share = Mockito.mock(CustomButtonParams.class);
-        when(share.getType()).thenReturn(ButtonType.CCT_SHARE_BUTTON);
-        initBehavior(List.of(share));
-        assertFalse(mBehavior.canShowManualOverride(SHARE));
-
-        CustomButtonParams custom = Mockito.mock(CustomButtonParams.class);
-        when(custom.getType()).thenReturn(ButtonType.OTHER);
-        initBehavior(List.of(custom));
-        assertFalse(mBehavior.canShowManualOverride(TRANSLATE));
     }
 }

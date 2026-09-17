@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
-import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -67,12 +66,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     private static final String HELP_URL =
             "https://support.google.com/googlebook?p=web_powered_apps";
     private static final String CUSTOM_MENU_ITEM_ID_KEY = "CustomMenuItemId";
-    private static final String SHOW_OPEN_IN_BROWSER_MENU_TOP_PARAM =
-            "show_open_in_browser_menu_top";
-    private static final String REMOVE_FIND_IN_PAGE_MENU_ITEM_PARAM =
-            "remove_find_in_page_menu_item";
-    private static final String REMOVE_DESKTOP_SITE_MENU_ITEM_PARAM =
-            "remove_desktop_site_menu_item";
     private final Verifier mVerifier;
     private final @CustomTabsUiType int mUiType;
     private boolean mShowShare;
@@ -166,20 +159,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         boolean translateVisible = true;
         boolean zoomVisible = false;
 
-        if (ChromeFeatureList.sCctAdaptiveButton.isEnabled()) {
-            if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
-                    REMOVE_FIND_IN_PAGE_MENU_ITEM_PARAM,
-                    false)) {
-                findInPageVisible = false;
-            }
-            if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
-                    REMOVE_DESKTOP_SITE_MENU_ITEM_PARAM,
-                    false)) {
-                requestDesktopSiteVisible = false;
-            }
-        }
         if (mUiType == CustomTabsUiType.MEDIA_VIEWER) {
             // Most of the menu items don't make sense when viewing media.
             iconRowVisible = false;
@@ -323,13 +302,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         }
 
         // --- Open in browser ---
-        boolean showOpenInBrowserAtTop =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
-                        SHOW_OPEN_IN_BROWSER_MENU_TOP_PARAM,
-                        true);
-        if (openInChromeItemVisible && showOpenInBrowserAtTop) {
-            addOpenInChrome(modelList, /* showIcon= */ true);
+        if (openInChromeItemVisible) {
+            addOpenInChrome(modelList);
         }
 
         // --- Read Aloud ---
@@ -339,11 +313,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             observeAndMaybeAddReadAloud(modelList, currentTab);
         }
 
-        // --- Reader Mode ---
         boolean shouldShowIconBeforeItem = shouldShowIconBeforeItem();
-        if (shouldShowReaderModeItem()) {
-            modelList.add(buildReaderModeItem(currentTab, shouldShowIconBeforeItem));
-        }
 
         // --- Share ---
         if (mShowShare) {
@@ -381,26 +351,24 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         }
 
         // --- Price Tracking / Price Insights ---
-        if (ChromeFeatureList.sCctAdaptiveButton.isEnabled()) {
-            // TODO(crbug.com/391931899): Also check the dev-controlled flag
-            MVCListAdapter.ListItem priceTrackingItem =
-                    maybeBuildPriceTrackingListItem(currentTab, shouldShowIconBeforeItem);
-            if (priceTrackingItem != null) {
-                modelList.add(priceTrackingItem);
-            }
-            var cpaController = mContextualPageActionControllerSupplier.get();
-            if (cpaController != null && cpaController.hasPriceInsights()) {
-                modelList.add(
-                        new MVCListAdapter.ListItem(
-                                AppMenuHandler.AppMenuItemType.STANDARD,
-                                AppMenuItemUtils.buildModelForStandardMenuItem(
-                                        mContext,
-                                        getAppMenuItemTheme(),
-                                        R.id.price_insights_menu_id,
-                                        R.string.price_insights_title,
-                                        R.drawable.ic_trending_down_24dp,
-                                        isMenuIconAtStart())));
-            }
+        // TODO(crbug.com/391931899): Also check the dev-controlled flag
+        MVCListAdapter.ListItem priceTrackingItem =
+                maybeBuildPriceTrackingListItem(currentTab, shouldShowIconBeforeItem);
+        if (priceTrackingItem != null) {
+            modelList.add(priceTrackingItem);
+        }
+        var cpaController = mContextualPageActionControllerSupplier.get();
+        if (cpaController != null && cpaController.hasPriceInsights()) {
+            modelList.add(
+                    new MVCListAdapter.ListItem(
+                            AppMenuHandler.AppMenuItemType.STANDARD,
+                            AppMenuItemUtils.buildModelForStandardMenuItem(
+                                    mContext,
+                                    getAppMenuItemTheme(),
+                                    R.id.price_insights_menu_id,
+                                    R.string.price_insights_title,
+                                    R.drawable.ic_trending_down_24dp,
+                                    isMenuIconAtStart())));
         }
 
         // --- Add to Homescreen / Open WebAPK ---
@@ -441,11 +409,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             modelList.add(buildOpenWithItem(currentTab, shouldShowIconBeforeItem));
         }
 
-        // --- Open in Browser ---
-        if (openInChromeItemVisible && !showOpenInBrowserAtTop) {
-            addOpenInChrome(modelList, /* showIcon= */ shouldShowIconBeforeItem);
-        }
-
         // --- Zoom ---
         if (zoomVisible) {
             if (shouldShowPageZoomItem(currentTab)) {
@@ -455,7 +418,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         return modelList;
     }
 
-    private void addOpenInChrome(MVCListAdapter.ModelList modelList, boolean showIcon) {
+    private void addOpenInChrome(MVCListAdapter.ModelList modelList) {
         String title;
         Context context = ContextUtils.getApplicationContext();
         if (mIsOffTheRecord) {
@@ -469,25 +432,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 AppMenuItemUtils.buildBaseModelForTextItem(
                                 getAppMenuItemTheme(), R.id.open_in_browser_id, isMenuIconAtStart())
                         .with(AppMenuItemProperties.TITLE, title)
+                        .with(
+                                AppMenuItemProperties.ICON,
+                                AppCompatResources.getDrawable(
+                                        mContext, R.drawable.ic_open_in_new_white_24dp))
                         .build();
-        if (showIcon) {
-            model.set(
-                    AppMenuItemProperties.ICON,
-                    AppCompatResources.getDrawable(mContext, R.drawable.ic_open_in_new_white_24dp));
-        }
         modelList.add(new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model));
-    }
-
-    private boolean shouldShowReaderModeItem() {
-        if (!ChromeFeatureList.sCctAdaptiveButton.isEnabled()
-                || !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CCT_ADAPTIVE_BUTTON,
-                        ReaderModeManager.CPA_FALLBACK_MENU_PARAM,
-                        false)) {
-            return false;
-        }
-        var cpaController = mContextualPageActionControllerSupplier.get();
-        return cpaController != null && cpaController.hasReaderMode();
     }
 
     /**
