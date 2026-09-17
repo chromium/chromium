@@ -219,6 +219,10 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
  private:
   bool UpdateSnapshotInternal(bool service_animations);
 
+  // Returns true if the resolved source belongs to a form control showing an
+  // autofill preview, whose rendered contents must not be sampled.
+  bool BlockSnapshotUpdate(Node* resolved_source) const;
+
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;
 

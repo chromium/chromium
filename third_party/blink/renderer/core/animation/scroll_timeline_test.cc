@@ -20,6 +20,9 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -1182,6 +1185,89 @@ TEST_F(ScrollTimelineTest, CompositedDeferredTimelineReattachment) {
   // and clear the compositor timeline.
   EXPECT_TRUE(animation->CompositorPending());
   EXPECT_FALSE(deferred_timeline->CompositorTimeline());
+}
+
+TEST_F(ScrollTimelineTest, AutofillPreviewPausesTimeline) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #textarea { width: 100px; height: 50px; }
+    </style>
+    <textarea id='textarea'></textarea>
+  )HTML");
+
+  auto* textarea = To<HTMLTextAreaElement>(GetElementById("textarea"));
+  textarea->SetValue("one\ntwo\nthree\nfour\nfive\nsix\nseven\neight");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* timeline =
+      MakeGarbageCollected<TestScrollTimeline>(&GetDocument(), textarea);
+  textarea->setScrollTop(10);
+  UpdateAllLifecyclePhasesForTest();
+  timeline->UpdateSnapshotForTesting();
+
+  ASSERT_TRUE(timeline->IsActive());
+  std::optional<double> paused_time = timeline->CurrentTimeSeconds();
+  ASSERT_TRUE(paused_time.has_value());
+  EXPECT_GT(*paused_time, 0);
+
+  // The preview must not be sampled, but the timeline stays active so that its
+  // animations remain in effect.
+  textarea->SetSuggestedValue("a\nmuch\nlonger\nsuggested\nvalue\ngoes\nhere");
+  UpdateAllLifecyclePhasesForTest();
+  timeline->UpdateSnapshotForTesting();
+  EXPECT_TRUE(timeline->IsActive());
+  EXPECT_EQ(timeline->CurrentTimeSeconds(), paused_time);
+
+  // Scrolling while the preview is showing must not advance the timeline.
+  textarea->setScrollTop(40);
+  UpdateAllLifecyclePhasesForTest();
+  timeline->UpdateSnapshotForTesting();
+  EXPECT_EQ(timeline->CurrentTimeSeconds(), paused_time);
+
+  // Clearing the preview resumes sampling.
+  textarea->SetSuggestedValue(String());
+  UpdateAllLifecyclePhasesForTest();
+  timeline->UpdateSnapshotForTesting();
+  EXPECT_TRUE(timeline->IsActive());
+  EXPECT_NE(timeline->CurrentTimeSeconds(), paused_time);
+}
+
+TEST_F(ScrollTimelineTest, AutofillPreviewBlocksPseudoElementScroller) {
+  // A <select> is one of the few form controls allowed to generate
+  // pseudo-elements, so its scroller may be a pseudo-element rather than the
+  // control itself. See CanHaveGeneratedChildren(). A timeline first sampled
+  // during a preview has no earlier value to retain, so it stays inactive.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #select::before {
+        content: 'a\A b\A c\A d\A e\A f\A g\A h';
+        white-space: pre;
+        display: block;
+        overflow: scroll;
+        width: 50px;
+        height: 20px;
+      }
+    </style>
+    <select id='select' size='4'>
+      <option value='one'>one</option>
+      <option value='two'>two</option>
+    </select>
+  )HTML");
+
+  auto* select = To<HTMLSelectElement>(GetElementById("select"));
+  select->SetSuggestedValue("two");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(select->IsPreviewed());
+
+  PseudoElement* before = select->GetPseudoElement(kPseudoIdBefore);
+  ASSERT_TRUE(before);
+  ASSERT_TRUE(before->GetLayoutBoxForScrolling());
+
+  auto* timeline =
+      MakeGarbageCollected<TestScrollTimeline>(&GetDocument(), before);
+  timeline->UpdateSnapshotForTesting();
+
+  EXPECT_FALSE(timeline->IsActive());
 }
 
 }  //  namespace blink

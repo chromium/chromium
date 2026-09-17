@@ -102,12 +102,12 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
   // [2] https://drafts.csswg.org/scroll-animations-1/#dom-viewtimeline-subject
   Element* GetReferenceElement() const { return reference_element_.Get(); }
 
- protected:
   // Returns an element eligible to be web exposed. This may be the element
   // itself, the ultimate owning element in the case of a pseudo-element, or
   // shadow host in the case of UA shadow content.
   static Element* Sanitize(Element* element);
 
+ protected:
   // Scroll offsets corresponding to 0% and 100% progress. By default, these
   // correspond to the scroll range of the container.
   virtual void CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
