@@ -1266,8 +1266,8 @@ export const ComposeboxEmbedderMixin =
           this.handleToolClick(e.detail.toolMode);
         }
 
-        handleToolClick(tool: ToolMode) {
-          const isTogglingOff = this.isTogglingOff(tool);
+        handleToolClick(tool: ToolMode, allowToggleOff: boolean = true) {
+          const isTogglingOff = allowToggleOff && this.isTogglingOff(tool);
 
           const newToolMode = isTogglingOff ? ToolMode.kUnspecified : tool;
 
@@ -1656,7 +1656,7 @@ export const ComposeboxEmbedderMixin =
             }
           }
           if (mode !== ToolMode.kUnspecified) {
-            this.handleToolClick(mode);
+            this.handleToolClick(mode, /*allowToggleOff=*/ false);
           }
 
           if (!!this.inputState && model === ModelMode.kUnspecified &&
@@ -3221,7 +3221,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   handleEscapeKeyLogic(): void;
   isTogglingOff(tool: ToolMode): boolean;
   onToolClick(e: CustomEvent<{toolMode: ToolMode}>): void;
-  handleToolClick(tool: ToolMode): void;
+  handleToolClick(tool: ToolMode, allowToggleOff?: boolean): void;
   handleToolModeUpdate(newTool: ToolMode, isSetByAim?: boolean): void;
   onModelClick(e: CustomEvent<{model: ModelMode}>): void;
   onOpenImageUpload(): void;

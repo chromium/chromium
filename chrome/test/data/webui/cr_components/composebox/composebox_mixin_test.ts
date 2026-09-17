@@ -1170,6 +1170,34 @@ suite('ComposeboxMixinTest', () => {
       });
 
   test(
+      'updates state does not toggle off tool mode when already in that mode',
+      async () => {
+        const inputState =
+            new MockInputState({activeTool: ToolMode.kImageGen});
+        searchboxHandler.setPromiseResolveFor('getInputState', {
+          state: inputState,
+        });
+        element.onInputStateChanged(inputState);
+        await microtasksFinished();
+
+        element.state = {
+          text: 'make an image',
+          files: [],
+          mode: ToolMode.kImageGen,
+          model: ModelMode.kUnspecified,
+          // <if expr="not is_android">
+          smartTabSharingActive: false,
+          // </if>
+        };
+        await microtasksFinished();
+
+        assertEquals(1, searchboxHandler.getCallCount('setActiveToolMode'));
+        assertEquals(
+            ToolMode.kImageGen,
+            searchboxHandler.getArgs('setActiveToolMode')[0][0]);
+      });
+
+  test(
       'updates state from state property with browser file upload',
       async () => {
         const token = '00000000000000010000000000000002';
@@ -1411,6 +1439,32 @@ suite('ComposeboxMixinTest', () => {
         1,
         metrics.count(metricName, ContextualSearchInputStateDeletionType.TOOL));
   });
+
+  test(
+      'handleToolClick does not toggle off when allowToggleOff is false',
+      async () => {
+        element.composeboxSource = 'TestEmbedder';
+        const inputState =
+            new MockInputState({activeTool: ToolMode.kDeepSearch});
+        element.onInputStateChanged(inputState);
+        await microtasksFinished();
+
+        element.handleToolClick(
+            ToolMode.kDeepSearch, /*allowToggleOff=*/ false);
+        await microtasksFinished();
+
+        assertEquals(1, searchboxHandler.getCallCount('setActiveToolMode'));
+        assertEquals(
+            ToolMode.kDeepSearch,
+            searchboxHandler.getArgs('setActiveToolMode')[0][0]);
+
+        const metricName =
+            'ContextualSearch.UserAction.InputStateDeletion.TestEmbedder';
+        assertEquals(
+            0,
+            metrics.count(
+                metricName, ContextualSearchInputStateDeletionType.TOOL));
+      });
 
   test('setDefaultModel uses activeModel from backend', async () => {
     const inputState = new MockInputState({
