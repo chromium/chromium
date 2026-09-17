@@ -38,6 +38,7 @@ using AutocompleteEntryLabelSensitiveSet =
              bool (*)(const AutocompleteEntryLabelSensitive&,
                       const AutocompleteEntryLabelSensitive&)>;
 using ::base::Time;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Optional;
@@ -620,6 +621,95 @@ TEST_F(GetFormValuesForElementNameAndLabelTest, ReturnsMostRecentDateLastUsed) {
   EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(
                            kDefaultValue, kDefaultName, kDefaultLabel, 2,
                            expected_date_last_used)));
+}
+
+// Prefix matching properly escapes SQL LIKE wildcards like '%', '_', and '\'.
+TEST_F(GetFormValuesForElementNameAndLabelTest, LikePatternEscaping) {
+  FormFieldData field_percent =
+      test::CreateTestFormField(kDefaultLabel, kDefaultName, u"100% discount",
+                                FormControlType::kInputText);
+  FormFieldData field_thousand = test::CreateTestFormField(
+      kDefaultLabel, kDefaultName, u"1000 items", FormControlType::kInputText);
+  FormFieldData field_underscore = test::CreateTestFormField(
+      kDefaultLabel, kDefaultName, u"_special", FormControlType::kInputText);
+  FormFieldData field_letter = test::CreateTestFormField(
+      kDefaultLabel, kDefaultName, u"aspecial", FormControlType::kInputText);
+  FormFieldData field_backslash = test::CreateTestFormField(
+      kDefaultLabel, kDefaultName, u"\\special", FormControlType::kInputText);
+
+  ASSERT_TRUE(SubmitFormField(field_percent));
+  ASSERT_TRUE(SubmitFormField(field_thousand));
+  ASSERT_TRUE(SubmitFormField(field_underscore));
+  ASSERT_TRUE(SubmitFormField(field_letter));
+  ASSERT_TRUE(SubmitFormField(field_backslash));
+
+  std::vector<AutocompleteSearchResultLabelSensitive> entries;
+
+  // Searching for "100%" should only match "100% discount", not "1000 items".
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      kDefaultName, kDefaultLabel, u"100%", /*limit=*/10, entries));
+  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(
+                           u"100% discount", kDefaultName, kDefaultLabel, 1)));
+
+  // Searching for "_" should only match "_special", not "aspecial".
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      kDefaultName, kDefaultLabel, u"_", /*limit=*/10, entries));
+  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(u"_special", kDefaultName,
+                                                      kDefaultLabel, 1)));
+
+  // Searching for "\" should only match "\special", not other entries.
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      kDefaultName, kDefaultLabel, u"\\", /*limit=*/10, entries));
+  EXPECT_THAT(entries, ElementsAre(EqualsSearchResult(
+                           u"\\special", kDefaultName, kDefaultLabel, 1)));
+}
+
+// When multiple entries exist with the same value, query results are
+// deduplicated and prefer the highest priority MatchingType (kNameAndLabel >
+// kName / kLabel).
+TEST_F(GetFormValuesForElementNameAndLabelTest,
+       QueryDeduplication_PrefersNameAndLabel) {
+  FormFieldData field_both = test::CreateTestFormField(
+      u"Email Address", u"email_field", u"user@example.com",
+      FormControlType::kInputText);
+  FormFieldData field_name_only = test::CreateTestFormField(
+      u"Different Label", u"email_field", u"user@example.com",
+      FormControlType::kInputText);
+
+  ASSERT_TRUE(SubmitFormField(field_both));
+  ASSERT_TRUE(SubmitFormField(field_name_only));
+
+  std::vector<AutocompleteSearchResultLabelSensitive> entries;
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      u"email_field", u"Email Address", /*prefix=*/u"user", /*limit=*/10,
+      entries));
+
+  EXPECT_THAT(
+      entries,
+      ElementsAre(
+          AllOf(Property(&AutocompleteSearchResultLabelSensitive::value,
+                         u"user@example.com"),
+                Property(&AutocompleteSearchResultLabelSensitive::matching_type,
+                         MatchingType::kNameAndLabel))));
+}
+
+// When queried with an empty label, suggestions are matched by name only
+// and assign MatchingType::kName.
+TEST_F(GetFormValuesForElementNameAndLabelTest, QueryWithEmptyLabel) {
+  FormFieldData field = test::CreateTestFormField(
+      u"Some Label", u"user_name", u"Alice", FormControlType::kInputText);
+  ASSERT_TRUE(SubmitFormField(field));
+
+  std::vector<AutocompleteSearchResultLabelSensitive> entries;
+  ASSERT_TRUE(table().GetFormValuesForElementNameAndLabel(
+      u"user_name", /*label=*/u"", /*prefix=*/u"Al", /*limit=*/10, entries));
+
+  EXPECT_THAT(
+      entries,
+      ElementsAre(AllOf(
+          Property(&AutocompleteSearchResultLabelSensitive::value, u"Alice"),
+          Property(&AutocompleteSearchResultLabelSensitive::matching_type,
+                   MatchingType::kName))));
 }
 
 using GetCountOfValuesContainedBetweenTest =
@@ -1391,6 +1481,23 @@ TEST_F(MigrateDataFromLegacyTableTest, WipesExistingEntriesBeforeMigration) {
 
   // The migrated legacy entry should exist with empty label.
   EXPECT_TRUE(DoesAutocompleteEntryExist(legacy_name, u"", legacy_value));
+}
+
+// Tests ToSafeMatchingType correctly converts valid matching types and returns
+// kUnknown for out-of-bounds integer values.
+TEST_F(AutocompleteTableLabelSensitiveTest, ToSafeMatchingType_Bounds) {
+  EXPECT_EQ(ToSafeMatchingType(-1), MatchingType::kUnknown);
+  EXPECT_EQ(ToSafeMatchingType(static_cast<int>(MatchingType::kUnknown)),
+            MatchingType::kUnknown);
+  EXPECT_EQ(ToSafeMatchingType(static_cast<int>(MatchingType::kLabel)),
+            MatchingType::kLabel);
+  EXPECT_EQ(ToSafeMatchingType(static_cast<int>(MatchingType::kName)),
+            MatchingType::kName);
+  EXPECT_EQ(ToSafeMatchingType(static_cast<int>(MatchingType::kNameAndLabel)),
+            MatchingType::kNameAndLabel);
+  EXPECT_EQ(ToSafeMatchingType(static_cast<int>(MatchingType::kMaxValue) + 1),
+            MatchingType::kUnknown);
+  EXPECT_EQ(ToSafeMatchingType(100), MatchingType::kUnknown);
 }
 
 }  // namespace

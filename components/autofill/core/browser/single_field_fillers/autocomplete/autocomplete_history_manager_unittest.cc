@@ -50,11 +50,12 @@
 
 namespace autofill {
 namespace {
-constexpr int kTestDbQuryId = 100;
+constexpr int kTestDbQueryId = 100;
 
 using OnSuggestionsReturnedCallback =
     SingleFieldFillRouter::OnSuggestionsReturnedCallback;
 using ::autofill::test::CreateTestFormField;
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Contains;
@@ -634,7 +635,7 @@ TEST_F(AutocompleteHistoryManagerTest,
                                           test_field_.value(), _, _))
       .WillOnce([&](auto, auto, int, DbCallback callback) {
         db_callback = std::move(callback);
-        return kTestDbQuryId;
+        return kTestDbQueryId;
       });
 
   MockSuggestionsReturnedCallback mock_callback;
@@ -648,7 +649,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
-  std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
+  std::move(db_callback).Run(kTestDbQueryId, std::move(mocked_results));
   run_loop.Run();
 }
 
@@ -745,7 +746,7 @@ TEST_F(AutocompleteHistoryManagerTest,
                                           test_field_.value(), _, _))
       .WillOnce([&](auto, auto, int, DbCallback callback) {
         db_callback = std::move(callback);
-        return kTestDbQuryId;
+        return kTestDbQueryId;
       });
 
   base::RunLoop run_loop;
@@ -762,7 +763,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
-  std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
+  std::move(db_callback).Run(kTestDbQueryId, std::move(mocked_results));
   run_loop.Run();
 }
 
@@ -785,7 +786,7 @@ TEST_F(AutocompleteHistoryManagerTest,
                                           test_field_.value(), _, _))
       .WillOnce([&](auto, auto, int, DbCallback callback) {
         db_callback = std::move(callback);
-        return kTestDbQuryId;
+        return kTestDbQueryId;
       });
 
   base::RunLoop run_loop;
@@ -802,7 +803,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
-  std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
+  std::move(db_callback).Run(kTestDbQueryId, std::move(mocked_results));
   run_loop.Run();
 }
 
@@ -819,7 +820,7 @@ TEST_F(AutocompleteHistoryManagerTest,
                                           test_field_.value(), _, _))
       .WillOnce([&](auto, auto, int, DbCallback callback) {
         db_callback = std::move(callback);
-        return kTestDbQuryId;
+        return kTestDbQueryId;
       });
 
   base::RunLoop run_loop;
@@ -835,7 +836,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
-  std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
+  std::move(db_callback).Run(kTestDbQueryId, std::move(mocked_results));
   run_loop.Run();
 }
 
@@ -854,7 +855,7 @@ TEST_F(AutocompleteHistoryManagerTest,
                                           test_field_.value(), _, _))
       .WillOnce([&](auto, auto, int, DbCallback callback) {
         db_callback = std::move(callback);
-        return kTestDbQuryId;
+        return kTestDbQueryId;
       });
 
   base::RunLoop run_loop;
@@ -867,7 +868,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
-  std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
+  std::move(db_callback).Run(kTestDbQueryId, std::move(mocked_results));
   run_loop.Run();
 }
 
@@ -887,7 +888,7 @@ TEST_F(AutocompleteHistoryManagerTest,
                                           test_field_.value(), _, _))
       .WillOnce([&](auto, auto, int, DbCallback callback) {
         db_callback = std::move(callback);
-        return kTestDbQuryId;
+        return kTestDbQueryId;
       });
 
   // Simulate request for suggestions.
@@ -904,7 +905,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
-  std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
+  std::move(db_callback).Run(kTestDbQueryId, std::move(mocked_results));
   run_loop.Run();
 }
 
@@ -981,10 +982,94 @@ TEST_F(AutocompleteHistoryManagerTest,
   autocomplete_manager_->OnSingleFieldSuggestionSelected(suggestion);
 }
 
+// Tests that migration is triggered when the Finch migration generation is
+// greater than the stored migration generation pref.
+TEST_F(AutocompleteHistoryManagerTest,
+       Migration_TriggersWhenGenerationIncreases) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillLabelSensitiveAutocomplete,
+      {{"autocomplete_label_sensitive_migration_generation", "2"}});
+  prefs_->SetInteger(
+      prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration, 1);
+
+  EXPECT_CALL(*web_data_service_, MigrateDataFromLegacyTable);
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
+}
+
+// Tests that migration is not triggered when the stored migration generation
+// pref is already equal to or greater than the Finch migration generation.
+TEST_F(AutocompleteHistoryManagerTest,
+       Migration_DoesNotTriggerWhenGenerationMatchesOrLess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillLabelSensitiveAutocomplete,
+      {{"autocomplete_label_sensitive_migration_generation", "2"}});
+  prefs_->SetInteger(
+      prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration, 2);
+
+  EXPECT_CALL(*web_data_service_, MigrateDataFromLegacyTable).Times(0);
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
+}
+
+// Tests that migration is not triggered when the label-sensitive autocomplete
+// feature is disabled.
+TEST_F(AutocompleteHistoryManagerTest,
+       Migration_DoesNotTriggerWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillLabelSensitiveAutocomplete);
+  prefs_->SetInteger(
+      prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration, 0);
+
+  EXPECT_CALL(*web_data_service_, MigrateDataFromLegacyTable).Times(0);
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
+}
+
+// Tests that the migration generation pref is updated upon successful
+// migration.
+TEST_F(AutocompleteHistoryManagerTest, Migration_PrefUpdatedOnSuccess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillLabelSensitiveAutocomplete,
+      {{"autocomplete_label_sensitive_migration_generation", "2"}});
+  prefs_->SetInteger(
+      prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration, 1);
+
+  EXPECT_CALL(*web_data_service_, MigrateDataFromLegacyTable)
+      .WillOnce(RunOnceCallback<0>(
+          kTestDbQueryId, std::make_unique<WDResult<bool>>(BOOL_RESULT, true)));
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
+
+  EXPECT_EQ(prefs_->GetInteger(
+                prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration),
+            2);
+}
+
+// Tests that the migration generation pref is not updated if migration fails.
+TEST_F(AutocompleteHistoryManagerTest, Migration_PrefNotUpdatedOnFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillLabelSensitiveAutocomplete,
+      {{"autocomplete_label_sensitive_migration_generation", "2"}});
+  prefs_->SetInteger(
+      prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration, 1);
+
+  EXPECT_CALL(*web_data_service_, MigrateDataFromLegacyTable)
+      .WillOnce(RunOnceCallback<0>(
+          kTestDbQueryId,
+          std::make_unique<WDResult<bool>>(BOOL_RESULT, false)));
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
+
+  EXPECT_EQ(prefs_->GetInteger(
+                prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration),
+            1);
+}
+
 TEST_F(AutocompleteHistoryManagerTest,
        SuggestionsReturned_InvokeHandler_TwoRequests_OneHandler_Cancels) {
-  int kTestDbQuryId_first = 100;
-  int kTestDbQuryId_second = 101;
+  int kTestDbQueryId_first = 100;
+  int kTestDbQueryId_second = 101;
 
   std::vector<AutocompleteEntry> expected_values_first = {
       GetAutocompleteEntry(test_field_.name(), u"SomePrefixOne")};
@@ -1007,13 +1092,13 @@ TEST_F(AutocompleteHistoryManagerTest,
         // Correctly move the move-only callback.
         db_callback_first = std::move(callback);
         // The function must return a handle.
-        return kTestDbQuryId_first;
+        return kTestDbQueryId_first;
       })
       .WillOnce([&](auto, auto, int, DbCallback callback) {
         // Correctly move the move-only callback.
         db_callback_second = std::move(callback);
         // The function must return a handle.
-        return kTestDbQuryId_second;
+        return kTestDbQueryId_second;
       });
 
   base::RunLoop run_loop;
@@ -1024,8 +1109,7 @@ TEST_F(AutocompleteHistoryManagerTest,
       /*trigger_autofill_field=*/nullptr, autofill_client_,
       mock_callback.Get());
 
-  EXPECT_CALL(*web_data_service_, CancelRequest(kTestDbQuryId_first))
-      .Times(1);
+  EXPECT_CALL(*web_data_service_, CancelRequest(kTestDbQueryId_first)).Times(1);
   EXPECT_CALL(mock_callback,
               Run(test_field_.global_id(), HasSingleSuggestionWithMainText(
                                                u"SomePrefixTwo")))
@@ -1037,7 +1121,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   ASSERT_FALSE(db_callback_second.is_null());
   std::move(db_callback_second)
-      .Run(kTestDbQuryId_second, std::move(mocked_results_second));
+      .Run(kTestDbQueryId_second, std::move(mocked_results_second));
   run_loop.Run();
 }
 
@@ -1054,7 +1138,7 @@ TEST_F(AutocompleteHistoryManagerTest, SuggestionsReturned_CancelPendingQuery) {
                                           test_field_.value(), _, _))
       .WillOnce([&](auto, auto, int, DbCallback callback) {
         db_callback = std::move(callback);
-        return kTestDbQuryId;
+        return kTestDbQueryId;
       });
 
   base::RunLoop run_loop;
@@ -1067,11 +1151,11 @@ TEST_F(AutocompleteHistoryManagerTest, SuggestionsReturned_CancelPendingQuery) {
       mock_callback.Get());
 
   // Simulate cancelling the request.
-  EXPECT_CALL(*web_data_service_, CancelRequest(kTestDbQuryId));
+  EXPECT_CALL(*web_data_service_, CancelRequest(kTestDbQueryId));
   autocomplete_manager_->CancelPendingQuery();
 
   ASSERT_FALSE(db_callback.is_null());
-  std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results_one));
+  std::move(db_callback).Run(kTestDbQueryId, std::move(mocked_results_one));
   run_loop.Run();
 }
 
@@ -1096,7 +1180,7 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
                                           test_field_.value(), _, _))
       .WillOnce([&](auto, auto, int, DbCallback callback) {
         db_callback = std::move(callback);
-        return kTestDbQuryId;
+        return kTestDbQueryId;
       });
 
   MockSuggestionsReturnedCallback mock_callback;
@@ -1108,7 +1192,7 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
       mock_callback.Get());
 
   ASSERT_FALSE(db_callback.is_null());
-  std::move(db_callback).Run(kTestDbQuryId, std::move(mocked_results));
+  std::move(db_callback).Run(kTestDbQueryId, std::move(mocked_results));
 }
 
 TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
@@ -1120,7 +1204,7 @@ TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
                                           test_field_.value(), _, _))
       .WillOnce([&run_loop]() {
         run_loop.Quit();
-        return kTestDbQuryId;
+        return kTestDbQueryId;
       });
 
   // Simulate request for suggestions.
@@ -1131,7 +1215,7 @@ TEST_F(AutocompleteHistoryManagerTest, DestructorCancelsRequests) {
   run_loop.Run();
 
   // Expect a cancel call.
-  EXPECT_CALL(*web_data_service_, CancelRequest(kTestDbQuryId));
+  EXPECT_CALL(*web_data_service_, CancelRequest(kTestDbQueryId));
 
   autocomplete_manager_.reset();
 
@@ -1432,10 +1516,10 @@ class AutocompleteHistoryManagerAtMemoryTest
         .WillByDefault([&](auto, auto, int, DbCallback callback) {
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE,
-              base::BindOnce(std::move(callback), kTestDbQuryId,
+              base::BindOnce(std::move(callback), kTestDbQueryId,
                              GetMockedDbResults({GetAutocompleteEntry(
                                  test_field_.name(), u"Some Value")})));
-          return kTestDbQuryId;
+          return kTestDbQueryId;
         });
   }
 

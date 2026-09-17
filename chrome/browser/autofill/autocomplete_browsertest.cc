@@ -228,6 +228,34 @@ class AutocompleteTest : public InProcessBrowserTest {
     return suggestions;
   }
 
+  std::vector<Suggestion> GetAutocompleteSuggestionsWithLabel(
+      const std::string& input_name,
+      const std::string& label,
+      const std::string& prefix) {
+    base::RunLoop run_loop;
+    base::MockCallback<SingleFieldFillRouter::OnSuggestionsReturnedCallback>
+        mock_callback;
+    std::vector<Suggestion> suggestions;
+    EXPECT_CALL(mock_callback, Run)
+        .WillOnce(DoAll(SaveArg<1>(&suggestions),
+                        RunClosure(run_loop.QuitClosure())));
+    FormFieldData field = test::CreateTestFormField(
+        label, input_name, prefix, FormControlType::kInputText);
+    FormData form;
+    form.set_url(GURL("https://www.foo.com"));
+    form.set_fields({field});
+    autocomplete_history_manager()->OnGetSingleFieldSuggestions(
+        form, /*form_structure=*/nullptr, field,
+        /*trigger_autofill_field=*/nullptr, autofill_manager()->client(),
+        mock_callback.Get());
+
+    // Make sure the DB task gets executed.
+    WaitForPendingDBTasks(*GetWebDataService());
+    std::move(run_loop).Run();
+
+    return suggestions;
+  }
+
   scoped_refptr<AutofillWebDataService> GetWebDataService() {
     return WebDataServiceFactory::GetAutofillWebDataForProfile(
         current_profile(), ServiceAccessType::EXPLICIT_ACCESS);
@@ -356,6 +384,42 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
 
   // Verify that the entry is still there.
   EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),
+              SuggestionVectorMainTextsAre(Suggestion::Text(
+                  UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
+}
+
+class AutocompleteLabelSensitiveTest : public AutocompleteTest {
+ public:
+  AutocompleteLabelSensitiveTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kAutofillLabelSensitiveAutocomplete);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that autocomplete suggestions are offered based on matching label
+// even when input name/id differs, when `kAutofillLabelSensitiveAutocomplete`
+// is enabled.
+IN_PROC_BROWSER_TEST_F(AutocompleteLabelSensitiveTest,
+                       SuggestsByMatchingLabel) {
+  std::string prefix = "Some";
+  std::string test_value = "SomeName!";
+  NavigateToFile(kSimpleFormFileName);
+  ASSERT_TRUE(autofill_manager()->forms_seen_waiter().Wait(1));
+
+  // Save an autocomplete entry with label "First Name:" directly.
+  FormFieldData saved_field = test::CreateTestFormField(
+      /*label=*/"First Name:", /*name=*/"first_name_input",
+      /*value=*/test_value, FormControlType::kInputText);
+  GetWebDataService()->AddFormFields({saved_field});
+  WaitForPendingDBTasks(*GetWebDataService());
+
+  // Query a completely different input "other_input_id", but with the matching
+  // label "First Name:".
+  EXPECT_THAT(GetAutocompleteSuggestionsWithLabel("other_input_id",
+                                                  "First Name:", prefix),
               SuggestionVectorMainTextsAre(Suggestion::Text(
                   UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 }

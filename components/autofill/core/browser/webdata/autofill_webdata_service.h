@@ -316,7 +316,8 @@ class AutofillWebDataService : public WebDataServiceBase {
 
   // Copies data from the legacy `autofill` table to the new `autocomplete`
   // table.
-  void MigrateDataFromLegacyTable(WebDataServiceRequestCallback consumer);
+  virtual void MigrateDataFromLegacyTable(
+      WebDataServiceRequestCallback consumer);
 
  protected:
   ~AutofillWebDataService() override;

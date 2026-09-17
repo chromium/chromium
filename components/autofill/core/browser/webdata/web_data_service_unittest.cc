@@ -631,6 +631,105 @@ TEST_F(WebDataServiceAutofillLabelSensitiveTest,
   EXPECT_THAT(consumer3.Get<1>(), ValueOfWDResult<int64_t>(1));
 }
 
+TEST_F(WebDataServiceAutofillLabelSensitiveTest, MigrateDataFromLegacyTable) {
+  // First insert with feature disabled to ensure entry is only in the legacy
+  // table.
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(
+        features::kAutofillLabelSensitiveAutocomplete);
+
+    std::vector<FormFieldData> form_fields;
+    AppendFormFieldWithLabel(u"legacy_name", u"", u"legacy_val", form_fields);
+    wds_->AddFormFields(form_fields);
+    WaitForEmptyDBSequence();
+  }
+
+  // Verify that the field was saved to the old table only.
+  WebDataServiceRequestFuture legacy_consumer;
+  wds_->GetFormValuesForElementName(u"legacy_name", u"legacy", /*limit=*/10,
+                                    legacy_consumer.GetCallback());
+  EXPECT_THAT(
+      legacy_consumer.Get<1>(),
+      ValueOfWDResult<std::vector<AutocompleteEntry>>(UnorderedElementsAre(
+          Property(&AutocompleteEntry::key,
+                   AutocompleteKey("legacy_name", "legacy_val")))));
+
+  // Verify that the new label-sensitive table is empty before migration.
+  WebDataServiceRequestFuture pre_migration_consumer;
+  wds_->GetFormValuesForElementNameAndLabel(
+      u"legacy_name", u"", u"legacy", /*limit=*/10,
+      pre_migration_consumer.GetCallback());
+  EXPECT_THAT(
+      pre_migration_consumer.Get<1>(),
+      ValueOfWDResult<std::vector<AutocompleteSearchResultLabelSensitive>>(
+          IsEmpty()));
+
+  // Trigger migration.
+  WebDataServiceRequestFuture consumer;
+  wds_->MigrateDataFromLegacyTable(consumer.GetCallback());
+  WaitForEmptyDBSequence();
+
+  EXPECT_THAT(consumer.Get<1>(), ValueOfWDResult<bool>(true));
+
+  // Verify migrated entries are accessible in label-sensitive table.
+  WebDataServiceRequestFuture query_consumer;
+  wds_->GetFormValuesForElementNameAndLabel(u"legacy_name", u"", u"legacy",
+                                            /*limit=*/10,
+                                            query_consumer.GetCallback());
+  EXPECT_THAT(
+      query_consumer.Get<1>(),
+      ValueOfWDResult<std::vector<AutocompleteSearchResultLabelSensitive>>(
+          UnorderedElementsAre(AllOf(
+              Property(&AutocompleteSearchResultLabelSensitive::value,
+                       u"legacy_val"),
+              Property(&AutocompleteSearchResultLabelSensitive::matching_type,
+                       MatchingType::kName)))));
+}
+
+TEST_F(WebDataServiceAutofillLabelSensitiveTest,
+       RemoveFormElementsAddedBetween) {
+  base::Time start_time = base::Time::Now();
+
+  std::vector<FormFieldData> form_fields1;
+  AppendFormFieldWithLabel(u"name1", u"label1", u"value1", form_fields1);
+  wds_->AddFormFields(form_fields1);
+  WaitForEmptyDBSequence();
+
+  task_environment_.FastForwardBy(base::Days(2));
+  base::Time mid_time = base::Time::Now();
+
+  std::vector<FormFieldData> form_fields2;
+  AppendFormFieldWithLabel(u"name2", u"label2", u"value2", form_fields2);
+  wds_->AddFormFields(form_fields2);
+  WaitForEmptyDBSequence();
+
+  // Remove elements added in the first window [start_time - 1 min, mid_time - 1
+  // min).
+  wds_->RemoveFormElementsAddedBetween(start_time - base::Minutes(1),
+                                       mid_time - base::Minutes(1));
+  WaitForEmptyDBSequence();
+
+  // name1 should be deleted.
+  WebDataServiceRequestFuture consumer1;
+  wds_->GetFormValuesForElementNameAndLabel(
+      u"name1", u"label1", u"v", /*limit=*/10, consumer1.GetCallback());
+  EXPECT_THAT(
+      consumer1.Get<1>(),
+      ValueOfWDResult<std::vector<AutocompleteSearchResultLabelSensitive>>(
+          IsEmpty()));
+
+  // name2 should remain.
+  WebDataServiceRequestFuture consumer2;
+  wds_->GetFormValuesForElementNameAndLabel(
+      u"name2", u"label2", u"v", /*limit=*/10, consumer2.GetCallback());
+  EXPECT_THAT(
+      consumer2.Get<1>(),
+      ValueOfWDResult<std::vector<AutocompleteSearchResultLabelSensitive>>(
+          UnorderedElementsAre(Property(
+              &AutocompleteSearchResultLabelSensitive::value, u"value2"))));
+}
+
 }  // namespace
 
 }  // namespace autofill
