@@ -903,7 +903,7 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
   }
 }
 
-TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
+TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceThrottled) {
   const size_t kTotalRetries = 10;
 
   auto encrypted_reporting_client = EncryptedReportingClient::Create(
@@ -911,6 +911,7 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
                                             kClientId);
 
+  base::TimeDelta expected_delay_after = base::Seconds(10);
   for (size_t i = 0; i < kTotalRetries; ++i) {
     // Add one more SECURITY record for upload.
     AddRecordToPayload(Priority::SECURITY);
@@ -918,7 +919,30 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
                                          memory_resource_);
     ASSERT_TRUE(scoped_reservation.reserved());
 
-    // New SECURITY event upload is allowed immediately.
+    auto allowed_delay = encrypted_reporting_client->WhenIsAllowedToProceed(
+        payload_records_.rbegin()->sequence_information().priority(),
+        payload_records_.rbegin()->sequence_information().generation_id());
+    if (i == 0) {
+      // First upload allowed immediately.
+      EXPECT_FALSE(allowed_delay.is_positive());
+    } else {
+      // Further uploads allowed with delay.
+      EXPECT_THAT(allowed_delay, Ge(expected_delay_after));
+      // Double the expectation for the next retry.
+      expected_delay_after *= 2;
+      // Move forward to allow.
+      task_environment_.FastForwardBy(allowed_delay - base::Seconds(1));
+      EXPECT_TRUE(
+          encrypted_reporting_client
+              ->WhenIsAllowedToProceed(
+                  payload_records_.rbegin()->sequence_information().priority(),
+                  payload_records_.rbegin()
+                      ->sequence_information()
+                      .generation_id())
+              .is_positive());
+      task_environment_.FastForwardBy(base::Seconds(1));
+    }
+
     EXPECT_FALSE(
         encrypted_reporting_client
             ->WhenIsAllowedToProceed(
@@ -937,10 +961,23 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
 
     const auto& enqueued_result = enqueued_event.result();
     EXPECT_OK(enqueued_result);
-    EXPECT_THAT(
-        enqueued_result.value(),
-        ElementsAre(
-            payload_records_.rbegin()->sequence_information().sequencing_id()));
+    if (i == 0) {
+      // First time only one record expected in cache.
+      EXPECT_THAT(enqueued_result.value(),
+                  ElementsAre(payload_records_.rbegin()
+                                  ->sequence_information()
+                                  .sequencing_id()));
+    } else {
+      // After that 2 last records expected in cache.
+      EXPECT_THAT(enqueued_result.value(),
+                  ElementsAre(payload_records_.rbegin()
+                                      ->sequence_information()
+                                      .sequencing_id() -
+                                  1L,
+                              payload_records_.rbegin()
+                                  ->sequence_information()
+                                  .sequencing_id()));
+    }
 
     task_environment_.RunUntilIdle();
 
@@ -949,9 +986,20 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
     EXPECT_THAT(request_body, IsDataUploadRequestValid());
     auto response = ResponseBuilder(std::move(request_body)).Build();
     ASSERT_TRUE(response.has_value());
+
+    // Modify response to not confirm the last records.
+    {
+      auto* const last_successfully_uploaded_record =
+          response.value().FindDict(json_keys::kLastSucceedUploadedRecord);
+      ASSERT_TRUE(last_successfully_uploaded_record);
+      last_successfully_uploaded_record->Set(
+          json_keys::kSequencingId, base::NumberToString(sequence_id_ - 2));
+    }
+
     SimulateCustomResponseForRequest(/*index=*/0, std::move(response));
 
-    GetAndValidateResponse(response_event);
+    GetAndValidateResponse(response_event,
+                           /*expected_seq_id=*/sequence_id_ - 2);
 
     encrypted_reporting_client->AccountForAllowedJob(
         payload_records_.rbegin()->sequence_information().priority(),

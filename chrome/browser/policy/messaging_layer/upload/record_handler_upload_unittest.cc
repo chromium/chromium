@@ -660,6 +660,9 @@ TEST_F(RecordHandlerUploadTest, RepeatedInitiationAttempts) {
         init_encrypted_record.sequence_information().sequencing_id() + 1);
     expected_response.sequence_information.set_sequencing_id(
         init_encrypted_record.sequence_information().sequencing_id());
+
+    // Avoid rate limiting by time.
+    task_environment_.FastForwardBy(base::Minutes(1));
   }
 }
 
@@ -794,6 +797,9 @@ TEST_F(RecordHandlerUploadTest, RepeatedNextStepAttempts) {
             1);
     expected_response.sequence_information.set_sequencing_id(
         next_step_encrypted_record.sequence_information().sequencing_id());
+
+    // Avoid rate limiting by time.
+    task_environment_.FastForwardBy(base::Minutes(1));
   }
 }
 
@@ -923,6 +929,9 @@ TEST_F(RecordHandlerUploadTest, RepeatedFinalizeAttempts) {
         fin_encrypted_record.sequence_information().sequencing_id() + 1);
     expected_response.sequence_information.set_sequencing_id(
         fin_encrypted_record.sequence_information().sequencing_id());
+
+    // Avoid rate limiting by time.
+    task_environment_.FastForwardBy(base::Minutes(1));
   }
 }
 
