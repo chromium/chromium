@@ -1470,7 +1470,7 @@
   <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_SECURITY_TITLE" desc="Security title for the payments churned users bubble. On acceptance, payments autofill is turned on for a user and a confirmation bubble is shown.">
     Check out securely with autofill
   </message>
-  <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_CONVENIENCE_TITLE" desc="Convenience title for the payments churned users bubble. On acceptance, payments autofill is turned on for a user and a confirmation bubble is shown.">
+  <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_CONVENIENCE_TITLE" desc="Convenience title for the payments churned users bubble. On acceptance, payments autofill is turned on for a user and a confirmation bubble is shown." formatter_data="android_java">
     Check out faster with autofill
   </message>
   <message name="IDS_AUTOFILL_CHURNED_USERS_BUBBLE_SECURITY_DESCRIPTION" desc="Security description for the payments churned users bubble. On acceptance, payments autofill is turned on for a user and a confirmation bubble is shown.">
