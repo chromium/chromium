@@ -205,6 +205,27 @@ net::NetworkAnonymizationKey CreateNetworkAnonymizationKey(
   return net::NetworkAnonymizationKey::CreateSameSite(std::move(site));
 }
 
+class MockPreconnectManagerObserver : public PreconnectManager::Observer {
+ public:
+  MOCK_METHOD(
+      void,
+      OnPreconnectUrl,
+      (const GURL&,
+       int,
+       bool,
+       const net::NetworkAnonymizationKey&,
+       mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&),
+      (override));
+  MOCK_METHOD(
+      void,
+      OnPreresolveFinished,
+      (const GURL&,
+       const net::NetworkAnonymizationKey&,
+       mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&,
+       bool),
+      (override));
+};
+
 }  // namespace
 
 class PreconnectManagerImplTest : public testing::Test {
@@ -1038,7 +1059,19 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHostsDisabled) {
       network::GetTestNetworkRestrictionsId());
 }
 
-TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrl) {
+// Tests that when PreconnectManagerDirectFastPath is disabled (the legacy
+// pipeline), StartPreconnectUrl queues a PreresolveJob to resolve the host
+// proxy and DNS on the browser UI thread before issuing PreconnectSockets.
+// Note: We explicitly disable kPreconnectManagerDirectFastPath here because
+// this test specifically verifies the legacy UI-thread PreresolveJob pipeline.
+// When the fast path is enabled, StartPreconnectUrl bypasses the PreresolveJob
+// queue entirely and immediately invokes PreconnectSockets (tested below in
+// TestStartPreconnectUrlFastPath).
+TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrl_LegacyPipeline) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPreconnectManagerDirectFastPath);
+
   GURL url("http://cdn.google.com/script.js");
   net::NetworkAnonymizationKey network_anonymization_key =
       CreateNetworkAnonymizationKey(url);
@@ -1075,7 +1108,14 @@ TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrl) {
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
-TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrlDisabled) {
+// Tests that when PreconnectManagerDirectFastPath is disabled and preconnect is
+// disabled by delegate, PreresolveJob does not resolve host proxy.
+TEST_F(PreconnectManagerImplTest,
+       TestStartPreconnectUrlDisabled_LegacyPipeline) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPreconnectManagerDirectFastPath);
+
   GURL url("http://cdn.google.com/script.js");
   net::NetworkAnonymizationKey network_anonymization_key =
       CreateNetworkAnonymizationKey(url);
@@ -1095,8 +1135,15 @@ TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrlDisabled) {
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
+// Tests that when PreconnectManagerDirectFastPath is disabled,
+// StartPreconnectUrl passes NetworkAnonymizationKey through the legacy
+// PreresolveJob pipeline.
 TEST_F(PreconnectManagerImplTest,
-       TestStartPreconnectUrlWithNetworkIsolationKey) {
+       TestStartPreconnectUrlWithNetworkIsolationKey_LegacyPipeline) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPreconnectManagerDirectFastPath);
+
   GURL url("http://cdn.google.com/script.js");
   GURL origin("http://cdn.google.com");
   bool allow_credentials = false;
@@ -1125,9 +1172,12 @@ TEST_F(PreconnectManagerImplTest,
                                             network_anonymization_key, net::OK);
 }
 
+// Tests that when PreconnectManagerDirectFastPath is enabled,
+// StartPreconnectUrl directly invokes PreconnectSockets on the NetworkContext,
+// bypassing host preresolution on the browser UI thread.
 TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrlFastPath) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kPreconnectManagerDirectFastPath);
+  feature_list.InitAndEnableFeature(features::kPreconnectManagerDirectFastPath);
 
   GURL url("http://cdn.google.com/script.js");
   net::NetworkAnonymizationKey network_anonymization_key =
@@ -1168,7 +1218,7 @@ TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrlFastPath) {
 TEST_F(PreconnectManagerImplTest,
        TestStartPreconnectUrlFastPath_PreconnectDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kPreconnectManagerDirectFastPath);
+  feature_list.InitAndEnableFeature(features::kPreconnectManagerDirectFastPath);
 
   GURL url("http://cdn.google.com/script.js");
   net::NetworkAnonymizationKey network_anonymization_key =
@@ -1186,6 +1236,159 @@ TEST_F(PreconnectManagerImplTest,
       /*storage_partition_config=*/nullptr,
       network::GetTestNetworkRestrictionsId(),
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+}
+
+TEST_F(PreconnectManagerImplTest,
+       TestStartPreconnectUrlFastPathWithNetworkIsolationKey) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreconnectManagerDirectFastPath);
+
+  GURL url("http://cdn.google.com/script.js");
+  GURL origin("http://cdn.google.com");
+  bool allow_credentials = false;
+  net::SchemefulSite requesting_site =
+      net::SchemefulSite(GURL("http://foo.test"));
+  net::NetworkAnonymizationKey network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateSameSite(std::move(requesting_site));
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(
+          1, origin, network::mojom::CredentialsMode::kOmit,
+          network_anonymization_key, _,
+          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+          _, _));
+  preconnect_manager_->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr,
+      network::GetTestNetworkRestrictionsId(),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+}
+
+TEST_F(PreconnectManagerImplTest,
+       TestStartPreconnectUrlFastPathWithCredentials) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreconnectManagerDirectFastPath);
+
+  GURL url("http://cdn.google.com/script.js");
+  GURL origin("http://cdn.google.com");
+  bool allow_credentials = true;
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(
+          1, origin, network::mojom::CredentialsMode::kInclude,
+          network_anonymization_key, _,
+          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+          _, _));
+  preconnect_manager_->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr,
+      network::GetTestNetworkRestrictionsId(),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+}
+
+TEST_F(PreconnectManagerImplTest, TestObserverOnPreconnectUrl_FastPath) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreconnectManagerDirectFastPath);
+
+  MockPreconnectManagerObserver observer;
+  preconnect_manager_->SetObserverForTesting(&observer);
+
+  GURL url("http://cdn.google.com/script.js");
+  GURL origin("http://cdn.google.com");
+  bool allow_credentials = false;
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+
+  mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+      observer_remote;
+  auto observer_receiver = observer_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+      intercepted_remote;
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
+  EXPECT_CALL(observer, OnPreresolveFinished(_, _, _, _)).Times(0);
+  EXPECT_CALL(observer, OnPreconnectUrl(origin, 1, allow_credentials,
+                                        network_anonymization_key, _))
+      .WillOnce(
+          [&](const GURL&, int, bool, const net::NetworkAnonymizationKey&,
+              mojo::PendingRemote<
+                  network::mojom::ConnectionChangeObserverClient>& client) {
+            EXPECT_TRUE(client.is_valid());
+            intercepted_remote = std::move(client);
+          });
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(
+          1, origin, network::mojom::CredentialsMode::kOmit,
+          network_anonymization_key, _,
+          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+          _, _))
+      .WillOnce([&](uint32_t, const GURL&, network::mojom::CredentialsMode,
+                    const net::NetworkAnonymizationKey&,
+                    const base::UnguessableToken&,
+                    const net::MutableNetworkTrafficAnnotationTag&,
+                    const std::optional<net::ConnectionKeepAliveConfig>&,
+                    mojo::PendingRemote<
+                        network::mojom::ConnectionChangeObserverClient>
+                        observer_client) {
+        EXPECT_FALSE(observer_client.is_valid());
+      });
+
+  preconnect_manager_->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr,
+      network::GetTestNetworkRestrictionsId(),
+      /*keepalive_config=*/std::nullopt, std::move(observer_remote));
+  EXPECT_TRUE(intercepted_remote.is_valid());
+}
+
+TEST_F(PreconnectManagerImplTest,
+       TestObserverOnPreresolveFinished_LegacyPipeline) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPreconnectManagerDirectFastPath);
+
+  MockPreconnectManagerObserver observer;
+  preconnect_manager_->SetObserverForTesting(&observer);
+
+  GURL url("http://cdn.google.com/script.js");
+  GURL origin("http://cdn.google.com");
+  bool allow_credentials = false;
+  net::NetworkAnonymizationKey network_anonymization_key =
+      CreateNetworkAnonymizationKey(url);
+
+  EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.GetHost()));
+  preconnect_manager_->StartPreconnectUrl(
+      url, allow_credentials, network_anonymization_key,
+      TRAFFIC_ANNOTATION_FOR_TESTS,
+      /*storage_partition_config=*/nullptr,
+      network::GetTestNetworkRestrictionsId(),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
+
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(
+          1, origin, network::mojom::CredentialsMode::kOmit,
+          network_anonymization_key, _,
+          net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+          _, _));
+  EXPECT_CALL(observer,
+              OnPreresolveFinished(origin, network_anonymization_key, _, true));
+  EXPECT_CALL(observer, OnPreconnectUrl(origin, 1, allow_credentials,
+                                        network_anonymization_key, _));
+  mock_network_context_->CompleteHostLookup(origin.GetHost(),
+                                            network_anonymization_key, net::OK);
 }
 
 TEST_F(PreconnectManagerImplTest, TestDetachedRequestHasHigherPriority) {

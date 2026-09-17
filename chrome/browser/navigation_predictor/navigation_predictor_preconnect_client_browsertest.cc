@@ -32,6 +32,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/preconnect_manager.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -107,25 +108,49 @@ class NavigationPredictorPreconnectClientBrowserTest
     return https_server_->GetURL(file);
   }
 
-  void OnPreresolveFinished(
+  void OnPreconnectUrl(
       const GURL& url,
+      int num_sockets,
+      bool allow_credentials,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
-          observer,
-      bool success) override {
-    // The tests do not care about preresolves to non-test server (e.g., hard
+          observer) override {
+    // The tests do not care about preconnects to non-test server (e.g., hard
     // coded preconnects to google.com).
     if (url::Origin::Create(url) !=
         url::Origin::Create(https_server_->base_url())) {
       return;
     }
     if (observer.is_valid()) {
+      observer_.reset();
       observer_.Bind(std::move(observer));
     }
-    EXPECT_TRUE(success);
     preresolve_done_count_++;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
+  }
+
+  void OnPreresolveFinished(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          observer,
+      bool success) override {
+    if (url::Origin::Create(url) !=
+        url::Origin::Create(https_server_->base_url())) {
+      return;
+    }
+    if (!success) {
+      if (observer.is_valid()) {
+        observer_.reset();
+        observer_.Bind(std::move(observer));
+      }
+      preresolve_done_count_++;
+      if (run_loop_) {
+        run_loop_->Quit();
+      }
+    }
   }
 
   void WaitForPreresolveCount(int expected_count) {
@@ -506,9 +531,28 @@ class NavigationPredictorPreconnectClientConnectionAllowlistBrowserTest
     return {network::features::kConnectionAllowlists};
   }
 
+  // The connection allowlist tests verify the legacy UI-thread host preresolve
+  // allowlist check and observe OnPreresolveFinished, so disable the direct
+  // fast-path.
+  base::flat_set<base::test::FeatureRef> GetSubresourceFilterDisabledFeatures()
+      const override {
+    return {features::kPreconnectManagerDirectFastPath};
+  }
+
   void SetUpOnMainThread() override {
     NavigationPredictorPreconnectClientBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  void OnPreconnectUrl(
+      const GURL& url,
+      int num_sockets,
+      bool allow_credentials,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          observer) override {
+    preresolve_results_[url] = true;
+    preresolve_done_count_++;
   }
 
   void OnPreresolveFinished(
@@ -517,8 +561,10 @@ class NavigationPredictorPreconnectClientConnectionAllowlistBrowserTest
       mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
           observer,
       bool success) override {
-    preresolve_results_[url] = success;
-    preresolve_done_count_++;
+    if (!success) {
+      preresolve_results_[url] = false;
+      preresolve_done_count_++;
+    }
   }
 
   void WaitForPreresolveCount(int expected_count) {

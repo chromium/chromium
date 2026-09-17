@@ -105,33 +105,55 @@ class SearchEnginePreconnectorBrowserTest
     return https_server_->GetURL(file);
   }
 
+  void OnPreconnectUrl(
+      const GURL& url,
+      int num_sockets,
+      bool allow_credentials,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          observer) override {
+    const GURL origin = url.DeprecatedGetOriginAsURL();
+    if (!preresolve_counts_.contains(origin)) {
+      return;
+    }
+
+    // Take the observer so that we can manually send mojo message.
+    if (observer.is_valid()) {
+      remote_.reset();
+      remote_.Bind(std::move(observer));
+    }
+
+    ++preresolve_counts_[origin];
+    if (run_loops_[origin]) {
+      run_loops_[origin]->Quit();
+    }
+  }
+
   void OnPreresolveFinished(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
           observer,
       bool success) override {
-    // Take the observer so that we can manually send mojo message.
-    if (observer.is_valid() && !remote_.is_bound()) {
-      remote_.Bind(std::move(observer));
-    }
-
     const GURL origin = url.DeprecatedGetOriginAsURL();
     if (!preresolve_counts_.contains(origin)) {
       return;
     }
 
-    // Only assert the positive case: the test URL must preconnect. Don't
-    // assert the search host fails to resolve, because a leaked
-    // "*"->127.0.0.1 rule in the shared network service can't be cleared
-    // from the test, so the search host may resolve to 127.0.0.1 here too.
-    if (origin == GetTestURL("/").DeprecatedGetOriginAsURL()) {
-      EXPECT_TRUE(success);
+    // In legacy pipeline, for unresolvable test hosts (e.g. www.google.com with
+    // cleared DNS rules), PreconnectUrl is skipped, so we record completion
+    // here and bind the observer remote so tests can simulate connection
+    // changes.
+    if (!success) {
+      if (observer.is_valid()) {
+        remote_.reset();
+        remote_.Bind(std::move(observer));
+      }
+      ++preresolve_counts_[origin];
+      if (run_loops_[origin]) {
+        run_loops_[origin]->Quit();
+      }
     }
-
-    ++preresolve_counts_[origin];
-    if (run_loops_[origin])
-      run_loops_[origin]->Quit();
   }
 
   void WaitForPreresolveCountForURL(const GURL& url, int expected_count) {
@@ -677,21 +699,6 @@ class SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest
   }
 
   bool PreconnectFromKeyedServiceEnabled() const override { return GetParam(); }
-
-  void OnPreresolveFinished(
-      const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
-          observer,
-      bool success) override {
-    // Take the observer so that we can manually send mojo message.
-    if (observer.is_valid() && !remote_.is_bound()) {
-      remote_.Bind(std::move(observer));
-    }
-
-    SearchEnginePreconnectorBrowserTest::OnPreresolveFinished(
-        url, network_anonymization_key, observer, success);
-  }
 };
 
 class SearchEnginePreconnectorWithResetConnectionFailureOnSessionUsedBrowserTest
@@ -723,20 +730,6 @@ class SearchEnginePreconnectorWithResetConnectionFailureOnSessionUsedBrowserTest
   }
 
   bool PreconnectFromKeyedServiceEnabled() const override { return GetParam(); }
-
-  void OnPreresolveFinished(
-      const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
-          observer,
-      bool success) override {
-    if (observer.is_valid() && !remote_.is_bound()) {
-      remote_.Bind(std::move(observer));
-    }
-
-    SearchEnginePreconnectorBrowserTest::OnPreresolveFinished(
-        url, network_anonymization_key, observer, success);
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1297,33 +1290,6 @@ class SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
-  }
-
-  void OnPreresolveFinished(
-      const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
-          observer,
-      bool success) override {
-    if (observer.is_valid()) {
-      // This will disconnect the old remote if it is bound.
-      remote_.reset();
-      remote_.Bind(std::move(observer));
-    }
-
-    const GURL origin = url.DeprecatedGetOriginAsURL();
-    if (!preresolve_counts_.contains(origin)) {
-      return;
-    }
-
-    if (origin == GetTestURL("/").DeprecatedGetOriginAsURL()) {
-      EXPECT_TRUE(success);
-    }
-
-    ++preresolve_counts_[origin];
-    if (run_loops_[origin]) {
-      run_loops_[origin]->Quit();
-    }
   }
 };
 

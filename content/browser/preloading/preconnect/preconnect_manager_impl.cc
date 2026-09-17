@@ -27,9 +27,6 @@
 
 namespace content {
 
-BASE_FEATURE(kPreconnectManagerDirectFastPath,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 const bool kAllowCredentialsOnPreconnectByDefault = true;
 
 std::unique_ptr<PreconnectManager> PreconnectManager::Create(
@@ -236,7 +233,8 @@ void PreconnectManagerImpl::StartPreconnectUrl(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kPreconnectManagerDirectFastPath)) {
+  if (base::FeatureList::IsEnabled(
+          features::kPreconnectManagerDirectFastPath)) {
     PreconnectUrl(url.DeprecatedGetOriginAsURL(), /*num_sockets=*/1,
                   allow_credentials, network_anonymization_key,
                   traffic_annotation, storage_partition_config,
@@ -280,8 +278,12 @@ void PreconnectManagerImpl::PreconnectUrl(
   CHECK(!network_restrictions_id.is_empty(), base::NotFatalUntil::M165);
   CHECK(url.DeprecatedGetOriginAsURL() == url, base::NotFatalUntil::M159);
   CHECK(url.SchemeIsHTTPOrHTTPS(), base::NotFatalUntil::M159);
+  CHECK(!network_anonymization_key.IsEmpty() ||
+        !net::NetworkAnonymizationKey::IsPartitioningEnabled());
   if (observer_) {
-    observer_->OnPreconnectUrl(url, num_sockets, allow_credentials);
+    observer_->OnPreconnectUrl(url, num_sockets, allow_credentials,
+                               network_anonymization_key,
+                               connection_change_observer_client);
   }
 
   auto* network_context = GetNetworkContext(storage_partition_config);

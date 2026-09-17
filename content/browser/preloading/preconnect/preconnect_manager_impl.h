@@ -32,8 +32,6 @@ class NetworkContext;
 
 namespace content {
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreconnectManagerDirectFastPath);
-
 class BrowserContext;
 
 // Stores the status of all preconnects associated with a given |url|.

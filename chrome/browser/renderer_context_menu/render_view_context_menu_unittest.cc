@@ -396,6 +396,19 @@ class RenderViewContextMenuPrefsTest
     last_preresolved_url_ = GURL();
   }
 
+  void OnPreconnectUrl(
+      const GURL& url,
+      int num_sockets,
+      bool allow_credentials,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          connection_change_observer_client) override {
+    last_preresolved_url_ = url;
+    if (preresolved_finished_closure_) {
+      std::move(preresolved_finished_closure_).Run();
+    }
+  }
+
   void OnPreresolveFinished(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
@@ -403,7 +416,7 @@ class RenderViewContextMenuPrefsTest
           observer,
       bool success) override {
     last_preresolved_url_ = url;
-    if (!preresolved_finished_closure_.is_null()) {
+    if (preresolved_finished_closure_) {
       std::move(preresolved_finished_closure_).Run();
     }
   }
