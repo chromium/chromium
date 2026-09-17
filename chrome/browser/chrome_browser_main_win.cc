@@ -582,7 +582,7 @@ int ChromeBrowserMainPartsWin::PreEarlyInitialization() {
     return CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
   }
 
-  // Requires FeatureList and may restart the browser.
+  // May restart the browser de-elevated.
   if (auto deelevate_result = MaybeAutoDeElevate()) {
     return *deelevate_result;
   }
@@ -1028,10 +1028,6 @@ std::optional<int> ChromeBrowserMainPartsWin::MaybeAutoDeElevate() {
     return std::nullopt;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kAutoDeElevate)) {
-    return std::nullopt;
-  }
-
   // Don't bother trying when UAC is disabled because it won't work anyway.
   if (!base::win::UserAccountIsUnnecessarilyElevated()) {
     return std::nullopt;
@@ -1061,12 +1057,8 @@ std::optional<int> ChromeBrowserMainPartsWin::MaybeAutoDeElevate() {
   new_command_line.AppendSwitch(switches::kDoNotDeElevateOnLaunch);
 
   auto process_or_error = base::win::RunDeElevated(new_command_line);
-  const HRESULT hr = process_or_error.has_value()
-                         ? S_OK
-                         : HRESULT_FROM_WIN32(process_or_error.error());
-  base::UmaHistogramSparse("Windows.AutoDeElevateResult", hr);
   // If it fails, it doesn't matter why, just proceed with the normal launch.
-  if (SUCCEEDED(hr)) {
+  if (process_or_error.has_value()) {
     return CHROME_RESULT_CODE_NORMAL_EXIT_AUTO_DE_ELEVATED;
   }
 
