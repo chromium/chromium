@@ -9,7 +9,7 @@ import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 export function getHtml(this: ReadAnythingToolbarElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="toolbarContainer" class="immersive-toolbar-container"
+<div id="toolbarContainer"
     role="toolbar" aria-label="$i18n{readingModeReadAloudToolbarLabel}"
     tabindex="0"
     @keydown="${this.onToolbarKeydown_}">
