@@ -47,7 +47,7 @@ const UChar* Address16(StringView view, size_t offset = 0) {
 const char kChars[] = "12345";
 const char16_t kCharsU[] = u"12345";
 const LChar* const kChars8 = reinterpret_cast<const LChar*>(kChars);
-const UChar* const kChars16 = reinterpret_cast<const UChar*>(kCharsU);
+const UChar (&kChars16)[6] = kCharsU;
 const base::span<const LChar> kSpan8 = base::byte_span_from_cstring(kChars);
 const base::span<const UChar> kSpan16 = base::span_from_cstring(kCharsU);
 

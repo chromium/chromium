@@ -42,13 +42,6 @@ AtomicString::AtomicString(base::span<const UChar> chars,
                            AtomicStringUCharEncoding encoding)
     : string_(AtomicStringTable::Instance().Add(chars, encoding)) {}
 
-AtomicString::AtomicString(const UChar* chars)
-    : string_(AtomicStringTable::Instance().Add(
-          // SAFETY: safe when `chars` points to a null-terminated cstring.
-          UNSAFE_BUFFERS({base::unchecked, chars,
-                          chars ? LengthOfNullTerminatedString(chars) : 0}),
-          AtomicStringUCharEncoding::kUnknown)) {}
-
 String AtomicString::AddSlowCase(const StringView& string_view) {
   return AtomicStringTable::Instance().Add(string_view);
 }

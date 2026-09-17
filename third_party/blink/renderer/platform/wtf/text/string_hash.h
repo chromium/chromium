@@ -78,11 +78,6 @@ struct HashTraits<String> : SimpleClassHashTraits<String> {
   static uint32_t GetHash(const LChar* key) {
     return GetHash(reinterpret_cast<const char*>(key));
   }
-  static uint32_t GetHash(const UChar* key) {
-    return HashWideString24(
-        // SAFETY: Safe when input is null-terminated string.
-        UNSAFE_BUFFERS({key, blink::LengthOfNullTerminatedString(key)}));
-  }
 
   static bool Equal(const String& a, const char* b) { return a == b; }
   static bool Equal(const char* a, const String& b) { return a == b; }
@@ -92,8 +87,6 @@ struct HashTraits<String> : SimpleClassHashTraits<String> {
   static bool Equal(const LChar* a, const String& b) {
     return reinterpret_cast<const char*>(a) == b;
   }
-  static bool Equal(const String& a, const UChar* b) { return a == b; }
-  static bool Equal(const UChar* a, const String& b) { return a == b; }
   // NOTE: There are no String == StringView overloads, so we also make no
   // Equal() for them.
 

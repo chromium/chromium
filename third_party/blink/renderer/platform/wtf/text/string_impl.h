@@ -984,17 +984,6 @@ inline StringImpl::size_type StringImpl::Find(UChar character,
   return blink::Find(Span16(), character, start);
 }
 
-// Null-terminated strings is generally discouraged as it has high chance to
-// cause Buffer overflow.
-UNSAFE_BUFFER_USAGE inline wtf_size_t LengthOfNullTerminatedString(
-    const UChar* string) {
-  size_t length = 0;
-  while (string[length] != 0) {
-    ++length;
-  }
-  return base::checked_cast<wtf_size_t>(length);
-}
-
 template <typename CharacterType1,
           typename CharacterType2,
           typename Projection = std::identity>

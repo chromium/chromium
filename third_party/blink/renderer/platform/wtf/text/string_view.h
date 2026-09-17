@@ -169,8 +169,12 @@ class WTF_EXPORT StringView {
       : impl_(StringImpl::empty16_bit_),
         bytes_(chars.data()),
         length_(base::checked_cast<size_type>(chars.size())) {}
+  template <size_t kLength>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  StringView(const UChar* chars);
+  StringView(const UChar (&chars)[kLength])
+      : StringView(base::span(chars).template first<kLength - 1>()) {
+    DCHECK_EQ(chars[kLength - 1], 0);
+  }
 
   // StringView(const T*, size_type) are deleted explicitly because `const T*`
   // is converted to a StringView implicitly and StringView(const StringView&,

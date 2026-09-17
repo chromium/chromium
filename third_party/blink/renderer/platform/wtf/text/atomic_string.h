@@ -105,7 +105,11 @@ class WTF_EXPORT AtomicString {
   explicit AtomicString(
       base::span<const UChar> chars,
       AtomicStringUCharEncoding encoding = AtomicStringUCharEncoding::kUnknown);
-  explicit AtomicString(const UChar* chars);
+  template <size_t kLength>
+  explicit AtomicString(const UChar (&chars)[kLength])
+      : AtomicString(base::span(chars).template first<kLength - 1>()) {
+    DCHECK_EQ(chars[kLength - 1], 0);
+  }
 
   explicit AtomicString(const StringView& view) : string_(Add(view)) {}
 
