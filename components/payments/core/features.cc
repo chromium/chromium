@@ -57,6 +57,8 @@ const base::FeatureParam<CredentialDiscoveryMode> kCredentialDiscoveryModeParam{
     &kSecurePaymentConfirmationCredentialDiscoveryMode, "mode",
 #if BUILDFLAG(IS_ANDROID)
     CredentialDiscoveryMode::kOsOnly,
+#elif BUILDFLAG(IS_WIN)
+    CredentialDiscoveryMode::kHybrid,
 #else
     CredentialDiscoveryMode::kUserDatabaseOnly,
 #endif
