@@ -230,7 +230,7 @@ class AppsContainerView::ContinueContainer : public views::View {
   const raw_ptr<AppListViewDelegate> view_delegate_;
   raw_ptr<ContinueSectionView> continue_section_ = nullptr;
   raw_ptr<RecentAppsView> recent_apps_ = nullptr;
-  raw_ptr<views::Separator, DanglingUntriaged> separator_ = nullptr;
+  raw_ptr<views::Separator> separator_ = nullptr;
 };
 
 BEGIN_METADATA(AppsContainerView, ContinueContainer)
@@ -328,15 +328,22 @@ AppsContainerView::~AppsContainerView() {
   AppListModelProvider::Get()->RemoveObserver(this);
   apps_grid_view_->pagination_model()->RemoveObserver(this);
 
+  contents_view_ = nullptr;
+  scrollable_container_ = nullptr;
+  delete continue_container_.ExtractAsDangling();
+  separator_ = nullptr;
+  toast_container_ = nullptr;
+  apps_grid_view_ = nullptr;
+  folder_background_view_ = nullptr;
   // Make sure |page_switcher_| is deleted before |apps_grid_view_| because
   // |page_switcher_| uses the PaginationModel owned by |apps_grid_view_|.
-  delete page_switcher_;
+  delete page_switcher_.ExtractAsDangling();
 
   // App list folder view, if shown, may reference/observe a root apps grid view
   // item (associated with the item for which the folder is shown). Delete
   // `app_list_folder_view_` explicitly to ensure it's deleted before
   // `apps_grid_view_`.
-  delete app_list_folder_view_;
+  delete app_list_folder_view_.ExtractAsDangling();
 }
 
 void AppsContainerView::UpdateTopLevelGridDimensions() {

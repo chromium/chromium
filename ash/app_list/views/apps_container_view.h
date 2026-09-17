@@ -317,7 +317,7 @@ class ASH_EXPORT AppsContainerView
   // cardified state ends.
   bool keep_gradient_mask_for_cardified_state_ = false;
 
-  const raw_ptr<ContentsView> contents_view_;
+  raw_ptr<ContentsView> contents_view_ = nullptr;
 
   // The app list config used to configure sizing and layout of apps grid items
   // within the apps container.
@@ -338,8 +338,8 @@ class ASH_EXPORT AppsContainerView
   raw_ptr<views::Separator> separator_ = nullptr;
   raw_ptr<AppListToastContainerView> toast_container_ = nullptr;
   raw_ptr<PagedAppsGridView> apps_grid_view_ = nullptr;
-  raw_ptr<AppListFolderView, DanglingUntriaged> app_list_folder_view_ = nullptr;
-  raw_ptr<PageSwitcher, DanglingUntriaged> page_switcher_ = nullptr;
+  raw_ptr<AppListFolderView> app_list_folder_view_ = nullptr;
+  raw_ptr<PageSwitcher> page_switcher_ = nullptr;
   raw_ptr<FolderBackgroundView> folder_background_view_ = nullptr;
 
   ShowState show_state_ = SHOW_NONE;
