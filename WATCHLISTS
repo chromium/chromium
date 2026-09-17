@@ -2550,6 +2550,9 @@
     'wpt_tools': {
       'filepath': 'third_party/blink/web_tests/external/wpt/tools/',
     },
+    'wpt_webdriver': {
+      'filepath': 'third_party/blink/web_tests/external/wpt/webdriver/',
+    },
     'x11': {
       'filepath': 'ui/base/x/'
     },
@@ -3515,6 +3518,7 @@
     'windows_sandboxing': ['wfh+watch@chromium.org'],
     'wm_state': ['toshikikikuchi+watch-state@chromium.org'],
     'wpt_tools': ['lpz+watch@chromium.org'],
+    'wpt_webdriver': ['sadym@chromium.org'],
     'x11': ['sadrul@chromium.org'],
     'zlib': ['cblume+zlib@chromium.org', 'hans@chromium.org'],
     'zoom': ['wjmaclean@chromium.org'],
