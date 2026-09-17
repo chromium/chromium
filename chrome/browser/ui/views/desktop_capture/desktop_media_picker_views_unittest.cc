@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -485,6 +487,32 @@ TEST_P(DesktopMediaPickerViewsTest, DoneCallbackCalledOnOkButtonPressed) {
   GetPickerDialogView()->AcceptDialog();
   EXPECT_EQ(kFakeId, WaitForPickerResult());
 }
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+TEST_P(DesktopMediaPickerViewsTest, BlockedSourceOkButtonDisabled) {
+  base::test::ScopedFeatureList feature_list(
+      enterprise_data_protection::kEnableTabSharingProtection);
+
+  DesktopMediaID fake_id(DesktopMediaID::TYPE_WEB_CONTENTS, 222);
+
+  media_lists_[DesktopMediaList::Type::kWebContents]->AddSourceByFullMediaID(
+      fake_id);
+  media_lists_[DesktopMediaList::Type::kWebContents]->SetSourceSharingBlocked(
+      0, true);
+
+  test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
+  test_api_.FocusSourceAtIndex(0);
+
+  // Ok button should remain disabled because the tab is blocked by policy.
+  EXPECT_FALSE(GetPickerDialogView()->IsDialogButtonEnabled(
+      ui::mojom::DialogButton::kOk));
+  EXPECT_FALSE(test_api_.IsOkButtonEnabled());
+
+  // Attempting to accept via controller/Enter key should not succeed.
+  GetPickerDialogView()->AcceptSource();
+  EXPECT_FALSE(has_picker_result());
+}
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 // Regression test for https://crbug.com/40052774
 TEST_P(DesktopMediaPickerViewsTest, DoneCallbackNotCalledOnDoubleTap) {

@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -60,6 +61,9 @@ class DesktopMediaTabList : public DesktopMediaListController::ListView {
   void OnSelectionChanged();
   void ClearPreview();
   void ClearPreviewImageIfUnchanged(size_t previous_preview_set_count);
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  void ShowBlockedPreview(const DesktopMediaList::Source& source);
+#endif
 
   // Helper for UMA-tracking of how often a user highlights a discarded tab.
   // (When that happens, the user will not see a tab preview.)

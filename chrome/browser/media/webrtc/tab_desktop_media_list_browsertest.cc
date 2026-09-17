@@ -17,9 +17,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -38,6 +40,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -544,3 +547,85 @@ IN_PROC_BROWSER_TEST_P(TabDesktopMediaListProtectionTest,
   const auto& source = media_list.GetSource(0);
   EXPECT_EQ(source.is_sharing_blocked, !allow_screenshots);
 }
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+class TabDesktopMediaListProtectionFeatureEnabledTest
+    : public InProcessBrowserTest {
+ public:
+  TabDesktopMediaListProtectionFeatureEnabledTest() {
+    feature_list_.InitAndEnableFeature(
+        enterprise_data_protection::kEnableTabSharingProtection);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TabDesktopMediaListProtectionFeatureEnabledTest,
+    PreservesRecencyOrderAndSuppressesPreviewForBlockedTabs) {
+  content::WebContents* tab1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab1);
+
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  content::WebContents* tab2 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab2);
+  ASSERT_NE(tab1, tab2);
+
+  // Tab 2 is active and thus more recent than Tab 1.
+  // Block Tab 2, and allow Tab 1.
+  enterprise_data_protection::DataProtectionPageUserData::
+      UpdateDataControlsScreenshotState(tab2->GetPrimaryPage(), "test_id",
+                                        /*allow=*/false);
+  enterprise_data_protection::DataProtectionPageUserData::
+      UpdateDataControlsScreenshotState(tab1->GetPrimaryPage(), "test_id",
+                                        /*allow=*/true);
+
+  testing::NiceMock<DesktopMediaListMockObserver> observer;
+  TabDesktopMediaList media_list(
+      tab2, base::BindRepeating([](content::WebContents*) { return true; }),
+      /*include_chrome_app_windows=*/false);
+  media_list.SetUpdatePeriod(base::Milliseconds(1));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnSourceAdded(0));
+  EXPECT_CALL(observer, OnSourceAdded(1))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  media_list.StartUpdating(&observer);
+  run_loop.Run();
+
+  ASSERT_EQ(media_list.GetSourceCount(), 2);
+  // Tab 2 (blocked) is more recent and remains at index 0 (no re-sorting).
+  EXPECT_TRUE(media_list.GetSource(0).is_sharing_blocked);
+  // Tab 1 (allowed) remains at index 1.
+  EXPECT_FALSE(media_list.GetSource(1).is_sharing_blocked);
+
+  // Setting the blocked source as previewed should not mark it as visibly
+  // captured.
+  media_list.SetPreviewedSource(media_list.GetSource(0).id);
+  EXPECT_FALSE(tab2->IsBeingVisiblyCaptured());
+
+  // Setting the allowed source as previewed should mark it as visibly captured.
+  media_list.SetPreviewedSource(media_list.GetSource(1).id);
+  EXPECT_TRUE(tab1->IsBeingVisiblyCaptured());
+
+  // If the previewed tab becomes blocked by policy during a subsequent refresh,
+  // previewed_source_ state is updated and the visible capture keepalive is
+  // reset.
+  base::RunLoop run_loop2;
+  EXPECT_CALL(observer, OnSourceThumbnailChanged(testing::_))
+      .WillRepeatedly(testing::Return());
+  EXPECT_CALL(observer, OnSourceThumbnailChanged(1))
+      .WillOnce(base::test::RunClosure(run_loop2.QuitClosure()))
+      .RetiresOnSaturation();
+  enterprise_data_protection::DataProtectionPageUserData::
+      UpdateDataControlsScreenshotState(tab1->GetPrimaryPage(), "test_id",
+                                        /*allow=*/false);
+  run_loop2.Run();
+
+  EXPECT_TRUE(media_list.GetSource(1).is_sharing_blocked);
+  EXPECT_FALSE(tab1->IsBeingVisiblyCaptured());
+}
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)

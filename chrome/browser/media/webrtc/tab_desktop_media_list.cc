@@ -14,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -57,6 +59,16 @@ void HandleCapturedBitmap(
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(reply), hash, image));
+}
+
+bool IsWebContentsSharingBlocked(content::WebContents* contents) {
+  if (!contents) {
+    return false;
+  }
+  auto* page_user_data =
+      enterprise_data_protection::DataProtectionPageUserData::GetForPage(
+          contents->GetPrimaryPage());
+  return page_user_data && !page_user_data->settings().allow_screenshots;
 }
 
 }  // namespace
@@ -167,18 +179,30 @@ void TabDesktopMediaList::Refresh(bool update_thumbnails) {
     content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
     DCHECK(main_frame);
 
-    auto* page_user_data =
-        enterprise_data_protection::DataProtectionPageUserData::GetForPage(
-            contents->GetPrimaryPage());
-
     DesktopMediaID media_id(DesktopMediaID::TYPE_WEB_CONTENTS,
                             DesktopMediaID::kNullId,
                             content::WebContentsMediaCaptureId(
                                 main_frame->GetProcess()->GetDeprecatedID(),
                                 main_frame->GetRoutingID()));
 
-    const bool is_sharing_blocked =
-        page_user_data && !page_user_data->settings().allow_screenshots;
+    const bool is_sharing_blocked = IsWebContentsSharingBlocked(contents);
+
+    if (previewed_source_ &&
+        previewed_source_->web_contents_id == media_id.web_contents_id) {
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+      if (base::FeatureList::IsEnabled(
+              enterprise_data_protection::kEnableTabSharingProtection)) {
+        if (is_sharing_blocked) {
+          previewed_source_visible_keepalive_.RunAndReset();
+        } else if (!previewed_source_visible_keepalive_) {
+          previewed_source_visible_keepalive_ =
+              contents->IncrementCapturerCount(
+                  gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false,
+                  /*is_activity=*/false);
+        }
+      }
+#endif
+    }
 
     // Get tab's last active time stamp.
     const base::TimeTicks t = contents->GetLastActiveTimeTicks();
@@ -248,6 +272,18 @@ void TabDesktopMediaList::TriggerScreenshot(
   content::RenderFrameHost* host = content::RenderFrameHost::FromID(
       previewed_source_->web_contents_id.render_process_id,
       previewed_source_->web_contents_id.main_render_frame_id);
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableTabSharingProtection) &&
+      IsWebContentsSharingBlocked(WebContents::FromRenderFrameHost(host))) {
+    if (can_refresh()) {
+      UpdateSourcePreview(previewed_source_.value(), gfx::ImageSkia());
+    }
+    return;
+  }
+#endif
+
   content::RenderWidgetHostView* const view = host ? host->GetView() : nullptr;
   if (!view) {
     // Clear the preview image, so that we don't have a stale image for eg
@@ -346,9 +382,20 @@ void TabDesktopMediaList::SetPreviewedSource(
   // in the background. Pass false to stay_hidden to fully wake the page to not
   // only allow it to load, but also to avoid pages realising they're visible
   // only in the preview and manipulating the user.
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (!base::FeatureList::IsEnabled(
+          enterprise_data_protection::kEnableTabSharingProtection) ||
+      !IsWebContentsSharingBlocked(source_contents)) {
+    previewed_source_visible_keepalive_ =
+        source_contents->IncrementCapturerCount(
+            gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false,
+            /*is_activity=*/false);
+  }
+#else
   previewed_source_visible_keepalive_ = source_contents->IncrementCapturerCount(
       gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false,
       /*is_activity=*/false);
+#endif
 
   // Capture a new previewed image.
   // TODO(crbug.com/40187992): Schedule this delayed if there has been another
