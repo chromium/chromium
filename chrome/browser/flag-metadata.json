@@ -6720,18 +6720,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "lens-enable-raw-file-media-types",
-    "owners": ["hujasonx@google.com"],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "lens-enable-urls-in-composeboxes",
-    "owners": [
-      "hujasonx@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "lens-fetch-srp-api-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 145

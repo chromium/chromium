@@ -1246,16 +1246,6 @@ inline constexpr char kLensContinuousZoomEnabledName[] =
 inline constexpr char kLensContinuousZoomEnabledDescription[] =
     "When enabled, Lens camera supports continuous zoom.";
 
-inline constexpr char kLensEnableSendRawFileMediaTypesName[] =
-    "Lens enable send raw file media types";
-inline constexpr char kLensEnableSendRawFileMediaTypesDescription[] =
-    "Enables sending raw file media types in the Lens overlay.";
-
-inline constexpr char kLensEnableSendUrlsInComposeboxesName[] =
-    "Lens enable send urls in composeboxes";
-inline constexpr char kLensEnableSendUrlsInComposeboxesDescription[] =
-    "Enables sending urls in AIM composeboxes.";
-
 inline constexpr char kLensFetchSrpApiEnabledName[] =
     "Lens fetch SRP API enabled";
 inline constexpr char kLensFetchSrpApiEnabledDescription[] =
