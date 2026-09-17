@@ -107,7 +107,6 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       callbackRouter_: {type: Object},
       hasMostVisitedTiles_: {type: Boolean},
       mostVisitedEnabled_: {type: Boolean},
-      showShortcuts_: {type: Boolean},
       freStage_: {type: Number},
       hotkeyTokens_: {type: Array},
       isActive_: {
@@ -146,8 +145,6 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       SearchboxBrowserProxy.getInstance().callbackRouter;
   protected accessor mostVisitedEnabled_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereMostVisitedEnabled');
-  protected accessor showShortcuts_: boolean =
-      loadTimeData.getBoolean('omniboxEverywhereShowShortcuts');
   protected accessor hasMostVisitedTiles_: boolean = false;
   protected accessor freStage_: FreStage =
       (loadTimeData.valueExists('initialFreStage') ?
@@ -343,6 +340,11 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     return (this.freStage_ === FreStage.kShortcutSetupChin ||
             this.freStage_ === FreStage.kShortcutReminderChin) &&
         !this.isComposeboxMode_;
+  }
+
+  protected isMostVisitedHidden_(): boolean {
+    return !this.hasMostVisitedTiles_ || this.isFreIntroModal_() ||
+        this.isFreChin_();
   }
 
   protected isFreShortcutSetupChin_(): boolean {

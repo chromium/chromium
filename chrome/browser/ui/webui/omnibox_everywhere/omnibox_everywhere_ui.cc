@@ -144,13 +144,9 @@ class OmniboxEverywhereMostVisitedPrefObserver
   }
 };
 
-void AddMostVisitedSourceStrings(content::WebUIDataSource* source,
-                                 Profile* profile) {
+void AddMostVisitedSourceStrings(content::WebUIDataSource* source) {
   source->AddBoolean("omniboxEverywhereMostVisitedEnabled",
                      omnibox::kOmniboxEverywhereMostVisitedParam.Get());
-  source->AddBoolean(
-      "omniboxEverywhereShowShortcuts",
-      omnibox_everywhere::prefs::IsOmniboxEverywhereShortcutsVisible(profile));
 
   static constexpr webui::LocalizedString kMostVisitedStrings[] = {
       {"addLinkTitle", IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TITLE},
@@ -383,7 +379,7 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowImageSuggest",
                      omnibox::kShowComposeboxImageSuggestions.Get());
 
-  AddMostVisitedSourceStrings(source, profile_);
+  AddMostVisitedSourceStrings(source);
 
   const bool is_fusebox_enabled = IsFuseboxEnabled(profile_);
   source->AddBoolean("searchboxShowComposeEntrypoint", is_fusebox_enabled);
