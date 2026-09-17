@@ -3640,6 +3640,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenInNewTabFilterHardening) {
       {"chrome://settings", "about:blank"},
       {"chrome://inspect", "about:blank"},
       {"file:///", "about:blank"},
+      {"unregistered:user", "about:blank"},
   };
 
   for (const auto& pair : tests) {

@@ -122,7 +122,9 @@
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -1411,12 +1413,22 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
 void DevToolsUIBindings::OpenInNewTab(const std::string& url) {
   GURL gurl(url);
   // Hardening: Verify that the frontend renderer is allowed to request this URL.
-  if (!web_contents_ || !web_contents_->GetPrimaryMainFrame() ||
-      !content::ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
-          web_contents_->GetPrimaryMainFrame()
-              ->GetProcess()
-              ->GetDeprecatedID(),
-          gurl)) {
+  content::ChildProcessSecurityPolicy* policy =
+      content::ChildProcessSecurityPolicy::GetInstance();
+  bool can_request =
+      web_contents_ && web_contents_->GetPrimaryMainFrame() &&
+      policy->CanRequestURL(
+          web_contents_->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+          gurl);
+
+  if (can_request && !gurl.SchemeIsHTTPOrHTTPS() &&
+      !policy->IsWebSafeScheme(gurl.GetScheme()) &&
+      !blink::IsValidCustomHandlerScheme(
+          gurl.scheme(), blink::ProtocolHandlerSecurityLevel::kStrict)) {
+    can_request = false;
+  }
+
+  if (!can_request) {
     gurl = GURL(url::kAboutBlankURL);
   }
 
