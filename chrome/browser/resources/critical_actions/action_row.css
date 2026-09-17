@@ -26,7 +26,6 @@ td {
 }
 
 .uuid-cell,
-.url-cell,
 .metadata-preview {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -39,20 +38,12 @@ td {
   max-width: 130px;
 }
 
-.url-cell {
-  max-width: 220px;
-}
-
-.url-link,
 .metadata-preview {
   color: var(--cr-link-color);
+  cursor: pointer;
+  user-select: none;
 }
 
-.url-link {
-  text-decoration: none;
-}
-
-.url-link:hover,
 .metadata-preview:hover {
   text-decoration: underline;
 }
@@ -93,11 +84,6 @@ td {
 
 .metadata-cell {
   max-width: 260px;
-}
-
-.metadata-preview {
-  cursor: pointer;
-  user-select: none;
 }
 
 .metadata-full {

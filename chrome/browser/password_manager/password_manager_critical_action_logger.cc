@@ -28,8 +28,7 @@ PasswordManagerCriticalActionLogger::~PasswordManagerCriticalActionLogger() =
     default;
 
 void PasswordManagerCriticalActionLogger::MaybeLogCriticalAction(
-    PasswordManagerDriver* driver,
-    const GURL& url) {
+    PasswordManagerDriver* driver) {
   if (!base::FeatureList::IsEnabled(
           critical_actions::features::kCriticalActionHistory)) {
     return;
@@ -60,7 +59,6 @@ void PasswordManagerCriticalActionLogger::MaybeLogCriticalAction(
           .SetTimestamp(base::Time::Now())
           .SetActionType(critical_actions::ActionType::kGooglePasswordManager)
           .SetActionSource(critical_actions::ActionSource::kPasswordManager)
-          .SetUrl(url)
           .SetConversationId(task->source_info().id.value_or(""))
           .SetActorTaskId(task->id().is_null()
                               ? ""

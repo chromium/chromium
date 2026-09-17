@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -127,7 +128,6 @@ class PasswordManagerCriticalActionLoggerTest
     return logger_.get();
   }
 
-  const GURL& test_url() const { return test_url_; }
   int64_t nav_id() const { return nav_id_; }
 
   actor::TaskId StartActorTask() {
@@ -164,15 +164,13 @@ TEST_F(PasswordManagerCriticalActionLoggerTest,
 
   logger()->MaybeLogCriticalAction(
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
-          web_contents()->GetPrimaryMainFrame()),
-      test_url());
+          web_contents()->GetPrimaryMainFrame()));
 
   EXPECT_EQ(recorded_nav_id, nav_id());
   EXPECT_EQ(recorded_entry.action_type,
             critical_actions::ActionType::kGooglePasswordManager);
   EXPECT_EQ(recorded_entry.action_source,
             critical_actions::ActionSource::kPasswordManager);
-  EXPECT_EQ(recorded_entry.url, test_url());
   EXPECT_EQ(recorded_entry.actor_task_id,
             base::NumberToString(task_id.value()));
 }
@@ -183,8 +181,7 @@ TEST_F(PasswordManagerCriticalActionLoggerTest,
 
   logger()->MaybeLogCriticalAction(
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
-          web_contents()->GetPrimaryMainFrame()),
-      test_url());
+          web_contents()->GetPrimaryMainFrame()));
 }
 
 TEST_F(PasswordManagerCriticalActionLoggerTest,
@@ -199,8 +196,7 @@ TEST_F(PasswordManagerCriticalActionLoggerTest,
 
   logger()->MaybeLogCriticalAction(
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
-          web_contents()->GetPrimaryMainFrame()),
-      test_url());
+          web_contents()->GetPrimaryMainFrame()));
 }
 
 TEST_F(PasswordManagerCriticalActionLoggerTest,

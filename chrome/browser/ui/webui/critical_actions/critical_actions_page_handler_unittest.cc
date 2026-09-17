@@ -57,7 +57,6 @@ class CriticalActionsPageHandlerTest : public testing::Test {
       ActionSource source = ActionSource::kAutofill,
       std::string conversation_id = "conv-123",
       std::string actor_task_id = "task-456",
-      GURL url = GURL("https://example.com/login"),
       std::string metadata = "{\"field\":\"username\"}") {
     CriticalActionEntry entry;
     entry.critical_action_id = std::move(id);
@@ -67,7 +66,6 @@ class CriticalActionsPageHandlerTest : public testing::Test {
     entry.action_source = source;
     entry.conversation_id = std::move(conversation_id);
     entry.actor_task_id = std::move(actor_task_id);
-    entry.url = std::move(url);
     entry.metadata = std::move(metadata);
     return entry;
   }
@@ -163,11 +161,11 @@ TEST_F(CriticalActionsPageHandlerTest, FilterByActionTypeAndSearchQuery) {
   base::Time now = base::Time::Now();
   service()->AddCriticalAction(CreateAction(
       "id-ff", now, 101, ActionType::kFormFill, ActionSource::kAutofill,
-      "conv-1", "task-1", GURL("https://forms.example.com")));
+      "conv-1", "task-1"));
   service()->AddCriticalAction(
       CreateAction("id-dl", now + base::Seconds(1), 102, ActionType::kDownload,
                    ActionSource::kActor, "conv-2", "task-2",
-                   GURL("https://download.example.com/file.zip")));
+                   "{\"filename\":\"file.zip\"}"));
 
   // Filter by Download action type (kDownload = 2)
   {

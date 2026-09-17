@@ -13,7 +13,6 @@ class WebContents;
 }
 
 class Profile;
-class GURL;
 
 namespace password_manager {
 
@@ -36,7 +35,7 @@ class PasswordManagerCriticalActionLogger
   ~PasswordManagerCriticalActionLogger() override;
 
   // Logs critical action telemetry if the feature is enabled.
-  void MaybeLogCriticalAction(PasswordManagerDriver* driver, const GURL& url);
+  void MaybeLogCriticalAction(PasswordManagerDriver* driver);
 
  private:
   // content::WebContentsObserver:

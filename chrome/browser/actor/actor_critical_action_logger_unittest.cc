@@ -232,7 +232,6 @@ TEST_F(ActorCriticalActionLoggerTest, LogsFormFillActionWithMetadata) {
 TEST_F(ActorCriticalActionLoggerTest, LogsAgentSelfReportedActionDirectly) {
   ActorCriticalActionLogger::LogAgentSelfReportedAction(
       profile(), "conversation-123", critical_actions::ActionType::kDownload,
-      GURL("https://example.com/file.pdf"),
       /*navigation_id=*/1008, TaskId(123));
   FlushPendingActions(1008);
 
@@ -243,7 +242,6 @@ TEST_F(ActorCriticalActionLoggerTest, LogsAgentSelfReportedActionDirectly) {
             critical_actions::ActionType::kDownload);
   EXPECT_EQ(logged_actions[0].conversation_id, "conversation-123");
   EXPECT_EQ(logged_actions[0].actor_task_id, "123");
-  EXPECT_EQ(logged_actions[0].url, GURL("https://example.com/file.pdf"));
 }
 
 TEST_F(ActorCriticalActionLoggerTest, SkipsNonCriticalAction) {
@@ -270,7 +268,6 @@ TEST_F(ActorCriticalActionLoggerTest, HandlesNullProfile) {
   ActorCriticalActionLogger::LogAgentSelfReportedAction(
       /*profile=*/nullptr, "conversation-123",
       critical_actions::ActionType::kDownload,
-      GURL("https://example.com/file.pdf"),
       /*navigation_id=*/1008, TaskId(123));
 
   auto logged_actions = GetLoggedActions();

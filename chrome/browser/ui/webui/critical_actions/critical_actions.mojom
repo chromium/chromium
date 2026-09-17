@@ -43,9 +43,6 @@ struct CriticalActionItem {
   // Tooltip providing additional details.
   string tooltip;
 
-  // URL of the page where the action occurred.
-  string url;
-
   // Additional JSON metadata for the action.
   string metadata;
 };
@@ -87,7 +84,7 @@ interface PageHandler {
   // Returns a paginated slice of critical actions.
   // |page_index|: 0-based page index.
   // |page_size|: number of items per page.
-  // |search_query|: optional text filter for ID, URL, metadata, etc.
+  // |search_query|: optional text filter for ID, metadata, etc.
   // |action_type_filter|: optional action type filter. If null, returns all
   // types.
   GetCriticalActions(uint32 page_index,

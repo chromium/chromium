@@ -1402,7 +1402,7 @@ void ChromePasswordManagerClient::OnPasswordFilled(
     password_manager::PasswordManagerDriver* driver,
     const GURL& url) {
   if (critical_action_logger_) {
-    critical_action_logger_->MaybeLogCriticalAction(driver, url);
+    critical_action_logger_->MaybeLogCriticalAction(driver);
   }
 }
 

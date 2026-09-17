@@ -18,7 +18,6 @@
 #include "sql/sqlite_result_code.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
-#include "url/gurl.h"
 
 namespace critical_actions {
 
@@ -274,14 +273,13 @@ bool CriticalActionDatabase::AddCriticalAction(
   sql::Statement stmt_entry(db_.GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO CriticalActionEntries (critical_action_id, timestamp, "
-      "action_type, url, metadata, actor_task_id) "
-      "VALUES (?, ?, ?, ?, ?, ?)"));
+      "action_type, metadata, actor_task_id) "
+      "VALUES (?, ?, ?, ?, ?)"));
   stmt_entry.BindString(0, entry.critical_action_id);
   stmt_entry.BindTime(1, entry.timestamp);
   stmt_entry.BindInt(2, static_cast<int>(entry.action_type));
-  stmt_entry.BindString(3, entry.url.spec());
-  stmt_entry.BindString(4, entry.metadata);
-  stmt_entry.BindString(5, entry.actor_task_id);
+  stmt_entry.BindString(3, entry.metadata);
+  stmt_entry.BindString(4, entry.actor_task_id);
   if (!stmt_entry.Run()) {
     return false;
   }
@@ -360,7 +358,7 @@ std::optional<CriticalActionEntry> CriticalActionDatabase::GetCriticalAction(
       SQL_FROM_HERE,
       "SELECT e.critical_action_id, e.timestamp, v.visit_id, "
       "c.conversation_id, "
-      "       e.actor_task_id, e.action_type, e.url, e.metadata "
+      "       e.actor_task_id, e.action_type, e.metadata "
       "FROM CriticalActionEntries e "
       "LEFT JOIN CriticalActionVisits v ON e.critical_action_id = "
       "v.critical_action_id "
@@ -424,7 +422,7 @@ std::string CriticalActionDatabase::BuildGetCriticalActionsQuery(
   std::string sql_query =
       "SELECT e.critical_action_id, e.timestamp, v.visit_id, "
       "c.conversation_id, "
-      "       e.actor_task_id, e.action_type, e.url, e.metadata "
+      "       e.actor_task_id, e.action_type, e.metadata "
       "FROM CriticalActionEntries e "
       "LEFT JOIN CriticalActionVisits v ON e.critical_action_id = "
       "v.critical_action_id "
@@ -510,8 +508,7 @@ CriticalActionEntry CriticalActionDatabase::StatementToEntry(
   entry.conversation_id = statement.ColumnString(3);
   entry.actor_task_id = statement.ColumnString(4);
   entry.action_type = static_cast<ActionType>(statement.ColumnInt(5));
-  entry.url = GURL(statement.ColumnString(6));
-  entry.metadata = statement.ColumnString(7);
+  entry.metadata = statement.ColumnString(6);
   return entry;
 }
 

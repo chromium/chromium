@@ -31,7 +31,6 @@ static_library("critical_actions") {
     "//chrome/common:constants",
     "//mojo/public/cpp/bindings",
     "//ui/base",
-    "//url",
   ]
 }
 

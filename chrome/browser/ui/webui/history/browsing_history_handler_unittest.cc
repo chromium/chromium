@@ -663,7 +663,6 @@ class BrowsingHistoryHandlerCriticalActionsTest
     entry.timestamp = timestamp;
     entry.visit_id = visit_id;
     entry.action_type = type;
-    entry.url = GURL("http://actor-example.com");
     entry.conversation_id = std::string(conversation_id);
     entry.actor_task_id = std::string(actor_task_id);
     entry.metadata = std::string(metadata);
@@ -737,45 +736,6 @@ TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
       "HistoryPage.QueryHistoryTotalTime.WithoutCriticalActions", 0);
   histogram_tester.ExpectUniqueSample(
       "HistoryPage.CriticalActionsPerVisitCount", 1, 1);
-}
-
-// An action's own URL and the URL of the history visit it is linked to can
-// refer to different pages: the actor caches the navigation ID *before*
-// invoking a tool, while the action's URL is resolved *after* the tool has run
-// and can therefore describe the post-navigation page. The linkout must follow
-// the visit, i.e. the page the action was actually performed on.
-// See b/561854104.
-TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
-       LinkoutFollowsVisitUrlNotActionUrl) {
-  base::Time visit_time = base::Time::Now();
-
-  critical_actions::CriticalActionEntry action =
-      CreateAction("test-action-id-1", visit_time, 42,
-                   critical_actions::ActionType::kFederatedLogin);
-  // The page the tool navigated to after the credential was used.
-  action.url = GURL("https://app-example.com/dashboard");
-  service()->AddCriticalAction(action);
-  FlushDatabaseTasks();
-
-  // The page the credential was actually used on.
-  BrowsingHistoryService::HistoryEntry actor_entry(
-      BrowsingHistoryService::HistoryEntry::LOCAL_ENTRY,
-      GURL("https://accounts.idp-example.com/signin"), u"Actor Visit",
-      visit_time, std::string(), false, std::u16string(), false, GURL(),
-      /*visit_count=*/1, 0,
-      /*is_actor_visit=*/true, history::kNoAppIdFilter, 42);
-
-  QueryOptions options;
-  MockHistoryServiceCall(u"idp-example", options, {actor_entry});
-
-  mojom::QueryResultPtr results = RunQueryHistory("idp-example");
-  ASSERT_TRUE(results);
-  ASSERT_EQ(results->value.size(), 1u);
-  ASSERT_EQ(results->value[0]->critical_actions.size(), 1u);
-  EXPECT_EQ(results->value[0]->critical_actions[0]->linkout_url,
-            "chrome://password-manager/passwords/idp-example.com");
-  EXPECT_NE(results->value[0]->critical_actions[0]->linkout_url,
-            "chrome://password-manager/passwords/app-example.com");
 }
 
 TEST_F(BrowsingHistoryHandlerTest,
@@ -1125,7 +1085,6 @@ TEST_F(BrowsingHistoryHandlerTest,
   action.timestamp = base::Time::Now();
   action.visit_id = 1001;
   action.action_type = critical_actions::ActionType::kDownload;
-  action.url = GURL("http://example.com");
   critical_action_service->AddCriticalAction(action);
 
   base::HistogramTester histogram_tester;

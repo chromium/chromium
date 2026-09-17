@@ -40,7 +40,6 @@ class ActorCriticalActionLogger {
       Profile* profile,
       std::string conversation_id,
       critical_actions::ActionType action_type,
-      const GURL& url,
       int64_t navigation_id,
       TaskId actor_task_id = TaskId(),
       std::string metadata = "");
@@ -51,7 +50,6 @@ class ActorCriticalActionLogger {
                        critical_actions::ActionType action_type,
                        std::string conversation_id,
                        TaskId actor_task_id,
-                       const GURL& url,
                        std::string metadata,
                        int64_t navigation_id);
 };

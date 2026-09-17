@@ -45,7 +45,7 @@ ${!this.isFeatureEnabled_ ? html`
   <div class="filters-group flex-center">
     <div class="search-box flex-center">
       <input type="search" class="search-input"
-          placeholder="Search ID, URL, Conversation, Task, Metadata..."
+          placeholder="Search ID, Conversation, Task, Metadata..."
           .value="${this.searchQuery_}"
           @input="${this.onSearchInput_}">
     </div>
@@ -85,7 +85,6 @@ ${!this.isFeatureEnabled_ ? html`
         <th>Actor Task ID</th>
         <th>Type</th>
         <th>Source</th>
-        <th>URL</th>
         <th>Metadata</th>
         <th>Actions</th>
       </tr>

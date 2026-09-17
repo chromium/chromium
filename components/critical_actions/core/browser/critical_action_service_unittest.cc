@@ -66,7 +66,6 @@ TEST_F(CriticalActionServiceTest, AddAndGetActionRunsOnMainThread) {
   entry.conversation_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.actor_task_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.action_type = ActionType::kCredentialAccess;
-  entry.url = GURL("https://example.com/oauth");
   entry.metadata = "{\"scopes\": [\"profile\"]}";
 
   // AddCriticalAction does not have a callback (it is asynchronous
@@ -248,13 +247,12 @@ TEST_F(CriticalActionServiceTest, AddCriticalActionWithNavigationIdInOrder) {
   CriticalActionEntry entry;
   entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.action_type = ActionType::kFormFill;
-  entry.url = GURL("https://example.com/login");
 
   // Action added before visit_id resolution.
   service_->AddCriticalActionWithNavigationId(entry, nav_id);
 
   // History callback arrives.
-  history::URLRow url_row(entry.url);
+  history::URLRow url_row(GURL("https://example.com/login"));
   history::VisitRow visit_row;
   visit_row.visit_id = visit_id;
   history::VisitedURLInfo visited_info(
@@ -286,7 +284,6 @@ TEST_F(CriticalActionServiceTest,
   CriticalActionEntry entry;
   entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.action_type = ActionType::kFormFill;
-  entry.url = GURL("https://example.com/register");
   service_->AddCriticalActionWithNavigationId(entry, nav_id);
 
   base::test::TestFuture<std::optional<CriticalActionEntry>> get_future;
@@ -464,14 +461,13 @@ TEST_F(CriticalActionServiceTest,
   entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.action_type = ActionType::kFormFill;
   entry.actor_task_id = task_id;
-  entry.url = GURL("https://example.com/step");
   service_->AddCriticalActionWithNavigationId(entry, nav_id);
 
   // Conversation ID arrives while action is pending.
   service_->SetCriticalActionsConversationId({task_id}, conv_id);
 
   // Navigation visit arrives.
-  history::URLRow url_row(entry.url);
+  history::URLRow url_row(GURL("https://example.com/step"));
   history::VisitRow visit_row;
   visit_row.visit_id = visit_id;
   history::VisitedURLInfo visited_info(

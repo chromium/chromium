@@ -127,12 +127,6 @@ CriticalActionEntry::Builder&& CriticalActionEntry::Builder::SetActionSource(
   return std::move(*this);
 }
 
-CriticalActionEntry::Builder&& CriticalActionEntry::Builder::SetUrl(
-    GURL url_val) && {
-  entry_.url = std::move(url_val);
-  return std::move(*this);
-}
-
 CriticalActionEntry::Builder&& CriticalActionEntry::Builder::SetConversationId(
     std::string conversation_id_val) && {
   entry_.conversation_id = std::move(conversation_id_val);
@@ -162,10 +156,6 @@ CriticalActionEntry CriticalActionEntry::Builder::Build() && {
   CHECK(!entry_.timestamp.is_null());
   CHECK(entry_.action_type != ActionType::kUnknown);
   CHECK(entry_.action_source != ActionSource::kUnknown);
-
-  if (!entry_.url.is_valid()) {
-    entry_.url = GURL();
-  }
 
   return std::move(entry_);
 }

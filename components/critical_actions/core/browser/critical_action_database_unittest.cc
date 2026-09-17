@@ -41,7 +41,6 @@ class CriticalActionDatabaseTest : public testing::Test {
         base::Uuid::GenerateRandomV4().AsLowercaseString();
     entry.timestamp = base::Time::Now();
     entry.action_type = ActionType::kFormFill;
-    entry.url = GURL("https://example.com");
     return entry;
   }
 
@@ -65,7 +64,6 @@ TEST_F(CriticalActionDatabaseTest, AddAndGetEntry) {
   entry.visit_id = base::RandIntInclusive(1, 1000000);
   entry.conversation_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.actor_task_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  entry.url = GURL("https://example.com/login");
   entry.metadata = "{\"key\": \"val\"}";
 
   EXPECT_TRUE(database.AddCriticalAction(entry));
@@ -73,6 +71,10 @@ TEST_F(CriticalActionDatabaseTest, AddAndGetEntry) {
   auto retrieved = database.GetCriticalAction(entry.critical_action_id);
   ASSERT_TRUE(retrieved.has_value());
   EXPECT_EQ(*retrieved, entry);
+  EXPECT_EQ(retrieved->critical_action_id, entry.critical_action_id);
+  EXPECT_EQ(retrieved->actor_task_id, entry.actor_task_id);
+  EXPECT_EQ(retrieved->conversation_id, entry.conversation_id);
+  EXPECT_EQ(retrieved->metadata, entry.metadata);
 
   database.Close();
 }
@@ -223,7 +225,6 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
   entry1.conversation_id = conv_id_1;
   entry1.actor_task_id = task_id_1;
   entry1.visit_id = 101;
-  entry1.url = GURL("https://example.com/page1");
   ASSERT_TRUE(database.AddCriticalAction(entry1));
 
   CriticalActionEntry entry2 = CreateDefaultEntry();
@@ -232,7 +233,6 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
   entry2.conversation_id = conv_id_2;
   entry2.actor_task_id = task_id_1;
   entry2.visit_id = 102;
-  entry2.url = GURL("https://example.org/page2");
   ASSERT_TRUE(database.AddCriticalAction(entry2));
 
   CriticalActionEntry entry3 = CreateDefaultEntry();
@@ -241,7 +241,6 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
   entry3.conversation_id = conv_id_1;
   entry3.actor_task_id = task_id_2;
   entry3.visit_id = 103;
-  entry3.url = GURL("https://example.com/page3");
   ASSERT_TRUE(database.AddCriticalAction(entry3));
 
   // Test 1: Query all, verify order (timestamp DESC: entry3 -> entry2 ->
@@ -388,7 +387,6 @@ TEST_F(CriticalActionDatabaseTest, MigrationV1ToV2) {
     EXPECT_EQ(act_1->conversation_id, "conv_1");
     EXPECT_EQ(act_1->actor_task_id, "task_1");
     EXPECT_EQ(act_1->action_type, ActionType::kFormFill);
-    EXPECT_EQ(act_1->url, GURL("https://test.com"));
     EXPECT_EQ(act_1->metadata, "meta1");
 
     // Verify record B
@@ -467,6 +465,7 @@ TEST(CriticalActionDatabaseHelpersTest,
   std::string query =
       CriticalActionDatabase::BuildGetCriticalActionsQuery(options);
   EXPECT_THAT(query, HasSubstr("SELECT e.critical_action_id"));
+  EXPECT_THAT(query, Not(HasSubstr("e.url")));
   EXPECT_THAT(query, Not(HasSubstr("WHERE")));
   EXPECT_THAT(query, HasSubstr("ORDER BY e.timestamp DESC"));
   EXPECT_THAT(query, Not(HasSubstr("LIMIT")));

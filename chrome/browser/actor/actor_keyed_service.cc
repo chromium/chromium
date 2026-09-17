@@ -897,8 +897,7 @@ void ActorKeyedService::OnDownloadCreated(content::DownloadManager* manager,
               : 0;
       ActorCriticalActionLogger::LogAgentSelfReportedAction(
           profile_, task->source_info().id.value_or(""),
-          critical_actions::ActionType::kDownload, item->GetURL(),
-          navigation_id, task->id());
+          critical_actions::ActionType::kDownload, navigation_id, task->id());
     }
   }
 }

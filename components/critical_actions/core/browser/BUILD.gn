@@ -23,7 +23,6 @@ static_library("browser") {
     "//components/strings:components_strings",
     "//sql",
     "//ui/base",
-    "//url",
   ]
 }
 

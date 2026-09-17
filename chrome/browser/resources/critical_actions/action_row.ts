@@ -21,7 +21,6 @@ const DEFAULT_CRITICAL_ACTION_ITEM: CriticalActionItem = {
   actionSourceStr: '',
   label: '',
   tooltip: '',
-  url: '',
   metadata: '',
 };
 

@@ -12,7 +12,6 @@
 #include "base/uuid.h"
 #include "components/critical_actions/core/browser/critical_action_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace critical_actions {
 
@@ -71,7 +70,6 @@ TEST_F(CriticalActionBackendTest, ForwardCallsToDatabase) {
   entry.conversation_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.actor_task_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   entry.action_type = ActionType::kFormFill;
-  entry.url = GURL("https://example.com");
   entry.metadata = "{}";
 
   // Verify basic crud operations are successfully forwarded.
@@ -97,7 +95,6 @@ TEST_F(CriticalActionBackendTest, SetCriticalActionsConversationId) {
   entry.timestamp = base::Time::Now();
   entry.actor_task_id = task_id;
   entry.action_type = ActionType::kCredentialAccess;
-  entry.url = GURL("https://example.com/checkout");
 
   backend_->AddCriticalAction(entry);
 
