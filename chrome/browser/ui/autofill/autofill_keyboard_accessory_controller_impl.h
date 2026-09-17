@@ -113,6 +113,7 @@ class AutofillKeyboardAccessoryControllerImpl
   void OpenSettingsForEntityType(int32_t entity_type) override;
   void SelectSuggestion(int index) override;
   void UnselectSuggestion() override;
+  void UnselectSuggestionIfSelected(int index) override;
 
   base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -140,6 +141,15 @@ class AutofillKeyboardAccessoryControllerImpl
 
   // Hides the view and asynchronously deletes itself.
   void HideViewAndDie();
+
+  // Updates `selected_suggestion_index_` and mirrors the new selection state to
+  // `ManualFillingController`.
+  void SetSelectedSuggestionIndex(std::optional<int> index);
+
+  // Tracks the currently selected suggestion in the accessory view. Used to
+  // deduplicate redundant or stale select/unselect events from the Java
+  // bridge and mirror the selection state to the `ManualFillingController.
+  std::optional<int> selected_suggestion_index_;
 
   // Uniquely identifies the UI the controller is showing.
   UiSessionId ui_session_id_;

@@ -325,7 +325,7 @@ void AutofillKeyboardAccessoryViewImpl::SuggestionSelectionStateChanged(
   if (is_selected) {
     controller_->SelectSuggestion(list_index);
   } else {
-    controller_->UnselectSuggestion();
+    controller_->UnselectSuggestionIfSelected(list_index);
   }
 }
 

@@ -502,6 +502,8 @@ AutofillKeyboardAccessoryControllerImpl::GetElementTextDirection() const {
 }
 
 void AutofillKeyboardAccessoryControllerImpl::OnSuggestionsChanged() {
+  SetSelectedSuggestionIndex(std::nullopt);
+
   // Assume that suggestions are (still) available. If this is wrong, the method
   // `HideViewAndDie` will be called soon after and will hide all suggestions.
   if (base::WeakPtr<ManualFillingController> manual_filling_controller =
@@ -553,6 +555,8 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
     return;
   }
 
+  SetSelectedSuggestionIndex(std::nullopt);
+
   if (base::WeakPtr<ManualFillingController> manual_filling_controller =
           ManualFillingController::GetOrCreate(web_contents_.get())) {
     bool is_loading = false;
@@ -595,6 +599,9 @@ bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(int index) {
   RemovalConfirmationText removal_text;
   if (!GetRemovalConfirmationText(index, &removal_text)) {
     return false;
+  }
+  if (selected_suggestion_index_) {
+    UnselectSuggestion();
   }
 
   view_->ConfirmDeletion(
@@ -717,6 +724,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   }
   // TODO(crbug.com/535486238): Plumb search_bar_initial_value through to the
   // UI.
+  SetSelectedSuggestionIndex(std::nullopt);
   ui_session_id_ = ui_session_id;
   suggestions_filling_product_ = GetFillingProductFromSuggestionTypes(
       base::ToVector(suggestions, &Suggestion::type), trigger_source);
@@ -887,6 +895,7 @@ bool AutofillKeyboardAccessoryControllerImpl::ShowAutofillAiSuggestionDetails(
   }
   if (base::optional_ref<const EntityInstance> entity =
           GetPersonalContextEntityForSuggestion(suggestions_[index], *client)) {
+    SetSelectedSuggestionIndex(std::nullopt);
     AutofillAiSuggestionDetailsText details_text =
         GetAutofillAiSuggestionDetailsText(*entity, client->GetAppLocale());
     view_->ShowAutofillAiSuggestionDetails(
@@ -981,12 +990,18 @@ void AutofillKeyboardAccessoryControllerImpl::SelectSuggestion(int index) {
     return;
   }
 
+  if (selected_suggestion_index_ == index) {
+    return;
+  }
+
   // If the mouse pointer is locked by the webpage, hide the suggestions to
   // prevent unexpected or untrusted interactions.
   if (IsPointerLocked(web_contents_.get())) {
     Hide(SuggestionHidingReason::kMouseLocked);
     return;
   }
+
+  SetSelectedSuggestionIndex(index);
 
   const Suggestion& suggestion = GetSuggestionAt(index);
 
@@ -1006,8 +1021,32 @@ void AutofillKeyboardAccessoryControllerImpl::UnselectSuggestion() {
     return;
   }
 
+  SetSelectedSuggestionIndex(std::nullopt);
+
   if (delegate_) {
     delegate_->ClearPreviewedForm();
+  }
+}
+
+void AutofillKeyboardAccessoryControllerImpl::UnselectSuggestionIfSelected(
+    int index) {
+  if (selected_suggestion_index_ != index) {
+    return;
+  }
+  UnselectSuggestion();
+}
+
+void AutofillKeyboardAccessoryControllerImpl::SetSelectedSuggestionIndex(
+    std::optional<int> index) {
+  if (selected_suggestion_index_ == index) {
+    return;
+  }
+  selected_suggestion_index_ = index;
+  if (web_contents_) {
+    if (base::WeakPtr<ManualFillingController> manual_filling_controller =
+            ManualFillingController::GetOrCreate(web_contents_.get())) {
+      manual_filling_controller->SetSelectedSuggestion(index);
+    }
   }
 }
 

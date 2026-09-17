@@ -61,6 +61,9 @@ class AutofillKeyboardAccessoryController
 
   // Opens settings for the given entity type.
   virtual void OpenSettingsForEntityType(int32_t entity_type) = 0;
+
+  // Unselects the suggestion at `index` if it is currently selected.
+  virtual void UnselectSuggestionIfSelected(int index) = 0;
 };
 
 }  // namespace autofill
