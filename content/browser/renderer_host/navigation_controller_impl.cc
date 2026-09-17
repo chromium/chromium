@@ -4688,7 +4688,10 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   std::string page_state_data =
       frame_entry ? frame_entry->page_state().ToEncodedData() : std::string();
 
-  // TODO(clamy): See if user gesture should be propagated to `common_params`.
+  // Filter out user gestures for proxy navigations, to prevent them from being
+  // exposed to the committed document in the renderer. (See
+  // `has_possibly_filtered_user_gesture` in
+  // //third_party/blink/public/mojom/navigation/navigation_params.mojom.)
   bool has_user_gesture_for_common_params =
       from_frame_proxy ? false : params.has_user_gesture;
 
