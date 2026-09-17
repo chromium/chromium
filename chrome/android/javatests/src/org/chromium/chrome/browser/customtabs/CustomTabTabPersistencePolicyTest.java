@@ -9,8 +9,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.util.SparseBooleanArray;
@@ -25,11 +23,8 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -83,16 +78,15 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Tests for the Custom Tab persistence logic. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class CustomTabTabPersistencePolicyTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final TestProfile mProfile = TestProfile.createRegular();
     private final TestProfile mIncognitoProfile = TestProfile.createIncognito(mProfile);
     private final TestProfileProvider mProfileProvider =
             new TestProfileProvider(mProfile, mIncognitoProfile);
+    private final SequencedTaskRunner mSequencedTaskRunner =
+            PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE);
 
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
-    private final SequencedTaskRunner mSequencedTaskRunner =
-            PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE);
 
     @Before
     public void setUp() throws Exception {
@@ -435,8 +429,8 @@ public class CustomTabTabPersistencePolicyTest {
         ApplicationStatus.registerStateListenerForActivity(stateListener, customTabActivity);
         ApplicationStatus.onStateChangeForTesting(customTabActivity, ActivityState.STARTED);
 
-        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = mock();
-        when(profileProviderSupplier.get()).thenReturn(mProfileProvider);
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(mProfileProvider);
 
         CustomTabsTabModelOrchestrator orchestrator = new CustomTabsTabModelOrchestrator();
         orchestrator.createTabModels(

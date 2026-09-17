@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.OMNIBOX_ENABLED;
 import static org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsProperties.TITLE_VISIBLE;
@@ -36,14 +36,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabSideSheetStrategy.MaximizeButtonCallback;
@@ -66,14 +65,18 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class CustomTabToolbarButtonsViewBinderTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Rule
-    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+    public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Mock private View.OnClickListener mOnClickListener;
-    @Mock private MaximizeButtonCallback mMaximizeButtonCallback;
+    private final PayloadCallbackHelper<View> mClickHelper = new PayloadCallbackHelper<>();
+    private final CallbackHelper mMaximizeButtonHelper = new CallbackHelper();
+    private final View.OnClickListener mOnClickListener = mClickHelper::notifyCalled;
+    private final MaximizeButtonCallback mMaximizeButtonCallback =
+            () -> {
+                mMaximizeButtonHelper.notifyCalled();
+                return false;
+            };
 
     private Activity mActivity;
     private CustomTabToolbar mToolbar;
@@ -162,7 +165,7 @@ public class CustomTabToolbarButtonsViewBinderTest {
         assertEquals(View.VISIBLE, closeButton.getVisibility());
         assertEquals(icon, closeButton.getDrawable());
         closeButton.performClick();
-        verify(mOnClickListener).onClick(closeButton);
+        assertThat(mClickHelper.getOnlyPayloadBlocking(), equalTo(closeButton));
 
         // Close button at start, menu at end.
         FrameLayout.LayoutParams closeLp = (FrameLayout.LayoutParams) closeButton.getLayoutParams();
@@ -212,7 +215,7 @@ public class CustomTabToolbarButtonsViewBinderTest {
         assertNotNull(minimizeButton);
         assertEquals(View.VISIBLE, minimizeButton.getVisibility());
         minimizeButton.performClick();
-        verify(mOnClickListener).onClick(minimizeButton);
+        assertThat(mClickHelper.getOnlyPayloadBlocking(), equalTo(minimizeButton));
     }
 
     @Test
@@ -228,7 +231,7 @@ public class CustomTabToolbarButtonsViewBinderTest {
         assertNotNull(maximizeButton);
         assertEquals(View.VISIBLE, maximizeButton.getVisibility());
         maximizeButton.performClick();
-        verify(mMaximizeButtonCallback).onClick();
+        assertThat(mMaximizeButtonHelper.getCallCount(), equalTo(1));
     }
 
     @Test
@@ -256,7 +259,7 @@ public class CustomTabToolbarButtonsViewBinderTest {
         assertEquals(icon1, button.getDrawable());
 
         button.performClick();
-        verify(mOnClickListener).onClick(button);
+        assertThat(mClickHelper.getOnlyPayloadBlocking(), equalTo(button));
 
         // Update
         Drawable icon2 = new ColorDrawable(0x00FF00);

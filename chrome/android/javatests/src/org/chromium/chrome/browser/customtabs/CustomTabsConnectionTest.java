@@ -28,7 +28,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
@@ -40,10 +39,13 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
@@ -70,12 +72,16 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class CustomTabsConnectionTest {
-    private CustomTabsConnection mCustomTabsConnection;
     private static final String URL = "http://www.google.com";
     private static final String URL2 = "https://www.android.com";
     private static final String INVALID_SCHEME_URL = "intent://www.google.com";
     private static final String TEST_PAGE = "/chrome/test/data/android/simple.html";
 
+    @Rule
+    public final CustomTabActivityTestRule mCustomTabActivityTestRule =
+            new CustomTabActivityTestRule();
+
+    private CustomTabsConnection mCustomTabsConnection;
     private String mTestPageUrl;
     private EmbeddedTestServer mTestServer;
 
@@ -86,9 +92,6 @@ public class CustomTabsConnectionTest {
                 EmbeddedTestServer.createAndStartHTTPSServer(context, ServerCertificate.CERT_OK);
         mTestPageUrl = mTestServer.getURL(TEST_PAGE);
     }
-
-    @Rule
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     @Before
     public void setUp() {
@@ -1008,7 +1011,22 @@ public class CustomTabsConnectionTest {
     public void testMaybeAddAdditionalContentExtrasToOutboundIntent() {
         Intent outboundIntent = new Intent();
         BrowserServicesIntentDataProvider browserServicesIntentDataProvider =
-                Mockito.mock(BrowserServicesIntentDataProvider.class);
+                new BrowserServicesIntentDataProvider() {
+                    @Override
+                    public @ActivityType int getActivityType() {
+                        return ActivityType.CUSTOM_TAB;
+                    }
+
+                    @Override
+                    public @Nullable String getUrlToLoad() {
+                        return null;
+                    }
+
+                    @Override
+                    public ColorProvider getColorProvider() {
+                        return null;
+                    }
+                };
         mCustomTabsConnection.maybeAddAdditionalContentExtrasToOutboundIntent(
                 SupplierUtils.ofNull(), browserServicesIntentDataProvider, outboundIntent, 1);
 

@@ -11,18 +11,12 @@ import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 
 import androidx.test.filters.SmallTest;
 
@@ -30,14 +24,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
@@ -52,9 +44,23 @@ public class CustomTabBottomBarViewUnitTest {
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private SwipeHandler mSwipeHandler;
-    @Mock private OnClickListener mOnClickListener;
+    private final PayloadCallbackHelper<Integer> mSwipeDirectionHelper =
+            new PayloadCallbackHelper<>();
+    private final PayloadCallbackHelper<View> mClickHelper = new PayloadCallbackHelper<>();
+    private final SwipeHandler mSwipeHandler =
+            new SwipeHandler() {
+                @Override
+                public void onSwipeStarted(
+                        @ScrollDirection int direction, MotionEvent triggerEvent) {
+                    mSwipeDirectionHelper.notifyCalled(direction);
+                }
+
+                @Override
+                public boolean isSwipeEnabled(
+                        @ScrollDirection int direction, MotionEvent triggerEvent) {
+                    return direction == ScrollDirection.UP;
+                }
+            };
 
     private Activity mActivity;
     private CustomTabBottomBarView mView;
@@ -63,7 +69,6 @@ public class CustomTabBottomBarViewUnitTest {
     @Before
     public void setUp() {
         mActivity = mActivityTestRule.launchActivity(null);
-        when(mSwipeHandler.isSwipeEnabled(eq(ScrollDirection.UP), any())).thenReturn(true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mView =
@@ -72,7 +77,7 @@ public class CustomTabBottomBarViewUnitTest {
                                             .getLayoutInflater()
                                             .inflate(R.layout.custom_tabs_bottombar, null);
                     mStub = mActivity.getLayoutInflater().inflate(R.layout.bottombar_stub, null);
-                    mStub.setOnClickListener(mOnClickListener);
+                    mStub.setOnClickListener(mClickHelper::notifyCalled);
                     mView.addView(mStub);
                     mView.setSwipeHandler(mSwipeHandler);
                     mActivity.setContentView(mView);
@@ -93,7 +98,9 @@ public class CustomTabBottomBarViewUnitTest {
     @SmallTest
     public void testSwipeUp() {
         onView(withChild(withId(R.id.stub))).perform(swipeUp());
-        verify(mSwipeHandler).onSwipeStarted(eq(ScrollDirection.UP), any(MotionEvent.class));
+        assertEquals(
+                Integer.valueOf(ScrollDirection.UP),
+                mSwipeDirectionHelper.getOnlyPayloadBlocking());
     }
 
     @Test
@@ -104,13 +111,13 @@ public class CustomTabBottomBarViewUnitTest {
             message = "crbug.com/353773627")
     public void testSwipeRightDoesNotTrigger() {
         onView(withChild(withId(R.id.stub))).perform(swipeRight());
-        verify(mSwipeHandler, never()).onSwipeStarted(anyInt(), any());
+        assertEquals(0, mSwipeDirectionHelper.getCallCount());
     }
 
     @Test
     @SmallTest
     public void testChildRespondsToClick() {
         onView(withId(R.id.stub)).perform(click());
-        verify(mOnClickListener).onClick(eq(mStub));
+        assertEquals(mStub, mClickHelper.getOnlyPayloadBlocking());
     }
 }
