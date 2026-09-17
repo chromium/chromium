@@ -250,6 +250,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidBottomBar,
     &kAndroidBottomBarAim,
     &kAndroidBricksNativePage,
+    &kAndroidCloseAllTabsRetainsPinnedTabs,
     &kAndroidContextMenuDisabledMenuItems,
     &kAndroidDesktopBookmarkDialog,
     &kAndroidDesktopBookmarkLayout,
@@ -676,6 +677,10 @@ BASE_FEATURE(kAndroidBeforeUnloadSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBottomBar, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBottomBarAim, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidBricksNativePage, base::FEATURE_DISABLED_BY_DEFAULT);
+// When enabled, the "Close all tabs" action in the tab switcher (GTS/Hub) leaves
+// pinned tabs open, and the confirmation dialog offers an opt-in checkbox to close
+// them as well.
+BASE_FEATURE(kAndroidCloseAllTabsRetainsPinnedTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidContextMenuDisabledMenuItems, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidDesktopBookmarkDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidDesktopBookmarkLayout, base::FEATURE_DISABLED_BY_DEFAULT);

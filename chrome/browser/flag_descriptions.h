@@ -5464,6 +5464,13 @@ inline constexpr char kAndroidBricksNativePageName[] =
 inline constexpr char kAndroidBricksNativePageDescription[] =
     "Enables the chrome://bricks native page as a Compose playground.";
 
+inline constexpr char kAndroidCloseAllTabsRetainsPinnedTabsName[] =
+    "Android close all tabs retains pinned tabs";
+inline constexpr char kAndroidCloseAllTabsRetainsPinnedTabsDescription[] =
+    "Makes the \"Close all tabs\" action in the tab switcher leave pinned tabs "
+    "open, and adds an opt-in checkbox to the confirmation dialog for closing "
+    "them as well.";
+
 inline constexpr char kAndroidContextMenuDisabledMenuItemsName[] =
     "Android context menu disabled menu items";
 inline constexpr char kAndroidContextMenuDisabledMenuItemsDescription[] =

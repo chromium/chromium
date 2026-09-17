@@ -12475,6 +12475,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if (BUILDFLAG(IS_ANDROID))
+    {"android-close-all-tabs-retains-pinned-tabs",
+     flag_descriptions::kAndroidCloseAllTabsRetainsPinnedTabsName,
+     flag_descriptions::kAndroidCloseAllTabsRetainsPinnedTabsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kAndroidCloseAllTabsRetainsPinnedTabs)},
     {"android-context-menu-disabled-menu-items",
      flag_descriptions::kAndroidContextMenuDisabledMenuItemsName,
      flag_descriptions::kAndroidContextMenuDisabledMenuItemsDescription,

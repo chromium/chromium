@@ -344,6 +344,15 @@
     "expiry_milestone": 170
   },
   {
+    "name": "android-close-all-tabs-retains-pinned-tabs",
+    "owners": [
+      "hitarthkothari@google.com",
+      "ckitagawa@google.com",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "android-context-menu-disabled-menu-items",
     "owners": [
       "hitarthkothari@google.com",

@@ -44,6 +44,7 @@ BASE_DECLARE_FEATURE(kAndroidBeforeUnloadSupport);
 BASE_DECLARE_FEATURE(kAndroidBottomBar);
 BASE_DECLARE_FEATURE(kAndroidBottomBarAim);
 BASE_DECLARE_FEATURE(kAndroidBricksNativePage);
+BASE_DECLARE_FEATURE(kAndroidCloseAllTabsRetainsPinnedTabs);
 BASE_DECLARE_FEATURE(kAndroidContextMenuDisabledMenuItems);
 BASE_DECLARE_FEATURE(kAndroidDesktopBookmarkDialog);
 BASE_DECLARE_FEATURE(kAndroidDesktopBookmarkLayout);

@@ -10506,6 +10506,8 @@ from previous Chrome versions.
       label="MigrateDefaultChromeAppToWebAppsNonGSuite:disabled"/>
   <int value="-1329332304" label="cast-streaming-force-enable-hardware-hevc"/>
   <int value="-1328783148" label="ComposeboxSkillsContextualTasks:disabled"/>
+  <int value="-1328599543"
+      label="AndroidCloseAllTabsRetainsPinnedTabs:enabled"/>
   <int value="-1328468625" label="LensSearchSidePanelNewFeedback:enabled"/>
   <int value="-1328090640" label="DesktopPWAsAppHomePage:enabled"/>
   <int value="-1328078305" label="RemoveSearchReadyOmnibox:disabled"/>
@@ -11886,6 +11888,8 @@ from previous Chrome versions.
   <int value="-901386731" label="EnableAndroidSidePanel:enabled"/>
   <int value="-900976825" label="AndroidSpellcheckFullApiBlink:disabled"/>
   <int value="-900871741" label="DesktopPWAsNotificationIconAndTitle:disabled"/>
+  <int value="-900492704"
+      label="AndroidCloseAllTabsRetainsPinnedTabs:disabled"/>
   <int value="-899969457" label="ReadAloudBackgroundPlayback:disabled"/>
   <int value="-899915066" label="ImprovedKeyboardShortcuts:disabled"/>
   <int value="-899881954"
