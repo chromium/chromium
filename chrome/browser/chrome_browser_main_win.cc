@@ -48,9 +48,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/version.h"
-#include "base/win/elevation_util.h"
 #include "base/win/pe_image.h"
-#include "base/win/win_util.h"
 #include "base/win/wrapped_window_proc.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -582,11 +580,6 @@ int ChromeBrowserMainPartsWin::PreEarlyInitialization() {
     return CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
   }
 
-  // May restart the browser de-elevated.
-  if (auto deelevate_result = MaybeAutoDeElevate()) {
-    return *deelevate_result;
-  }
-
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
@@ -1020,47 +1013,3 @@ void ChromeBrowserMainPartsWin::SetupModuleDatabase(
       &ChromeBrowserMainPartsWin::OnModuleEvent, base::Unretained(this)));
 }
 
-// Check if the browser process is launching elevated, and attempt to
-// automatically de-elevate.
-std::optional<int> ChromeBrowserMainPartsWin::MaybeAutoDeElevate() {
-  // Do not de-elevate in an integration test.
-  if (is_integration_test()) {
-    return std::nullopt;
-  }
-
-  // Don't bother trying when UAC is disabled because it won't work anyway.
-  if (!base::win::UserAccountIsUnnecessarilyElevated()) {
-    return std::nullopt;
-  }
-
-  const char* const kNoRestartSwitches[] = {
-      // Do not interfere with automation scenarios, which might want to launch
-      // Chrome elevated.
-      switches::kEnableAutomation,
-      // Never attempt to de-elevate a second time.
-      switches::kDoNotDeElevateOnLaunch};
-  if (std::ranges::any_of(
-          kNoRestartSwitches,
-          [command_line = base::CommandLine::ForCurrentProcess()](
-              const char* no_restart_switch) {
-            return command_line->HasSwitch(no_restart_switch);
-          })) {
-    return std::nullopt;
-  }
-
-  base::CommandLine new_command_line(*base::CommandLine::ForCurrentProcess());
-  // Give a fully qualified .exe name
-  base::FilePath full_exe_name;
-  if (base::PathService::Get(base::FILE_EXE, &full_exe_name)) {
-    new_command_line.SetProgram(full_exe_name);
-  }
-  new_command_line.AppendSwitch(switches::kDoNotDeElevateOnLaunch);
-
-  auto process_or_error = base::win::RunDeElevated(new_command_line);
-  // If it fails, it doesn't matter why, just proceed with the normal launch.
-  if (process_or_error.has_value()) {
-    return CHROME_RESULT_CODE_NORMAL_EXIT_AUTO_DE_ELEVATED;
-  }
-
-  return std::nullopt;
-}
