@@ -2612,18 +2612,12 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
 - (void)setLastProfileForTesting:(Profile*)profile {
   _lastProfile = profile;
-  if (!profile) {
-    _lastActiveBrowser.reset();
-    return;
-  }
   ProfileBrowserCollection* collection =
       ProfileBrowserCollection::GetForProfile(profile);
   if (!collection) {
-    _lastActiveBrowser.reset();
     return;
   }
-  BrowserWindowInterface* browser = collection->GetLastActiveBrowser();
-  _lastActiveBrowser = browser ? browser->GetWeakPtr() : nullptr;
+  _lastActiveBrowser = collection->GetLastActiveBrowser()->GetWeakPtr();
 }
 
 @end  // @implementation AppController

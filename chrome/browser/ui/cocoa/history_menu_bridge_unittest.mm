@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -32,7 +33,6 @@
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -133,36 +133,33 @@ class MockBridge : public HistoryMenuBridge {
   NSMenu* __strong menu_;
 };
 
-class HistoryMenuBridgeTest : public CocoaTest {
+class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
  public:
   bool ShouldMenuItemBeVisible(NSMenuItem* item) {
     return bridge_->ShouldMenuItemBeVisible(item);
   }
 
-  TestingProfile* profile() { return profile_.get(); }
-
  protected:
   void SetUp() override {
-    CocoaTest::SetUp();
-    TestingProfile::Builder profile_builder;
-    profile_builder.AddTestingFactory(
-        FaviconServiceFactory::GetInstance(),
-        FaviconServiceFactory::GetDefaultFactory());
-    profile_builder.AddTestingFactory(
-        HistoryServiceFactory::GetInstance(),
-        HistoryServiceFactory::GetDefaultFactory());
-    profile_ = profile_builder.Build();
-    [AppController.sharedController setLastProfileForTesting:profile_.get()];
+    BrowserWithTestWindowTest::SetUp();
+    [AppController.sharedController setLastProfileForTesting:profile()];
 
-    bridge_ = std::make_unique<MockBridge>(profile_.get());
+    bridge_ = std::make_unique<MockBridge>(profile());
     os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(true);
   }
 
   void TearDown() override {
     bridge_.reset();
-    [AppController.sharedController setLastProfileForTesting:nullptr];
-    profile_.reset();
-    CocoaTest::TearDown();
+    BrowserWithTestWindowTest::TearDown();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {TestingProfile::TestingFactory{
+                FaviconServiceFactory::GetInstance(),
+                FaviconServiceFactory::GetDefaultFactory()},
+            TestingProfile::TestingFactory{
+                HistoryServiceFactory::GetInstance(),
+                HistoryServiceFactory::GetDefaultFactory()}};
   }
 
   // We are a friend of HistoryMenuBridge (and have access to
@@ -213,13 +210,12 @@ class HistoryMenuBridgeTest : public CocoaTest {
     return bridge_->menu_item_map_;
   }
 
+ private:
+  CocoaTestHelper cocoa_test_helper_;
+
  protected:
   std::unique_ptr<MockBridge> bridge_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
 };
 
 class HistoryMenuBridgeLifetimeTest : public testing::Test {

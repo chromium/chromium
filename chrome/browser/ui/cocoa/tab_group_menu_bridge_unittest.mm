@@ -1,4 +1,4 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,34 +12,28 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_test.h"
-#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-class TabGroupMenuBridgeBrowserTest : public InProcessBrowserTest {
+class TabGroupMenuBridgeTest : public BrowserWithTestWindowTest {
  public:
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    service_ = std::make_unique<tab_groups::FakeTabGroupSyncService>();
 
-    // Save the existing main menu to restore in TearDown.
-    old_main_menu_ = [NSApp mainMenu];
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+    service_ = std::make_unique<tab_groups::FakeTabGroupSyncService>();
 
     // Create a dummy main menu.
     main_menu_ = [[NSMenu alloc] init];
@@ -65,17 +59,12 @@ class TabGroupMenuBridgeBrowserTest : public InProcessBrowserTest {
     [tab_groups_menu_ addItem:new_group_item];
   }
 
-  void TearDownOnMainThread() override {
-    [NSApp setMainMenu:old_main_menu_];
-    old_main_menu_ = nil;
-    main_menu_ = nil;
-    tab_groups_menu_root_ = nil;
-    tab_groups_menu_ = nil;
-    InProcessBrowserTest::TearDownOnMainThread();
+  void TearDown() override {
+    [NSApp setMainMenu:nil];
+    BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
-  Profile* profile() { return GetProfile(); }
   NSMenu* menu() { return tab_groups_menu_; }
   tab_groups::TabGroupSyncService* service() { return service_.get(); }
 
@@ -121,15 +110,13 @@ class TabGroupMenuBridgeBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<tab_groups::TabGroupSyncService> service_;
-  NSMenu* __strong old_main_menu_;
   NSMenu* __strong main_menu_;
   NSMenuItem* __strong tab_groups_menu_root_;
   NSMenu* __strong tab_groups_menu_;
 };
 
 // Regression test for crbug.com/482257280.
-IN_PROC_BROWSER_TEST_F(TabGroupMenuBridgeBrowserTest,
-                       BuildMenuDuringConstructionWithExistingGroups) {
+TEST_F(TabGroupMenuBridgeTest, BuildMenuDuringConstructionWithExistingGroups) {
   // Add a group before constructing the bridge so OnInitialized() calls
   // BuildMenu() during construction with groups present.
   AddGroup(u"Pre-existing Group", tab_groups::TabGroupColorId::kBlue,
@@ -141,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupMenuBridgeBrowserTest,
   ExpectGroupTitlesInMenu({"Pre-existing Group"});
 }
 
-IN_PROC_BROWSER_TEST_F(TabGroupMenuBridgeBrowserTest, CreatesBlankMenu) {
+TEST_F(TabGroupMenuBridgeTest, CreatesBlankMenu) {
   TabGroupMenuBridge bridge(profile(), service());
   bridge.BuildMenu();
   // Only the static "New Tab Group" item should be present.
@@ -149,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupMenuBridgeBrowserTest, CreatesBlankMenu) {
   ExpectGroupTitlesInMenu({});
 }
 
-IN_PROC_BROWSER_TEST_F(TabGroupMenuBridgeBrowserTest, TracksGroupUpdates) {
+TEST_F(TabGroupMenuBridgeTest, TracksGroupUpdates) {
   TabGroupMenuBridge bridge(profile(), service());
   bridge.BuildMenu();
 
@@ -171,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupMenuBridgeBrowserTest, TracksGroupUpdates) {
   ExpectGroupTitlesInMenu({"Group 2"});
 }
 
-IN_PROC_BROWSER_TEST_F(TabGroupMenuBridgeBrowserTest, SubmenuHasCorrectItems) {
+TEST_F(TabGroupMenuBridgeTest, SubmenuHasCorrectItems) {
   TabGroupMenuBridge bridge(profile(), service());
   AddGroup(u"Group 1", tab_groups::TabGroupColorId::kGrey,
            {GURL("https://a.com"), GURL("https://b.com")});
@@ -209,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupMenuBridgeBrowserTest, SubmenuHasCorrectItems) {
             "Tab Title");
 }
 
-IN_PROC_BROWSER_TEST_F(TabGroupMenuBridgeBrowserTest, ClickingTabOpensUrl) {
+TEST_F(TabGroupMenuBridgeTest, ClickingTabOpensUrl) {
   TabGroupMenuBridge bridge(profile(), service());
 
   AddGroup(u"Group 1", tab_groups::TabGroupColorId::kGrey,
@@ -227,12 +214,12 @@ IN_PROC_BROWSER_TEST_F(TabGroupMenuBridgeBrowserTest, ClickingTabOpensUrl) {
   }
   ASSERT_TRUE(tab_item);
 
-  int initial_count = browser()->GetTabStripModel()->count();
+  EXPECT_EQ(0, browser()->tab_strip_model()->count());
 
   [submenu performActionForItemAtIndex:[submenu indexOfItem:tab_item]];
 
-  EXPECT_EQ(initial_count + 1, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
   content::WebContents* new_tab =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      browser()->tab_strip_model()->GetWebContentsAt(0);
   EXPECT_EQ(GURL("https://a.com"), new_tab->GetVisibleURL());
 }

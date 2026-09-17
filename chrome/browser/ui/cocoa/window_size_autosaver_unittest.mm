@@ -7,11 +7,11 @@
 #import <Cocoa/Cocoa.h>
 
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -19,11 +19,9 @@ namespace {
 
 constexpr char kPath[] = "WindowSizeAutosaverTest";
 
-class WindowSizeAutosaverTest : public CocoaTest {
- public:
+class WindowSizeAutosaverTest : public BrowserWithTestWindowTest {
   void SetUp() override {
-    CocoaTest::SetUp();
-    profile_ = std::make_unique<TestingProfile>();
+    BrowserWithTestWindowTest::SetUp();
     window_ = [[NSWindow alloc]
         initWithContentRect:NSMakeRect(100, 101, 150, 151)
                   styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskResizable
@@ -31,24 +29,18 @@ class WindowSizeAutosaverTest : public CocoaTest {
                       defer:NO];
     window_.releasedWhenClosed = NO;
     static_cast<user_prefs::PrefRegistrySyncable*>(
-        profile_->GetPrefs()->DeprecatedGetPrefRegistry())
+        profile()->GetPrefs()->DeprecatedGetPrefRegistry())
         ->RegisterDictionaryPref(kPath);
   }
 
   void TearDown() override {
     [window_ close];
-    window_ = nil;
-    profile_.reset();
-    CocoaTest::TearDown();
+    BrowserWithTestWindowTest::TearDown();
   }
 
-  TestingProfile* profile() { return profile_.get(); }
-
+ public:
+  CocoaTestHelper cocoa_test_helper_;
   NSWindow* __strong window_;
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {

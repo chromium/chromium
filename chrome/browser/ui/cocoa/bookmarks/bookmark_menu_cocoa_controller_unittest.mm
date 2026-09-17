@@ -1,4 +1,4 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,23 +17,19 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
+#include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "content/public/test/test_utils.h"
-#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
@@ -41,18 +37,29 @@
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
-class BookmarkMenuCocoaControllerBrowserTest : public InProcessBrowserTest {
+class BookmarkMenuCocoaControllerTest : public BrowserWithTestWindowTest {
  public:
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+
     menu_ = [[NSMenu alloc] initWithTitle:@"test"];
   }
 
-  void TearDownOnMainThread() override {
-    controller_ = nil;
+  void TearDown() override {
     bridge_ = nullptr;
-    InProcessBrowserTest::TearDownOnMainThread();
+    BrowserWithTestWindowTest::TearDown();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {TestingProfile::TestingFactory{
+                BookmarkModelFactory::GetInstance(),
+                BookmarkModelFactory::GetDefaultFactory()},
+            TestingProfile::TestingFactory{
+                ManagedBookmarkServiceFactory::GetInstance(),
+                ManagedBookmarkServiceFactory::GetDefaultFactory()},
+            TestingProfile::TestingFactory{
+                BookmarkMergedSurfaceServiceFactory::GetInstance(),
+                BookmarkMergedSurfaceServiceFactory::GetDefaultFactory()}};
   }
 
   void InitBridgeAndController() {
@@ -70,18 +77,17 @@ class BookmarkMenuCocoaControllerBrowserTest : public InProcessBrowserTest {
   BookmarkMenuCocoaController* controller() { return controller_; }
   BookmarkMenuBridge* bridge() { return bridge_.get(); }
   NSMenu* menu() { return menu_; }
-  Profile* profile() { return GetProfile(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       switches::kSyncEnableBookmarksInTransportMode};
+  CocoaTestHelper cocoa_test_helper_;
   NSMenu* __strong menu_;
   std::unique_ptr<BookmarkMenuBridge> bridge_;
   BookmarkMenuCocoaController* __strong controller_;
 };
 
-IN_PROC_BROWSER_TEST_F(BookmarkMenuCocoaControllerBrowserTest,
-                       TestOpenItemAfterModelLoaded) {
+TEST_F(BookmarkMenuCocoaControllerTest, TestOpenItemAfterModelLoaded) {
   const GURL kUrl1("http://site1.com");
   const GURL kUrl2("http://site2.com");
   const GURL kUrl3("http://site3.com");
@@ -102,11 +108,13 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuCocoaControllerBrowserTest,
 
   InitBridgeAndController();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  AddTab(browser(), GURL("about:blank"));
 
   content::WebContents* contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      browser()->tab_strip_model()->GetActiveWebContents();
   CHECK(contents);
+
+  content::TestNavigationObserver navigation_observer(contents);
 
   BookmarkMenuCocoaController* c = controller();
 
@@ -127,43 +135,40 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuCocoaControllerBrowserTest,
   ASSERT_NE(nullptr, item3);
   ASSERT_NE(nullptr, item4);
 
+  ASSERT_EQ(navigation_observer.last_navigation_url(), GURL());
+
   base::UserActionTester user_actions;
 
-  {
-    content::TestNavigationObserver navigation_observer(contents);
-    [c openBookmarkMenuItem:item1];
-    navigation_observer.WaitForNavigationFinished();
-    EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl1);
-    EXPECT_EQ(1, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
-  }
+  [c openBookmarkMenuItem:item1];
 
-  {
-    content::TestNavigationObserver navigation_observer(contents);
-    [c openBookmarkMenuItem:item2];
-    navigation_observer.WaitForNavigationFinished();
-    EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl2);
-    EXPECT_EQ(2, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
-  }
+  CommitPendingLoad(&contents->GetController());
+  navigation_observer.WaitForNavigationFinished();
+  EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl1);
+  EXPECT_EQ(1, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
 
-  {
-    content::TestNavigationObserver navigation_observer(contents);
-    [c openBookmarkMenuItem:item3];
-    navigation_observer.WaitForNavigationFinished();
-    EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl3);
-    EXPECT_EQ(3, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
-  }
+  [c openBookmarkMenuItem:item2];
 
-  {
-    content::TestNavigationObserver navigation_observer(contents);
-    [c openBookmarkMenuItem:item4];
-    navigation_observer.WaitForNavigationFinished();
-    EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl4);
-    EXPECT_EQ(4, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
-  }
+  CommitPendingLoad(&contents->GetController());
+  navigation_observer.WaitForNavigationFinished();
+  EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl2);
+  EXPECT_EQ(2, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
+
+  [c openBookmarkMenuItem:item3];
+
+  CommitPendingLoad(&contents->GetController());
+  navigation_observer.WaitForNavigationFinished();
+  EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl3);
+  EXPECT_EQ(3, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
+
+  [c openBookmarkMenuItem:item4];
+
+  CommitPendingLoad(&contents->GetController());
+  navigation_observer.WaitForNavigationFinished();
+  EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl4);
+  EXPECT_EQ(4, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
 }
 
-IN_PROC_BROWSER_TEST_F(BookmarkMenuCocoaControllerBrowserTest,
-                       TestOpenItemWhileModelLoading) {
+TEST_F(BookmarkMenuCocoaControllerTest, TestOpenItemWhileModelLoading) {
   const GURL kUrl1("http://site1.com");
   const GURL kUrl2("http://site2.com");
   const GURL kUrl3("http://site3.com");
@@ -189,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuCocoaControllerBrowserTest,
 
   // Ensure that the bookmarks JSON file is written to disk.
   model()->CommitPendingWriteForTest();
-  content::RunAllTasksUntilIdle();
+  task_environment()->RunUntilIdle();
 
   // Mimic a scenario where a new profile was created and
   // BookmarkMergedSurfaceService is in the process of loading.
@@ -206,15 +211,17 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuCocoaControllerBrowserTest,
 
   ASSERT_FALSE(bookmark_service()->loaded());
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  AddTab(browser(), GURL("about:blank"));
 
   content::WebContents* contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      browser()->tab_strip_model()->GetActiveWebContents();
   CHECK(contents);
 
-  base::UserActionTester user_actions;
-
   content::TestNavigationObserver navigation_observer(contents);
+
+  ASSERT_EQ(navigation_observer.last_navigation_url(), GURL());
+
+  base::UserActionTester user_actions;
 
   [BookmarkMenuCocoaController
       openBookmarkByGUID:uuid1
@@ -242,6 +249,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuCocoaControllerBrowserTest,
                 uuid4, BookmarkModel::NodeTypeForUuidLookup::kAccountNodes));
 
   // Once the model is loaded, the bookmark should open.
+  CommitPendingLoad(&contents->GetController());
   navigation_observer.WaitForNavigationFinished();
 
   EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl1);

@@ -13,9 +13,9 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sessions/core/session_id.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 @interface FakeHistoryMenuController : HistoryMenuCocoaController {
@@ -33,24 +33,21 @@
 
 @end  // FakeHistoryMenuController
 
-class HistoryMenuCocoaControllerTest : public CocoaTest {
+class HistoryMenuCocoaControllerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
-    CocoaTest::SetUp();
-    profile_ = std::make_unique<TestingProfile>();
+    BrowserWithTestWindowTest::SetUp();
+    ASSERT_TRUE(profile());
 
-    bridge_ = std::make_unique<HistoryMenuBridge>(profile_.get());
+    bridge_ = std::make_unique<HistoryMenuBridge>(profile());
     bridge_->controller_ =
         [[FakeHistoryMenuController alloc] initWithBridge:bridge_.get()];
   }
 
   void TearDown() override {
     bridge_.reset();
-    profile_.reset();
-    CocoaTest::TearDown();
+    BrowserWithTestWindowTest::TearDown();
   }
-
-  TestingProfile* profile() { return profile_.get(); }
 
   void CreateItems(NSMenu* menu) {
     auto item = std::make_unique<HistoryMenuBridge::HistoryItem>();
@@ -76,8 +73,7 @@ class HistoryMenuCocoaControllerTest : public CocoaTest {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
+  CocoaTestHelper cocoa_test_helper_;
   std::unique_ptr<HistoryMenuBridge> bridge_;
 };
 

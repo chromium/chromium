@@ -9,30 +9,26 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/testing_pref_service.h"
-#include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
-class ProfileMenuControllerTest : public CocoaTest {
+class ProfileMenuControllerTest : public BrowserWithTestWindowTest {
  public:
-  ProfileMenuControllerTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
-
   void SetUp() override {
     CocoaTest::BootstrapCocoa();
-    CocoaTest::SetUp();
-    ASSERT_TRUE(profile_manager_.SetUp());
-    profile_ = profile_manager_.CreateTestingProfile(
-        TestingProfile::kDefaultProfileUserName);
+    BrowserWithTestWindowTest::SetUp();
 
     RebuildController();
   }
@@ -41,13 +37,9 @@ class ProfileMenuControllerTest : public CocoaTest {
     [controller_ deinitialize];
     controller_ = nil;
     item_ = nil;
-    profile_ = nullptr;
-    profile_manager_.DeleteAllTestingProfiles();
-    CocoaTest::TearDown();
-  }
 
-  TestingProfileManager* profile_manager() { return &profile_manager_; }
-  TestingProfile* profile() { return profile_; }
+    BrowserWithTestWindowTest::TearDown();
+  }
 
   void TestBottomItems() {
     NSMenu* menu = controller().menu;
@@ -98,9 +90,6 @@ class ProfileMenuControllerTest : public CocoaTest {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile> profile_ = nullptr;
   NSMenuItem* __strong item_;
   ProfileMenuController* __strong controller_;
 };
@@ -219,12 +208,8 @@ TEST_F(ProfileMenuControllerTest, SetActiveAndRemove) {
   const std::u16string kDefaultProfileName = u"DefaultProfile";
   profile_manager()
       ->profile_attributes_storage()
-      ->GetProfileAttributesWithPath(profile()->GetPath())
+      ->GetProfileAttributesWithPath(browser()->GetProfile()->GetPath())
       ->SetLocalProfileName(kDefaultProfileName, false);
-
-  testing::NiceMock<MockBrowserWindowInterface> default_browser;
-  ON_CALL(default_browser, GetProfile())
-      .WillByDefault(testing::Return(profile()));
 
   NSMenu* menu = controller().menu;
   TestingProfileManager* manager = profile_manager();
@@ -233,30 +218,36 @@ TEST_F(ProfileMenuControllerTest, SetActiveAndRemove) {
   ASSERT_EQ(7, menu.numberOfItems);
 
   // Create a browser and "show" it.
-  auto p2_browser =
-      std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
-  ON_CALL(*p2_browser, GetProfile()).WillByDefault(testing::Return(profile2));
+  BrowserWindowCreateParams profile2_params(profile2, true);
+  std::unique_ptr<BrowserWindowInterface> p2_browser(
+      CreateBrowserWithTestWindowForParams(std::move(profile2_params)));
   [controller() activeBrowserChangedTo:p2_browser.get()];
   VerifyProfileNamedIsActive(@"Profile 2", __LINE__);
 
   // Close the browser and make sure the new active browser's profile is active.
   p2_browser.reset();
-  [controller() activeBrowserChangedTo:&default_browser];
+  [controller() activeBrowserChangedTo:browser()];
   VerifyProfileNamedIsActive(base::SysUTF16ToNSString(kDefaultProfileName),
                              __LINE__);
 
   // Open a new browser and make sure it takes effect.
-  auto p3_browser =
-      std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
-  ON_CALL(*p3_browser, GetProfile()).WillByDefault(testing::Return(profile3));
+  BrowserWindowCreateParams profile3_params(profile3, true);
+  std::unique_ptr<BrowserWindowInterface> p3_browser(
+      CreateBrowserWithTestWindowForParams(std::move(profile3_params)));
   [controller() activeBrowserChangedTo:p3_browser.get()];
   VerifyProfileNamedIsActive(@"Profile 3", __LINE__);
 
   // Close the browser and make sure the new active browser's profile is active.
   p3_browser.reset();
-  [controller() activeBrowserChangedTo:&default_browser];
+  [controller() activeBrowserChangedTo:browser()];
   VerifyProfileNamedIsActive(base::SysUTF16ToNSString(kDefaultProfileName),
                              __LINE__);
+
+  // Close the browser.
+  std::unique_ptr<BrowserWindowInterface> browser = release_browser();
+  browser->tab_strip_model()->CloseAllTabs();
+  browser.reset();
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 
   [controller() activeBrowserChangedTo:nil];
   VerifyProfileNamedIsActive(base::SysUTF16ToNSString(kDefaultProfileName),
