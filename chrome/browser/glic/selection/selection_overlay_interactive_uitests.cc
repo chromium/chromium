@@ -1418,16 +1418,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
           "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
           "  const chip = chips.find(c => "
           "c.querySelector('.chip-label')?.textContent === 'Explain');"
-          "  return chip !== null;"
-          "}"),
-      ExecuteJsAt(kOverlayWebContentsId, kSelectionOverlay,
-                  "el => {"
-                  "  const chips = "
-                  "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
-                  "  const chip = chips.find(c => "
-                  "c.querySelector('.chip-label')?.textContent === 'Explain');"
-                  "  chip.click();"
-                  "}"));
+          "  if (!chip) return false;"
+          "  chip.click();"
+          "  return true;"
+          "}"));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
