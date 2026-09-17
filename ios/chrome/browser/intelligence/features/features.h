@@ -214,10 +214,6 @@ bool IsGeminiLiveEnabled();
 BASE_DECLARE_FEATURE(kGeminiLiveDormantReasons);
 bool IsGeminiLiveDormantReasonsEnabled();
 
-// Returns true if the Gemini chat persistence is enabled.
-bool IsGeminiChatPersistenceEnabled();
-BASE_DECLARE_FEATURE(kGeminiChatPersistence);
-
 // Feature flag for Gemini configurable parameters.
 BASE_DECLARE_FEATURE(kGeminiConfigParams);
 

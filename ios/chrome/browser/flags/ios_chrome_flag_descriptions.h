@@ -880,10 +880,6 @@ inline constexpr char kGeminiBinaryMigrationName[] = "Gemini Binary Migration";
 inline constexpr char kGeminiBinaryMigrationDescription[] =
     "Enables the binary network migration for Gemini.";
 
-inline constexpr char kGeminiChatPersistenceName[] = "Gemini Chat Persistence";
-inline constexpr char kGeminiChatPersistenceDescription[] =
-    "Enables improvements to Gemini Chat persistence.";
-
 inline constexpr char kGeminiClientMigrationName[] = "Gemini Client Migration";
 inline constexpr char kGeminiClientMigrationDescription[] =
     "Enables the client migration for Gemini, adding the infrastructure for "

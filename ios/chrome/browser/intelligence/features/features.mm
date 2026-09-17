@@ -412,15 +412,6 @@ bool IsGeminiLiveDormantReasonsEnabled() {
   return base::FeatureList::IsEnabled(kGeminiLiveDormantReasons);
 }
 
-BASE_FEATURE(kGeminiChatPersistence, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsGeminiChatPersistenceEnabled() {
-  if (!IsPageActionMenuEnabled()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kGeminiChatPersistence);
-}
-
 BASE_FEATURE(kGeminiConfigParams, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kGeminiResponseReadyInterval[] = "GeminiResponseReadyInterval";

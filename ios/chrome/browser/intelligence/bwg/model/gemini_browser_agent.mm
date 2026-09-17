@@ -1880,11 +1880,6 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
     }
     [new_active->GetWebViewProxy().scrollViewProxy
         addObserver:scroll_observer_];
-
-    if (IsGeminiChatPersistenceEnabled() && is_floaty_invoked_) {
-      ios::provider::RequestUIChange(
-          ios::provider::GeminiUIElementType::kZeroState);
-    }
   }
 
   UpdateLiveModeUI();
