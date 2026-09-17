@@ -200,6 +200,8 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
     // Obtains a mapped I420 buffer with this ScaledBuffer's size hard-applied.
     // If I420 is not used internally, a conversion happens.
     webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override;
+    webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420ForInspection()
+        override;
 
     // Obtains a mapped buffer of this ScaledBuffer's size hard-applied. The
     // resulting buffer's type is the non-kNative type used internally.
@@ -238,6 +240,8 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
   int height() const override { return frame_->natural_size().height(); }
 
   webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override;
+  webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420ForInspection()
+      override;
   webrtc::scoped_refptr<webrtc::VideoFrameBuffer> GetMappedFrameBuffer(
       std::span<webrtc::VideoFrameBuffer::Type> types) override;
 
@@ -274,20 +278,25 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
   struct AdaptedFrame {
     AdaptedFrame(ScaledBufferSize size,
                  scoped_refptr<media::VideoFrame> video_frame,
-                 webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer)
+                 webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer,
+                 bool is_for_inspection = false)
         : size(std::move(size)),
           video_frame(std::move(video_frame)),
-          frame_buffer(std::move(frame_buffer)) {}
+          frame_buffer(std::move(frame_buffer)),
+          is_for_inspection(is_for_inspection) {}
 
     ScaledBufferSize size;
     // If |frame_buffer| was produced without a media::VideoFrame this is null.
     scoped_refptr<media::VideoFrame> video_frame;
     webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer;
+    bool is_for_inspection;
   };
 
   webrtc::scoped_refptr<webrtc::VideoFrameBuffer> GetOrCreateFrameBufferForSize(
-      const ScaledBufferSize& size);
-  AdaptedFrame AdaptBestFrame(const ScaledBufferSize& size) const
+      const ScaledBufferSize& size,
+      bool is_for_inspection = false);
+  AdaptedFrame AdaptBestFrame(const ScaledBufferSize& size,
+                              bool is_for_inspection) const
       EXCLUSIVE_LOCKS_REQUIRED(adapted_frames_lock_);
 
   void OnFramePrepared(

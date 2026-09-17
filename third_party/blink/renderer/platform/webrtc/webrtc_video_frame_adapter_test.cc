@@ -477,6 +477,35 @@ TEST_F(WebRtcVideoFrameAdapterTest, FrameFeedbackSetsRequireMappedFrame) {
         ->getMediaVideoFrame();
   }
   EXPECT_FALSE(resources->GetFeedback().require_mapped_frame);
+  {
+    // Access both directly and via ToI420ForInspection(). Since it was only
+    // adapted for inspection, feedback should remain false.
+    webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+        new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                              resources));
+    multi_buffer->getMediaVideoFrame();
+    multi_buffer->ToI420ForInspection();
+  }
+  EXPECT_FALSE(resources->GetFeedback().require_mapped_frame);
+  {
+    // First inspect, then map for encoding. Feedback should become true.
+    webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+        new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                              resources));
+    multi_buffer->ToI420ForInspection();
+    multi_buffer->ToI420();
+  }
+  EXPECT_TRUE(resources->GetFeedback().require_mapped_frame);
+  {
+    // Inspect a frame that is otherwise dropped (not accessed via
+    // getMediaVideoFrame or non-inspection adaptation). Feedback should not be
+    // overwritten to false and must remain true.
+    webrtc::scoped_refptr<WebRtcVideoFrameAdapter> multi_buffer(
+        new webrtc::RefCountedObject<WebRtcVideoFrameAdapter>(frame_720p,
+                                                              resources));
+    multi_buffer->ToI420ForInspection();
+  }
+  EXPECT_TRUE(resources->GetFeedback().require_mapped_frame);
 }
 
 }  // namespace blink
