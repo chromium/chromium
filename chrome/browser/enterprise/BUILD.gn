@@ -16,6 +16,7 @@ source_set("enterprise") {
     "connectors/analysis/analysis_service_settings.h",
     "connectors/connectors_manager.h",
     "connectors/connectors_service.h",
+    "connectors/device_trust/signals/signals_service_factory.h",
     "connectors/interstitials/enterprise_block_controller_client.h",
     "connectors/interstitials/enterprise_block_page.h",
     "connectors/interstitials/enterprise_warn_controller_client.h",
@@ -56,6 +57,7 @@ source_set("enterprise") {
     "//chrome/browser:browser_process",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/enterprise/browser_management:management_identity",
+    "//chrome/browser/enterprise/connectors/device_trust/signals",
     "//chrome/browser/enterprise/core",
     "//chrome/browser/enterprise/isolated_mode",
     "//chrome/browser/profiles",
@@ -128,7 +130,6 @@ source_set("enterprise") {
     ]
   } else {
     public_deps += [
-      "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
       "//chrome/browser/ui:idle_bubble",
       "//chrome/browser/ui:idle_dialog",
@@ -150,7 +151,6 @@ source_set("enterprise") {
       "connectors/device_trust/device_trust_service_factory.h",
       "connectors/device_trust/navigation_throttle.h",
       "connectors/device_trust/signals/decorators/common/context_signals_decorator.h",
-      "connectors/device_trust/signals/signals_service_factory.h",
       "data_protection/data_protection_ui_controller.h",
       "reporting/browser_report_generator_desktop.h",
       "reporting/report_generator_desktop.h",
@@ -532,6 +532,7 @@ source_set("impl") {
 
   if (is_android) {
     sources += [
+      "connectors/device_trust/signals/android/signals_service_factory_android.cc",
       "platform_auth/entra_provider_android.cc",
       "reporting/browser_report_generator_android.cc",
       "reporting/report_scheduler_android.cc",
@@ -548,6 +549,7 @@ source_set("impl") {
       "//components/enterprise/browser/reporting/android:signals_reporting_scheduler",
       "//components/enterprise/device_attestation/android",
       "//components/enterprise/device_attestation/android:jni_headers",
+      "//components/enterprise/device_trust/core/signals/decorators/common",
     ]
   } else {
     sources += [
@@ -568,7 +570,6 @@ source_set("impl") {
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust:features",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
-      "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
       "//chrome/browser/lifetime",
       "//chrome/browser/search_engine_choice",
