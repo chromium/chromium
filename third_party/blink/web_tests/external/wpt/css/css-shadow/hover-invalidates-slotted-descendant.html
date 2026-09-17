@@ -9,26 +9,27 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <style>
-  #host { display: block; }
-  /* Shadow content, not slotted. Hovered first so the common ancestor with the
-     slotted subtree is the host, which makes the subsequent hover chain stop
-     inside the shadow tree (its top is the <slot>). */
-  .icon { width: 100px; height: 30px; background: black; }
   .option { width: 100px; height: 100px; }
   .content { width: 100%; height: 100%; background-color: red; }
   :is(.option):hover .content { background-color: green; }
 </style>
 
-<div id="host"><div class="option"><div class="content"></div></div></div>
+<div id="host">
+  <template shadowrootmode="open">
+    <style>
+      /* Shadow content, not slotted. Hovered first so the common ancestor with the
+        slotted subtree is the host, which makes the subsequent hover chain stop
+        inside the shadow tree (its top is the <slot>). */
+      .icon { width: 100px; height: 30px; background: black; }
+    </style>
+    <div class="icon"></div><slot></slot>
+  </template>
+  <div class="option"><div class="content"></div></div>
+</div>
 
 <script>
-const host = document.getElementById("host");
-const shadow = host.attachShadow({ mode: "open" });
-shadow.innerHTML = '<div class="icon"></div><slot></slot>';
-
 promise_test(async () => {
   const content = document.querySelector(".content");
-  const icon = shadow.querySelector(".icon");
 
   assert_equals(getComputedStyle(content).backgroundColor, "rgb(255, 0, 0)",
     "content is red before any hover");
@@ -37,7 +38,7 @@ promise_test(async () => {
   // target and the slotted content is the host, so the next hover chain stops at
   // the <slot> (shadow scope) rather than walking up to <html>. The icon is not
   // an .option, so this hover must not restyle the content.
-  await new test_driver.Actions().pointerMove(0, 0, { origin: icon }).send();
+  await new test_driver.Actions().pointerMove(0, 0, { origin: host }).send();
   assert_equals(getComputedStyle(content).backgroundColor, "rgb(255, 0, 0)",
     "content stays red while unrelated shadow content is hovered");
 
