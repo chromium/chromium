@@ -7,6 +7,9 @@
 
 // Icons.
 #define IDI_APP 101
+// IDI_INSTALLER_BADGE aliases IDI_APP to provide the installer overlay badge
+// without duplicating the .ico payload in the resource table.
+#define IDI_INSTALLER_BADGE IDI_APP
 #define IDB_ERROR_ILLUSTRATION 1000
 #define IDB_BACKGROUND_LIGHT 1001
 #define IDB_BACKGROUND_DARK 1002

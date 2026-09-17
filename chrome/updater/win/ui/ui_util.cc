@@ -4,8 +4,9 @@
 
 #include "chrome/updater/win/ui/ui_util.h"
 
-#include <stdint.h>
+#include <windows.h>
 
+#include <stdint.h>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -89,15 +90,158 @@ class ScopedSelectObject {
   const HGDIOBJ old_object_;
 };
 
-base::win::ScopedGDIObject<HICON> Create32bppAlphaIcon(HBITMAP bitmap,
-                                                       int bm_width,
-                                                       int bm_height,
-                                                       int target_w,
-                                                       int target_h,
-                                                       int dst_x,
-                                                       int dst_y,
-                                                       int dst_w,
-                                                       int dst_h) {
+// Extracts the alpha channel from `icon` scaled to `width x height`.
+// If `icon` is a 32bpp icon with per-pixel alpha, extracts per-pixel alpha
+// from its color bitmap. Otherwise, falls back to querying the 1bpp AND mask
+// via `DrawIconEx` with `DI_MASK` (where 0 is opaque 255 and non-zero is
+// transparent 0).
+std::vector<uint8_t> GetIconAlphaChannel(HDC hdc,
+                                         HICON icon,
+                                         int width,
+                                         int height) {
+  if (!icon || width <= 0 || height <= 0) {
+    return {};
+  }
+
+  std::optional<base::win::ScopedGetDC> default_dc;
+  if (!hdc) {
+    default_dc.emplace(nullptr);
+  }
+  const HDC dc = hdc ? hdc : static_cast<HDC>(default_dc.value());
+  if (!dc) {
+    VLOG(1) << __func__ << ": Failed to acquire screen DC";
+    return {};
+  }
+
+  // 1. Inspect the icon's color bitmap via GetIconInfo. Standard Windows 32bpp
+  // ARGB icons store transparency in the color bitmap's alpha channel while
+  // leaving the 1bpp AND mask (hbmMask) all zeros (0x00, opaque).
+  ICONINFO icon_info = {};
+  if (::GetIconInfo(icon, &icon_info)) {
+    base::win::ScopedGDIObject<HBITMAP> color_bmp(icon_info.hbmColor);
+    base::win::ScopedGDIObject<HBITMAP> mask_bmp(icon_info.hbmMask);
+
+    if (color_bmp.is_valid()) {
+      BITMAP bm = {};
+      if (::GetObject(color_bmp.get(), sizeof(bm), &bm) != 0 &&
+          bm.bmBitsPixel == 32 && bm.bmWidth > 0 && bm.bmHeight > 0) {
+        const int bm_width = static_cast<int>(bm.bmWidth);
+        const int bm_height = static_cast<int>(bm.bmHeight);
+
+        BITMAPINFO bi32 = {};
+        bi32.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        bi32.bmiHeader.biWidth = bm_width;
+        bi32.bmiHeader.biHeight = -bm_height;  // top-down
+        bi32.bmiHeader.biPlanes = 1;
+        bi32.bmiHeader.biBitCount = 32;
+        bi32.bmiHeader.biCompression = BI_RGB;
+
+        std::vector<uint32_t> pixels(static_cast<size_t>(bm_width) * bm_height);
+        if (::GetDIBits(dc, color_bmp.get(), 0, bm_height, pixels.data(),
+                        &bi32, DIB_RGB_COLORS) == bm_height) {
+          bool has_per_pixel_alpha = false;
+          for (uint32_t pixel : pixels) {
+            if ((pixel >> 24) != 0) {
+              has_per_pixel_alpha = true;
+              break;
+            }
+          }
+
+          // Tradeoff (All-zero alpha vs 1bpp AND mask fallback):
+          // 32bpp icons with all-zero alpha (e.g. `google_update.ico`) are
+          // treated as lacking per-pixel alpha, falling back to DI_MASK.
+          // Non-zero alpha (even all 255) is treated as valid icon alpha.
+          if (has_per_pixel_alpha) {
+            std::vector<uint8_t> alpha(static_cast<size_t>(width) * height);
+            for (int y = 0; y < height; ++y) {
+              const int src_y =
+                  std::clamp(::MulDiv(y, bm_height, height), 0, bm_height - 1);
+              for (int x = 0; x < width; ++x) {
+                const int src_x =
+                    std::clamp(::MulDiv(x, bm_width, width), 0, bm_width - 1);
+                const uint32_t pixel =
+                    pixels[static_cast<size_t>(src_y) * bm_width + src_x];
+                alpha[static_cast<size_t>(y) * width + x] =
+                    static_cast<uint8_t>(pixel >> 24);
+              }
+            }
+            return alpha;
+          }
+        }
+      }
+    }
+  }
+
+  // 2. Fallback for non-32bpp icons (or 32bpp icons without per-pixel alpha):
+  // Query the 1bpp AND mask using DI_MASK. In Windows icon AND masks,
+  // 0 (black) represents opaque pixels (alpha = 255) and non-zero
+  // (white 0x00FFFFFF) represents transparent pixels (alpha = 0).
+  BITMAPINFO mask_bi = {};
+  mask_bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  mask_bi.bmiHeader.biWidth = width;
+  mask_bi.bmiHeader.biHeight = -height;  // top-down
+  mask_bi.bmiHeader.biPlanes = 1;
+  mask_bi.bmiHeader.biBitCount = 32;
+  mask_bi.bmiHeader.biCompression = BI_RGB;
+
+  void* mask_bits = nullptr;
+  base::win::ScopedGDIObject<HBITMAP> mask_dib(::CreateDIBSection(
+      dc, &mask_bi, DIB_RGB_COLORS, &mask_bits, nullptr, 0));
+  base::win::ScopedCreateDC mask_dc(::CreateCompatibleDC(dc));
+
+  if (!mask_dib.is_valid() || !mask_dc.is_valid() || !mask_bits) {
+    return {};
+  }
+
+  // SAFETY: `mask_dib` is a 32bpp top-down DIB section allocated immediately
+  // above with dimensions `width x height`, containing exactly `width * height`
+  // 32-bit DWORDs.
+  base::span<uint32_t> mask_span = UNSAFE_BUFFERS(base::span(
+      static_cast<uint32_t*>(mask_bits), static_cast<size_t>(width) * height));
+  std::ranges::fill(mask_span, 0);
+
+  {
+    ScopedSelectObject select_mask(mask_dc.get(), mask_dib.get());
+    if (!select_mask.is_valid()) {
+      return {};
+    }
+
+    // Draw the icon's AND mask using DI_MASK. In Windows icon AND masks,
+    // 0 (black) represents opaque pixels and non-zero (white 0x00FFFFFF)
+    // represents transparent pixels.
+    if (!::DrawIconEx(mask_dc.get(), 0, 0, icon, width, height, 0, nullptr,
+                      DI_MASK)) {
+      VLOG(1) << __func__ << ": DrawIconEx(DI_MASK) failed";
+      return {};
+    }
+    ::GdiFlush();
+  }
+
+  // `mask_dib` is now unselected from `mask_dc`, ensuring safe memory access
+  // across all display drivers and GDI acceleration modes.
+  std::vector<uint8_t> alpha(static_cast<size_t>(width) * height);
+  for (size_t i = 0; i < mask_span.size(); ++i) {
+    alpha[i] = ((mask_span[i] & 0x00FFFFFF) == 0) ? 255 : 0;
+  }
+  return alpha;
+}
+
+// Synthesizes a 32bpp icon with per-pixel alpha (BITMAPV5HEADER) from
+// `bitmap`. If `badge_icon` is provided, composites the badge over the base
+// logo using GDI `::DrawIconEx` and restores the destination alpha channel via
+// single-channel Porter-Duff "Over" (A_out = A_badge + A_base * (1 - A_badge)).
+base::win::ScopedGDIObject<HICON> Create32bppAlphaIcon(
+    HBITMAP bitmap,
+    int bm_width,
+    int bm_height,
+    int target_w,
+    int target_h,
+    int dst_x,
+    int dst_y,
+    int dst_w,
+    int dst_h,
+    HICON badge_icon = nullptr,
+    bool* is_alpha_bitmap = nullptr) {
   base::win::ScopedGetDC hdc(nullptr);
   if (!hdc) {
     VLOG(1) << __func__ << ": Failed to acquire screen DC";
@@ -144,9 +288,27 @@ base::win::ScopedGDIObject<HICON> Create32bppAlphaIcon(HBITMAP bitmap,
 
   const bool has_per_pixel_alpha =
       has_partial_alpha || (has_zero_alpha && has_opaque_alpha);
+  if (is_alpha_bitmap) {
+    *is_alpha_bitmap = has_per_pixel_alpha;
+  }
+
+  // Opaque bitmaps (24bpp or 32bpp without true per-pixel alpha) must fall
+  // back to `CreateColorKeyedIcon()`, which samples the border/corners and
+  // keys out the solid dialog background (e.g. RGB(31, 31, 31) or
+  // RGB(255, 255, 255)). Generating a 32bpp icon from an opaque base bitmap
+  // without color keying would render the logo inside a solid square box.
+  // Note: Unlike `GetIconAlphaChannel()`, which accepts fully opaque 32bpp
+  // icons (all alpha = 255), base logo bitmaps with uniform alpha = 255 are
+  // treated as opaque here so their solid rectangular background is keyed out.
   if (!has_per_pixel_alpha) {
     return {};
   }
+
+  const RECT badge_rect = GetBadgeRect(target_w, target_h);
+  const int badge_w = badge_rect.right - badge_rect.left;
+  const int badge_h = badge_rect.bottom - badge_rect.top;
+  const int badge_x = badge_rect.left;
+  const int badge_y = badge_rect.top;
 
   BITMAPV5HEADER v5 = {};
   v5.bV5Size = sizeof(BITMAPV5HEADER);
@@ -172,9 +334,12 @@ base::win::ScopedGDIObject<HICON> Create32bppAlphaIcon(HBITMAP bitmap,
   }
 
   const size_t dst_pixels_count = static_cast<size_t>(target_w) * target_h;
-  base::span<uint32_t> dst_pixels = UNSAFE_BUFFERS(
+  // SAFETY: `color_bmp` is a 32bpp top-down DIB section allocated immediately
+  // above with dimensions `target_w x target_h`, containing exactly
+  // `target_w * target_h` 32-bit DWORDs.
+  base::span<uint32_t> dst_span = UNSAFE_BUFFERS(
       base::span(static_cast<uint32_t*>(v5_bits), dst_pixels_count));
-  std::ranges::fill(dst_pixels, 0);
+  std::ranges::fill(dst_span, 0);
 
   for (int dy = 0; dy < dst_h; ++dy) {
     const float sy = (dy + 0.5f) * bm_height / dst_h - 0.5f;
@@ -219,13 +384,77 @@ base::win::ScopedGDIObject<HICON> Create32bppAlphaIcon(HBITMAP bitmap,
       const uint32_t g_out = has_unpremultiplied_colors ? (g * a) / 255 : g;
       const uint32_t b_out = has_unpremultiplied_colors ? (b * a) / 255 : b;
 
-      dst_pixels[(dst_y + dy) * target_w + (dst_x + dx)] =
+      dst_span[(dst_y + dy) * target_w + (dst_x + dx)] =
           (a << 24) | (r_out << 16) | (g_out << 8) | b_out;
     }
   }
 
-  const size_t mask_bytes_per_line =
-      (static_cast<size_t>(target_w) + 15) / 16 * 2;
+  if (badge_icon && badge_w > 0 && badge_h > 0) {
+    const std::vector<uint8_t> badge_alpha =
+        GetIconAlphaChannel(hdc, badge_icon, badge_w, badge_h);
+    if (badge_alpha.empty()) {
+      VLOG(1) << __func__ << ": Failed to extract badge alpha channel";
+      return {};
+    }
+    base::win::ScopedCreateDC badge_dc(::CreateCompatibleDC(hdc));
+    if (!badge_dc.is_valid()) {
+      VLOG(1) << __func__ << ": Failed to allocate badge DC";
+      return {};
+    }
+
+    // `color_bmp` is created as a top-down DIB (`v5.bV5Height = -target_h`),
+    // so memory row 0 is the visual top. Visual coordinates
+    // `(badge_x + x, badge_y + y)` directly index `dst_span` without
+    // bottom-up inversion (`target_h - 1 - y`).
+    std::vector<uint8_t> base_alpha(static_cast<size_t>(badge_w) * badge_h);
+    for (int y = 0; y < badge_h; ++y) {
+      for (int x = 0; x < badge_w; ++x) {
+        const size_t idx = (badge_y + y) * target_w + (badge_x + x);
+        base_alpha[static_cast<size_t>(y) * badge_w + x] =
+            static_cast<uint8_t>(dst_span[idx] >> 24);
+      }
+    }
+
+    {
+      ScopedSelectObject select_color(badge_dc.get(), color_bmp.get());
+      if (!select_color.is_valid()) {
+        VLOG(1) << __func__ << ": Failed to select color bitmap into badge DC";
+        return {};
+      }
+      if (!::DrawIconEx(badge_dc.get(), badge_x, badge_y, badge_icon, badge_w,
+                        badge_h, 0, nullptr, DI_NORMAL)) {
+        VLOG(1) << __func__ << ": DrawIconEx failed for badge";
+        return {};
+      }
+      ::GdiFlush();
+    }
+
+    // `color_bmp` is now unselected from `badge_dc`, making direct DIB bit
+    // access safe across all display drivers.
+    // Standard Windows GDI DrawIconEx blends the source badge into the
+    // destination DIB using standard alpha blending:
+    // C_out = C_badge * A_badge + C_base * (1 - A_badge).
+    // Since the base logo DIB is already premultiplied, the resulting RGB
+    // channels in color_bmp are already correctly premultiplied for 32bpp
+    // ARGB icon format. However, DrawIconEx does not preserve the
+    // destination alpha channel, zeroing the alpha byte on rendered pixels.
+    // Restore the blended per-pixel alpha using Porter-Duff "Over":
+    // A_out = A_badge + A_base * (1 - A_badge).
+    for (int y = 0; y < badge_h; ++y) {
+      for (int x = 0; x < badge_w; ++x) {
+        const size_t badge_idx = static_cast<size_t>(y) * badge_w + x;
+        const size_t idx = (badge_y + y) * target_w + (badge_x + x);
+        const uint8_t badge_a = badge_alpha[badge_idx];
+        const uint8_t base_a = base_alpha[badge_idx];
+        const uint8_t out_a = static_cast<uint8_t>(
+            badge_a + (base_a * (255 - badge_a) + 127) / 255);
+        dst_span[idx] =
+            (dst_span[idx] & 0x00FFFFFF) | (static_cast<uint32_t>(out_a) << 24);
+      }
+    }
+  }
+
+  const size_t mask_bytes_per_line = CalculateDDBStride(target_w);
   std::vector<uint8_t> mask_bits(mask_bytes_per_line * target_h, 0);
   base::win::ScopedGDIObject<HBITMAP> mask_bmp(
       ::CreateBitmap(target_w, target_h, 1, 1, mask_bits.data()));
@@ -251,7 +480,15 @@ base::win::ScopedGDIObject<HICON> CreateColorKeyedIcon(
     int dst_y,
     int dst_w,
     int dst_h,
-    std::optional<COLORREF> transparent_color) {
+    std::optional<COLORREF> transparent_color,
+    HICON badge_icon) {
+  const RECT badge_rect = GetBadgeRect(target_w, target_h);
+  const int badge_w = badge_rect.right - badge_rect.left;
+  const int badge_h = badge_rect.bottom - badge_rect.top;
+  const int badge_x = badge_rect.left;
+  const int badge_y = badge_rect.top;
+  const bool has_badge = (badge_icon != nullptr) && badge_w > 0 && badge_h > 0;
+
   base::win::ScopedGetDC hdc(nullptr);
   base::win::ScopedCreateDC mem_dc(::CreateCompatibleDC(hdc));
   base::win::ScopedCreateDC src_dc(::CreateCompatibleDC(hdc));
@@ -271,11 +508,8 @@ base::win::ScopedGDIObject<HICON> CreateColorKeyedIcon(
   void* color_bits_ptr = nullptr;
   base::win::ScopedGDIObject<HBITMAP> color_bmp(::CreateDIBSection(
       hdc, &bi, DIB_RGB_COLORS, &color_bits_ptr, nullptr, 0));
-  base::win::ScopedGDIObject<HBITMAP> mask_bmp(
-      ::CreateBitmap(target_w, target_h, 1, 1, nullptr));
-
-  if (!color_bmp.is_valid() || !mask_bmp.is_valid() || !color_bits_ptr) {
-    VLOG(1) << __func__ << ": Failed to allocate GDI bitmaps";
+  if (!color_bmp.is_valid() || !color_bits_ptr) {
+    VLOG(1) << __func__ << ": Failed to allocate color DIB section";
     return {};
   }
 
@@ -286,6 +520,7 @@ base::win::ScopedGDIObject<HICON> CreateColorKeyedIcon(
     }
   }
 
+  std::vector<uint8_t> badge_alpha;
   {
     ScopedSelectObject select_color(mem_dc.get(), color_bmp.get());
     ScopedSelectObject select_src(src_dc.get(), bitmap);
@@ -294,8 +529,11 @@ base::win::ScopedGDIObject<HICON> CreateColorKeyedIcon(
       return {};
     }
 
-    // If an explicit key color was not provided, sample the 4 corners of the
-    // source bitmap.
+    // If an explicit key color was not provided, sample the 4 corners directly
+    // from the source bitmap (src_dc) before compositing any badge overlay onto
+    // mem_dc. This ensures c10 is not contaminated by the badge overlay in the
+    // top-right corner, preserving corners_match and color keying for logos
+    // with custom background colors.
     if (!key_color.has_value()) {
       constexpr COLORREF kLightDialogBg = RGB(255, 255, 255);
       constexpr COLORREF kDarkDialogBg = RGB(31, 31, 31);
@@ -326,16 +564,40 @@ base::win::ScopedGDIObject<HICON> CreateColorKeyedIcon(
       VLOG(1) << __func__ << ": StretchBlt failed";
       return {};
     }
+
+    if (has_badge) {
+      badge_alpha = GetIconAlphaChannel(hdc, badge_icon, badge_w, badge_h);
+      if (badge_alpha.empty()) {
+        VLOG(1) << __func__ << ": Failed to extract badge alpha channel";
+        return {};
+      }
+      if (!::DrawIconEx(mem_dc.get(), badge_x, badge_y, badge_icon, badge_w,
+                        badge_h, 0, nullptr, DI_NORMAL)) {
+        VLOG(1) << __func__ << ": DrawIconEx failed for badge";
+        return {};
+      }
+    }
   }
   ::GdiFlush();
 
-  const size_t color_row_stride =
-      ((static_cast<size_t>(target_w) * 3 + 3) / 4) * 4;
+  constexpr uint8_t kBadgeOpaqueThreshold = 128;
+  auto is_badge_opaque = [&](int x, int y) -> bool {
+    if (!has_badge || badge_alpha.empty() || x < badge_x ||
+        x >= badge_x + badge_w || y < badge_y || y >= badge_y + badge_h) {
+      return false;
+    }
+    return badge_alpha[static_cast<size_t>(y - badge_y) * badge_w +
+                       (x - badge_x)] >= kBadgeOpaqueThreshold;
+  };
+
+  const size_t color_row_stride = CalculateDIBStride(target_w, 24);
   const size_t color_buffer_size = color_row_stride * target_h;
+  // SAFETY: `color_bmp` is a 24bpp DIB section allocated immediately above
+  // with width `target_w` and height `target_h`, whose byte buffer size is
+  // exactly `CalculateDIBStride(target_w, 24) * target_h`.
   base::span<uint8_t> color_bytes = UNSAFE_BUFFERS(
       base::span(static_cast<uint8_t*>(color_bits_ptr), color_buffer_size));
-  const size_t mask_row_stride =
-      ((static_cast<size_t>(target_w) + 31) / 32) * 4;
+  const size_t mask_row_stride = CalculateDDBStride(target_w);
   std::vector<uint8_t> mask_pixels(mask_row_stride * target_h, 0);
   std::vector<bool> is_transparent(static_cast<size_t>(target_w) * target_h,
                                    false);
@@ -361,19 +623,20 @@ base::win::ScopedGDIObject<HICON> CreateColorKeyedIcon(
   };
 
   // For auto-detected key colors, verify directly on the in-memory color buffer
-  // that the image contains non-background interior content (avoiding
-  // expensive GDI GetPixel round-trips).
+  // that the base logo contains non-background interior content (avoiding
+  // expensive GDI GetPixel round-trips). Pixels covered by an opaque badge
+  // overlay are skipped so we inspect only the underlying base logo.
   if (key_color.has_value() && !transparent_color.has_value()) {
     bool has_interior_content = false;
-    for (int y = dst_y; y < dst_y + dst_h; ++y) {
+    for (int y = dst_y; y < dst_y + dst_h && !has_interior_content; ++y) {
       for (int x = dst_x; x < dst_x + dst_w; ++x) {
+        if (is_badge_opaque(x, y)) {
+          continue;
+        }
         if (!is_color_match(get_pixel_color(x, y), *key_color)) {
           has_interior_content = true;
           break;
         }
-      }
-      if (has_interior_content) {
-        break;
       }
     }
     if (!has_interior_content) {
@@ -381,9 +644,13 @@ base::win::ScopedGDIObject<HICON> CreateColorKeyedIcon(
     }
   }
 
-  // Mark letterbox margins as transparent.
+  // Mark letterbox margins as transparent, excluding pixels where the badge
+  // overlay is opaque.
   for (int y = 0; y < target_h; ++y) {
     for (int x = 0; x < target_w; ++x) {
+      if (is_badge_opaque(x, y)) {
+        continue;
+      }
       if (x < dst_x || x >= dst_x + dst_w || y < dst_y || y >= dst_y + dst_h) {
         is_transparent[static_cast<size_t>(y) * target_w + x] = true;
       }
@@ -399,6 +666,9 @@ base::win::ScopedGDIObject<HICON> CreateColorKeyedIcon(
 
     auto check_and_push = [&](int x, int y) {
       if (x >= dst_x && x < dst_x + dst_w && y >= dst_y && y < dst_y + dst_h) {
+        if (is_badge_opaque(x, y)) {
+          return;
+        }
         const size_t idx = static_cast<size_t>(y) * target_w + x;
         if (!is_transparent[idx] &&
             is_color_match(get_pixel_color(x, y), target_key)) {
@@ -438,12 +708,13 @@ base::win::ScopedGDIObject<HICON> CreateColorKeyedIcon(
   }
 
   // Update mask bits (1 = transparent, 0 = opaque) and zero transparent color
-  // pixels to prevent XOR artifacts.
+  // pixels to prevent XOR artifacts. Note that CreateBitmap expects top-down
+  // scanlines (row 0 is visual top), whereas color_bmp is a bottom-up DIB.
   for (int y = 0; y < target_h; ++y) {
     const size_t dib_y = target_h - 1 - y;
     for (int x = 0; x < target_w; ++x) {
       if (is_transparent[static_cast<size_t>(y) * target_w + x]) {
-        mask_pixels[dib_y * mask_row_stride + (x / 8)] |=
+        mask_pixels[static_cast<size_t>(y) * mask_row_stride + (x / 8)] |=
             static_cast<uint8_t>(1 << (7 - (x % 8)));
         const size_t offset =
             dib_y * color_row_stride + static_cast<size_t>(x) * 3;
@@ -454,23 +725,10 @@ base::win::ScopedGDIObject<HICON> CreateColorKeyedIcon(
     }
   }
 
-  struct {
-    BITMAPINFOHEADER bmiHeader;
-    RGBQUAD bmiColors[2];
-  } mask_bi = {};
-  mask_bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  mask_bi.bmiHeader.biWidth = target_w;
-  mask_bi.bmiHeader.biHeight = target_h;
-  mask_bi.bmiHeader.biPlanes = 1;
-  mask_bi.bmiHeader.biBitCount = 1;
-  mask_bi.bmiHeader.biCompression = BI_RGB;
-  mask_bi.bmiColors[0] = {0, 0, 0, 0};
-  mask_bi.bmiColors[1] = {255, 255, 255, 0};
-
-  if (::SetDIBits(hdc, mask_bmp.get(), 0, target_h, mask_pixels.data(),
-                  reinterpret_cast<BITMAPINFO*>(&mask_bi),
-                  DIB_RGB_COLORS) != target_h) {
-    VLOG(1) << __func__ << ": SetDIBits failed for icon mask";
+  base::win::ScopedGDIObject<HBITMAP> mask_bmp(
+      ::CreateBitmap(target_w, target_h, 1, 1, mask_pixels.data()));
+  if (!mask_bmp.is_valid()) {
+    VLOG(1) << __func__ << ": Failed to allocate mask bitmap";
     return {};
   }
 
@@ -483,6 +741,18 @@ base::win::ScopedGDIObject<HICON> CreateColorKeyedIcon(
     VLOG(1) << __func__ << ": CreateIconIndirect failed";
   }
   return icon;
+}
+
+std::optional<DWORD> ReadPersonalizeRegistryFlag(const wchar_t* value_name) {
+  base::win::RegKey key(
+      HKEY_CURRENT_USER,
+      L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+      KEY_READ);
+  DWORD value = 0;
+  if (key.ReadValueDW(value_name, &value) == ERROR_SUCCESS) {
+    return value;
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -516,6 +786,32 @@ bool IsMainWindow(HWND wnd) {
 
 bool HasSystemMenu(HWND wnd) {
   return (::GetWindowLong(wnd, GWL_STYLE) & WS_SYSMENU) != 0;
+}
+
+RECT GetBadgeRect(int target_w, int target_h) {
+  if (target_w <= 0 || target_h <= 0) {
+    return {};
+  }
+  const int badge_w = std::max((target_w + 1) / 2, 1);
+  const int badge_h = std::max((target_h + 1) / 2, 1);
+  const int badge_x = target_w - badge_w;
+  const int badge_y = 0;
+  return {
+      .left = badge_x,
+      .top = badge_y,
+      .right = badge_x + badge_w,
+      .bottom = badge_y + badge_h,
+  };
+}
+
+SIZE GetBaseLogoDimensions(int target_w, int target_h) {
+  if (target_w <= 0 || target_h <= 0) {
+    return {};
+  }
+  return {
+      .cx = std::max((target_w * 3 + 2) / 4, 1),
+      .cy = std::max((target_h * 3 + 2) / 4, 1),
+  };
 }
 
 IconSizes GetIconSizesForDpi(UINT dpi) {
@@ -596,7 +892,12 @@ base::win::ScopedGDIObject<HICON> CreateIconFromHBitmap(
     int width,
     int height,
     UINT dpi,
-    std::optional<COLORREF> transparent_color) {
+    std::optional<COLORREF> transparent_color,
+    HICON badge_icon,
+    bool* badge_applied) {
+  if (badge_applied) {
+    *badge_applied = false;
+  }
   if (!bitmap) {
     return {};
   }
@@ -621,39 +922,90 @@ base::win::ScopedGDIObject<HICON> CreateIconFromHBitmap(
   const int target_w = icon_w > 0 ? icon_w : 32;
   const int target_h = icon_h > 0 ? icon_h : 32;
 
+  const bool has_badge = badge_icon != nullptr;
+
+  // When a badge overlay is requested, the base logo is scaled to 3/4 of the
+  // target canvas and positioned in the lower-left, allowing the badge overlay
+  // in the top-right to sit higher and to the right of the logo (matching the
+  // prominent native installer overlay appearance without obscuring the
+  // center of the base logo). When unbadged, the base logo occupies the full
+  // canvas and is centered.
+  const SIZE base_size = has_badge ? GetBaseLogoDimensions(target_w, target_h)
+                                   : SIZE{.cx = target_w, .cy = target_h};
+  const int base_w = base_size.cx;
+  const int base_h = base_size.cy;
+
   // Calculate scaled dimensions that fit within the target dimensions while
   // preserving the source bitmap's aspect ratio.
-  int dst_w = target_w;
-  int dst_h = target_h;
-  if (static_cast<int64_t>(bm_width) * target_h >
-      static_cast<int64_t>(target_w) * bm_height) {
+  int dst_w = base_w;
+  int dst_h = base_h;
+  if (static_cast<int64_t>(bm_width) * base_h >
+      static_cast<int64_t>(base_w) * bm_height) {
     // Source is wider than target aspect ratio: fit to width.
-    dst_w = target_w;
-    dst_h = std::min(target_h,
-                     std::max(1, ::MulDiv(bm_height, target_w, bm_width)));
-  } else if (static_cast<int64_t>(bm_width) * target_h <
-             static_cast<int64_t>(target_w) * bm_height) {
+    dst_w = base_w;
+    dst_h =
+        std::min(base_h, std::max(1, ::MulDiv(bm_height, base_w, bm_width)));
+  } else if (static_cast<int64_t>(bm_width) * base_h <
+             static_cast<int64_t>(base_w) * bm_height) {
     // Source is taller than target aspect ratio: fit to height.
-    dst_h = target_h;
-    dst_w = std::min(target_w,
-                     std::max(1, ::MulDiv(bm_width, target_h, bm_height)));
+    dst_h = base_h;
+    dst_w =
+        std::min(base_w, std::max(1, ::MulDiv(bm_width, base_h, bm_height)));
   }
-  const int dst_x = (target_w - dst_w) / 2;
-  const int dst_y = (target_h - dst_h) / 2;
+  const int dst_x = has_badge ? (base_w - dst_w) / 2 : (target_w - dst_w) / 2;
+  const int dst_y = has_badge ? target_h - dst_h : (target_h - dst_h) / 2;
 
   // 1. Check for true 32bpp per-pixel alpha:
+  // If the source bitmap is 32bpp and possesses true per-pixel alpha,
+  // synthesize a 32bpp BITMAPV5HEADER icon with per-pixel alpha blending.
   if (bm.bmBitsPixel == 32) {
+    bool is_alpha_bitmap = false;
     base::win::ScopedGDIObject<HICON> alpha_icon =
         Create32bppAlphaIcon(bitmap, bm_width, bm_height, target_w, target_h,
-                             dst_x, dst_y, dst_w, dst_h);
+                             dst_x, dst_y, dst_w, dst_h, badge_icon,
+                             &is_alpha_bitmap);
     if (alpha_icon.is_valid()) {
+      if (badge_applied) {
+        *badge_applied = has_badge;
+      }
       return alpha_icon;
+    }
+    if (is_alpha_bitmap) {
+      if (has_badge) {
+        VLOG(1) << __func__
+                << ": Badge failed on alpha icon; retrying unbadged";
+        return CreateIconFromHBitmap(bitmap, width, height, dpi,
+                                     transparent_color, /*badge_icon=*/nullptr,
+                                     badge_applied);
+      }
+      return {};
     }
   }
 
   // 2. Color-keying fallback for opaque bitmaps (24bpp or opaque 32bpp).
-  return CreateColorKeyedIcon(bitmap, bm_width, bm_height, target_w, target_h,
-                              dst_x, dst_y, dst_w, dst_h, transparent_color);
+  // Generates a 24bpp icon with a 1bpp monochrome mask keyed to the dialog
+  // background, avoiding multi-pass software keying while guaranteeing clean
+  // transparent silhouettes without solid background boxes.
+  base::win::ScopedGDIObject<HICON> keyed_icon = CreateColorKeyedIcon(
+      bitmap, bm_width, bm_height, target_w, target_h, dst_x, dst_y, dst_w,
+      dst_h, transparent_color, badge_icon);
+  if (keyed_icon.is_valid()) {
+    if (badge_applied) {
+      *badge_applied = has_badge;
+    }
+    return keyed_icon;
+  }
+
+  // If badged creation failed, retry without the badge so the user gets a
+  // full-canvas centered unbadged icon rather than failing or showing an
+  // off-center logo.
+  if (has_badge) {
+    VLOG(1) << __func__ << ": Badged icon creation failed; retrying unbadged";
+    return CreateIconFromHBitmap(bitmap, width, height, dpi, transparent_color,
+                                 /*badge_icon=*/nullptr, badge_applied);
+  }
+
+  return {};
 }
 
 std::wstring GetInstallerDisplayName(const std::u16string& bundle_name,
@@ -719,14 +1071,9 @@ bool IsDarkModeOn() {
     return IsColorDark(::GetSysColor(COLOR_WINDOW));
   }
 
-  base::win::RegKey key(
-      HKEY_CURRENT_USER,
-      L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-      KEY_READ);
-  DWORD is_light_theme = 1;
-  return key.ReadValueDW(L"AppsUseLightTheme", &is_light_theme) ==
-             ERROR_SUCCESS &&
-         !is_light_theme;
+  const std::optional<DWORD> is_light_theme =
+      ReadPersonalizeRegistryFlag(L"AppsUseLightTheme");
+  return is_light_theme.has_value() && !*is_light_theme;
 }
 
 bool CouldBeThemeSettingChange(WPARAM wparam) {
@@ -742,6 +1089,19 @@ void ApplySuggestedWindowRect(HWND hwnd, LPARAM lparam) {
                    new_window_rect->bottom - new_window_rect->top,
                    SWP_NOZORDER | SWP_NOACTIVATE);
   }
+}
+
+bool IsSystemDarkModeOn() {
+  if (IsHighContrastOn()) {
+    return IsColorDark(::GetSysColor(COLOR_WINDOW));
+  }
+
+  const std::optional<DWORD> is_light_theme =
+      ReadPersonalizeRegistryFlag(L"SystemUsesLightTheme");
+  if (is_light_theme.has_value()) {
+    return !*is_light_theme;
+  }
+  return IsDarkModeOn();
 }
 
 bool MaybeSetArrowCursor(HWND hwnd, WPARAM wparam, LPARAM lparam) {

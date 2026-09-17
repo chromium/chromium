@@ -92,6 +92,15 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, SetAppLogoThemeSwitching);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, ErrorIllustrationThemeSwitching);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, ApplyDpiScalingIconMetrics);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, WindowIconsPersistAcrossCompletion);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, SetAppLogoHybridTheme);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, SetAppLogoIdenticalBitmapHandles);
+  FRIEND_TEST_ALL_PREFIXES(
+      ProgressWndTest,
+      ResetWindowIconCachePreventsGdiHandleRecyclingStaleCacheHit);
+  FRIEND_TEST_ALL_PREFIXES(
+      ProgressWndTest,
+      GetCurrentAppLogoBitmapDarkModeSingleLightBitmapFallback);
 
   enum class States {
     STATE_INIT = 0,
@@ -148,9 +157,16 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   HBRUSH OnCtlColorStatic(HDC dc, HWND ctl_hwnd);
 
   void SetControlText(int id, const std::wstring& text);
-  void SetAppLogo(HBITMAP light_bitmap, HBITMAP dark_bitmap);
+  // Sets the application logos for light and dark modes. `dark_bitmap` is
+  // optional because applications or update servers may only provide a single
+  // standard (unthemed) logo. When `dark_bitmap` is null or omitted,
+  // `light_bitmap` is used for both themes. `light_bitmap` and `dark_bitmap`
+  // must not refer to the same non-null handle.
+  void SetAppLogo(base::win::ScopedGDIObject<HBITMAP> light_bitmap,
+                  base::win::ScopedGDIObject<HBITMAP> dark_bitmap = {});
   void UpdateAppLogo(UINT target_dpi = 0);
   HBITMAP GetCurrentAppLogoBitmap() const;
+  HBITMAP SelectLogoForTheme(bool is_dark) const;
   void UpdateErrorIllustration() override;
   // Returns the cached error illustration bitmap for the specified theme,
   // loading it from resources on first request.
@@ -202,6 +218,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   // The theme `ResetThemeResources()` last rebuilt the caches above for. Not
   // read back from `CustomDlgColors`, whose state other handlers also refresh.
   bool applied_dark_mode_;
+  bool applied_system_dark_mode_;
   bool applied_high_contrast_;
 
   // Cached original app logo bitmaps for light and dark themes received via
