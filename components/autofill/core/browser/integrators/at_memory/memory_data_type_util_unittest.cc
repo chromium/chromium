@@ -362,7 +362,7 @@ TEST(MemoryDataTypeUtilTest,
   EXPECT_EQ(result.type, MemoryDataType::kPassportNumber);
   EXPECT_EQ(result.value, u"A12345678");
   EXPECT_EQ(result.confidence_score, 0.85f);
-  EXPECT_TRUE(result.is_obfuscated);
+  EXPECT_FALSE(result.is_obfuscated);
   ASSERT_EQ(result.metadata_list.size(), 1u);
   EXPECT_EQ(result.metadata_list[0].type, MemoryDataType::kPassportCountry);
   EXPECT_EQ(result.metadata_list[0].value, u"US");

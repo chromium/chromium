@@ -1099,7 +1099,6 @@ MemorySearchResult ConvertToMemorySearchResult(
       proto_result.relevance_score(), std::move(primary_typed_value));
   pcontext_result.sources = ExtractSources(proto_result);
   pcontext_result.metadata_list = ExtractMetadata(proto_result, app_locale);
-  pcontext_result.is_obfuscated = IsSpiiMemoryDataType(memory_data_type);
   return pcontext_result;
 }
 

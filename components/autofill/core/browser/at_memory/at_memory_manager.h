@@ -230,46 +230,13 @@ class AtMemoryManager {
                       const Suggestion& suggestion,
                       std::unique_ptr<AtMemoryMetricsRecorder> metrics);
 
-  // Triggers reauthentication and fetching of the unmasked Personal Context
-  // value, which fills the field upon completion. Returns `IsAsync(true)` if
-  // the operation involves reauthentication or server communication.
-  IsAsync FillSensitivePersonalContextData(
-      BrowserAutofillManager& bam,
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
-      const Suggestion& suggestion,
-      std::unique_ptr<AtMemoryMetricsRecorder> metrics);
-
-  // Fills the field with the unmasked sensitive SPII Personal Context value if
-  // fetching succeeded, or records failure metrics if it failed.
-  void OnSensitivePersonalContextDataFetched(
-      base::WeakPtr<BrowserAutofillManager> bam,
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
-      std::unique_ptr<AtMemoryMetricsRecorder> metrics,
-      AtMemoryQueryService::SpiiRetrievalResult result);
-
-  // Fills sensitive identity data by selecting the appropriate filling path
-  // depending on whether the data is sourced from Autofill AI or Personal
-  // Context. Returns `IsAsync(true)` if the operation involves reauthentication
-  // or server communication.
-  IsAsync FillSensitiveAutofillAiOrPersonalContextData(
-      BrowserAutofillManager& bam,
-      const FormGlobalId& form_id,
-      const FieldGlobalId& field_id,
-      const Suggestion& suggestion,
-      std::unique_ptr<AtMemoryMetricsRecorder> metrics);
-
-  // Fills the unmasked AutofillAI value after fetching it. Returns
-  // `IsAsync(true)` if the operation involves reauthentication or server
-  // communication.
+  // Fills sensitive Autofill AI identity data. Returns `IsAsync(true)` if the
+  // operation involves reauthentication or server communication.
   IsAsync FillSensitiveAutofillAiData(
       BrowserAutofillManager& bam,
-      const EntityInstance::EntityId& entity_id,
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id,
       const Suggestion& suggestion,
-      AttributeType data_type,
       std::unique_ptr<AtMemoryMetricsRecorder> metrics);
 
   // Callback handler when the unmasked AutofillAI entity has been fetched.

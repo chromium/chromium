@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "components/autofill/core/browser/logging/log_router.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -1096,29 +1097,39 @@ TEST_F(AtMemoryQueryServiceTest,
   EXPECT_EQ(fake_data_provider->last_type(), MemoryDataType::kAddressFull);
 }
 
-// Tests that the query service correctly identifies and marks SPII data types
-// as obfuscated, while leaving non-SPII data types set to unobfuscated.
+// Tests that the query service returns obfuscated SPII data types when sourced
+// from Autofill, while leaving non-SPII remote data types set to unobfuscated.
 TEST_F(AtMemoryQueryServiceTest, Query_SetsIsObfuscated) {
+  CreditCard card = test::GetCreditCard();
+  autofill_client()
+      .GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(card);
+
   // Prepare a fake server response.
   AtMemoryQueryResponse response;
   response.set_query_classification(
       AtMemoryQueryResponse::QUERY_CLASSIFICATION_AT_MEMORY);
 
-  // 1. Non-SPII: Full Name
+  // 1. Non-SPII: Full Name (remote)
   AtMemorySearchResult* result1 = response.add_results();
   result1->mutable_primary_attribute()->set_schemaful_key(
       personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
   result1->mutable_primary_attribute()->set_value("John Doe");
 
-  // 2. SPII: Credit Card Number
-  AtMemorySearchResult* result2 = response.add_results();
-  result2->mutable_primary_attribute()->set_schemaful_key(
-      personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_NUMBER);
-  result2->mutable_primary_attribute()->set_value("1111222233334444");
+  // 2. SPII: Credit Card Number (fetched from Autofill)
+  response.mutable_autofill_fetch_plan()
+      ->add_fetch_specifications()
+      ->set_data_type(
+          personal_context::proto::MEMORY_DATA_TYPE_CREDIT_CARD_NUMBER);
 
   StubFetchContextResponse(std::move(response));
 
-  std::unique_ptr<AtMemoryQueryService> service = CreateQueryService();
+  auto data_provider = std::make_unique<AutofillDataProvider>(
+      &autofill_client().GetPersonalDataManager(),
+      autofill_client().GetEntityDataManager());
+  std::unique_ptr<AtMemoryQueryService> service =
+      CreateQueryService(std::move(data_provider));
 
   TestFuture<MemorySearchResults> future;
   service->Query(u"some query", GURL("https://example.com"), u"Page Title",

@@ -5001,11 +5001,18 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
 
 // Tests that when an AtMemory search result requires async fetching,
 // accepting the suggestion triggers a loading state UI update.
-TEST_F(AutofillExternalDelegateTest,
+TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
        AtMemorySearchResult_Async_TriggersLoadingState) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::debug::kAtMemoryNoDeviceReauthCheck);
+  constexpr auto kPassportNumberType =
+      AttributeType(AttributeTypeName::kPassportNumber);
+
+  EntityInstance full_passport = GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EntityInstance masked_passport = MaskEntityInstance(full_passport);
+  ASSERT_NE(
+      full_passport.attribute(kPassportNumberType)->GetCompleteRawInfo(),
+      masked_passport.attribute(kPassportNumberType)->GetCompleteRawInfo());
+  AddOrUpdateEntityInstance(masked_passport);
 
   autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://example.com"));
@@ -5016,8 +5023,7 @@ TEST_F(AutofillExternalDelegateTest,
   Suggestion suggestion(u"Passport", SuggestionType::kAtMemorySearchResult);
   Suggestion::AtMemoryPayload at_memory_payload(
       u"1234", MemoryDataType::kPassportNumber);
-  at_memory_payload.identifier = std::string("personal-context-guid");
-  at_memory_payload.is_personal_context_sourced = true;
+  at_memory_payload.identifier = masked_passport.guid();
   suggestion.payload = std::move(at_memory_payload);
 
   std::vector<Suggestion> suggestions = {suggestion};
