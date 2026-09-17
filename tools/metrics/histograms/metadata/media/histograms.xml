@@ -2389,17 +2389,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Symphonia.OversizedPcmPacket" units="frames"
-    expires_after="2027-08-01">
-  <owner>jophba@chromium.org</owner>
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    Reports the number of frames in a PCM packet that was larger than the static
-    buffer used for decoding.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.TabAudioMuted" enum="Boolean"
     expires_after="2027-06-01">
   <owner>evliu@google.com</owner>

@@ -43,10 +43,6 @@ namespace media {
 
 namespace {
 
-// PCM specific property for the maximum number of frames per packet. This
-// value covers up to ~85ms of audio per chunk.
-constexpr int kDefaultMaxFramesPerPcmPacket = 4096;
-
 SymphoniaAudioCodec ToSymphoniaCodec(AudioCodec codec,
                                      SampleFormat sample_format) {
   switch (codec) {
@@ -125,14 +121,6 @@ SymphoniaDecoderConfig ToSymphoniaConfig(const AudioDecoderConfig& config) {
       GetBytesPerSample(config.codec(), config.sample_format());
   out.channel_mask = ChannelLayoutToMask(config.channel_layout());
   out.sample_rate = config.samples_per_second();
-
-  // Symphonia needs to know the max frames per packet for PCM decoding, which
-  // is not something we know directly in Chrome. Set a safe limit here.
-  // If this limit is violated, Symphonia will return a DecodeError and audio
-  // decoding will fail. FFMpeg does not have this restriction because it
-  // dynamically derives the frames needed from the AVPacket size itself.
-  out.max_frames_per_packet =
-      IsPcm(config.codec()) ? kDefaultMaxFramesPerPcmPacket : 0;
   return out;
 }
 
@@ -354,25 +342,6 @@ void SymphoniaAudioDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer,
     std::move(decode_cb_bound)
         .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
-  }
-
-  // Symphonia's PCM decoder requires a pre-configured max frames per packet.
-  // If an incoming packet yields more frames than the capacity, the decode
-  // will fail out of bounds. Since we don't know the max chunk bounds in
-  // advance, we lazily grow it here by tearing down and recreating the wrapper
-  // handle if necessary.
-  if (!is_eos && IsPcm(config_.codec())) {
-    const int bytes_per_frame =
-        config_.channels() *
-        GetBytesPerSample(config_.codec(), config_.sample_format());
-    const int frames_in_buffer = buffer->size() / bytes_per_frame;
-
-    if (frames_in_buffer > kDefaultMaxFramesPerPcmPacket) {
-      base::UmaHistogramCounts100000("Media.Audio.Symphonia.OversizedPcmPacket",
-                                     frames_in_buffer);
-      std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
-      return;
-    }
   }
 
   // Pass the buffer to the Symphonia decoder.

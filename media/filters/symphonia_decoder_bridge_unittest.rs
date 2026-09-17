@@ -225,7 +225,6 @@ fn test_decoder_init_failure() {
         extra_data: &[], // Empty extra data might be enough to fail some decoders.
         bytes_per_sample: 2,
         channel_mask: 0,
-        max_frames_per_packet: 0,
         sample_rate: 44100,
     };
     let result = init_symphonia_decoder(&config);
@@ -262,7 +261,6 @@ fn test_flac_init_with_marker() {
         extra_data: &extra_data,
         bytes_per_sample: 2,
         channel_mask: 1, // Mono
-        max_frames_per_packet: 0,
         sample_rate: 48000,
     };
 
@@ -276,7 +274,6 @@ fn test_flac_init_with_marker() {
         extra_data: &extra_data,
         bytes_per_sample: 2,
         channel_mask: 1, // Mono
-        max_frames_per_packet: 0,
         sample_rate: 48000,
     };
     let result_trailing = init_symphonia_decoder(&config_trailing);
@@ -299,7 +296,6 @@ fn test_flac_init_with_header_only() {
         extra_data: &extra_data,
         bytes_per_sample: 2,
         channel_mask: 1, // Mono
-        max_frames_per_packet: 0,
         sample_rate: 48000,
     };
 
@@ -322,7 +318,6 @@ fn test_flac_init_with_marker_only() {
         extra_data: &extra_data,
         bytes_per_sample: 2,
         channel_mask: 1, // Mono
-        max_frames_per_packet: 0,
         sample_rate: 48000,
     };
 
@@ -348,7 +343,6 @@ fn test_flac_init_with_other_block() {
         extra_data: &extra_data,
         bytes_per_sample: 2,
         channel_mask: 1, // Mono
-        max_frames_per_packet: 0,
         sample_rate: 48000,
     };
 
@@ -612,7 +606,6 @@ fn test_mp2_layer_switching() {
         extra_data: &[],
         bytes_per_sample: 4,
         channel_mask: 1, // Mono
-        max_frames_per_packet: 0,
         sample_rate: 48000,
     };
     let mut result = init_symphonia_decoder(&config);
@@ -646,7 +639,6 @@ fn test_mp1_layer_switching() {
         extra_data: &[],
         bytes_per_sample: 4,
         channel_mask: 1, // Mono
-        max_frames_per_packet: 0,
         sample_rate: 48000,
     };
     let mut result = init_symphonia_decoder(&config);
@@ -680,7 +672,6 @@ fn test_mp_midstream_layer_switching() {
         extra_data: &[],
         bytes_per_sample: 4,
         channel_mask: 1, // Mono
-        max_frames_per_packet: 0,
         sample_rate: 48000,
     };
     let mut result = init_symphonia_decoder(&config);
@@ -712,4 +703,27 @@ fn test_mp_midstream_layer_switching() {
     expect_eq!(decode_result.status, ffi::SymphoniaDecodeStatus::Ok);
     expect_eq!(decode_result.buffer.num_frames, 1152);
     expect_eq!(result.decoder.current_codec_id(), Some(CODEC_ID_MP2));
+}
+
+// Verify that PCM decoder dynamically grows its buffer for large packets
+// without requiring a pre-configured max_frames_per_packet limit.
+#[gtest(SymphoniaDecoderBridgeTest, PcmLargePacket)]
+fn test_pcm_large_packet() {
+    let config = ffi::SymphoniaDecoderConfig {
+        codec: ffi::SymphoniaAudioCodec::PcmS16,
+        extra_data: &[],
+        bytes_per_sample: 2,
+        channel_mask: 3, // Stereo
+        sample_rate: 48000,
+    };
+    let mut result = init_symphonia_decoder(&config);
+    expect_eq!(result.status, ffi::SymphoniaInitStatus::Ok);
+
+    // 8192 stereo 16-bit frames = 32768 bytes (exceeding old 4096 frame limit).
+    let pcm_data = vec![0x12u8; 8192 * 2 * 2];
+    let packet = ffi::SymphoniaPacket { timestamp_us: 0, duration_us: 170666, data: &pcm_data };
+    let decode_result = result.decoder.decode(&packet);
+    expect_eq!(decode_result.status, ffi::SymphoniaDecodeStatus::Ok);
+    expect_eq!(decode_result.buffer.num_frames, 8192);
+    expect_eq!(decode_result.buffer.data.len(), pcm_data.len());
 }

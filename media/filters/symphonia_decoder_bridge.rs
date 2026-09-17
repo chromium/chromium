@@ -99,10 +99,6 @@ pub mod ffi {
         extra_data: &'a [u8],
         /// Expected bytes per sample from the container/config.
         bytes_per_sample: u8,
-
-        /// fields necessary for PCM decoders.
-        /// Maximum number of frames per packet.
-        max_frames_per_packet: u64,
         /// Sample rate of the audio stream.
         sample_rate: u32,
         /// Channel mask of the audio stream.
@@ -576,10 +572,6 @@ impl<'a> TryFrom<&ffi::SymphoniaDecoderConfig<'a>> for AudioCodecParameters {
 
         if let Some(extra_data) = extra_data {
             params.with_extra_data(extra_data);
-        }
-
-        if value.max_frames_per_packet > 0 {
-            params.with_max_frames_per_packet(value.max_frames_per_packet);
         }
 
         Ok(params)
