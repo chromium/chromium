@@ -1563,6 +1563,80 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInSidePanel) {
   run_loop.Run();
 }
 
+TEST_F(ContextualTasksUiServiceTest,
+       Navigation_NonWebScheme_FromEmbeddedGuest_NotIntercepted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Test both with kAimTriggeredThreadLinks enabled and disabled.
+  scoped_feature_list.InitAndEnableFeature(kAimTriggeredThreadLinks);
+
+  GURL extension_url("chrome-extension://someextensionid/secret.html");
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+  ON_CALL(*aim_eligibility_service_, IsAimHost(_, _))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNonThreadNavigationInTab(_, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  // When viewed in a tab with a non-web scheme, HandleNavigationImpl should
+  // return false and avoid dispatching any thread link or OpenUrl helpers.
+  EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(extension_url, true), web_contents.get(), &tab,
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
+
+  // Same check when viewed in side panel (null tab).
+  EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(extension_url, true), web_contents.get(), nullptr,
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       Navigation_NonWebScheme_AimTriggeredThreadLinksDisabled_NotIntercepted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kAimTriggeredThreadLinks);
+
+  GURL extension_url("chrome-extension://someextensionid/secret.html");
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+  ON_CALL(*aim_eligibility_service_, IsAimHost(_, _))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNonThreadNavigationInTab(_, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(extension_url, true), web_contents.get(), nullptr,
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
+}
+
 // If the search results page is navigated to while viewing the UI in the side
 // panel (e.g. no tab tied to the WebContents), ensure the correct event is
 // fired.
