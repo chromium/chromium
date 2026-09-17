@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/accessibility/soda_installer_impl.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -14,7 +15,10 @@
 #include "components/global_media_controls/public/media_session_notification_item.h"
 #include "components/global_media_controls/public/test/mock_media_session_notification_item_delegate.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
+#include "components/live_caption/caption_util.h"
+#include "components/live_caption/pref_names.h"
 #include "components/media_router/browser/test/mock_media_router.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/test/test_renderer_host.h"
@@ -24,7 +28,9 @@
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/bubble/bubble_anchor.h"
+#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/widget_test.h"
 
 class MediaDialogViewTest : public ChromeViewsTestBase {
  public:
@@ -57,8 +63,7 @@ class MediaDialogViewTest : public ChromeViewsTestBase {
   }
 
   void TearDown() override {
-    MediaDialogView::HideDialog();
-    view_ = nullptr;
+    HideDialog();
     anchor_widget_->Close();
     ChromeViewsTestBase::TearDown();
   }
@@ -111,6 +116,28 @@ class MediaDialogViewTest : public ChromeViewsTestBase {
 
   global_media_controls::MediaItemUIUpdatedView* media_item_ui_updated_view() {
     return view_->GetItemsForTesting().begin()->second;
+  }
+
+  views::Widget* anchor_widget() { return anchor_widget_.get(); }
+
+  void HideDialog() {
+    views::Widget* widget =
+        MediaDialogView::IsShowing()
+            ? MediaDialogView::GetDialogViewForTesting()->GetWidget()
+            : nullptr;
+    MediaDialogView::HideDialog();
+    view_ = nullptr;
+    // Widget::Close() is asynchronous, so the dialog would otherwise outlive
+    // the objects it points at.
+    if (widget) {
+      views::test::WidgetDestroyedWaiter(widget).Wait();
+    }
+  }
+
+  // TEST_F() subclasses do not inherit this fixture's friendship with
+  // `MediaDialogView`.
+  views::ToggleButton* live_caption_button(MediaDialogView* view) {
+    return view->live_caption_button_;
   }
 
   Profile* profile() { return &profile_; }
@@ -193,4 +220,48 @@ TEST_F(MediaDialogViewTest, TerminateSession) {
       item->GetWeakPtr());
   EXPECT_FALSE(media_item_ui_updated_view()->GetFooterForTesting());
   EXPECT_TRUE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
+}
+
+// Regression test for crbug.com/468238180. The dialog reads and writes the
+// original profile's prefs, so it must observe that same profile.
+TEST_F(MediaDialogViewTest, LiveCaptionUpdatesInIncognito) {
+  if (!captions::IsLiveCaptionFeatureSupported()) {
+    GTEST_SKIP() << "Live Caption is not supported on this platform.";
+  }
+  // This test drives its own incognito dialog.
+  HideDialog();
+
+  // Enabling the pref would otherwise build caption bubble UI, which needs a
+  // root window. The factory redirects off-the-record profiles to the
+  // original, so the override has to go there.
+  captions::LiveCaptionControllerFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(
+          [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+            return nullptr;
+          }));
+
+  Profile* incognito = profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
+  media_router::ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
+      incognito, base::BindRepeating(&media_router::MockMediaRouter::Create));
+  auto incognito_service =
+      std::make_unique<MediaNotificationService>(incognito, false);
+
+  // Writing through the off-the-record PrefService shadows the pref, which
+  // suppresses later notifications from the original profile.
+  incognito->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
+
+  MediaDialogView::ShowDialogFromToolbar(
+      views::BubbleAnchor(anchor_widget()->GetContentsView()),
+      incognito_service.get(), incognito);
+  MediaDialogView* view = MediaDialogView::GetDialogViewForTesting();
+  ASSERT_TRUE(live_caption_button(view));
+  ASSERT_FALSE(live_caption_button(view)->GetIsOn());
+
+  profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, true);
+  ASSERT_FALSE(incognito->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(live_caption_button(view)->GetIsOn());
+
+  HideDialog();
 }

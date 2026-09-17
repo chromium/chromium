@@ -117,6 +117,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
  private:
   friend class MediaDialogViewBrowserTest;
+  friend class MediaDialogViewTest;
   friend class MediaDialogViewWithRemotePlaybackTest;
 
   MediaDialogView(
@@ -167,6 +168,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   const raw_ptr<MediaNotificationService> service_;
 
+  // Always the original (non-OTR) profile; all prefs are read, written and
+  // observed here.
   const raw_ptr<Profile> profile_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

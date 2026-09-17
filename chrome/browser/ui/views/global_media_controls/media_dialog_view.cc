@@ -387,7 +387,9 @@ MediaDialogView::MediaDialogView(
   CHECK(service_);
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(profile->GetPrefs());
+  // Observe the prefs the dialog reads and writes: always the original
+  // profile.
+  pref_change_registrar_->Init(profile_->GetPrefs());
   pref_change_registrar_->Add(
       prefs::kLiveCaptionEnabled,
       base::BindRepeating(&MediaDialogView::OnLiveCaptionEnabledChanged,
