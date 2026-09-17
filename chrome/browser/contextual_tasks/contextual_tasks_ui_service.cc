@@ -4,7 +4,6 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 
-#include <algorithm>
 #include <optional>
 
 #include "base/command_line.h"
@@ -1881,7 +1880,6 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   if (is_nav_to_ai) {
     should_bypass_interception =
-        aim_eligibility_service_ &&
         aim_eligibility_service_->HasNoCobrowseParams(url_params.url);
 
     // If the page is to AI and the navigation is not same site, apply a param
@@ -3202,24 +3200,6 @@ bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
          aim_eligibility_service_->IsAimUrl(url, GetForcedEmbeddedPageHost());
 }
 
-bool ContextualTasksUiService::IsSidePanelOpenAndRequestInSidePanel(
-    content::WebContents* web_contents) {
-  if (!web_contents) {
-    return false;
-  }
-  BrowserWindowInterface* browser =
-      webui::GetBrowserWindowInterface(web_contents);
-  if (!browser) {
-    return false;
-  }
-  auto* controller = ContextualTasksPanelController::From(browser);
-  if (!controller || !controller->IsPanelOpenForContextualTask()) {
-    return false;
-  }
-  return std::ranges::contains(controller->GetPanelWebContentsList(),
-                               web_contents);
-}
-
 bool ContextualTasksUiService::IsPendingErrorPage(const base::Uuid& task_id) {
   if (!pending_error_page_tasks_.contains(task_id)) {
     return false;
@@ -3538,8 +3518,7 @@ void ContextualTasksUiService::OnImageClickedFromSourcesMenu(
 }
 
 bool ContextualTasksUiService::IsAllowedHost(const GURL& url) {
-  return aim_eligibility_service_ &&
-         aim_eligibility_service_->IsAimHost(url, GetForcedEmbeddedPageHost());
+  return aim_eligibility_service_->IsAimHost(url, GetForcedEmbeddedPageHost());
 }
 
 void ContextualTasksUiService::OnInitialThreadUrlAvailable(
