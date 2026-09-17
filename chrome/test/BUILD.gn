@@ -2160,6 +2160,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/new_tab_page:impl",
       "//chrome/browser/ui/webui/ntp:browser_tests",
       "//chrome/browser/ui/webui/omnibox/aim_eligibility_extension:browser_tests",
+      "//chrome/browser/ui/webui/organizer_panel:browser_tests",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/searchbox:browser_tests",
       "//chrome/browser/ui/webui/settings:browser_tests",

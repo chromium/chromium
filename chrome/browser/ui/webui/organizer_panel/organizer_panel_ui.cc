@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
+#include "chrome/browser/ui/webui/organizer_panel/tab_groups_organizer_page_handler.h"
 #include "chrome/browser/ui/webui/tab_search/search_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -91,6 +92,22 @@ void OrganizerPanelUI::BindInterface(
 void OrganizerPanelUI::BindInterface(
     mojo::PendingReceiver<tab_search::mojom::SearchHandler> receiver) {
   search_handler_ = std::make_unique<SearchHandler>(std::move(receiver));
+}
+
+void OrganizerPanelUI::BindInterface(
+    mojo::PendingReceiver<
+        organizer_panel::mojom::TabGroupsOrganizerPageHandlerFactory>
+        receiver) {
+  tab_groups_page_factory_receiver_.reset();
+  tab_groups_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void OrganizerPanelUI::CreatePageHandler(
+    mojo::PendingReceiver<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+        receiver) {
+  tab_groups_organizer_page_handler_ =
+      std::make_unique<TabGroupsOrganizerPageHandler>(
+          std::move(receiver), Profile::FromWebUI(web_ui()));
 }
 
 void OrganizerPanelUI::CreatePageHandler(

@@ -24,6 +24,8 @@ export {OrganizerListSectionItemTitleElement} from './organizer_list_section_ite
 export {renderHighlightedText, SEARCH_PART_SEPARATOR, sliceRangesForParts} from './search_utils.js';
 export {StackedFaviconsElement} from './stacked_favicons.js';
 export {Color} from './tab_group_types.mojom-webui.js';
-export type {PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TokenRange} from './tab_search.mojom-webui.js';
+export type {BrowserProxy as TabGroupsBrowserProxy, TabGroup} from './tab_groups.mojom-webui.js';
+export {browserProxyFactory as tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandler, TabGroupsOrganizerPageHandlerRemote} from './tab_groups.mojom-webui.js';
+export type {PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TokenRange} from './tab_search.mojom-webui.js';
 export {browserProxyFactory, PageHandlerRemote, SplitTabLayout} from './tab_search.mojom-webui.js';
 export {TabAlertState} from './tabs.mojom-webui.js';

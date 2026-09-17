@@ -5,7 +5,7 @@
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 import type {OrganizerPanelAppElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import {browserProxyFactory, PageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {browserProxyFactory, PageHandlerRemote, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -14,6 +14,8 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 suite('OrganizerPanelAppTest', () => {
   let app: OrganizerPanelAppElement;
   let mockPageHandler: PageHandlerRemote&TestMock<PageHandlerRemote>;
+  let mockTabGroupsHandler: TestMock<TabGroupsOrganizerPageHandlerRemote>&
+      TabGroupsOrganizerPageHandlerRemote;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -41,6 +43,12 @@ suite('OrganizerPanelAppTest', () => {
         tabGroups: [],
       },
     }));
+
+    mockTabGroupsHandler =
+        TestMock.fromClass(TabGroupsOrganizerPageHandlerRemote);
+    mockTabGroupsHandler.setResultFor(
+        'getTabGroups', Promise.resolve({tabGroups: []}));
+    tabGroupsBrowserProxyFactory.setInstance({handler: mockTabGroupsHandler});
 
     app = document.createElement('organizer-panel-app');
     document.body.appendChild(app);
