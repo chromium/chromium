@@ -250,3 +250,6 @@
 
 # Times out on Linux accessibility: https://crbug.com/553341288
 -TranslateManagerBrowserTest.IsReadingModeOpen
+
+# Fails or crashes: https://crbug.com/562962226
+NewTabPageAppTest.VoiceSearchCoherence
