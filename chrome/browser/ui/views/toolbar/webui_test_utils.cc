@@ -10,7 +10,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
+#include "base/test/test_timeouts.h"
 #include "chrome/browser/headless/headless_command_processor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -32,6 +34,7 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -934,4 +937,42 @@ std::string DispatchEventScript(const std::string& selector,
       GetButtonIconJS(selector).c_str(), kGetCoordinatesJS,
       AddMockPointerCaptureFunctions("target").c_str(), event_class.c_str(),
       type.c_str(), options.c_str());
+}
+
+std::string DispatchPointerDownAndUp(const std::string& selector,
+                                     const std::string& pointer_type,
+                                     const std::string& opts) {
+  return base::StringPrintf(
+      "(() => { const target = %s; "
+      "%s"
+      "%s"
+      "target.dispatchEvent(new PointerEvent('pointerdown', {bubbles: true, "
+      "cancelable: true, view: window, pointerType: '%s', clientX: x, clientY: "
+      "y, "
+      "%s}));"
+      "target.dispatchEvent(new PointerEvent('pointerup', {bubbles: true, "
+      "cancelable: true, view: window, pointerType: '%s', clientX: x, clientY: "
+      "y, "
+      "%s})); })();",
+      GetButtonIconJS(selector).c_str(), kGetCoordinatesJS,
+      AddMockPointerCaptureFunctions("target").c_str(), pointer_type.c_str(),
+      opts.c_str(), pointer_type.c_str(), opts.c_str());
+}
+
+NavigationCounter::NavigationCounter(content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents) {}
+
+NavigationCounter::~NavigationCounter() = default;
+
+void NavigationCounter::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  navigation_count_++;
+}
+
+void NavigationCounter::WaitForNoNavigations() {
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+  run_loop.Run();
+  EXPECT_EQ(navigation_count_, 0u);
 }

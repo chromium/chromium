@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
@@ -94,6 +95,9 @@ void PinButton(BrowserWindowInterface* browser,
                views::WebView* web_view,
                const char* pref);
 
+// CSS selector for the WebUI toolbar home button.
+inline constexpr char kHomeSelector[] = "#home";
+
 // Pins Home button and waits for it to become visible in WebUI toolbar.
 WebUIToolbarWebView* SetUpAndPinHomeButton(BrowserWindowInterface* browser);
 
@@ -118,6 +122,37 @@ std::string DispatchEventScript(const std::string& selector,
                                 const std::string& event_class,
                                 const std::string& type,
                                 const std::string& options = "");
+
+// Simulates a physical pointer press + release cycle without dispatching a
+// top-level 'click' event. This is practically sufficient for interacting with
+// some custom WebUI elements (like CrIconButton) that bind their action logic
+// exclusively to 'pointerup'. It is also strictly required for simulating
+// auxiliary interactions (like middle-clicks) which do not produce standard
+// 'click' events.
+std::string DispatchPointerDownAndUp(
+    const std::string& selector,
+    const std::string& pointer_type = "mouse",
+    const std::string& opts = "detail: 1, button: 0");
+
+// Counts navigations started in a WebContents, and can assert that none
+// happened.
+class NavigationCounter : public content::WebContentsObserver {
+ public:
+  explicit NavigationCounter(content::WebContents* web_contents);
+  ~NavigationCounter() override;
+
+  // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+  // A helper that waits some time and then checks that no navigations occurred.
+  void WaitForNoNavigations();
+
+  size_t navigation_count() const { return navigation_count_; }
+
+ private:
+  size_t navigation_count_ = 0;
+};
 
 class AvatarButtonUpdateWaiter : public AvatarToolbarButtonInterface::Observer {
  public:
