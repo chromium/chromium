@@ -96,6 +96,15 @@ constexpr std::string_view kThirdPartyModsDirectory =
           "23a5260u",  // iOS 26 beta1 (rerelease)
           "23a5276f",  // iOS 26 beta2
           "23a5287g",  // iOS 26 beta3
+          "23A5297i",  // iOS 26 beta4
+          "23A5297m",  // iOS 26 beta4 (rerelease)
+          "23A5297n",  // iOS 26 beta4 (iPhone 11 only)
+          "24a5355q",  // iOS 27 beta1
+          "24a5370h",  // iOS 27 beta2
+          "24a5380h",  // iOS 27 beta3
+          "24a5380l",  // iOS 27 beta3 (iPad)
+          "24a5390f",  // iOS 27 beta4
+          "24a5408d",  // iOS 27 beta5
       });
 
   std::string build =
