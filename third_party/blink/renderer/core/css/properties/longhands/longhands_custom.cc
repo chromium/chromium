@@ -4874,9 +4874,9 @@ void InternalVisitedColor::ApplyInherit(StyleResolverState& state) const {
   } else {
     // In principle, we should always inherit the InternalVisitedColor()
     // of the parent, but (as an optimization) we don't store anything in
-    // that field for elements outside of visited links.
+    // that field for elements outside of links.
     const StyleColor& inherited_color =
-        (state.ParentStyle()->InsideLink() == EInsideLink::kInsideVisitedLink)
+        (state.ParentStyle()->InsideLink() != EInsideLink::kNotInsideLink)
             ? state.ParentStyle()->InternalVisitedColor()
             : state.ParentStyle()->Color();
     builder.SetInternalVisitedColor(inherited_color);

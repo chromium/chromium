@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style id="visited-style">
+a:visited {
+  color: orange;
+}
+</style>
+<style>
+a {
+  color: red;
+}
+a span {
+  color: inherit;
+  transition: color 1s ease;
+}
+</style>
+<a href=""><span>visited link</span></a>
+<a href="http://madeup.site.com"><span>unvisited link</span></a>
+<script>
+promise_test(() => {
+  const transitionrunPromises = [];
+  document.querySelectorAll('span').forEach(element => {
+    const promise = new Promise((resolve, reject) => {
+      let resolved = false;
+      let timeoutCountdownInFrames = 2;
+      const tick = () => {
+        requestAnimationFrame(() => {
+          if (resolved)
+            return;
+          if (--timeoutCountdownInFrames == 0)
+            reject('Timeout waiting for transition run');
+          tick();
+        });
+      }
+      element.addEventListener('transitionrun', () => {
+        resolved = true;
+        resolve();
+      });
+      tick();
+    });
+    transitionrunPromises.push(promise);
+  });
+
+  assert_equals(document.getAnimations().length, 0);
+  // The getAnimations call forced a style sync, thus changing the style now
+  // forces transitions.
+  document.getElementById('visited-style').textContent =
+      'a:visited { color: blue; }';
+
+  const animations = document.getAnimations();
+  assert_equals(
+      animations.length, 2,
+      'inherited transition should occur for visited and unvisited links');
+  animations.forEach(animation => {
+    const keyframes = animation.effect.getKeyframes();
+    assert_equals(keyframes[0].color, 'rgb(255, 0, 0)');
+    assert_equals(keyframes[1].color, 'rgb(255, 0, 0)');
+  });
+  // Expect two transitionrun events even though one does not have a visible
+  // effect.
+  return Promise.all(transitionrunPromises);
+}, 'Do not leak inherited link visited state via web animations API');
+</script>
