@@ -140,6 +140,8 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
       return "--toolbar-element-padding";
     case kToolbarIconDefaultMargin:
       return "--toolbar-icon-default-margin";
+    case kToolbarButtonRefreshExpandedMargin:
+      return "--toolbar-button-refresh-expanded-margin";
     case kToolbarCornerRadius:
       return "--toolbar-corner-radius";
     case kSidePanelInset:

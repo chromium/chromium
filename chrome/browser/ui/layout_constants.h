@@ -212,6 +212,10 @@ enum class LayoutConstant {
   // Default margin of the toolbar icons set by the layout manager.
   kToolbarIconDefaultMargin,
 
+  // Horizontal margin for expanded toolbar buttons (e.g. app menu, avatar) with
+  // labels.
+  kToolbarButtonRefreshExpandedMargin,
+
   // corner radius on the top of the toolbar introduced in chrome refresh 2023
   kToolbarCornerRadius,
 

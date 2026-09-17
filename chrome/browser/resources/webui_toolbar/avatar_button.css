@@ -21,6 +21,11 @@
   display: none !important;
 }
 
+#button[has-label] {
+  margin-inline: calc(var(--toolbar-button-refresh-expanded-margin) -
+                      var(--toolbar-icon-default-margin));
+}
+
 #button {
   /* Set padding variables for the nested button */
   --toolbar-chip-padding-start: var(--avatar-chip-padding-left);

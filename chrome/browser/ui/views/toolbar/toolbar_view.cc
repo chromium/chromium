@@ -211,7 +211,6 @@ auto& GetViewCommandMap() {
   return kViewCommandMap;
 }
 
-constexpr int kBrowserAppMenuRefreshExpandedMargin = 5;
 constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
 constexpr int kLargeSpaceBetweenButtons = 6;
 constexpr int kInsideBorderAroundGlicButtons = 2;
@@ -252,8 +251,10 @@ bool IsPositionInWindowCaptionForView(const views::View* view,
 void SetRefreshMargins(views::View* button, bool expanded) {
   button->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::VH(0, expanded ? kBrowserAppMenuRefreshExpandedMargin
-                                  : kBrowserAppMenuRefreshCollapsedMargin));
+      gfx::Insets::VH(
+          0, expanded ? GetLayoutConstant(
+                            LayoutConstant::kToolbarButtonRefreshExpandedMargin)
+                      : kBrowserAppMenuRefreshCollapsedMargin));
 }
 
 }  // namespace
