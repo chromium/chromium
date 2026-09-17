@@ -10,6 +10,7 @@ import '../menus/audio_menu.js';
 import '../menus/media_menu.js';
 import '../menus/color_menu.js';
 import '../menus/font_menu.js';
+import '../menus/font_size_menu.js';
 import '../menus/line_focus_menu.js';
 import '../menus/line_spacing_menu.js';
 import '../menus/letter_spacing_menu.js';
@@ -18,18 +19,14 @@ import '../menus/highlight_menu.js';
 import '../menus/rate_menu.js';
 import '../menus/presentation_menu.js';
 import '../menus/settings_menu.js';
-import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '//resources/cr_elements/icons.html.js';
 
 import {HelpBubbleMixinLit} from '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
@@ -43,6 +40,7 @@ import type {AppearanceMenuElement} from '../menus/appearance_menu.js';
 import type {AudioMenuElement} from '../menus/audio_menu.js';
 import type {ColorMenuElement} from '../menus/color_menu.js';
 import type {FontMenuElement} from '../menus/font_menu.js';
+import type {FontSizeMenuElement} from '../menus/font_size_menu.js';
 import type {HighlightMenuElement} from '../menus/highlight_menu.js';
 import type {LetterSpacingMenuElement} from '../menus/letter_spacing_menu.js';
 import type {LineFocusMenuElement} from '../menus/line_focus_menu.js';
@@ -57,9 +55,8 @@ import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 import {getCurrentSpeechRate} from '../read_aloud/speech_presentation_rules.js';
 import type {VoiceSelectionMenuElement} from '../read_aloud/voice_selection_menu.js';
-import {openMenu, spinnerDebounceTimeout} from '../shared/common.js';
-import {getNewIndex, isArrow, isHorizontalArrow} from '../shared/keyboard_util.js';
-import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
+import {spinnerDebounceTimeout} from '../shared/common.js';
+import {getNewIndex, isHorizontalArrow} from '../shared/keyboard_util.js';
 import {ReadAnythingLogger, SpeechControls, TimeFrom} from '../shared/read_anything_logger.js';
 
 import {getCss} from './read_anything_toolbar.css.js';
@@ -78,7 +75,7 @@ export interface ReadAnythingToolbarElement {
     letterSpacingMenu: LetterSpacingMenuElement,
     fontMenu: FontMenuElement,
     textMenu: TextMenuElement,
-    fontSizeMenu: CrLazyRenderLitElement<CrActionMenuElement>,
+    fontSizeMenu: FontSizeMenuElement,
     voiceSelectionMenu: VoiceSelectionMenuElement,
     highlightMenu: HighlightMenuElement,
     lineFocusMenu: LineFocusMenuElement,
@@ -93,17 +90,7 @@ interface MenuButton {
   icon: string;
   ariaLabel: string;
   openMenu: (target: HTMLElement) => void;
-  announceId?: string;
 }
-
-// Max number of paragraph elements inside an aria-live region for
-// announcing setting changes. Not clearing the element may make
-// the announce block too big and waste memory. Trade-off is that every
-// MAX_PARAGRAOHS_IN_ANNOUNCE_BLOCK font sizes, there is a chance the
-// announcement won't happen the sixth time, if the change is too fast.
-// It is unlikely someone will change the font size more than 5 times so
-// this covers most use cases.
-const MAX_PARAGRAPHS_IN_ANNOUNCE_BLOCK = 5;
 
 const ReadAnythingToolbarElementBase =
     HelpBubbleMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
@@ -203,10 +190,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // connectedCallback has finished executing.
   private isSetupComplete_: boolean = false;
 
-  protected isFontSizeDefault_(): boolean {
-    return this.visualBrowserProxy_.getFontSize() ===
-        this.visualBrowserProxy_.getDefaultFontSize();
-  }
 
   isReadingModeInactive(): boolean {
     return this.presentationState ===
@@ -290,9 +273,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
           'read-anything:format-size' :
           'read-anything:font-size-old',
       ariaLabel: loadTimeData.getString('fontSizeTitle'),
-      openMenu: (target: HTMLElement) =>
-          openMenu(this.$.fontSizeMenu.get(), target),
-      announceId: 'size-announce',
+      openMenu: (target: HTMLElement) => this.$.fontSizeMenu.open(target),
     }];
   }
 
@@ -405,67 +386,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.speechRate_ = event.detail.data;
   }
 
-  protected onFontSizeIncreaseClick_() {
-    this.updateFontSize_(true);
-  }
-
-  protected onFontSizeDecreaseClick_() {
-    this.updateFontSize_(false);
-  }
-
-  private announceSizeChage(increase: boolean) {
-    const sizeChangeAnnounce: HTMLDivElement =
-        this.shadowRoot?.getElementById('size-announce') as HTMLDivElement;
-    if (sizeChangeAnnounce) {
-      // We must add a new HTML element otherwise aria-live won't catch it.
-      const paragraph: HTMLParagraphElement = document.createElement('p');
-      if (increase) {
-        paragraph.textContent = this.i18n('increaseFontSizeAnnouncement');
-      } else {
-        paragraph.textContent = this.i18n('decreaseFontSizeAnnouncement');
-      }
-      sizeChangeAnnounce.appendChild(paragraph);
-      // To avoid adding indefinite number of HTML elements. If the list of
-      // paragraphs in size_change_announce has become too large reset it.
-      if (sizeChangeAnnounce.getElementsByTagName('p').length >
-          MAX_PARAGRAPHS_IN_ANNOUNCE_BLOCK) {
-        this.restoreAnnounceState('size-announce');
-      }
-    }
-  }
-
-
-  // Helper function to clear html in an aria announce element.
-  private restoreAnnounceState(id: string) {
-    const srNotice: HTMLElement|null = this.shadowRoot?.getElementById(id);
-    if (srNotice) {
-      const paragraphs = srNotice.querySelectorAll('p');
-      paragraphs.forEach(paragraph => {
-        paragraph.remove();
-      });
-    }
-  }
-
-  private updateFontSize_(increase: boolean) {
-    this.logger_.logTextSettingsChange(
-        ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
-    const startingSize = this.visualBrowserProxy_.getFontSize();
-    this.visualBrowserProxy_.onFontSizeChanged(increase);
-    this.fire(ToolbarEvent.FONT_SIZE);
-    if (startingSize !== this.visualBrowserProxy_.getFontSize()) {
-      this.announceSizeChage(increase);
-    }
-    this.requestUpdate();
-    // Don't close the menu
-  }
-
-  protected onFontResetClick_() {
-    this.logger_.logTextSettingsChange(
-        ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
-    this.visualBrowserProxy_.onFontSizeReset();
-    this.fire(ToolbarEvent.FONT_SIZE);
-    this.requestUpdate();
-  }
 
   protected onPlayPauseClick_() {
     this.logger_.logSpeechControlClick(
@@ -499,23 +419,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     });
 
     this.onKeyDown_(e, focusableElements);
-  }
-
-  protected onFontSizeMenuKeydown_(e: KeyboardEvent) {
-    // The font size selection menu is laid out horizontally, so users should be
-    // able to navigate it using either up and down arrows, or left and right
-    // arrows.
-    if (!isArrow(e.key)) {
-      return;
-    }
-    e.preventDefault();
-    const focusableElements =
-        Array.from(this.$.fontSizeMenu.get().children) as HTMLElement[];
-    assert(e.target instanceof HTMLElement);
-    const elementToFocus =
-        focusableElements[getNewIndex(e.key, e.target, focusableElements)];
-    assert(elementToFocus, 'no element to focus');
-    elementToFocus.focus();
   }
 
   protected onCloseAllMenus_(

@@ -36,7 +36,7 @@ suite('FontSize', () => {
   // blockId is the css id of the announcement block.
   function getAnnouncementBlock(blockId: string): HTMLElement {
     const announcement_div =
-        toolbar.$.toolbarContainer.querySelector<HTMLElement>(blockId);
+        toolbar.$.fontSizeMenu.get().querySelector<HTMLElement>(blockId);
     assertTrue(announcement_div !== null);
     return announcement_div;
   }
@@ -127,10 +127,7 @@ suite('FontSize', () => {
   test(' decrease clicked changes aria-live region', () => {
     clickDecrease();
     assertEquals(
-        toolbar.$.toolbarContainer.querySelector('#size-announce')
-            ?.querySelector('p')
-            ?.textContent,
-        'Font size decreased');
+        'Font size decreased', getAnnouncementBlockText('#size-announce'));
   });
 
   test('reset clicked returns font size to starting size', async () => {

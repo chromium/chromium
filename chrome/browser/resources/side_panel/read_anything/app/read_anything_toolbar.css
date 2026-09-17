@@ -62,19 +62,6 @@
   align-items: center;
 }
 
-#font-size-increase {
-  --cr-icon-button-fill-color: var(--color-sys-on-surface-subtle);
-}
-
-#font-size-decrease {
-  margin-inline-start: 12px;
-  --cr-icon-button-fill-color: var(--color-sys-on-surface-subtle);
-}
-
-#font-size-reset {
-  margin-inline-end: 4px;
-}
-
 #toolbarContainer {
   --cr-icon-button-fill-color-default: var(--toolbar-icon-color);
   --play-pause-icon-color: var(--audio-player-icon-color);
@@ -94,13 +81,6 @@
   line-height: var(--immersive-menu-font-line-height);
   outline: none;
   border: none;
-}
-
-.announce-block {
-  width:1px;
-  height:1px;
-  overflow:hidden;
-  position: absolute;
 }
 
 /*
@@ -150,10 +130,6 @@
   background-color: var(--toggle-active-background-color);
   --cr-icon-button-fill-color: var(--background-color);
   border-radius: 12px;
-}
-
-.immersive-font-size-menu::part(dialog) {
-  border-radius: var(--cornerRadii-medium-small, 12px);
 }
 
 @media (forced-colors: active) {

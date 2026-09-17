@@ -35,6 +35,7 @@ export type {AppearanceMenuElement} from './menus/appearance_menu.js';
 export type {AudioMenuElement} from './menus/audio_menu.js';
 export type {ColorMenuElement} from './menus/color_menu.js';
 export type {FontMenuElement} from './menus/font_menu.js';
+export type {FontSizeMenuElement} from './menus/font_size_menu.js';
 export type {GroupedActionMenuElement} from './menus/grouped_action_menu.js';
 export type {HighlightMenuElement} from './menus/highlight_menu.js';
 export type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';

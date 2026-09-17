@@ -83,10 +83,6 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     ` : ''}
 
   ${this.textStyleOptions_.map((item, index) => html`
-    ${item.announceId ? html`
-      <div id="${item.announceId}" class="announce-block" aria-live="polite">
-      </div>
-    ` : ''}
     <cr-icon-button class="toolbar-button text-style-button"
         id="${item.id}"
         tabindex="-1"
@@ -132,38 +128,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     .presentationState="${this.presentationState}"
     @close-all-menus="${this.onCloseAllMenus_}">
   </presentation-menu>
-  <cr-lazy-render-lit id="fontSizeMenu" .template='${() => html`
-  <cr-action-menu @keydown="${this.onFontSizeMenuKeydown_}"
-      accessibility-label="$i18n{fontSizeTitle}"
-      role-description="$i18n{menu}"
-      class="immersive-font-size-menu">
-    <cr-icon-button class="font-size" role="menuitem"
-        id="font-size-decrease"
-        aria-label="$i18n{decreaseFontSizeLabel}"
-        title="$i18n{decreaseFontSizeLabel}"
-        iron-icon="${this.webuiRoundedIconsEnabled_
-            ? 'read-anything:remove'
-            : 'read-anything:font-size-decrease-old'}"
-        @click="${this.onFontSizeDecreaseClick_}">
-    </cr-icon-button>
-    <cr-icon-button class="font-size" role="menuitem"
-        id="font-size-increase"
-        aria-label="$i18n{increaseFontSizeLabel}"
-        title="$i18n{increaseFontSizeLabel}"
-        iron-icon="cr:add"
-        @click="${this.onFontSizeIncreaseClick_}">
-    </cr-icon-button>
-    <cr-button role="menuitem"
-        id="font-size-reset"
-        ?disabled="${this.isFontSizeDefault_()}"
-        aria-label="$i18n{fontResetTooltip}"
-        title="$i18n{fontResetTooltip}"
-        @click="${this.onFontResetClick_}">
-      $i18n{fontResetTitle}
-    </cr-button>
-  </cr-action-menu>
-  `}'>
-  </cr-lazy-render-lit>
+  <font-size-menu id="fontSizeMenu"></font-size-menu>
   <rate-menu id="rateMenu" .settingsPrefs="${this.settingsPrefs}"
     @rate-change="${this.onRateChange_}">
   </rate-menu>
