@@ -11,157 +11,8 @@ import os
 import subprocess
 import sys
 
-import dbus
 
-
-SAVED_SESSION_STATE_FILE = 'crd_previous_session_state.json'
-SUBPROCESS_TIMEOUT_SECONDS = 10
-
-
-def _get_saved_session_state_path():
-  """Returns path to file storing previous session state in runtime dir."""
-  runtime_dir = os.environ.get('XDG_RUNTIME_DIR')
-  if not runtime_dir:
-    runtime_dir = f'/run/user/{os.getuid()}'
-  return os.path.join(runtime_dir, SAVED_SESSION_STATE_FILE)
-
-
-class SystemdManager:
-  """Interacts with systemd user manager via D-Bus."""
-
-  def __init__(self, bus=None):
-    try:
-      if 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
-        os.environ['DBUS_SESSION_BUS_ADDRESS'] = (
-            f'unix:path=/run/user/{os.getuid()}/bus'
-        )
-      self.bus = bus or dbus.SessionBus()
-      self.manager = self.bus.get_object(
-          'org.freedesktop.systemd1', '/org/freedesktop/systemd1'
-      )
-      self.props = dbus.Interface(
-          self.manager, 'org.freedesktop.DBus.Properties'
-      )
-      self.interface = dbus.Interface(
-          self.manager, 'org.freedesktop.systemd1.Manager'
-      )
-    except Exception as e:
-      print(f'Failed to connect to systemd D-Bus: {e}', file=sys.stderr)
-      self.bus = None
-      self.manager = None
-      self.props = None
-      self.interface = None
-
-  def get_environment(self):
-    """Fetches systemd user environment variables as a raw dict via D-Bus.
-
-    Using the D-Bus API preserves raw unquoted values, preventing shell-quoting
-    or escaping mismatches for values containing spaces or special characters.
-    """
-    if not self.props:
-      return {}
-    try:
-      env_list = self.props.Get(
-          'org.freedesktop.systemd1.Manager', 'Environment'
-      )
-      return dict(str(s).split('=', 1) for s in env_list if '=' in s)
-    except Exception as e:
-      print(
-          f'Failed to get systemd user environment via D-Bus: {e}',
-          file=sys.stderr,
-      )
-      return {}
-
-  def set_environment(self, assignments):
-    """Sets systemd user environment variables via D-Bus."""
-    if not assignments or not self.interface:
-      return
-    try:
-      self.interface.SetEnvironment(assignments)
-    except Exception as e:
-      print(f'Failed to set environment variables: {e}', file=sys.stderr)
-
-  def unset_environment(self, names):
-    """Unsets systemd user environment variables via D-Bus."""
-    if not names or not self.interface:
-      return
-    try:
-      self.interface.UnsetEnvironment(names)
-    except Exception as e:
-      print(f'Failed to unset environment variables: {e}', file=sys.stderr)
-
-
-class EnvironmentStore:
-  """Manages persistence of session environment state in the runtime dir."""
-
-  def __init__(self, path=None):
-    self.path = path or _get_saved_session_state_path()
-    self.variables = {}
-    self.is_valid = False
-
-  def load(self):
-    """Loads session state from file. Returns True if a valid state existed."""
-    if not os.path.exists(self.path):
-      self.is_valid = False
-      return False
-    try:
-      with open(self.path, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-      if isinstance(data, dict) and isinstance(data.get('environment'), dict):
-        self.variables = data['environment']
-        self.is_valid = True
-        return True
-    except (OSError, ValueError) as e:
-      print(f'Failed to read saved session state: {e}', file=sys.stderr)
-    self.is_valid = False
-    return False
-
-  def record(self, var_name, original_value, injected_value):
-    """Records the pre-CRD original value and CRD injected fingerprint."""
-    self.variables[var_name] = {
-        'original_value': original_value,
-        'injected_value': injected_value,
-    }
-
-  def get_entry(self, var_name):
-    """Returns (original_value, injected_value) tuple for a variable."""
-    entry = self.variables.get(var_name)
-    if isinstance(entry, dict):
-      orig = entry.get('original_value', entry.get('previous'))
-      injected = entry.get('injected_value', entry.get('overridden'))
-      return orig, injected
-    return None, None
-
-  def save(self):
-    """Atomically writes session state dict to a 0600 file in runtime dir."""
-    # Write to a PID-tagged temporary file with restricted permissions (0600)
-    # and atomically replace the destination file. This prevents race conditions
-    # and ensures another process never reads a partially written state file.
-    tmp_path = f'{self.path}.tmp.{os.getpid()}'
-    try:
-      flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_TRUNC
-      fd = os.open(tmp_path, flags, 0o600)
-      with open(fd, 'w', encoding='utf-8') as f:
-        json.dump({'environment': self.variables}, f)
-      os.replace(tmp_path, self.path)
-    except OSError as e:
-      if os.path.exists(tmp_path):
-        try:
-          os.remove(tmp_path)
-        except OSError:
-          pass
-      print(f'Failed to save session state: {e}', file=sys.stderr)
-
-  def cleanup(self):
-    """Removes the saved session state file."""
-    if os.path.exists(self.path):
-      try:
-        os.remove(self.path)
-      except OSError as e:
-        print(f'Failed to remove saved state file: {e}', file=sys.stderr)
-
-
-def start(systemd_mgr=None, store=None):
+def start():
   """Sets environment variables for a new session."""
   # Locate the remote-session-info tool in the same directory as this script.
   script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -171,95 +22,59 @@ def start(systemd_mgr=None, store=None):
   try:
     # Execute remote-session-info and parse its JSON output.
     output = subprocess.check_output(
-        [remote_session_info_path],
-        universal_newlines=True,
-        timeout=SUBPROCESS_TIMEOUT_SECONDS,
+        [remote_session_info_path], universal_newlines=True
     )
     session_info = json.loads(output)
   except (
       subprocess.CalledProcessError,
-      subprocess.TimeoutExpired,
-      ValueError,
-      OSError,
+      json.JSONDecodeError,
+      FileNotFoundError,
   ) as e:
     print(f'Failed to get session info: {e}', file=sys.stderr)
     return
 
-  systemd_mgr = systemd_mgr or SystemdManager()
-  store = store or EnvironmentStore()
-
   # If this is a CRD session, set the relevant environment variables.
-  if isinstance(session_info, dict) and session_info.get('isCrdSession'):
-    ssh_auth_sock = session_info.get('sshAuthSock')
-    # Load existing state file if present (e.g. during session reconnection),
-    # preserving the original environment state.
-    state_existed = store.load()
-
-    should_save = not state_existed
-    if ssh_auth_sock:
-      orig, _ = store.get_entry('SSH_AUTH_SOCK')
-      if orig is None and 'SSH_AUTH_SOCK' not in store.variables:
-        current_env = systemd_mgr.get_environment()
-        current_sock = current_env.get('SSH_AUTH_SOCK')
-        orig = current_sock if current_sock != ssh_auth_sock else None
-
-      # Store original value and injected fingerprint. When the session ends,
-      # stop() will compare the current environment against injected_value.
-      # If the user changed it during the session, we suppress restoring
-      # the original value to preserve the manual change.
-      store.record(
-          'SSH_AUTH_SOCK', original_value=orig, injected_value=ssh_auth_sock
-      )
-      should_save = True
-
-    if should_save:
-      store.save()
-
-    env_updates = ['CHROME_REMOTE_DESKTOP_SESSION=1']
-    if ssh_auth_sock:
-      env_updates.append(f'SSH_AUTH_SOCK={ssh_auth_sock}')
-    systemd_mgr.set_environment(env_updates)
+  if session_info.get('isCrdSession'):
+    try:
+      subprocess.run([
+          'systemctl',
+          '--user',
+          'set-environment',
+          'CHROME_REMOTE_DESKTOP_SESSION=1',
+      ])
+      ssh_auth_sock = session_info.get('sshAuthSock')
+      if ssh_auth_sock:
+        subprocess.run([
+            'systemctl',
+            '--user',
+            'set-environment',
+            f'SSH_AUTH_SOCK={ssh_auth_sock}',
+        ])
+    except subprocess.CalledProcessError as e:
+      print(f'Failed to set environment variables: {e}', file=sys.stderr)
 
 
-def stop(systemd_mgr=None, store=None):
-  """Unsets or restores environment variables when session ends."""
-  systemd_mgr = systemd_mgr or SystemdManager()
-  store = store or EnvironmentStore()
-
-  env = systemd_mgr.get_environment()
-  has_valid_state = store.load()
-  store.cleanup()
-
-  # Always unset CHROME_REMOTE_DESKTOP_SESSION when session environment ends.
-  vars_to_unset = ['CHROME_REMOTE_DESKTOP_SESSION']
-  vars_to_set = []
-
-  # Only inspect and restore SSH_AUTH_SOCK specifically, rather than
-  # iterating over all keys in the state file. This keeps the logic simple
-  # and prevents any potential tampering with the state file from
-  # overriding arbitrary environment variables.
-  #
-  # Differentiate between a missing/invalid state file and a valid state file
-  # that simply did not record an override for SSH_AUTH_SOCK (e.g. when SSH
-  # forwarding was not enabled for the session).
-  if has_valid_state:
-    if 'SSH_AUTH_SOCK' in store.variables:
-      orig, injected = store.get_entry('SSH_AUTH_SOCK')
-      # If the current environment variable still matches the injected_value
-      # fingerprint, restore it to its original_value snapshot. If modified
-      # during the session, persist the user modification.
-      if env.get('SSH_AUTH_SOCK') == injected:
-        if orig is not None:
-          vars_to_set.append(f'SSH_AUTH_SOCK={orig}')
-        else:
-          vars_to_unset.append('SSH_AUTH_SOCK')
-  elif 'CHROME_REMOTE_DESKTOP_SESSION' in env:
-    # If no state file was found or it was invalid, fall back to unsetting
-    # SSH_AUTH_SOCK if this was a CRD session.
-    vars_to_unset.append('SSH_AUTH_SOCK')
-
-  systemd_mgr.unset_environment(vars_to_unset)
-  systemd_mgr.set_environment(vars_to_set)
+def stop():
+  """Unsets environment variables when session ends."""
+  # Check the current systemd user environment to see if it was set by CRD.
+  env_output = subprocess.check_output(
+      ['systemctl', '--user', 'show-environment'], universal_newlines=True
+  )
+  # Check if CHROME_REMOTE_DESKTOP_SESSION is present in the environment.
+  if any(
+      line.startswith('CHROME_REMOTE_DESKTOP_SESSION=')
+      for line in env_output.splitlines()
+  ):
+    try:
+      subprocess.run([
+          'systemctl',
+          '--user',
+          'unset-environment',
+          'CHROME_REMOTE_DESKTOP_SESSION',
+          'SSH_AUTH_SOCK',
+      ])
+    except subprocess.CalledProcessError as e:
+      print(f'Failed to unset environment variables: {e}', file=sys.stderr)
 
 
 def main():

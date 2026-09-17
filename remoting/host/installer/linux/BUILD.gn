@@ -134,19 +134,3 @@ action("remoting_me2me_host_deb_installer") {
     "//third_party/icu:icudata",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "setup_session_environment_unittest.cc" ]
-
-  data = [
-    "setup-session-environment",
-    "setup_session_environment_unittest.py",
-  ]
-
-  deps = [
-    "//base",
-    "//testing/gtest",
-  ]
-}
