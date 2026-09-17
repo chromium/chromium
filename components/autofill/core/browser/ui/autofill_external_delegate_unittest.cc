@@ -963,22 +963,24 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenFirstPartySources) {
 
   SetupMockAtMemoryQueryService(u"shoe size", std::move(search_results));
 
-  auto matcher = ElementsAre(AllOf(
-      HasMainText(u"42"),
-      Field(
-          &Suggestion::children,
-          ElementsAre(
-              AllOf(HasMainText(u"example.com"), HasLabel(u"Store")),
-              AllOf(HasMainText(u"Marian Paździoch"), HasLabel(u"Name")),
-              Field(&Suggestion::type, SuggestionType::kSeparator),
-              AllOf(
-                  HasMinorText(l10n_util::GetStringUTF16(
-                      IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE)),
+  auto matcher = ElementsAre(
+      Field(&Suggestion::type, SuggestionType::kTitle),
+      AllOf(
+          HasMainText(u"42"),
+          Field(
+              &Suggestion::children,
+              ElementsAre(
+                  AllOf(HasMainText(u"example.com"), HasLabel(u"Store")),
+                  AllOf(HasMainText(u"Marian Paździoch"), HasLabel(u"Name")),
+                  Field(&Suggestion::type, SuggestionType::kSeparator),
+                  AllOf(
+                      HasMinorText(l10n_util::GetStringUTF16(
+                          IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE)),
+                      Field(&Suggestion::type,
+                            SuggestionType::kAtMemorySourceAttribution)),
+                  Field(&Suggestion::type, SuggestionType::kSeparator),
                   Field(&Suggestion::type,
-                        SuggestionType::kAtMemorySourceAttribution)),
-              Field(&Suggestion::type, SuggestionType::kSeparator),
-              Field(&Suggestion::type,
-                    SuggestionType::kManageEnhancedAutofill)))));
+                        SuggestionType::kManageEnhancedAutofill)))));
 
   InSequence sequence;
   // The first call notifies the UI that search has started and shows a fetching
@@ -1013,16 +1015,18 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenAutofillSource) {
 
   SetupMockAtMemoryQueryService(u"addr", std::move(search_results));
 
-  auto matcher = ElementsAre(AllOf(
-      HasMainText(u"1600 Amphitheatre Pkwy"),
-      Field(&Suggestion::children,
-            ElementsAre(AllOf(HasMainText(u"Mountain View"), HasLabel(u"City")),
-                        AllOf(HasMainText(u"CA"), HasLabel(u"State")),
-                        Field(&Suggestion::type, SuggestionType::kSeparator),
-                        AllOf(HasMainText(l10n_util::GetStringUTF16(
-                                  IDS_AUTOFILL_AT_MEMORY_MANAGE_CONTACT_INFO)),
-                              Field(&Suggestion::type,
-                                    SuggestionType::kManageAddress))))));
+  auto matcher = ElementsAre(
+      Field(&Suggestion::type, SuggestionType::kTitle),
+      AllOf(HasMainText(u"1600 Amphitheatre Pkwy"),
+            Field(&Suggestion::children,
+                  ElementsAre(
+                      AllOf(HasMainText(u"Mountain View"), HasLabel(u"City")),
+                      AllOf(HasMainText(u"CA"), HasLabel(u"State")),
+                      Field(&Suggestion::type, SuggestionType::kSeparator),
+                      AllOf(HasMainText(l10n_util::GetStringUTF16(
+                                IDS_AUTOFILL_AT_MEMORY_MANAGE_CONTACT_INFO)),
+                            Field(&Suggestion::type,
+                                  SuggestionType::kManageAddress))))));
 
   InSequence sequence;
   // The first call notifies the UI that search has started and shows a fetching
@@ -1067,7 +1071,8 @@ TEST_F(AutofillExternalDelegateTest,
                   _, _, _));
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(
-                  ElementsAre(Field(&Suggestion::type,
+                  ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                              Field(&Suggestion::type,
                                     SuggestionType::kAtMemorySearchResult)),
                   _, _, _));
 
@@ -1106,7 +1111,8 @@ TEST_F(AutofillExternalDelegateTest,
 
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(
-                  ElementsAre(Field(&Suggestion::type,
+                  ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                              Field(&Suggestion::type,
                                     SuggestionType::kAtMemorySearchResult)),
                   _, _, _));
   received_callback.Run(std::move(search_results2));
@@ -1144,7 +1150,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPartialResponseKeepsSearching) {
   // We expect that UpdateAutofillSuggestions IS called with these results.
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(
-                  ElementsAre(Field(&Suggestion::type,
+                  ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                              Field(&Suggestion::type,
                                     SuggestionType::kAtMemorySearchResult)),
                   _, _, _));
 
@@ -1164,7 +1171,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryPartialResponseKeepsSearching) {
   // results, because the previous response was only a partial success.
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(
-                  ElementsAre(Field(&Suggestion::type,
+                  ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                              Field(&Suggestion::type,
                                     SuggestionType::kAtMemorySearchResult)),
                   _, _, _));
 
@@ -1203,7 +1211,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFinalResponseStopsSearching) {
   // We expect that UpdateAutofillSuggestions IS called with these results.
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(
-                  ElementsAre(Field(&Suggestion::type,
+                  ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                              Field(&Suggestion::type,
                                     SuggestionType::kAtMemorySearchResult)),
                   _, _, _));
 
@@ -1325,7 +1334,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryStaleResponseIgnored) {
 
   EXPECT_CALL(autofill_client(),
               UpdateAutofillSuggestions(
-                  ElementsAre(Field(&Suggestion::type,
+                  ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                              Field(&Suggestion::type,
                                     SuggestionType::kAtMemorySearchResult)),
                   _, _, _));
   received_callback2.Run(std::move(search_results2));

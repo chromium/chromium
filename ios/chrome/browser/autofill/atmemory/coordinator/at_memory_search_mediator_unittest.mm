@@ -352,7 +352,9 @@ TEST_F(AtMemorySearchMediatorTest, OpenGranularFillAtIndex) {
 
   [mediator_ startSearchWithQuery:kSearchQuery];
 
-  [mediator_ openGranularFillForSearchResultAtIndex:0];
+  // Index 0 is the section header (SuggestionType::kTitle); index 1 is the
+  // first search result.
+  [mediator_ openGranularFillForSearchResultAtIndex:1];
 
   EXPECT_TRUE(fake_handler.wasCalled);
 }

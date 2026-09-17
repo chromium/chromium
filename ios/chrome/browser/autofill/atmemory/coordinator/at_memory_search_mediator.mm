@@ -55,6 +55,10 @@ constexpr std::string_view kNoticeInteractionsHistogram =
   // Suggestions returned by AtMemoryManager.
   std::vector<autofill::Suggestion> _suggestions;
 
+  // Whether the current suggestions represent 0-state recent fills (as opposed
+  // to search results).
+  BOOL _isRecentFills;
+
   // Tells if the notice is visible.
   BOOL _noticeIsVisible;
   // Tracks if the notice impression metric has been logged.
@@ -115,6 +119,7 @@ constexpr std::string_view kNoticeInteractionsHistogram =
         /*metadata=*/{},
         /*update_callback=*/std::move(updateCallback),
         /*ukm_source_id=*/ukmSourceId);
+    _isRecentFills = YES;
     _atMemoryManager->OnFilterChanged(u"");
   }
   return self;
@@ -172,6 +177,7 @@ constexpr std::string_view kNoticeInteractionsHistogram =
     return;
   }
 
+  _isRecentFills = NO;
   _atMemoryManager->OnSearchSubmitted(base::SysNSStringToUTF16(query));
 }
 
@@ -228,18 +234,11 @@ constexpr std::string_view kNoticeInteractionsHistogram =
 
 // Pushes current suggestions to the consumer.
 - (void)pushSuggestionsToConsumer {
-  NSMutableArray<AtMemorySearchItem*>* searchItems =
-      [[NSMutableArray alloc] init];
-  NSMutableArray<AtMemorySearchItem*>* recentFillItems =
-      [[NSMutableArray alloc] init];
+  NSMutableArray<AtMemorySearchItem*>* items = [[NSMutableArray alloc] init];
 
-  bool isRecentFills = false;
   for (size_t i = 0; i < _suggestions.size(); ++i) {
     const auto& suggestion = _suggestions[i];
     switch (suggestion.type) {
-      case autofill::SuggestionType::kTitle:
-        isRecentFills = true;
-        break;
       case autofill::SuggestionType::kAtMemoryNoConnection:
         [self.consumer setErrorType:AtMemoryErrorType::kNoConnectionError];
         return;
@@ -261,11 +260,7 @@ constexpr std::string_view kNoticeInteractionsHistogram =
 
         AtMemorySearchItem* item =
             [[AtMemorySearchItem alloc] initWithSuggestion:suggestion index:i];
-        if (isRecentFills) {
-          [recentFillItems addObject:item];
-        } else {
-          [searchItems addObject:item];
-        }
+        [items addObject:item];
         break;
       }
       default:
@@ -273,14 +268,12 @@ constexpr std::string_view kNoticeInteractionsHistogram =
     }
   }
 
-  if (recentFillItems.count > 0) {
-    [self.consumer setRecentFills:recentFillItems];
-  } else if (searchItems.count > 0) {
-    [self.consumer setSearchResults:searchItems];
-  } else if (_atMemoryManager && _atMemoryManager->IsSearching()) {
-    [self.consumer setErrorType:AtMemoryErrorType::kNoDataError];
+  if (_isRecentFills) {
+    [self.consumer setRecentFills:items];
+  } else if (items.count > 0) {
+    [self.consumer setSearchResults:items];
   } else {
-    [self.consumer setRecentFills:@[]];
+    [self.consumer setErrorType:AtMemoryErrorType::kNoDataError];
   }
 }
 

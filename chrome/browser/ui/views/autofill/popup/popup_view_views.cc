@@ -760,16 +760,10 @@ bool PopupViewViews::HandleKeyPressEventForAtMemory(
       }
       return false;
     case ui::VKEY_DOWN:
-      if (GetSelectedCell()) {
+      if (!rows_.empty()) {
         SelectNextRow(PopupCellSelectionSource::kKeyboard);
-        return true;
       }
-      if (HasSelectablePopupInteractiveRowViewAt(0)) {
-        SetSelectedCell(CellIndex(0, PopupRowView::CellType::kContent),
-                        PopupCellSelectionSource::kKeyboard);
-        return true;
-      }
-      return false;
+      return GetSelectedCell().has_value();
     case ui::VKEY_LEFT:
     case ui::VKEY_RIGHT:
       return HandlePopupHorizontalNavigation(event);

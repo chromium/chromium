@@ -247,7 +247,13 @@ class AtMemoryManagerTestBase : public Test,
         });
     EXPECT_CALL(update_callback_,
                 Run(_, AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl))
-        .WillOnce(SaveArg<0>(&final_suggestions));
+        .WillOnce([&final_suggestions](std::vector<Suggestion> suggestions,
+                                       AutofillSuggestionTriggerSource) {
+          std::erase_if(suggestions, [](const Suggestion& suggestion) {
+            return suggestion.type == SuggestionType::kTitle;
+          });
+          final_suggestions = std::move(suggestions);
+        });
   }
 
   // Creates a test form, calls `AutofillManager::OnFormsSeen` with it and
@@ -533,9 +539,10 @@ TEST_P(AtMemoryManagerTest,
 
   search_callback.Run(std::move(results));
 
-  ASSERT_EQ(final_suggestions.size(), 1u);
-  EXPECT_EQ(final_suggestions[0].type, SuggestionType::kAtMemorySearchResult);
-  EXPECT_EQ(final_suggestions[0].main_text.value, u"Full Address");
+  ASSERT_EQ(final_suggestions.size(), 2u);
+  EXPECT_EQ(final_suggestions[0].type, SuggestionType::kTitle);
+  EXPECT_EQ(final_suggestions[1].type, SuggestionType::kAtMemorySearchResult);
+  EXPECT_EQ(final_suggestions[1].main_text.value, u"Full Address");
 }
 
 // Tests that when a search result has an empty type name and no metadata, the
@@ -1319,7 +1326,8 @@ TEST_P(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
   search_callback.Run(std::move(results));
 
   EXPECT_THAT(resulting_suggestions,
-              ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
+              ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                          EqualsSuggestionWithManageEnhancedAutofillFooter(
                               MemoryDataType::kAddressFull),
                           EqualsSuggestionWithManageEnhancedAutofillFooter(
                               MemoryDataType::kPhone,
@@ -1366,7 +1374,8 @@ TEST_P(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
                                     SuggestionType::kAtMemoryFetching)),
                   AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
   EXPECT_CALL(update_callback_,
-              Run(ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
+              Run(ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                              EqualsSuggestionWithManageEnhancedAutofillFooter(
                                   MemoryDataType::kAddressFull),
                               EqualsSuggestionWithManageEnhancedAutofillFooter(
                                   MemoryDataType::kDriversLicenseName,
@@ -1404,8 +1413,9 @@ TEST_P(AtMemoryManagerTest,
                                     SuggestionType::kAtMemoryFetching)),
                   AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
   EXPECT_CALL(update_callback_,
-              Run(ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
-                      MemoryDataType::kIban)),
+              Run(ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                              EqualsSuggestionWithManageEnhancedAutofillFooter(
+                                  MemoryDataType::kIban)),
                   AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
 
   manager().OnSearchSubmitted(u"query");
@@ -1451,6 +1461,7 @@ TEST_P(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
   EXPECT_THAT(
       resulting_suggestions,
       ElementsAre(
+          Field(&Suggestion::type, SuggestionType::kTitle),
           EqualsSuggestionWithManageEnhancedAutofillFooter(
               MemoryDataType::kAddressFull),
           EqualsSuggestionWithManageEnhancedAutofillFooter(
@@ -1514,9 +1525,10 @@ TEST_P(AtMemoryManagerPolicyTest, RespectsEnterprisePolicy) {
 
   if (GetParam().should_be_kept) {
     EXPECT_THAT(resulting_suggestions,
-                ElementsAre(EqualsAtMemorySuggestion(GetParam().type, _)));
-    ASSERT_EQ(resulting_suggestions.size(), 1u);
-    EXPECT_EQ(resulting_suggestions[0].main_text.value, GetParam().value);
+                ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                            EqualsAtMemorySuggestion(GetParam().type, _)));
+    ASSERT_EQ(resulting_suggestions.size(), 2u);
+    EXPECT_EQ(resulting_suggestions[1].main_text.value, GetParam().value);
   } else {
     ASSERT_EQ(resulting_suggestions.size(), 1u);
     EXPECT_EQ(resulting_suggestions[0].type,
@@ -1584,9 +1596,10 @@ TEST_P(AtMemoryManagerPrefTest, FiltersOutCreditCardsWhenPrefDisabled) {
 
   if (GetParam().should_be_kept) {
     EXPECT_THAT(resulting_suggestions,
-                ElementsAre(EqualsAtMemorySuggestion(GetParam().type, _)));
-    ASSERT_EQ(resulting_suggestions.size(), 1u);
-    EXPECT_EQ(resulting_suggestions[0].main_text.value, GetParam().value);
+                ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                            EqualsAtMemorySuggestion(GetParam().type, _)));
+    ASSERT_EQ(resulting_suggestions.size(), 2u);
+    EXPECT_EQ(resulting_suggestions[1].main_text.value, GetParam().value);
   } else {
     ASSERT_EQ(resulting_suggestions.size(), 1u);
     EXPECT_EQ(resulting_suggestions[0].type,
@@ -1838,9 +1851,10 @@ TEST_P(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
   manager().OnSearchSubmitted(u"query");
 
   // Verify that the personal context notice card is prepended first, followed
-  // by the search result entry.
+  // by the section title and the search result entry.
   EXPECT_THAT(suggestions,
               SuggestionVectorIdsAre(SuggestionType::kPersonalContextNotice,
+                                     SuggestionType::kTitle,
                                      SuggestionType::kAtMemorySearchResult));
 }
 
@@ -2026,7 +2040,8 @@ TEST_P(AtMemoryManagerTest, FetchingState_TimerStopsWhenResultsReceived) {
 
   // Return search results.
   EXPECT_CALL(update_callback_,
-              Run(ElementsAre(Field(&Suggestion::type,
+              Run(ElementsAre(Field(&Suggestion::type, SuggestionType::kTitle),
+                              Field(&Suggestion::type,
                                     SuggestionType::kAtMemorySearchResult)),
                   AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
   MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
@@ -2763,8 +2778,9 @@ TEST_F(AtMemoryManagerTestBase, SearchStatefulness_PersistsAndResetsState) {
   AtMemorySearchState restored_state =
       manager().GetStateForField(field_id, form_origin());
   EXPECT_EQ(restored_state.filter, u"john");
-  ASSERT_EQ(restored_state.suggestions.size(), 1u);
-  EXPECT_EQ(restored_state.suggestions[0].main_text.value, u"John Doe");
+  ASSERT_EQ(restored_state.suggestions.size(), 2u);
+  EXPECT_EQ(restored_state.suggestions[0].type, SuggestionType::kTitle);
+  EXPECT_EQ(restored_state.suggestions[1].main_text.value, u"John Doe");
 
   // 4. Accessing a different field resets state.
   EXPECT_TRUE(manager()

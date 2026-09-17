@@ -308,6 +308,43 @@ bool ShouldEraseMemorySearchResult(MemoryDataType type,
   return !may_perform;
 }
 
+// Creates an unselectable section title suggestion for the given string ID.
+Suggestion CreateTitleSuggestion(int message_id) {
+  Suggestion suggestion(l10n_util::GetStringUTF16(message_id),
+                        SuggestionType::kTitle);
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
+  return suggestion;
+}
+
+// Inserts section title suggestions (`SuggestionType::kTitle`) above Autofill-
+// sourced and Personal Context-sourced suggestions. Assumes
+// `suggestions` is non-empty and sorted such that local Autofill suggestions
+// precede remote Personal Context suggestions.
+void InsertSectionTitles(std::vector<Suggestion>& suggestions) {
+  if (suggestions.empty()) {
+    return;
+  }
+  auto is_personal_context_sourced = [](const Suggestion& suggestion) {
+    return suggestion.GetPayload<Suggestion::AtMemoryPayload>()
+        .is_personal_context_sourced;
+  };
+  if (!is_personal_context_sourced(suggestions.front())) {
+    suggestions.insert(
+        suggestions.begin(),
+        CreateTitleSuggestion(IDS_AUTOFILL_AT_MEMORY_YOUR_SAVED_AUTOFILL_INFO));
+  }
+  if (auto remote_it =
+          std::ranges::find_if(suggestions, is_personal_context_sourced);
+      remote_it != suggestions.end()) {
+    suggestions.insert(
+        remote_it,
+        CreateTitleSuggestion(
+            IDS_AUTOFILL_AT_MEMORY_SOURCE_ATTRIBUTION_PERSONAL_INTELLIGENCE));
+  }
+}
+
 }  // namespace
 
 // static
@@ -750,13 +787,8 @@ void AtMemoryManager::MaybeAppendPreviouslyFilledSuggestions(
   if (prev_suggestions.empty()) {
     return;
   }
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_PREVIOUSLY_FILLED),
-      SuggestionType::kTitle);
-  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
-  suggestion.acceptability =
-      Suggestion::Acceptability::kUnselectableAndUnacceptable;
-  suggestions.push_back(std::move(suggestion));
+  suggestions.emplace_back(
+      CreateTitleSuggestion(IDS_AUTOFILL_AT_MEMORY_PREVIOUSLY_FILLED));
   suggestions.insert(suggestions.end(),
                      std::make_move_iterator(prev_suggestions.rbegin()),
                      std::make_move_iterator(prev_suggestions.rend()));
@@ -958,6 +990,7 @@ void AtMemoryManager::ShowResultsRetrievedStateSuggestions(
   CHECK(!suggestions.empty());
   suggestions.front().a11y_announcement = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_AT_MEMORY_SEARCH_RESULTS_A11Y_ANNOUNCEMENT);
+  InsertSectionTitles(suggestions);
   MaybeAppendPersonalContextNotice(suggestions);
   SendSuggestions(std::move(suggestions));
 }
