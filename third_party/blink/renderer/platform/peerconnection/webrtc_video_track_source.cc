@@ -561,10 +561,6 @@ void WebRtcVideoTrackSource::DeliverFrame(
         update_rect->height()});
   }
 
-  if (base::FeatureList::IsEnabled(media::kWebRTCLogColorSpace)) {
-    LOG(ERROR) << "WebRtcVideoTrackSource::DeliverFrame: color_space = "
-               << frame->ColorSpace().ToString();
-  }
 
   if (frame->ColorSpace().IsValid() &&
       base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
@@ -573,11 +569,6 @@ void WebRtcVideoTrackSource::DeliverFrame(
       // encoder.
       gfx::ColorSpace cs =
           media::VideoFrameConverter::GetDestinationColorSpace(*frame);
-      if (base::FeatureList::IsEnabled(media::kWebRTCLogColorSpace)) {
-        LOG(ERROR) << "Rewriting color space to " << cs.ToString()
-                   << ", because the format is "
-                   << media::VideoPixelFormatToString(frame->format());
-      }
       frame_builder.set_color_space(GfxToWebRtcColorSpace(cs));
     } else {
       frame_builder.set_color_space(GfxToWebRtcColorSpace(frame->ColorSpace()));

@@ -1081,10 +1081,6 @@ BASE_FEATURE(kWebRTCColorAccuracy, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebRTCHardwareVideoEncoderFrameDrop,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables verbose logging of color space.
-// TODO: Delete this after testing is done.
-BASE_FEATURE(kWebRTCLogColorSpace, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebRtcAudioNeuralResidualEchoEstimation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -305,7 +305,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebCodecsDecoderFlushOptimizations);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebCodecsVideoEncoderFrameDrop);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebRTCColorAccuracy);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebRTCHardwareVideoEncoderFrameDrop);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebRTCLogColorSpace);
 // When enabled, input audio processing in the audio process may use an ML-based
 // residual echo estimator instead of the default heuristics, when applying
 // WebRTC echo cancellation.
