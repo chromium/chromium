@@ -115,48 +115,55 @@ class PinRequestView::FocusableLabelButton : public views::LabelButton {
 BEGIN_METADATA(PinRequestView, FocusableLabelButton)
 END_METADATA
 
-PinRequestView::TestApi::TestApi(PinRequestView* view) : view_(view) {
-  DCHECK(view_);
+PinRequestView::TestApi::TestApi(PinRequestView* view) {
+  DCHECK(view);
+  scoped_view_observer_.Observe(view);
 }
 
 PinRequestView::TestApi::~TestApi() = default;
 
 LoginButton* PinRequestView::TestApi::back_button() {
-  return view_->back_button_;
+  return pin_request_view()->back_button_;
 }
 
 views::Label* PinRequestView::TestApi::title_label() {
-  return view_->title_label_;
+  return pin_request_view()->title_label_;
 }
 
 views::Label* PinRequestView::TestApi::description_label() {
-  return view_->description_label_;
+  return pin_request_view()->description_label_;
 }
 
 views::View* PinRequestView::TestApi::access_code_view() {
-  return view_->access_code_view_;
+  return pin_request_view()->access_code_view_;
 }
 
 views::LabelButton* PinRequestView::TestApi::help_button() {
-  return view_->help_button_;
+  return pin_request_view()->help_button_;
 }
 
 views::Button* PinRequestView::TestApi::submit_button() {
-  return view_->submit_button_;
+  return pin_request_view()->submit_button_;
 }
 
 LoginPinView* PinRequestView::TestApi::pin_keyboard_view() {
-  return view_->pin_keyboard_view_;
+  return pin_request_view()->pin_keyboard_view_;
 }
 
 views::Textfield* PinRequestView::TestApi::GetInputTextField(int index) {
   return FixedLengthCodeInput::TestApi(
-             static_cast<FixedLengthCodeInput*>(view_->access_code_view_))
+             static_cast<FixedLengthCodeInput*>(
+                 pin_request_view()->access_code_view_))
       .GetInputTextField(index);
 }
 
 PinRequestViewState PinRequestView::TestApi::state() const {
-  return view_->state_;
+  return pin_request_view()->state_;
+}
+
+void PinRequestView::TestApi::OnViewIsDeleting(views::View* observed_view) {
+  CHECK(scoped_view_observer_.IsObservingSource(observed_view));
+  scoped_view_observer_.Reset();
 }
 
 // TODO(crbug.com/40679369): Make dialog look good on small screens with high

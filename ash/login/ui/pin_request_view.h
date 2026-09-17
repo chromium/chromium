@@ -101,10 +101,10 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
     virtual ~Delegate() = default;
   };
 
-  class ASH_EXPORT TestApi {
+  class ASH_EXPORT TestApi : public views::ViewObserver {
    public:
     explicit TestApi(PinRequestView* view);
-    ~TestApi();
+    ~TestApi() override;
 
     LoginButton* back_button();
     views::Label* title_label();
@@ -117,8 +117,20 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
     views::Textfield* GetInputTextField(int index);
     PinRequestViewState state() const;
 
+    // views::ViewObserver
+    void OnViewIsDeleting(views::View* observed_view) override;
+
    private:
-    const raw_ptr<PinRequestView, DanglingUntriaged> view_;
+    PinRequestView* pin_request_view() {
+      return static_cast<PinRequestView*>(scoped_view_observer_.GetSource());
+    }
+    const PinRequestView* pin_request_view() const {
+      return static_cast<const PinRequestView*>(
+          scoped_view_observer_.GetSource());
+    }
+
+    base::ScopedObservation<views::View, views::ViewObserver>
+        scoped_view_observer_{this};
   };
 
   // Creates pin request view that will enable the user to enter a pin.
