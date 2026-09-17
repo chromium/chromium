@@ -102,7 +102,10 @@ export function getImage(path: string): string {
 }
 
 function getBaseFaviconUrl(): URL {
-  const faviconUrl = new URL('chrome://favicon2/');
+  const baseUrl = window.location.protocol === 'chrome-extension:' ?
+      '/_favicon/' :
+      'chrome://favicon2/';
+  const faviconUrl = new URL(baseUrl, window.location.origin);
   faviconUrl.searchParams.set('size', '16');
   faviconUrl.searchParams.set('scaleFactor', 'SCALEFACTORx');
   return faviconUrl;
