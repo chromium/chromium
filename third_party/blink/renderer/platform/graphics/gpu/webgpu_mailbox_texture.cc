@@ -94,9 +94,12 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
         gfx::Rect copy_rect(image_sub_rect.x(), image_sub_rect.y(),
                             dest_shared_image->size().width(),
                             dest_shared_image->size().height());
-        auto result = lease->RasterInterface()->CopySharedImage(
-            shared_image, image->GetSyncToken(), dest_shared_image,
-            lease->GetSyncToken(), copy_rect, gfx::Point());
+        auto result = context_provider_wrapper->ContextProvider()
+                          .RasterInterface()
+                          ->CopySharedImage(
+                              shared_image, image->GetSyncToken(),
+                              dest_shared_image, lease->GetSyncToken(),
+                              copy_rect, gfx::Point());
         lease->SetSyncToken(result.dest_sync_token);
         lease->SetCleared();
         image->UpdateSyncToken(result.source_sync_token);
