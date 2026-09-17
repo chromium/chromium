@@ -10,13 +10,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -26,9 +24,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
@@ -73,17 +68,11 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 public class TabTest {
     @Rule
-    public AutoResetCtaTransitTestRule mActivityTestRule =
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    private Tab mTab;
-    private int mRootIdForReset;
-    private Token mTabGroupIdForReset;
-    private CallbackHelper mOnTitleUpdatedHelper;
     private final List<Tab> mExtraTabs = new ArrayList<>();
-
+    private final CallbackHelper mOnTitleUpdatedHelper = new CallbackHelper();
     private final TabObserver mTabObserver =
             new TabObserver() {
                 @Override
@@ -91,6 +80,10 @@ public class TabTest {
                     mOnTitleUpdatedHelper.notifyCalled();
                 }
             };
+
+    private Tab mTab;
+    private int mRootIdForReset;
+    private Token mTabGroupIdForReset;
 
     private boolean isShowingSadTab() throws Exception {
         return ThreadUtils.runOnUiThreadBlocking(() -> SadTab.isShowing(mTab));
@@ -100,7 +93,6 @@ public class TabTest {
     public void setUp() throws Exception {
         mTab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mTabObserver));
-        mOnTitleUpdatedHelper = new CallbackHelper();
         mRootIdForReset = mTab.getRootId();
         mTabGroupIdForReset = mTab.getTabGroupId();
     }
@@ -395,7 +387,38 @@ public class TabTest {
 
     private void checkDiscardingAndAppendingPendingNavigation(
             TestTabCreator tabCreator, String firstUrl, String secondUrl, String secondTitle) {
-        TabObserver observer = Mockito.mock(TabObserver.class);
+        CallbackHelper urlUpdatedHelper = new CallbackHelper();
+        CallbackHelper contentChangedHelper = new CallbackHelper();
+        CallbackHelper faviconUpdatedHelper = new CallbackHelper();
+        CallbackHelper titleUpdatedHelper = new CallbackHelper();
+        CallbackHelper navEntriesAppendedHelper = new CallbackHelper();
+        TabObserver observer =
+                new TabObserver() {
+                    @Override
+                    public void onUrlUpdated(Tab tab) {
+                        urlUpdatedHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void onContentChanged(Tab tab) {
+                        contentChangedHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
+                        faviconUpdatedHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void onTitleUpdated(Tab tab) {
+                        titleUpdatedHelper.notifyCalled();
+                    }
+
+                    @Override
+                    public void onNavigationEntriesAppended(Tab tab) {
+                        navEntriesAppendedHelper.notifyCalled();
+                    }
+                };
         Tab bgTab = tabCreator.createTab(firstUrl);
         boolean wasFrozen = bgTab.isFrozen();
         boolean hadPendingLoad = bgTab.getPendingLoadParams() != null;
@@ -407,11 +430,11 @@ public class TabTest {
                             new LoadUrlParams(secondUrl), secondTitle);
                     assertEquals(wasFrozen, bgTab.isFrozen());
                 });
-        verify(observer).onUrlUpdated(eq(bgTab));
-        verify(observer, never()).onContentChanged(bgTab);
-        verify(observer).onFaviconUpdated(bgTab, null, null);
-        verify(observer).onTitleUpdated(bgTab);
-        verify(observer).onNavigationEntriesAppended(bgTab);
+        assertEquals(1, urlUpdatedHelper.getCallCount());
+        assertEquals(0, contentChangedHelper.getCallCount());
+        assertEquals(1, faviconUpdatedHelper.getCallCount());
+        assertEquals(1, titleUpdatedHelper.getCallCount());
+        assertEquals(1, navEntriesAppendedHelper.getCallCount());
         assertEquals(secondTitle, ChromeTabUtils.getTitleOnUiThread(bgTab));
         assertEquals(secondUrl, ChromeTabUtils.getUrlStringOnUiThread(bgTab));
 
