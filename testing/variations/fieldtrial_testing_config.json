@@ -4058,7 +4058,6 @@
                         "MigratedCollectedCookies": "true",
                         "MigratedDevToolsConfirm": "true",
                         "MigratedDevToolsSharedProcess": "true",
-                        "MigratedExtensionDevTools": "true",
                         "MigratedGoogleApiKeys": "true",
                         "MigratedInstallationError": "true",
                         "MigratedInstallerDownloader": "true",
