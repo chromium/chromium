@@ -951,11 +951,13 @@ std::optional<bool> BreakAtHeaderFooterBoundary(
   }
 
   // Only break into a footer on a paragraph-sized gap, or when the footer is a
-  // page number. Otherwise, fall through to let normal paragraph or heading
-  // rules decide.
+  // pure page number (digits only). Narrow text containing digits alongside
+  // words or punctuation (kNarrowWithDigit, such as a trailing date or citation
+  // at the end of a footnote) requires a paragraph-sized gap so it is not
+  // severed from its paragraph.
   if (next_role == HeaderFooterRole::kFooter &&
       (is_large_line_spacing_break ||
-       next_page_number_kind != PageNumberKind::kNone)) {
+       next_page_number_kind == PageNumberKind::kPureNumber)) {
     return true;
   }
 
