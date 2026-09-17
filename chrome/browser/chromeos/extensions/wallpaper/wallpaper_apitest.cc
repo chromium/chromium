@@ -22,5 +22,7 @@ IN_PROC_BROWSER_TEST_F(WallPaperApiTest, Wallpaper) {
       ash::SystemSaltGetter::RawSalt({1, 2, 3, 4, 5, 6, 7, 8}));
 
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("wallpaper")) << message_;
+  // The wallpaper API is restricted to component extensions and apps.
+  ASSERT_TRUE(RunExtensionTest("wallpaper", {}, {.load_as_component = true}))
+      << message_;
 }
