@@ -341,4 +341,111 @@ TEST_F(PictureInPictureOcclusionTrackerTest,
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
+TEST_F(PictureInPictureOcclusionTrackerTest,
+       ClosingPiPWidgetDuringUpdateAllObserverStatesDoesNotCrash) {
+  MockPictureInPictureOcclusionObserver observer1;
+  ScopedPictureInPictureOcclusionObservation observation1(&observer1);
+  MockPictureInPictureOcclusionObserver observer2;
+  ScopedPictureInPictureOcclusionObservation observation2(&observer2);
+
+  std::unique_ptr<views::Widget> picture_in_picture_widget =
+      CreatePictureInPictureWidget();
+  picture_in_picture_widget->SetBounds({0, 0, 200, 200});
+
+  std::unique_ptr<views::Widget> occludable_widget1 =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  occludable_widget1->Show();
+  occludable_widget1->SetBounds({300, 0, 200, 200});
+
+  std::unique_ptr<views::Widget> occludable_widget2 =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  occludable_widget2->Show();
+  occludable_widget2->SetBounds({0, 0, 200, 200});
+
+  EXPECT_CALL(observer1, OnOcclusionStateChanged(false));
+  observation1.Observe(occludable_widget1.get());
+  EXPECT_CALL(observer2, OnOcclusionStateChanged(true));
+  observation2.Observe(occludable_widget2.get());
+  testing::Mock::VerifyAndClearExpectations(&observer1);
+  testing::Mock::VerifyAndClearExpectations(&observer2);
+
+  WaitForBoundsChangedDebounce();
+
+  // When observer1 is notified of occlusion, synchronously destroy the PiP
+  // widget. This triggers OnWidgetDestroying which re-entrantly calls
+  // UpdateAllObserverStates(). Both observers should safely become unoccluded.
+  EXPECT_CALL(observer1, OnOcclusionStateChanged(true)).WillOnce([&]() {
+    picture_in_picture_widget.reset();
+  });
+  EXPECT_CALL(observer1, OnOcclusionStateChanged(false));
+  EXPECT_CALL(observer2, OnOcclusionStateChanged(false));
+
+  // Move occludable_widget1 under the PiP widget, triggering
+  // UpdateAllObserverStates(). Note that occludable_widget1 is moving, not
+  // picture_in_picture_widget, so picture_in_picture_widget is not on the call
+  // stack when destroyed.
+  occludable_widget1->SetBounds({50, 50, 200, 200});
+  WaitForBoundsChangedDebounce();
+}
+
+TEST_F(PictureInPictureOcclusionTrackerTest,
+       AddingObserversDuringUpdateAllObserverStatesDoesNotCrash) {
+  MockPictureInPictureOcclusionObserver observer1;
+  ScopedPictureInPictureOcclusionObservation observation1(&observer1);
+  MockPictureInPictureOcclusionObserver observer2;
+  ScopedPictureInPictureOcclusionObservation observation2(&observer2);
+
+  std::unique_ptr<views::Widget> picture_in_picture_widget =
+      CreatePictureInPictureWidget();
+  picture_in_picture_widget->SetBounds({0, 0, 50, 50});
+
+  std::unique_ptr<views::Widget> occludable_widget1 =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  occludable_widget1->Show();
+  occludable_widget1->SetBounds({100, 100, 50, 50});
+
+  std::unique_ptr<views::Widget> occludable_widget2 =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  occludable_widget2->Show();
+  occludable_widget2->SetBounds({200, 200, 50, 50});
+
+  EXPECT_CALL(observer1, OnOcclusionStateChanged(false));
+  observation1.Observe(occludable_widget1.get());
+  EXPECT_CALL(observer2, OnOcclusionStateChanged(false));
+  observation2.Observe(occludable_widget2.get());
+  testing::Mock::VerifyAndClearExpectations(&observer1);
+  testing::Mock::VerifyAndClearExpectations(&observer2);
+
+  WaitForBoundsChangedDebounce();
+
+  std::vector<std::unique_ptr<views::Widget>> new_widgets;
+  std::vector<std::unique_ptr<MockPictureInPictureOcclusionObserver>>
+      new_observers;
+  std::vector<std::unique_ptr<ScopedPictureInPictureOcclusionObservation>>
+      new_observations;
+
+  // When observer1 is notified of occlusion, synchronously add 50 new observed
+  // widgets. This forces observed_widget_data_ (a base::flat_map) to reallocate
+  // its internal vector during iteration.
+  EXPECT_CALL(observer1, OnOcclusionStateChanged(true)).WillOnce([&]() {
+    for (int i = 0; i < 50; ++i) {
+      auto widget =
+          CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+      widget->Show();
+      auto obs = std::make_unique<MockPictureInPictureOcclusionObserver>();
+      auto observation =
+          std::make_unique<ScopedPictureInPictureOcclusionObservation>(
+              obs.get());
+      observation->Observe(widget.get());
+      new_widgets.push_back(std::move(widget));
+      new_observers.push_back(std::move(obs));
+      new_observations.push_back(std::move(observation));
+    }
+  });
+  EXPECT_CALL(observer2, OnOcclusionStateChanged(true));
+
+  picture_in_picture_widget->SetBounds({0, 0, 500, 500});
+  WaitForBoundsChangedDebounce();
+}
+
 }  // namespace

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
@@ -181,6 +182,16 @@ class PictureInPictureOcclusionTracker : public views::WidgetObserver {
   // Used to ensure that frequent `OnWidgetBoundsChanged()` calls from dragging
   // a window don't calculate occlusion too often.
   base::OneShotTimer bounds_changed_throttle_timer_;
+
+  // True if we are currently notifying observers in
+  // `UpdateAllObserverStates()`.
+  bool is_updating_observer_states_ = false;
+
+  // True if a task to run `UpdateAllObserverStates()` has already been posted
+  // to handle re-entrant update requests.
+  bool has_scheduled_reupdate_ = false;
+
+  base::WeakPtrFactory<PictureInPictureOcclusionTracker> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_OCCLUSION_TRACKER_H_

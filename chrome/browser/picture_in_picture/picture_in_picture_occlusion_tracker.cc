@@ -4,6 +4,8 @@
 
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 
+#include "base/auto_reset.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 
 namespace {
@@ -285,9 +287,39 @@ void PictureInPictureOcclusionTracker::UnobserveWidgetAndParents(
 }
 
 void PictureInPictureOcclusionTracker::UpdateAllObserverStates() {
+  if (is_updating_observer_states_) {
+    if (!has_scheduled_reupdate_) {
+      has_scheduled_reupdate_ = true;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &PictureInPictureOcclusionTracker::UpdateAllObserverStates,
+              weak_factory_.GetWeakPtr()));
+    }
+    return;
+  }
+
+  base::AutoReset<bool> auto_reset(&is_updating_observer_states_, true);
+  has_scheduled_reupdate_ = false;
+
+  // Snapshot widgets to update using WeakPtrs to protect against deletion
+  // or container reallocation during observer callbacks.
+  std::vector<base::WeakPtr<views::Widget>> widgets_to_update;
+  widgets_to_update.reserve(observed_widget_data_.size());
   for (const auto& [widget, observed_widget_data] : observed_widget_data_) {
     if (observed_widget_data.number_of_direct_observers > 0) {
-      UpdateObserverStateForWidget(widget);
+      widgets_to_update.push_back(widget->GetWeakPtr());
+    }
+  }
+
+  for (const auto& weak_widget : widgets_to_update) {
+    if (!weak_widget) {
+      continue;
+    }
+    auto iter = observed_widget_data_.find(weak_widget.get());
+    if (iter != observed_widget_data_.end() &&
+        iter->second.number_of_direct_observers > 0) {
+      UpdateObserverStateForWidget(weak_widget.get());
     }
   }
 }
@@ -295,6 +327,7 @@ void PictureInPictureOcclusionTracker::UpdateAllObserverStates() {
 void PictureInPictureOcclusionTracker::UpdateObserverStateForWidget(
     views::Widget* widget,
     bool force_update) {
+  base::WeakPtr<views::Widget> weak_widget = widget->GetWeakPtr();
   const gfx::Rect observer_bounds = widget->GetWindowBoundsInScreen();
   bool occluded = false;
   for (const auto& [picture_in_picture_widget, observed_widget_data] :
@@ -335,7 +368,10 @@ void PictureInPictureOcclusionTracker::UpdateObserverStateForWidget(
     occluded = iter->second.forced_occlusion_state.value();
   }
   for (auto& observer : observers_) {
-    if (observer.occludable_widget() == widget) {
+    if (!weak_widget) {
+      break;
+    }
+    if (observer.occludable_widget() == weak_widget.get()) {
       observer.occlusion_observer()->OnOcclusionStateChanged(occluded);
     }
   }
