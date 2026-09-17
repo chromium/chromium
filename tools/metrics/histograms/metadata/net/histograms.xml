@@ -273,6 +273,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="TpmCommand">
   <variant name="Create" summary="TPM2_Create"/>
+  <variant name="CreatePrimary" summary="TPM2_CreatePrimary"/>
   <variant name="FlushContext" summary="TPM2_FlushContext"/>
   <variant name="Hash" summary="TPM2_Hash"/>
   <variant name="HashSequenceStart" summary="TPM2_HashSequenceStart"/>

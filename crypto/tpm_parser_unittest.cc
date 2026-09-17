@@ -91,6 +91,30 @@ std::vector<uint8_t> BuildTpmEcdsaSignature(TpmAlgHash hash_alg,
   return tpm_sig;
 }
 
+std::vector<uint8_t> BuildFakeCreatePrimaryResponse(
+    uint32_t object_handle,
+    TpmSt tag = TPM_ST_SESSIONS,
+    uint32_t response_code = 0) {
+  uint32_t resp_size = 10;
+  if (response_code == 0) {
+    resp_size += 4 + 4;  // objectHandle + parameterSize
+  }
+
+  std::vector<uint8_t> resp(resp_size);
+  base::SpanWriter<uint8_t> writer(resp);
+  writer.WriteEnumBigEndian(response_code == 0 ? tag : TPM_ST_NO_SESSIONS);
+  writer.WriteU32BigEndian(resp_size);
+  writer.WriteU32BigEndian(response_code);
+
+  if (response_code == 0) {
+    writer.WriteU32BigEndian(object_handle);
+    // The remaining parameters are not read by the parser.
+    writer.WriteU32BigEndian(0);
+  }
+
+  CHECK_EQ(writer.remaining(), 0u);
+  return resp;
+}
 
 std::vector<uint8_t> BuildFakeFlushContextResponse(uint32_t response_code = 0) {
   uint32_t resp_size = 10;
@@ -610,6 +634,7 @@ TEST(TpmCppParserTest, ParseTpmSignature_MalformedBlob) {
 
 TEST(TpmCppParserTest, TpmCommandStringify) {
   EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kCreate), "Create");
+  EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kCreatePrimary), "CreatePrimary");
   EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kFlushContext), "FlushContext");
   EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kHash), "Hash");
   EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kHashSequenceStart),
@@ -623,6 +648,7 @@ TEST(TpmCppParserTest, TpmCommandStringify) {
 
 TEST(TpmCppParserTest, ResponseStructCommandConstants) {
   static_assert(CreateResponse::kCommand == TpmCommand::kCreate);
+  static_assert(CreatePrimaryResponse::kCommand == TpmCommand::kCreatePrimary);
   static_assert(FlushContextResponse::kCommand == TpmCommand::kFlushContext);
   static_assert(HashResponse::kCommand == TpmCommand::kHash);
   static_assert(HashSequenceStartResponse::kCommand ==
@@ -906,6 +932,42 @@ TEST(TpmCppParserTest, ParseCreateResponse_TpmError) {
   EXPECT_THAT(
       ParseCreateResponse(resp),
       ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x100)));
+}
+
+TEST(TpmCppParserTest, BuildCreatePrimaryEccSrkCommand) {
+  std::vector<uint8_t> cmd = BuildCreatePrimaryEccSrkCommand();
+  EXPECT_EQ(cmd.size(), 67u);
+
+  base::SpanReader<const uint8_t> reader(cmd);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmSt>(), TPM_ST_SESSIONS);
+  EXPECT_EQ(reader.ReadU32BigEndian(), 67u);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmCc>(), TPM_CC_CREATE_PRIMARY);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmRh>(), TPM_RH_OWNER);
+}
+
+TEST(TpmCppParserTest, ParseCreatePrimaryResponse_Success) {
+  constexpr uint32_t kObjectHandle = 0x80FFFFFF;
+  std::vector<uint8_t> resp = BuildFakeCreatePrimaryResponse(kObjectHandle);
+
+  EXPECT_THAT(ParseCreatePrimaryResponse(resp),
+              ValueIs(CreatePrimaryResponse{.object_handle = kObjectHandle}));
+}
+
+TEST(TpmCppParserTest, ParseCreatePrimaryResponse_WrongType) {
+  std::vector<uint8_t> resp =
+      BuildFakeCreatePrimaryResponse(0x80FFFFFF, TPM_ST_NO_SESSIONS);
+
+  EXPECT_THAT(ParseCreatePrimaryResponse(resp),
+              ErrorIs(TpmParseError(TpmParseError::Type::kWrongType)));
+}
+
+TEST(TpmCppParserTest, ParseCreatePrimaryResponse_TpmError) {
+  std::vector<uint8_t> resp =
+      BuildFakeCreatePrimaryResponse(0x80FFFFFF, TPM_ST_SESSIONS, 0x08B);
+
+  EXPECT_THAT(
+      ParseCreatePrimaryResponse(resp),
+      ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x08B)));
 }
 
 }  // namespace crypto::tpm

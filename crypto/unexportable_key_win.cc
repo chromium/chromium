@@ -697,6 +697,7 @@ bool IsTpm20Available() {
 std::optional<TPMOperation> TpmCommandToOperation(tpm::TpmCommand command) {
   switch (command) {
     case tpm::TpmCommand::kCreate:
+    case tpm::TpmCommand::kCreatePrimary:
       return TPMOperation::kNewAttestationKeyCreation;
     case tpm::TpmCommand::kSign:
       return TPMOperation::kRestrictedMessageSigning;

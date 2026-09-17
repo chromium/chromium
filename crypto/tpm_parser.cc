@@ -213,6 +213,22 @@ TpmParseErrorOr<CreateResponse> ParseCreateResponse(
   });
 }
 
+std::vector<uint8_t> BuildCreatePrimaryEccSrkCommand() {
+  return base::ToVector(build_create_primary_ecc_srk_command());
+}
+
+TpmParseErrorOr<CreatePrimaryResponse> ParseCreatePrimaryResponse(
+    base::span<const uint8_t> response_blob) {
+  RawCreatePrimaryResponse raw_response =
+      parse_create_primary_response(base::SpanToRustSlice(response_blob));
+
+  return MapResponseStatus(raw_response.status).transform([&] {
+    return CreatePrimaryResponse{
+        .object_handle = raw_response.object_handle,
+    };
+  });
+}
+
 std::vector<uint8_t> BuildFlushContextCommand(uint32_t handle) {
   return base::ToVector(build_flush_context_command(handle));
 }

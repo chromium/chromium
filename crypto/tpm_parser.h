@@ -38,6 +38,7 @@ using enum TpmSt;
 // Enumerates the TPM 2.0 commands implemented by this module.
 enum class TpmCommand {
   kCreate,             // TPM2_Create
+  kCreatePrimary,      // TPM2_CreatePrimary
   kFlushContext,       // TPM2_FlushContext
   kHash,               // TPM2_Hash
   kHashSequenceStart,  // TPM2_HashSequenceStart
@@ -51,6 +52,9 @@ void AbslStringify(Sink& sink, TpmCommand command) {
   switch (command) {
     case TpmCommand::kCreate:
       sink.Append("Create");
+      return;
+    case TpmCommand::kCreatePrimary:
+      sink.Append("CreatePrimary");
       return;
     case TpmCommand::kFlushContext:
       sink.Append("FlushContext");
@@ -147,6 +151,18 @@ struct CRYPTO_EXPORT CreateResponse {
                          const CreateResponse&) = default;
 };
 
+// Response components extracted from a parsed TPM2_CreatePrimary response.
+struct CRYPTO_EXPORT CreatePrimaryResponse {
+  static constexpr auto kCommand = TpmCommand::kCreatePrimary;
+
+  // Handle of the transient primary object created by the TPM. The caller owns
+  // the object and has to release it with TPM2_FlushContext.
+  uint32_t object_handle = 0;
+
+  friend bool operator==(const CreatePrimaryResponse&,
+                         const CreatePrimaryResponse&) = default;
+};
+
 // Response from parsing a TPM2_FlushContext response.
 struct CRYPTO_EXPORT FlushContextResponse {
   static constexpr auto kCommand = TpmCommand::kFlushContext;
@@ -226,6 +242,25 @@ CRYPTO_EXPORT std::optional<std::vector<uint8_t>> BuildCreateAikCommand(
 // If the TPM returns an error code, an error of type `kTpmErrorResponse` will
 // be returned containing the error code.
 CRYPTO_EXPORT TpmParseErrorOr<CreateResponse> ParseCreateResponse(
+    base::span<const uint8_t> response_blob);
+
+// Builds a serialized TPM2_CreatePrimary command buffer for the ECC Storage
+// Root Key, created under the owner hierarchy.
+//
+// The template is fixed to ECC P-256 with SHA-256 and AES-128-CFB storage
+// parameters, so the command takes no parameters: it reproduces the key that
+// the Platform Crypto Provider persists at handle 0x81000009.
+//
+// The resulting object is transient. The caller owns the handle returned in the
+// response and has to release it with TPM2_FlushContext.
+CRYPTO_EXPORT std::vector<uint8_t> BuildCreatePrimaryEccSrkCommand();
+
+// Parses a serialized TPM2_CreatePrimary response and extracts the handle of
+// the created transient object.
+//
+// If the TPM returns an error code, an error of type `kTpmErrorResponse` will
+// be returned containing the error code, and no handle will be extracted.
+CRYPTO_EXPORT TpmParseErrorOr<CreatePrimaryResponse> ParseCreatePrimaryResponse(
     base::span<const uint8_t> response_blob);
 
 // Builds a serialized TPM2_FlushContext command buffer.
