@@ -79,7 +79,7 @@ bool CopyBefore(const CBS& outer, const CBS& inner, CBB* out) {
            UNSAFE_TODO(CBS_data(&outer) + CBS_len(&outer)));
 
   return !!CBB_add_bytes(out, CBS_data(&outer),
-                         UNSAFE_TODO(CBS_data(&inner) - CBS_data(&outer)));
+                         CBS_data(&inner) - CBS_data(&outer));
 }
 
 // Copies all the bytes in |outer| which are after |inner| to |out|. |inner|

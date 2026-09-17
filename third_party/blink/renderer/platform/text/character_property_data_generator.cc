@@ -523,7 +523,7 @@ class LineBreakData {
       if (ch != kMinChar && (ch - kMinChar) % 8 == 0) {
         fprintf(fp, "   ");
       }
-      UNSAFE_TODO(fprintf(fp, ch < 0x7F ? " %c" : "%02X", ch));
+      fprintf(fp, ch < 0x7F ? " %c" : "%02X", ch);
     }
     fprintf(fp, " */\n");
 

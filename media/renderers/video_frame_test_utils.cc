@@ -212,7 +212,7 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
         for (int x = 0; x < coded_size.width() / 4; ++x) {
           y_pixels[y_i++] = yuv[0];
           if ((x % 2) && (y % 2)) {
-            UNSAFE_TODO(uv_pixels[uv_i++]) = UNSAFE_TODO(yuv[1]);
+            uv_pixels[uv_i++] = UNSAFE_TODO(yuv[1]);
             uv_pixels[uv_i++] = UNSAFE_TODO(yuv[2]);
           }
         }

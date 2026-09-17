@@ -350,7 +350,7 @@ bool TreeComposeChecker::Find(uint16_t index,
     }
   };
   const TableEntry* a =
-      reinterpret_cast<const TableEntry*>(&UNSAFE_TODO(data_->tree[index]));
+      reinterpret_cast<const TableEntry*>(&data_->tree[index]);
   const TableEntry* z = UNSAFE_TODO(a + size);
   const TableEntry target = {key, 0};
   const TableEntry* it = std::lower_bound(a, z, target);

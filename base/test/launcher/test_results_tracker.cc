@@ -294,17 +294,16 @@ TestResultsTracker::~TestResultsTracker() {
             FormatTimeAsIso8601(Time::Now()).c_str());
 
     for (const TestResult& result : results) {
-      UNSAFE_TODO(fprintf(
-          out_.get(),
-          "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
-          "%s classname=\"%s\">\n",
-          result.GetTestName().c_str(), result.elapsed_time.InSecondsF(),
-          (result.timestamp
-               ? StrCat({" timestamp=\"",
-                         FormatTimeAsIso8601(*result.timestamp), "\""})
-                     .c_str()
-               : ""),
-          result.GetTestCaseName().c_str()));
+      fprintf(out_.get(),
+              "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
+              "%s classname=\"%s\">\n",
+              result.GetTestName().c_str(), result.elapsed_time.InSecondsF(),
+              (result.timestamp
+                   ? StrCat({" timestamp=\"",
+                             FormatTimeAsIso8601(*result.timestamp), "\""})
+                         .c_str()
+                   : ""),
+              result.GetTestCaseName().c_str());
       if (result.status != TestResult::TEST_SUCCESS) {
         // The actual failure message is not propagated up to here, as it's too
         // much work to escape it properly, and in case of failure, almost
@@ -704,8 +703,8 @@ void TestResultsTracker::PrintTests(InputIterator first,
     return;
   }
 
-  UNSAFE_TODO(fprintf(stdout, "%" PRIuS " test%s %s:\n", count,
-                      count != 1 ? "s" : "", description.c_str()));
+  fprintf(stdout, "%" PRIuS " test%s %s:\n", count, count != 1 ? "s" : "",
+          description.c_str());
   for (InputIterator it = first; it != last; ++it) {
     const std::string& test_name = *it;
     const auto location_it = test_locations_.find(test_name);

@@ -54,8 +54,7 @@ void OverflowTestsSoftExpectTrue(bool overflow_detected) {
     BUILDFLAG(IS_APPLE)
     // Sadly, on Linux, Android, and OSX we don't have a good story yet. Don't
     // fail the test, but report.
-    UNSAFE_TODO(printf("Platform has overflow: %s\n",
-                       !overflow_detected ? "yes." : "no."));
+    printf("Platform has overflow: %s\n", !overflow_detected ? "yes." : "no.");
 #else
     // Otherwise, fail the test. (Note: EXPECT are ok in subfunctions, ASSERT
     // aren't).

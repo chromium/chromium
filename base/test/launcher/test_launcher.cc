@@ -2245,9 +2245,8 @@ bool TestLauncher::RunRetryTests() {
       return false;
     }
 
-    UNSAFE_TODO(fprintf(stdout, "Retrying %zu test%s (retry #%zu)\n",
-                        retry_started_count, retry_started_count > 1 ? "s" : "",
-                        retry_limit_ - retries_left_));
+    fprintf(stdout, "Retrying %zu test%s (retry #%zu)\n", retry_started_count,
+            retry_started_count > 1 ? "s" : "", retry_limit_ - retries_left_);
     fflush(stdout);
 
     --retries_left_;

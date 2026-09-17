@@ -277,9 +277,9 @@ bool Vp8Parser::ParseSegmentationHeader(bool keyframe) {
       bool loop_filter_update;
       BD_READ_BOOL_OR_RETURN(&loop_filter_update);
       if (loop_filter_update)
-        UNSAFE_TODO(BD_READ_SIGNED_OR_RETURN(6, &shdr->lf_update_value[i]));
+        BD_READ_SIGNED_OR_RETURN(6, &shdr->lf_update_value[i]);
       else
-        UNSAFE_TODO(shdr->lf_update_value[i]) = 0;
+        shdr->lf_update_value[i] = 0;
     }
   }
 
@@ -288,10 +288,9 @@ bool Vp8Parser::ParseSegmentationHeader(bool keyframe) {
       bool segment_prob_update;
       BD_READ_BOOL_OR_RETURN(&segment_prob_update);
       if (segment_prob_update)
-        UNSAFE_TODO(BD_READ_UNSIGNED_OR_RETURN(8, &shdr->segment_prob[i]));
+        BD_READ_UNSIGNED_OR_RETURN(8, &shdr->segment_prob[i]);
       else
-        UNSAFE_TODO(shdr->segment_prob[i]) =
-            Vp8SegmentationHeader::kDefaultSegmentProb;
+        shdr->segment_prob[i] = Vp8SegmentationHeader::kDefaultSegmentProb;
     }
   }
 
@@ -318,14 +317,14 @@ bool Vp8Parser::ParseLoopFilterHeader(bool keyframe) {
         bool ref_frame_delta_update_flag;
         BD_READ_BOOL_OR_RETURN(&ref_frame_delta_update_flag);
         if (ref_frame_delta_update_flag)
-          UNSAFE_TODO(BD_READ_SIGNED_OR_RETURN(6, &lfhdr->ref_frame_delta[i]));
+          BD_READ_SIGNED_OR_RETURN(6, &lfhdr->ref_frame_delta[i]);
       }
 
       for (size_t i = 0; i < kNumBlockContexts; ++i) {
         bool mb_mode_delta_update_flag;
         BD_READ_BOOL_OR_RETURN(&mb_mode_delta_update_flag);
         if (mb_mode_delta_update_flag)
-          UNSAFE_TODO(BD_READ_SIGNED_OR_RETURN(6, &lfhdr->mb_mode_delta[i]));
+          BD_READ_SIGNED_OR_RETURN(6, &lfhdr->mb_mode_delta[i]);
       }
     }
   }
@@ -760,11 +759,11 @@ bool Vp8Parser::ParseTokenProbs(Vp8EntropyHeader* ehdr,
       for (size_t k = 0; k < kNumPrevCoeffContexts; ++k) {
         for (size_t l = 0; l < kNumEntropyNodes; ++l) {
           bool coeff_prob_update_flag;
-          UNSAFE_TODO(BD_READ_BOOL_WITH_PROB_OR_RETURN(
-              &coeff_prob_update_flag, kCoeffUpdateProbs[i][j][k][l]));
+          BD_READ_BOOL_WITH_PROB_OR_RETURN(&coeff_prob_update_flag,
+                                           kCoeffUpdateProbs[i][j][k][l]);
           if (coeff_prob_update_flag)
-            UNSAFE_TODO(
-                BD_READ_UNSIGNED_OR_RETURN(8, &ehdr->coeff_probs[i][j][k][l]));
+
+            BD_READ_UNSIGNED_OR_RETURN(8, &ehdr->coeff_probs[i][j][k][l]);
         }
       }
     }
@@ -789,7 +788,7 @@ bool Vp8Parser::ParseIntraProbs(Vp8EntropyHeader* ehdr,
     BD_READ_BOOL_OR_RETURN(&intra_16x16_prob_update_flag);
     if (intra_16x16_prob_update_flag) {
       for (size_t i = 0; i < kNumYModeProbs; ++i)
-        UNSAFE_TODO(BD_READ_UNSIGNED_OR_RETURN(8, &ehdr->y_mode_probs[i]));
+        BD_READ_UNSIGNED_OR_RETURN(8, &ehdr->y_mode_probs[i]);
 
       if (update_curr_probs) {
         curr_entropy_hdr_.y_mode_probs = ehdr->y_mode_probs;
@@ -800,7 +799,7 @@ bool Vp8Parser::ParseIntraProbs(Vp8EntropyHeader* ehdr,
     BD_READ_BOOL_OR_RETURN(&intra_chroma_prob_update_flag);
     if (intra_chroma_prob_update_flag) {
       for (size_t i = 0; i < kNumUVModeProbs; ++i)
-        UNSAFE_TODO(BD_READ_UNSIGNED_OR_RETURN(8, &ehdr->uv_mode_probs[i]));
+        BD_READ_UNSIGNED_OR_RETURN(8, &ehdr->uv_mode_probs[i]);
 
       if (update_curr_probs) {
         curr_entropy_hdr_.uv_mode_probs = ehdr->uv_mode_probs;
@@ -820,7 +819,7 @@ bool Vp8Parser::ParseMVProbs(Vp8EntropyHeader* ehdr, bool update_curr_probs) {
       if (mv_prob_update_flag) {
         uint8_t prob;
         BD_READ_UNSIGNED_OR_RETURN(7, &prob);
-        UNSAFE_TODO(ehdr->mv_probs[mv_ctx][p]) = prob ? (prob << 1) : 1;
+        ehdr->mv_probs[mv_ctx][p] = prob ? (prob << 1) : 1;
       }
     }
   }
