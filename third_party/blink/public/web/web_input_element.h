@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_INPUT_ELEMENT_H_
 
 #include "build/build_config.h"
-#include "third_party/blink/public/common/webid/email_verification_state.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 
@@ -84,8 +83,6 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
 
   // Returns true if the text of the element should be visible.
   bool ShouldRevealPassword() const;
-
-  void SetEmailVerificationState(EmailVerificationState state);
 
   // Triggers a form submission.
   void DispatchSimulatedEnter();

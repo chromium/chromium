@@ -147,11 +147,6 @@ interface AutofillAgent {
                              string email,
                              string token);
 
-  // Notifies the renderer of a change in the email verification state for the
-  // given email field.
-  UpdateEmailVerificationState(
-      FieldRendererId email_field_id, EmailVerificationState state);
-
   // Starts observing the visibility of the field identified by `field_id`.
   // The `observer` will be notified when the field becomes visible (e.g.,
   // meets the 800ms visibility condition). Only one field can be actively

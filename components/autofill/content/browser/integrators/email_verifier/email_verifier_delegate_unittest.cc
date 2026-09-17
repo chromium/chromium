@@ -87,11 +87,6 @@ class MockAutofillDriver : public TestContentAutofillDriver {
                const std::string& email,
                const std::string& presentation_token),
               (override));
-  MOCK_METHOD(void,
-              UpdateEmailVerificationState,
-              (const FieldGlobalId& email_field_id,
-               mojom::EmailVerificationState state),
-              (override));
 };
 
 class MockEmailVerifierDelegateObserver
@@ -271,14 +266,6 @@ class EmailVerifierDelegateTestBase
     const bool is_accepted =
         ui_status ==
         AutofillClient::EmailVerificationPermissionUiStatus::kAllowed;
-    EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                              form.field(0)->global_id(),
-                              mojom::EmailVerificationState::kLoading))
-        .Times(is_accepted ? 2 : 1);
-    EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                              form.field(0)->global_id(),
-                              mojom::EmailVerificationState::kNone))
-        .Times(is_accepted ? 1 : 2);
 
     if (is_accepted) {
       EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
@@ -290,9 +277,6 @@ class EmailVerifierDelegateTestBase
       EXPECT_CALL(driver(),
                   SendEmailVerificationToken(form.field(0)->global_id(), email,
                                              "test_token"));
-      EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                                form.field(0)->global_id(),
-                                mojom::EmailVerificationState::kVerified));
     } else {
       EXPECT_CALL(email_verifier(), Verify).Times(0);
       EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
@@ -952,11 +936,6 @@ TEST_F(EmailVerifierDelegateTest, NotSignedInAddsStrike) {
   EmailVerificationNotSignedInStrikeDatabase not_signed_in_strike_db(
       client().GetStrikeDatabase());
 
-  EXPECT_CALL(driver(),
-              UpdateEmailVerificationState(
-                  form->field(0)->global_id(),
-                  mojom::EmailVerificationState::kLoggedOutOrUnsupported));
-
   TriggerDefaultFormFill(*form);
 
   // 1 strike added to not-signed-in strike database.
@@ -1113,11 +1092,6 @@ TEST_F(EmailVerifierDelegateTest, ClearsNotSignedInStrikesWhenAlreadyAllowed) {
 
   EXPECT_CALL(driver(),
               SendEmailVerificationToken(field_id, email, "test_token"));
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            field_id, mojom::EmailVerificationState::kLoading));
-  EXPECT_CALL(driver(),
-              UpdateEmailVerificationState(
-                  field_id, mojom::EmailVerificationState::kVerified));
 
   TriggerDefaultFormFill(*form);
 
@@ -1536,11 +1510,11 @@ TEST_F(EmailVerifierDelegateTest, PageNavigatedDuringVerification) {
 }
 
 // Verifies that if a page navigation occurs while DNS lookup is in-flight,
-// OnDnsCheckPassed does not set kLoading on the driver.
+// the flow records kPageNavigatedDuringCheckIfVerifiable and subsequent
+// callbacks are safely ignored.
 TEST_F(EmailVerifierDelegateTest, PageNavigatedDuringDnsLookup) {
   base::HistogramTester histogram_tester;
   FormStructure* form = SetUpValidForm();
-  FieldGlobalId field_id = form->field(0)->global_id();
 
   base::OnceClosure saved_dns_callback;
   EmailVerifier::IsVerifiableCallback saved_is_verifiable_callback;
@@ -1551,10 +1525,6 @@ TEST_F(EmailVerifierDelegateTest, PageNavigatedDuringDnsLookup) {
         saved_is_verifiable_callback = std::move(callback);
       });
 
-  // Ensure loading state is never set on driver.
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            field_id, mojom::EmailVerificationState::kLoading))
-      .Times(0);
 
   TriggerDefaultFormFill(*form);
 
@@ -1570,8 +1540,7 @@ TEST_F(EmailVerifierDelegateTest, PageNavigatedDuringDnsLookup) {
       "Blink.Evp.Autofill.FlowResult",
       EvpAutofillFlowResult::kPageNavigatedDuringCheckIfVerifiable, 1);
 
-  // When DNS resolution completes after navigation, it must NOT update the
-  // state.
+  // When DNS resolution completes after navigation, it is safely ignored.
   std::move(saved_dns_callback).Run();
 
   // When CheckIfVerifiable completes, it should also be a no-op.
@@ -1811,23 +1780,9 @@ TEST_F(EmailVerifierDelegateTest,
   checkpoint.Call(4);
 }
 
-// Verifies that when email verification is triggered on a form fill, the
-// delegate notifies the driver to show a loading state on the email
-// field after the DNS check passes.
-TEST_F(EmailVerifierDelegateTest, UpdateEmailVerificationStateLoading) {
-  FormStructure* form = SetUpValidForm();
-
-  SetUpVerificationExpectations(*form);
-
-  TriggerDefaultFormFill(*form);
-
-  popup_shown_run_loop_.Run();
-}
-
 // Verifies that when the verification check determines the user is logged out
-// (not verifiable), the delegate updates the state to kLoggedOutOrUnsupported.
-TEST_F(EmailVerifierDelegateTest,
-       UpdateEmailVerificationStateLoggedOutOrUnsupported) {
+// (not verifiable), the flow records kNotVerifiable.
+TEST_F(EmailVerifierDelegateTest, FlowResultLoggedOutOrUnsupported) {
   base::HistogramTester histogram_tester;
   FormStructure* form = SetUpValidForm();
 
@@ -1837,20 +1792,15 @@ TEST_F(EmailVerifierDelegateTest,
           blink::mojom::EmailVerificationRequestResult::kUserLoggedOut,
           base::Milliseconds(100)));
 
-  EXPECT_CALL(driver(),
-              UpdateEmailVerificationState(
-                  form->field(0)->global_id(),
-                  mojom::EmailVerificationState::kLoggedOutOrUnsupported));
-
   TriggerDefaultFormFill(*form);
 
   histogram_tester.ExpectUniqueSample("Blink.Evp.Autofill.FlowResult",
                                       EvpAutofillFlowResult::kNotVerifiable, 1);
 }
 
-// Verifies that when the verification request fails, the delegate updates the
-// state to kFailed.
-TEST_F(EmailVerifierDelegateTest, UpdateEmailVerificationStateFailed) {
+// Verifies that when the verification request fails, the flow records
+// kVerificationFailed.
+TEST_F(EmailVerifierDelegateTest, FlowResultFailed) {
   base::HistogramTester histogram_tester;
   FormStructure* form = SetUpValidForm();
 
@@ -1864,21 +1814,6 @@ TEST_F(EmailVerifierDelegateTest, UpdateEmailVerificationStateFailed) {
             blink::mojom::EmailVerificationRequestResult::kSuccess,
             base::Milliseconds(100));
       });
-
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            form->field(0)->global_id(),
-                            mojom::EmailVerificationState::kLoading))
-      .Times(2);
-
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            form->field(0)->global_id(),
-                            mojom::EmailVerificationState::kNone))
-      .Times(1);
-
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            form->field(0)->global_id(),
-                            mojom::EmailVerificationState::kFailed))
-      .Times(1);
 
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
       .WillOnce(RunOnceCallback<3>(
@@ -2170,55 +2105,9 @@ TEST_F(EmailVerifierDelegateTest, UkmMetricsRecorded) {
       ukm::GetExponentialBucketMinForUserTiming(200));
 }
 
-// Verifies that the loading indicator is shown immediately after DNS check
-// passes, before accounts fetch and ShowEmailVerificationPopup.
-TEST_F(EmailVerifierDelegateTest,
-       UpdateEmailVerificationState_DnsResolvedShowsLoading) {
-  FormStructure* form = SetUpValidForm();
-  FieldGlobalId field_id = form->field(0)->global_id();
-
-  base::OnceClosure saved_dns_callback;
-  EmailVerifier::IsVerifiableCallback saved_is_verifiable_callback;
-  EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _, _))
-      .WillOnce([&](const std::string&, base::OnceClosure on_dns_resolved,
-                    EmailVerifier::IsVerifiableCallback is_verifiable_cb) {
-        saved_dns_callback = std::move(on_dns_resolved);
-        saved_is_verifiable_callback = std::move(is_verifiable_cb);
-      });
-
-  // Initially before DNS check finishes, no loading state is set.
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            field_id, mojom::EmailVerificationState::kLoading))
-      .Times(0);
-
-  TriggerDefaultFormFill(*form);
-
-  ASSERT_TRUE(saved_dns_callback);
-  ASSERT_TRUE(saved_is_verifiable_callback);
-
-  // When DNS check passes, the delegate shows the loading indicator.
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            field_id, mojom::EmailVerificationState::kLoading))
-      .Times(1);
-  std::move(saved_dns_callback).Run();
-
-  // When CheckIfVerifiable completes, before ShowEmailVerificationPopup is
-  // shown, the indicator is reset to kNone to avoid showing a spinner while
-  // waiting for user input.
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            field_id, mojom::EmailVerificationState::kNone))
-      .Times(1);
-  EXPECT_CALL(client(), ShowEmailVerificationPopup);
-  std::move(saved_is_verifiable_callback)
-      .Run(CreateVerifiableResult(),
-           blink::mojom::EmailVerificationRequestResult::kSuccess,
-           base::Milliseconds(100));
-}
-
 // Verifies that when a user has already allowed EVP (already_allowed == true),
-// the loading indicator is kept continuously without resetting to kNone.
-TEST_F(EmailVerifierDelegateTest,
-       UpdateEmailVerificationState_AlreadyAllowedKeepsLoadingWithoutReset) {
+// the permission popup is skipped and verification is performed directly.
+TEST_F(EmailVerifierDelegateTest, AlreadyAllowedSkipsPopupAndVerifies) {
   FormStructure* form = SetUpValidForm();
   FieldGlobalId field_id = form->field(0)->global_id();
   std::string email = "johndoe@hades.com";
@@ -2243,15 +2132,6 @@ TEST_F(EmailVerifierDelegateTest,
             base::Milliseconds(100));
       });
 
-  // Loading state is set on DNS resolve, and remains active through Verify.
-  // It is never reset to kNone during the flow.
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            field_id, mojom::EmailVerificationState::kNone))
-      .Times(0);
-  EXPECT_CALL(driver(), UpdateEmailVerificationState(
-                            field_id, mojom::EmailVerificationState::kLoading))
-      .Times(2);  // Once on DNS resolve, once in Verify().
-
   EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
 
   EXPECT_CALL(email_verifier(), Verify(_, "test_nonce", _))
@@ -2262,9 +2142,6 @@ TEST_F(EmailVerifierDelegateTest,
 
   EXPECT_CALL(driver(),
               SendEmailVerificationToken(field_id, email, "test_token"));
-  EXPECT_CALL(driver(),
-              UpdateEmailVerificationState(
-                  field_id, mojom::EmailVerificationState::kVerified));
 
   TriggerDefaultFormFill(*form);
 }

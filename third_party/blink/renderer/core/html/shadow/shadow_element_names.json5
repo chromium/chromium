@@ -78,10 +78,6 @@
       Symbol: "kIdTextFieldContainer",
     },
     {
-      name: "email-verification-indicator",
-      Symbol: "kIdEmailVerificationIndicator",
-    },
-    {
       name: "file-upload-button",
       Symbol: "kIdFileUploadButton",
     },
@@ -201,10 +197,6 @@
     {
       name: "-internal-select-inner-element",
       Symbol: "kSelectInnerElement",
-    },
-    {
-      name: "-internal-email-verification-indicator",
-      Symbol: "kPseudoEmailVerificationIndicator",
     },
   ],
 }

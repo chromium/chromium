@@ -615,17 +615,6 @@ enum AutofillSuggestionTriggerSource {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSuggestionTriggerSource)
 
-// LINT.IfChange(EmailVerificationState)
-// Represents the visual verification state of an email input element.
-enum EmailVerificationState {
-  kNone,
-  kLoading,
-  kVerified,
-  kLoggedOutOrUnsupported,
-  kFailed,
-};
-// LINT.ThenChange(//third_party/blink/public/common/webid/email_verification_state.h:EmailVerificationState)
-
 // Represents the type of modification made by JavaScript to a form field's
 // value.
 enum JavaScriptModificationType {

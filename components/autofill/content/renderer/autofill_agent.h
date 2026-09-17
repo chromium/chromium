@@ -232,9 +232,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   void SendEmailVerificationToken(FieldRendererId email_field_id,
                                   const std::string& email,
                                   const std::string& token) override;
-  void UpdateEmailVerificationState(
-      FieldRendererId email_field_id,
-      mojom::EmailVerificationState state) override;
   void ObserveFieldVisibility(
       FieldRendererId field_id,
       mojo::PendingRemote<mojom::AutofillVisibilityObserver> observer) override;

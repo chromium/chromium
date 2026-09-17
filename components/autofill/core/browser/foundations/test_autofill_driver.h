@@ -133,9 +133,6 @@ class TestAutofillDriverTemplate : public T {
   void SendEmailVerificationToken(FieldGlobalId email_field_id,
                                   const std::string& email,
                                   const std::string& token) override {}
-  void UpdateEmailVerificationState(
-      const FieldGlobalId& email_field_id,
-      mojom::EmailVerificationState state) override {}
   void ScrollFieldIntoView(FieldGlobalId field_id) override {}
   bool IsSafeToFill(const FormFieldData& field,
                     FieldType filled_type,

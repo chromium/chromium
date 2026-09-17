@@ -93,16 +93,6 @@ class PasswordRevealButtonElement final : public HTMLDivElement {
   }
 };
 
-class EmailVerificationIndicatorElement final : public HTMLDivElement {
- public:
-  explicit EmailVerificationIndicatorElement(Document&);
-
- private:
-  FocusableState SupportsFocus(UpdateBehavior) const override {
-    return FocusableState::kNotFocusable;
-  }
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TEXT_CONTROL_INNER_ELEMENTS_H_

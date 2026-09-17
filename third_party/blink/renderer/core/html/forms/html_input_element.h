@@ -27,7 +27,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/common/webid/email_verification_state.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -234,7 +233,6 @@ class CORE_EXPORT HTMLInputElement
                                    unsigned end,
                                    ExceptionState&);
 
-  void setNonce(const AtomicString&) final;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const final;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
   void DetachLayoutTree(bool performing_reattach) final;
@@ -363,23 +361,7 @@ class CORE_EXPORT HTMLInputElement
   bool ShouldDrawCapsLockIndicator() const;
   void SetShouldRevealPassword(bool value);
   bool ShouldRevealPassword() const { return should_reveal_password_; }
-  // Sets the logical verification state (e.g. loading, verified, etc.) and
-  // updates the indicator element's DOM attributes.
-  void SetEmailVerificationState(EmailVerificationState state);
-  EmailVerificationState GetEmailVerificationState() const;
 
-  // Re-evaluates whether the indicator is supported by checking for associated
-  // token fields, and updates the data-state attribute of the indicator shadow
-  // element.
-  void UpdateEmailVerificationIndicator();
-
-  // Returns true if this input field has an
-  // autocomplete="email-verification-token" attribute. The nonce is not checked
-  // here because a page can dynamically set/clear the nonce via setNonce(), and
-  // we need to identify the element as a token field to trigger form updates.
-  // Whether verification is supported (which requires a non-empty nonce) is
-  // checked separately in IsEmailVerificationSupported().
-  bool IsEmailVerificationTokenField() const;
   void DispatchSimulatedEnter();
   AXObject* PopupRootAXObject();
   void DidNotifySubtreeInsertionsToDocument() override;
@@ -541,7 +523,6 @@ class CORE_EXPORT HTMLInputElement
   bool RecalcWillValidate() const final;
   void RequiredAttributeChanged() final;
   void DisabledAttributeChanged(DisabledChangedReason) final;
-  void AttributeChanged(const AttributeModificationParams&) final;
 
   void InitializeTypeInParsing();
   void UpdateType(const AtomicString&);

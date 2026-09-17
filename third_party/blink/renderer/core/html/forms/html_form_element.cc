@@ -1227,14 +1227,6 @@ void HTMLFormElement::Associate(ListedElement& e) {
     InvalidateAncestorFormsForAutofill(parentNode());
   }
   ScheduleWebMCPSchemaUpdateIfActive();
-  if (RuntimeEnabledFeatures::EmailVerificationStatusIndicatorEnabled(
-          GetExecutionContext())) {
-    if (auto* input_element = DynamicTo<HTMLInputElement>(e.ToHTMLElement())) {
-      if (input_element->IsEmailVerificationTokenField()) {
-        NotifyEmailVerificationTokenFieldChanged();
-      }
-    }
-  }
 }
 
 void HTMLFormElement::Disassociate(ListedElement& e) {
@@ -1247,14 +1239,6 @@ void HTMLFormElement::Disassociate(ListedElement& e) {
   }
   RemoveFromPastNamesMap(e.ToHTMLElement());
   ScheduleWebMCPSchemaUpdateIfActive();
-  if (RuntimeEnabledFeatures::EmailVerificationStatusIndicatorEnabled(
-          GetExecutionContext())) {
-    if (auto* input_element = DynamicTo<HTMLInputElement>(e.ToHTMLElement())) {
-      if (input_element->IsEmailVerificationTokenField()) {
-        NotifyEmailVerificationTokenFieldChanged();
-      }
-    }
-  }
 }
 
 bool HTMLFormElement::IsURLAttribute(const Attribute& attribute) const {
@@ -1762,17 +1746,6 @@ void HTMLFormElement::ScheduleWebMCPSchemaUpdateIfActive() {
     return;
   }
   ScheduleDeclarativeWebMCPToolRegistration();
-}
-
-void HTMLFormElement::NotifyEmailVerificationTokenFieldChanged() {
-  for (ListedElement* listed_element : ListedElements()) {
-    HTMLElement& html_element = listed_element->ToHTMLElement();
-    if (auto* input_element = DynamicTo<HTMLInputElement>(html_element)) {
-      if (input_element->type() == input_type_names::kEmail) {
-        input_element->UpdateEmailVerificationIndicator();
-      }
-    }
-  }
 }
 
 }  // namespace blink

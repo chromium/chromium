@@ -148,8 +148,6 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     return CollectAndCacheListedElements(/*collect_for_autofill*/ false);
   }
 
-  void NotifyEmailVerificationTokenFieldChanged();
-
   // Returns the contained form control elements associated with `this`, also
   // including descendants of `this` that are form control elements and inside
   // Shadow DOM. The result will contain the form control elements of <form>s

@@ -1177,34 +1177,6 @@ input[type="color" i]::-webkit-color-swatch {
     }
 }
 
-input::-internal-email-verification-indicator {
-    display: none;
-    inline-size: 16px;
-    block-size: 16px;
-    padding: 2px;
-    -webkit-user-modify: read-only !important;
-    cursor: default;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-}
-
-input::-internal-email-verification-indicator[data-state="verified"] {
-    display: inline-block;
-    background-image: url("images/email_verification_verified.svg");
-}
-
-input::-internal-email-verification-indicator[data-state="loading"] {
-    display: inline-block;
-    background-image: url("images/email_verification_loading.svg");
-    animation: -internal-email-verification-spin 1s linear infinite;
-}
-
-@keyframes -internal-email-verification-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
 input::-webkit-calendar-picker-indicator {
     display: inline-block;
     inline-size: 0.66em;

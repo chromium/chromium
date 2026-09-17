@@ -105,15 +105,6 @@ void EmailVerificationHandler::StoreEmailVerificationToken(
       TokenInfo{.token = token,
                 .token_field_id = form_util::GetFieldRendererId(token_element),
                 .email = email};
-
-  blink::WebInputElement input_element =
-      form_util::GetFormControlByRendererId(email_field_id)
-          .DynamicTo<blink::WebInputElement>();
-  if (!input_element) {
-    return;
-  }
-  input_element.SetEmailVerificationState(
-      blink::EmailVerificationState::kVerified);
 }
 
 void EmailVerificationHandler::WillSendSubmitEvent(

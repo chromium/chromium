@@ -341,10 +341,7 @@ class AutofillDriverRouter {
       const FieldGlobalId& email_field_id,
       const std::string& email,
       const std::string& token);
-  void UpdateEmailVerificationState(
-      RoutedCallback<FieldRendererId, mojom::EmailVerificationState> callback,
-      const FieldGlobalId& email_field_id,
-      mojom::EmailVerificationState state);
+
   void ExposeDomNodeIdsInAllFrames(RoutedCallback<> callback);
   using BrowserFormHandler = AutofillDriver::BrowserFormHandler;
   using RendererFormHandler =

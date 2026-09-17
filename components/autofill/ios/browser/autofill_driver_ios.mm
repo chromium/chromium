@@ -913,13 +913,6 @@ void AutofillDriverIOS::SendEmailVerificationToken(FieldGlobalId email_field_id,
   NOTIMPLEMENTED();
 }
 
-void AutofillDriverIOS::UpdateEmailVerificationState(
-    const FieldGlobalId& email_field_id,
-    mojom::EmailVerificationState state) {
-  // TODO(crbug.com/380367784): Implement email verification on iOS.
-  NOTIMPLEMENTED();
-}
-
 bool AutofillDriverIOS::IsSafeToFill(const FormFieldData& field,
                                      FieldType filled_type,
                                      const url::Origin& main_origin,

@@ -129,14 +129,6 @@ String ConvertSanitizedValueToStateValue(const InputType& input_type,
   return sanitized_value;
 }
 
-bool AutocompleteAttributeContainsEmailVerificationToken(
-    const AtomicString& autocomplete_value) {
-  DEFINE_STATIC_LOCAL(const AtomicString, kEmailVerificationToken,
-                      ("email-verification-token"));
-  return SpaceSplitString(autocomplete_value.ToAsciiLower())
-      .Contains(kEmailVerificationToken);
-}
-
 }  // namespace
 
 using ValueMode = InputType::ValueMode;
@@ -1062,22 +1054,6 @@ void HTMLInputElement::FinishParsingChildren() {
       SetChecked(checked);
     dirty_checkedness_ = false;
   }
-  if (Form() && RuntimeEnabledFeatures::EmailVerificationStatusIndicatorEnabled(
-                    GetExecutionContext())) {
-    if (IsEmailVerificationTokenField()) {
-      Form()->NotifyEmailVerificationTokenFieldChanged();
-    }
-  }
-}
-
-void HTMLInputElement::setNonce(const AtomicString& nonce) {
-  Element::setNonce(nonce);
-  if (Form() && RuntimeEnabledFeatures::EmailVerificationStatusIndicatorEnabled(
-                    GetExecutionContext())) {
-    if (IsEmailVerificationTokenField()) {
-      Form()->NotifyEmailVerificationTokenFieldChanged();
-    }
-  }
 }
 
 bool HTMLInputElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
@@ -1381,9 +1357,6 @@ void HTMLInputElement::DidChangeIsInCanvasSubtree() {
     // Hide suggested values when under canvas, to prevent leaking this
     // information to javascript.
     SetSuggestedValue(String());
-  }
-  if (auto* email_input = DynamicTo<EmailInputType>(input_type_.Get())) {
-    email_input->UpdateEmailVerificationIndicator();
   }
 }
 
@@ -1934,12 +1907,6 @@ void HTMLInputElement::DidChangeForm() {
   TextControlElement::DidChangeForm();
   if (input_type_) {
     AddToRadioButtonGroup();
-    if (RuntimeEnabledFeatures::EmailVerificationStatusIndicatorEnabled(
-            GetExecutionContext())) {
-      if (type() == input_type_names::kEmail) {
-        UpdateEmailVerificationIndicator();
-      }
-    }
   }
 }
 
@@ -1947,26 +1914,6 @@ Node::InsertionNotificationRequest HTMLInputElement::InsertedInto(
     ContainerNode& insertion_point) {
   TextControlElement::InsertedInto(insertion_point);
   HTMLFormElement* form = Form();
-  // During parser association, Associate() is called before attributes
-  // (like autocomplete) are parsed and before the element is inserted into
-  // the DOM. Later, when attributes are set, AttributeChanged calls
-  // NotifyEmailVerificationTokenFieldChanged which queries ListedElements()
-  // and prematurely rebuilds/caches the form elements.
-  // If the element has FormWasSetByParser() = true, InsertedInto will not
-  // run ResetFormOwner or call Associate() again, which would normally
-  // invalidate the cache. In this case, we must manually invalidate it here
-  // so the newly inserted token is correctly included in future queries,
-  // and then notify.
-  // Otherwise, for dynamically added elements (where FormWasSetByParser()
-  // is false), ResetFormOwner() -> Associate() is run and already handles
-  // the invalidation and notification.
-  if (form &&
-      RuntimeEnabledFeatures::EmailVerificationStatusIndicatorEnabled(
-          GetExecutionContext()) &&
-      IsEmailVerificationTokenField() && FormWasSetByParser()) {
-    form->InvalidateListedElements();
-    form->NotifyEmailVerificationTokenFieldChanged();
-  }
   if (insertion_point.isConnected()) {
     if (!form) {
       AddToRadioButtonGroup();
@@ -2066,31 +2013,6 @@ void HTMLInputElement::RequiredAttributeChanged() {
 void HTMLInputElement::DisabledAttributeChanged(DisabledChangedReason reason) {
   TextControlElement::DisabledAttributeChanged(reason);
   input_type_view_->DisabledAttributeChanged(reason);
-}
-
-void HTMLInputElement::AttributeChanged(
-    const AttributeModificationParams& params) {
-  HTMLFormControlElement::AttributeChanged(params);
-  if (Form() && RuntimeEnabledFeatures::EmailVerificationStatusIndicatorEnabled(
-                    GetExecutionContext())) {
-    if (params.name == html_names::kAutocompleteAttr) {
-      bool old_has_token =
-          AutocompleteAttributeContainsEmailVerificationToken(params.old_value);
-      bool new_has_token =
-          AutocompleteAttributeContainsEmailVerificationToken(params.new_value);
-      if (old_has_token != new_has_token) {
-        Form()->NotifyEmailVerificationTokenFieldChanged();
-      }
-    } else if (params.name == html_names::kNonceAttr) {
-      if (IsEmailVerificationTokenField()) {
-        bool old_was_empty = params.old_value.empty();
-        bool new_is_empty = params.new_value.empty();
-        if (old_was_empty != new_is_empty) {
-          Form()->NotifyEmailVerificationTokenFieldChanged();
-        }
-      }
-    }
-  }
 }
 
 void HTMLInputElement::SelectColorInColorChooser(const Color& color) {
@@ -2563,30 +2485,6 @@ void HTMLInputElement::SetShouldRevealPassword(bool value) {
         kLocalStyleChange,
         StyleChangeReasonForTracing::Create(style_change_reason::kControl));
   }
-}
-
-void HTMLInputElement::SetEmailVerificationState(EmailVerificationState state) {
-  if (auto* email_input = DynamicTo<EmailInputType>(input_type_.Get())) {
-    email_input->SetEmailVerificationState(state);
-  }
-}
-
-EmailVerificationState HTMLInputElement::GetEmailVerificationState() const {
-  if (auto* email_input = DynamicTo<EmailInputType>(input_type_.Get())) {
-    return email_input->GetEmailVerificationState();
-  }
-  return EmailVerificationState::kNone;
-}
-
-void HTMLInputElement::UpdateEmailVerificationIndicator() {
-  if (auto* email_input = DynamicTo<EmailInputType>(input_type_.Get())) {
-    email_input->UpdateEmailVerificationIndicator();
-  }
-}
-
-bool HTMLInputElement::IsEmailVerificationTokenField() const {
-  return AutocompleteAttributeContainsEmailVerificationToken(
-      FastGetAttribute(html_names::kAutocompleteAttr));
 }
 
 void HTMLInputElement::DispatchSimulatedEnter() {
