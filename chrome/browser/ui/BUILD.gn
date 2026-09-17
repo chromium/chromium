@@ -2448,8 +2448,6 @@ static_library("ui") {
     sources += [
       "views/profiles/profile_menu_coordinator.cc",
       "views/profiles/profile_menu_coordinator.h",
-      "views/profiles/profile_menu_view_base.cc",
-      "views/profiles/profile_menu_view_base.h",
     ]
     deps += [
       "//chrome/browser/lifetime:termination_notification",
@@ -2463,18 +2461,13 @@ static_library("ui") {
       "//chrome/browser/ui/views/profiles:avatar_badge_view",
       "//chrome/browser/ui/views/profiles:incognito_menu_view",
       "//chrome/browser/ui/views/profiles:isolated_mode_menu_view",
+      "//chrome/browser/ui/views/profiles:profile_menu_view_base",
       "//chrome/browser/ui/views/profiles:signin_view_controller_delegate_views",
       "//chrome/browser/ui/views/profiles:signin_view_controller_delegate_views_impl",
       "//chrome/browser/ui/wallet",
     ]
 
     allow_circular_includes_from += [
-      # incognito_menu_view.h includes profile_menu_view_base.h.
-      "//chrome/browser/ui/views/profiles:incognito_menu_view",
-
-      # isolated_mode_menu_view.h includes profile_menu_view_base.h and
-      # isolated_mode_menu_view.cc includes singleton_tabs.h.
-      "//chrome/browser/ui/views/profiles:isolated_mode_menu_view",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_controller",
       "//chrome/browser/ui/wallet",
       "//chrome/browser/ui/views/hats:impl",
@@ -2531,7 +2524,6 @@ static_library("ui") {
     # "//chrome/browser:browser_public_dependencies". Non-android and
     # non-chromeos-ash circular deps.
     allow_circular_includes_from += [
-      # profile_menu_view.h includes profile_menu_view_base.h and
       # profile_menu_view.cc includes browser_commands.h.
       "//chrome/browser/ui/views/profiles:profile_menu_view",
       "//chrome/browser/ui/startup/default_browser_prompt:impl",

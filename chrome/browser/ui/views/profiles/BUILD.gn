@@ -23,10 +23,51 @@ if (is_chromeos) {
 }
 
 if (is_win || is_mac || is_linux || is_chromeos) {
+  source_set("profile_menu_view_base") {
+    public = [ "profile_menu_view_base.h" ]
+    sources = [ "profile_menu_view_base.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/views:close_bubble_on_tab_activation_helper",
+      "//chrome/browser/ui/views/controls",
+      "//components/signin/public/identity_manager",
+      "//content/public/browser",
+      "//ui/base",
+      "//ui/base/metadata",
+      "//ui/color:color_headers",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+    deps = [
+      ":avatar_badge_view",
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/supervised_user/core/browser",
+      "//skia",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/color",
+      "//ui/compositor",
+      "//ui/display",
+      "//ui/strings:ui_strings",
+    ]
+  }
+
   source_set("incognito_menu_view") {
     public = [ "incognito_menu_view.h" ]
     sources = [ "incognito_menu_view.cc" ]
-    public_deps = [ "//ui/views" ]
+    public_deps = [
+      ":profile_menu_view_base",
+      "//ui/views",
+    ]
     deps = [
       "//base",
       "//chrome/app:generated_resources",
@@ -43,7 +84,10 @@ if (is_win || is_mac || is_linux || is_chromeos) {
   source_set("isolated_mode_menu_view") {
     public = [ "isolated_mode_menu_view.h" ]
     sources = [ "isolated_mode_menu_view.cc" ]
-    public_deps = [ "//ui/views" ]
+    public_deps = [
+      ":profile_menu_view_base",
+      "//ui/views",
+    ]
     deps = [
       "//base",
       "//chrome/app:generated_resources",
@@ -245,6 +289,7 @@ if (toolkit_views) {
 
     deps = [
       ":avatar_toolbar_button",
+      ":profile_menu_view_base",
       "//base",
       "//base/test:test_support",
       "//chrome/browser:browser_process",
@@ -313,6 +358,7 @@ if (is_win || is_mac || is_linux) {
     public = [ "profile_menu_view.h" ]
     sources = [ "profile_menu_view.cc" ]
     public_deps = [
+      ":profile_menu_view_base",
       "//base",
       "//chrome/browser/password_manager",
       "//chrome/browser/signin",
