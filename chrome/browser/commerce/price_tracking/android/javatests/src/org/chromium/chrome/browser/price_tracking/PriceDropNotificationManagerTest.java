@@ -50,8 +50,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.ResetSharedPrefsRule;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -99,7 +99,8 @@ public class PriceDropNotificationManagerTest {
 
     private PriceDropNotificationManager mPriceDropNotificationManager;
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final ResetSharedPrefsRule mResetSharedPrefsRule = new ResetSharedPrefsRule();
 
     @Mock private ShoppingService mMockShoppingService;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
@@ -342,7 +343,6 @@ public class PriceDropNotificationManagerTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/562732344")
     public void testHasReachedMaxAllowedNotificationNumber() {
         int mockType = SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED;
         assertEquals(
