@@ -26,6 +26,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.resources.dynamics.CaptureResult;
 
 import java.util.concurrent.TimeoutException;
@@ -71,6 +72,7 @@ public class NativePageBitmapCapturerTest {
     @Test
     @SmallTest
     @DisableIf.Build(sdk_is_less_than = 31)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625946
     public void testWithNativePageHardwareBuffer() throws TimeoutException {
         RegularNewTabPageStation ntp = mTabbedActivityTestRule.startOnNtp();
 

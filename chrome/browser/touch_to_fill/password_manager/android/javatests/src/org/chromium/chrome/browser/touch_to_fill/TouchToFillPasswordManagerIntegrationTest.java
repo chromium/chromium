@@ -65,6 +65,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -250,6 +251,7 @@ public class TouchToFillPasswordManagerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626839
     public void testClickingManagePasswordsTriggersCallback() {
         runOnUiThreadBlocking(
                 () -> {
@@ -281,6 +283,7 @@ public class TouchToFillPasswordManagerIntegrationTest {
     @Test
     @MediumTest
     @Restriction({RESTRICTION_TYPE_NON_AUTO}) // Flaky test: https://crbug.com/465185902
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626839
     public void testClickingHybridButtonTriggersCallback() {
         runOnUiThreadBlocking(
                 () -> {

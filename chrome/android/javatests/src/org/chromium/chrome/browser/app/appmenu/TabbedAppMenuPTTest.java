@@ -79,6 +79,7 @@ public class TabbedAppMenuPTTest {
      */
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562155107
     public void testOpenNewIncognitoTabOrWindow() {
         // openNewIncognitoTab() opens either an incognito tab or an incognito window.
         var incognitoNewTabPageStation =

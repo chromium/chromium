@@ -92,6 +92,7 @@ public class ProfileTest {
     /** Test if two calls to get non-primary profile with the same id return the same object. */
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562626080
     public void testNonPrimaryProfileConsistency() {
         OtrProfileId profileId = new OtrProfileId("test::OtrProfile");
         Profile nonPrimaryOtrProfile1 =

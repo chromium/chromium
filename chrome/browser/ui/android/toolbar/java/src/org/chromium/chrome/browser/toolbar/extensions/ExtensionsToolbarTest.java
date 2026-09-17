@@ -184,6 +184,7 @@ public class ExtensionsToolbarTest {
      */
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625134
     public void testClickingOnASecondActionClosesTheFirst() throws IOException {
         String alphaId =
                 loadPopupExtension(
@@ -1029,6 +1030,7 @@ public class ExtensionsToolbarTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625134
     public void testExtensionCommandClosesPopupIfOpen() throws IOException {
         String extensionId =
                 loadCommandExtension(
@@ -1059,6 +1061,7 @@ public class ExtensionsToolbarTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562625134
     public void testNonExtensionCommandIsSentToApplicationWindow() throws IOException {
         String extensionId = loadPopupExtension("extension", "Extension", "Action", "popup opened");
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
