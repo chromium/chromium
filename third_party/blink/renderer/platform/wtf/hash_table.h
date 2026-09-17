@@ -206,7 +206,7 @@ template <WeakHandlingFlag x,
           typename Y>
 struct WeakProcessingHashTableHelper;
 
-typedef enum { kHashItemKnownGood } HashItemKnownGoodTag;
+enum HashItemKnownGoodTag { kHashItemKnownGood };
 
 // Base class that is marked as stack allocated if Allocator is a garbage
 // collected allocator. Used as a base for hash table iterators to mark
@@ -232,20 +232,19 @@ template <typename Key,
           typename Allocator>
 class HashTableConstIterator final
     : public ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {
-  typedef HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>
-      HashTableType;
-  typedef HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>
-      iterator;
-  typedef HashTableConstIterator<Key,
-                                 Value,
-                                 Extractor,
-                                 Traits,
-                                 KeyTraits,
-                                 Allocator>
-      const_iterator;
+  using HashTableType =
+      HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
+  using iterator =
+      HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
+  using const_iterator = HashTableConstIterator<Key,
+                                                Value,
+                                                Extractor,
+                                                Traits,
+                                                KeyTraits,
+                                                Allocator>;
   using value_type = Value;
-  typedef typename Traits::IteratorConstGetType GetType;
-  typedef const value_type* PointerType;
+  using GetType = typename Traits::IteratorConstGetType;
+  using PointerType = const value_type*;
 
   friend class HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
   friend class HashTableIterator<Key,
@@ -413,20 +412,19 @@ template <typename Key,
           typename Allocator>
 class HashTableIterator final
     : public ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {
-  typedef HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>
-      HashTableType;
-  typedef HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>
-      iterator;
-  typedef HashTableConstIterator<Key,
-                                 Value,
-                                 Extractor,
-                                 Traits,
-                                 KeyTraits,
-                                 Allocator>
-      const_iterator;
+  using HashTableType =
+      HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
+  using iterator =
+      HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
+  using const_iterator = HashTableConstIterator<Key,
+                                                Value,
+                                                Extractor,
+                                                Traits,
+                                                KeyTraits,
+                                                Allocator>;
   using value_type = Value;
-  typedef typename Traits::IteratorGetType GetType;
-  typedef value_type* PointerType;
+  using GetType = typename Traits::IteratorGetType;
+  using PointerType = value_type*;
 
   friend class HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
 
@@ -624,23 +622,22 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
   DISALLOW_NEW();
 
  public:
-  typedef HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>
-      iterator;
-  typedef HashTableConstIterator<Key,
-                                 Value,
-                                 Extractor,
-                                 Traits,
-                                 KeyTraits,
-                                 Allocator>
-      const_iterator;
-  typedef Traits ValueTraits;
-  typedef Key KeyType;
-  typedef typename KeyTraits::PeekInType KeyPeekInType;
-  typedef Value ValueType;
-  typedef Extractor ExtractorType;
-  typedef KeyTraits KeyTraitsType;
-  typedef IdentityHashTranslator<KeyTraits> IdentityTranslatorType;
-  typedef HashTableAddResult<HashTable, ValueType> AddResult;
+  using iterator =
+      HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
+  using const_iterator = HashTableConstIterator<Key,
+                                                Value,
+                                                Extractor,
+                                                Traits,
+                                                KeyTraits,
+                                                Allocator>;
+  using ValueTraits = Traits;
+  using KeyType = Key;
+  using KeyPeekInType = typename KeyTraits::PeekInType;
+  using ValueType = Value;
+  using ExtractorType = Extractor;
+  using KeyTraitsType = KeyTraits;
+  using IdentityTranslatorType = IdentityHashTranslator<KeyTraits>;
+  using AddResult = HashTableAddResult<HashTable, ValueType>;
 
   HashTable();
 
@@ -2074,9 +2071,9 @@ struct HashTableConstIteratorAdapter {
   HashTableConstIteratorAdapter(
       const typename HashTableType::const_iterator& impl)
       : impl_(impl) {}
-  typedef typename Traits::IteratorConstGetType GetType;
-  typedef
-      typename HashTableType::ValueTraits::IteratorConstGetType SourceGetType;
+  using GetType = typename Traits::IteratorConstGetType;
+  using SourceGetType =
+      typename HashTableType::ValueTraits::IteratorConstGetType;
 
   GetType Get() const {
     return const_cast<GetType>(SourceGetType(impl_.Get()));
@@ -2123,9 +2120,9 @@ struct HashTableConstIteratorAdapter<HashTableType, Traits> {
   HashTableConstIteratorAdapter(
       const typename HashTableType::const_iterator& impl)
       : impl_(impl) {}
-  typedef typename Traits::IteratorConstGetType GetType;
-  typedef
-      typename HashTableType::ValueTraits::IteratorConstGetType SourceGetType;
+  using GetType = typename Traits::IteratorConstGetType;
+  using SourceGetType =
+      typename HashTableType::ValueTraits::IteratorConstGetType;
 
   GetType Get() const {
     return const_cast<GetType>(SourceGetType(impl_.Get()));
@@ -2173,8 +2170,8 @@ struct HashTableIteratorAdapter {
   using pointer = value_type*;
   using reference = value_type&;
 
-  typedef typename Traits::IteratorGetType GetType;
-  typedef typename HashTableType::ValueTraits::IteratorGetType SourceGetType;
+  using GetType = typename Traits::IteratorGetType;
+  using SourceGetType = typename HashTableType::ValueTraits::IteratorGetType;
 
   constexpr HashTableIteratorAdapter() = default;
   HashTableIteratorAdapter(const typename HashTableType::iterator& impl)
@@ -2226,8 +2223,8 @@ struct HashTableIteratorAdapter<HashTableType, Traits> {
   using pointer = value_type*;
   using reference = value_type&;
 
-  typedef typename Traits::IteratorGetType GetType;
-  typedef typename HashTableType::ValueTraits::IteratorGetType SourceGetType;
+  using GetType = typename Traits::IteratorGetType;
+  using SourceGetType = typename HashTableType::ValueTraits::IteratorGetType;
 
   constexpr HashTableIteratorAdapter() = default;
   HashTableIteratorAdapter(const typename HashTableType::iterator& impl)

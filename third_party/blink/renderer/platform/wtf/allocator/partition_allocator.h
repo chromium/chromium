@@ -150,6 +150,6 @@ WTF_EXPORT char* PartitionAllocator::AllocateVectorBacking<char>(size_t);
   }                                                              \
                                                                  \
  private:                                                        \
-  typedef int __thisIsHereToForceASemicolonAfterThisMacro
+  using __thisIsHereToForceASemicolonAfterThisMacro = int
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITION_ALLOCATOR_H_

@@ -38,19 +38,19 @@ template <size_t size>
 struct IntTypes;
 template <>
 struct IntTypes<1> {
-  typedef uint8_t UnsignedType;
+  using UnsignedType = uint8_t;
 };
 template <>
 struct IntTypes<2> {
-  typedef uint16_t UnsignedType;
+  using UnsignedType = uint16_t;
 };
 template <>
 struct IntTypes<4> {
-  typedef uint32_t UnsignedType;
+  using UnsignedType = uint32_t;
 };
 template <>
 struct IntTypes<8> {
-  typedef uint64_t UnsignedType;
+  using UnsignedType = uint64_t;
 };
 
 template <typename T>

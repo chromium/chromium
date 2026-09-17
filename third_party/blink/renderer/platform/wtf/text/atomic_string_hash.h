@@ -43,7 +43,7 @@ struct HashTraits<AtomicString> : SimpleClassHashTraits<AtomicString> {
 
   // Unlike other types, we can return a const reference for AtomicString's
   // empty value (g_null_atom).
-  typedef const AtomicString& PeekOutType;
+  using PeekOutType = const AtomicString&;
 
   static const AtomicString& EmptyValue() { return g_null_atom; }
   static PeekOutType Peek(const AtomicString& value) { return value; }

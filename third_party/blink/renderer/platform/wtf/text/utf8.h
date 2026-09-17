@@ -33,12 +33,12 @@
 
 namespace blink::unicode {
 
-typedef enum {
+enum ConversionStatus {
   kSuccess,          // Conversion successful.
   kSourceExhausted,  // partial character in source, but hit end
   kTargetExhausted,  // insuff. room in target for conversion
   kSourceIllegal     // source sequence is illegal/malformed
-} ConversionStatus;
+};
 
 template <typename CharType>
 struct ConversionResult {

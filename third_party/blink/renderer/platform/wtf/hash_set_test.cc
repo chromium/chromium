@@ -156,7 +156,7 @@ TEST(HashSetTest, ReserveCapacity) {
 TEST(HashSetTest, HashSetOwnPtr) {
   bool deleted1 = false, deleted2 = false;
 
-  typedef HashSet<std::unique_ptr<Dummy>> OwnPtrSet;
+  using OwnPtrSet = HashSet<std::unique_ptr<Dummy>>;
   OwnPtrSet set;
 
   Dummy* ptr1 = new Dummy(deleted1);

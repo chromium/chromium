@@ -326,13 +326,13 @@ struct GenericHashTraits<scoped_refptr<P>>
     *reinterpret_cast<void**>(&slot) = reinterpret_cast<void*>(-1);
   }
 
-  typedef RefPtrValuePeeker PeekInType;
-  typedef scoped_refptr<P>* IteratorGetType;
-  typedef const scoped_refptr<P>* IteratorConstGetType;
-  typedef scoped_refptr<P>& IteratorReferenceType;
-  typedef const scoped_refptr<P>& IteratorConstReferenceType;
+  using PeekInType = RefPtrValuePeeker;
+  using IteratorGetType = scoped_refptr<P>*;
+  using IteratorConstGetType = const scoped_refptr<P>*;
+  using IteratorReferenceType = scoped_refptr<P>&;
+  using IteratorConstReferenceType = const scoped_refptr<P>&;
 
-  typedef P* PeekOutType;
+  using PeekOutType = P*;
   static PeekOutType Peek(const scoped_refptr<P>& value) { return value.get(); }
 
   template <typename = void>

@@ -125,11 +125,11 @@ struct HashTableConstIteratorAdapter<HashTableType,
                                      KeyValuePair<KeyType, MappedType>>
     : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
  public:
-  typedef KeyValuePair<KeyType, MappedType> ValueType;
-  typedef HashTableConstKeysIterator<HashTableType, KeyType, MappedType>
-      KeysIterator;
-  typedef HashTableConstValuesIterator<HashTableType, KeyType, MappedType>
-      ValuesIterator;
+  using ValueType = KeyValuePair<KeyType, MappedType>;
+  using KeysIterator =
+      HashTableConstKeysIterator<HashTableType, KeyType, MappedType>;
+  using ValuesIterator =
+      HashTableConstValuesIterator<HashTableType, KeyType, MappedType>;
 
   using iterator_category = std::bidirectional_iterator_tag;
   using value_type = ValueType;
@@ -177,11 +177,11 @@ struct HashTableIteratorAdapter<HashTableType,
                                 KeyValuePair<KeyType, MappedType>>
     : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
  public:
-  typedef KeyValuePair<KeyType, MappedType> ValueType;
-  typedef HashTableKeysIterator<HashTableType, KeyType, MappedType>
-      KeysIterator;
-  typedef HashTableValuesIterator<HashTableType, KeyType, MappedType>
-      ValuesIterator;
+  using ValueType = KeyValuePair<KeyType, MappedType>;
+  using KeysIterator =
+      HashTableKeysIterator<HashTableType, KeyType, MappedType>;
+  using ValuesIterator =
+      HashTableValuesIterator<HashTableType, KeyType, MappedType>;
 
   using iterator_category = std::bidirectional_iterator_tag;
   using value_type = ValueType;
@@ -232,9 +232,9 @@ template <typename HashTableType, typename KeyType, typename MappedType>
 struct HashTableConstKeysIterator<HashTableType, KeyType, MappedType>
     : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
  private:
-  typedef HashTableConstIteratorAdapter<HashTableType,
-                                        KeyValuePair<KeyType, MappedType>>
-      ConstIterator;
+  using ConstIterator =
+      HashTableConstIteratorAdapter<HashTableType,
+                                    KeyValuePair<KeyType, MappedType>>;
 
  public:
   using iterator_category = typename ConstIterator::iterator_category;
@@ -278,9 +278,9 @@ template <typename HashTableType, typename KeyType, typename MappedType>
 struct HashTableConstValuesIterator<HashTableType, KeyType, MappedType>
     : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
  private:
-  typedef HashTableConstIteratorAdapter<HashTableType,
-                                        KeyValuePair<KeyType, MappedType>>
-      ConstIterator;
+  using ConstIterator =
+      HashTableConstIteratorAdapter<HashTableType,
+                                    KeyValuePair<KeyType, MappedType>>;
 
  public:
   using iterator_category = typename ConstIterator::iterator_category;
@@ -324,12 +324,11 @@ template <typename HashTableType, typename KeyType, typename MappedType>
 struct HashTableKeysIterator<HashTableType, KeyType, MappedType>
     : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
  private:
-  typedef HashTableIteratorAdapter<HashTableType,
-                                   KeyValuePair<KeyType, MappedType>>
-      Iterator;
-  typedef HashTableConstIteratorAdapter<HashTableType,
-                                        KeyValuePair<KeyType, MappedType>>
-      ConstIterator;
+  using Iterator = HashTableIteratorAdapter<HashTableType,
+                                            KeyValuePair<KeyType, MappedType>>;
+  using ConstIterator =
+      HashTableConstIteratorAdapter<HashTableType,
+                                    KeyValuePair<KeyType, MappedType>>;
 
  public:
   using iterator_category = typename Iterator::iterator_category;
@@ -378,12 +377,11 @@ template <typename HashTableType, typename KeyType, typename MappedType>
 struct HashTableValuesIterator<HashTableType, KeyType, MappedType>
     : internal::IteratorAdapterBase<KeyValuePair<KeyType, MappedType>> {
  private:
-  typedef HashTableIteratorAdapter<HashTableType,
-                                   KeyValuePair<KeyType, MappedType>>
-      Iterator;
-  typedef HashTableConstIteratorAdapter<HashTableType,
-                                        KeyValuePair<KeyType, MappedType>>
-      ConstIterator;
+  using Iterator = HashTableIteratorAdapter<HashTableType,
+                                            KeyValuePair<KeyType, MappedType>>;
+  using ConstIterator =
+      HashTableConstIteratorAdapter<HashTableType,
+                                    KeyValuePair<KeyType, MappedType>>;
 
  public:
   using iterator_category = typename Iterator::iterator_category;

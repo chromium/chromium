@@ -57,7 +57,7 @@
 #if BUILDFLAG(IS_APPLE)
 #include "base/apple/scoped_cftyperef.h"
 
-typedef const struct __CFString* CFStringRef;
+using CFStringRef = const struct __CFString*;
 #endif
 
 #ifdef __OBJC__
@@ -75,9 +75,9 @@ enum TextCaseSensitivity {
 
 enum StripBehavior { kStripExtraWhiteSpace, kDoNotStripWhiteSpace };
 
-typedef bool (*CharacterMatchFunctionPtr)(UChar);
-typedef bool (*IsWhiteSpaceFunctionPtr)(UChar);
-typedef HashMap<uint32_t, StringImpl*, AlreadyHashedTraits> StaticStringsTable;
+using CharacterMatchFunctionPtr = bool (*)(UChar);
+using IsWhiteSpaceFunctionPtr = bool (*)(UChar);
+using StaticStringsTable = HashMap<uint32_t, StringImpl*, AlreadyHashedTraits>;
 
 // You can find documentation about this class in this doc:
 // https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/platform/wtf/text/README.md

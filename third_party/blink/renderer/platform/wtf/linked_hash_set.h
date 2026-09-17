@@ -150,7 +150,7 @@ class LinkedHashSet {
   using reverse_iterator = IteratorWrapper<BackingReverseIterator>;
   using const_reverse_iterator = IteratorWrapper<BackingReverseIterator>;
 
-  typedef typename TraitsArg::PeekInType ValuePeekInType;
+  using ValuePeekInType = typename TraitsArg::PeekInType;
 
   LinkedHashSet() = default;
   LinkedHashSet(const LinkedHashSet&) = default;

@@ -116,7 +116,8 @@ class WTF_EXPORT TextCodec {
 using EncodingNameRegistrar = void (*)(const char* alias,
                                        const AtomicString& canonical_name);
 
-typedef std::unique_ptr<TextCodec> (*NewTextCodecFunction)(const TextEncoding&);
+using NewTextCodecFunction =
+    std::unique_ptr<TextCodec> (*)(const TextEncoding&);
 using TextCodecRegistrar = void (*)(const char* canonical_name,
                                     NewTextCodecFunction);
 

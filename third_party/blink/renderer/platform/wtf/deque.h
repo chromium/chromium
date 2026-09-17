@@ -56,10 +56,10 @@ class Deque {
   USE_ALLOCATOR(Deque, Allocator);
 
  public:
-  typedef DequeIterator<T, kInlineCapacity, Allocator> iterator;
-  typedef DequeConstIterator<T, kInlineCapacity, Allocator> const_iterator;
-  typedef std::reverse_iterator<iterator> reverse_iterator;
-  typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+  using iterator = DequeIterator<T, kInlineCapacity, Allocator>;
+  using const_iterator = DequeConstIterator<T, kInlineCapacity, Allocator>;
+  using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
   Deque();
 
@@ -188,8 +188,8 @@ class Deque {
     }
   };
 
-  typedef VectorTypeOperations<T, Allocator> TypeOperations;
-  typedef DequeIteratorBase<T, kInlineCapacity, Allocator> IteratorBase;
+  using TypeOperations = VectorTypeOperations<T, Allocator>;
+  using IteratorBase = DequeIteratorBase<T, kInlineCapacity, Allocator>;
 
   void erase(wtf_size_t position);
   void DestroyAll();
@@ -257,15 +257,15 @@ template <typename T,
           typename Allocator = PartitionAllocator>
 class DequeIterator : public DequeIteratorBase<T, kInlineCapacity, Allocator> {
  private:
-  typedef DequeIteratorBase<T, kInlineCapacity, Allocator> Base;
-  typedef DequeIterator<T, kInlineCapacity, Allocator> Iterator;
+  using Base = DequeIteratorBase<T, kInlineCapacity, Allocator>;
+  using Iterator = DequeIterator<T, kInlineCapacity, Allocator>;
 
  public:
-  typedef ptrdiff_t difference_type;
-  typedef T value_type;
-  typedef T* pointer;
-  typedef T& reference;
-  typedef std::bidirectional_iterator_tag iterator_category;
+  using difference_type = ptrdiff_t;
+  using value_type = T;
+  using pointer = T*;
+  using reference = T&;
+  using iterator_category = std::bidirectional_iterator_tag;
 
   constexpr DequeIterator() = default;
   DequeIterator(Deque<T, kInlineCapacity, Allocator>* deque, wtf_size_t index)
@@ -311,16 +311,16 @@ template <typename T,
 class DequeConstIterator
     : public DequeIteratorBase<T, kInlineCapacity, Allocator> {
  private:
-  typedef DequeIteratorBase<T, kInlineCapacity, Allocator> Base;
-  typedef DequeConstIterator<T, kInlineCapacity, Allocator> Iterator;
-  typedef DequeIterator<T, kInlineCapacity, Allocator> NonConstIterator;
+  using Base = DequeIteratorBase<T, kInlineCapacity, Allocator>;
+  using Iterator = DequeConstIterator<T, kInlineCapacity, Allocator>;
+  using NonConstIterator = DequeIterator<T, kInlineCapacity, Allocator>;
 
  public:
-  typedef ptrdiff_t difference_type;
-  typedef T value_type;
-  typedef const T* pointer;
-  typedef const T& reference;
-  typedef std::bidirectional_iterator_tag iterator_category;
+  using difference_type = ptrdiff_t;
+  using value_type = T;
+  using pointer = const T*;
+  using reference = const T&;
+  using iterator_category = std::bidirectional_iterator_tag;
 
   constexpr DequeConstIterator() = default;
   DequeConstIterator(const Deque<T, kInlineCapacity, Allocator>* deque,

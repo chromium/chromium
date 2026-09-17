@@ -17,8 +17,8 @@
 
 // These definitions should be matched to
 // third_party/icu/source/common/unicode/umachine.h.
-typedef char16_t UChar;
-typedef int32_t UChar32;
+using UChar = char16_t;
+using UChar32 = int32_t;
 
 #endif
 
@@ -27,7 +27,7 @@ static_assert(sizeof(UChar) == 2, "UChar should be two bytes");
 namespace blink {
 
 // Define platform neutral 8 bit character type (L is for Latin-1).
-typedef unsigned char LChar;
+using LChar = unsigned char;
 
 // A concept to check if a type is LChar or UChar.
 template <typename CharType>

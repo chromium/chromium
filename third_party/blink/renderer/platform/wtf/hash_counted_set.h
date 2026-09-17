@@ -44,11 +44,11 @@ class HashCountedSet {
       HashMap<Value, wtf_size_t, Traits, HashTraits<wtf_size_t>, Allocator>;
 
  public:
-  typedef Value ValueType;
+  using ValueType = Value;
   using value_type = ValueType;
-  typedef typename ImplType::iterator iterator;
-  typedef typename ImplType::const_iterator const_iterator;
-  typedef typename ImplType::AddResult AddResult;
+  using iterator = typename ImplType::iterator;
+  using const_iterator = typename ImplType::const_iterator;
+  using AddResult = typename ImplType::AddResult;
 
   HashCountedSet() = default;
 

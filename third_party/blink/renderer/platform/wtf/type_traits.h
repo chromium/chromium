@@ -43,7 +43,7 @@ inline const char* GetStringWithTypeName() {
 template <typename T, typename U>
 struct IsSubclass {
  private:
-  typedef char YesType;
+  using YesType = char;
   struct NoType {
     char padding[8];
   };
@@ -59,7 +59,7 @@ struct IsSubclass {
 template <typename T, template <typename... V> class U>
 struct IsSubclassOfTemplate {
  private:
-  typedef char YesType;
+  using YesType = char;
   struct NoType {
     char padding[8];
   };
@@ -76,7 +76,7 @@ struct IsSubclassOfTemplate {
 template <typename T, template <typename V, size_t W> class U>
 struct IsSubclassOfTemplateTypenameSize {
  private:
-  typedef char YesType;
+  using YesType = char;
   struct NoType {
     char padding[8];
   };
@@ -93,7 +93,7 @@ struct IsSubclassOfTemplateTypenameSize {
 template <typename T, template <typename V, size_t W, typename X> class U>
 struct IsSubclassOfTemplateTypenameSizeTypename {
  private:
-  typedef char YesType;
+  using YesType = char;
   struct NoType {
     char padding[8];
   };

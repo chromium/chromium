@@ -46,11 +46,11 @@ class HashSet {
   USE_ALLOCATOR(HashSet, Allocator);
 
  private:
-  typedef TraitsArg ValueTraits;
-  typedef typename ValueTraits::PeekInType ValuePeekInType;
+  using ValueTraits = TraitsArg;
+  using ValuePeekInType = typename ValueTraits::PeekInType;
 
  public:
-  typedef typename ValueTraits::TraitType ValueType;
+  using ValueType = typename ValueTraits::TraitType;
   using value_type = ValueType;
   using reference = value_type&;
   using const_reference = const value_type&;
@@ -58,19 +58,18 @@ class HashSet {
   using const_pointer = const value_type*;
 
  private:
-  typedef HashTable<ValueType,
-                    ValueType,
-                    IdentityExtractor,
-                    ValueTraits,
-                    ValueTraits,
-                    Allocator>
-      HashTableType;
+  using HashTableType = HashTable<ValueType,
+                                  ValueType,
+                                  IdentityExtractor,
+                                  ValueTraits,
+                                  ValueTraits,
+                                  Allocator>;
 
  public:
-  typedef HashTableConstIteratorAdapter<HashTableType, ValueTraits> iterator;
-  typedef HashTableConstIteratorAdapter<HashTableType, ValueTraits>
-      const_iterator;
-  typedef typename HashTableType::AddResult AddResult;
+  using iterator = HashTableConstIteratorAdapter<HashTableType, ValueTraits>;
+  using const_iterator =
+      HashTableConstIteratorAdapter<HashTableType, ValueTraits>;
+  using AddResult = typename HashTableType::AddResult;
 
   HashSet() = default;
   HashSet(const HashSet&) = default;

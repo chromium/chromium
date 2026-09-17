@@ -128,8 +128,8 @@ static_assert((!IsSubclass<TestBaseClass<int>, TestDerivedClass>::value),
 static_assert((IsSubclassOfTemplate<TestDerivedClass, TestBaseClass>::value),
               "Derived class should be a subclass of template from its base");
 
-typedef int IntArray[];
-typedef int IntArraySized[4];
+using IntArray = int[];
+using IntArraySized = int[4];
 
 #if !defined(COMPILER_MSVC) || defined(__clang__)
 

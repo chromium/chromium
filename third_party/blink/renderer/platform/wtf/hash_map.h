@@ -93,27 +93,26 @@ class HashMap {
   friend class HashCountedSet;
 
  private:
-  typedef KeyTraitsArg KeyTraits;
-  typedef MappedTraitsArg MappedTraits;
-  typedef HashMapValueTraits<KeyTraits, MappedTraits> ValueTraits;
+  using KeyTraits = KeyTraitsArg;
+  using MappedTraits = MappedTraitsArg;
+  using ValueTraits = HashMapValueTraits<KeyTraits, MappedTraits>;
 
  public:
-  typedef typename KeyTraits::TraitType KeyType;
-  typedef const typename KeyTraits::PeekInType& KeyPeekInType;
-  typedef typename MappedTraits::TraitType MappedType;
-  typedef typename ValueTraits::TraitType ValueType;
+  using KeyType = typename KeyTraits::TraitType;
+  using KeyPeekInType = const typename KeyTraits::PeekInType&;
+  using MappedType = typename MappedTraits::TraitType;
+  using ValueType = typename ValueTraits::TraitType;
   using value_type = ValueType;
 
  private:
-  typedef typename MappedTraits::PeekOutType MappedPeekType;
+  using MappedPeekType = typename MappedTraits::PeekOutType;
 
-  typedef HashTable<KeyType,
-                    ValueType,
-                    KeyValuePairExtractor,
-                    ValueTraits,
-                    KeyTraits,
-                    Allocator>
-      HashTableType;
+  using HashTableType = HashTable<KeyType,
+                                  ValueType,
+                                  KeyValuePairExtractor,
+                                  ValueTraits,
+                                  KeyTraits,
+                                  Allocator>;
 
   class HashMapKeysProxy;
   class HashMapValuesProxy;
@@ -139,10 +138,10 @@ class HashMap {
     requires(std::forward_iterator<It>)
   HashMap(It begin, It end);
 
-  typedef HashTableIteratorAdapter<HashTableType, ValueType> iterator;
-  typedef HashTableConstIteratorAdapter<HashTableType, ValueType>
-      const_iterator;
-  typedef typename HashTableType::AddResult AddResult;
+  using iterator = HashTableIteratorAdapter<HashTableType, ValueType>;
+  using const_iterator =
+      HashTableConstIteratorAdapter<HashTableType, ValueType>;
+  using AddResult = typename HashTableType::AddResult;
 
   void swap(HashMap& ref) { impl_.swap(ref.impl_); }
 
@@ -570,7 +569,7 @@ bool operator==(const HashMap<T, U, V, W, X>& a,
   if (a.size() != b.size())
     return false;
 
-  typedef typename HashMap<T, U, V, W, X>::const_iterator const_iterator;
+  using const_iterator = typename HashMap<T, U, V, W, X>::const_iterator;
 
   const_iterator a_end = a.end();
   const_iterator b_end = b.end();

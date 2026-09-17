@@ -359,8 +359,8 @@ class WTF_EXPORT StringBuilder {
   static const wtf_size_t kInlineBufferSize = 256;
   static wtf_size_t InitialBufferSize() { return kInlineBufferSize; }
 
-  typedef Vector<LChar, kInlineBufferSize / sizeof(LChar)> Buffer8;
-  typedef Vector<UChar, kInlineBufferSize / sizeof(UChar)> Buffer16;
+  using Buffer8 = Vector<LChar, kInlineBufferSize / sizeof(LChar)>;
+  using Buffer16 = Vector<UChar, kInlineBufferSize / sizeof(UChar)>;
 
   void EnsureBuffer8(wtf_size_t added_size) {
     DCHECK(is_8bit_);

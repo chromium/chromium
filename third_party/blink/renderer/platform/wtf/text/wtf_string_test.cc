@@ -115,7 +115,7 @@ void TestNumberToStringEcmaScript(double number, const char* reference) {
 }  // anonymous namespace
 
 TEST(StringTest, NumberToStringEcmaScriptBoundaries) {
-  typedef std::numeric_limits<double> Limits;
+  using Limits = std::numeric_limits<double>;
 
   // Infinity.
   TestNumberToStringEcmaScript(Limits::infinity(), "Infinity");

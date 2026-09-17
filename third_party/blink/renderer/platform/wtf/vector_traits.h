@@ -143,8 +143,8 @@ template <typename First, typename Second>
 struct VectorTraits<std::pair<First, Second>> {
   using TraitType = std::pair<First, Second>;
 
-  typedef VectorTraits<First> FirstTraits;
-  typedef VectorTraits<Second> SecondTraits;
+  using FirstTraits = VectorTraits<First>;
+  using SecondTraits = VectorTraits<Second>;
 
   static_assert(!IsWeakV<First>, "Weak references are not allowed in Vector");
   static_assert(!IsWeakV<Second>, "Weak references are not allowed in Vector");

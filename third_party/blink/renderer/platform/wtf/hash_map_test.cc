@@ -155,7 +155,7 @@ TEST(HashMaptest, RemoveAdd) {
   DummyRefCounted::ref_invokes_count_ = 0;
   bool is_deleted = false;
 
-  typedef HashMap<int, scoped_refptr<DummyRefCounted>> Map;
+  using Map = HashMap<int, scoped_refptr<DummyRefCounted>>;
   Map map;
 
   scoped_refptr<DummyRefCounted> object =
