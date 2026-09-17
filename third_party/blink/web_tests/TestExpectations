@@ -9019,9 +9019,6 @@ crbug.com/529423495 http/tests/devtools/elements/styles/xsl-transformed.js [ Fai
 # Gardener 2026-07-17
 crbug.com/535696870 [ Linux ] external/wpt/html/semantics/permission-element/bounded-sizes-reftest.tentative.html [ Failure Pass ]
 
-
-crbug.com/510232476 [ Mac13 ] external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children-002.html [ Failure Pass ]
-
 # Gardener 2026-07-28
 crbug.com/539889938 [ Linux ] external/wpt/html/semantics/permission-element/geolocation-element/parent-image-mask.tentative.html [ Failure Pass ]
 crbug.com/539889938 [ Linux ] external/wpt/html/semantics/permission-element/parent-image-mask.tentative.html [ Failure Pass ]
