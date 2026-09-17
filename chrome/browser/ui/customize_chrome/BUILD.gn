@@ -49,3 +49,30 @@ source_set("customize_chrome_base") {
     ]
   }
 }
+
+if (is_android) {
+  source_set("android_browsertests") {
+    testonly = true
+    visibility = [ "//chrome/test:*" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "side_panel_controller_android_browsertest.cc" ]
+    deps = [
+      ":customize_chrome_base",
+      "//base",
+      "//chrome/browser/android/thin_webview",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+      "//chrome/browser/ui/side_panel/test/android:browser_test_support",
+      "//components/search",
+      "//components/sessions:session_id",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/android",
+      "//ui/base",
+    ]
+  }
+}

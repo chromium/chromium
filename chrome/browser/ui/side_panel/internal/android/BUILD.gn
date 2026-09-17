@@ -141,7 +141,6 @@ source_set("browser_tests") {
     ":android",
     "//chrome/browser/android:tabs_public",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/side_panel/android",

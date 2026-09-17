@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/side_panel/test/android/side_panel_android_browser_test_base.h"
 
 #include "base/android/device_info.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
 #include "components/tabs/public/tab_interface.h"
@@ -33,6 +35,17 @@ SidePanelAndroidBrowserTestBase::GetActiveTabInLastActiveBrowser() {
   auto* tab = tab_list->GetActiveTab();
   CHECK(tab) << "No active tab.";
   return tab;
+}
+
+// static:
+BrowserWindowInterface*
+SidePanelAndroidBrowserTestBase::CreateBrowserWindowAsync(Profile* profile) {
+  BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
+      BrowserWindowInterface::Type::TYPE_NORMAL, *profile,
+      /*from_user_gesture=*/false);
+  base::test::TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(create_params), future.GetCallback());
+  return future.Get();
 }
 
 SidePanelAndroidBrowserTestBase::SidePanelAndroidBrowserTestBase() {

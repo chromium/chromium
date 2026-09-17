@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window/test/android/browser_window_android_browsertest_base.h"
 
 class BrowserWindowInterface;
+class Profile;
 
 namespace tabs {
 class TabInterface;
@@ -28,6 +29,10 @@ class SidePanelAndroidBrowserTestBase
 
   // Returns the active tab in this test's last active browser window.
   static tabs::TabInterface* GetActiveTabInLastActiveBrowser();
+
+  // Creates an additional browser window for `profile` and blocks until it is
+  // ready.
+  static BrowserWindowInterface* CreateBrowserWindowAsync(Profile* profile);
 
   // Implements `AndroidBrowserTest`:
   void SetUp() override;

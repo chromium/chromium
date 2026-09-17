@@ -28,6 +28,14 @@ class SidePanelControllerAndroid : public SidePanelControllerBase {
       delete;
   ~SidePanelControllerAndroid() override;
 
+  content::WebContents* GetWebContentsForTesting() const {
+    return web_contents_.get();
+  }
+  thin_webview::android::TabThinWebViewHost* GetWebContentsHostForTesting()
+      const {
+    return web_contents_host_.get();
+  }
+
  private:
   SidePanelNativeView CreateCustomizeChromeView(
       SidePanelEntryScope& scope) override;

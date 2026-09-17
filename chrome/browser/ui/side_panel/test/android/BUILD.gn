@@ -62,6 +62,7 @@ source_set("browser_test_support") {
     "//chrome/browser/glic/public:features",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/browser_window/test:android_browser_test_support",
     "//chrome/browser/ui/side_panel/android",
     "//chrome/browser/ui/side_panel/test/android:browser_test_support_jni",

@@ -9,14 +9,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/run_until.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
 #include "chrome/browser/ui/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
@@ -212,15 +210,6 @@ class AutoOpenSidePanelTabModelObserver : public TabModelObserver {
       side_panel_entry_observers_;
 };
 
-BrowserWindowInterface* CreateBrowserWindowAsync(Profile* profile) {
-  BrowserWindowCreateParams create_params = BrowserWindowCreateParams(
-      BrowserWindowInterface::Type::TYPE_NORMAL, *profile,
-      /*from_user_gesture=*/false);
-  base::test::TestFuture<BrowserWindowInterface*> future;
-  CreateBrowserWindow(std::move(create_params), future.GetCallback());
-  return future.Get();
-}
-
 // Wait until both the Java layout and the C++ state reflect that the side panel
 // is open.
 void WaitUntilOpened(SidePanelCoordinatorAndroid* coordinator) {
@@ -238,6 +227,7 @@ void WaitUntilClosed(SidePanelCoordinatorAndroid* coordinator) {
            coordinator->GetStateForTesting() == SidePanelState::kClosed;
   }));
 }
+
 }  // namespace
 
 class SidePanelCoordinatorAndroidBrowserTest

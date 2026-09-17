@@ -1411,7 +1411,10 @@ if (is_android) {
     }
 
     if (enable_webui_ntp) {
-      deps += [ "//chrome/browser/ui/webui/customize_buttons:browser_tests" ]
+      deps += [
+        "//chrome/browser/ui/customize_chrome:android_browsertests",
+        "//chrome/browser/ui/webui/customize_buttons:browser_tests",
+      ]
     }
 
     if (enable_chrome_android_internal) {
