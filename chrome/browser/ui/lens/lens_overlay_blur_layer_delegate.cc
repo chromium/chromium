@@ -23,6 +23,7 @@ LensOverlayBlurLayerDelegate::LensOverlayBlurLayerDelegate(
     content::RenderWidgetHost* background_view_host)
     : background_view_host_(background_view_host) {
   SetLayer(std::make_unique<ui::LayerTextured>());
+  layer()->SetName("LensOverlayBlurLayer");
   layer()->SetFillsBoundsOpaquely(true);
   layer()->set_delegate(this);
 
