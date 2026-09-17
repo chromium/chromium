@@ -155,16 +155,27 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   }
 
 #if BUILDFLAG(ENABLE_PDF)
-  // text/pdf is an alias for application/pdf for the purpose of invoking the
-  // built-in PDF viewer (crbug.com/40774340). Canonicalize it here -- before
-  // the download decision below -- so the download pref, the PDF viewer
-  // machinery, and the committed WebContents contents MIME type uniformly
-  // observe application/pdf, preserving the invariant that a full-page PDF's
-  // contents MIME type is application/pdf.
   if (response_head->mime_type == "text/pdf") {
+    // text/pdf is an alias for application/pdf for the purpose of invoking the
+    // built-in PDF viewer (crbug.com/40774340). Canonicalize it here -- before
+    // the download decision below -- so the download pref, the PDF viewer
+    // machinery, and the committed WebContents contents MIME type uniformly
+    // observe application/pdf, preserving the invariant that a full-page PDF's
+    // contents MIME type is application/pdf.
     response_head->mime_type = pdf::kPDFMimeType;
+  } else if (response_head->mime_type == pdf::kPDFMimeType &&
+             response_url.SchemeIsHTTPOrHTTPS() && response_head->headers) {
+    // If net::SniffMimeType() sniffed an HTTP(S) "text/plain" response as
+    // "application/pdf", revert `response_head->mime_type` back to
+    // "text/plain". The PDF viewer rejects HTTP(S) responses with a
+    // "text/plain" Content-Type header, so do not intercept the response.
+    std::string original_header_mime_type;
+    if (response_head->headers->GetMimeType(&original_header_mime_type) &&
+        original_header_mime_type == "text/plain") {
+      response_head->mime_type = original_header_mime_type;
+    }
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_PDF)
 
   if (content::download_utils::MustDownload(
           web_contents->GetBrowserContext(), response_url,

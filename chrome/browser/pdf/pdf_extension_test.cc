@@ -1052,17 +1052,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsureTextPdfExtensionLoaded) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, BinaryPdfServedAsTextPlain) {
-  // When a PDF contains binary bytes in the first 1024 bytes,
-  // net::SniffMimeType() sniffs "text/plain" for binary content and matches the
-  // "%PDF-" magic number, overriding the MIME type to "application/pdf" and
-  // loading the PDF Viewer. However, DocumentLoaderImpl::Init() rejects HTTP
-  // responses with a "text/plain" Content-Type header, so loading the PDF
-  // document fails.
-  // TODO(crbug.com/40056239): Render as plain text instead?
+  // Even when a PDF contains binary bytes in the first 1024 bytes, causing
+  // net::SniffMimeType() to match the "%PDF-" magic number, the PDF Viewer does
+  // not load for HTTP responses with a "text/plain" Content-Type header and the
+  // content is rendered as plain text.
   const GURL url = embedded_test_server()->GetURL("/text_plain/pdf/test.pdf");
-  EXPECT_FALSE(LoadPdf(url));
-  EXPECT_EQ(pdf::kPDFMimeType, GetActiveWebContents()->GetContentsMimeType());
-  EXPECT_EQ(1, CountPDFProcesses());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_EQ("text/plain", GetActiveWebContents()->GetContentsMimeType());
+  EXPECT_EQ(0, CountPDFProcesses());
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MostlyTextPdfServedAsTextPlain) {
