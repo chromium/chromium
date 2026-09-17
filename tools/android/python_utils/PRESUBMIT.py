@@ -12,15 +12,17 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckChange(input_api, output_api):
+    """Presubmit checks to run on upload and on commit of a CL."""
     # These tests contain too many Linux assumptions (pwd command, output when
     # files are missing) for them to run on Windows, so exit early.
     if input_api.is_windows:
         return []
-    """Presubmit checks to run on upload and on commit of a CL."""
+    if not input_api.HasAffectedFiles(extensions='.py'):
+        return []
     files_to_skip = []
     # Skip git tests if running on non-git workspace.
     if input_api.change.scm != 'git':
-        files_to_skip.append('.+git_metadata_utils_unittest\.py$')
+        files_to_skip.append(r'.+git_metadata_utils_unittest\.py$')
 
     checks = input_api.canned_checks.GetUnitTestsRecursively(
         input_api,

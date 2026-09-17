@@ -13,6 +13,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def _PythonChecks(input_api, output_api):
+    if not input_api.HasAffectedFiles(extensions=('.py', '.java')):
+        return []
     _CHROMIUM_SRC_ROOT = (
         pathlib.Path(input_api.PresubmitLocalPath())
         .parents[3]

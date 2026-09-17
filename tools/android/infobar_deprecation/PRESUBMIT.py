@@ -8,6 +8,8 @@ Runs Python unit tests in /tools/android/infobar_deprecation on upload.
 
 
 def CheckChangeOnUpload(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py'):
+    return []
   result = []
   result.extend(
     input_api.canned_checks.RunUnitTests(

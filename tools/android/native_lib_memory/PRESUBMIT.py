@@ -10,6 +10,11 @@ for more details on the presubmit API built into depot_tools.
 
 
 def CommonChecks(input_api, output_api):
+  if not (
+    input_api.HasAffectedFiles(extensions='.py')
+    or input_api.HasAffectedFiles(path='run_tests')
+  ):
+    return []
   output = []
   files_to_skip = []
   disabled_warnings = [
