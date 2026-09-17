@@ -93,7 +93,6 @@ public class MerchantTrustSignalsStorageFactoryTest {
 
     @Test
     public void testDestroy() {
-
         MerchantTrustSignalsStorageFactory factory =
                 new MerchantTrustSignalsStorageFactory(mProfileSupplier);
         factory.getForLastUsedProfile();

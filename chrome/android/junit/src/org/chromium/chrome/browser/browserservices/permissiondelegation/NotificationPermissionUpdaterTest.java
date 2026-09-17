@@ -60,7 +60,6 @@ public class NotificationPermissionUpdaterTest {
 
     @Before
     public void setUp() {
-
         PackageManager pm = RuntimeEnvironment.application.getPackageManager();
         mShadowPackageManager = shadowOf(pm);
         mShadowPackageManager.installPackage(generateTestPackageInfo(PACKAGE_NAME));
@@ -118,7 +117,6 @@ public class NotificationPermissionUpdaterTest {
     @Test
     @Feature("TrustedWebActivities")
     public void updatesPermission_onSubsequentCalls() {
-
         installTrustedWebActivityService(ORIGIN, PACKAGE_NAME);
         setNotificationPermission(ContentSetting.ALLOW);
         NotificationPermissionUpdater.onOriginVerified(ORIGIN, URL, PACKAGE_NAME);
@@ -160,7 +158,6 @@ public class NotificationPermissionUpdaterTest {
     @Test
     @Feature("TrustedWebActivities")
     public void doesntUnregister_whenOtherClientsRemain() {
-
         installTrustedWebActivityService(ORIGIN, PACKAGE_NAME);
         setNotificationPermission(ContentSetting.ALLOW);
 

@@ -858,7 +858,6 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
     @Test
     public void testOnItemClicked_LocalHistoryAlreadyHasBitmapDoesNotSaveToDisk() {
-
         String fileIdHash = "test_hash_saves";
         NtpBackgroundDataImageBase localThemeInList =
                 prepareLocalHistoryWithThemeCollectionImpl(fileIdHash);
@@ -895,7 +894,6 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
     @Test
     public void testOnItemClicked_LocalHistoryNullBitmapDoesNotSave() {
-
         String fileIdHash = "test_hash_null_bitmap";
         NtpBackgroundDataImageBase localThemeInList =
                 prepareLocalHistoryWithThemeCollectionImpl(fileIdHash);

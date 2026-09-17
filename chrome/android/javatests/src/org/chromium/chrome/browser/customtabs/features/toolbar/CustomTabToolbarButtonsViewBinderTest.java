@@ -279,7 +279,6 @@ public class CustomTabToolbarButtonsViewBinderTest {
     @UiThreadTest
     @Feature({"CustomTabs"})
     public void testOptionalButton() {
-
         mToolbar.ensureOptionalButtonInflated();
         mModel.set(CustomTabToolbarButtonsProperties.OPTIONAL_BUTTON_VISIBLE, true);
 

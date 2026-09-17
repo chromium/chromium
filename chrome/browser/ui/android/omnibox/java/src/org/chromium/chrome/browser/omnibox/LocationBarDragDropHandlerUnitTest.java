@@ -136,7 +136,6 @@ public class LocationBarDragDropHandlerUnitTest {
 
     @Test
     public void testOnDrag_Drop_FileUri() {
-
         when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
         when(mDragEvent.getClipData()).thenReturn(mClipData);
         when(mClipData.getItemCount()).thenReturn(1);
@@ -157,7 +156,6 @@ public class LocationBarDragDropHandlerUnitTest {
 
     @Test
     public void testOnDrag_Drop_ContentUri() {
-
         when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
         when(mDragEvent.getClipData()).thenReturn(mClipData);
         when(mClipData.getItemCount()).thenReturn(1);
@@ -191,7 +189,6 @@ public class LocationBarDragDropHandlerUnitTest {
 
     @Test
     public void testOnDrag_Drop_ContentUri_LoadFailed() {
-
         when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
         when(mDragEvent.getClipData()).thenReturn(mClipData);
         when(mClipData.getItemCount()).thenReturn(1);
@@ -220,7 +217,6 @@ public class LocationBarDragDropHandlerUnitTest {
 
     @Test
     public void testOnDrag_Drop_ContentUri_TabDestroyed() {
-
         when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
         when(mDragEvent.getClipData()).thenReturn(mClipData);
         when(mClipData.getItemCount()).thenReturn(1);
@@ -342,7 +338,6 @@ public class LocationBarDragDropHandlerUnitTest {
 
     @Test
     public void testOnDrag_Drop_BrowsableIntent() {
-
         when(mDragEvent.getAction()).thenReturn(DragEvent.ACTION_DROP);
         when(mDragEvent.getClipData()).thenReturn(mClipData);
         when(mClipData.getItemCount()).thenReturn(1);

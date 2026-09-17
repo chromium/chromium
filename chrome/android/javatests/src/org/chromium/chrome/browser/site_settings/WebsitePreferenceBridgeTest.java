@@ -109,7 +109,6 @@ public class WebsitePreferenceBridgeTest {
     @SmallTest
     @UseMethodParameter(EmbargoedParams.class)
     public void testModifyContentSettingsCustomScope(boolean isEmbargoed) {
-
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowserContextHandle browserContext =

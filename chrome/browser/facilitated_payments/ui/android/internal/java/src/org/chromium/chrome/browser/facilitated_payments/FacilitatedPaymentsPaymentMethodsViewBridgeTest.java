@@ -170,7 +170,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     public void requestShowContent_callsControllerRequestShowContent() {
-
         mViewBridge.requestShowContent(BANK_ACCOUNTS);
 
         verify(mBottomSheetController)
@@ -180,7 +179,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     public void requestShowContent_bottomSheetContentImplIsStubbed() {
-
         mViewBridge.requestShowContent(BANK_ACCOUNTS);
 
         ArgumentCaptor<FacilitatedPaymentsPaymentMethodsView> contentCaptor =
@@ -206,7 +204,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Test
     @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void requestShowContentForPaymentLink_callsControllerRequestShowContent() {
-
         mViewBridge.requestShowContentForPaymentLink(EWALLETS, APPS);
 
         verify(mBottomSheetController)
@@ -217,7 +214,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Test
     @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void requestShowContentForPaymentLink_callsControllerRequestShowContent_nullAppArray() {
-
         mViewBridge.requestShowContentForPaymentLink(EWALLETS, null);
 
         verify(mBottomSheetController)
@@ -228,7 +224,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Test
     @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void requestShowContentForPaymentLink_bottomSheetContentImplIsStubbed() {
-
         mViewBridge.requestShowContentForPaymentLink(EWALLETS, APPS);
 
         ArgumentCaptor<FacilitatedPaymentsPaymentMethodsView> contentCaptor =
@@ -254,7 +249,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     public void showPixAccountLinkingPrompt_callsControllerRequestShowContent() {
-
         mViewBridge.showPixAccountLinkingPrompt(/* strikeCount= */ 0, "test@gmail.com");
 
         verify(mBottomSheetController)
@@ -264,7 +258,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     public void showPixAccountLinkingSuccessScreen_callsControllerRequestShowContent() {
-
         mViewBridge.showPixAccountLinkingSuccessScreen();
 
         verify(mBottomSheetController)

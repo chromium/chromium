@@ -250,7 +250,6 @@ public class NonCardPaymentMethodsManagementFragmentTest {
     @Test
     @MediumTest
     public void testEwalletAccountShown() {
-
         AutofillTestHelper.addEwallet(EWALLET_ACCOUNT);
         SettingsActivityInterface activity = mSettingsActivityTestRule.startSettingsActivity();
         String expectedPrefSummary =

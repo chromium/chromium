@@ -417,7 +417,6 @@ public class ChromeActivityUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)
     public void testGetResources() {
-
         TestChromeActivity chromeActivity = new TestChromeActivity();
         chromeActivity.setThemeResourceProviderForTesting(mThemeResourceProvider);
         chromeActivity.getResources();

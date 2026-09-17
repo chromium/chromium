@@ -378,7 +378,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testTabGridDialogVisibilitySupplier() {
-
         Supplier<Boolean> tabGridDialogVisibilitySupplier =
                 mCoordinator.getTabGridDialogVisibilitySupplier();
 

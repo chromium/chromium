@@ -485,7 +485,6 @@ public class ToolbarPhoneTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testOptionalButton_NotDrawnWhenNotVisible() {
-
         Drawable drawable =
                 AppCompatResources.getDrawable(
                         mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);
@@ -531,7 +530,6 @@ public class ToolbarPhoneTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testOptionalButton_DrawnWhenVisible() {
-
         Drawable drawable =
                 AppCompatResources.getDrawable(
                         mActivityTestRule.getActivity(), R.drawable.ic_toolbar_share_offset_24dp);

@@ -409,7 +409,6 @@ public class OptionalButtonViewTest {
 
     @Test
     public void testSetIconDrawableWithAnimation_swapIcons_withAndWithoutTint() {
-
         // First button has an icon that supports tinting (e.g. new tab).
         Drawable firstButtonIcon =
                 AppCompatResources.getDrawable(mActivity, R.drawable.ic_star_24dp);

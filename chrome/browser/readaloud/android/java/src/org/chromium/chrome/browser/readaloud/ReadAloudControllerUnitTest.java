@@ -2808,7 +2808,6 @@ public class ReadAloudControllerUnitTest {
 
     @Test
     public void testIsPageTranslated() {
-
         mFakeTranslateBridge.setIsPageTranslated(true);
         assertTrue(mController.isTranslated(mTab));
     }

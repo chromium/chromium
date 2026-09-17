@@ -747,7 +747,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onTextChanged_emptyTextTriggersZeroSuggest() {
-
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         @PageClassification int pageClassification = PageClassification.BLANK;
@@ -809,7 +808,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onTextChanged_nonEmptyTextTriggersSuggestions() {
-
         GURL url = JUnitTestGURLs.BLUE_1;
         @PageClassification int pageClassification = PageClassification.BLANK;
         var session = createSession(url, url.getSpec(), pageClassification);
@@ -826,7 +824,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onTextChanged_cancelsPendingRequests() {
-
         GURL url = JUnitTestGURLs.BLUE_1;
         @PageClassification int pageClassification = PageClassification.BLANK;
         var session = createSession(url, url.getSpec(), pageClassification);
@@ -1473,7 +1470,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void setSessionState_trackSessionState() {
-
         assertFalse(mMediator.isOmniboxSessionActiveForTesting());
 
         mMediator.beginInput(createEmptySession());
@@ -1528,7 +1524,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void requestToUiModelTime_recordedForZps() {
-
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         @PageClassification int pageClassification = PageClassification.BLANK;
@@ -1556,7 +1551,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void requestToUiModelTime_notRecordedWhenCanceled_LastResult() {
-
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         @PageClassification int pageClassification = PageClassification.BLANK;
@@ -1580,7 +1574,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void requestToUiModelTime_notRecordedWhenCanceled_FirstResult() {
-
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         @PageClassification int pageClassification = PageClassification.BLANK;
@@ -1605,7 +1598,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void requestToUiModelTime_recordsBothHistogramsWhenFirstResponseIsFinal() {
-
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         @PageClassification int pageClassification = PageClassification.BLANK;
@@ -1623,7 +1615,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void requestToUiModelTime_subsequentKeyStrokesReportTimeSinceLastKeystroke() {
-
         UnsyncedSuggestionsListAnimation.setAnimationsDisabledForTesting(
                 /* disabledForTesting= */ true);
 
@@ -1843,7 +1834,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onTopResumedActivityChanged_nonZeroSuggest() {
-
         GURL url = JUnitTestGURLs.BLUE_1;
         @PageClassification int pageClassification = PageClassification.BLANK;
         var session = createSession(url, url.getSpec(), pageClassification);
@@ -1870,7 +1860,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onTopResumedActivityChanged_zeroSuggest() {
-
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
         @PageClassification int pageClassification = PageClassification.BLANK;
@@ -1914,7 +1903,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onTextChanged_cachedZpsNotInvokedInTypedContext() {
-
         var session = createSession(PAGE_URL, PAGE_TITLE, 0);
         mMediator.beginInput(session);
 
@@ -1961,7 +1949,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onTextChanged_dontCacheTypedSuggestions() {
-
         for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
                 pageClass <= PageClassification.MAX_VALUE;
                 pageClass++) {
@@ -1975,7 +1962,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onTextChanged_dontCacheCachedSuggestions() {
-
         for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
                 pageClass <= PageClassification.MAX_VALUE;
                 pageClass++) {

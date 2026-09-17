@@ -243,7 +243,6 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void translateChildrenVertical() {
-
         mDropdown.translateChildrenVertical(45.6f);
         mDropdown.onChildAttachedToWindow(mView);
         verify(mView).setTranslationY(45.6f);
@@ -254,7 +253,6 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void setChildAlpha() {
-
         mDropdown.setChildAlpha(0.6f);
         mDropdown.onChildAttachedToWindow(mView);
         verify(mView).setAlpha(0.6f);

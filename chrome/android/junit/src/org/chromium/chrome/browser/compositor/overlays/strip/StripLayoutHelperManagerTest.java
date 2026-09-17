@@ -1241,7 +1241,6 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     public void testPushAndUpdateStrip() {
-
         mTabStripHeightSupplier.set(0);
         mStripLayoutHelperManager.onHeightChanged(0, 0, true);
 

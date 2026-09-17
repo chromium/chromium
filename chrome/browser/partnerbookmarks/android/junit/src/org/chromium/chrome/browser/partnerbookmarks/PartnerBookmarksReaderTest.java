@@ -109,7 +109,6 @@ public class PartnerBookmarksReaderTest {
 
     @Test
     public void partnerBookmarksCreationComplete_NotCalledWithoutBrowserCustomizations() {
-
         PartnerBookmarksReader reader =
                 createPartnerBookmarksReader(
                         /* browserCustomizationsInitialized= */ true,

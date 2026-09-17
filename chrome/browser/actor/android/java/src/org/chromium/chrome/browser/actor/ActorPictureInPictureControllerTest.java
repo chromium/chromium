@@ -373,7 +373,6 @@ public class ActorPictureInPictureControllerTest {
 
     @Test
     public void testAttemptPictureInPicture_NoTasks() {
-
         mController.attemptPictureInPicture();
 
         verify(mActivity, never()).enterPictureInPictureMode();

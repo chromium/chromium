@@ -48,7 +48,6 @@ public class TabStateThemeResourceProviderTest {
 
     @Before
     public void setUp() {
-
         doReturn(true).when(mIncognitoTab).isIncognitoBranded();
         doReturn(false).when(mRegularTab).isIncognitoBranded();
     }
@@ -108,7 +107,6 @@ public class TabStateThemeResourceProviderTest {
 
     @Test
     public void testNonBrowsingLayoutDisablesOverlay() {
-
         createProvider();
         doReturn(LayoutType.HUB).when(mLayoutManager).getActiveLayoutType();
         mActivityTabProvider.setForTesting(mIncognitoTab);
