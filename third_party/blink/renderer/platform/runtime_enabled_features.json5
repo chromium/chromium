@@ -1082,6 +1082,13 @@
       status: "experimental",
     },
     {
+      // Kill switch for https://crbug.com/385194416. Makes the canvas 2D
+      // context's `direction` getter reflect the stored keyword (including
+      // "inherit") instead of always resolving it to "ltr"/"rtl".
+      name: "CanvasTextDirectionReflect",
+      status: "stable",
+    },
+    {
       // https://crbug.com/479240778
       name: "CanvasTextMetricsPreciseBounds",
       status: "experimental",
