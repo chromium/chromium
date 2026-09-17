@@ -36,6 +36,8 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
+#include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -54,6 +56,7 @@
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/btm_service.h"
@@ -73,6 +76,7 @@
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
@@ -2399,6 +2403,288 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_RelatedWebsiteSets,
                   .Set("serviceSites", base::ListValue().Append(kServiceSite)));
 
   EXPECT_EQ(*set_list, expected);
+}
+
+class DevToolsProtocolTest_PrivateVerificationTokens
+    : public DevToolsProtocolTest {
+ public:
+  DevToolsProtocolTest_PrivateVerificationTokens() {
+    scoped_feature_list_.InitAndEnableFeature(
+        net::features::kEnablePrivateVerificationTokens);
+  }
+
+  void SetUpOnMainThread() override {
+    DevToolsProtocolTest::SetUpOnMainThread();
+    pvt_service_ = PrivateVerificationTokensServiceFactory::GetForProfile(
+        browser()->GetProfile());
+    ASSERT_NE(pvt_service_, nullptr);
+    if (!pvt_service_->is_initialized()) {
+      base::test::TestFuture<void> init_future;
+      class Waiter : public PrivateVerificationTokensService::Observer {
+       public:
+        explicit Waiter(base::OnceClosure callback)
+            : callback_(std::move(callback)) {}
+        void OnInitializationComplete() override { std::move(callback_).Run(); }
+
+       private:
+        base::OnceClosure callback_;
+      };
+      Waiter waiter(init_future.GetCallback());
+      base::ScopedObservation<PrivateVerificationTokensService,
+                              PrivateVerificationTokensService::Observer>
+          observation(&waiter);
+      observation.Observe(pvt_service_);
+      ASSERT_TRUE(init_future.Wait());
+    }
+  }
+
+  void TearDownOnMainThread() override {
+    pvt_service_ = nullptr;
+    DevToolsProtocolTest::TearDownOnMainThread();
+  }
+
+  void StoreTestTokens(const url::Origin& issuer, size_t count) {
+    std::vector<private_verification_tokens::PrivateVerificationTokensToken>
+        tokens;
+    for (size_t i = 0; i < count; ++i) {
+      tokens.emplace_back(issuer, std::vector<uint8_t>{1, 2, 3}, /*key_id=*/10,
+                          base::Time::Now() + base::Days(1), /*version=*/1);
+    }
+    base::test::TestFuture<void> store_future;
+    pvt_service_->StoreTokens(std::move(tokens), store_future.GetCallback());
+    ASSERT_TRUE(store_future.Wait());
+  }
+
+ protected:
+  raw_ptr<PrivateVerificationTokensService> pvt_service_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_PrivateVerificationTokens,
+                       ManagePrivateVerificationTokens) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), url));
+  Attach();
+
+  const url::Origin issuer_origin =
+      url::Origin::Create(GURL("https://issuer.example.com"));
+
+  // 1. Initial state: no tokens.
+  {
+    SendCommandSync("Storage.getPrivateVerificationTokens");
+    ASSERT_TRUE(result());
+    EXPECT_THAT(result()->FindList("tokens"),
+                testing::Pointee(testing::IsEmpty()));
+  }
+
+  // 2. Store tokens and verify getPrivateVerificationTokens.
+  StoreTestTokens(issuer_origin, 3);
+  std::string first_token_id;
+  {
+    SendCommandSync("Storage.getPrivateVerificationTokens");
+    ASSERT_TRUE(result());
+    const base::ListValue* tokens_list = result()->FindList("tokens");
+    ASSERT_THAT(tokens_list, testing::Pointee(testing::SizeIs(3)));
+
+    const base::DictValue* first_token = tokens_list->front().GetIfDict();
+    ASSERT_TRUE(first_token);
+    const std::string* id = first_token->FindString("id");
+    ASSERT_TRUE(id);
+    EXPECT_FALSE(id->empty());
+    first_token_id = *id;
+
+    EXPECT_THAT(first_token->FindString("issuerOrigin"),
+                testing::Pointee(testing::Eq(issuer_origin.Serialize())));
+    EXPECT_THAT(first_token->FindInt("keyId"), testing::Optional(10));
+    EXPECT_THAT(first_token->FindInt("version"), testing::Optional(1));
+    const std::string* token_b64 = first_token->FindString("token");
+    ASSERT_TRUE(token_b64);
+    EXPECT_THAT(base::Base64Decode(*token_b64),
+                testing::Optional(testing::ElementsAre(1, 2, 3)));
+    EXPECT_TRUE(first_token->FindDouble("expiration").has_value());
+    EXPECT_TRUE(first_token->FindDouble("creationTime").has_value());
+  }
+
+  // 3. Delete one token by ID.
+  {
+    base::DictValue params;
+    params.Set("tokenId", first_token_id);
+    SendCommandSync("Storage.deletePrivateVerificationToken",
+                    std::move(params));
+    ASSERT_TRUE(result());
+
+    // Verify count is now 2.
+    SendCommandSync("Storage.getPrivateVerificationTokens");
+    ASSERT_TRUE(result());
+    EXPECT_THAT(result()->FindList("tokens"),
+                testing::Pointee(testing::SizeIs(2)));
+  }
+
+  // 4. Clear all tokens for the issuer.
+  {
+    base::DictValue params;
+    params.Set("issuerOrigin", issuer_origin.Serialize());
+    SendCommandSync("Storage.clearPrivateVerificationTokens",
+                    std::move(params));
+    ASSERT_TRUE(result());
+
+    // Verify tokens are cleared.
+    SendCommandSync("Storage.getPrivateVerificationTokens");
+    ASSERT_TRUE(result());
+    EXPECT_THAT(result()->FindList("tokens"),
+                testing::Pointee(testing::IsEmpty()));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_PrivateVerificationTokens,
+                       TrackPrivateVerificationTokens) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), url));
+  Attach();
+
+  const url::Origin issuer_origin =
+      url::Origin::Create(GURL("https://issuer.example.com"));
+
+  // Enable tracking.
+  {
+    base::DictValue params;
+    params.Set("enable", true);
+    SendCommandSync("Storage.setPrivateVerificationTokensTracking",
+                    std::move(params));
+    ASSERT_TRUE(result());
+  }
+
+  // 1. Storing tokens emits Storage.privateVerificationTokensUpdated.
+  StoreTestTokens(issuer_origin, 2);
+  WaitForNotification("Storage.privateVerificationTokensUpdated",
+                      /*allow_existing=*/true);
+
+  SendCommandSync("Storage.getPrivateVerificationTokens");
+  ASSERT_TRUE(result());
+  const base::ListValue* tokens_list = result()->FindList("tokens");
+  ASSERT_THAT(tokens_list, testing::Pointee(testing::SizeIs(2)));
+  const std::string* first_token_id =
+      tokens_list->front().GetIfDict()->FindString("id");
+  ASSERT_TRUE(first_token_id);
+
+  // 2. Deleting a single token emits Storage.privateVerificationTokensUpdated.
+  {
+    base::DictValue params;
+    params.Set("tokenId", *first_token_id);
+    SendCommandSync("Storage.deletePrivateVerificationToken",
+                    std::move(params));
+    ASSERT_TRUE(result());
+    WaitForNotification("Storage.privateVerificationTokensUpdated",
+                        /*allow_existing=*/true);
+  }
+
+  // 3. Clearing tokens emits Storage.privateVerificationTokensUpdated.
+  {
+    base::DictValue params;
+    params.Set("issuerOrigin", issuer_origin.Serialize());
+    SendCommandSync("Storage.clearPrivateVerificationTokens",
+                    std::move(params));
+    ASSERT_TRUE(result());
+    WaitForNotification("Storage.privateVerificationTokensUpdated",
+                        /*allow_existing=*/true);
+  }
+
+  // 4. Disabling tracking stops emitting events.
+  {
+    base::DictValue params;
+    params.Set("enable", false);
+    SendCommandSync("Storage.setPrivateVerificationTokensTracking",
+                    std::move(params));
+    ASSERT_TRUE(result());
+  }
+
+  StoreTestTokens(issuer_origin, 1);
+  EXPECT_FALSE(
+      HasExistingNotification("Storage.privateVerificationTokensUpdated"));
+}
+
+class DevToolsProtocolTest_PrivateVerificationTokensDisabled
+    : public DevToolsProtocolTest {
+ public:
+  DevToolsProtocolTest_PrivateVerificationTokensDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        net::features::kEnablePrivateVerificationTokens);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_PrivateVerificationTokensDisabled,
+                       ServiceNotCreatedWhenFeatureDisabled) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), url));
+  Attach();
+
+  EXPECT_EQ(PrivateVerificationTokensServiceFactory::GetForProfile(
+                browser()->GetProfile()),
+            nullptr);
+
+  // 1. Storage.getPrivateVerificationTokens
+  {
+    SendCommandSync("Storage.getPrivateVerificationTokens");
+    EXPECT_FALSE(result());
+    ASSERT_TRUE(error());
+    EXPECT_THAT(error()->FindString("message"),
+                testing::Pointee(testing::Eq(
+                    "Private Verification Tokens service is not available")));
+  }
+
+  // 2. Storage.clearPrivateVerificationTokens
+  {
+    base::DictValue params;
+    params.Set("issuerOrigin", "https://issuer.example.com");
+    SendCommandSync("Storage.clearPrivateVerificationTokens",
+                    std::move(params));
+    EXPECT_FALSE(result());
+    ASSERT_TRUE(error());
+    EXPECT_THAT(error()->FindString("message"),
+                testing::Pointee(testing::Eq(
+                    "Private Verification Tokens service is not available")));
+  }
+
+  // 3. Storage.deletePrivateVerificationToken
+  {
+    base::DictValue params;
+    params.Set("tokenId", "1");
+    SendCommandSync("Storage.deletePrivateVerificationToken",
+                    std::move(params));
+    EXPECT_FALSE(result());
+    ASSERT_TRUE(error());
+    EXPECT_THAT(error()->FindString("message"),
+                testing::Pointee(testing::Eq(
+                    "Private Verification Tokens service is not available")));
+  }
+
+  // 4. Storage.setPrivateVerificationTokensTracking
+  {
+    base::DictValue params;
+    params.Set("enable", true);
+    SendCommandSync("Storage.setPrivateVerificationTokensTracking",
+                    std::move(params));
+    EXPECT_FALSE(result());
+    ASSERT_TRUE(error());
+    EXPECT_THAT(error()->FindString("message"),
+                testing::Pointee(testing::Eq(
+                    "Private Verification Tokens service is not available")));
+  }
+
+  EXPECT_EQ(PrivateVerificationTokensServiceFactory::GetForProfileIfExists(
+                browser()->GetProfile()),
+            nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,

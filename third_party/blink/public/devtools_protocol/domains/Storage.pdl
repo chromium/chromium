@@ -40,6 +40,25 @@ experimental domain Storage
       string issuerOrigin
       number count
 
+  # Details of a stored Private Verification Token.
+  experimental type PrivateVerificationToken extends object
+    properties
+      # Unique identifier of the token in the database.
+      string id
+      # Origin of the token issuer.
+      string issuerOrigin
+      # Public key ID used to issue the token.
+      integer keyId
+      # Expiration timestamp in seconds since the epoch.
+      Network.TimeSinceEpoch expiration
+      # Token creation timestamp in seconds since the epoch.
+      Network.TimeSinceEpoch creationTime
+      # Token protocol version.
+      integer version
+      # Base64-encoded serialized token.
+      string token
+
+
 
   type StorageBucketsDurability extends string
     enum
@@ -209,6 +228,27 @@ experimental domain Storage
       # True if any tokens were deleted, false otherwise.
       boolean didDeleteTokens
 
+  # Returns all stored Private Verification Tokens for the current browsing
+  # context.
+  experimental command getPrivateVerificationTokens
+    returns
+      array of PrivateVerificationToken tokens
+
+  # Removes all Private Verification Tokens issued by the provided issuerOrigin.
+  experimental command clearPrivateVerificationTokens
+    parameters
+      string issuerOrigin
+
+  # Removes a specific Private Verification Token by its ID.
+  experimental command deletePrivateVerificationToken
+    parameters
+      string tokenId
+
+  # Set tracking for Private Verification Tokens.
+  experimental command setPrivateVerificationTokensTracking
+    parameters
+      boolean enable
+
   # Set tracking for a storage key's buckets.
   experimental command setStorageBucketTracking
     parameters
@@ -278,6 +318,9 @@ experimental domain Storage
   event storageBucketDeleted
     parameters
       string bucketId
+
+  # Private Verification Tokens have been stored or deleted.
+  experimental event privateVerificationTokensUpdated
 
   # A single Related Website Set object.
   experimental type RelatedWebsiteSet extends object

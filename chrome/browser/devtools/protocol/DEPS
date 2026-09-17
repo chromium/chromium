@@ -14,5 +14,11 @@ specific_include_rules = {
   ],
   "devtools_iwa_browsertest\\.cc": [
     "+components/web_package/signed_web_bundles"
-  ]
+  ],
+  "storage_handler\\.cc": [
+    "+components/private_verification_tokens/common",
+  ],
+  "devtools_protocol_browsertest\\.cc": [
+    "+components/private_verification_tokens/common",
+  ],
 }
