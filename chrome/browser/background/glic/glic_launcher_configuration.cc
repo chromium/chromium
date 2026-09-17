@@ -58,21 +58,36 @@ GlicLauncherConfiguration::GlicLauncherConfiguration(Observer* manager)
                                        base::Value(default_hotkey));
     }
 
+    // TODO(b/563018760): Remove this migration logic in 6-12 months once
+    // existing users have migrated.
     if (base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope) &&
-        !local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated)) {
-      std::string hotkey_str =
-          local_state->GetString(prefs::kGlicLauncherHotkey);
-      bool is_default_or_empty = hotkey_str.empty();
-      if (!is_default_or_empty) {
-        const base::Value* default_value =
-            local_state->GetDefaultPrefValue(prefs::kGlicLauncherHotkey);
-        if (default_value && default_value->GetString() == hotkey_str) {
-          is_default_or_empty = true;
+        !local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2)) {
+      // Existing users who completed FRE default to global scope, while new
+      // users default to local scope.
+      // We check `prefs::kGlicLauncherEnabled` in local_state rather than the
+      // FRE profile pref (`prefs::kGlicCompletedFre`) because hotkeys are
+      // machine-level settings initialized at startup before user profiles are
+      // loaded. When a user completes FRE, `kGlicLauncherEnabled` is written
+      // to local_state.
+      const bool has_launcher_pref =
+          local_state->HasPrefPath(prefs::kGlicLauncherEnabled);
+
+      if (has_launcher_pref) {
+        // If an existing user explicitly disabled the launcher, respect the
+        // disabled state by clearing the hotkey so it does not inadvertently
+        // activate.
+        if (!local_state->GetBoolean(prefs::kGlicLauncherEnabled)) {
+          local_state->SetString(prefs::kGlicLauncherHotkey, "");
         }
+        const std::string hotkey_str =
+            local_state->GetString(prefs::kGlicLauncherHotkey);
+        local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled,
+                                !hotkey_str.empty());
+      } else {
+        // New users default to local scope.
+        local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled, false);
       }
-      local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled,
-                              !is_default_or_empty);
-      local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated, true);
+      local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2, true);
     }
 
     pref_registrar_.Init(local_state);

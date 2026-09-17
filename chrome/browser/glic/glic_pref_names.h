@@ -41,8 +41,9 @@ inline constexpr char kGlicHotkeyGlobalScopeEnabled[] =
     "glic.hotkey_global_scope_enabled";
 
 // Boolean pref that tracks if the hotkey scope has been migrated.
-inline constexpr char kGlicHotkeyGlobalScopeMigrated[] =
-    "glic.hotkey_global_scope_migrated";
+// TODO(b/563018760): Deprecate and remove after 6-12 months.
+inline constexpr char kGlicHotkeyGlobalScopeMigratedV2[] =
+    "glic.hotkey_global_scope_migrated_v2";
 
 // String pref that keeps track of the non-localized version of the registered
 // selection hotkey for Glic.

@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -36,6 +37,20 @@ class GlicLauncherConfigurationTest : public testing::Test {
 
   PrefService* local_state() {
     return TestingBrowserProcess::GetGlobal()->local_state();
+  }
+
+  void SetUp() override {
+    local_state()->ClearPref(prefs::kGlicLauncherEnabled);
+    local_state()->ClearPref(prefs::kGlicLauncherHotkey);
+    local_state()->ClearPref(prefs::kGlicHotkeyGlobalScopeEnabled);
+    local_state()->ClearPref(prefs::kGlicHotkeyGlobalScopeMigratedV2);
+  }
+
+  void TearDown() override {
+    local_state()->ClearPref(prefs::kGlicLauncherEnabled);
+    local_state()->ClearPref(prefs::kGlicLauncherHotkey);
+    local_state()->ClearPref(prefs::kGlicHotkeyGlobalScopeEnabled);
+    local_state()->ClearPref(prefs::kGlicHotkeyGlobalScopeMigratedV2);
   }
 
  private:
@@ -114,37 +129,77 @@ TEST_F(GlicLauncherConfigurationTest, HotkeyScope_Enabled_Empty) {
   EXPECT_FALSE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
 }
 
-TEST_F(GlicLauncherConfigurationTest, HotkeyScope_Migration_CustomHotkey) {
+TEST_F(GlicLauncherConfigurationTest,
+       HotkeyScope_Migration_ExistingUser_DefaultHotkey) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
 
-  // Set custom hotkey and ensure migrated is false.
+  // Existing user has launcher enabled and default hotkey.
+  local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
+
+  MockObserver observer;
+  GlicLauncherConfiguration config{&observer};
+  // Should migrate to true (Global scope).
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+  EXPECT_EQ(GlicLauncherConfiguration::GetToggleHotkey(),
+            LocalHotkeyManager::GetDefaultAccelerator(
+                LocalHotkeyManager::Command::kPanelToggle));
+}
+
+TEST_F(GlicLauncherConfigurationTest,
+       HotkeyScope_Migration_ExistingUser_CustomHotkey) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+
+  // Existing user has launcher enabled and custom hotkey.
+  local_state()->SetBoolean(prefs::kGlicLauncherEnabled, true);
   const ui::Accelerator hotkey(ui::VKEY_K, ui::EF_ALT_DOWN);
   local_state()->SetString(prefs::kGlicLauncherHotkey,
                            ui::Command::AcceleratorToString(hotkey));
-  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated, false);
-  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled, false);
 
   MockObserver observer;
   GlicLauncherConfiguration config{&observer};
   // Should migrate to true.
   EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
-  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated));
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+  EXPECT_EQ(GlicLauncherConfiguration::GetToggleHotkey(), hotkey);
 }
 
-TEST_F(GlicLauncherConfigurationTest, HotkeyScope_Migration_DefaultHotkey) {
+TEST_F(GlicLauncherConfigurationTest,
+       HotkeyScope_Migration_ExistingUser_LauncherDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
 
-  // Ensure migrated is false, and enabled is true.
-  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated, false);
-  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled, true);
+  // Existing user has launcher explicitly disabled.
+  local_state()->SetBoolean(prefs::kGlicLauncherEnabled, false);
 
   MockObserver observer;
   GlicLauncherConfiguration config{&observer};
-  // Should migrate to false.
+  // Hotkey should be cleared to respect disabled state, and scope should be
+  // false.
+  EXPECT_TRUE(GlicLauncherConfiguration::GetToggleHotkey().IsEmpty());
   EXPECT_FALSE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
-  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated));
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+}
+
+TEST_F(GlicLauncherConfigurationTest, HotkeyScope_Migration_NewUser) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+
+  // New users have neither launcher nor hotkey pref explicitly set.
+  ASSERT_FALSE(local_state()->HasPrefPath(prefs::kGlicLauncherEnabled));
+  ASSERT_FALSE(local_state()->HasPrefPath(prefs::kGlicLauncherHotkey));
+
+  MockObserver observer;
+  GlicLauncherConfiguration config{&observer};
+  // Should migrate to false (Local scope).
+  EXPECT_FALSE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+  // Default hotkey is still preserved for local scope.
+  EXPECT_EQ(GlicLauncherConfiguration::GetToggleHotkey(),
+            LocalHotkeyManager::GetDefaultAccelerator(
+                LocalHotkeyManager::Command::kPanelToggle));
 }
 
 TEST_F(GlicLauncherConfigurationTest, HotkeyScope_AlreadyMigrated) {
@@ -155,7 +210,7 @@ TEST_F(GlicLauncherConfigurationTest, HotkeyScope_AlreadyMigrated) {
   const ui::Accelerator hotkey(ui::VKEY_K, ui::EF_ALT_DOWN);
   local_state()->SetString(prefs::kGlicLauncherHotkey,
                            ui::Command::AcceleratorToString(hotkey));
-  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigrated, true);
+  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2, true);
   local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled, false);
 
   MockObserver observer;
