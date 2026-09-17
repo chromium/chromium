@@ -85,6 +85,25 @@ public class TwaVerifierTest {
                 mDelegate.getVerifiedScope("https://www.example.com/dir/page2.html"));
     }
 
+    /**
+     * Tests that {@link TwaVerifier#getVerifiedScope} returns the URL itself for URLs with
+     * non-HTTP(S) schemes.
+     */
+    @Test
+    public void verifiedScopeIsUrl_forUrlsWithNonHttpSchemes() {
+        assertEquals(
+                "blob:https://www.example.com/1234-5678",
+                mDelegate.getVerifiedScope("blob:https://www.example.com/1234-5678"));
+        assertEquals("about:blank", mDelegate.getVerifiedScope("about:blank"));
+        assertEquals(
+                "data:text/html,sample_text",
+                mDelegate.getVerifiedScope("data:text/html,sample_text"));
+        assertEquals(
+                "filesystem:https://www.example.com/temporary/f",
+                mDelegate.getVerifiedScope("filesystem:https://www.example.com/temporary/f"));
+        assertEquals("not-an-origin", mDelegate.getVerifiedScope("not-an-origin"));
+    }
+
     @Test
     public void isPageInVerificationCache() {
         Origin trusted = Origin.create("https://www.trusted.com");
@@ -100,6 +119,15 @@ public class TwaVerifierTest {
     public void verify_failsInvalidUrl() {
         Promise<Boolean> result = mDelegate.verify("not-an-origin");
         assertFalse(result.getResult());
+    }
+
+    /** Tests that verification fails for URLs with non-HTTP(S) schemes. */
+    @Test
+    public void verify_failsUrlsWithNonHttpSchemes() {
+        assertFalse(mDelegate.verify("blob:" + INITIAL_URL).getResult());
+        assertFalse(mDelegate.verify("about:blank").getResult());
+        assertFalse(mDelegate.verify("data:text/html,sample_text").getResult());
+        verify(mOriginVerifier, never()).start(any(), any());
     }
 
     /** Tests that the first call to verify for a trusted origin performs full verification. */

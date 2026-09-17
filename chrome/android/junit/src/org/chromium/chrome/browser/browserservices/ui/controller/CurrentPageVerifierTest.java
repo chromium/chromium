@@ -46,6 +46,11 @@ public class CurrentPageVerifierTest {
     private static final String TRUSTED_ORIGIN_PAGE1 = TRUSTED_ORIGIN + "/page1";
     private static final String OTHER_TRUSTED_ORIGIN_PAGE1 = OTHER_TRUSTED_ORIGIN + "/page1";
     private static final String UNTRUSTED_PAGE = "https://www.origin3.com/page1";
+    private static final String UNTRUSTED_ORIGIN_BLOB_PAGE =
+            "blob:https://www.origin3.com/1234-5678";
+    private static final String TRUSTED_ORIGIN_BLOB_PAGE = "blob:" + TRUSTED_ORIGIN + "/1234-5678";
+    private static final String ABOUT_BLANK_PAGE = "about:blank";
+    private static final String DATA_PAGE = "data:text/html,<div>Test</div>";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock TabObserverRegistrar mTabObserverRegistrar;
@@ -133,6 +138,112 @@ public class CurrentPageVerifierTest {
         mCurrentPageVerifier.onFinishNativeInitialization();
         navigateToUrl(OTHER_TRUSTED_ORIGIN_PAGE1);
         mVerifierDelegate.passVerification(Origin.create(OTHER_TRUSTED_ORIGIN_PAGE1));
+        navigateToUrl(TRUSTED_ORIGIN_PAGE1);
+        mVerifierDelegate.passVerification(Origin.create(TRUSTED_ORIGIN_PAGE1));
+        assertStatus(VerificationStatus.SUCCESS);
+    }
+
+    /**
+     * Tests that navigating from a verified page to a cross-origin blob: URL updates the
+     * verification status to {@link VerificationStatus#FAILURE}.
+     */
+    @Test
+    public void statusIsFail_WhenNavigatingToUntrustedOriginBlobUrl() {
+        setInitialUrl(TRUSTED_ORIGIN_PAGE1);
+        mCurrentPageVerifier.onFinishNativeInitialization();
+        mVerifierDelegate.passVerification(Origin.create(TRUSTED_ORIGIN_PAGE1));
+        assertStatus(VerificationStatus.SUCCESS);
+
+        navigateToUrl(UNTRUSTED_ORIGIN_BLOB_PAGE);
+        assertStatus(VerificationStatus.FAILURE);
+        assertEquals(UNTRUSTED_ORIGIN_BLOB_PAGE, mCurrentPageVerifier.getState().url);
+    }
+
+    /**
+     * Tests that navigating to a blob: URL with the same origin as the verified app results in
+     * {@link VerificationStatus#FAILURE}.
+     *
+     * <p>Note: Failing verification for a same-origin blob: URL is not the ideal desired platform
+     * behavior (since the document belongs to the verified origin), but is an intentional fail-safe
+     * trade-off of the current URL-based {@link Origin#create} implementation.
+     */
+    @Test
+    public void statusIsFail_WhenNavigatingToSameOriginBlobUrl() {
+        setInitialUrl(TRUSTED_ORIGIN_PAGE1);
+        mCurrentPageVerifier.onFinishNativeInitialization();
+        mVerifierDelegate.passVerification(Origin.create(TRUSTED_ORIGIN_PAGE1));
+        assertStatus(VerificationStatus.SUCCESS);
+
+        navigateToUrl(TRUSTED_ORIGIN_BLOB_PAGE);
+        assertStatus(VerificationStatus.FAILURE);
+    }
+
+    /**
+     * Tests that navigating to about:blank results in {@link VerificationStatus#FAILURE}.
+     *
+     * <p>Note: Failing verification for a same-origin about:blank navigation is not necessarily the
+     * desired behavior, but is an intentional fail-safe trade-off of the current URL-based {@link
+     * Origin#create} implementation.
+     */
+    @Test
+    public void statusIsFail_WhenNavigatingToAboutBlank() {
+        setInitialUrl(TRUSTED_ORIGIN_PAGE1);
+        mCurrentPageVerifier.onFinishNativeInitialization();
+        mVerifierDelegate.passVerification(Origin.create(TRUSTED_ORIGIN_PAGE1));
+        assertStatus(VerificationStatus.SUCCESS);
+
+        navigateToUrl(ABOUT_BLANK_PAGE);
+        assertStatus(VerificationStatus.FAILURE);
+    }
+
+    @Test
+    public void statusIsFail_WhenNavigatingToDataUrl() {
+        setInitialUrl(TRUSTED_ORIGIN_PAGE1);
+        mCurrentPageVerifier.onFinishNativeInitialization();
+        mVerifierDelegate.passVerification(Origin.create(TRUSTED_ORIGIN_PAGE1));
+        assertStatus(VerificationStatus.SUCCESS);
+
+        navigateToUrl(DATA_PAGE);
+        assertStatus(VerificationStatus.FAILURE);
+    }
+
+    @Test
+    public void statusIsFail_WhenInitialUrlHasNonHttpScheme() {
+        setInitialUrl(UNTRUSTED_ORIGIN_BLOB_PAGE);
+        mCurrentPageVerifier.onFinishNativeInitialization();
+        assertStatus(VerificationStatus.FAILURE);
+    }
+
+    /**
+     * Tests that a pending verification completing after navigating to a blob: URL does not update
+     * the status to {@link VerificationStatus#SUCCESS}.
+     */
+    @Test
+    public void doesntUpdateState_IfVerificationFinishedAfterNavigatingToBlobUrl() {
+        setInitialUrl(TRUSTED_ORIGIN_PAGE1);
+        mCurrentPageVerifier.onFinishNativeInitialization();
+        assertStatus(VerificationStatus.PENDING);
+
+        navigateToUrl(UNTRUSTED_ORIGIN_BLOB_PAGE);
+        assertStatus(VerificationStatus.FAILURE);
+
+        mVerifierDelegate.passVerification(Origin.create(TRUSTED_ORIGIN_PAGE1));
+        assertStatus(VerificationStatus.FAILURE);
+    }
+
+    /**
+     * Tests that navigating back to the verified origin restores {@link
+     * VerificationStatus#SUCCESS}.
+     */
+    @Test
+    public void statusIsSuccess_WhenNavigatingBackFromBlobUrl() {
+        setInitialUrl(TRUSTED_ORIGIN_PAGE1);
+        mCurrentPageVerifier.onFinishNativeInitialization();
+        mVerifierDelegate.passVerification(Origin.create(TRUSTED_ORIGIN_PAGE1));
+
+        navigateToUrl(UNTRUSTED_ORIGIN_BLOB_PAGE);
+        assertStatus(VerificationStatus.FAILURE);
+
         navigateToUrl(TRUSTED_ORIGIN_PAGE1);
         mVerifierDelegate.passVerification(Origin.create(TRUSTED_ORIGIN_PAGE1));
         assertStatus(VerificationStatus.SUCCESS);

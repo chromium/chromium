@@ -118,7 +118,6 @@ public class CurrentPageVerifier implements NativeInitObserver {
     private void verify(String url) {
         Promise<Boolean> result = mDelegate.verify(url);
         String scope = mDelegate.getVerifiedScope(url);
-        if (scope == null) return;
 
         if (result.isFulfilled()) {
             updateState(scope, url, statusFromBoolean(result.getResult()));

@@ -26,8 +26,12 @@ public abstract class WebappVerifier implements Verifier {
     }
 
     @Override
-    public final @Nullable String getVerifiedScope(String url) {
-        if (isUrlInScope(url)) return getScope();
+    public final String getVerifiedScope(String url) {
+        if (isUrlInScope(url)) {
+            // Fall back to url if the webapp scope is null.
+            String scope = getScope();
+            if (scope != null) return scope;
+        }
         return url;
     }
 

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.browserservices.ui.controller;
 
 import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /** Empty {@link Verifier} implementation. */
 @NullMarked
@@ -24,7 +23,7 @@ public class EmptyVerifier implements Verifier {
     }
 
     @Override
-    public @Nullable String getVerifiedScope(String url) {
+    public String getVerifiedScope(String url) {
         return url;
     }
 

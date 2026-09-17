@@ -40,8 +40,12 @@ class TestVerifier implements Verifier {
 
     @Override
     public Promise<Boolean> verify(String url) {
+        Origin origin = Origin.create(url);
+        // Mirrors TwaVerifier: non-HTTP(S) URLs are not supported and cannot be verified.
+        if (origin == null) return Promise.fulfilled(false);
+
         Promise<Boolean> promise = new Promise<>();
-        mPendingVerifications.put(Origin.createOrThrow(url), promise);
+        mPendingVerifications.put(origin, promise);
         return promise;
     }
 
@@ -52,7 +56,9 @@ class TestVerifier implements Verifier {
 
     @Override
     public String getVerifiedScope(String url) {
-        return Origin.createOrThrow(url).toString();
+        Origin origin = Origin.create(url);
+        if (origin == null) return url;
+        return origin.toString();
     }
 
     @Override
