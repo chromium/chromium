@@ -12,11 +12,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
@@ -52,22 +47,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -154,25 +144,25 @@ public class TouchToFillPasswordManagerViewTest {
                     .setLastUsedMsSinceEpoch(0)
                     .setIsBackupCredential(true)
                     .build();
+
+    @Rule
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
     private final AtomicBoolean mManageButtonClicked = new AtomicBoolean(false);
     private final AtomicBoolean mHybridButtonClicked = new AtomicBoolean(false);
     private final AtomicBoolean mMorePasskeysClicked = new AtomicBoolean(false);
-
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private Callback<Integer> mDismissHandler;
-    @Mock private Callback<Credential> mCredentialCallback;
-    @Mock private FillableItemCollectionInfo mItemCollectionInfo;
+    private final PayloadCallbackHelper<Integer> mDismissHandler = new PayloadCallbackHelper<>();
+    private final PayloadCallbackHelper<Credential> mCredentialCallback =
+            new PayloadCallbackHelper<>();
+    private final FillableItemCollectionInfo mItemCollectionInfo =
+            new FillableItemCollectionInfo(1, 1);
 
     private PropertyModel mModel;
     private TouchToFillPasswordManagerView mTouchToFillView;
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mSheetTestSupport;
     private WebPageStation mPage;
-
-    @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Before
     public void setUp() throws InterruptedException {
@@ -187,7 +177,7 @@ public class TouchToFillPasswordManagerViewTest {
                 () -> {
                     mModel =
                             TouchToFillPasswordManagerProperties.createDefaultModel(
-                                    mDismissHandler);
+                                    mDismissHandler::notifyCalled);
                     mTouchToFillView =
                             new TouchToFillPasswordManagerView(
                                     getActivity(), mBottomSheetController);
@@ -523,7 +513,7 @@ public class TouchToFillPasswordManagerViewTest {
 
         TouchCommon.singleClickView(getCredentials().getChildAt(0));
 
-        waitForEvent(mCredentialCallback).onResult(eq(ANA));
+        assertThat(mCredentialCallback.getOnlyPayloadBlocking(), is(ANA));
     }
 
     @Test
@@ -546,7 +536,7 @@ public class TouchToFillPasswordManagerViewTest {
 
         TouchCommon.singleClickView(getCredentials().getChildAt(1));
 
-        waitForEvent(mCredentialCallback).onResult(eq(ANA));
+        assertThat(mCredentialCallback.getOnlyPayloadBlocking(), is(ANA));
     }
 
     @Test
@@ -570,7 +560,7 @@ public class TouchToFillPasswordManagerViewTest {
 
         onViewWaiting(withId(R.id.username))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        waitForEvent(mCredentialCallback).onResult(eq(ANA));
+        assertThat(mCredentialCallback.getOnlyPayloadBlocking(), is(ANA));
     }
 
     @Test
@@ -594,7 +584,7 @@ public class TouchToFillPasswordManagerViewTest {
 
         onViewWaiting(withId(R.id.touch_to_fill_button_title))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
-        waitForEvent(mCredentialCallback).onResult(eq(ANA));
+        assertThat(mCredentialCallback.getOnlyPayloadBlocking(), is(ANA));
     }
 
     @Test
@@ -624,7 +614,7 @@ public class TouchToFillPasswordManagerViewTest {
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         onViewWaiting(withId(R.id.touch_to_fill_button_title))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
-        verify(mCredentialCallback, times(0)).onResult(any());
+        assertThat(mCredentialCallback.getCallCount(), is(0));
     }
 
     @Test
@@ -715,7 +705,9 @@ public class TouchToFillPasswordManagerViewTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
         pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
-        verify(mDismissHandler).onResult(BottomSheetController.StateChangeReason.NONE);
+        assertThat(
+                mDismissHandler.getOnlyPayloadBlocking(),
+                is(BottomSheetController.StateChangeReason.NONE));
     }
 
     @Test
@@ -1104,12 +1096,6 @@ public class TouchToFillPasswordManagerViewTest {
         return getCredentials().getChildAt(index).findViewById(R.id.recovery_password_label);
     }
 
-    private static <T> T waitForEvent(T mock) {
-        return verify(
-                mock,
-                timeout(ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL)));
-    }
-
     private MVCListAdapter.ListItem buildCredentialItem(
             Credential credential, FillableItemCollectionInfo collectionInfo) {
         return new MVCListAdapter.ListItem(
@@ -1117,7 +1103,7 @@ public class TouchToFillPasswordManagerViewTest {
                 new PropertyModel.Builder(
                                 TouchToFillPasswordManagerProperties.CredentialProperties.ALL_KEYS)
                         .with(CREDENTIAL, credential)
-                        .with(ON_CLICK_LISTENER, mCredentialCallback)
+                        .with(ON_CLICK_LISTENER, mCredentialCallback::notifyCalled)
                         .with(SHOW_SUBMIT_BUTTON, false)
                         .with(ITEM_COLLECTION_INFO, collectionInfo)
                         .build());
@@ -1142,7 +1128,7 @@ public class TouchToFillPasswordManagerViewTest {
                 new PropertyModel.Builder(
                                 TouchToFillPasswordManagerProperties.CredentialProperties.ALL_KEYS)
                         .with(CREDENTIAL, credential)
-                        .with(ON_CLICK_LISTENER, mCredentialCallback)
+                        .with(ON_CLICK_LISTENER, mCredentialCallback::notifyCalled)
                         .with(SHOW_SUBMIT_BUTTON, showSubmitButton)
                         .build());
     }
