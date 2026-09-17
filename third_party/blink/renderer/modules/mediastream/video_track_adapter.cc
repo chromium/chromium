@@ -27,6 +27,7 @@
 #include "media/base/limits.h"
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_frame_pool.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -258,9 +259,8 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   virtual ~VideoFrameResolutionAdapter();
   friend class ThreadSafeRefCounted<VideoFrameResolutionAdapter>;
 
-  void DoDeliverFrame(
-      scoped_refptr<media::VideoFrame> video_frame,
-      const base::TimeTicks& estimated_capture_time);
+  void DoDeliverFrame(scoped_refptr<media::VideoFrame> video_frame,
+                      const base::TimeTicks& estimated_capture_time);
 
   // Returns |true| if the input frame rate is higher that the requested max
   // frame rate and |frame| should be dropped. If it returns true, |reason| is
@@ -270,10 +270,8 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
                       media::VideoCaptureFrameDropReason* reason);
 
   // Updates track settings if either frame width, height or frame rate have
-  // changed since last update.
-  void MaybeUpdateTrackSettings(
-      const VideoTrackSettingsInternalCallback& settings_callback,
-      const media::VideoFrame& frame);
+  // changed since last update. Returns true if settings changed.
+  bool MaybeUpdateTrackSettings(const media::VideoFrame& frame);
 
   // Updates computed source format for all tracks if either frame width, height
   // or frame rate have changed since last update.
@@ -370,6 +368,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::AddCallbacks(
       std::move(capture_version_callback),
       std::move(settings_callback),
       std::move(format_callback)};
+
   callbacks_.emplace(track, std::move(track_callbacks));
 }
 
@@ -417,6 +416,10 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
   auto frame_drop_reason = media::VideoCaptureFrameDropReason::kNone;
   if (MaybeDropFrame(*video_frame, frame_rate, &frame_drop_reason)) {
     OnFrameDropped(frame_drop_reason);
+    return;
+  }
+
+  if (callbacks_.empty()) {
     return;
   }
 
@@ -535,12 +538,14 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DoDeliverFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     const base::TimeTicks& estimated_capture_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
-  if (callbacks_.empty()) {
-    OnFrameDropped(
-        media::VideoCaptureFrameDropReason::kResolutionAdapterHasNoCallbacks);
-  }
+  bool settings_changed = MaybeUpdateTrackSettings(*video_frame);
   for (const auto& callback : callbacks_) {
-    MaybeUpdateTrackSettings(callback.second.settings_callback, *video_frame);
+    if (settings_changed) {
+      callback.second.settings_callback.Run(
+          track_settings_.frame_size, track_settings_.frame_rate,
+          track_settings_.metadata_frame_source_size,
+          track_settings_.device_scale_factor);
+    }
     callback.second.frame_callback.Run(video_frame, estimated_capture_time);
   }
 }
@@ -600,8 +605,7 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
   return false;
 }
 
-void VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTrackSettings(
-    const VideoTrackSettingsInternalCallback& settings_callback,
+bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTrackSettings(
     const media::VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
   ComputeFrameRate(frame.timestamp(), &track_settings_.frame_rate,
@@ -615,17 +619,15 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTrackSettings(
     track_settings_.frame_size = frame.natural_size();
     track_settings_.metadata_frame_source_size = frame.metadata().source_size;
     track_settings_.device_scale_factor = frame.metadata().device_scale_factor;
-    settings_callback.Run(track_settings_.frame_size,
-                          track_settings_.frame_rate,
-                          track_settings_.metadata_frame_source_size,
-                          track_settings_.device_scale_factor);
+    return true;
   }
+  return false;
 }
 void VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTracksFormat(
     const media::VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
   if (MaybeUpdateFrameRate(&source_format_settings_) ||
-      frame.natural_size() != track_settings_.frame_size) {
+      frame.natural_size() != source_format_settings_.frame_size) {
     source_format_settings_.frame_size = frame.natural_size();
     media::VideoCaptureFormat source_format;
     source_format.frame_size = source_format_settings_.frame_size;
@@ -637,6 +639,12 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeUpdateTracksFormat(
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::ResetFrameRate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
+  track_settings_.frame_rate = 0.0;
+  track_settings_.last_updated_frame_rate = 0.0;
+  track_settings_.prev_frame_timestamp = base::TimeDelta::Max();
+  source_format_settings_.prev_frame_timestamp = base::TimeDelta::Max();
+  timestamp_last_delivered_frame_ = base::TimeDelta::Max();
+  accumulated_drift_ = base::TimeDelta();
   for (const auto& callback : callbacks_) {
     callback.second.settings_callback.Run(
         track_settings_.frame_size, 0.0,

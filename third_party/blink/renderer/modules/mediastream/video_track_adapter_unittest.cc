@@ -953,7 +953,11 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
     WebHeap::CollectAllGarbageForTesting();
   }
 
-  std::unique_ptr<MediaStreamVideoTrack> AddTrack() {
+  std::unique_ptr<MediaStreamVideoTrack> AddTrack(
+      VideoTrackSettingsCallback settings_cb = base::DoNothing(),
+      VideoTrackFormatCallback format_cb = base::DoNothing(),
+      VideoTrackAdapterSettings adapter_settings =
+          VideoTrackAdapterSettings()) {
     auto track = std::make_unique<MediaStreamVideoTrack>(
         mock_source_, WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
         true);
@@ -966,12 +970,12 @@ class VideoTrackAdapterEncodedTest : public ::testing::Test {
     video_stream_fallbacks.encoded_frame_cb = base::BindRepeating(
         &VideoTrackAdapterEncodedTest::OnEncodedVideoFrameDelivered,
         base::Unretained(this));
-    video_stream_fallbacks.settings_cb = base::DoNothing();
+    video_stream_fallbacks.settings_cb = std::move(settings_cb);
     video_stream_fallbacks.capture_version_cb = base::DoNothing();
-    video_stream_fallbacks.format_cb = base::DoNothing();
+    video_stream_fallbacks.format_cb = std::move(format_cb);
     RunSyncOnRenderThread([&] {
       adapter_->AddTrack(track.get(), std::move(video_stream_fallbacks),
-                         VideoTrackAdapterSettings());
+                         adapter_settings);
     });
     return track;
   }
@@ -1019,6 +1023,93 @@ TEST_F(VideoTrackAdapterEncodedTest, DeliverEncodedVideoFrame) {
         std::move(quit_closure).Run();
       }));
   run_loop.Run();
+  RunSyncOnRenderThread([&] {
+    adapter_->RemoveTrack(track1.get());
+    adapter_->RemoveTrack(track2.get());
+  });
+}
+
+TEST_F(VideoTrackAdapterEncodedTest,
+       FormatCallbackNotTriggeredOnEveryFrameWhenScaling) {
+  const gfx::Size kSourceSize(1280, 720);
+  const gfx::Size kTargetSize(640, 360);
+  int format_callback_calls = 0;
+
+  auto format_cb =
+      base::BindLambdaForTesting([&](const media::VideoCaptureFormat& format) {
+        EXPECT_EQ(format.frame_size, kSourceSize);
+        format_callback_calls++;
+      });
+
+  VideoTrackAdapterSettings adapter_settings(
+      kTargetSize, /*min_aspect_ratio=*/0.0, /*max_aspect_ratio=*/640.0,
+      /*max_frame_rate=*/std::nullopt);
+  auto track = AddTrack(base::DoNothing(), format_cb, adapter_settings);
+  EXPECT_CALL(*this, OnFrameDelivered).Times(4);
+
+  for (int i = 0; i < 4; ++i) {
+    scoped_refptr<media::VideoFrame> frame =
+        media::VideoFrame::CreateZeroInitializedFrame(
+            media::PIXEL_FORMAT_I420, kSourceSize, gfx::Rect(kSourceSize),
+            kSourceSize, base::Milliseconds(i * 33));
+    base::RunLoop run_loop;
+    base::OnceClosure quit_closure = run_loop.QuitClosure();
+    platform_support_->GetIOTaskRunner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          adapter_->DeliverFrameOnVideoTaskRunner(frame, base::TimeTicks());
+          std::move(quit_closure).Run();
+        }));
+    run_loop.Run();
+  }
+
+  // Flush the render thread where format_cb is posted.
+  RunSyncOnRenderThread([&] {});
+
+  // Source resolution did not change across frames, so format_cb must only be
+  // invoked once despite the track scaling frames down to 640x360.
+  EXPECT_EQ(format_callback_calls, 1);
+
+  RunSyncOnRenderThread([&] { adapter_->RemoveTrack(track.get()); });
+}
+
+TEST_F(VideoTrackAdapterEncodedTest, MultiTrackFrameRateCalculation) {
+  const gfx::Size kFrameSize(640, 480);
+  double track1_fps = 0.0;
+  double track2_fps = 0.0;
+
+  auto settings_cb1 = base::BindLambdaForTesting(
+      [&](gfx::Size, double frame_rate, std::optional<gfx::Size>,
+          std::optional<float>) { track1_fps = frame_rate; });
+  auto settings_cb2 = base::BindLambdaForTesting(
+      [&](gfx::Size, double frame_rate, std::optional<gfx::Size>,
+          std::optional<float>) { track2_fps = frame_rate; });
+
+  auto track1 = AddTrack(settings_cb1);
+  auto track2 = AddTrack(settings_cb2);
+  EXPECT_CALL(*this, OnFrameDelivered).Times(10);
+
+  for (int i = 0; i < 5; ++i) {
+    scoped_refptr<media::VideoFrame> frame =
+        media::VideoFrame::CreateZeroInitializedFrame(
+            media::PIXEL_FORMAT_I420, kFrameSize, gfx::Rect(kFrameSize),
+            kFrameSize, base::Milliseconds(i * 33));
+    base::RunLoop run_loop;
+    base::OnceClosure quit_closure = run_loop.QuitClosure();
+    platform_support_->GetIOTaskRunner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          adapter_->DeliverFrameOnVideoTaskRunner(frame, base::TimeTicks());
+          std::move(quit_closure).Run();
+        }));
+    run_loop.Run();
+  }
+
+  // Flush the render thread where settings_cb is posted.
+  RunSyncOnRenderThread([&] {});
+
+  EXPECT_GT(track1_fps, 0.0);
+  EXPECT_GT(track2_fps, 0.0);
+  EXPECT_NEAR(track1_fps, track2_fps, 0.1);
+
   RunSyncOnRenderThread([&] {
     adapter_->RemoveTrack(track1.get());
     adapter_->RemoveTrack(track2.get());
