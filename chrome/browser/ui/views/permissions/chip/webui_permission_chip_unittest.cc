@@ -62,18 +62,19 @@ class WebUIPermissionChipTest : public testing::Test {
   std::unique_ptr<WebUILocationBar> location_bar_;
 };
 
-TEST_F(WebUIPermissionChipTest, AnnounceAlertOnExpandEnded) {
+TEST_F(WebUIPermissionChipTest, DoesNotAnnounceAlertOnExpandEnded) {
   WebUIPermissionChip chip(location_bar_.get());
   const std::u16string message = u"Test Announcement";
   chip.SetMessage(message);
 
-  EXPECT_CALL(mock_toolbar_delegate_, AnnounceAlert(message));
+  // The chip must not announce itself when the expand animation ends. This
+  // mirrors the Native Views `PermissionChipView`, where `ChipController`
+  // decides whether to announce (it stays silent when the prompt bubble starts
+  // open, since the bubble fires its own `ax::mojom::Event::kAlert`).
+  // Announcing here would make screen readers speak the request twice.
+  EXPECT_CALL(mock_toolbar_delegate_, AnnounceAlert(testing::_)).Times(0);
 
-  // Simulate expansion animation ended IPC from WebUI. This should trigger the
-  // a11y announcement so that screen readers speak the permission request
-  // text once the chip has fully expanded and is visible.
-  // In WebUIPermissionChip, OnExpandAnimationEnded() explicitly calls
-  // AnnounceAlert() to perform this announcement.
+  // Simulate the expansion animation ended IPC from WebUI.
   chip.AnimateExpand(base::Milliseconds(350));
   chip.OnExpandAnimationEnded();
 }

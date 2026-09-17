@@ -299,7 +299,13 @@ void WebUIPermissionChip::FinishAnimation(AnimationState state) {
   is_animating_ = false;
   is_fully_collapsed_ = (state == AnimationState::kCollapsed);
   if (state == AnimationState::kExpanded) {
-    AnnounceAlert(message_);
+    // Do not announce the chip here. `ChipController` owns the decision of
+    // whether the chip should be announced: the announcement is suppressed
+    // when the prompt bubble starts open, because the bubble fires its own
+    // `ax::mojom::Event::kAlert`. Announcing unconditionally here would make
+    // screen readers speak the permission request twice. See
+    // `ChipController::ShowPermissionUi()` and
+    // `ChipController::AnnouncePermissionRequestForAccessibility()`.
     observers_.Notify(&Observer::OnExpandAnimationEnded);
   } else {
     observers_.Notify(&Observer::OnCollapseAnimationEnded);
