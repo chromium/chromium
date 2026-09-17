@@ -349,11 +349,11 @@ void LocationBarView::Init() {
       browser_ &&
       browser_->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS;
 
-  // Skip creating the WebUI presenters/views for web apps and devtools windows
-  // since they're not supported there and will result in extra Omnibox
-  // processes being created (note that the address bar is not shown in web
-  // apps).
-  if (!is_web_app && !is_devtools) {
+  // Skip creating the WebUI presenters/views for web apps, devtools windows,
+  // and popup windows since they're not supported there and will result in
+  // extra Omnibox processes being created (note that the address bar is not
+  // shown in web apps, and is an uneditable address bar in popups).
+  if (!is_web_app && !is_devtools && !is_popup_mode_) {
     if (omnibox::IsAimPopupFeatureEnabled()) {
       omnibox_popup_aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
           /*location_bar=*/this, omnibox_controller_.get(),
@@ -389,7 +389,7 @@ void LocationBarView::Init() {
     }
   }
 
-  // Default to the legacy popup view for web apps and devtools windows.
+  // Default to the legacy popup view for web apps, devtools, and popup windows.
   // When the legacy `OmniboxPopupViewViews` is deprecated we will need to
   // ensure that a null `omnibox_popup_view_` doesn't cause any issues (or aim
   // for a cleaner solution).
