@@ -382,47 +382,52 @@ public class SettingsFragmentRegistry {
      * @return Resolved Fragment class token, or null if invalid.
      */
     public static @Nullable Class<? extends Fragment> getFragmentClassForUrl(String url) {
-        String scheme;
-        String host;
-        String path;
-        try {
-            Uri uri = Uri.parse(url);
-            scheme = uri.getScheme();
-            host = uri.getHost();
-            path = uri.getPath();
-        } catch (UnsupportedOperationException
-                | IllegalArgumentException
-                | IndexOutOfBoundsException e) {
-            // Malformed URIs safely fall back to null.
-            return null;
-        }
+        String path = settingsPath(Uri.parse(url));
+        return path == null ? null : sPathToFragmentMap.get(path);
+    }
 
-        // Strict scheme validation prevents cross-origin or local file
-        // scheme injection.
-        if (!UrlUtilities.isChromeScheme(scheme)) {
-            return null;
-        }
+    /**
+     * Returns the normalized path of a settings URL, or null if {@code uri} does not address
+     * settings.
+     *
+     * <p>Strict scheme and host validation keeps other pages, e.g. a local file scheme, from being
+     * routed through this registry. The path is lower cased with {@link Locale#US} so that matching
+     * does not depend on the device locale, and a trailing slash is stripped so that
+     * "chrome://settings/appearance/" and "chrome://settings/appearance" agree.
+     */
+    private static @Nullable String settingsPath(Uri uri) {
+        if (!UrlUtilities.isChromeScheme(uri.getScheme())) return null;
+        if (!UrlConstants.SETTINGS_HOST.equalsIgnoreCase(uri.getHost())) return null;
 
-        // Strict host validation ensures only settings pages are routed
-        // through this registry.
-        if (!UrlConstants.SETTINGS_HOST.equalsIgnoreCase(host)) {
-            return null;
-        }
+        String path = uri.getPath();
+        if (path == null) return "";
 
-        if (path == null) path = "";
-
-        // Normalize path using Locale.US for case-insensitive matching
-        // regardless of device locale.
         path = path.toLowerCase(Locale.US);
+        return path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+    }
 
-        // Strip trailing slash for consistency (e.g.
-        // "chrome://settings/appearance/" ->
-        // "chrome://settings/appearance").
-        if (path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
-        }
+    /**
+     * Returns whether two URLs address the same settings page, i.e. the same path and query.
+     *
+     * <p>Comparison ignores the scheme, because chrome://settings and chrome-native://settings both
+     * reach settings and are used interchangeably today; see the TODO in {@link
+     * #createUrlForFragment}. Returns false unless both URLs are settings URLs.
+     */
+    public static boolean isSameSettingsPage(@Nullable String url, @Nullable String other) {
+        String key = settingsPageKey(url);
+        return key != null && key.equals(settingsPageKey(other));
+    }
 
-        return sPathToFragmentMap.get(path);
+    /** Returns a scheme-independent identity for a settings URL, or null if it is not one. */
+    private static @Nullable String settingsPageKey(@Nullable String url) {
+        if (url == null) return null;
+
+        Uri uri = Uri.parse(url);
+        String path = settingsPath(uri);
+        if (path == null) return null;
+
+        String query = uri.getQuery();
+        return query == null ? path : path + "?" + query;
     }
 
     /**

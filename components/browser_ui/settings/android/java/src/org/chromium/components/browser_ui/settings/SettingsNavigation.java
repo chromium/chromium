@@ -334,6 +334,31 @@ public interface SettingsNavigation {
     void finishCurrentSettings(Fragment fragment);
 
     /**
+     * Finishes the current settings page and lands on {@code parentFragment}.
+     *
+     * <p>Use this instead of {@link #finishCurrentSettings(Fragment)} when the current page is
+     * being left because the data behind it no longer exists, for example after the user deletes
+     * the site group the page is showing. Naming the destination matters under URL navigation:
+     * there is no fragment back stack to pop, and the page occupies a navigation entry that is now
+     * dead. Implementations navigate to the parent's URL in place of that entry, so the user lands
+     * on a useful page and does not run into the dead entry again by going back.
+     *
+     * <p>The default implementation ignores the parent and behaves like {@link
+     * #finishCurrentSettings(Fragment)}, which is correct when the page was shown by a fragment
+     * transaction: popping the back stack already returns to the parent.
+     *
+     * @param fragment The expected current fragment.
+     * @param parentFragment The page to land on, or null to just finish.
+     * @param parentArgs Arguments for {@code parentFragment}, if any.
+     */
+    default void finishCurrentSettings(
+            Fragment fragment,
+            @Nullable Class<? extends Fragment> parentFragment,
+            @Nullable Bundle parentArgs) {
+        finishCurrentSettings(fragment);
+    }
+
+    /**
      * Executes pending navigations immediately.
      *
      * <p>See {@link finishCurrentSettings} for a valid use case of this method.

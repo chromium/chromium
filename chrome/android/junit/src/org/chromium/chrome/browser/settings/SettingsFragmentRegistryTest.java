@@ -422,4 +422,43 @@ public class SettingsFragmentRegistryTest {
         assertNull(SettingsFragmentRegistry.getMainMenuAnchor(SiteSettings.class));
         assertNull(SettingsFragmentRegistry.getMainMenuAnchor(PrivacySettings.class));
     }
+
+    @Test
+    public void testIsSameSettingsPage() {
+        // Scheme is ignored: both schemes reach settings and are currently used interchangeably.
+        assertTrue(
+                SettingsFragmentRegistry.isSameSettingsPage(
+                        "chrome://settings/allSites", "chrome-native://settings/allSites"));
+
+        // Path comparison is case insensitive and tolerates a trailing slash, matching
+        // getFragmentClassForUrl().
+        assertTrue(
+                SettingsFragmentRegistry.isSameSettingsPage(
+                        "chrome://settings/allSites/", "chrome://settings/allsites"));
+
+        // Query parameters are part of the page identity.
+        assertTrue(
+                SettingsFragmentRegistry.isSameSettingsPage(
+                        "chrome://settings/allSites/group?group=example.com",
+                        "chrome://settings/allSites/group?group=example.com"));
+        assertFalse(
+                SettingsFragmentRegistry.isSameSettingsPage(
+                        "chrome://settings/allSites/group?group=example.com",
+                        "chrome://settings/allSites/group?group=other.com"));
+        assertFalse(
+                SettingsFragmentRegistry.isSameSettingsPage(
+                        "chrome://settings/allSites", "chrome://settings/siteSettings"));
+
+        // Non-settings and malformed URLs never match, including against each other.
+        assertFalse(
+                SettingsFragmentRegistry.isSameSettingsPage(
+                        "https://example.com/allSites", "chrome://settings/allSites"));
+        assertFalse(
+                SettingsFragmentRegistry.isSameSettingsPage(
+                        "https://example.com/", "https://example.com/"));
+        assertFalse(
+                SettingsFragmentRegistry.isSameSettingsPage(null, "chrome://settings/allSites"));
+        assertFalse(
+                SettingsFragmentRegistry.isSameSettingsPage("chrome://settings/allSites", null));
+    }
 }

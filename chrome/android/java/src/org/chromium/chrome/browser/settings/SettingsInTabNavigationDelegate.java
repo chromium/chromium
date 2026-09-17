@@ -17,6 +17,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Delegates settings preference navigation calls to {@link Tab#loadUrl} for in-tab navigation. */
@@ -154,19 +157,110 @@ public class SettingsInTabNavigationDelegate implements SettingsNavigation {
 
     @Override
     public void finishCurrentSettings(Fragment fragment) {
-        // Prefer looking up the enclosing SettingsHostFragment directly from the fragment's parent
-        // hierarchy. When Chrome is in the background or during lifecycle transitions, the host
-        // fragment view may not report isShown(), which causes the activity-level lookup to return
-        // null.
-        SettingsHostFragment hostFragment = SettingsHostFragment.get(fragment);
-        if (hostFragment == null) {
-            WindowAndroid windowAndroid = mTab.getWindowAndroid();
-            Activity activity = windowAndroid != null ? windowAndroid.getActivity().get() : null;
-            hostFragment = SettingsHostFragment.get(activity);
+        finishCurrentSettings(fragment, /* parentFragment= */ null, /* parentArgs= */ null);
+    }
+
+    @Override
+    public void finishCurrentSettings(
+            Fragment fragment,
+            @Nullable Class<? extends Fragment> parentFragment,
+            @Nullable Bundle parentArgs) {
+        SettingsHostFragment hostFragment = findHostFragment(fragment);
+
+        // Anything the host can handle itself, let it: it ignores a call naming a page that is no
+        // longer current or already finished, it defers one made while fragment state is saved,
+        // and it pops the back stack for a page shown by a fragment transaction, e.g. one opened
+        // from a page that has not been migrated to URL navigation. Only a page shown by URL
+        // navigation, which has no back stack entry to pop, is worth intercepting.
+        if (hostFragment != null && !hostFragment.wouldShowMainSettings(fragment)) {
+            hostFragment.finishCurrentSettings(fragment);
+            return;
         }
+
+        // The page occupies a navigation entry in the tab, so land somewhere deliberate.
+        String parentUrl =
+                parentFragment == null
+                        ? null
+                        : SettingsFragmentRegistry.createUrlForFragment(parentFragment, parentArgs);
+        if (parentUrl != null) {
+            navigateReplacingCurrentEntry(parentUrl);
+            return;
+        }
+        if (goBackToPreviousSettingsEntry()) {
+            return;
+        }
+
+        // No settings entry to return to, e.g. settings was the first page loaded in this tab.
+        // Let the host show the main settings page after all.
         if (hostFragment != null) {
             hostFragment.finishCurrentSettings(fragment);
         }
+    }
+
+    /**
+     * Navigates to {@code url}, replacing the current navigation entry instead of pushing a new
+     * one.
+     *
+     * <p>For leaving a page whose entry is no longer valid, e.g. because the data it was showing
+     * was deleted. Replacing rather than pushing keeps the dead entry out of history, so going back
+     * does not return to it.
+     *
+     * <p>If the previous entry already shows {@code url}, goes back to it instead, so the user is
+     * not left with two adjacent entries for the same page and a back press that appears to do
+     * nothing.
+     */
+    void navigateReplacingCurrentEntry(String url) {
+        if (SettingsFragmentRegistry.isSameSettingsPage(getPreviousEntryUrl(), url)) {
+            mTab.goBack();
+            return;
+        }
+        LoadUrlParams params = new LoadUrlParams(url);
+        params.setShouldReplaceCurrentEntry(true);
+        mTab.loadUrl(params);
+    }
+
+    /**
+     * Goes back if the previous navigation entry is a settings page, and returns whether it did.
+     *
+     * <p>The previous entry is deliberately required to be a settings page: going back out of
+     * settings altogether is not what finishing a settings page means.
+     */
+    private boolean goBackToPreviousSettingsEntry() {
+        String previousUrl = getPreviousEntryUrl();
+        if (previousUrl == null
+                || SettingsFragmentRegistry.getFragmentClassForUrl(previousUrl) == null) {
+            return false;
+        }
+        mTab.goBack();
+        return true;
+    }
+
+    /** Returns the URL of the entry preceding the current one, or null if there is none. */
+    private @Nullable String getPreviousEntryUrl() {
+        WebContents webContents = mTab.getWebContents();
+        if (webContents == null) return null;
+
+        NavigationController controller = webContents.getNavigationController();
+        if (!controller.canGoBack()) return null;
+
+        NavigationHistory history =
+                controller.getDirectedNavigationHistory(/* isForward= */ false, /* itemLimit= */ 1);
+        if (history == null || history.getEntryCount() == 0) return null;
+        return history.getEntryAtIndex(0).getUrl().getSpec();
+    }
+
+    /**
+     * Resolves the host fragment, preferring the fragment's own parent hierarchy. When Chrome is in
+     * the background or during lifecycle transitions the host fragment's view may not report
+     * isShown(), which makes the activity-level lookup return null.
+     */
+    private @Nullable SettingsHostFragment findHostFragment(Fragment fragment) {
+        SettingsHostFragment hostFragment = SettingsHostFragment.get(fragment);
+        if (hostFragment != null) return hostFragment;
+
+        WindowAndroid windowAndroid = mTab.getWindowAndroid();
+        Activity activity = windowAndroid != null ? windowAndroid.getActivity().get() : null;
+        return SettingsHostFragment.get(activity);
     }
 
     @Override
