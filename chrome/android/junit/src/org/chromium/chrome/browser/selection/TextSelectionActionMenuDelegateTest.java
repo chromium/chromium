@@ -8,12 +8,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -552,5 +555,202 @@ public class TextSelectionActionMenuDelegateTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         assertNull(mDelegate.getWebSearchMenuItemTitle(context, "test query"));
+    }
+
+    private static ResolveInfo createResolveInfo(String packageName, String activityName) {
+        ResolveInfo resolveInfo = new ResolveInfo();
+        resolveInfo.activityInfo = new ActivityInfo();
+        resolveInfo.activityInfo.packageName = packageName;
+        resolveInfo.activityInfo.name = activityName;
+        return resolveInfo;
+    }
+
+    private static final String GSA_ASK_GEMINI_PROCESS_TEXT_ACTIVITY =
+            TextSelectionActionMenuDelegate.DEFAULT_SUPPRESSED_PROCESS_TEXT_ACTIVITY_PREFIXES
+                    + "launcher.ProcessTextGatewayActivity";
+
+    private static ResolveInfo createGsaAskGeminiResolveInfo() {
+        return createResolveInfo(
+                "com.google.android.googlequicksearchbox", GSA_ASK_GEMINI_PROCESS_TEXT_ACTIVITY);
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_removesGsaAskGeminiWhenAskGeminiEnabled() {
+        enableAskGeminiForSelection();
+        ResolveInfo other = createResolveInfo("com.example.translate", "com.example.Translate");
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(
+                        MenuType.FLOATING, List.of(createGsaAskGeminiResolveInfo(), other));
+
+        assertEquals(List.of(other), filtered);
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_removesGsaAskGeminiOnDropdownMenu() {
+        enableAskGeminiForSelection();
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(
+                        MenuType.DROPDOWN, List.of(createGsaAskGeminiResolveInfo()));
+
+        assertTrue(filtered.isEmpty());
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_keepsGsaAskGeminiWhenAskGeminiDisabled() {
+        // setUp() disables CLANK_GLIC_CONTEXT_MENU, so Chrome contributes no "Ask Gemini" item and
+        // the Google app's entry must be left alone rather than leaving no Gemini entry point.
+        List<ResolveInfo> activities = List.of(createGsaAskGeminiResolveInfo());
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(MenuType.FLOATING, activities);
+
+        assertSame(activities, filtered);
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_keepsGsaAskGeminiOnIncognitoTab() {
+        enableAskGeminiForSelection();
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        List<ResolveInfo> activities = List.of(createGsaAskGeminiResolveInfo());
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(MenuType.FLOATING, activities);
+
+        assertSame(activities, filtered);
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_keepsGsaAskGeminiOnDestroyedTab() {
+        enableAskGeminiForSelection();
+        mTab.destroy();
+        List<ResolveInfo> activities = List.of(createGsaAskGeminiResolveInfo());
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(MenuType.FLOATING, activities);
+
+        assertSame(activities, filtered);
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_keepsGsaAskGeminiWhenNoContainerAvailable() {
+        FeatureOverrides.enable(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU);
+        FeatureOverrides.disable(ChromeFeatureList.TAB_BOTTOM_SHEET);
+        FeatureOverrides.disable(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL);
+        GlicEnabling.setEnabledForTesting(true);
+        List<ResolveInfo> activities = List.of(createGsaAskGeminiResolveInfo());
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(MenuType.FLOATING, activities);
+
+        assertSame(activities, filtered);
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_keepsOtherActivities() {
+        enableAskGeminiForSelection();
+        // Another activity in the same package must not be filtered out, and the original list
+        // reference should be returned without allocating a copy.
+        List<ResolveInfo> activities =
+                List.of(
+                        createResolveInfo(
+                                "com.google.android.googlequicksearchbox",
+                                "com.google.android.googlequicksearchbox.SearchActivity"),
+                        createResolveInfo("com.example.translate", "com.example.Translate"));
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(MenuType.FLOATING, activities);
+
+        assertSame(activities, filtered);
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_removesDifferentClassUnderRobinPrefix() {
+        enableAskGeminiForSelection();
+        ResolveInfo renamedRobinActivity =
+                createResolveInfo(
+                        "com.google.android.googlequicksearchbox",
+                        TextSelectionActionMenuDelegate
+                                        .DEFAULT_SUPPRESSED_PROCESS_TEXT_ACTIVITY_PREFIXES
+                                + "other.SomeRenamedGatewayActivity");
+        ResolveInfo other = createResolveInfo("com.example.translate", "com.example.Translate");
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(
+                        MenuType.FLOATING, List.of(renamedRobinActivity, other));
+
+        assertEquals(List.of(other), filtered);
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_keepsSameClassNameOutsideRobinPrefix() {
+        enableAskGeminiForSelection();
+        ResolveInfo nonRobinGateway =
+                createResolveInfo(
+                        "com.google.android.googlequicksearchbox",
+                        "com.google.android.apps.search.lens.ProcessTextGatewayActivity");
+        List<ResolveInfo> activities = List.of(nonRobinGateway);
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(MenuType.FLOATING, activities);
+
+        assertSame(activities, filtered);
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_customSuppressedPrefixesParam() {
+        enableAskGeminiForSelection();
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
+                .param(
+                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
+                        TextSelectionActionMenuDelegate
+                                .PARAM_SUPPRESSED_PROCESS_TEXT_ACTIVITY_PREFIXES,
+                        "com.example.custom1., com.example.custom2.")
+                .apply();
+        ResolveInfo custom1 =
+                createResolveInfo("com.example.custom1", "com.example.custom1.ProcessTextActivity");
+        ResolveInfo custom2 =
+                createResolveInfo("com.example.custom2", "com.example.custom2.Handler");
+        ResolveInfo gsaRobin = createGsaAskGeminiResolveInfo();
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(
+                        MenuType.FLOATING, List.of(custom1, gsaRobin, custom2));
+
+        // When overridden, only the configured prefixes are suppressed.
+        assertEquals(List.of(gsaRobin), filtered);
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_killSwitchDisabledPreservesGsaItem() {
+        enableAskGeminiForSelection();
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
+                .param(
+                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
+                        TextSelectionActionMenuDelegate.PARAM_SUPPRESS_DUPLICATE_PROCESS_TEXT,
+                        false)
+                .apply();
+        List<ResolveInfo> activities = List.of(createGsaAskGeminiResolveInfo());
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(MenuType.FLOATING, activities);
+
+        assertSame(activities, filtered);
+    }
+
+    @Test
+    public void testFilterTextProcessingActivities_handlesNullActivityInfo() {
+        enableAskGeminiForSelection();
+        ResolveInfo noActivityInfo = new ResolveInfo();
+
+        List<ResolveInfo> filtered =
+                mDelegate.filterTextProcessingActivities(
+                        MenuType.FLOATING,
+                        List.of(noActivityInfo, createGsaAskGeminiResolveInfo()));
+
+        assertEquals(List.of(noActivityInfo), filtered);
     }
 }

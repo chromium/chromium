@@ -68,6 +68,27 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
 
     @VisibleForTesting static final String ASK_GEMINI_POSITION_ASSIST = "assist";
 
+    @VisibleForTesting
+    static final String PARAM_SUPPRESS_DUPLICATE_PROCESS_TEXT = "suppress_duplicate_process_text";
+
+    @VisibleForTesting
+    static final String PARAM_SUPPRESSED_PROCESS_TEXT_ACTIVITY_PREFIXES =
+            "suppressed_process_text_activity_prefixes";
+
+    /**
+     * Default namespace prefix for activity aliases in the Google app (GSA) registering an
+     * ACTION_PROCESS_TEXT handler whose intent filter is labelled "Ask Gemini". This is an exported
+     * activity alias in the Google app; it is observable via PackageManager#queryIntentActivities
+     * for ACTION_PROCESS_TEXT. Chrome contributes its own "Ask Gemini" item to the selection menu,
+     * so when that entry point is enabled the Google app's item is a duplicate and is filtered out.
+     * Matched on the activity namespace prefix rather than the menu title or exact class name so
+     * that the check stays correct in every locale, survives activity renames within the Robin
+     * namespace, and avoids colliding with non-Gemini features.
+     */
+    @VisibleForTesting
+    static final String DEFAULT_SUPPRESSED_PROCESS_TEXT_ACTIVITY_PREFIXES =
+            "com.google.android.apps.search.assistant.surfaces.voice.robin.";
+
     private final Tab mTab;
     private @Nullable String mSelectedText;
 
@@ -133,7 +154,61 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
     @Override
     public List<ResolveInfo> filterTextProcessingActivities(
             @MenuType int menuType, List<ResolveInfo> activities) {
-        return activities;
+        // Only drop the Google app's entry when Chrome contributes its own "Ask Gemini" item,
+        // otherwise the user would be left without any Gemini entry point in the menu.
+        // SelectionActionMenuDelegate#filterTextProcessingActivities does not receive the selection
+        // text or password state (and runs before getAdditionalMenuItems sets mSelectedText), but
+        // SelectActionMenuHelper#getTextProcessingItems only invokes this filter for non-empty,
+        // non-password selections.
+        if (!shouldShowAskGeminiForSelection(
+                /* isSelectionPassword= */ false, /* selectedText= */ "non-empty")) {
+            return activities;
+        }
+        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
+                PARAM_SUPPRESS_DUPLICATE_PROCESS_TEXT,
+                true)) {
+            return activities;
+        }
+        String[] suppressedPrefixes = getGeminiRelatedPrefixFilter();
+        List<ResolveInfo> filteredActivities = null;
+        for (int i = 0; i < activities.size(); i++) {
+            ResolveInfo activity = activities.get(i);
+            if (isSuppressedTextProcessingActivity(activity, suppressedPrefixes)) {
+                if (filteredActivities == null) {
+                    filteredActivities = new ArrayList<>(activities.subList(0, i));
+                }
+            } else if (filteredActivities != null) {
+                filteredActivities.add(activity);
+            }
+        }
+        return filteredActivities != null ? filteredActivities : activities;
+    }
+
+    private static String[] getGeminiRelatedPrefixFilter() {
+        String prefixesParam =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
+                        PARAM_SUPPRESSED_PROCESS_TEXT_ACTIVITY_PREFIXES);
+        if (TextUtils.isEmpty(prefixesParam)) {
+            prefixesParam = DEFAULT_SUPPRESSED_PROCESS_TEXT_ACTIVITY_PREFIXES;
+        }
+        return prefixesParam.split(",");
+    }
+
+    private static boolean isSuppressedTextProcessingActivity(
+            ResolveInfo activity, String[] suppressedPrefixes) {
+        if (activity.activityInfo == null || activity.activityInfo.name == null) {
+            return false;
+        }
+        String activityName = activity.activityInfo.name;
+        for (String prefix : suppressedPrefixes) {
+            String trimmed = prefix.trim();
+            if (!trimmed.isEmpty() && activityName.startsWith(trimmed)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -256,9 +331,9 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
     // TODO(b/543135302): Move Ask Gemini menu enabling checks and feature params into GlicEnabling
     // as helper methods.
     /**
-     * Whether to show the "Ask Gemini" item in the text selection menu. Supports both mobile
-     * (floating action mode with bottom sheet) and desktop Android (right-click dropdown menu with
-     * side panel).
+     * Whether to show the "Ask Gemini" item in the text selection menu for the given selection.
+     * Supports both mobile (floating action mode with bottom sheet) and desktop Android
+     * (right-click dropdown menu with side panel).
      */
     private boolean shouldShowAskGeminiForSelection(
             boolean isSelectionPassword, String selectedText) {
