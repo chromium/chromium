@@ -442,6 +442,7 @@ void ChipController::ResetPermissionPromptChip() {
               ->GetLastCommittedURL();
       bool should_ignore_omnibox_state_check =
           visible_url == chrome::ChromeUINewTabURLAsGURL() ||
+          visible_url == chrome::ChromeUINewTabPageURLAsGURL() ||
           committed_url.host() == chrome::kChromeUIOmniboxPopupHost ||
           committed_url.host() == chrome::kChromeUIContextualTasksHost;
 

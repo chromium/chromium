@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
@@ -33,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -56,6 +58,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace {
@@ -932,25 +935,45 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
+class PermissionsSecurityModelNtpInteractiveUITest
+    : public PermissionsSecurityModelInteractiveUITest,
+      public ::testing::WithParamInterface<GURL> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PermissionsSecurityModelNtpInteractiveUITest,
+    ::testing::Values(chrome::ChromeUINewTabURLAsGURL(),
+                      chrome::ChromeUINewTabPageURLAsGURL()));
+
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelNtpInteractiveUITest,
                        PermissionRequestOnNtpUseDseOrigin) {
   content::WebContents* embedder_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
 
   content::RenderFrameHost* main_rfh =
-      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
-          browser(), chrome::ChromeUINewTabURLAsGURL(), 1);
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
+                                                                GetParam(), 1);
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
 
   ASSERT_TRUE(main_rfh);
-  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
-            embedder_contents->GetLastCommittedURL());
+  EXPECT_EQ(GetParam(), embedder_contents->GetLastCommittedURL());
   EXPECT_EQ(chrome::ChromeUINewTabPageURLAsGURL(),
             main_rfh->GetLastCommittedOrigin().GetURL());
 
   EXPECT_EQ(false, content::EvalJs(main_rfh, kCheckMicrophone,
                                    content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
+  content::PermissionController* permission_controller =
+      browser()->GetProfile()->GetPermissionController();
+  EXPECT_EQ(permission_controller
+                ->GetPermissionResultForOriginWithoutContext(
+                    blink::mojom::PermissionDescriptor::New(
+                        blink::mojom::PermissionName::AUDIO_CAPTURE,
+                        /*extensions=*/nullptr),
+                    url::Origin::Create(
+                        GURL(UIThreadSearchTermsData().GoogleBaseURLValue())))
+                .status,
+            blink::mojom::PermissionStatus::ASK);
 
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(embedder_contents);
@@ -963,6 +986,15 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   EXPECT_EQ("granted",
             content::EvalJs(main_rfh, kRequestMicrophone,
                             content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
+  EXPECT_EQ(permission_controller
+                ->GetPermissionResultForOriginWithoutContext(
+                    blink::mojom::PermissionDescriptor::New(
+                        blink::mojom::PermissionName::AUDIO_CAPTURE,
+                        /*extensions=*/nullptr),
+                    url::Origin::Create(
+                        GURL(UIThreadSearchTermsData().GoogleBaseURLValue())))
+                .status,
+            blink::mojom::PermissionStatus::GRANTED);
 
   bubble_factory->set_response_type(
       permissions::PermissionRequestManager::AutoResponseType::NONE);
@@ -971,20 +1003,19 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
                                   content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1));
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelNtpInteractiveUITest,
                        MicActivityIndicatorOnNtpUseDseOrigin) {
   content::WebContents* embedder_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
 
   content::RenderFrameHost* main_rfh =
-      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
-          browser(), chrome::ChromeUINewTabURLAsGURL(), 1);
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
+                                                                GetParam(), 1);
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
 
   ASSERT_TRUE(main_rfh);
-  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
-            embedder_contents->GetLastCommittedURL());
+  EXPECT_EQ(GetParam(), embedder_contents->GetLastCommittedURL());
   EXPECT_EQ(chrome::ChromeUINewTabPageURLAsGURL(),
             main_rfh->GetLastCommittedOrigin().GetURL());
 
@@ -1024,20 +1055,19 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 
 // Test that a permission prompt bubble will be shown on NTP despite the empty
 // address bar.
-IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelNtpInteractiveUITest,
                        PermissionRequestOnNtpIsNotAutoIgnored) {
   content::WebContents* embedder_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(embedder_contents);
 
   content::RenderFrameHost* main_rfh =
-      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
-          browser(), chrome::ChromeUINewTabURLAsGURL(), 1);
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
+                                                                GetParam(), 1);
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
 
   ASSERT_TRUE(main_rfh);
-  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
-            embedder_contents->GetLastCommittedURL());
+  EXPECT_EQ(GetParam(), embedder_contents->GetLastCommittedURL());
   EXPECT_EQ(chrome::ChromeUINewTabPageURLAsGURL(),
             main_rfh->GetLastCommittedOrigin().GetURL());
 
