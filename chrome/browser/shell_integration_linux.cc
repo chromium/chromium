@@ -785,6 +785,16 @@ std::string GetMimeTypesRegistrationFileContents(
 
   for (const auto& file_handler : file_handlers) {
     for (const auto& accept_entry : file_handler.accept) {
+      // FreeDesktop URL scheme associations use "x-scheme-handler/*"
+      // pseudo-MIME types in .desktop entries, which belong to protocol
+      // handlers rather than file handlers. Skip them here so they are
+      // filtered out from shared MIME-info registration XML files.
+      if (base::EqualsCaseInsensitiveASCII(accept_entry.mime_type,
+                                           "x-scheme-handler") ||
+          base::StartsWith(accept_entry.mime_type, "x-scheme-handler/",
+                           base::CompareCase::INSENSITIVE_ASCII)) {
+        continue;
+      }
       writer.StartElement("mime-type");
       writer.AddAttribute("type", accept_entry.mime_type);
 

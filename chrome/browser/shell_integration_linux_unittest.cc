@@ -631,6 +631,64 @@ TEST(ShellIntegrationTest, GetMimeTypesRegistrationFileContents) {
   EXPECT_EQ(file_contents, expected_file_contents);
 }
 
+TEST(ShellIntegrationTest,
+     GetMimeTypesRegistrationFileContentsFiltersSchemeHandlers) {
+  apps::FileHandlers file_handlers;
+  {
+    apps::FileHandler file_handler;
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      // "x-scheme-handler/*" is a FreeDesktop pseudo-MIME type for URL scheme
+      // handling, not a valid media type for file associations. It should be
+      // ignored during shared MIME-info file registration.
+      accept_entry.mime_type = "x-scheme-handler/mailto";
+      accept_entry.file_extensions.insert(".eml");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      // Bare "x-scheme-handler" without trailing slash must also be ignored.
+      accept_entry.mime_type = "x-scheme-handler";
+      accept_entry.file_extensions.insert(".bad");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      // Uppercase pseudo-types must also be ignored case-insensitively.
+      accept_entry.mime_type = "X-Scheme-Handler/custom";
+      accept_entry.file_extensions.insert(".cust");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      // Uppercase bare "X-Scheme-Handler" must also be ignored.
+      accept_entry.mime_type = "X-Scheme-Handler";
+      accept_entry.file_extensions.insert(".bad2");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "text/plain";
+      accept_entry.file_extensions.insert(".txt");
+      file_handler.accept.push_back(accept_entry);
+    }
+    file_handlers.push_back(file_handler);
+  }
+
+  const std::string file_contents =
+      GetMimeTypesRegistrationFileContents(file_handlers);
+  const std::string expected_file_contents =
+      "<?xml version=\"1.0\"?>\n"
+      "<mime-info "
+      "xmlns=\"http://www.freedesktop.org/standards/shared-mime-info\">\n"
+      " <mime-type type=\"text/plain\">\n"
+      "  <glob pattern=\"*.txt\"/>\n"
+      " </mime-type>\n"
+      "</mime-info>\n";
+
+  EXPECT_EQ(file_contents, expected_file_contents);
+}
+
 // The WM class name may be either capitalised or not, depending on the
 // platform.
 void CheckProgramClassClass(const std::string& class_name) {

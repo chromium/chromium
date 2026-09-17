@@ -10,8 +10,8 @@ The
 main responsibility is support the following operations:
 
 1. Install operating system integration for a given web app.
-1. Update operating system integration for a given web app.
-1. Uninstall/remove operating system integration for a given web app.
+2. Update operating system integration for a given web app.
+3. Uninstall/remove operating system integration for a given web app.
 
 It owns sub-managers who are responsible for each individual operating system
 integration functionality (e.g.
@@ -125,7 +125,7 @@ the following steps:
    For each size, `xdg-icon-resource install` is called to register the icon
    globally for the user. This allows the `.desktop` file to reference the icon
    by its registered name.
-1. **`.desktop` File Generation**: A `.desktop` file string is generated (via
+2. **`.desktop` File Generation**: A `.desktop` file string is generated (via
    `shell_integration_linux::GetDesktopFileContents`). This file contains proper
    instructions for the desktop environment, such as executing the browser with
    the correct app ID, the app's title, the installed icon's name, and any file
@@ -137,7 +137,7 @@ the following steps:
      icon).
    - `NoDisplay=true`: Included if the shortcut is meant to be hidden from
      user-facing menus.
-1. **Location-Specific Installation**:
+3. **Location-Specific Installation**:
    - **Desktop**: The `.desktop` file is written directly to the user's desktop
      directory (e.g., `~/Desktop`).
    - **Run on OS Login (Autostart)**: If the app is configured to launch on OS
@@ -158,7 +158,16 @@ MIME info database:
 
 1. An XML string containing the MIME type registrations is generated and written
    to a temporary file.
-1. `xdg-mime install` is executed to register the MIME types with the system.
-1. Finally, as with shortcut creation, `update-desktop-database` is called to
+2. `xdg-mime install` is executed to register the MIME types with the system.
+3. Finally, as with shortcut creation, `update-desktop-database` is called to
    refresh the desktop cache so that the new file associations take effect
    immediately in the user's file manager.
+
+> **Note on FreeDesktop Protocol vs. File Handlers:** Under FreeDesktop
+> specifications, URL scheme associations are stored in `.desktop` entries using
+> pseudo-MIME types prefixed with `x-scheme-handler/` (e.g.
+> `x-scheme-handler/mailto`). These are exclusively protocol handlers and are
+> filtered out during file handler registration, so they never appear in
+> generated shared MIME-info XML files or file handler `.desktop` shortcuts.
+> Legitimate `x-scheme-handler/*` associations are populated solely from
+> validated `protocol_handlers`.

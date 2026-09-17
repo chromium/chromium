@@ -19,7 +19,8 @@ fetching and icon downloading in the Content layer.
 The browser process does not trust manifest parsing from the untrusted renderer.
 In `ManifestManagerHost`, the browser enforces strict same-origin invariants on
 `start_url`, `id`, `scope`, and action handlers (`share_target`,
-`file_handlers`), terminating any violating renderer process via
+`file_handlers`), as well as syntactic validity on `file_handlers` accept MIME
+types and file extensions, terminating any violating renderer process via
 `mojo::ReportBadMessage`.
 
 For manifest parsing and Mojo type definitions in Blink, see

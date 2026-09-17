@@ -189,6 +189,102 @@ TEST_F(FileHandlingSubManagerConfigureTest, InstallWithFilehandlers) {
             ".baz");
 }
 
+TEST_F(FileHandlingSubManagerConfigureTest, InvalidMimeTypesIgnored) {
+  apps::FileHandlers file_handlers;
+  {
+    apps::FileHandler file_handler;
+    file_handler.action = GURL("https://app.site/open-foo");
+    file_handler.display_name = u"Mixed opener";
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      // "x-scheme-handler/mailto" is invalid file handler data (it represents a
+      // FreeDesktop URL scheme pseudo-MIME type rather than a valid file media
+      // type) and must be filtered out when configuring OS file handling state.
+      accept_entry.mime_type = "x-scheme-handler/mailto";
+      accept_entry.file_extensions.insert(".eml");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      // Bare "x-scheme-handler" without trailing slash must also be skipped.
+      accept_entry.mime_type = "x-scheme-handler";
+      accept_entry.file_extensions.insert(".bad");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      // Uppercase "X-Scheme-Handler/..." must also be skipped.
+      accept_entry.mime_type = "X-Scheme-Handler/mailto";
+      accept_entry.file_extensions.insert(".eml2");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      // Uppercase bare "X-Scheme-Handler" must also be skipped.
+      accept_entry.mime_type = "X-Scheme-Handler";
+      accept_entry.file_extensions.insert(".bad2");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "application/foo";
+      accept_entry.file_extensions.insert(".foo");
+      file_handler.accept.push_back(accept_entry);
+    }
+    file_handlers.push_back(file_handler);
+  }
+
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  EXPECT_TRUE(state.has_value());
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  EXPECT_TRUE(os_integration_state.has_file_handling());
+  const proto::os_state::FileHandling& file_handling =
+      os_integration_state.file_handling();
+  EXPECT_EQ(file_handling.file_handlers_size(), 1);
+  EXPECT_EQ(file_handling.file_handlers(0).accept_size(), 1);
+  EXPECT_EQ(file_handling.file_handlers(0).accept(0).mimetype(),
+            "application/foo");
+}
+
+TEST_F(FileHandlingSubManagerConfigureTest,
+       AllSchemeHandlersFilteredResultsInNoFileHandling) {
+  apps::FileHandlers file_handlers;
+  {
+    apps::FileHandler file_handler;
+    file_handler.action = GURL("https://app.site/open-foo");
+    file_handler.display_name = u"Scheme opener";
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "x-scheme-handler/mailto";
+      accept_entry.file_extensions.insert(".eml");
+      file_handler.accept.push_back(accept_entry);
+    }
+    {
+      apps::FileHandler::AcceptEntry accept_entry;
+      accept_entry.mime_type = "X-Scheme-Handler";
+      accept_entry.file_extensions.insert(".bad");
+      file_handler.accept.push_back(accept_entry);
+    }
+    file_handlers.push_back(file_handler);
+  }
+
+  const webapps::AppId& app_id = InstallWebAppWithFileHandlers(file_handlers);
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  EXPECT_TRUE(state.has_value());
+  const proto::os_state::WebAppOsIntegration& os_integration_state =
+      state.value();
+  // File handling is enabled in OS integration state, but because all accept
+  // entries were filtered out as scheme handlers, no file handler entries
+  // are retained. HasFileHandling() in FileHandlingSubManager::Execute avoids
+  // registering with the OS.
+  EXPECT_TRUE(os_integration_state.has_file_handling());
+  EXPECT_EQ(os_integration_state.file_handling().file_handlers_size(), 0);
+}
+
 TEST_F(FileHandlingSubManagerConfigureTest, UpdateUserChoiceDisallowed) {
   apps::FileHandlers file_handlers;
 

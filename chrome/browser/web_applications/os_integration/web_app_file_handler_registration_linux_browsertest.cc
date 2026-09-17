@@ -28,6 +28,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -140,6 +141,66 @@ IN_PROC_BROWSER_TEST_F(
                                "update-desktop-database"));
   EXPECT_TRUE(xdg_commands_called[1].xdg_command.contains(
       GetUserApplicationsDir().value()));
+}
+
+// Verify that scheme handler pseudo-types in manifest file_handlers are
+// ignored and not registered in OS MIME type files.
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlerRegistrationLinuxBrowserTest,
+                       SchemeHandlerMimeTypesExcludedFromRegistration) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+  GURL url(embedded_test_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest="
+      "manifest_with_x_scheme_handler_in_file_handlers.json"));
+
+  apps::FileHandlers expected_file_handlers;
+  expected_file_handlers.push_back(GetTestFileHandler(
+      "https://site.api/open-foo", {{"application/foo", {".foo"}}}));
+
+  std::string expected_file_contents =
+      shell_integration_linux::GetMimeTypesRegistrationFileContents(
+          expected_file_handlers);
+
+  std::vector<LinuxFileRegistration> xdg_commands_called;
+  base::RunLoop loop;
+  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(base::BindLambdaForTesting(
+      [&](base::FilePath filename_in, std::string xdg_command_in,
+          std::string file_contents_in) {
+        LinuxFileRegistration file_registration = LinuxFileRegistration();
+        file_registration.file_name = filename_in;
+        file_registration.xdg_command = xdg_command_in;
+        file_registration.file_contents = file_contents_in;
+        xdg_commands_called.push_back(file_registration);
+        loop.Quit();
+        return true;
+      }));
+
+  ExternalInstallOptions install_options = CreateInstallOptions(url);
+  install_options.install_source = ExternalInstallSource::kExternalPolicy;
+  InstallApp(install_options);
+
+  loop.Run();
+  std::optional<webapps::AppId> app_id = WebAppProvider::GetForTest(profile())
+                                             ->registrar_unsafe()
+                                             .LookupExternalAppId(url);
+  EXPECT_TRUE(app_id.has_value());
+
+  base::FilePath expected_filename =
+      shell_integration_linux::GetMimeTypesRegistrationFilename(
+          profile()->GetPath(), app_id.value());
+
+  // Verify that the file registration command was called with XML contents
+  // matching only the valid "application/foo" file handler. We verify that
+  // "x-scheme-handler/mailto" was filtered out during manifest installation
+  // and is completely absent from the registered file contents.
+  EXPECT_EQ(xdg_commands_called[0].file_contents, expected_file_contents);
+  EXPECT_EQ(xdg_commands_called[0].file_name, expected_filename);
+  EXPECT_THAT(xdg_commands_called[0].file_contents,
+              testing::Not(testing::HasSubstr("x-scheme-handler")));
+  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(
+      UpdateMimeInfoDatabaseOnLinuxCallback());
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
+            result_code_.value());
 }
 
 }  // namespace web_app

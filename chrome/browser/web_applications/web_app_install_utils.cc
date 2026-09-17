@@ -58,6 +58,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "net/base/mime_util.h"
 #include "net/http/http_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -317,7 +318,9 @@ void PopulateFileHandlerInfoFromManifest(
   apps::FileHandlers web_app_file_handlers;
 
   for (const auto& manifest_file_handler : manifest_file_handlers) {
-    DCHECK(manifest_file_handler);
+    if (!manifest_file_handler) {
+      continue;
+    }
     apps::FileHandler web_app_file_handler;
     web_app_file_handler.action = manifest_file_handler->action;
     web_app_file_handler.display_name = manifest_file_handler->name;
@@ -325,16 +328,30 @@ void PopulateFileHandlerInfoFromManifest(
         ToFileHandlerLaunchType(manifest_file_handler->launch_type);
 
     for (const auto& it : manifest_file_handler->accept) {
-      apps::FileHandler::AcceptEntry web_app_accept_entry;
-      web_app_accept_entry.mime_type = base::UTF16ToUTF8(it.first);
-      for (const auto& manifest_file_extension : it.second) {
-        web_app_accept_entry.file_extensions.insert(
-            base::UTF16ToUTF8(manifest_file_extension));
+      std::string mime_type = base::UTF16ToUTF8(it.first);
+      std::string top_level_mime_type;
+      if (!net::ParseMimeTypeWithoutParameter(mime_type, &top_level_mime_type,
+                                              nullptr) ||
+          !net::IsValidTopLevelMimeType(top_level_mime_type)) {
+        continue;
       }
-      web_app_file_handler.accept.push_back(std::move(web_app_accept_entry));
+      apps::FileHandler::AcceptEntry web_app_accept_entry;
+      web_app_accept_entry.mime_type = std::move(mime_type);
+      for (const auto& manifest_file_extension : it.second) {
+        std::string file_extension = base::UTF16ToUTF8(manifest_file_extension);
+        if (file_extension.length() <= 1 || file_extension[0] != '.') {
+          continue;
+        }
+        web_app_accept_entry.file_extensions.insert(std::move(file_extension));
+      }
+      if (!web_app_accept_entry.file_extensions.empty()) {
+        web_app_file_handler.accept.push_back(std::move(web_app_accept_entry));
+      }
     }
 
-    web_app_file_handlers.push_back(std::move(web_app_file_handler));
+    if (!web_app_file_handler.accept.empty()) {
+      web_app_file_handlers.push_back(std::move(web_app_file_handler));
+    }
   }
 
   web_app_info->file_handlers = std::move(web_app_file_handlers);

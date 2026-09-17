@@ -18,6 +18,7 @@
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/base/mime_util.h"
 #include "net/base/schemeful_site.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -98,7 +99,23 @@ std::optional<std::string> MaybeGetBadMessageStringForManifest(
         return "Manifest file_handlers must be same-origin with the document.";
       }
       for (const auto& [mime_type, extensions] : file_handler->accept) {
+        std::string mime_type_utf8 = base::UTF16ToUTF8(mime_type);
+        std::string top_level_mime_type;
+        if (!net::ParseMimeTypeWithoutParameter(mime_type_utf8,
+                                                &top_level_mime_type,
+                                                /*subtype=*/nullptr) ||
+            !net::IsValidTopLevelMimeType(top_level_mime_type)) {
+          return "Manifest file_handlers accept MIME type is invalid.";
+        }
+        if (extensions.empty()) {
+          return "Manifest file_handlers accept extensions list cannot be "
+                 "empty.";
+        }
         for (const auto& extension : extensions) {
+          if (!extension.starts_with(u".") || extension.length() <= 1) {
+            return "Manifest file_handlers accept extension must start with a "
+                   "'.' and contain at least one extension character.";
+          }
           for (size_t i = 0; i < extension.length();) {
             UChar32 c;
             U16_NEXT(extension, i, extension.length(), c);

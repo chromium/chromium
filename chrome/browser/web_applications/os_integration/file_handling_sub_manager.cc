@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
@@ -59,6 +60,12 @@ bool HasFileHandling(
           os_integration_state.file_handling().file_handlers_size() > 0);
 }
 
+bool IsSchemeHandlerMimeType(std::string_view mime_type) {
+  return base::EqualsCaseInsensitiveASCII(mime_type, "x-scheme-handler") ||
+         base::StartsWith(mime_type, "x-scheme-handler/",
+                          base::CompareCase::INSENSITIVE_ASCII);
+}
+
 }  // namespace
 
 std::set<std::string> GetFileExtensionsFromFileHandlingProto(
@@ -80,7 +87,12 @@ std::set<std::string> GetMimeTypesFromFileHandlingProto(
   std::set<std::string> mime_types;
   for (const auto& file_handler : file_handling.file_handlers()) {
     for (const auto& accept_entry : file_handler.accept()) {
-      mime_types.insert(accept_entry.mimetype());
+      // "x-scheme-handler/*" is a FreeDesktop pseudo-MIME type used for URL
+      // scheme associations, not a media type for file handling. Exclude it
+      // when extracting file handling MIME types.
+      if (!IsSchemeHandlerMimeType(accept_entry.mimetype())) {
+        mime_types.insert(accept_entry.mimetype());
+      }
     }
   }
   return mime_types;
@@ -122,15 +134,20 @@ void FileHandlingSubManager::Configure(
   // checks above.
   for (const auto& file_handler :
        *provider_->registrar_unsafe().GetAppFileHandlers(app_id)) {
-    proto::os_state::FileHandling::FileHandler* file_handler_proto =
-        os_file_handling->add_file_handlers();
+    proto::os_state::FileHandling::FileHandler file_handler_proto;
     DCHECK(file_handler.action.is_valid());
-    file_handler_proto->set_action(file_handler.action.spec());
-    file_handler_proto->set_display_name(
+    file_handler_proto.set_action(file_handler.action.spec());
+    file_handler_proto.set_display_name(
         base::UTF16ToUTF8(file_handler.display_name));
 
     for (const auto& accept_entry : file_handler.accept) {
-      auto* accept_entry_proto = file_handler_proto->add_accept();
+      // Exclude "x-scheme-handler/*" pseudo-MIME types so that URL scheme
+      // registrations cannot be injected via file handlers into OS file
+      // handling integration.
+      if (IsSchemeHandlerMimeType(accept_entry.mime_type)) {
+        continue;
+      }
+      auto* accept_entry_proto = file_handler_proto.add_accept();
       accept_entry_proto->set_mimetype(accept_entry.mime_type);
       for (const auto& file_extension : accept_entry.file_extensions) {
         if (provider_->registrar_unsafe().GetAppFileHandlerApprovalState(
@@ -138,6 +155,10 @@ void FileHandlingSubManager::Configure(
           accept_entry_proto->add_file_extensions(file_extension);
         }
       }
+    }
+
+    if (file_handler_proto.accept_size() > 0) {
+      *os_file_handling->add_file_handlers() = std::move(file_handler_proto);
     }
   }
 

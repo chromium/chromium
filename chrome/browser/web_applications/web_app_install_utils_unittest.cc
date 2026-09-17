@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -352,6 +353,140 @@ TEST_F(FileHandlersFromManifestTest, Basic) {
     EXPECT_EQ(*file_handlers[i].accept[0].file_extensions.begin(),
               MakeExtension(i));
   }
+}
+
+TEST_F(FileHandlersFromManifestTest,
+       MultipleValidHandlersWithMultipleAcceptAndExtensions) {
+  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers;
+
+  // Handler 1: Images with multiple MIME types and multiple extensions.
+  {
+    auto file_handler = blink::mojom::ManifestFileHandler::New();
+    file_handler->action = MakeActionUrl(0);
+    file_handler->name = u"Image Handler";
+    file_handler->accept[u"image/png"] = {u".png"};
+    file_handler->accept[u"image/jpeg"] = {u".jpg", u".jpeg"};
+    manifest_file_handlers.push_back(std::move(file_handler));
+  }
+
+  // Handler 2: Documents with a single MIME type.
+  {
+    auto file_handler = blink::mojom::ManifestFileHandler::New();
+    file_handler->action = MakeActionUrl(1);
+    file_handler->name = u"PDF Handler";
+    file_handler->accept[u"application/pdf"] = {u".pdf"};
+    manifest_file_handlers.push_back(std::move(file_handler));
+  }
+
+  auto web_app_info = CreateWebAppInstallInfo();
+  PopulateFileHandlerInfoFromManifest(manifest_file_handlers, GetStartUrl(),
+                                      &web_app_info);
+  const apps::FileHandlers& file_handlers = web_app_info.file_handlers;
+  ASSERT_EQ(file_handlers.size(), 2U);
+
+  EXPECT_EQ(file_handlers[0].action, MakeActionUrl(0));
+  EXPECT_EQ(file_handlers[0].display_name, u"Image Handler");
+  ASSERT_EQ(file_handlers[0].accept.size(), 2U);
+
+  EXPECT_EQ(file_handlers[1].action, MakeActionUrl(1));
+  EXPECT_EQ(file_handlers[1].display_name, u"PDF Handler");
+  ASSERT_EQ(file_handlers[1].accept.size(), 1U);
+  EXPECT_EQ(file_handlers[1].accept[0].mime_type, "application/pdf");
+  EXPECT_EQ(file_handlers[1].accept[0].file_extensions.size(), 1U);
+  EXPECT_EQ(*file_handlers[1].accept[0].file_extensions.begin(), ".pdf");
+}
+
+TEST_F(FileHandlersFromManifestTest, InvalidMimeTypesAndExtensions) {
+  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers;
+
+  // Invalid MIME type: x-scheme-handler/mailto
+  {
+    auto file_handler = blink::mojom::ManifestFileHandler::New();
+    file_handler->action = MakeActionUrl(0);
+    file_handler->name = u"Invalid1";
+    file_handler->accept[u"x-scheme-handler/mailto"] = {u".eml"};
+    manifest_file_handlers.push_back(std::move(file_handler));
+  }
+
+  // Invalid MIME type: not a valid format (missing slash)
+  {
+    auto file_handler = blink::mojom::ManifestFileHandler::New();
+    file_handler->action = MakeActionUrl(1);
+    file_handler->name = u"Invalid2";
+    file_handler->accept[u"image_png"] = {u".png"};
+    manifest_file_handlers.push_back(std::move(file_handler));
+  }
+
+  // Invalid extension: missing leading dot
+  {
+    auto file_handler = blink::mojom::ManifestFileHandler::New();
+    file_handler->action = MakeActionUrl(2);
+    file_handler->name = u"Invalid3";
+    file_handler->accept[u"image/png"] = {u"png"};
+    manifest_file_handlers.push_back(std::move(file_handler));
+  }
+
+  // Invalid extension: single dot only
+  {
+    auto file_handler = blink::mojom::ManifestFileHandler::New();
+    file_handler->action = MakeActionUrl(3);
+    file_handler->name = u"Invalid4";
+    file_handler->accept[u"image/png"] = {u"."};
+    manifest_file_handlers.push_back(std::move(file_handler));
+  }
+
+  auto web_app_info = CreateWebAppInstallInfo();
+  PopulateFileHandlerInfoFromManifest(manifest_file_handlers, GetStartUrl(),
+                                      &web_app_info);
+  // Verify that all invalid file handlers were skipped and no file handlers
+  // were added.
+  EXPECT_TRUE(web_app_info.file_handlers.empty());
+}
+
+TEST_F(FileHandlersFromManifestTest, MixedValidAndInvalidFileHandlers) {
+  std::vector<blink::mojom::ManifestFileHandlerPtr> manifest_file_handlers;
+
+  // File handler containing a mix of valid and invalid accept entries /
+  // extensions:
+  // - "x-scheme-handler/https": invalid MIME type, should be dropped.
+  // - "image/png": valid MIME type with valid (".png") and invalid
+  // ("invalid_ext", ".") extensions.
+  // - "text/plain": valid MIME type with valid (".txt") extension.
+  {
+    auto file_handler = blink::mojom::ManifestFileHandler::New();
+    file_handler->action = MakeActionUrl(0);
+    file_handler->name = u"Mixed";
+    file_handler->accept[u"x-scheme-handler/https"] = {u".html"};
+    file_handler->accept[u"image/png"] = {u"invalid_ext", u".", u".png"};
+    file_handler->accept[u"text/plain"] = {u".txt"};
+    manifest_file_handlers.push_back(std::move(file_handler));
+  }
+
+  auto web_app_info = CreateWebAppInstallInfo();
+  PopulateFileHandlerInfoFromManifest(manifest_file_handlers, GetStartUrl(),
+                                      &web_app_info);
+  const apps::FileHandlers& file_handlers = web_app_info.file_handlers;
+  ASSERT_EQ(file_handlers.size(), 1U);
+  EXPECT_EQ(file_handlers[0].action, MakeActionUrl(0));
+  ASSERT_EQ(file_handlers[0].accept.size(), 2U);
+
+  // Find image/png accept entry. Note that only one extension (".png") is
+  // retained; the invalid extensions ("invalid_ext" missing a leading dot and
+  // "." having length <= 1) are filtered out.
+  auto img_it = std::ranges::find(file_handlers[0].accept, "image/png",
+                                  &apps::FileHandler::AcceptEntry::mime_type);
+  ASSERT_NE(img_it, file_handlers[0].accept.end());
+  EXPECT_EQ(img_it->file_extensions.size(), 1U);
+  EXPECT_EQ(*img_it->file_extensions.begin(), ".png");
+  EXPECT_FALSE(img_it->file_extensions.contains("invalid_ext"));
+  EXPECT_FALSE(img_it->file_extensions.contains("."));
+
+  // Find text/plain accept entry
+  auto txt_it = std::ranges::find(file_handlers[0].accept, "text/plain",
+                                  &apps::FileHandler::AcceptEntry::mime_type);
+  ASSERT_NE(txt_it, file_handlers[0].accept.end());
+  EXPECT_EQ(txt_it->file_extensions.size(), 1U);
+  EXPECT_EQ(*txt_it->file_extensions.begin(), ".txt");
 }
 
 // Test duplicate icon download URLs from the manifest.

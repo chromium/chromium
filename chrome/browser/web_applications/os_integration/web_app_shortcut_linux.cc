@@ -597,9 +597,19 @@ bool CreateDesktopShortcut(base::Environment* env,
       NOTREACHED();
   }
 
-  std::vector<std::string> mime_types(
-      shortcut_info.file_handler_mime_types.begin(),
-      shortcut_info.file_handler_mime_types.end());
+  std::vector<std::string> mime_types;
+  // Filter out any "x-scheme-handler/*" pseudo-MIME types from file handlers.
+  // In FreeDesktop .desktop files, "x-scheme-handler/*" entries associate URL
+  // schemes and must only originate from validated protocol_handlers below.
+  for (const auto& file_handler_mime_type :
+       shortcut_info.file_handler_mime_types) {
+    if (!base::EqualsCaseInsensitiveASCII(file_handler_mime_type,
+                                          "x-scheme-handler") &&
+        !base::StartsWith(file_handler_mime_type, "x-scheme-handler/",
+                          base::CompareCase::INSENSITIVE_ASCII)) {
+      mime_types.push_back(file_handler_mime_type);
+    }
+  }
 
   // Convert protocol handlers into mime types for registration in the
   // .desktop file.

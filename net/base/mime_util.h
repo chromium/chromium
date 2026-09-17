@@ -139,7 +139,8 @@ NET_EXPORT std::optional<std::string> ExtractMimeTypeFromMediaType(
 // Returns true if the |type_string| is a top-level type of any media type
 // registered with IANA media types registry at
 // http://www.iana.org/assignments/media-types/media-types.xhtml or an
-// experimental type (type with x- prefix).
+// experimental type (type with x- prefix, excluding pseudo-types such as
+// x-scheme-handler).
 //
 // This method doesn't check that the input conforms to token ABNF, so if input
 // is experimental type strings, you need to check check that before using

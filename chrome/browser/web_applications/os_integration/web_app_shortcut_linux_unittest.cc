@@ -538,10 +538,91 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutWithProtocols) {
     ASSERT_TRUE(base::PathExists(autostart_shortcut_path));
 
     std::string actual_contents;
-    ASSERT_TRUE(
+    EXPECT_TRUE(
         base::ReadFileToString(autostart_shortcut_path, &actual_contents));
     EXPECT_EQ(expected_contents, actual_contents);
   }
+}
+
+TEST_F(WebAppShortcutLinuxTest,
+       CreateDesktopShortcutWithFileHandlersAndProtocols) {
+  std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
+  ShortcutLocations locations;
+  locations.on_desktop = true;
+  locations.in_startup = true;
+  locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
+
+  // Add file handler MIME types, including an unexpected x-scheme-handler
+  // entry.
+  shortcut_info->file_handler_mime_types.emplace("image/png");
+  shortcut_info->file_handler_mime_types.emplace("text/plain");
+  shortcut_info->file_handler_mime_types.emplace("x-scheme-handler/mailto");
+  shortcut_info->file_handler_mime_types.emplace("x-scheme-handler");
+  shortcut_info->file_handler_mime_types.emplace("X-Scheme-Handler/custom");
+  shortcut_info->file_handler_mime_types.emplace("X-Scheme-Handler");
+
+  // Add protocol handlers.
+  shortcut_info->protocol_handlers.emplace("web+testing");
+
+  int invoke_count = 0;
+  LaunchXdgUtilityForTesting CreateDesktopShortcutLaunchXdgUtility =
+      base::BindLambdaForTesting([&](const std::vector<std::string>& argv,
+                                     int* exit_code) -> bool {
+        ValidateCreateDesktopShortcutLaunchXdgUtility(
+            argv, exit_code, GetApplicationsPath(), invoke_count);
+
+        // Validate MIME types were added to contents correctly:
+        // - "image/png" and "text/plain" from file_handler_mime_types are kept.
+        // - "x-scheme-handler/web+testing" is added from protocol_handlers.
+        // - "x-scheme-handler/mailto" from file_handler_mime_types is filtered
+        //   out and must NOT appear in the .desktop file.
+        // Each of these expectations is explicitly asserted below.
+        if (invoke_count == 2) {
+          std::string expected_contents =
+              shell_integration_linux::GetDesktopFileContents(
+                  shell_integration_linux::internal::GetChromeExePath(),
+                  GenerateApplicationNameFromInfo(*shortcut_info),
+                  shortcut_info->url, shortcut_info->app_id,
+                  shortcut_info->title, GetExpectedIconPath(),
+                  shortcut_info->profile_path, "",
+                  "image/png;text/plain;x-scheme-handler/web+testing", false,
+                  "", shortcut_info->actions);
+
+          base::FilePath application_shortcut_path(argv[5]);
+          EXPECT_TRUE(base::PathExists(application_shortcut_path));
+
+          std::string actual_contents;
+          EXPECT_TRUE(base::ReadFileToString(application_shortcut_path,
+                                             &actual_contents));
+          EXPECT_EQ(expected_contents, actual_contents);
+
+          // Explicitly verify protocol handler is present in .desktop file.
+          EXPECT_THAT(actual_contents,
+                      testing::HasSubstr("x-scheme-handler/web+testing"));
+
+          // Explicitly verify valid file handler MIME types are present.
+          EXPECT_THAT(actual_contents, testing::HasSubstr("image/png"));
+          EXPECT_THAT(actual_contents, testing::HasSubstr("text/plain"));
+
+          // Explicitly verify x-scheme-handler/mailto from file handlers was
+          // filtered out and does not exist in the .desktop file.
+          EXPECT_THAT(
+              actual_contents,
+              testing::Not(testing::HasSubstr("x-scheme-handler/mailto")));
+        }
+        invoke_count++;
+
+        if (invoke_count < 4) {
+          SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
+        }
+        return true;
+      });
+
+  SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
+
+  EXPECT_TRUE(
+      CreateDesktopShortcut(/*env=*/nullptr, *shortcut_info, locations));
+  EXPECT_EQ(invoke_count, 4);
 }
 
 TEST_F(WebAppShortcutLinuxTest,

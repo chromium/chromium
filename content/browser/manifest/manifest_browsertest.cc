@@ -1316,6 +1316,145 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       BadMessage_FileHandlersAcceptInvalidMimeType) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto invalid_manifest = blink::mojom::Manifest::New();
+  invalid_manifest->start_url = test_url;
+  invalid_manifest->id = test_url;
+  invalid_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  blink::mojom::ManifestFileHandlerPtr file_handler =
+      blink::mojom::ManifestFileHandler::New();
+  file_handler->action = test_url;
+
+  std::vector<std::u16string> extensions;
+  extensions.push_back(u".eml");
+  file_handler->accept[u"x-scheme-handler/mailto"] = std::move(extensions);
+
+  invalid_manifest->file_handlers.push_back(std::move(file_handler));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess,
+      std::move(invalid_manifest));
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::StartsWith(
+                  "Manifest file_handlers accept MIME type is invalid."));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ManifestBrowserTest,
+    BadMessage_FileHandlersAcceptExtensionMissingLeadingDot) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto invalid_manifest = blink::mojom::Manifest::New();
+  invalid_manifest->start_url = test_url;
+  invalid_manifest->id = test_url;
+  invalid_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  blink::mojom::ManifestFileHandlerPtr file_handler =
+      blink::mojom::ManifestFileHandler::New();
+  file_handler->action = test_url;
+
+  std::vector<std::u16string> extensions;
+  extensions.push_back(u"png");
+  file_handler->accept[u"image/png"] = std::move(extensions);
+
+  invalid_manifest->file_handlers.push_back(std::move(file_handler));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess,
+      std::move(invalid_manifest));
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::StartsWith(
+                  "Manifest file_handlers accept extension must start with a "
+                  "'.' and contain at least one extension character."));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       BadMessage_FileHandlersAcceptExtensionOnlyDot) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto invalid_manifest = blink::mojom::Manifest::New();
+  invalid_manifest->start_url = test_url;
+  invalid_manifest->id = test_url;
+  invalid_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  blink::mojom::ManifestFileHandlerPtr file_handler =
+      blink::mojom::ManifestFileHandler::New();
+  file_handler->action = test_url;
+
+  std::vector<std::u16string> extensions;
+  extensions.push_back(u".");
+  file_handler->accept[u"image/png"] = std::move(extensions);
+
+  invalid_manifest->file_handlers.push_back(std::move(file_handler));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess,
+      std::move(invalid_manifest));
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::StartsWith(
+                  "Manifest file_handlers accept extension must start with a "
+                  "'.' and contain at least one extension character."));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       BadMessage_FileHandlersAcceptEmptyExtensions) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto invalid_manifest = blink::mojom::Manifest::New();
+  invalid_manifest->start_url = test_url;
+  invalid_manifest->id = test_url;
+  invalid_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  blink::mojom::ManifestFileHandlerPtr file_handler =
+      blink::mojom::ManifestFileHandler::New();
+  file_handler->action = test_url;
+
+  std::vector<std::u16string> extensions;
+  file_handler->accept[u"image/png"] = std::move(extensions);
+
+  invalid_manifest->file_handlers.push_back(std::move(file_handler));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess,
+      std::move(invalid_manifest));
+  EXPECT_THAT(
+      bad_message_observer.WaitForBadMessage(),
+      ::testing::StartsWith(
+          "Manifest file_handlers accept extensions list cannot be empty."));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
                        BadMessage_ProtocolHandlersActionCrossOrigin) {
   const GURL test_url =
       embedded_test_server()->GetURL("/manifest/empty-manifest.html");

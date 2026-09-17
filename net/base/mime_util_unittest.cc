@@ -559,6 +559,8 @@ TEST(MimeUtilTest, TestIsValidTopLevelMimeType) {
   EXPECT_TRUE(IsValidTopLevelMimeType("X-video"));
 
   EXPECT_FALSE(IsValidTopLevelMimeType("x-"));
+  EXPECT_FALSE(IsValidTopLevelMimeType("x-scheme-handler"));
+  EXPECT_FALSE(IsValidTopLevelMimeType("X-Scheme-Handler"));
 }
 
 TEST(MimeUtilTest, TestGetExtensionsForMimeType) {

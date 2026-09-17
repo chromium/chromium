@@ -661,9 +661,13 @@ bool MimeUtil::IsValidTopLevelMimeType(std::string_view type_string) const {
     }
   }
 
-  return type_string.size() > 2 &&
-         base::StartsWith(type_string, "x-",
-                          base::CompareCase::INSENSITIVE_ASCII);
+  // "x-scheme-handler" is a pseudo-MIME type (used e.g. for URL scheme
+  // associations), not an IANA media type.
+  if (lower_type == "x-scheme-handler") {
+    return false;
+  }
+
+  return lower_type.size() > 2 && lower_type.starts_with("x-");
 }
 
 //----------------------------------------------------------------------------

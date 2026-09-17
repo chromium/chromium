@@ -3021,7 +3021,36 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
 
     ASSERT_EQ(2u, GetErrorCount());
     EXPECT_EQ(
-        "property 'accept' file extension ignored, must start with a '.'.",
+        "property 'accept' file extension ignored, must start with a '.' and "
+        "contain at least one extension character.",
+        errors()[0]);
+    EXPECT_EQ("FileHandler ignored. Property 'accept' is invalid.",
+              errors()[1]);
+    ASSERT_EQ(0u, file_handlers.size());
+  }
+
+  // Extensions that only consist of a '.' are invalid.
+  {
+    auto& manifest = ParseManifest(
+        R"({
+          "file_handlers": [
+            {
+              "name": "name",
+              "action": "/files",
+              "accept": {
+                "image/png": [
+                  "."
+                ]
+              }
+            }
+          ]
+        })");
+    auto& file_handlers = manifest->file_handlers;
+
+    ASSERT_EQ(2u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'accept' file extension ignored, must start with a '.' and "
+        "contain at least one extension character.",
         errors()[0]);
     EXPECT_EQ("FileHandler ignored. Property 'accept' is invalid.",
               errors()[1]);
@@ -3096,6 +3125,8 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
                 "image_png": ".png",
                 "foo/bar": ".foo",
                 "application/foobar;parameter=25": ".foobar",
+                "x-scheme-handler/mailto": ".eml",
+                "X-Scheme-Handler/http": ".html",
                 "application/its+xml": ".itsml"
               }
             }
@@ -3103,11 +3134,13 @@ TEST_F(ManifestParserTest, FileHandlerParseRules) {
         })");
     auto& file_handlers = manifest->file_handlers;
 
-    ASSERT_EQ(3u, GetErrorCount());
+    ASSERT_EQ(5u, GetErrorCount());
     EXPECT_EQ("invalid MIME type: image_png", errors()[0]);
     EXPECT_EQ("invalid MIME type: foo/bar", errors()[1]);
     EXPECT_EQ("invalid MIME type: application/foobar;parameter=25",
               errors()[2]);
+    EXPECT_EQ("invalid MIME type: x-scheme-handler/mailto", errors()[3]);
+    EXPECT_EQ("invalid MIME type: X-Scheme-Handler/http", errors()[4]);
     ASSERT_EQ(1u, file_handlers.size());
 
     EXPECT_EQ("Foo", file_handlers[0]->name);
@@ -4870,6 +4903,35 @@ TEST_F(ManifestParserTest, ShareTargetUrlTemplateParseRules) {
     EXPECT_TRUE(manifest->share_target->params->files.has_value());
     EXPECT_EQ(1u, manifest->share_target->params->files->size());
     EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Wildcard */* and <type>/* are valid in share_target.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({ "share_target": { "action": "https://foo.com/#", "method":
+        "POST", "enctype": "multipart/form-data", "params":
+        { "title": "mytitle", "files": [{ "name": "name",
+        "accept": ["*/*", "image/*", ".csv"]}] } }
+        })",
+        manifest_url, document_url);
+    EXPECT_TRUE(manifest->share_target.get());
+    EXPECT_TRUE(manifest->share_target->params->files.has_value());
+    EXPECT_EQ(1u, manifest->share_target->params->files->size());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Pseudo-MIME types like x-scheme-handler are invalid in share_target.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({ "share_target": { "action": "https://foo.com/#", "method":
+        "POST", "enctype": "multipart/form-data", "params":
+        { "title": "mytitle", "files": [{ "name": "name",
+        "accept": ["x-scheme-handler/mailto"]}] } }
+        })",
+        manifest_url, document_url);
+    EXPECT_FALSE(manifest->share_target.get());
+    EXPECT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("invalid mime type inside files.", errors()[0]);
   }
 
   // Invalid mimetype.

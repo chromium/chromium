@@ -347,7 +347,10 @@ struct ManifestFileHandler {
   url.mojom.Url action;
   // Human-readable name for the file handler. May be displayed in file manager.
   mojo_base.mojom.String16 name;
-  // A mapping of a MIME types to a corresponding list of file extensions.
+  // A mapping of valid MIME types to a corresponding list of file extensions.
+  // Each MIME type must be syntactically valid and must NOT contain protocol
+  // scheme handlers or FreeDesktop pseudo-MIME types (e.g. "x-scheme-handler/*").
+  // Each file extension must start with '.' and be longer than 1 character.
   map<mojo_base.mojom.String16, array<mojo_base.mojom.String16>> accept;
 
   // How the app should be launched when there are multiple files being opened.
