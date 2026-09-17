@@ -29,9 +29,6 @@ dependencies {
     buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
 
     androidTestCompile 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.0.0'
-    // accessibility-test-framework:3.1.2 depends on jsoup 1.12, which has a security
-    // vulnerability, so grab a later version.
-    androidTestCompile 'org.jsoup:jsoup:1.14.3'
     androidTestCompile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
     // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.
     androidTestCompile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
@@ -46,8 +43,11 @@ dependencies {
     androidTestCompile "org.mockito:mockito-core:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-subclass:${mockitoVersion}"
 
-    // Used by //third_party/byte_buddy
-    androidTestCompile "net.bytebuddy:byte-buddy:1.14.5"
+    // Declared as a top-level dep so that //third_party/byte_buddy can depend
+    // on it. The version must match the byte-buddy that mockito depends on
+    // (see byte-buddy-agent / byte-buddy-android), otherwise gradle resolves
+    // to the higher of the two anyway.
+    androidTestCompile "net.bytebuddy:byte-buddy:1.17.6"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
