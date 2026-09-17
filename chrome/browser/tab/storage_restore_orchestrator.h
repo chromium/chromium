@@ -72,7 +72,7 @@ class StorageRestoreOrchestrator
   raw_ptr<TabStateStorageService> service_;
   raw_ptr<StorageLoadedData> loaded_data_;
 
-  bool is_restore_cancelled_;
+  bool is_restore_cancelled_ = false;
 };
 
 }  // namespace tabs
