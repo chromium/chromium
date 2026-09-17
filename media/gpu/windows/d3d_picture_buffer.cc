@@ -32,7 +32,7 @@ D3DPictureBuffer::D3DPictureBuffer(
 
 D3DPictureBuffer::~D3DPictureBuffer() = default;
 
-D3D11Status D3DPictureBuffer::Init(
+D3DStatus D3DPictureBuffer::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,
     ComD3D11VideoDevice1 video_device,
@@ -46,7 +46,7 @@ D3D11Status D3DPictureBuffer::Init(
   view_desc.Texture2D.ArraySlice = array_slice_;
 
   media_log_ = std::move(media_log);
-  D3D11Status result = texture_wrapper_->Init(
+  D3DStatus result = texture_wrapper_->Init(
       std::move(gpu_task_runner), std::move(get_helper_cb), texture_,
       array_slice_, this, std::move(picture_buffer_gpu_resource_init_done_cb));
   if (!result.is_ok()) {
@@ -59,13 +59,13 @@ D3D11Status D3DPictureBuffer::Init(
 
   if (!SUCCEEDED(hr)) {
     MEDIA_LOG(ERROR, media_log_) << "Failed to CreateVideoDecoderOutputView";
-    return {D3D11Status::Codes::kCreateDecoderOutputViewFailed, hr};
+    return {D3DStatus::Codes::kCreateDecoderOutputViewFailed, hr};
   }
 
-  return D3D11Status::Codes::kOk;
+  return D3DStatus::Codes::kOk;
 }
 
-D3D11Status D3DPictureBuffer::ProcessTexture(
+D3DStatus D3DPictureBuffer::ProcessTexture(
     scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) {
   return texture_wrapper_->ProcessTexture(shared_image_dest);
 }
@@ -74,9 +74,9 @@ ComD3D11Texture2D D3DPictureBuffer::Texture() const {
   return texture_;
 }
 
-D3D11Status::Or<ID3D11VideoDecoderOutputView*>
+D3DStatus::Or<ID3D11VideoDecoderOutputView*>
 D3DPictureBuffer::AcquireOutputView() const {
-  D3D11Status result = texture_wrapper_->BeginSharedImageAccess();
+  D3DStatus result = texture_wrapper_->BeginSharedImageAccess();
   if (!result.is_ok()) {
     MEDIA_LOG(ERROR, media_log_)
         << "Failed to acquired key mutex for native texture resource";
@@ -88,7 +88,7 @@ D3DPictureBuffer::AcquireOutputView() const {
   return output_view_.Get();
 }
 
-D3D11Status::Or<ID3D12Resource*> D3DPictureBuffer::ToD3D12Resource(
+D3DStatus::Or<ID3D12Resource*> D3DPictureBuffer::ToD3D12Resource(
     ID3D12Device* device) {
   HRESULT hr;
   if (!d3d12_resource_) {
@@ -100,7 +100,7 @@ D3D11Status::Or<ID3D12Resource*> D3DPictureBuffer::ToD3D12Resource(
                                            &handle);
     if (FAILED(hr)) {
       MEDIA_LOG(ERROR, media_log_) << "Cannot create shared handle";
-      return {D3D11StatusCode::kCreateSharedHandleFailed, hr};
+      return {D3DStatusCode::kCreateSharedHandleFailed, hr};
     }
     base::win::ScopedHandle handle_holder(handle);
     hr = device->OpenSharedHandle(handle_holder.get(),
@@ -108,7 +108,7 @@ D3D11Status::Or<ID3D12Resource*> D3DPictureBuffer::ToD3D12Resource(
     if (FAILED(hr)) {
       MEDIA_LOG(ERROR, media_log_)
           << "Open shared handle as D3D12 resource failed.";
-      return {D3D11StatusCode::kCreateSharedHandleFailed, hr};
+      return {D3DStatusCode::kCreateSharedHandleFailed, hr};
     }
   }
 #if DCHECK_IS_ON()
@@ -125,10 +125,10 @@ void D3DPictureBuffer::SetFenceAndValue(scoped_refptr<D3D12Fence> fence,
   fence_and_value_ = std::make_pair(std::move(fence), value);
 }
 
-D3D11Status D3DPictureBuffer::WaitForDecodeCompleteGPU(
+D3DStatus D3DPictureBuffer::WaitForDecodeCompleteGPU(
     ID3D11DeviceContext* context) {
   const auto& [fence, value] = fence_and_value_;
-  return !fence ? D3D11Status::Codes::kOk : fence->WaitGPU(*context, value);
+  return !fence ? D3DStatus::Codes::kOk : fence->WaitGPU(*context, value);
 }
 
 }  // namespace media

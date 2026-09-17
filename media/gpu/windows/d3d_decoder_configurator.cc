@@ -14,7 +14,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/av1_guids.h"
-#include "media/gpu/windows/d3d11_status.h"
+#include "media/gpu/windows/d3d_status.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/direct_composition_support.h"
@@ -161,7 +161,7 @@ bool D3DDecoderConfigurator::SupportsD3D11Device(
   return false;
 }
 
-D3D11Status::Or<ComD3D11Texture2D>
+D3DStatus::Or<ComD3D11Texture2D>
 D3DDecoderConfigurator::CreateD3D11OutputTexture(ComD3D11Device device,
                                                  gfx::Size size,
                                                  uint32_t array_size,
@@ -194,11 +194,11 @@ D3DDecoderConfigurator::CreateD3D11OutputTexture(ComD3D11Device device,
   HRESULT hr =
       device->CreateTexture2D(&output_texture_desc_, nullptr, &texture);
   if (FAILED(hr)) {
-    return {D3D11Status::Codes::kCreateDecoderOutputTextureFailed, hr};
+    return {D3DStatus::Codes::kCreateDecoderOutputTextureFailed, hr};
   }
   hr = SetDebugName(texture.Get(), "D3D11Decoder_ConfiguratorOutput");
   if (FAILED(hr)) {
-    return {D3D11Status::Codes::kCreateDecoderOutputTextureFailed, hr};
+    return {D3DStatus::Codes::kCreateDecoderOutputTextureFailed, hr};
   }
   return texture;
 }

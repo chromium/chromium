@@ -72,13 +72,13 @@ bool D3D12VideoProcessorWrapper::Init() {
   return true;
 }
 
-D3D11Status D3D12VideoProcessorWrapper::WaitForInFlightWork() {
+D3DStatus D3D12VideoProcessorWrapper::WaitForInFlightWork() {
   return WaitForInFlightWorkImpl();
 }
 
-D3D11Status D3D12VideoProcessorWrapper::WaitForInFlightWorkImpl() {
+D3DStatus D3D12VideoProcessorWrapper::WaitForInFlightWorkImpl() {
   if (!fence_ || fence_->GetCompletedValue() >= fence_->Value()) {
-    return D3D11StatusCode::kOk;
+    return D3DStatusCode::kOk;
   }
   return fence_->WaitCPU(fence_->Value());
 }

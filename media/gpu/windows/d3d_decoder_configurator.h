@@ -12,9 +12,9 @@
 #include <vector>
 
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
 #include "media/gpu/windows/d3d_picture_buffer.h"
+#include "media/gpu/windows/d3d_status.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -45,7 +45,7 @@ class MEDIA_GPU_EXPORT D3DDecoderConfigurator {
   bool SupportsD3D11Device(ComD3D11VideoDevice1 video_device);
 
   // Create the decoder's output texture.
-  D3D11Status::Or<ComD3D11Texture2D> CreateD3D11OutputTexture(
+  D3DStatus::Or<ComD3D11Texture2D> CreateD3D11OutputTexture(
       ComD3D11Device device,
       gfx::Size size,
       uint32_t array_size,

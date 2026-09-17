@@ -44,25 +44,25 @@ DefaultTexture2DWrapper::DefaultTexture2DWrapper(
 
 DefaultTexture2DWrapper::~DefaultTexture2DWrapper() = default;
 
-D3D11Status DefaultTexture2DWrapper::BeginSharedImageAccess() {
+D3DStatus DefaultTexture2DWrapper::BeginSharedImageAccess() {
   if (shared_image_access_) {
-    return D3D11Status::Codes::kOk;
+    return D3DStatus::Codes::kOk;
   }
 
   if (shared_image_rep_) {
     TRACE_EVENT0("gpu", "D3D11TextureWrapper::BeginScopedWriteAccess");
     shared_image_access_ = shared_image_rep_->BeginScopedWriteAccess();
     if (!shared_image_access_) {
-      return {D3D11Status::Codes::
+      return {D3DStatus::Codes::
                   kVideoDecodeImageRepresentationBeginScopedWriteAccessFailed,
               "Failed to begin shared image access"};
     }
   }
 
-  return D3D11Status::Codes::kOk;
+  return D3DStatus::Codes::kOk;
 }
 
-D3D11Status DefaultTexture2DWrapper::ProcessTexture(
+D3DStatus DefaultTexture2DWrapper::ProcessTexture(
     scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) {
   // If we've received an error, then return it to our caller.  This is probably
   // from some previous operation.
@@ -73,14 +73,14 @@ D3D11Status DefaultTexture2DWrapper::ProcessTexture(
   }
 
   shared_image_dest = shared_image_;
-  return D3D11Status::Codes::kOk;
+  return D3DStatus::Codes::kOk;
 }
 
 const gfx::Size& DefaultTexture2DWrapper::GetSize() const {
   return size_;
 }
 
-D3D11Status DefaultTexture2DWrapper::Init(
+D3DStatus DefaultTexture2DWrapper::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,
     ComD3D11Texture2D texture,
@@ -89,7 +89,7 @@ D3D11Status DefaultTexture2DWrapper::Init(
     Texture2DWrapper::PictureBufferGPUResourceInitDoneCB
         picture_buffer_gpu_resource_init_done_cb) {
   if (SharedImageFormatToDXGIFormat(output_si_format_) == DXGI_FORMAT_UNKNOWN) {
-    return D3D11Status::Codes::kUnsupportedTextureFormatForBind;
+    return D3DStatus::Codes::kUnsupportedTextureFormatForBind;
   }
 
   picture_buffer_gpu_resource_init_done_cb_ =
@@ -111,10 +111,10 @@ D3D11Status DefaultTexture2DWrapper::Init(
       std::move(get_helper_cb), size_, output_color_space_, output_si_format_,
       video_device_, texture, array_slice, std::move(picture_buffer),
       std::move(gpu_resource_init_cb));
-  return D3D11Status::Codes::kOk;
+  return D3DStatus::Codes::kOk;
 }
 
-void DefaultTexture2DWrapper::OnError(D3D11Status status) {
+void DefaultTexture2DWrapper::OnError(D3DStatus status) {
   if (!received_error_)
     received_error_ = status;
 }
@@ -148,7 +148,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
   helper_ = get_helper_cb.Run();
   if (!helper_) {
     std::move(on_error_cb)
-        .Run(std::move(D3D11Status::Codes::kGetCommandBufferHelperFailed));
+        .Run(std::move(D3DStatus::Codes::kGetCommandBufferHelperFailed));
     return;
   }
 
@@ -191,7 +191,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     if (FAILED(hr)) {
       DLOG(ERROR) << "CreateSharedHandle failed with error " << std::hex << hr;
       std::move(on_error_cb)
-          .Run(std::move(D3D11Status::Codes::kCreateSharedHandleFailed));
+          .Run(std::move(D3DStatus::Codes::kCreateSharedHandleFailed));
       return;
     }
 
@@ -223,7 +223,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
           is_thread_safe);
   if (!shared_image) {
     std::move(on_error_cb)
-        .Run(std::move(D3D11Status::Codes::kCreateSharedImageFailed));
+        .Run(std::move(D3DStatus::Codes::kCreateSharedImageFailed));
     return;
   }
 
@@ -233,7 +233,7 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
                                          memory_type_tracker);
   if (!shared_image_rep) {
     std::move(on_error_cb)
-        .Run(D3D11Status::Codes::kProduceVideoDecodeImageRepresentationFailed);
+        .Run(D3DStatus::Codes::kProduceVideoDecodeImageRepresentationFailed);
     shared_image_ = nullptr;
     return;
   }

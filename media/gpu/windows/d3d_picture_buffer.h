@@ -20,10 +20,10 @@
 #include "media/base/video_frame.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d12_fence.h"
 #include "media/gpu/windows/d3d_com_defs.h"
+#include "media/gpu/windows/d3d_status.h"
 
 namespace media {
 
@@ -60,29 +60,29 @@ class MEDIA_GPU_EXPORT D3DPictureBuffer
                    std::unique_ptr<Texture2DWrapper> texture_wrapper,
                    size_t picture_index);
 
-  D3D11Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-                   GetCommandBufferHelperCB get_helper_cb,
-                   ComD3D11VideoDevice1 video_device,
-                   const GUID& decoder_guid,
-                   std::unique_ptr<MediaLog> media_log,
-                   PictureBufferGPUResourceInitDoneCB
-                       picture_buffer_gpu_resource_init_done_cb);
+  D3DStatus Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+                 GetCommandBufferHelperCB get_helper_cb,
+                 ComD3D11VideoDevice1 video_device,
+                 const GUID& decoder_guid,
+                 std::unique_ptr<MediaLog> media_log,
+                 PictureBufferGPUResourceInitDoneCB
+                     picture_buffer_gpu_resource_init_done_cb);
 
   D3DPictureBuffer(const D3DPictureBuffer&) = delete;
   D3DPictureBuffer& operator=(const D3DPictureBuffer&) = delete;
 
   // Initialize |shared_image_dest|; return true if successful.
   // |input_color_space| is the color space of our input texture.
-  D3D11Status ProcessTexture(
+  D3DStatus ProcessTexture(
       scoped_refptr<gpu::ClientSharedImage>& shared_image_dest);
   ComD3D11Texture2D Texture() const;
-  D3D11Status::Or<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;
+  D3DStatus::Or<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;
 
   // Get the D3D12Resource by device->OpenSharedHandle or return the opened one.
-  D3D11Status::Or<ID3D12Resource*> ToD3D12Resource(ID3D12Device* device);
+  D3DStatus::Or<ID3D12Resource*> ToD3D12Resource(ID3D12Device* device);
 
   void SetFenceAndValue(scoped_refptr<D3D12Fence> fence, uint64_t value);
-  D3D11Status WaitForDecodeCompleteGPU(ID3D11DeviceContext* context);
+  D3DStatus WaitForDecodeCompleteGPU(ID3D11DeviceContext* context);
 
   size_t picture_index() const { return picture_index_; }
 

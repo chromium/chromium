@@ -11,8 +11,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d_com_defs.h"
+#include "media/gpu/windows/d3d_status.h"
 
 namespace media {
 
@@ -39,19 +39,18 @@ class MEDIA_GPU_EXPORT D3D12Fence
 
   // Let |command_queue| signal the fence and return the corresponding fence
   // value to be waited for elsewhere.
-  D3D11Status::Or<uint64_t> Signal(ID3D12CommandQueue& command_queue);
+  D3DStatus::Or<uint64_t> Signal(ID3D12CommandQueue& command_queue);
 
   // Wait on CPU until the |fence_value| is signaled.
-  D3D11Status WaitCPU(uint64_t fence_value) const;
+  D3DStatus WaitCPU(uint64_t fence_value) const;
 
   // Let D3D11 |device_context| wait on GPU until the |fence_value| is signaled.
   // The D3D11Fence should have been checked to be supported before calling
   // this.
-  D3D11Status WaitGPU(ID3D11DeviceContext& device_context,
-                      uint64_t fence_value);
+  D3DStatus WaitGPU(ID3D11DeviceContext& device_context, uint64_t fence_value);
 
   // Signal the fence and wait on CPU until the fence is signaled.
-  D3D11Status SignalAndWaitCPU(ID3D12CommandQueue& command_queue);
+  D3DStatus SignalAndWaitCPU(ID3D12CommandQueue& command_queue);
 
  private:
   friend class RefCountedThreadSafe;

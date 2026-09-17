@@ -31,11 +31,11 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
 #include "media/gpu/windows/d3d12_video_decoder_wrapper.h"
 #include "media/gpu/windows/d3d_av1_accelerator.h"
 #include "media/gpu/windows/d3d_picture_buffer.h"
+#include "media/gpu/windows/d3d_status.h"
 #include "media/gpu/windows/d3d_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "media/media_buildflags.h"
@@ -201,7 +201,7 @@ bool D3DVideoDecoder::InitializeAcceleratedDecoder(
         profile_, config.color_space_info());
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else {
-    NotifyError(D3D11Status::Codes::kDecoderUnsupportedCodec);
+    NotifyError(D3DStatus::Codes::kDecoderUnsupportedCodec);
     return false;
   }
 
@@ -235,12 +235,12 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
       gpu_preferences_, gpu_workarounds_, config_, bit_depth, chroma_sampling_,
       media_log_.get(), use_shared_handle_, device_);
   if (!decoder_configurator) {
-    NotifyError(D3D11StatusCode::kDecoderUnsupportedProfile);
+    NotifyError(D3DStatusCode::kDecoderUnsupportedProfile);
     return false;
   }
 
   if (!decoder_configurator->SupportsD3D11Device(video_device_)) {
-    NotifyError(D3D11StatusCode::kDecoderUnsupportedCodec);
+    NotifyError(D3DStatusCode::kDecoderUnsupportedCodec);
     return false;
   }
 
@@ -256,7 +256,7 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
       &format_checker, video_device_, device_context_, media_log_.get(),
       config_.color_space_info().ToGfxColorSpace(), use_shared_handle_);
   if (!texture_selector) {
-    NotifyError(D3D11StatusCode::kCreateTextureSelectorFailed);
+    NotifyError(D3DStatusCode::kCreateTextureSelectorFailed);
     return false;
   }
 
@@ -285,7 +285,7 @@ D3DVideoDecoder::CreateD3DVideoDecoderWrapper(
     MEDIA_LOG(INFO, media_log_) << "D3DVideoDecoder is using D3D12 backend";
     ComUnknown d3d_device = get_d3d_device_cb_.Run(D3DVersion::kD3D12);
     if (!d3d_device) {
-      NotifyError({D3D11StatusCode::kUnsupportedFeatureLevel,
+      NotifyError({D3DStatusCode::kUnsupportedFeatureLevel,
                    "Cannot create D3D12Device"});
       return nullptr;
     }
@@ -296,7 +296,7 @@ D3DVideoDecoder::CreateD3DVideoDecoderWrapper(
     ComD3D12VideoDevice video_device;
     HRESULT hr = device.As(&video_device);
     if (FAILED(hr)) {
-      NotifyError({D3D11StatusCode::kFailedToGetVideoDevice,
+      NotifyError({D3DStatusCode::kFailedToGetVideoDevice,
                    "Cannot create D3D12VideoDevice", hr});
       return nullptr;
     }
@@ -304,13 +304,13 @@ D3DVideoDecoder::CreateD3DVideoDecoderWrapper(
     // Check ID3D11Device5 is supported so that we can use D3D11Fence.
     d3d_device = get_d3d_device_cb_.Run(D3DVersion::kD3D11);
     if (!d3d_device) {
-      NotifyError({D3D11StatusCode::kUnsupportedFeatureLevel,
+      NotifyError({D3DStatusCode::kUnsupportedFeatureLevel,
                    "Cannot create D3D11Device"});
       return nullptr;
     }
     ComD3D11Device5 d3d11_device5;
     if (d3d_device.As(&d3d11_device5) != S_OK) {
-      NotifyError({D3D11StatusCode::kUnsupportedFeatureLevel,
+      NotifyError({D3DStatusCode::kUnsupportedFeatureLevel,
                    "Cannot get ID3D11Device5 interface"});
       return nullptr;
     }
@@ -328,14 +328,14 @@ D3DVideoDecoder::CreateD3DVideoDecoderWrapper(
   }
 
   if (!video_decoder_wrapper) {
-    NotifyError({D3D11StatusCode::kDecoderCreationFailed,
+    NotifyError({D3DStatusCode::kDecoderCreationFailed,
                  "D3DVideoDecoderWrapper is not created"});
     return nullptr;
   }
 
   auto use_single_texture = video_decoder_wrapper->UseSingleTexture();
   if (!use_single_texture.has_value()) {
-    NotifyError({D3D11StatusCode::kGetDecoderConfigFailed,
+    NotifyError({D3DStatusCode::kGetDecoderConfigFailed,
                  "GetSingleTextureRecommended failed"});
     return nullptr;
   }
@@ -414,12 +414,12 @@ void D3DVideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (!d3d_device) {
     // This happens if, for example, if chrome is configured to use
     // D3D9 for ANGLE.
-    return NotifyError(D3D11Status::Codes::kFailedToGetAngleDevice);
+    return NotifyError(D3DStatus::Codes::kFailedToGetAngleDevice);
   }
   CHECK_EQ(d3d_device.As(&device_), S_OK);
 
   if (!IsD3D11FeatureLevelSupported(device_)) {
-    return NotifyError(D3D11Status::Codes::kUnsupportedFeatureLevel);
+    return NotifyError(D3DStatus::Codes::kUnsupportedFeatureLevel);
   }
 
   device_->GetImmediateContext(&device_context_);
@@ -429,7 +429,7 @@ void D3DVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   auto hr = device_.As(&video_device_);
   if (FAILED(hr)) {
-    return NotifyError({D3D11Status::Codes::kFailedToGetVideoDevice, hr});
+    return NotifyError({D3DStatus::Codes::kFailedToGetVideoDevice, hr});
   }
 
   if (!InitializeAcceleratedDecoder(config_)) {
@@ -514,7 +514,7 @@ void D3DVideoDecoder::OnGpuInitComplete(
   DCHECK_EQ(state_, State::kInitializing);
 
   if (!success) {
-    return NotifyError(D3D11Status::Codes::kFailedToInitializeGPUProcess);
+    return NotifyError(D3DStatus::Codes::kFailedToInitializeGPUProcess);
   }
 
   release_mailbox_cb_ = std::move(release_mailbox_cb);
@@ -599,7 +599,7 @@ void D3DVideoDecoder::DoDecode() {
       current_buffer_ = nullptr;
       if (!accelerated_video_decoder_->Flush()) {
         // This will also signal error |current_decode_cb_|.
-        NotifyError(D3D11Status::Codes::kAcceleratorFlushFailed);
+        NotifyError(D3DStatus::Codes::kAcceleratorFlushFailed);
         return;
       }
       // Pictures out output synchronously during Flush.  Signal the decode
@@ -717,10 +717,10 @@ void D3DVideoDecoder::DoDecode() {
       picture_buffers_.clear();
     } else if (result == media::AcceleratedVideoDecoder::kTryAgain) {
       LOG(ERROR) << "Try again is not supported";
-      NotifyError(D3D11Status::Codes::kTryAgainNotSupported);
+      NotifyError(D3DStatus::Codes::kTryAgainNotSupported);
       return;
     } else {
-      return NotifyError(D3D11Status(D3D11Status::Codes::kDecoderFailedDecode)
+      return NotifyError(D3DStatus(D3DStatus::Codes::kDecoderFailedDecode)
                              .WithData("VDA Error", result));
     }
   }
@@ -842,7 +842,7 @@ void D3DVideoDecoder::CreatePictureBuffers() {
         texture_selector_->CreateTextureWrapper(device_, color_space, size);
     if (!tex_wrapper) {
       return NotifyError(
-          D3D11Status::Codes::kAllocateTextureForCopyingWrapperFailed);
+          D3DStatus::Codes::kAllocateTextureForCopyingWrapperFailed);
     }
 
     const size_t array_slice = use_single_video_decoder_texture_ ? 0 : i;
@@ -864,7 +864,7 @@ void D3DVideoDecoder::CreatePictureBuffers() {
             base::BindOnce(&D3DVideoDecoder::PictureBufferGPUResourceInitDone,
                            weak_factory_.GetWeakPtr()));
 
-    D3D11Status result = picture_buffers_[i]->Init(
+    D3DStatus result = picture_buffers_[i]->Init(
         gpu_task_runner_, get_helper_cb_, video_device_,
         decoder_configurator_->DecoderGuid(), media_log_->Clone(),
         std::move(picture_buffer_gpu_resource_init_done_cb));
@@ -879,7 +879,7 @@ void D3DVideoDecoder::CreatePictureBuffers() {
     }
   }
 
-  D3D11Status result =
+  D3DStatus result =
       d3d_video_decoder_wrapper_->SetPictureBuffers(picture_buffers_);
   if (!result.is_ok()) {
     return NotifyError(std::move(result).AddHere());
@@ -912,7 +912,7 @@ bool D3DVideoDecoder::OutputResult(const CodecPicture* picture,
   DCHECK(texture_selector_);
   TRACE_EVENT0("gpu", "D3DVideoDecoder::OutputResult");
 
-  D3D11Status result =
+  D3DStatus result =
       picture_buffer->WaitForDecodeCompleteGPU(device_context_.Get());
   if (!result.is_ok()) {
     NotifyError(std::move(result).AddHere());
@@ -993,7 +993,7 @@ bool D3DVideoDecoder::SubmitBitstreamBufferForTesting(  // IN-TEST
          d3d_video_decoder_wrapper_->SubmitSlice();
 }
 
-void D3DVideoDecoder::NotifyError(D3D11Status reason,
+void D3DVideoDecoder::NotifyError(D3DStatus reason,
                                   DecoderStatus::Codes opt_decoder_code) {
   TRACE_EVENT0("gpu", "D3DVideoDecoder::NotifyError");
 

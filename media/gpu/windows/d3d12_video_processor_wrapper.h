@@ -40,7 +40,7 @@ class MEDIA_GPU_EXPORT D3D12VideoProcessorWrapper {
   // ProcessFrames() but before its own fence wait, so resources referenced by
   // the in-flight command list are not released while the GPU is still using
   // them.
-  virtual D3D11Status WaitForInFlightWork();
+  virtual D3DStatus WaitForInFlightWork();
 
   // Returns whether the D3D12 video processor can convert an input of
   // |input_format| in |input_color_space| to an output of |output_format| in
@@ -66,7 +66,7 @@ class MEDIA_GPU_EXPORT D3D12VideoProcessorWrapper {
       const gfx::Rect& output_rectangle);
 
  private:
-  D3D11Status WaitForInFlightWorkImpl();
+  D3DStatus WaitForInFlightWorkImpl();
 
   ComD3D12Device device_;
   ComD3D12VideoDevice video_device_;

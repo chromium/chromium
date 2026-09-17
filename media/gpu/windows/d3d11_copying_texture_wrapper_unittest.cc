@@ -34,7 +34,7 @@ class MockVideoProcessorProxy : public VideoProcessorProxy {
   MockVideoProcessorProxy()
       : VideoProcessorProxy(MakeComPtr<D3D11VideoDeviceMock>(), nullptr) {}
 
-  D3D11Status Init(uint32_t width, uint32_t height) override {
+  D3DStatus Init(uint32_t width, uint32_t height) override {
     return MockInit(width, height);
   }
 
@@ -67,7 +67,7 @@ class MockVideoProcessorProxy : public VideoProcessorProxy {
     return MockVideoProcessorBlt();
   }
 
-  MOCK_METHOD2(MockInit, D3D11Status(uint32_t, uint32_t));
+  MOCK_METHOD2(MockInit, D3DStatus(uint32_t, uint32_t));
   MOCK_METHOD0(MockCreateVideoProcessorOutputView, HRESULT());
   MOCK_METHOD0(MockCreateVideoProcessorInputView, HRESULT());
   MOCK_METHOD0(MockVideoProcessorBlt, HRESULT());
@@ -84,31 +84,31 @@ class MockTexture2DWrapper : public Texture2DWrapper {
  public:
   MockTexture2DWrapper() {}
 
-  D3D11Status ProcessTexture(
+  D3DStatus ProcessTexture(
       scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) override {
     return MockProcessTexture();
   }
 
-  D3D11Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-                   GetCommandBufferHelperCB get_helper_cb,
-                   ComD3D11Texture2D in_texture,
-                   size_t array_slice,
-                   scoped_refptr<media::D3DPictureBuffer> picture_buffer,
-                   PictureBufferGPUResourceInitDoneCB
-                       picture_buffer_gpu_resource_init_done_cb) override {
+  D3DStatus Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+                 GetCommandBufferHelperCB get_helper_cb,
+                 ComD3D11Texture2D in_texture,
+                 size_t array_slice,
+                 scoped_refptr<media::D3DPictureBuffer> picture_buffer,
+                 PictureBufferGPUResourceInitDoneCB
+                     picture_buffer_gpu_resource_init_done_cb) override {
     gpu_task_runner_ = std::move(gpu_task_runner);
     return MockInit();
   }
 
-  D3D11Status BeginSharedImageAccess() override {
+  D3DStatus BeginSharedImageAccess() override {
     return MockBeginSharedImageAccess();
   }
 
   const gfx::Size& GetSize() const override { return size_; }
 
-  MOCK_METHOD0(MockInit, D3D11Status());
-  MOCK_METHOD0(MockProcessTexture, D3D11Status());
-  MOCK_METHOD0(MockBeginSharedImageAccess, D3D11Status());
+  MOCK_METHOD0(MockInit, D3DStatus());
+  MOCK_METHOD0(MockProcessTexture, D3DStatus());
+  MOCK_METHOD0(MockBeginSharedImageAccess, D3DStatus());
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
   gfx::Size size_;
@@ -142,8 +142,8 @@ class D3D11CopyingTexture2DWrapperTest
     ON_CALL(*result.get(), MockInit(_, _))
         .WillByDefault(
             Return(GetProcessorProxyInit()
-                       ? D3D11Status::Codes::kOk
-                       : D3D11Status::Codes::kCreateVideoProcessorFailed));
+                       ? D3DStatus::Codes::kOk
+                       : D3DStatus::Codes::kCreateVideoProcessorFailed));
 
     ON_CALL(*result.get(), MockCreateVideoProcessorOutputView())
         .WillByDefault(Return(GetCreateVideoProcessorOutputView()));
@@ -163,14 +163,14 @@ class D3D11CopyingTexture2DWrapperTest
     ON_CALL(*result.get(), MockInit())
         .WillByDefault(
             Return(GetTextureWrapperInit()
-                       ? D3D11Status::Codes::kOk
-                       : D3D11Status::Codes::kCreateVideoProcessorFailed));
+                       ? D3DStatus::Codes::kOk
+                       : D3DStatus::Codes::kCreateVideoProcessorFailed));
 
     ON_CALL(*result.get(), MockProcessTexture())
         .WillByDefault(Return(
             GetProcessTexture()
-                ? D3D11Status::Codes::kOk
-                : D3D11Status::Codes::kCreateVideoProcessorOutputViewFailed));
+                ? D3DStatus::Codes::kOk
+                : D3DStatus::Codes::kCreateVideoProcessorOutputViewFailed));
 
     return result;
   }
@@ -312,14 +312,13 @@ class CopyingTexture2DWrapperColorSpaceTest : public ::testing::Test {
   scoped_refptr<MockVideoProcessorProxy> MakeProcessor() {
     auto processor = base::MakeRefCounted<MockVideoProcessorProxy>();
     ON_CALL(*processor, MockInit(_, _))
-        .WillByDefault(Return(D3D11Status::Codes::kOk));
+        .WillByDefault(Return(D3DStatus::Codes::kOk));
     return processor;
   }
 
   std::unique_ptr<MockTexture2DWrapper> MakeTextureWrapper() {
     auto wrapper = std::make_unique<MockTexture2DWrapper>();
-    ON_CALL(*wrapper, MockInit())
-        .WillByDefault(Return(D3D11Status::Codes::kOk));
+    ON_CALL(*wrapper, MockInit()).WillByDefault(Return(D3DStatus::Codes::kOk));
     return wrapper;
   }
 

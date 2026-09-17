@@ -76,14 +76,14 @@ CopyingTexture2DWrapper::CopyingTexture2DWrapper(
 CopyingTexture2DWrapper::~CopyingTexture2DWrapper() = default;
 
 // Copy path doesn't need to sync until calling VideoProcessorBlt.
-D3D11Status CopyingTexture2DWrapper::BeginSharedImageAccess() {
-  return D3D11Status::Codes::kOk;
+D3DStatus CopyingTexture2DWrapper::BeginSharedImageAccess() {
+  return D3DStatus::Codes::kOk;
 }
 
-D3D11Status CopyingTexture2DWrapper::ProcessTexture(
+D3DStatus CopyingTexture2DWrapper::ProcessTexture(
     scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) {
   // Acquire keyed mutex for VideoProcessorBlt ops.
-  D3D11Status status = output_texture_wrapper_->BeginSharedImageAccess();
+  D3DStatus status = output_texture_wrapper_->BeginSharedImageAccess();
   if (!status.is_ok()) {
     return status;
   }
@@ -95,7 +95,7 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
   HRESULT hr = video_processor_->CreateVideoProcessorOutputView(
       output_texture_.Get(), &output_view_desc, &output_view);
   if (!SUCCEEDED(hr)) {
-    return {D3D11Status::Codes::kCreateVideoProcessorOutputViewFailed, hr};
+    return {D3DStatus::Codes::kCreateVideoProcessorOutputViewFailed, hr};
   }
 
   D3D11_VIDEO_PROCESSOR_INPUT_VIEW_DESC input_view_desc = {0};
@@ -106,7 +106,7 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
   hr = video_processor_->CreateVideoProcessorInputView(
       texture_.Get(), &input_view_desc, &input_view);
   if (!SUCCEEDED(hr)) {
-    return {D3D11Status::Codes::kCreateVideoProcessorInputViewFailed};
+    return {D3DStatus::Codes::kCreateVideoProcessorInputViewFailed};
   }
 
   D3D11_VIDEO_PROCESSOR_STREAM streams = {0};
@@ -118,7 +118,7 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
                                            1,  // stream_count
                                            &streams);
   if (!SUCCEEDED(hr)) {
-    return {D3D11Status::Codes::kVideoProcessorBltFailed, hr};
+    return {D3DStatus::Codes::kVideoProcessorBltFailed, hr};
   }
 
   return output_texture_wrapper_->ProcessTexture(shared_image_dest);
@@ -128,7 +128,7 @@ const gfx::Size& CopyingTexture2DWrapper::GetSize() const {
   return size_;
 }
 
-D3D11Status CopyingTexture2DWrapper::Init(
+D3DStatus CopyingTexture2DWrapper::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,
     ComD3D11Texture2D texture,

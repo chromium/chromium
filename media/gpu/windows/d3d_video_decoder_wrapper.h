@@ -11,7 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "media/gpu/windows/d3d11_status.h"
+#include "media/gpu/windows/d3d_status.h"
 #include "media/gpu/windows/scoped_d3d_buffers.h"
 
 namespace media {
@@ -40,7 +40,7 @@ class D3DVideoDecoderWrapper {
 
   // Set the initialized picture buffers that the D3DVideoDecoder class is
   // using.
-  virtual D3D11Status SetPictureBuffers(
+  virtual D3DStatus SetPictureBuffers(
       base::span<scoped_refptr<D3DPictureBuffer>> picture_buffers) = 0;
 
   // Start a frame and wait for the hardware to be ready for decoding.

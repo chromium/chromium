@@ -26,12 +26,12 @@
 #include "media/base/video_types.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_selector.h"
 #include "media/gpu/windows/d3d11_video_decoder_wrapper.h"
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "media/gpu/windows/d3d_decoder_configurator.h"
 #include "media/gpu/windows/d3d_h264_accelerator.h"
+#include "media/gpu/windows/d3d_status.h"
 #include "media/gpu/windows/d3d_video_decoder_client.h"
 #include "media/gpu/windows/d3d_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/d3d_vp9_accelerator.h"
@@ -187,7 +187,7 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
   // a more descriptive reason passed back up to the decoder stream rather than
   // just kFailed.
   void NotifyError(
-      D3D11Status reason,
+      D3DStatus reason,
       DecoderStatus::Codes opt_decoder_code = DecoderStatus::Codes::kFailed);
 
   // Posts |status| to any pending initialization or decode callbacks.

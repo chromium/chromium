@@ -32,7 +32,7 @@ void D3D12VideoDecoderTask::SetFenceAndValue(scoped_refptr<D3D12Fence> fence,
 bool D3D12VideoDecoderTask::WaitForCompletion() {
   const auto& [fence, value] = fence_and_value_;
   if (fence) {
-    bool ok = fence->WaitCPU(value) == D3D11StatusCode::kOk;
+    bool ok = fence->WaitCPU(value) == D3DStatusCode::kOk;
     if (ok) {
       fence_and_value_ = {nullptr, 0};
     }

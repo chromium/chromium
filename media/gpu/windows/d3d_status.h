@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_WINDOWS_D3D11_STATUS_H_
-#define MEDIA_GPU_WINDOWS_D3D11_STATUS_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D_STATUS_H_
+#define MEDIA_GPU_WINDOWS_D3D_STATUS_H_
 
 #include <wrl/client.h>
 
@@ -15,7 +15,7 @@
 
 namespace media {
 
-enum class D3D11StatusCode : StatusCodeType {
+enum class D3DStatusCode : StatusCodeType {
   kOk = 0,
 
   kFailedToGetAngleDevice = 1,
@@ -72,11 +72,11 @@ enum class D3D11StatusCode : StatusCodeType {
   kWaitForFenceFailed = 53,
 };
 
-struct D3D11StatusTraits {
-  using Codes = D3D11StatusCode;
-  static constexpr StatusGroupType Group() { return "D3D11Status"; }
+struct D3DStatusTraits {
+  using Codes = D3DStatusCode;
+  static constexpr StatusGroupType Group() { return "D3DStatus"; }
 
-  static void OnCreateFrom(TypedStatus<D3D11StatusTraits>* s, HRESULT hresult) {
+  static void OnCreateFrom(TypedStatus<D3DStatusTraits>* s, HRESULT hresult) {
     // Store it as a string for easy human consumption.
     std::stringstream hresult_str_repr;
     hresult_str_repr << std::hex << hresult;
@@ -88,13 +88,14 @@ struct D3D11StatusTraits {
     // Store the system error that might have been generated, if it's an
     // allowable string.
     std::string sys_err = logging::SystemErrorCodeToString(hresult);
-    if (base::IsStringUTF8AllowingNoncharacters(sys_err))
+    if (base::IsStringUTF8AllowingNoncharacters(sys_err)) {
       s->WithData("hresult_msg", sys_err);
+    }
   }
 };
 
-using D3D11Status = TypedStatus<D3D11StatusTraits>;
+using D3DStatus = TypedStatus<D3DStatusTraits>;
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_WINDOWS_D3D11_STATUS_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D_STATUS_H_

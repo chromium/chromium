@@ -85,9 +85,9 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
     }
   }
 
-  D3D11Status SetPictureBuffers(
+  D3DStatus SetPictureBuffers(
       base::span<scoped_refptr<D3DPictureBuffer>> picture_buffers) override {
-    return D3D11StatusCode::kOk;
+    return D3DStatusCode::kOk;
   }
 
   bool WaitForFrameBegins(D3DPictureBuffer* output_picture) override {
@@ -205,22 +205,22 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
         decoder_->video_decoder_.Get(), type_, &size,
         reinterpret_cast<void**>(&buffer));
     if (FAILED(hr)) {
-      std::optional<D3D11Status> error;
+      std::optional<D3DStatus> error;
       switch (type_) {
         case D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS:
-          error = {D3D11StatusCode::kGetPicParamBufferFailed,
+          error = {D3DStatusCode::kGetPicParamBufferFailed,
                    "GetDecoderBufferFailed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_INVERSE_QUANTIZATION_MATRIX:
-          error = {D3D11StatusCode::kGetQuantBufferFailed,
+          error = {D3DStatusCode::kGetQuantBufferFailed,
                    "GetDecoderBuffer Failed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL:
-          error = {D3D11StatusCode::kGetSliceControlBufferFailed,
+          error = {D3DStatusCode::kGetSliceControlBufferFailed,
                    "GetDecoderBuffer Failed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_BITSTREAM:
-          error = {D3D11StatusCode::kGetBitstreamBufferFailed,
+          error = {D3DStatusCode::kGetBitstreamBufferFailed,
                    "GetDecoderBuffer Failed", hr};
           break;
         default:
@@ -251,22 +251,22 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
     HRESULT hr = decoder_->video_context_->ReleaseDecoderBuffer(
         decoder_->video_decoder_.Get(), type_);
     if (FAILED(hr)) {
-      std::optional<D3D11Status> error;
+      std::optional<D3DStatus> error;
       switch (type_) {
         case D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS:
-          error = {D3D11StatusCode::kReleasePicParamBufferFailed,
+          error = {D3DStatusCode::kReleasePicParamBufferFailed,
                    "ReleaseDecoderBuffer Failed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_INVERSE_QUANTIZATION_MATRIX:
-          error = {D3D11StatusCode::kReleaseQuantBufferFailed,
+          error = {D3DStatusCode::kReleaseQuantBufferFailed,
                    "ReleaseDecoderBuffer Failed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL:
-          error = {D3D11StatusCode::kReleaseSliceControlBufferFailed,
+          error = {D3DStatusCode::kReleaseSliceControlBufferFailed,
                    "ReleaseDecoderBuffer Failed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_BITSTREAM:
-          error = {D3D11StatusCode::kReleaseBitstreamBufferFailed,
+          error = {D3DStatusCode::kReleaseBitstreamBufferFailed,
                    "ReleaseDecoderBuffer Failed", hr};
           break;
         default:

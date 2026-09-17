@@ -9,8 +9,8 @@
 
 #include "base/memory/ref_counted.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d_com_defs.h"
+#include "media/gpu/windows/d3d_status.h"
 
 namespace media {
 
@@ -24,7 +24,7 @@ class MEDIA_GPU_EXPORT VideoProcessorProxy
   VideoProcessorProxy(ComD3D11VideoDevice1 video_device,
                       ComD3D11DeviceContext d3d11_device_context);
 
-  virtual D3D11Status Init(uint32_t width, uint32_t height);
+  virtual D3DStatus Init(uint32_t width, uint32_t height);
 
   // TODO(tmathmeyer) implement color space modification.
 

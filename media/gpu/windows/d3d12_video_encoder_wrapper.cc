@@ -263,7 +263,7 @@ EncoderStatus D3D12VideoEncoderWrapper::Encode(
 
   ID3D12CommandList* command_lists[] = {command_list_.Get()};
   command_queue_->ExecuteCommandLists(std::size(command_lists), command_lists);
-  return fence_->SignalAndWaitCPU(*command_queue_.Get()) == D3D11StatusCode::kOk
+  return fence_->SignalAndWaitCPU(*command_queue_.Get()) == D3DStatusCode::kOk
              ? EncoderStatus::Codes::kOk
              : EncoderStatus::Codes::kD3D12FenceWaitFailed;
 }

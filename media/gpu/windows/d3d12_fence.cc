@@ -42,37 +42,36 @@ uint64_t D3D12Fence::GetCompletedValue() const {
   return fence_->GetCompletedValue();
 }
 
-D3D11Status::Or<uint64_t> D3D12Fence::Signal(
-    ID3D12CommandQueue& command_queue) {
+D3DStatus::Or<uint64_t> D3D12Fence::Signal(ID3D12CommandQueue& command_queue) {
   uint64_t next_value = fence_value_ + 1;
   HRESULT hr = command_queue.Signal(fence_.Get(), next_value);
   if (FAILED(hr)) {
-    return D3D11Status{D3D11StatusCode::kFenceSignalFailed,
-                       "ID3D12CommandQueue failed to signal fence", hr};
+    return D3DStatus{D3DStatusCode::kFenceSignalFailed,
+                     "ID3D12CommandQueue failed to signal fence", hr};
   }
   fence_value_ = next_value;
   return fence_value_;
 }
 
-D3D11Status D3D12Fence::WaitCPU(uint64_t fence_value) const {
+D3DStatus D3D12Fence::WaitCPU(uint64_t fence_value) const {
   if (fence_->GetCompletedValue() >= fence_value) {
-    return D3D11StatusCode::kOk;
+    return D3DStatusCode::kOk;
   }
   base::win::ScopedHandle fence_event{::CreateEvent(
       nullptr, /*bManualReset=*/TRUE, /*bInitialState=*/FALSE, nullptr)};
   HRESULT hr = fence_->SetEventOnCompletion(fence_value, fence_event.get());
   if (FAILED(hr)) {
-    return D3D11Status{D3D11StatusCode::kWaitForFenceFailed,
-                       "Failed to SetEventOnCompletion", hr};
+    return D3DStatus{D3DStatusCode::kWaitForFenceFailed,
+                     "Failed to SetEventOnCompletion", hr};
   }
 
   return WaitForSingleObject(fence_event.Get(), INFINITE) == WAIT_OBJECT_0
-             ? D3D11StatusCode::kOk
-             : D3D11StatusCode::kWaitForFenceFailed;
+             ? D3DStatusCode::kOk
+             : D3DStatusCode::kWaitForFenceFailed;
 }
 
-D3D11Status D3D12Fence::WaitGPU(ID3D11DeviceContext& device_context,
-                                uint64_t fence_value) {
+D3DStatus D3D12Fence::WaitGPU(ID3D11DeviceContext& device_context,
+                              uint64_t fence_value) {
   HRESULT hr;
   if (!d3d11_fence_) {
     Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device;
@@ -84,7 +83,7 @@ D3D11Status D3D12Fence::WaitGPU(ID3D11DeviceContext& device_context,
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to create shared handle for fence: "
                  << logging::SystemErrorCodeToString(hr);
-      return D3D11StatusCode::kCreateSharedHandleFailed;
+      return D3DStatusCode::kCreateSharedHandleFailed;
     }
     base::win::ScopedHandle scoped_handle(handle);
 
@@ -99,7 +98,7 @@ D3D11Status D3D12Fence::WaitGPU(ID3D11DeviceContext& device_context,
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to open shared fence: "
                  << logging::SystemErrorCodeToString(hr);
-      return D3D11StatusCode::kCreateFenceFailed;
+      return D3DStatusCode::kCreateFenceFailed;
     }
   }
   CHECK(d3d11_fence_);
@@ -111,12 +110,12 @@ D3D11Status D3D12Fence::WaitGPU(ID3D11DeviceContext& device_context,
   if (FAILED(hr)) {
     LOG(ERROR) << "ID3D11DeviceContext4 failed to wait for fence: "
                << logging::SystemErrorCodeToString(hr);
-    return D3D11StatusCode::kWaitForFenceFailed;
+    return D3DStatusCode::kWaitForFenceFailed;
   }
-  return D3D11StatusCode::kOk;
+  return D3DStatusCode::kOk;
 }
 
-D3D11Status D3D12Fence::SignalAndWaitCPU(ID3D12CommandQueue& command_queue) {
+D3DStatus D3D12Fence::SignalAndWaitCPU(ID3D12CommandQueue& command_queue) {
   auto fence_value_or_error = Signal(command_queue);
   if (!fence_value_or_error.has_value()) {
     return std::move(fence_value_or_error).error();
