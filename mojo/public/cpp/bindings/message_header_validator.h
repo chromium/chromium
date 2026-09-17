@@ -7,9 +7,26 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
+
+namespace internal {
+
+// Validates the header of the serialized message in `data`.
+//
+// `data` must contain the entire message (header and payload).
+//
+// Returns false if the data fails validation. If `message` is
+// non-null, it is also reported as bad; otherwise, reporting
+// is the caller's responsibility.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateMessageHeader(base::span<const uint8_t> data,
+                           Message* message = nullptr,
+                           const char* description = "");
+
+}  // namespace internal
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageHeaderValidator
     : public MessageReceiver {

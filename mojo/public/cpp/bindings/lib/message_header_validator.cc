@@ -5,6 +5,7 @@
 #include "mojo/public/cpp/bindings/message_header_validator.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/validate_params.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
@@ -116,6 +117,26 @@ bool IsValidMessageHeader(const internal::MessageHeader* header,
 
 }  // namespace
 
+namespace internal {
+
+bool ValidateMessageHeader(base::span<const uint8_t> data,
+                           Message* message,
+                           const char* description) {
+  // Pass 0 as number of handles and associated endpoint handles because we
+  // don't expect any in the header, even if the message contains handles.
+  ValidationContext validation_context(data.data(), data.size(), 0, 0, message,
+                                       description);
+
+  if (!ValidateStructHeaderAndClaimMemory(data.data(), &validation_context)) {
+    return false;
+  }
+
+  return IsValidMessageHeader(
+      reinterpret_cast<const MessageHeader*>(data.data()), &validation_context);
+}
+
+}  // namespace internal
+
 MessageHeaderValidator::MessageHeaderValidator()
     : MessageHeaderValidator("MessageHeaderValidator") {}
 
@@ -132,22 +153,8 @@ bool MessageHeaderValidator::Accept(Message* message) {
     return true;
   }
 
-  // Pass 0 as number of handles and associated endpoint handles because we
-  // don't expect any in the header, even if |message| contains handles.
-  internal::ValidationContext validation_context(
-      message->data(), message->data_num_bytes(), 0, 0, message,
-      description_.c_str());
-
-  if (!internal::ValidateStructHeaderAndClaimMemory(message->data(),
-                                                    &validation_context)) {
-    return false;
-  }
-
-  if (!IsValidMessageHeader(message->header(), &validation_context)) {
-    return false;
-  }
-
-  return true;
+  return internal::ValidateMessageHeader(message->data_as_span(), message,
+                                         description_.c_str());
 }
 
 }  // namespace mojo
