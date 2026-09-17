@@ -54,6 +54,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, Labels) {
   RunTest("side_panel/bookmarks/power_bookmarks_labels_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, ListHeader) {
+  RunTest("side_panel/bookmarks/power_bookmarks_list_header_test.js",
+          "mocha.run()");
+}
+
 using SidePanelBookmarksAppTest = SidePanelBookmarksTest;
 IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, General1) {
   SidePanelBookmarksTest::RunTest(

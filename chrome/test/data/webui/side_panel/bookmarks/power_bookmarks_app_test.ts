@@ -1370,31 +1370,6 @@ suite('General', () => {
       assertFalse(powerBookmarksApp.$.contextMenu.isOpen());
     });
 
-    test('SortMenuClosesOnFocusout', async () => {
-      const header = powerBookmarksApp.$.bookmarksList.$.heading;
-
-      // Open sort menu.
-      const sortButton =
-          header.shadowRoot.querySelector<HTMLElement>('.sort-menu-button');
-      assertTrue(!!sortButton);
-      sortButton.click();
-      await microtasksFinished();
-
-      const sortMenu = header.$.sortMenu;
-      assertTrue(sortMenu.open);
-
-      // Simulate blur by dispatching focusout event with relatedTarget outside
-      // the menu.
-      const event = new FocusEvent('focusout', {
-        relatedTarget: document.body,
-      });
-      sortMenu.dispatchEvent(event);
-
-      await microtasksFinished();
-
-      assertFalse(sortMenu.open);
-    });
-
     test('ShowUiOnlyCalledOnce', async () => {
       // connectedCallback was already called once during setup.
       assertEquals(1, bookmarksApi.getArgs('showUi').length);

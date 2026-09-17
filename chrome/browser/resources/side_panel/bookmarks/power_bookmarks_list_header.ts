@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import './icons.html.js';
+import '//bookmarks-side-panel.top-chrome/shared/sp_heading.js';
+import '//bookmarks-side-panel.top-chrome/shared/sp_icons.html.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
-import '//bookmarks-side-panel.top-chrome/shared/sp_heading.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
