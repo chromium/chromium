@@ -25,11 +25,13 @@ include_rules = [
   "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
+  ],
   "arc_policy_bridge\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part_ash.h",

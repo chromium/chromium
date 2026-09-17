@@ -30,7 +30,6 @@ include_rules = [
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles",
   "+chrome/browser/screen_ai",
-  "+chrome/browser/signin",
   "+chrome/browser/trusted_vault",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/webui/ash/settings/calculator",
@@ -58,6 +57,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/signin/chrome_signin_client_factory.h",
+    "+chrome/browser/signin/chrome_signin_client_test_util.h",
+    "+chrome/browser/signin/identity_manager_factory.h",
+    "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
+  ],
   # AppDiscoveryMetricsManager reads the SyncService through
   # ash::SyncServiceProvider; its test still installs the TestSyncService via
   # the //chrome-side Profile-keyed factory.
