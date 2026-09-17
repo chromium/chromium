@@ -10,6 +10,7 @@ export function getHtml(this: ComposeboxMatchElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="container" aria-hidden="true" part="match-container">
+  <div id="image" style="${this.imageStyle_()}"></div>
   <div id="focusIndicator" part="match-focus-indicator"></div>
   <div id="iconContainer" part="match-icon-container">
     <div id="icon" part="match-icon"

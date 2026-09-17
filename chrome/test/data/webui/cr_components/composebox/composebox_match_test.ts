@@ -8,9 +8,9 @@ import 'chrome://resources/cr_components/composebox/composebox_match.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxMatchElement} from 'chrome://resources/cr_components/composebox/composebox_match.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -44,6 +44,53 @@ suite('ComposeboxMatch', () => {
 
     const contents = matchElement.$.textContainer;
     assertEquals('test contents', contents.textContent.trim());
+  });
+
+  test(
+      'renders background image when SuggestStyle.kRichImage is set',
+      async () => {
+        matchElement.richImageSuggestionsEnabled = true;
+        matchElement.match = createAutocompleteMatch({
+          imageUrl: 'https://example.com/image.png',
+          suggestStyle: SuggestStyle.kRichImage,
+        });
+        await microtasksFinished();
+
+        assertTrue(matchElement.isRichImage);
+        assertEquals('rich-image', matchElement.getAttribute('suggest-style'));
+        assertTrue(!!matchElement.$.image);
+        assertTrue(
+            matchElement.$.image.style.backgroundImage.includes('image.png'));
+      });
+
+  test(
+      'does not render background image when suggestStyle is not kRichImage',
+      async () => {
+        matchElement.richImageSuggestionsEnabled = true;
+        matchElement.match = createAutocompleteMatch({
+          imageUrl: 'https://example.com/image.png',
+          suggestStyle: SuggestStyle.kDefault,
+        });
+        await microtasksFinished();
+
+        assertFalse(matchElement.isRichImage);
+        assertEquals('default', matchElement.getAttribute('suggest-style'));
+        assertTrue(!!matchElement.$.image);
+        assertEquals('', matchElement.$.image.style.backgroundImage);
+      });
+
+  test('does not render background image when flag is disabled', async () => {
+    matchElement.richImageSuggestionsEnabled = false;
+    matchElement.match = createAutocompleteMatch({
+      imageUrl: 'https://example.com/image.png',
+      suggestStyle: SuggestStyle.kRichImage,
+    });
+    await microtasksFinished();
+
+    assertFalse(matchElement.isRichImage);
+    assertEquals('default', matchElement.getAttribute('suggest-style'));
+    assertTrue(!!matchElement.$.image);
+    assertEquals('', matchElement.$.image.style.backgroundImage);
   });
 
   test('click triggers openAutocompleteMatch', async () => {
