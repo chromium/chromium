@@ -31,8 +31,6 @@
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
-#include "chrome/browser/safe_browsing/notification_content_detection/mock_notification_content_detection_service.h"
-#include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_service_factory.h"
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
@@ -41,8 +39,8 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/permissions/notifications_engagement_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
-#include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -62,6 +60,12 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/notification_content_detection/mock_notification_content_detection_service.h"  // nogncheck
+#include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_service_factory.h"  // nogncheck
+#include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "base/values.h"
@@ -752,6 +756,7 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 class PlatformNotificationServiceTest_NotificationContentDetection
     : public PlatformNotificationServiceTest,
       public testing::WithParamInterface<bool> {
@@ -1193,3 +1198,4 @@ TEST_F(PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
           safe_browsing::kNotificationContentDetectionMetadataDictionaryKey));
 }
 #endif
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)

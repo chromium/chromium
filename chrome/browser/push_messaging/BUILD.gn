@@ -140,6 +140,7 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//components/browsing_data/content",
       "//components/push_messaging:test_support",
+      "//components/safe_browsing:buildflags",
       "//content/test:test_support",
       "//testing/gtest",
     ]

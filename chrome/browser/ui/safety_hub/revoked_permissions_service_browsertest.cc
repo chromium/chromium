@@ -20,7 +20,6 @@
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
@@ -43,12 +42,17 @@
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/notifications_engagement_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"  // nogncheck
+#endif
 
 namespace {
 
@@ -297,6 +301,7 @@ IN_PROC_BROWSER_TEST_F(RevokedPermissionsServiceBrowserTest,
       browser(), GURL(chrome::kChromeUIContentSettingsURL)));
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 class AbusiveNotificationPermissionsRevocationBrowserTest
     : public RevokedPermissionsServiceBrowserTest {
  public:
@@ -527,6 +532,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
                                      ContentSettingsType::NOTIFICATIONS));
   }
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 class DisruptiveNotificationPermissionsRevocationShadowRunBrowserTest
     : public RevokedPermissionsServiceBrowserTest {

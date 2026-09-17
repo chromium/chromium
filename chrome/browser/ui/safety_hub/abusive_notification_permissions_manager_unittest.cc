@@ -8,11 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
-#include "chrome/browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h"
-#include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
-#include "chrome/browser/permissions/permission_revocation_request.h"
-#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager.h"
@@ -30,6 +26,7 @@
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/notifications_engagement_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
@@ -42,6 +39,14 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/permissions/crowd_deny_fake_safe_browsing_database_manager.h"
+#include "chrome/browser/permissions/crowd_deny_preload_data.h"
+#include "chrome/browser/permissions/permission_revocation_request.h"
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#endif
+
 namespace {
 
 const char url1[] = "https://example1.com";
@@ -994,6 +999,8 @@ TEST_F(AbusiveNotificationPermissionsManagerTest, GetV5GetHashProtocolManager) {
             &v5_protocol_manager);
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
 class ShowManualNotificationRevocationsTest
     : public AbusiveNotificationPermissionsManagerTest {
  public:
@@ -1561,3 +1568,4 @@ TEST_F(SuspiciousNotificationRevocationTest,
       AbusiveNotificationPermissionsManager::
           MaybeRevokeSuspiciousNotificationPermission(profile(), GURL(url1)));
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)

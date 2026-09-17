@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 if (is_android) {
@@ -453,12 +454,16 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/content_settings/core/test:test_support",
     "//components/optimization_guide/core:model_execution_test_support",
-    "//components/safe_browsing/content/browser/notification_content_detection:test_utils",
+    "//components/safe_browsing:buildflags",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/message_center/public/cpp",
   ]
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/browser/notification_content_detection:test_utils" ]
+  }
 
   if (enable_chrome_notifications) {
     sources += [

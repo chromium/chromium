@@ -59,6 +59,7 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/permissions/constants.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/features.h"
@@ -148,8 +149,10 @@ class SafetyHubHandlerTest : public testing::Test {
     hcsm_ = HostContentSettingsMapFactory::GetForProfile(profile());
     hcsm_->SetClockForTesting(&clock_);
 
-    // Set up safe browsing service.
+    // Set up Safe Browsing when it is available.
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     SetUpSafeBrowsingService();
+#endif
 
     handler_ = std::make_unique<SafetyHubHandler>(profile());
     handler()->set_web_ui(web_ui());
@@ -165,7 +168,9 @@ class SafetyHubHandlerTest : public testing::Test {
     if (partition) {
       partition->WaitForDeletionTasksForTesting();
     }
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
+#endif
   }
 
   void AddNotificationPermissionsForReview() {
@@ -545,6 +550,7 @@ class SafetyHubHandlerTest : public testing::Test {
   }
 
  private:
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void SetUpSafeBrowsingService() {
     mock_database_manager_ =
         base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
@@ -555,6 +561,7 @@ class SafetyHubHandlerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
         safe_browsing_factory_->CreateSafeBrowsingService());
   }
+#endif
 
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -567,9 +574,11 @@ class SafetyHubHandlerTest : public testing::Test {
   scoped_refptr<password_manager::TestPasswordStore> account_store_ =
       CreateAndUseTestAccountPasswordStore(&profile_);
   std::unique_ptr<SafetyHubHandler> handler_;
-  scoped_refptr<MockSafeBrowsingDatabaseManager> mock_database_manager_;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
+#endif
+  scoped_refptr<MockSafeBrowsingDatabaseManager> mock_database_manager_;
 };
 
 TEST_F(SafetyHubHandlerTest, PopulateUnusedSitePermissionsData) {
@@ -658,6 +667,8 @@ TEST_F(SafetyHubHandlerTest,
   EXPECT_EQ(revoked_permissions_before,
             handler()->PopulateUnusedSitePermissionsData());
 }
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 TEST_F(SafetyHubHandlerTest, PopulateAbusiveAndUnusedSitePermissionsData) {
   AddAbusiveNotificationPermission();
@@ -832,6 +843,8 @@ TEST_F(SafetyHubHandlerTest,
       safety_hub_util::GetRevokedAbusiveNotificationPermissions(hcsm()).size(),
       2U);
 }
+
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 TEST_F(SafetyHubHandlerTest,
        HandleIgnoreOriginsForNotificationPermissionReview) {
@@ -1398,23 +1411,29 @@ class SafetyHubHandlerUnusedPermissionRevocationDisabledTest
     hcsm_ = HostContentSettingsMapFactory::GetForProfile(profile());
     hcsm_->SetClockForTesting(&clock_);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     if (IsSafeBrowsingEnabled()) {
       SetUpSafeBrowsingService();
     }
+#endif
 
     handler_ = std::make_unique<SafetyHubHandler>(profile());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     if (IsSafeBrowsingEnabled()) {
       AddAbusiveNotificationPermission();
     }
+#endif
   }
 
   void TearDown() override {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     if (IsSafeBrowsingEnabled()) {
       TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
     }
+#endif
   }
 
   TestingProfile* profile() { return &profile_; }
@@ -1444,6 +1463,7 @@ class SafetyHubHandlerUnusedPermissionRevocationDisabledTest
   }
 
  private:
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void SetUpSafeBrowsingService() {
     mock_database_manager_ =
         base::MakeRefCounted<MockSafeBrowsingDatabaseManager>();
@@ -1454,6 +1474,7 @@ class SafetyHubHandlerUnusedPermissionRevocationDisabledTest
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(
         safe_browsing_factory_->CreateSafeBrowsingService());
   }
+#endif
 
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -1462,9 +1483,11 @@ class SafetyHubHandlerUnusedPermissionRevocationDisabledTest
   scoped_refptr<HostContentSettingsMap> hcsm_;
   base::SimpleTestClock clock_;
   std::unique_ptr<SafetyHubHandler> handler_;
-  scoped_refptr<MockSafeBrowsingDatabaseManager> mock_database_manager_;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
+#endif
+  scoped_refptr<MockSafeBrowsingDatabaseManager> mock_database_manager_;
 };
 
 TEST_P(SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
@@ -1594,4 +1617,8 @@ TEST_P(SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SafetyHubHandlerUnusedPermissionRevocationDisabledTest,
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
                          testing::Bool());
+#else
+                         testing::Values(false));
+#endif

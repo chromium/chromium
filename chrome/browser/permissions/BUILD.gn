@@ -269,9 +269,7 @@ source_set("unit_tests") {
     "permission_context_base_permissions_policy_unittest.cc",
     "permission_manager_unittest.cc",
     "permission_request_manager_unittest.cc",
-    "permission_revocation_request_unittest.cc",
     "permission_subscription_unittest.cc",
-    "prediction_service/contextual_notification_permission_ui_selector_unittest.cc",
     "prediction_service/passage_embedder_delegate_unittest.cc",
     "prediction_service/permissions_ai_ui_selector_unittest.cc",
     "pref_based_quiet_permission_ui_selector_unittest.cc",
@@ -279,6 +277,13 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [ "one_time_permissions_tracker_unittest.cc" ]
+  }
+
+  if (safe_browsing_mode != 0) {
+    sources += [
+      "permission_revocation_request_unittest.cc",
+      "prediction_service/contextual_notification_permission_ui_selector_unittest.cc",
+    ]
   }
 
   deps = [

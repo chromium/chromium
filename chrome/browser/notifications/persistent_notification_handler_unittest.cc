@@ -26,16 +26,13 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/safe_browsing/notification_content_detection/mock_notification_content_detection_service.h"
-#include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
-#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
-#include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -56,6 +53,13 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/notification_content_detection/mock_notification_content_detection_service.h"  // nogncheck
+#include "chrome/browser/safe_browsing/notification_content_detection/notification_content_detection_service_factory.h"  // nogncheck
+#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"  // nogncheck
+#include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/notification_content_detection_manager_android.h"
@@ -227,6 +231,7 @@ TEST_F(PersistentNotificationHandlerTest, OnClose_Programmatically) {
                    /* by_user= */ false, base::DoNothing());
 }
 
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
 #if BUILDFLAG(IS_ANDROID)
   base::HistogramTester histograms;
@@ -244,6 +249,7 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
                 .status,
             PermissionStatus::ASK);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Set `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to true for
   // `origin_`.
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile_.get());
@@ -264,6 +270,7 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
   hcsm->SetWebsiteSettingDefaultScope(
       origin_, GURL(), ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS,
       base::Value(suspicious_notification_id_dict.Clone()));
+#endif
 
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
@@ -277,6 +284,7 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
       /*notification_id=*/"non-suspicious-notification-id",
       /*is_suspicious=*/false);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Disabling the permission should set
   // `ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER` to false.
   content_settings::SettingInfo info;
@@ -287,6 +295,7 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
   EXPECT_EQ(
       false,
       value.GetDict().FindBool(safe_browsing::kIsAllowlistedByUserKey).value());
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   PermissionStatus kExpectedDisabledStatus = PermissionStatus::ASK;
@@ -328,7 +337,9 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
   EXPECT_EQ(0u, ukm_entries.size());
 #endif
 }
+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(PersistentNotificationHandlerTest,
        DisableNotificationAfterWarningLogsMetrics) {
@@ -776,3 +787,4 @@ TEST_F(PersistentNotificationHandlerWithAutoRevokeSuspiciousNotificationTest,
           .value_or(false));
 }
 #endif
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
