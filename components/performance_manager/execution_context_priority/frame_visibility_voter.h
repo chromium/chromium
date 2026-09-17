@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FRAME_VISIBILITY_VOTER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FRAME_VISIBILITY_VOTER_H_
 
+#include <vector>
+
+#include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -17,11 +21,14 @@ namespace execution_context_priority {
 // Process::Priority::kUserBlocking vote, while a non-visible frame will receive
 // a Process::Priority::kMinValue vote. If the kUnimportantFrame feature is
 // enabled, a lesser ProcessPriority::kUserVisible vote is cast for frames that
-// are deemed unimportant. Note: This FrameNodeObserver can affect the initial
-// priority of a frame and thus uses `OnBeforeFrameNodeAdded`.
+// are deemed unimportant. Speculative frames that are not yet active inherit
+// the priority of the visible active frame they are replacing. Note: This
+// FrameNodeObserver can affect the initial priority of a frame and thus uses
+// `OnBeforeFrameNodeAdded`.
 class FrameVisibilityVoter : public PriorityVoter, public FrameNodeObserver {
  public:
   static const char kFrameVisibilityReason[];
+  static const char kSpeculativeFrameReason[];
 
   // If `ignore_main_frame_visibility` is true, this voter will not cast votes
   // for main frame nodes; only subframes will have their visibility considered.
@@ -43,6 +50,7 @@ class FrameVisibilityVoter : public PriorityVoter, public FrameNodeObserver {
       const ProcessNode* pending_process_node,
       const FrameNode* pending_parent_or_outer_document_or_embedder) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+  void OnIsActiveChanged(const FrameNode* frame_node) override;
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override;
   void OnIsImportantChanged(const FrameNode* frame_node) override;
@@ -52,9 +60,20 @@ class FrameVisibilityVoter : public PriorityVoter, public FrameNodeObserver {
  private:
   bool ShouldVoteForFrame(const FrameNode* frame_node) const;
   void SetVoteForFrame(const FrameNode* frame_node);
+  void SetVoteForFrame(const FrameNode* frame_node, const PageNode* page_node);
+  void SetVoteForSpeculativeFrame(const FrameNode* speculative_frame,
+                                  const FrameNode* active_frame);
+  void UpdateVotesForSpeculativeFrames(const FrameNode* active_frame);
+  // Returns all in-flight speculative frames that are replacing `active_frame`.
+  std::vector<const FrameNode*> GetSpeculativeFramesForActiveFrame(
+      const FrameNode* active_frame) const;
 
   VotingChannel voting_channel_;
   const bool ignore_main_frame_visibility_;
+
+  // Tracks speculative frames that are currently in-flight. Speculative frames
+  // are inactive frames that have never been active.
+  base::flat_set<raw_ptr<const FrameNode, CtnExperimental>> speculative_frames_;
 };
 
 }  // namespace execution_context_priority
