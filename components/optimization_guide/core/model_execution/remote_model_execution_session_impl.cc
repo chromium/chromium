@@ -40,7 +40,9 @@ namespace {
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-constexpr char kModelExecutionStreamingRPCName[] = "v1:StreamExecute";
+constexpr char kModelExecutionStreamingRPCName[] =
+    "ws/"
+    "google.internal.chrome.modelexecution.ModelExecutionService.StreamExecute";
 
 GURL GetModelExecutionServiceStreamURL(ModelBasedCapabilityKey feature) {
   GURL url =
