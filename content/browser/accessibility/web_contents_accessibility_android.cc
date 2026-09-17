@@ -578,6 +578,12 @@ bool IsSelectionPositionValid(
 // These restrictions are primarily validated in `blink::AXSelection::IsValid()`
 // for atomic text fields and in `blink::AssertUserSelection` in general, and
 // are based on the behavior in `blink::SelectionAdjuster` class.
+//
+// Note: selections that span shadow DOM tree scopes are intentionally not
+// rejected in this function. Unlike the other restrictions, Blink does not
+// treat them as invalid and `SelectionAdjuster` shrinks them to a single tree
+// scope (see `AdjustSelectionToAvoidCrossingShadowBoundaries`), and the
+// adjusted selection is reported back through the selection changed event.
 bool IsSelectionValid(
     const ui::BrowserAccessibility::AXPosition& start_position,
     const ui::BrowserAccessibility::AXPosition& end_position) {
@@ -596,7 +602,6 @@ bool IsSelectionValid(
       GetRootEditable(start_position->GetAnchor());
   ui::AXNode* end_root_editable = GetRootEditable(end_position->GetAnchor());
 
-  // TODO(crbug.com/443078007): Add checking for matching tree scopes.
   return start_root_editable == end_root_editable;
 }
 
