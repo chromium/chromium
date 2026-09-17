@@ -24,7 +24,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -39,34 +38,6 @@
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
-
-namespace {
-
-class ErrorLabelView : public views::Label {
-  METADATA_HEADER(ErrorLabelView, views::Label)
-
- public:
-  explicit ErrorLabelView(bool show_error_label)
-      : Label(l10n_util::GetStringUTF16(
-            IDS_SYSTEM_PROXY_AUTH_DIALOG_ERROR_LABEL)) {
-    SetEnabled(true);
-    SetVisible(show_error_label);
-  }
-  ErrorLabelView(const ErrorLabelView&) = delete;
-  ErrorLabelView& operator=(const ErrorLabelView&) = delete;
-  ~ErrorLabelView() override = default;
-
-  // views::View:
-  void OnThemeChanged() override {
-    Label::OnThemeChanged();
-    SetEnabledColor(GetColorProvider()->GetColor(ui::kColorAlertHighSeverity));
-  }
-};
-
-BEGIN_METADATA(ErrorLabelView)
-END_METADATA
-
-}  // namespace
 
 namespace ash {
 
@@ -194,8 +165,12 @@ void RequestSystemProxyCredentialsView::Init() {
   error_icon->SetImageSize(gfx::Size(kIconSize, kIconSize));
   error_icon->SetVisible(show_error_label_);
 
-  error_label_ = error_container->AddChildView(
-      std::make_unique<ErrorLabelView>(show_error_label_));
+  auto error_label = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_ERROR_LABEL));
+  error_label->SetEnabled(true);
+  error_label->SetVisible(show_error_label_);
+  error_label->SetEnabledColor(ui::kColorAlertHighSeverity);
+  error_label_ = error_container->AddChildView(std::move(error_label));
   error_container->SetFlexForView(error_label_, 1);
 }
 
