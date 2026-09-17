@@ -51,6 +51,10 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       tabMenuOpen: {type: Boolean},
       recentTabId: {type: Number},
       sharingTabsText_: {type: String},
+      useUnbounded: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -59,6 +63,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   accessor tabMenuOpen: boolean = false;
   accessor recentTabId: number|null = null;
   protected accessor sharingTabsText_: string = '';
+  accessor useUnbounded: boolean = true;
 
   private closeTimer_: number|null = null;
   private browserProxy_: TabPickerBrowserProxy =
@@ -75,11 +80,25 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     this.cancelCloseTimer_();
   }
 
+  override firstUpdated() {
+    this.initializeUnboundedMenu_();
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
     if (changedProperties.has('selectedTabs')) {
       this.updateSharingTabsText_();
+    }
+
+    if (changedProperties.has('useUnbounded')) {
+      this.initializeUnboundedMenu_();
+    }
+  }
+
+  private async initializeUnboundedMenu_() {
+    if (this.isUnboundedMenuEnabled_()) {
+      await this.$.tabMenu.setUnbounded();
     }
   }
 
@@ -93,6 +112,15 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     } catch {
       // Standalone or test environment without proxy implementation.
     }
+  }
+
+  protected isUnboundedMenuEnabled_(): boolean {
+    if (loadTimeData.isInitialized() &&
+        loadTimeData.valueExists('contextualTasksUnboundedMenuEnabled') &&
+        !loadTimeData.getBoolean('contextualTasksUnboundedMenuEnabled')) {
+      return false;
+    }
+    return this.useUnbounded;
   }
 
   protected get hasTabSuggestions_(): boolean {
@@ -190,14 +218,18 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     this.fire('tab-selected', {tab, selected: !isSelected});
   }
 
-  private openTabMenu_() {
-    if (!this.hasTabSuggestions_) {
+  private async openTabMenu_() {
+    if (!this.hasTabSuggestions_ || this.$.tabMenu.open) {
       return;
+    }
+    if (this.isUnboundedMenuEnabled_() &&
+        !this.$.tabMenu.getDialog().hasAttribute('unbounded')) {
+      await this.$.tabMenu.setUnbounded();
     }
     this.tabMenuOpen = true;
     this.$.tabMenu.showAt(this.$.shareTabsTrigger, {
       anchorAlignmentX: AnchorAlignment.AFTER_END,
-      anchorAlignmentY: AnchorAlignment.BEFORE_START,
+      anchorAlignmentY: AnchorAlignment.AFTER_START,
       noOffset: true,
     });
   }

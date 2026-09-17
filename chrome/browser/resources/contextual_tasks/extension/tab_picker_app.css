@@ -87,7 +87,9 @@ composebox-favicon-group {
 
 #tabMenu {
   --cr-menu-background-color: var(--color-composebox-background,
-      var(--search-background-color, #fff));
+      var(--search-background-color,
+          var(--color-menu-background,
+              var(--cr-fallback-color-surface, #fff))));
   --cr-menu-border-radius: 16px;
   --cr-menu-shadow: var(--cr-elevation-3);
   --cr-primary-text-color: var(--color-composebox-file-chip-text, #1f1f1f);

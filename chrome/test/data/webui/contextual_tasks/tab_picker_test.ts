@@ -78,9 +78,19 @@ suite('TabPickerTest', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    if (!('showUnboundedElement' in HTMLElement.prototype)) {
+      (HTMLElement.prototype as unknown as
+       Record<string, unknown>)['showUnboundedElement'] = () =>
+          Promise.resolve();
+      (HTMLElement.prototype as unknown as
+       Record<string, unknown>)['hideUnboundedElement'] = () =>
+          Promise.resolve();
+    }
+
     loadTimeData.overrideValues({
       shareTabs: 'Add tabs',
       recentTabsSuffix: 'Recent',
+      contextualTasksUnboundedMenuEnabled: true,
     });
 
     testProxy = new TestTabPickerBrowserProxy();
@@ -228,5 +238,71 @@ suite('TabPickerTest', () => {
     await microtasksFinished();
 
     assertEquals('Add tabs', label.textContent.trim());
+  });
+
+  test(
+      'Opens flyout menu as unbounded menu when useUnbounded is enabled',
+      async () => {
+        let showUnboundedCalled = false;
+        let hideUnboundedCalled = false;
+
+        const dialog = app.$.tabMenu.getDialog();
+        (dialog as unknown as Record<string, unknown>)['showUnboundedElement'] =
+            () => {
+              showUnboundedCalled = true;
+              return Promise.resolve();
+            };
+        (dialog as unknown as Record<string, unknown>)['hideUnboundedElement'] =
+            () => {
+              hideUnboundedCalled = true;
+              return Promise.resolve();
+            };
+
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await microtasksFinished();
+
+        assertTrue(app.$.tabMenu.open);
+        assertTrue(dialog.hasAttribute('unbounded'));
+        assertTrue(showUnboundedCalled);
+
+        app.$.tabMenu.close();
+        await microtasksFinished();
+
+        assertFalse(app.$.tabMenu.open);
+        assertTrue(hideUnboundedCalled);
+      });
+
+  test('Closes unbounded menu on beforetoggle closed event', async () => {
+    app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+    await microtasksFinished();
+
+    assertTrue(app.$.tabMenu.open);
+    assertTrue(app.$.tabMenu.getDialog().hasAttribute('unbounded'));
+
+    const toggleEvent = new CustomEvent('beforetoggle');
+    Object.assign(toggleEvent, {oldState: 'open', newState: 'closed'});
+    app.$.tabMenu.getDialog().dispatchEvent(toggleEvent);
+    await microtasksFinished();
+
+    assertFalse(app.$.tabMenu.open);
+  });
+
+  test('Does not use unbounded menu when disabled', async () => {
+    app.remove();
+
+    loadTimeData.overrideValues({
+      contextualTasksUnboundedMenuEnabled: false,
+    });
+
+    app = document.createElement('tab-picker-app');
+    document.body.appendChild(app);
+    await testProxy.whenCalled('getRecentTabs');
+    await microtasksFinished();
+
+    app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+    await microtasksFinished();
+
+    assertTrue(app.$.tabMenu.open);
+    assertFalse(app.$.tabMenu.getDialog().hasAttribute('unbounded'));
   });
 });

@@ -27,6 +27,7 @@ export function getHtml(this: TabPickerAppElement) {
     </button>
 
     <cr-action-menu id="tabMenu"
+        role-description="menu"
         @close="${this.onMenuClose_}"
         @pointerenter="${this.onMenuPointerenter_}"
         @pointerleave="${this.onMenuPointerleave_}">
