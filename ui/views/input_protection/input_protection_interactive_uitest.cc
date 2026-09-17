@@ -8,7 +8,10 @@
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -21,15 +24,21 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/views/test/mock_activation_controller.h"
+#endif
+
 namespace views::test {
 
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryButtonId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondaryButtonId);
 
 constexpr gfx::Rect kInitialWidgetBounds(100, 100, 400, 400);
+constexpr gfx::Point kPrimaryButtonOrigin(20, 20);
 constexpr gfx::Size kButtonSize(120, 40);
-constexpr int kButtonMargin = 20;
+constexpr int kButtonSpacing = 20;
 
 }  // namespace
 
@@ -51,15 +60,29 @@ class InputProtectionInteractiveUiTest : public InputProtectionInteractiveTest {
     widget_->SetBounds(kInitialWidgetBounds);
 
     auto contents = std::make_unique<View>();
-    auto button = std::make_unique<LabelButton>(
+    auto primary_button = std::make_unique<LabelButton>(
         base::BindRepeating(
             &InputProtectionInteractiveUiTest::OnPrimaryButtonClicked,
             base::Unretained(this)),
         u"Primary Button");
-    button->SetProperty(kElementIdentifierKey, kPrimaryButtonId);
-    button->SetBoundsRect(
-        gfx::Rect(gfx::Point(kButtonMargin, kButtonMargin), kButtonSize));
-    contents->AddChildView(std::move(button));
+    primary_button->SetProperty(kElementIdentifierKey, kPrimaryButtonId);
+    primary_button->SetIsDefault(true);
+    gfx::Rect primary_button_bounds(kPrimaryButtonOrigin, kButtonSize);
+    primary_button->SetBoundsRect(primary_button_bounds);
+    contents->AddChildView(std::move(primary_button));
+
+    auto secondary_button = std::make_unique<LabelButton>(
+        base::BindRepeating(
+            &InputProtectionInteractiveUiTest::OnSecondaryButtonClicked,
+            base::Unretained(this)),
+        u"Secondary Button");
+    secondary_button->SetProperty(kElementIdentifierKey, kSecondaryButtonId);
+    gfx::Rect secondary_button_bounds(
+        gfx::Point(primary_button_bounds.x(),
+                   primary_button_bounds.bottom() + kButtonSpacing),
+        kButtonSize);
+    secondary_button->SetBoundsRect(secondary_button_bounds);
+    contents->AddChildView(std::move(secondary_button));
 
     widget_->SetContentsView(std::move(contents));
     WidgetVisibleWaiter waiter(widget_.get());
@@ -78,13 +101,22 @@ class InputProtectionInteractiveUiTest : public InputProtectionInteractiveTest {
   }
 
   void OnPrimaryButtonClicked() { primary_click_count_++; }
+  void OnSecondaryButtonClicked() { secondary_click_count_++; }
 
   const int& primary_click_count() const { return primary_click_count_; }
+  const int& secondary_click_count() const { return secondary_click_count_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<Widget> widget_;
   int primary_click_count_ = 0;
+  int secondary_click_count_ = 0;
+
+#if BUILDFLAG(IS_MAC)
+  // Use synchronous activation to prevent native activation timeouts on macOS.
+  views::test::MockActivationController activation_controller_{
+      /*allow_in_interactive_ui_tests=*/true};
+#endif
 };
 
 // Verifies that input event activation protection enforces the initial show
@@ -112,6 +144,67 @@ TEST_F(InputProtectionInteractiveUiTest, RapidSuccessiveClicksBlocked) {
       AdvancePastInputProtectionInterval(),
       // After the protection cooldown expires, subsequent click is allowed.
       ClickExpectingAllowed(kPrimaryButtonId, primary_click_count(), 2));
+}
+
+// Verifies that when a mouse press is blocked during input protection,
+// `RootView::ResetEventHandlers()` discards the subsequent mouse release even
+// after input protection expires, preventing unintended interactions.
+TEST_F(InputProtectionInteractiveUiTest,
+       MouseReleaseAfterInputProtectionDiscarded) {
+  RunTestSequence(
+      EnableInputEventActivationProtection(kPrimaryButtonId),
+      TriggerShowCooldown(kPrimaryButtonId), MousePress(kPrimaryButtonId),
+      AdvancePastInputProtectionInterval(), MouseRelease(kPrimaryButtonId),
+      CheckVariable(primary_click_count(), 0, "primary_click_count"));
+}
+
+// Verifies that the forward focus navigation key (Tab) is not blocked during
+// input protection.
+TEST_F(InputProtectionInteractiveUiTest,
+       TabKeyTraversalAllowedDuringInputProtection) {
+  RunTestSequence(EnableInputEventActivationProtection(kPrimaryButtonId),
+                  TriggerShowCooldown(kPrimaryButtonId),
+                  FocusElement(kPrimaryButtonId),
+                  KeyPressAndRelease(kPrimaryButtonId, ui::VKEY_TAB),
+                  CheckViewProperty(kSecondaryButtonId, &View::HasFocus, true));
+}
+
+// Verifies that reverse focus navigation (Shift+Tab) is not blocked during
+// input protection.
+TEST_F(InputProtectionInteractiveUiTest,
+       ShiftTabKeyTraversalAllowedDuringInputProtection) {
+  RunTestSequence(
+      EnableInputEventActivationProtection(kPrimaryButtonId),
+      TriggerShowCooldown(kPrimaryButtonId), FocusElement(kSecondaryButtonId),
+      KeyPressAndRelease(kSecondaryButtonId, ui::VKEY_TAB, ui::EF_SHIFT_DOWN),
+      CheckViewProperty(kPrimaryButtonId, &View::HasFocus, true));
+}
+
+// Verifies that pressing the Space key on a focused button is blocked during
+// input protection.
+TEST_F(InputProtectionInteractiveUiTest, SpaceKeyBlockedDuringInputProtection) {
+  RunTestSequence(
+      EnableInputEventActivationProtection(kPrimaryButtonId),
+      TriggerShowCooldown(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count(), 0),
+      AdvancePastInputProtectionInterval(),
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_SPACE,
+                                         primary_click_count(), 1));
+}
+
+// Verifies that pressing the Return key on a focused button is blocked during
+// input protection.
+TEST_F(InputProtectionInteractiveUiTest,
+       ReturnKeyBlockedDuringInputProtection) {
+  RunTestSequence(
+      EnableInputEventActivationProtection(kPrimaryButtonId),
+      TriggerShowCooldown(kPrimaryButtonId), FocusElement(kPrimaryButtonId),
+      KeyPressAndReleaseExpectingBlocked(kPrimaryButtonId, ui::VKEY_RETURN,
+                                         primary_click_count(), 0),
+      AdvancePastInputProtectionInterval(),
+      KeyPressAndReleaseExpectingAllowed(kPrimaryButtonId, ui::VKEY_RETURN,
+                                         primary_click_count(), 1));
 }
 
 }  // namespace views::test

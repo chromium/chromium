@@ -13,6 +13,8 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/test/views_test_base.h"
@@ -38,21 +40,71 @@ class InputProtectionTestApi
   // ready to receive input.
   [[nodiscard]] MultiStep TriggerShowCooldown(ui::ElementIdentifier element_id);
 
-  // Clicks `element_id` at `click_point` (or the center point if `click_point`
-  // is omitted) and verifies the click was blocked by input protection.
+  // Dispatches a simulated left mouse press to `element_id` at `click_point`
+  // (or the center point if `click_point` is omitted).
+  [[nodiscard]] MultiStep MousePress(
+      ui::ElementIdentifier element_id,
+      std::optional<gfx::Point> click_point = std::nullopt);
+
+  // Dispatches a simulated left mouse release to `element_id` at `click_point`
+  // (or the center point if `click_point` is omitted).
+  [[nodiscard]] MultiStep MouseRelease(
+      ui::ElementIdentifier element_id,
+      std::optional<gfx::Point> click_point = std::nullopt);
+
+  // Dispatches a simulated left mouse click (press and release) to `element_id`
+  // at `click_point` (or the center point if `click_point` is omitted).
+  [[nodiscard]] MultiStep Click(
+      ui::ElementIdentifier element_id,
+      std::optional<gfx::Point> click_point = std::nullopt);
+
+  // Clicks `element_id` and verifies the click was blocked by input protection.
   [[nodiscard]] MultiStep ClickExpectingBlocked(
       ui::ElementIdentifier element_id,
       const int& action_counter,
       int expected_count = 0,
       std::optional<gfx::Point> click_point = std::nullopt);
 
-  // Clicks `element_id` at `click_point` (or the center point if `click_point`
-  // is omitted) and verifies the click was processed.
+  // Clicks `element_id` and verifies the click was processed.
   [[nodiscard]] MultiStep ClickExpectingAllowed(
       ui::ElementIdentifier element_id,
       const int& action_counter,
       int expected_count = 1,
       std::optional<gfx::Point> click_point = std::nullopt);
+
+  // Dispatches a simulated key press to the widget containing `element_id`.
+  [[nodiscard]] MultiStep KeyPress(ui::ElementIdentifier element_id,
+                                   ui::KeyboardCode key,
+                                   int flags = ui::EF_NONE);
+
+  // Dispatches a simulated key release to the widget containing `element_id`.
+  [[nodiscard]] MultiStep KeyRelease(ui::ElementIdentifier element_id,
+                                     ui::KeyboardCode key,
+                                     int flags = ui::EF_NONE);
+
+  // Dispatches a keyboard event (press and release) to the widget containing
+  // `element_id` with optional event flags (e.g. ui::EF_SHIFT_DOWN).
+  [[nodiscard]] MultiStep KeyPressAndRelease(ui::ElementIdentifier element_id,
+                                             ui::KeyboardCode key,
+                                             int flags = ui::EF_NONE);
+
+  // Dispatches an action key (press and release) and verifies it was blocked
+  // by input protection.
+  [[nodiscard]] MultiStep KeyPressAndReleaseExpectingBlocked(
+      ui::ElementIdentifier element_id,
+      ui::KeyboardCode key,
+      const int& action_counter,
+      int expected_count = 0,
+      int flags = ui::EF_NONE);
+
+  // Dispatches an action key (press and release) and verifies it was
+  // processed.
+  [[nodiscard]] MultiStep KeyPressAndReleaseExpectingAllowed(
+      ui::ElementIdentifier element_id,
+      ui::KeyboardCode key,
+      const int& action_counter,
+      int expected_count = 1,
+      int flags = ui::EF_NONE);
 
   // Advances mock clock by the specified `delta`.
   [[nodiscard]] ui::InteractionSequence::StepBuilder AdvanceClockBy(

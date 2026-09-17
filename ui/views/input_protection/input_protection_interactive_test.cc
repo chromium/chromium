@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,6 +13,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view.h"
@@ -23,29 +23,58 @@ namespace views::test {
 
 namespace {
 
-// Dispatches a simulated left mouse click (press followed by release) to
-// `view`. Uses `ui::EventTimeForNow()` so the event timestamp is generated
-// from the same mock clock that tracks input protection cooldowns.
-//
-// When `click_point` is specified, the click targets that local coordinate,
-// otherwise the click defaults to the center point of the local bounds of
-// `view`. Converts coordinates to root view space before dispatching to the
-// widget.
-void DispatchClickAtPointOrDefaultCenter(
-    View* view,
-    const std::optional<gfx::Point>& click_point) {
+// Returns `click_point` (or the center point of `view` if omitted) converted to
+// the `RootView` coordinate space of the target widget.
+gfx::Point GetPointInRootView(View* view,
+                              const std::optional<gfx::Point>& click_point) {
   gfx::Point point = click_point.value_or(view->GetLocalBounds().CenterPoint());
   View::ConvertPointToTarget(view, view->GetWidget()->GetRootView(), &point);
+  return point;
+}
 
+// Event dispatch helpers below use `ui::EventTimeForNow()` so the event
+// timestamp is generated from the same mock clock that tracks input protection
+// cooldowns.
+void DispatchMousePressOnly(
+    View* view,
+    const std::optional<gfx::Point>& click_point = std::nullopt) {
+  gfx::Point point = GetPointInRootView(view, click_point);
   ui::MouseEvent press(ui::EventType::kMousePressed, point, point,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
   view->GetWidget()->OnMouseEvent(&press);
+}
 
+void DispatchMouseReleaseOnly(
+    View* view,
+    const std::optional<gfx::Point>& click_point = std::nullopt) {
+  gfx::Point point = GetPointInRootView(view, click_point);
   ui::MouseEvent release(ui::EventType::kMouseReleased, point, point,
                          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                          ui::EF_LEFT_MOUSE_BUTTON);
   view->GetWidget()->OnMouseEvent(&release);
+}
+
+void DispatchClick(View* view, const std::optional<gfx::Point>& click_point) {
+  DispatchMousePressOnly(view, click_point);
+  DispatchMouseReleaseOnly(view, click_point);
+}
+
+void DispatchKeyPressOnly(View* view, ui::KeyboardCode key, int flags) {
+  ui::KeyEvent press(ui::EventType::kKeyPressed, key, flags,
+                     ui::EventTimeForNow());
+  view->GetWidget()->OnKeyEvent(&press);
+}
+
+void DispatchKeyReleaseOnly(View* view, ui::KeyboardCode key, int flags) {
+  ui::KeyEvent release(ui::EventType::kKeyReleased, key, flags,
+                       ui::EventTimeForNow());
+  view->GetWidget()->OnKeyEvent(&release);
+}
+
+void DispatchKeyPressAndRelease(View* view, ui::KeyboardCode key, int flags) {
+  DispatchKeyPressOnly(view, key, flags);
+  DispatchKeyReleaseOnly(view, key, flags);
 }
 
 }  // namespace
@@ -80,17 +109,44 @@ InputProtectionTestApi::MultiStep InputProtectionTestApi::TriggerShowCooldown(
   return steps;
 }
 
+InputProtectionTestApi::MultiStep InputProtectionTestApi::MousePress(
+    ui::ElementIdentifier element_id,
+    std::optional<gfx::Point> click_point) {
+  auto steps = Steps(WithView(element_id, [click_point](View* view) {
+    DispatchMousePressOnly(view, click_point);
+  }));
+  AddDescriptionPrefix(steps, "MousePress()");
+  return steps;
+}
+
+InputProtectionTestApi::MultiStep InputProtectionTestApi::MouseRelease(
+    ui::ElementIdentifier element_id,
+    std::optional<gfx::Point> click_point) {
+  auto steps = Steps(WithView(element_id, [click_point](View* view) {
+    DispatchMouseReleaseOnly(view, click_point);
+  }));
+  AddDescriptionPrefix(steps, "MouseRelease()");
+  return steps;
+}
+
+InputProtectionTestApi::MultiStep InputProtectionTestApi::Click(
+    ui::ElementIdentifier element_id,
+    std::optional<gfx::Point> click_point) {
+  auto steps = Steps(WithView(element_id, [click_point](View* view) {
+    DispatchClick(view, click_point);
+  }));
+  AddDescriptionPrefix(steps, "Click()");
+  return steps;
+}
+
 InputProtectionTestApi::MultiStep InputProtectionTestApi::ClickExpectingBlocked(
     ui::ElementIdentifier element_id,
     const int& action_counter,
     int expected_count,
     std::optional<gfx::Point> click_point) {
   auto steps =
-      Steps(WithView(element_id,
-                     [click_point](View* view) {
-                       DispatchClickAtPointOrDefaultCenter(view, click_point);
-                     }),
-            CheckVariable(action_counter, expected_count));
+      Steps(Click(element_id, click_point),
+            CheckVariable(action_counter, expected_count, "action_counter"));
   AddDescriptionPrefix(steps, "ClickExpectingBlocked()");
   return steps;
 }
@@ -101,12 +157,70 @@ InputProtectionTestApi::MultiStep InputProtectionTestApi::ClickExpectingAllowed(
     int expected_count,
     std::optional<gfx::Point> click_point) {
   auto steps =
-      Steps(WithView(element_id,
-                     [click_point](View* view) {
-                       DispatchClickAtPointOrDefaultCenter(view, click_point);
-                     }),
-            CheckVariable(action_counter, expected_count));
+      Steps(Click(element_id, click_point),
+            CheckVariable(action_counter, expected_count, "action_counter"));
   AddDescriptionPrefix(steps, "ClickExpectingAllowed()");
+  return steps;
+}
+
+InputProtectionTestApi::MultiStep InputProtectionTestApi::KeyPress(
+    ui::ElementIdentifier element_id,
+    ui::KeyboardCode key,
+    int flags) {
+  auto steps = Steps(WithView(element_id, [key, flags](View* view) {
+    DispatchKeyPressOnly(view, key, flags);
+  }));
+  AddDescriptionPrefix(steps, "KeyPress()");
+  return steps;
+}
+
+InputProtectionTestApi::MultiStep InputProtectionTestApi::KeyRelease(
+    ui::ElementIdentifier element_id,
+    ui::KeyboardCode key,
+    int flags) {
+  auto steps = Steps(WithView(element_id, [key, flags](View* view) {
+    DispatchKeyReleaseOnly(view, key, flags);
+  }));
+  AddDescriptionPrefix(steps, "KeyRelease()");
+  return steps;
+}
+
+InputProtectionTestApi::MultiStep InputProtectionTestApi::KeyPressAndRelease(
+    ui::ElementIdentifier element_id,
+    ui::KeyboardCode key,
+    int flags) {
+  auto steps = Steps(WithView(element_id, [key, flags](View* view) {
+    DispatchKeyPressAndRelease(view, key, flags);
+  }));
+  AddDescriptionPrefix(steps, "KeyPressAndRelease()");
+  return steps;
+}
+
+InputProtectionTestApi::MultiStep
+InputProtectionTestApi::KeyPressAndReleaseExpectingBlocked(
+    ui::ElementIdentifier element_id,
+    ui::KeyboardCode key,
+    const int& action_counter,
+    int expected_count,
+    int flags) {
+  auto steps =
+      Steps(KeyPressAndRelease(element_id, key, flags),
+            CheckVariable(action_counter, expected_count, "action_counter"));
+  AddDescriptionPrefix(steps, "KeyPressAndReleaseExpectingBlocked()");
+  return steps;
+}
+
+InputProtectionTestApi::MultiStep
+InputProtectionTestApi::KeyPressAndReleaseExpectingAllowed(
+    ui::ElementIdentifier element_id,
+    ui::KeyboardCode key,
+    const int& action_counter,
+    int expected_count,
+    int flags) {
+  auto steps =
+      Steps(KeyPressAndRelease(element_id, key, flags),
+            CheckVariable(action_counter, expected_count, "action_counter"));
+  AddDescriptionPrefix(steps, "KeyPressAndReleaseExpectingAllowed()");
   return steps;
 }
 
