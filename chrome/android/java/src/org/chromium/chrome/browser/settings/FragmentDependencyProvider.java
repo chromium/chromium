@@ -80,8 +80,16 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
     private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<@Nullable SettingsSearchCoordinator> mSearchCoordinatorSupplier;
 
+    /**
+     * Whether settings is being shown in a tab. Injected by the host so that the value stays
+     * constant for the lifetime of this object, even if the screen width changes (e.g. the device
+     * is folded or unfolded).
+     */
+    private final boolean mShownInTab;
+
     public FragmentDependencyProvider(
             Activity activity,
+            boolean shownInTab,
             Profile profile,
             OneshotSupplier<WindowAndroid> windowAndroidSupplier,
             ActivityResultTracker activityResultTracker,
@@ -90,6 +98,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<@Nullable SettingsSearchCoordinator> searchCoordinatorSupplier) {
         mActivity = activity;
+        mShownInTab = shownInTab;
         mProfile = profile;
         mWindowAndroidSupplier = windowAndroidSupplier;
         mActivityResultTracker = activityResultTracker;
@@ -122,7 +131,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     .setCustomTabLauncher(new SettingsCustomTabLauncherImpl());
         }
 
-        if (!SettingsInTab.isEnabled()) {
+        if (!mShownInTab) {
             // SettingsInTab always keeps the main search bar visible, even when fragments are
             // searching.
             if (fragment instanceof SearchViewProvider f) {

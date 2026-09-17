@@ -247,6 +247,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         fragmentManager.registerFragmentLifecycleCallbacks(
                 new FragmentDependencyProvider(
                         this,
+                        /* shownInTab= */ false,
                         mProfile,
                         mWindowAndroidSupplier,
                         getActivityResultTracker(),

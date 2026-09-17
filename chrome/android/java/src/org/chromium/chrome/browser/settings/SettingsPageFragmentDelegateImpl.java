@@ -262,6 +262,7 @@ public class SettingsPageFragmentDelegateImpl
         var dependencyProvider =
                 new FragmentDependencyProvider(
                         mActivity,
+                        /* shownInTab= */ true,
                         mProfile,
                         windowAndroidSupplier,
                         mActivityResultTracker,

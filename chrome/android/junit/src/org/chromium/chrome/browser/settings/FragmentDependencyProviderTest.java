@@ -21,14 +21,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.components.browser_ui.settings.SearchViewProvider;
@@ -47,8 +43,6 @@ public class FragmentDependencyProviderTest {
     @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private Supplier<SettingsSearchCoordinator> mSearchCoordinatorSupplier;
     @Mock private SettingsSearchCoordinator mSearchCoordinator;
-
-    private FragmentDependencyProvider mProvider;
 
     public static class TestSearchViewProviderFragment extends Fragment
             implements SearchViewProvider {
@@ -75,46 +69,50 @@ public class FragmentDependencyProviderTest {
     @Before
     public void setUp() {
         when(mSearchCoordinatorSupplier.get()).thenReturn(mSearchCoordinator);
-        mProvider =
-                new FragmentDependencyProvider(
-                        mActivity,
-                        mProfile,
-                        new OneshotSupplierImpl<>(),
-                        mActivityResultTracker,
-                        new OneshotSupplierImpl<>(),
-                        new OneshotSupplierImpl<>(),
-                        ObservableSuppliers.createMonotonic(),
-                        mSearchCoordinatorSupplier);
+    }
+
+    private FragmentDependencyProvider createProvider(boolean shownInTab) {
+        return new FragmentDependencyProvider(
+                mActivity,
+                shownInTab,
+                mProfile,
+                new OneshotSupplierImpl<>(),
+                mActivityResultTracker,
+                new OneshotSupplierImpl<>(),
+                new OneshotSupplierImpl<>(),
+                ObservableSuppliers.createMonotonic(),
+                mSearchCoordinatorSupplier);
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
-    @Config(qualifiers = "sw600dp")
-    public void testOnFragmentAttached_SearchViewProvider_SettingsInTabEnabled() {
+    public void testOnFragmentAttached_SearchViewProvider_shownInTab() {
+        FragmentDependencyProvider provider = createProvider(/* shownInTab= */ true);
         TestSearchViewProviderFragment fragment = new TestSearchViewProviderFragment();
-        mProvider.onFragmentAttached(null, fragment, null);
+        provider.onFragmentAttached(null, fragment, null);
 
+        // Settings shown in a tab keeps the main search bar visible, so no observer is installed.
         assertNull(fragment.getObserver());
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
-    public void testOnFragmentAttached_SearchViewProvider_SettingsInTabDisabled() {
+    public void testOnFragmentAttached_SearchViewProvider_notShownInTab() {
+        FragmentDependencyProvider provider = createProvider(/* shownInTab= */ false);
         TestSearchViewProviderFragment fragment = new TestSearchViewProviderFragment();
-        mProvider.onFragmentAttached(null, fragment, null);
+        provider.onFragmentAttached(null, fragment, null);
 
         assertNotNull(fragment.getObserver());
     }
 
     @Test
     public void testAttachDependencies_BaseSiteSettingsFragment_canBeCalledMultipleTimes() {
+        FragmentDependencyProvider provider = createProvider(/* shownInTab= */ false);
         TestBaseSiteSettingsFragment fragment = new TestBaseSiteSettingsFragment();
-        mProvider.attachDependencies(null, fragment);
+        provider.attachDependencies(null, fragment);
         assertNotNull(fragment.getSiteSettingsDelegate());
 
         // Attaching dependencies again (e.g. during Activity recreation / SettingsInTab init)
         // should update the delegate without throwing an AssertionError.
-        mProvider.attachDependencies(null, fragment);
+        provider.attachDependencies(null, fragment);
         assertNotNull(fragment.getSiteSettingsDelegate());
     }
 }

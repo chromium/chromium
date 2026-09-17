@@ -264,6 +264,7 @@ public class SettingsHostFragment extends Fragment
 
         return new FragmentDependencyProvider(
                 activity,
+                /* shownInTab= */ true,
                 profile,
                 windowAndroidSupplier,
                 activityResultTracker,
