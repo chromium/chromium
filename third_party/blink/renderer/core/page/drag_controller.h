@@ -92,8 +92,8 @@ class CORE_EXPORT DragController final
     bool document_is_handling_drag = false;
   };
 
-  Operation DragEnteredOrUpdated(DragData*, LocalFrame& local_root);
-  void DragExited(DragData*, LocalFrame& local_root);
+  Operation DragEnteredOrUpdated(const DragData*, LocalFrame& local_root);
+  void DragExited(const DragData*, LocalFrame& local_root);
   void PerformDrop(DragData*,
                    LocalFrame& local_root,
                    const Operation& browser_drag_operation);
@@ -144,23 +144,25 @@ class CORE_EXPORT DragController final
   bool did_initiate_drag() const { return did_initiate_drag_; }
 
  private:
-  DispatchEventResult DispatchTextInputEventFor(LocalFrame*, DragData*);
-  bool CanProcessDrag(DragData*, LocalFrame& local_root);
+  DispatchEventResult DispatchTextInputEventFor(LocalFrame*,
+                                                const DragData*) const;
+  bool CanProcessDrag(const DragData*, LocalFrame& local_root) const;
   bool ConcludeEditDrag(DragData*);
-  ui::mojom::blink::DragOperation OperationForLoad(DragData*,
-                                                   LocalFrame& local_root);
-  bool TryDocumentDrag(DragData*,
+  ui::mojom::blink::DragOperation OperationForLoad(
+      const DragData*,
+      LocalFrame& local_root) const;
+  bool TryDocumentDrag(const DragData*,
                        DragDestinationAction,
                        ui::mojom::blink::DragOperation&,
                        LocalFrame& local_root);
-  bool TryDHTMLDrag(DragData*,
+  bool TryDHTMLDrag(const DragData*,
                     ui::mojom::blink::DragOperation&,
-                    LocalFrame& local_root);
-  ui::mojom::blink::DragOperation GetDragOperation(DragData*);
+                    LocalFrame& local_root) const;
+  ui::mojom::blink::DragOperation GetDragOperation(const DragData*) const;
   // Clear the selection from the document this drag is exiting.
-  void ClearDragCaret();
-  bool DragIsMove(FrameSelection&, DragData*);
-  bool IsCopyKeyDown(DragData*);
+  void ClearDragCaret() const;
+  bool DragIsMove(const FrameSelection&, const DragData*) const;
+  bool IsCopyKeyDown(const DragData*) const;
 
   void MouseMovedIntoDocument(Document*);
 
