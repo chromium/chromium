@@ -24,24 +24,10 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/base_window.h"
-#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
-
-namespace {
-
-views::Widget* GetWidgetForBrowser(BrowserWindowInterface* browser) {
-  if (!browser || !browser->GetWindow()) {
-    return nullptr;
-  }
-  return views::Widget::GetWidgetForNativeWindow(
-      browser->GetWindow()->GetNativeWindow());
-}
-
-}  // namespace
 
 DEFINE_USER_DATA(GlassFrameService);
 
@@ -95,7 +81,6 @@ base::CallbackListSubscription
 GlassFrameService::RegisterGlassFrameEligibilityChangedCallback(
     BrowserWindowInterface* browser_window_interface,
     GlassFrameEligibilityChangedCallback callback) {
-  MaybeTrackBrowser(browser_window_interface);
   return window_callbacks_[browser_window_interface].Add(std::move(callback));
 }
 
@@ -147,11 +132,6 @@ GlassFrameService::ActivationOrderedEligibleBrowsers() {
         // Skip untracked windows (e.g. non-normal windows or background windows
         // that have not yet been activated).
         if (!tracked_browsers_.contains(browser)) {
-          return true;
-        }
-        // A browser window must paint as active to be eligible for glass frame.
-        views::Widget* const widget = GetWidgetForBrowser(browser);
-        if (!widget || !widget->ShouldPaintAsActive()) {
           return true;
         }
         // Skip windows currently in fullscreen mode.
@@ -211,14 +191,6 @@ void GlassFrameService::MaybeTrackBrowser(BrowserWindowInterface* browser) {
   if (browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
     return;
   }
-  if (!paint_as_active_subscriptions_.contains(browser)) {
-    if (views::Widget* const widget = GetWidgetForBrowser(browser)) {
-      paint_as_active_subscriptions_[browser] =
-          widget->RegisterPaintAsActiveChangedCallback(
-              base::BindRepeating(&GlassFrameService::OnEligibleStateChanged,
-                                  base::Unretained(this)));
-    }
-  }
   if (!fullscreen_subscriptions_.contains(browser)) {
     if (auto* const exclusive_access_manager =
             ExclusiveAccessManager::From(browser)) {
@@ -242,7 +214,6 @@ void GlassFrameService::MaybeTrackBrowser(BrowserWindowInterface* browser) {
 }
 
 void GlassFrameService::StopTrackingBrowser(BrowserWindowInterface* browser) {
-  paint_as_active_subscriptions_.erase(browser);
   fullscreen_subscriptions_.erase(browser);
   window_callbacks_.erase(browser);
   tracked_browsers_.erase(browser);

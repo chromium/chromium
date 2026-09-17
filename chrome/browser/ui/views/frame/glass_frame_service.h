@@ -95,8 +95,6 @@ class GlassFrameService : public BrowserCollectionObserver,
       window_callbacks_;
   std::map<BrowserWindowInterface*, base::CallbackListSubscription>
       fullscreen_subscriptions_;
-  std::map<BrowserWindowInterface*, base::CallbackListSubscription>
-      paint_as_active_subscriptions_;
   // Set of tracked normal browsers.
   base::flat_set<BrowserWindowInterface*> tracked_browsers_;
 
