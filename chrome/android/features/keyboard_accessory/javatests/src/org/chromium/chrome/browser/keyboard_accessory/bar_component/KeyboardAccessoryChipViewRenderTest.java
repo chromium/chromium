@@ -30,7 +30,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -292,7 +291,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     // KeyboardAccessoryViewBinder.create() returns a raw BarItemViewHolder.
     @SuppressWarnings("unchecked")
     private ChipView createChipViewFromSuggestion(AutofillSuggestion suggestion, boolean enabled) {
-        Action action = new Action(AUTOFILL_SUGGESTION, CallbackUtils.emptyCallback());
+        Action action = new Action(AUTOFILL_SUGGESTION, () -> {});
         BarItemViewHolder<AutofillBarItem, ChipView> viewHolder =
                 KeyboardAccessoryViewBinder.create(
                         mKeyboardAccessoryView,
@@ -312,8 +311,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     // KeyboardAccessoryViewBinder.create() returns a raw BarItemViewHolder.
     @SuppressWarnings("unchecked")
     private ChipView createCredmanEntry() {
-        Action credmanAction =
-                new Action(CREDMAN_CONDITIONAL_UI_REENTRY, CallbackUtils.emptyCallback());
+        Action credmanAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, () -> {});
         BarItemViewHolder<BarItem, ChipView> viewHolder =
                 KeyboardAccessoryViewBinder.create(
                         mKeyboardAccessoryView,
@@ -333,8 +331,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     // KeyboardAccessoryViewBinder.create() returns a raw BarItemViewHolder.
     @SuppressWarnings("unchecked")
     private View createGeneratePassword() {
-        Action generatePasswordAction =
-                new Action(GENERATE_PASSWORD_AUTOMATIC, CallbackUtils.emptyCallback());
+        Action generatePasswordAction = new Action(GENERATE_PASSWORD_AUTOMATIC, () -> {});
         // TODO: crbug.com/385172647 - Use generics parameters once 2 line chips are rolled out.
         BarItemViewHolder viewHolder =
                 KeyboardAccessoryViewBinder.create(

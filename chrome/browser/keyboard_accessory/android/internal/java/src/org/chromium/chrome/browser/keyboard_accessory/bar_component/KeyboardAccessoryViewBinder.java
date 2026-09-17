@@ -333,7 +333,7 @@ class KeyboardAccessoryViewBinder {
             chipView.setOnClickListener(
                     view -> {
                         item.maybeEmitEventForIph(mKeyboardAccessory.getFeatureEngagementTracker());
-                        action.getCallback().onResult(action);
+                        action.getCallback().run();
                     });
             @Nullable Runnable longPressCallback = action.getLongPressCallback();
             if (longPressCallback != null) {
@@ -452,7 +452,7 @@ class KeyboardAccessoryViewBinder {
             textView.setEnabled(barItem.isEnabled());
             textView.setAlpha(
                     barItem.isEnabled() ? COMPLETE_OPACITY_ALPHA : GRAYED_OUT_OPACITY_ALPHA);
-            textView.setOnClickListener(view -> action.getCallback().onResult(action));
+            textView.setOnClickListener(view -> action.getCallback().run());
             // Margins can be either set in XML layouts or programmatically, they can't be part of
             // the KeyboardAccessory* styles.
             applyMargins(textView);
@@ -504,7 +504,7 @@ class KeyboardAccessoryViewBinder {
             chipView.setAlpha(item.isEnabled() ? COMPLETE_OPACITY_ALPHA : GRAYED_OUT_OPACITY_ALPHA);
             @Nullable Action action = item.getAction();
             if (action != null) {
-                chipView.setOnClickListener(view -> action.getCallback().onResult(action));
+                chipView.setOnClickListener(view -> action.getCallback().run());
             }
         }
 

@@ -434,7 +434,7 @@ class ManualFillingComponentBridge {
     }
 
     private Action[] createSingleAction(@AccessoryAction int actionType) {
-        return new Action[] {new Action(actionType, this::onActionSelected)};
+        return new Action[] {new Action(actionType, () -> onActionSelected(actionType))};
     }
 
     private Provider<Action[]> getOrCreateActionProvider(@AccessoryAction int actionType) {
@@ -449,10 +449,10 @@ class ManualFillingComponentBridge {
         return actionProvider;
     }
 
-    private void onActionSelected(Action action) {
+    private void onActionSelected(@AccessoryAction int actionType) {
         if (mNativeView == 0) return; // Component was destroyed already.
-        ManualFillingMetricsRecorder.recordActionSelected(action.getActionType());
-        ManualFillingComponentBridgeJni.get().onOptionSelected(mNativeView, action.getActionType());
+        ManualFillingMetricsRecorder.recordActionSelected(actionType);
+        ManualFillingComponentBridgeJni.get().onOptionSelected(mNativeView, actionType);
     }
 
     static void onOptionSelectedForWebContents(WebContents webContents, int accessoryAction) {
