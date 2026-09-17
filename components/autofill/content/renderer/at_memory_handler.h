@@ -56,7 +56,7 @@ class AtMemoryHandler {
   ~AtMemoryHandler();
 
   // May trigger the AtMemory suggestion if the keydown event completes
-  // AtMemory's trigger string or the keyboard shortcut.
+  // an AtMemory trigger.
   // Returns true in the latter case to indicate that the browser must not
   // default-handle the shortcut (in particular: not bubble up the keyboard
   // shortcut to the browser process).
