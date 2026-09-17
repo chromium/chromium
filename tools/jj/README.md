@@ -26,6 +26,9 @@ when you switch between submitted commits), you will need to run `gclient sync`.
 ### Syncing code
 `jj sync` (using the config in `tools/jj/config.toml`)
 
+Fetches `origin/main`, rebases the current change's branch onto `trunk()` (or
+all mutable changes with `-a`), and runs `gclient sync -D`.
+
 If a sync (or any other operation) results in a conflict, you can resolve the
 conflict by directly editing the conflicted file(s) and/or using `jj resolve`.
 
@@ -36,8 +39,26 @@ last unconflicted revision (e.g. `<change_id>/10`).
 ### Uploading code
 `jj upload` (using the config in `tools/jj/config.toml`)
 
-### Presubmits
-Currently manual (`git cl presubmit`)
+Runs `jj fix` and `git cl presubmit` before pushing changes to Gerrit.
+Presubmits are skipped when uploading multiple revisions at once.
+
+### Managing bugs
+`jj bug add`
+
+Attaches `Bug:` or `Fixed:` trailers to commits, with support for inheriting
+from parent commits or searching Buganizer via `bugged`.
+
+### Creating secondary workspaces
+`jj new-chromium-workspace <path>`
+
+Creates a new workspace directory with a linked `.gclient` and a `jj` workspace
+at `<path>/src`. Run `gclient sync` inside the new workspace afterward to sync
+submodules.
+
+### Gerrit review URL
+`jj gerrit-url`
+
+Prints Gerrit review URLs for revisions based on their `Change-Id`.
 
 ### Running formatters
-`jj fix` (using the config in `tools/jj/config.md`)
+`jj fix` (using the config in `tools/jj/config.toml`)
