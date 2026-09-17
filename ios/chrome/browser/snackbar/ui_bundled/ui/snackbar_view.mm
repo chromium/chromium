@@ -417,28 +417,16 @@ const CGFloat kTextSpacing = 2.0;
   const CGFloat margin =
       IsChromeNextIaEnabled() ? kSnackbarMarginNext : kSnackbarMarginLegacy;
 
-  // A composite layout guide that adjusts for the keyboard: adds padding when
-  // shown, and aligns with the safe area when the keyboard is dismissed.
-  UILayoutGuide* keyboardSafeAreaGuide = [[UILayoutGuide alloc] init];
-  [self addLayoutGuide:keyboardSafeAreaGuide];
-
-  AddSameConstraintsToSides(keyboardSafeAreaGuide, self,
-                            LayoutSides::kHorizontal | LayoutSides::kBottom);
-
-  self.keyboardLayoutGuide.usesBottomSafeArea = NO;
-
-  NSLayoutConstraint* toSafeArea = [keyboardSafeAreaGuide.topAnchor
-      constraintLessThanOrEqualToAnchor:safeAreaLayoutGuide.bottomAnchor];
-  NSLayoutConstraint* toKeyboard = [keyboardSafeAreaGuide.topAnchor
-      constraintEqualToAnchor:self.keyboardLayoutGuide.topAnchor
-                     constant:-kKeyboardOffset];
-  toKeyboard.priority = toSafeArea.priority - 1;
-  [NSLayoutConstraint activateConstraints:@[ toKeyboard, toSafeArea ]];
+  NSLayoutConstraint* toKeyboard = [_contentView.bottomAnchor
+      constraintLessThanOrEqualToAnchor:self.keyboardLayoutGuide.topAnchor
+                               constant:-kKeyboardOffset];
 
   _bottomConstraint = [_contentView.bottomAnchor
-      constraintLessThanOrEqualToAnchor:keyboardSafeAreaGuide.topAnchor
+      constraintLessThanOrEqualToAnchor:safeAreaLayoutGuide.bottomAnchor
                                constant:-(self.bottomOffset + margin)];
-  _bottomConstraint.active = YES;
+  _bottomConstraint.priority = toKeyboard.priority - 1;
+
+  [NSLayoutConstraint activateConstraints:@[ toKeyboard, _bottomConstraint ]];
 
   // On iPhone portrait, pin to the edges of the safe area.
   _compactWidthConstraints = @[
