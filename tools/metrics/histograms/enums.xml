@@ -7866,6 +7866,7 @@ from previous Chrome versions.
       label="AutofillEnableAiBasedAmountExtraction:enabled"/>
   <int value="-2119530966" label="enable-webrtc-dtls12"/>
   <int value="-2119493239" label="enable-app-info-dialog-mac"/>
+  <int value="-2119089093" label="BottomControlsJankImprovement:enabled"/>
   <int value="-2119003106" label="start-surface-user-setting:enabled"/>
   <int value="-2118893353" label="WebRtcRemoteEventLog:enabled"/>
   <int value="-2118731119"
@@ -19264,6 +19265,7 @@ from previous Chrome versions.
   <int value="1365642727" label="IdentityStatusConsistency:enabled"/>
   <int value="1365857480" label="WebUITabStripNewTabButtonInTabStrip:enabled"/>
   <int value="1366396538" label="GlanceablesV2:disabled"/>
+  <int value="1367203716" label="BottomControlsJankImprovement:disabled"/>
   <int value="1367406392" label="VaapiVideoDecoder:disabled"/>
   <int value="1367415672" label="AllowWgcWindowCapturer:disabled"/>
   <int value="1367467733" label="AutoplayIgnoreWebAudio:enabled"/>

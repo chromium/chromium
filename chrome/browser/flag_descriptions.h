@@ -5922,6 +5922,12 @@ inline constexpr char kBookmarksBarNTPDescription[] =
     "When enabled, the Bookmarks Bar will always show on the New Tab Page "
     "regardless of Profile setting; matching Desktop feature.";
 
+inline constexpr char kBottomControlsJankImprovementName[] =
+    "Bottom controls jank improvement";
+inline constexpr char kBottomControlsJankImprovementDescription[] =
+    "Enables scroll jank and visual transition improvements for Android bottom "
+    "controls.";
+
 inline constexpr char kBrowserControlsDebuggingName[] =
     "Browser controls debugging";
 inline constexpr char kBrowserControlsDebuggingDescription[] =

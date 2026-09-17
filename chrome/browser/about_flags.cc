@@ -11681,6 +11681,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidWindowManagementWebApiDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(permissions::features::kAndroidWindowManagementWebApi)},
 
+    {"bottom-controls-jank-improvement",
+     flag_descriptions::kBottomControlsJankImprovementName,
+     flag_descriptions::kBottomControlsJankImprovementDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kBottomControlsJankImprovement)},
+
     {"browser-controls-debugging",
      flag_descriptions::kBrowserControlsDebuggingName,
      flag_descriptions::kBrowserControlsDebuggingDescription, kOsAndroid,

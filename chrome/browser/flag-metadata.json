@@ -1476,6 +1476,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "bottom-controls-jank-improvement",
+    "owners": [ "ckitagawa@chromium.org", "clank-app-team@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "bottom-sheet-on-desktop-windowing",
     "owners": [ "adelm@google.com" ],
     "expiry_milestone": 170
