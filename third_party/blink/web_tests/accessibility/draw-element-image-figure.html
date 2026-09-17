@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<title>HTML-in-Canvas: Content under canvas layoutsubtree is exposed to AX tree</title>
+<title>HTML-in-Canvas: Content under canvas content=drawable is exposed to AX tree</title>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 
-<canvas id="canvas" width="400" height="400" layoutsubtree>
+<canvas id="canvas" width="400" height="400" content=drawable>
   <figure id="figure">
     <img drawable id="image" src="../images/resources/blue-100.png" alt="a happy face" style="width: 100px; height: 100px;" />
     <figcaption drawable id="caption" style="width: 200px; height: 50px;">A caption</figcaption>
@@ -73,5 +73,5 @@ async_test(function(t) {
 
     t.done();
   });
-}, 'Content under canvas layoutsubtree is exposed to the accessibility tree with proper bounds');
+}, 'Content under canvas content=drawable is exposed to the accessibility tree with proper bounds');
 </script>

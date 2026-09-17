@@ -10,7 +10,7 @@
   background: green;
 }
 </style>
-<canvas id="canvas" width="200" height="200" layoutsubtree>
+<canvas id="canvas" width="200" height="200" content=drawable>
   <div id="child"></div>
 </canvas>
 
@@ -108,7 +108,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const nestedCanvas = document.createElement('canvas');
-  nestedCanvas.layoutSubtree = true;
+  nestedCanvas.content = 'drawable';
   nestedCanvas.width = 100;
   nestedCanvas.height = 100;
   const childDiv = document.createElement('div');

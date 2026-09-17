@@ -5,8 +5,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 
-<canvas id="webgl_canvas" layoutsubtree="true" width="100" height="100">
-  <canvas id="nested_webgl_canvas" layoutsubtree="true" width="100" height="100">
+<canvas id="webgl_canvas" content="drawable" width="100" height="100">
+  <canvas id="nested_webgl_canvas" content="drawable" width="100" height="100">
     <div id="inner_div" style="width: 100px; height: 100px; background: green;"></div>
   </canvas>
 </canvas>

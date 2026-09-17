@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<title>HTML-in-Canvas: Content under canvas layoutsubtree is exposed with and without drawable attribute</title>
+<title>HTML-in-Canvas: Content under canvas content=drawable is exposed with and without drawable attribute</title>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 
-<canvas id="canvas" width="400" height="400" layoutsubtree>
+<canvas id="canvas" width="400" height="400" content=drawable>
   <div drawable id="drawn" style="width: 100px; height: 50px;">Drawn</div>
   <div drawable id="drawable_not_drawn" style="width: 100px; height: 50px;">Drawable not drawn</div>
   <div id="non_drawable" style="width: 100px; height: 50px;">Non-drawable</div>
@@ -62,5 +62,5 @@ async_test(function(t) {
 
     t.done();
   });
-}, 'All children of a layoutsubtree canvas are exposed to accessibility with geometry synced only for drawn elements');
+}, 'All children of a content=drawable canvas are exposed to accessibility with geometry synced only for drawn elements');
 </script>

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<title>Triple-nested layoutsubtree canvas should fire onpaint on all three canvases when innermost child changes</title>
+<title>Triple-nested content=drawable canvas should fire onpaint on all three canvases when innermost child changes</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/html/canvas/resources/wait-for-canvas-paint.js"></script>
 
-<canvas id="outer_canvas" layoutsubtree width="200" height="200">
+<canvas id="outer_canvas" content=drawable width="200" height="200">
   <div id="outer_target" style="width: 200px; height: 200px;">
-    <canvas id="middle_canvas" layoutsubtree width="150" height="150">
+    <canvas id="middle_canvas" content=drawable width="150" height="150">
       <div id="middle_target" style="width: 150px; height: 150px;">
-        <canvas id="inner_canvas" layoutsubtree width="100" height="100">
+        <canvas id="inner_canvas" content=drawable width="100" height="100">
           <div id="inner_target" style="width: 50px; height: 50px; background: #00f;"></div>
         </canvas>
       </div>
@@ -51,5 +51,5 @@ promise_test(async (t) => {
 
   assert_array_equals(paint_order, ['inner', 'middle', 'outer'],
                       "Onpaint events should fire on all 3 canvases from innermost to outermost");
-}, "Triple-nested layoutsubtree canvas fires onpaint on all canvases when innermost child changes");
+}, "Triple-nested content=drawable canvas fires onpaint on all canvases when innermost child changes");
 </script>

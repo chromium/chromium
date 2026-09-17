@@ -707444,7 +707444,7 @@
          ]
         ],
         "hit-test": {
-         "elementsFromPoint-no-layoutsubtree.tentative.html": [
+         "elementsFromPoint-no-content-drawable.tentative.html": [
           "34ee5cf6d25825a2c6d2368d0b87e1880446cd99",
           [
            null,
@@ -707512,7 +707512,7 @@
           {}
          ]
         ],
-        "layoutsubtree-no-hit-test.tentative.html": [
+        "content-drawable-no-hit-test.tentative.html": [
          "eb8c5bdae9375ab871a18a361155afdd84c55463",
          [
           null,
@@ -707521,21 +707521,21 @@
           }
          ]
         ],
-        "moved-nested-layoutsubtree-canvas.tentative.html": [
+        "moved-nested-content-drawable-canvas.tentative.html": [
          "b42547b8629e219b58d4cc8e5e5124e3a66cc8ae",
          [
           null,
           {}
          ]
         ],
-        "nested-div-layoutsubtree-canvas.tentative.html": [
+        "nested-div-content-drawable-canvas.tentative.html": [
          "888b5b8d15a41de075e38a7f89d8fc67e195da0d",
          [
           null,
           {}
          ]
         ],
-        "nested-layoutsubtree-canvas.tentative.html": [
+        "nested-content-drawable-canvas.tentative.html": [
          "540cb4b571d8b21f3c30f4b9df0d896aee93b4b2",
          [
           null,
@@ -708245,7 +708245,7 @@
           {}
          ]
         ],
-        "triple-nested-layoutsubtree-canvas.tentative.html": [
+        "triple-nested-content-drawable-canvas.tentative.html": [
          "e0718b159d65b67528ae68de91271ac5c9362faf",
          [
           null,
