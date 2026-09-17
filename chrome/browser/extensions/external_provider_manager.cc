@@ -11,16 +11,20 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
+#include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/external_provider_manager_factory.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/installed_loader.h"
+#include "chrome/browser/extensions/low_trust_policy_install_block_manager.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -51,7 +55,9 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
+
 bool g_external_updates_disabled_for_test_ = false;
+
 }  // namespace
 
 using extensions::mojom::ManifestLocation;
@@ -342,6 +348,14 @@ bool ExternalProviderManager::OnExternalExtensionUpdateUrlFound(
     // priority than |info.download_location|, and we aren't doing a
     // reinstall of a corrupt policy force-installed extension.
     ManifestLocation current = extension->location();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    if (CheckForAndMaybeBlockPolicyTakeover(*extension, info)) {
+      install_stage_tracker->ReportFailure(
+          info.extension_id,
+          InstallStageTracker::FailureReason::ALREADY_INSTALLED);
+      return false;
+    }
+#endif
     if (!IsReinstallForCorruptionExpected(info.extension_id) &&
         current == Manifest::GetHigherPriorityLocation(
                        current, info.download_location)) {
@@ -501,5 +515,59 @@ bool ExternalProviderManager::IsReinstallForCorruptionExpected(
   auto* reinstaller = CorruptedExtensionReinstaller::Get(context_);
   return reinstaller->IsReinstallForCorruptionExpected(id);
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+bool ExternalProviderManager::CheckForAndMaybeBlockPolicyTakeover(
+    const Extension& extension,
+    const ExternalInstallInfoUpdateUrl& info) {
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(context_);
+  CHECK(extension_management);
+  if (!extension_management->IsDseNtpOverrideBlockingActive()) {
+    return false;
+  }
+
+  const util::DseNtpOverrideType override_type =
+      util::GetDseNtpOverrideType(extension);
+  if (override_type == util::DseNtpOverrideType::kNone) {
+    return false;
+  }
+
+  ManifestLocation current = extension.location();
+  bool is_current_user_driven = current == ManifestLocation::kInternal ||
+                                current == ManifestLocation::kUnpacked ||
+                                current == ManifestLocation::kCommandLine;
+  if (!is_current_user_driven) {
+    return false;
+  }
+
+  // Is the incoming request trying to install a policy extension?
+  bool is_incoming_forced = Manifest::IsPolicyLocation(info.download_location);
+  bool is_incoming_recommended =
+      info.download_location == ManifestLocation::kExternalPrefDownload &&
+      extension_management->IsForcedOrRecommendedInstallConfigured(
+          info.extension_id, info.update_url.spec());
+
+  if (!is_incoming_forced && !is_incoming_recommended) {
+    return false;
+  }
+
+  // For already-installed extensions, the normal install pipeline (and thus
+  // StandardManagementPolicyProvider::UserMayInstall()) is bypassed. Instead,
+  // the extension's location is simply elevated to the policy location in
+  // ExtensionPrefs (see OnExternalExtensionUpdateUrlFound()).
+  // We must explicitly mark the extension blocked here so that:
+  // 1. ExtensionManagement::GetInstallationMode() overrides the mode to
+  //    kAllowed, preserving user control and management in the UI.
+  // 2. Subsequent policy syncs know to skip redundant install attempts.
+  extension_management->low_trust_block_manager()->MarkBlocked(
+      info.extension_id,
+      BlockedExtensionInfo{.override_type = override_type,
+                           .update_url = info.update_url.spec(),
+                           .timestamp = base::Time::Now()});
+
+  return true;
+}
+#endif
 
 }  // namespace extensions

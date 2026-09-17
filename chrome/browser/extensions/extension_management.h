@@ -99,11 +99,6 @@ class ExtensionManagement : public KeyedService,
   GURL GetEffectiveUpdateURL(const Extension& extension) override;
   bool IsAllowedManifestType(Manifest::Type manifest_type,
                              const std::string& extension_id) const override;
-  ManagedInstallationMode GetInstallationMode(
-      const Extension* extension) override;
-  ManagedInstallationMode GetInstallationMode(
-      const ExtensionId& extension_id,
-      const std::string& update_url) override;
   bool IsInstallationExplicitlyBlocked(const ExtensionId& id) override;
   const std::string BlockedInstallMessage(const ExtensionId& id) override;
   bool IsPermissionSetAllowed(const Extension* extension,
@@ -162,6 +157,10 @@ class ExtensionManagement : public KeyedService,
   // instance (Windows or Mac without trusted enterprise management).
   bool IsLowTrustEnforcementActive() const;
 
+  // Returns true if low-trust DSE/NTP policy install blocking is active
+  // (the feature is enabled and low-trust enforcement is active).
+  bool IsDseNtpOverrideBlockingActive() const;
+
   // Returns true if the policy-installed extension should be blocked because
   // it overrides DSE/NTP settings in a low-trust environment (where neither
   // the device nor the browser profile is managed by a trusted authority).
@@ -172,6 +171,49 @@ class ExtensionManagement : public KeyedService,
   // preferences in a low-trust environment (where neither the device nor the
   // browser profile is managed by a trusted authority).
   bool IsExtensionBlockedByLowTrust(const ExtensionId& extension_id) const;
+  // Installation mode.
+  // These return run-time (effective) values which can be different from
+  // the configured policy. For example, if a force-install policy is blocked
+  // in a low-trust environment and a user installs the same extension
+  // manually, then these variants would return values reflecting user install.
+  // Use these methods for UI and general runtime checks.
+  ManagedInstallationMode GetInstallationMode(
+      const Extension* extension) override;
+  ManagedInstallationMode GetInstallationMode(
+      const ExtensionId& extension_id,
+      const std::string& update_url) override;
+
+  // Configured variants:
+  // Use these to retrieve the raw policy configuration values set by the
+  // administrator, rather than the active runtime states.
+  //
+  // The configured value and the operational runtime value can differ when
+  // Chrome overrides the policy (e.g., when a forced or recommended policy
+  // installation of a search extension is blocked in a low-trust management
+  // environment, in which case the effective mode is overridden to kAllowed).
+  //
+  // These raw values are used for security functions like intercepting and
+  // blocking policy installs.
+  ManagedInstallationMode GetConfiguredInstallationMode(
+      const Extension& extension);
+  ManagedInstallationMode GetConfiguredInstallationMode(
+      const ExtensionId& extension_id,
+      const std::string& update_url);
+
+  // Returns true if the policy configuration targets this extension for
+  // automated installation (either forced or recommended), ignoring runtime
+  // overrides.
+  bool IsForcedOrRecommendedInstallConfigured(const Extension& extension);
+
+  // Use this variant as a best-effort check when only the ID is available.
+  // Note that this will miss policies that target extensions by update URL.
+  bool IsForcedOrRecommendedInstallConfigured(const ExtensionId& extension_id);
+
+  // Use this variant when the extension is not installed (e.g. blocked) but
+  // we have cached metadata (like update URL) available, to ensure update-URL
+  // policies are correctly resolved.
+  bool IsForcedOrRecommendedInstallConfigured(const ExtensionId& extension_id,
+                                              const std::string& update_url);
 
   // Returns the list of blocked API permissions for `extension`.
   APIPermissionSet GetBlockedAPIPermissions(const Extension* extension);
@@ -338,10 +380,6 @@ class ExtensionManagement : public KeyedService,
   // profile. The service provides information about CWS publish status for
   // extensions.
   raw_ptr<CWSInfoServiceInterface> cws_info_service_ = nullptr;
-
-  // Returns true if low-trust DSE/NTP policy install blocking is active
-  // (the feature is enabled and low-trust enforcement is active).
-  bool IsDseNtpOverrideBlockingActive() const;
 
   std::unique_ptr<LowTrustPolicyInstallBlockManager> low_trust_block_manager_;
 };

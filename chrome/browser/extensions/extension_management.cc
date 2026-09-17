@@ -52,6 +52,7 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/cws_info_service.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/browser/managed_installation_mode.h"
 #include "extensions/browser/pref_names.h"
@@ -193,7 +194,33 @@ ManagedInstallationMode ExtensionManagement::GetInstallationMode(
 ManagedInstallationMode ExtensionManagement::GetInstallationMode(
     const ExtensionId& extension_id,
     const std::string& update_url) {
+  ManagedInstallationMode mode =
+      GetConfiguredInstallationMode(extension_id, update_url);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // When a forced or recommended policy install is blocked in low trust,
+  // override the mode to kAllowed so the user can still manage the extension
+  // (install, enable, disable, or uninstall). Explicitly blocked extension
+  // policies remain in effect, however.
+  if ((mode == ManagedInstallationMode::kForced ||
+       mode == ManagedInstallationMode::kRecommended) &&
+      IsExtensionBlockedByLowTrust(extension_id)) {
+    return ManagedInstallationMode::kAllowed;
+  }
+#endif
+  return mode;
+}
 
+ManagedInstallationMode ExtensionManagement::GetConfiguredInstallationMode(
+    const Extension& extension) {
+  const std::string* update_url =
+      extension.manifest()->FindStringPath(manifest_keys::kUpdateURL);
+  return GetConfiguredInstallationMode(
+      extension.id(), update_url ? *update_url : std::string());
+}
+
+ManagedInstallationMode ExtensionManagement::GetConfiguredInstallationMode(
+    const ExtensionId& extension_id,
+    const std::string& update_url) {
   // Check per-extension installation mode setting first.
   auto* setting = GetSettingsForId(extension_id);
   if (setting)
@@ -206,6 +233,27 @@ ManagedInstallationMode ExtensionManagement::GetInstallationMode(
   }
   // Fall back to default installation mode setting.
   return default_settings_->installation_mode;
+}
+
+bool ExtensionManagement::IsForcedOrRecommendedInstallConfigured(
+    const Extension& extension) {
+  ManagedInstallationMode mode = GetConfiguredInstallationMode(extension);
+  return mode == ManagedInstallationMode::kForced ||
+         mode == ManagedInstallationMode::kRecommended;
+}
+
+bool ExtensionManagement::IsForcedOrRecommendedInstallConfigured(
+    const ExtensionId& extension_id) {
+  return IsForcedOrRecommendedInstallConfigured(extension_id, std::string());
+}
+
+bool ExtensionManagement::IsForcedOrRecommendedInstallConfigured(
+    const ExtensionId& extension_id,
+    const std::string& update_url) {
+  ManagedInstallationMode mode =
+      GetConfiguredInstallationMode(extension_id, update_url);
+  return mode == ManagedInstallationMode::kForced ||
+         mode == ManagedInstallationMode::kRecommended;
 }
 
 base::DictValue ExtensionManagement::GetForceInstallList() const {
@@ -483,13 +531,22 @@ bool ExtensionManagement::ShouldBlockPolicyInstalledDseNtpOverrideExtension(
   if (!IsDseNtpOverrideBlockingActive()) {
     return false;
   }
-  ManagedInstallationMode mode = GetInstallationMode(&extension);
-  if (mode != ManagedInstallationMode::kForced &&
-      mode != ManagedInstallationMode::kRecommended) {
+  if (util::GetDseNtpOverrideType(extension) ==
+      util::DseNtpOverrideType::kNone) {
     return false;
   }
-  return util::GetDseNtpOverrideType(extension) !=
-         util::DseNtpOverrideType::kNone;
+
+  // Block policy install attempts while allowing user-driven installs.
+  bool is_forced_policy = Manifest::IsPolicyLocation(extension.location());
+
+  // We must verify policy settings for recommended policy because the
+  // `kExternalPrefDownload` location is shared with non-policy installs
+  // and default apps.
+  bool is_recommended_policy =
+      extension.location() == mojom::ManifestLocation::kExternalPrefDownload &&
+      IsForcedOrRecommendedInstallConfigured(extension);
+
+  return is_forced_policy || is_recommended_policy;
 }
 
 bool ExtensionManagement::IsExtensionBlockedByLowTrust(
@@ -1074,6 +1131,7 @@ ExtensionManagementFactory::ExtensionManagementFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
+  DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(InstallStageTrackerFactory::GetInstance());
 }
 

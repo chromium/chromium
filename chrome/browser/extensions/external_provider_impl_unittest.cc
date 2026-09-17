@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -45,16 +46,19 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/install_flag.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/browser/pending_extension_manager.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_builder.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -515,6 +519,125 @@ TEST_F(ExternalProviderImplTest, LowTrustBlockedScannerBypass) {
   EXPECT_TRUE(ExtensionManagementFactory::GetForBrowserContext(profile())
                   ->low_trust_block_manager()
                   ->IsBlocked(kGoodApp.app_id));
+}
+
+// Tests that when a user-installed extension overriding NTP settings is already
+// present, a subsequent policy update attempting to install the same extension
+// in a low-trust environment does not override its location to policy-managed.
+TEST_F(ExternalProviderImplTest, LowTrustPolicyTakeoverPrevention) {
+  // `InstallVerifier` enforces webstore signatures for non-unpacked extensions
+  // in Google Chrome branded Win/Mac builds, which would leave this
+  // locally-built extension disabled with DISABLE_NOT_VERIFIED. Bypass it so
+  // the test exercises only the low-trust policy logic.
+  ScopedInstallVerifierBypassForTest ignore_verification;
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBlockPolicyDseNtpOverridesInLowTrust);
+
+  InitService(/*autoupdate_enabled=*/false);
+
+  base::FilePath extension_dir =
+      temp_dir().GetPath().AppendASCII("user_extension");
+  ASSERT_TRUE(base::CreateDirectory(extension_dir));
+  ASSERT_TRUE(base::WriteFile(extension_dir.AppendASCII("custom_newtab.html"),
+                              "<html></html>"));
+
+  constexpr char kPublicKey[] =
+      "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDasz2sLsAlmcF0v7/FGwzWVP/T+"
+      "CLhvWpojKckVp8RH0bN/x3HvQ8FUweTymsaLbqxMHn8LbMOYt9uvLg7MuUcs0puzo"
+      "7vPEwW7FPwLdIke2Fth+uXgkBFUFvtrOoAyIXmiRRFoIi9qfNVQOvIz0nv0c7UEKo"
+      "HT3UnT0ekxSl7lwIDAQAB";
+
+  ExtensionBuilder builder("User NTP Override");
+  builder.SetLocation(mojom::ManifestLocation::kInternal)
+      .SetID("lbgjohhgghbkcgejgklgcmfijhbheflf")
+      .SetManifestKey("key", kPublicKey)
+      .AddJSON(R"(
+           "chrome_url_overrides": {
+             "newtab": "custom_newtab.html"
+           }
+         )")
+      .SetPath(extension_dir);
+
+  base::Value manifest_value = builder.BuildManifest();
+  std::string manifest_json;
+  ASSERT_TRUE(base::JSONWriter::Write(manifest_value, &manifest_json));
+  ASSERT_TRUE(base::WriteFile(extension_dir.AppendASCII("manifest.json"),
+                              manifest_json));
+
+  auto user_extension = builder.Build();
+
+  // Grant the extension's active permissions to simulate user consent during
+  // installation, preventing DISABLE_PERMISSIONS_INCREASE on install.
+  PermissionsUpdater perms_updater(profile());
+  perms_updater.InitializePermissions(user_extension.get());
+  perms_updater.GrantActivePermissions(user_extension.get());
+
+  registrar()->OnExtensionInstalled(user_extension.get(),
+                                    syncer::StringOrdinal(),
+                                    kInstallFlagInstallImmediately);
+
+  // Verify it is active and has kInternal location.
+  ASSERT_TRUE(registry()->enabled_extensions().Contains(user_extension->id()));
+  EXPECT_EQ(
+      mojom::ManifestLocation::kInternal,
+      registry()->GetInstalledExtension(user_extension->id())->location());
+
+  // 2. Simulate an unmanaged (low trust) environment.
+  auto* management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile());
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      management_service, policy::EnterpriseManagementAuthority::NONE);
+
+  // Define GPO policy that attempts to force-install the same extension.
+  const std::string json = base::StringPrintf(
+      R"(
+        {
+          "%s": {
+            "external_update_url": "https://clients2.google.com/service/update2/crx"
+          }
+        }
+      )",
+      user_extension->id().c_str());
+
+  auto provider = std::make_unique<ExternalProviderImpl>(
+      external_provider_manager(),
+      base::MakeRefCounted<ExternalTestingLoader>(
+          json, base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
+      profile(), mojom::ManifestLocation::kInvalidLocation,
+      mojom::ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS);
+  ExternalProviderImpl* raw_provider = provider.get();
+
+  external_provider_manager()->AddProviderForTesting(std::move(provider));
+
+  // Run the provider update loop. This will synchronously trigger the scan.
+  raw_provider->VisitRegisteredExtension();
+
+  // Verify that in a low-trust environment, policy installation does not
+  // override the existing user-installed extension location.
+  ASSERT_TRUE(registry()->enabled_extensions().Contains(user_extension->id()));
+  EXPECT_EQ(
+      mojom::ManifestLocation::kInternal,
+      registry()->GetInstalledExtension(user_extension->id())->location());
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile());
+  EXPECT_TRUE(extension_management->low_trust_block_manager()->IsBlocked(
+      user_extension->id()));
+  EXPECT_EQ(ManagedInstallationMode::kAllowed,
+            extension_management->GetInstallationMode(user_extension.get()));
+
+  // 3. Simulate transition to a managed (trusted) environment.
+  policy::ScopedManagementServiceOverrideForTesting trusted_profile_management(
+      management_service, policy::EnterpriseManagementAuthority::CLOUD);
+
+  raw_provider->VisitRegisteredExtension();
+
+  // Verify that in a trusted environment, policy installation is permitted to
+  // manage the extension, updating its location to kExternalPolicyDownload.
+  ASSERT_TRUE(registry()->enabled_extensions().Contains(user_extension->id()));
+  EXPECT_EQ(
+      mojom::ManifestLocation::kExternalPolicyDownload,
+      registry()->GetInstalledExtension(user_extension->id())->location());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 

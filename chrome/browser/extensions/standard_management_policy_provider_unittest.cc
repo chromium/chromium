@@ -430,6 +430,93 @@ TEST_F(StandardManagementPolicyProviderTest, LowTrustSettingsOverrideBlock) {
     }
   }
 }
+
+// Tests that when an extension was previously blocked from policy install in
+// low-trust mode, a subsequent user install of the same extension is permitted.
+TEST_F(StandardManagementPolicyProviderTest, LowTrustManualInstallBypass) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBlockPolicyDseNtpOverridesInLowTrust);
+
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(&profile_),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  constexpr char kNtpOverrideJson[] = R"(
+    "chrome_url_overrides": {
+      "newtab": "custom.html"
+    }
+  )";
+
+  constexpr char kDseOverrideJson[] = R"(
+    "chrome_settings_overrides": {
+      "search_provider": {
+        "name": "Search",
+        "keyword": "search",
+        "search_url": "http://example.com/s?q={searchTerms}",
+        "favicon_url": "http://example.com/favicon.ico",
+        "encoding": "UTF-8",
+        "is_default": true
+      }
+    }
+  )";
+
+  auto manual_ntp_extension = ExtensionBuilder("Manual NTP Override")
+                                  .SetLocation(ManifestLocation::kInternal)
+                                  .AddJSON(kNtpOverrideJson)
+                                  .Build();
+
+  auto policy_ntp_extension =
+      ExtensionBuilder("Manual NTP Override")
+          .SetLocation(ManifestLocation::kExternalPolicyDownload)
+          .AddJSON(kNtpOverrideJson)
+          .Build();
+  ASSERT_EQ(manual_ntp_extension->id(), policy_ntp_extension->id());
+
+  auto manual_dse_extension = ExtensionBuilder("Manual DSE Override")
+                                  .SetLocation(ManifestLocation::kInternal)
+                                  .AddJSON(kDseOverrideJson)
+                                  .Build();
+
+  auto policy_dse_extension =
+      ExtensionBuilder("Manual DSE Override")
+          .SetLocation(ManifestLocation::kExternalPolicyDownload)
+          .AddJSON(kDseOverrideJson)
+          .Build();
+  ASSERT_EQ(manual_dse_extension->id(), policy_dse_extension->id());
+
+  {
+    ExtensionManagementPrefUpdater<sync_preferences::TestingPrefServiceSyncable>
+        pref_updater(profile_.GetTestingPrefService());
+    pref_updater.SetIndividualExtensionAutoInstalled(
+        manual_ntp_extension->id(), extension_urls::kChromeWebstoreUpdateURL,
+        /*forced=*/true);
+    pref_updater.SetIndividualExtensionAutoInstalled(
+        manual_dse_extension->id(), extension_urls::kChromeWebstoreUpdateURL,
+        /*forced=*/true);
+  }
+
+  auto check_user_may_install =
+      [&](const scoped_refptr<const Extension>& extension) {
+        base::test::TestFuture<ManagementPolicy::Decision> test_future;
+        provider_.UserMayInstall(extension.get(), test_future.GetCallback());
+        return test_future.Take();
+      };
+
+  for (const auto& [manual_ext, policy_ext] :
+       {std::make_pair(manual_ntp_extension, policy_ntp_extension),
+        std::make_pair(manual_dse_extension, policy_dse_extension)}) {
+    // An attempt to install the extension via policy in a low-trust environment
+    // is blocked, and the extension is recorded in the blocked manager.
+    EXPECT_FALSE(check_user_may_install(policy_ext).allowed);
+    EXPECT_TRUE(settings_->IsExtensionBlockedByLowTrust(manual_ext->id()));
+
+    // A subsequent manual user install of the same extension is permitted,
+    // bypassing the forced policy block since the user explicitly initiated it.
+    EXPECT_TRUE(check_user_may_install(manual_ext).allowed);
+    EXPECT_FALSE(provider_.MustRemainEnabled(manual_ext.get(), nullptr));
+    EXPECT_TRUE(provider_.UserMayModifySettings(manual_ext.get(), nullptr));
+  }
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace extensions

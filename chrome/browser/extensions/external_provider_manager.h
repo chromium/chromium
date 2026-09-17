@@ -25,6 +25,7 @@ class BrowserContext;
 namespace extensions {
 
 class CrxInstallError;
+class Extension;
 class ExtensionErrorController;
 class ExtensionPrefs;
 class ExtensionRegistry;
@@ -115,6 +116,16 @@ class ExternalProviderManager
 
   // Are we expecting a reinstall of the extension due to corruption?
   bool IsReinstallForCorruptionExpected(const ExtensionId& id) const;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  // Checks if a policy installation attempt is trying to take over a
+  // user-controlled DSE/NTP extension in a low-trust environment. If so,
+  // prevents the takeover by marking the extension as blocked in prefs and
+  // returning true.
+  bool CheckForAndMaybeBlockPolicyTakeover(
+      const Extension& extension,
+      const ExternalInstallInfoUpdateUrl& info);
+#endif
 
   // The BrowserContext with which the manager is associated.
   raw_ptr<content::BrowserContext> context_;

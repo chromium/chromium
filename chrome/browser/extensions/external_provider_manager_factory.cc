@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/extensions/extension_error_controller_factory.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_install_manager_factory.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
@@ -61,6 +62,7 @@ ExternalProviderManagerFactory::ExternalProviderManagerFactory()
   DependsOn(PendingExtensionManagerFactory::GetInstance());
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(InstallStageTrackerFactory::GetInstance());
+  DependsOn(ExtensionManagementFactory::GetInstance());
 #if BUILDFLAG(IS_CHROMEOS)
   DependsOn(InstallLimiterFactory::GetInstance());
 #endif
