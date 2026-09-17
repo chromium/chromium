@@ -898,7 +898,10 @@ suite('TopToolbarTest', () => {
 
     assertFalse(overflowMenuButton.classList.contains('active'));
     assertTrue(hideUnboundedCalled);
-    assertFalse(dialogEl.hasAttribute('unbounded'));
+    // The `unbounded` attribute stays in sync with the menu's unbounded mode,
+    // which remains enabled after close. hideUnboundedElement() tears down the
+    // native surface.
+    assertTrue(dialogEl.hasAttribute('unbounded'));
   });
 
   test('closes overflow menu when the side panel loses focus', async () => {
