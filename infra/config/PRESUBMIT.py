@@ -16,6 +16,8 @@ def CheckFreeze(input_api, output_api):
 
 
 def CheckTests(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions='.py', recursive=False):
+    return []
   glob = input_api.os_path.join(input_api.PresubmitLocalPath(), '*_test.py')
   tests = input_api.canned_checks.GetUnitTests(
     input_api, output_api, input_api.glob(glob)

@@ -11,6 +11,11 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckTests(input_api, output_api):
+  if not (
+    input_api.HasAffectedFiles(extensions='.py')
+    or input_api.HasAffectedFiles(path='vpython.toml')
+  ):
+    return []
   glob = input_api.os_path.join(
     input_api.PresubmitLocalPath(), 'tests', '*_test.py'
   )

@@ -6,6 +6,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckTestingBuildbotSourceSideSpecs(input_api, output_api):
+  if not input_api.HasAffectedFiles(extensions=('.pyl', '.py')):
+    return []
   return input_api.RunTests(
     [
       input_api.Command(
@@ -24,6 +26,8 @@ def CheckTestingBuildbotSourceSideSpecs(input_api, output_api):
 
 
 def CheckTestingBuildbotJsonFiles(input_api, output_api):
+  if not input_api.HasAffectedFiles(path='gn_isolate_map.pyl'):
+    return []
   return input_api.RunTests(
     [
       input_api.Command(

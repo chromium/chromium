@@ -51,6 +51,8 @@ def CheckBundlesOrder(input_api, output_api):
 
 def CheckLucicfgLint(input_api, output_api):
   """Checks if infra/config/targets/*.star files have lint issue or not."""
+  if not input_api.HasAffectedFiles(extensions='.star'):
+    return []
   d = input_api.PresubmitLocalPath()
   return input_api.RunTests(
     [
