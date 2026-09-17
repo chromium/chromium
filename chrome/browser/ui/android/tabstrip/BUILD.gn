@@ -15,9 +15,7 @@ android_library("java") {
     "//base:metrics_java",
     "//base:supplier_java",
     "//chrome/browser/browser_controls/android:java",
-    "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/toolbar:java",
-    "//components/cached_flags:java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   public_deps = [ ":enums_java" ]

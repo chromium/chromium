@@ -6,11 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/bricks/BricksCoordinatorInterface.java" ]
-  deps = [
-    "//components/module_installer/android:module_installer_java",
-    "//components/module_installer/android:module_interface_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
+  deps = [ "//components/module_installer/android:module_installer_java" ]
   annotation_processor_deps =
       [ "//components/module_installer/android:module_interface_processor" ]
 }
@@ -23,6 +19,5 @@ android_library("bricks_page_java") {
     "//chrome/android/modules/on_demand:provider_java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/embedder_support/android:util_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

@@ -289,11 +289,9 @@ if (_is_default_toolchain) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
-      "//chrome/android:base_module_java",
       "//chrome/browser/tab:java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
-      "//ui/android:ui_no_recycler_view_java",
       "//url:url_java",
     ]
   }
@@ -775,7 +773,6 @@ if (_is_default_toolchain) {
       "//components/thin_webview:factory_java",
       "//components/thin_webview:java",
       "//components/translate/content/android:java",
-      "//components/translate/core/common:translate_infobar_event_enum_java",
       "//components/trusted_vault/android:java",
       "//components/ukm/android:java",
       "//components/url_formatter/android:url_formatter_java",
@@ -852,9 +849,7 @@ if (_is_default_toolchain) {
       "//third_party/blink/public/mojom:authenticator_mojo_bindings_java",
       "//third_party/blink/public/mojom:mojom_core_java",
       "//third_party/blink/public/mojom:mojom_platform_java",
-      "//third_party/gif_player:gif_player_java",
       "//third_party/jni_zero:jni_zero_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
       "//third_party/metrics_proto:metrics_proto_java",
       "//ui/accessibility:ax_base_java",
       "//ui/accessibility:keyboard_focus_java",
@@ -1357,18 +1352,13 @@ if (_is_default_toolchain) {
       "//base:base_java_test_support",
       "//chrome/android:chrome_java",
       "//chrome/browser/download/android:file_provider_java",
-      "//chrome/browser/preferences:java",
       "//chrome/browser/profiles/android:java",
-      "//chrome/browser/profiles/android:test_support_java",
       "//components/download/public/common:public_java",
       "//components/offline_items_collection/core:core_java",
-      "//content/public/android:content_main_dex_java",
-      "//content/public/test/android:content_java_test_support",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_browser_browser_java",
       "//third_party/androidx:androidx_test_core_java",
       "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/junit",
       "//url:gurl_java",
     ]
   }

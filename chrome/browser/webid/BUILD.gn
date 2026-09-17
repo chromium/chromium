@@ -22,7 +22,6 @@ if (is_android) {
       "$google_play_services_package:google_play_services_identity_credentials_java",
       "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java",
-      "//base:service_loader_java",
       "//chrome/browser/android/browserservices/verification:java",
       "//components/content_relationship_verification/android:java",
       "//components/embedder_support/android:util_java",

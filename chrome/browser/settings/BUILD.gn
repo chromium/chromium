@@ -28,11 +28,9 @@ android_library("search_java") {
   deps = [
     "//base:base_java",
     "//base:base_shared_preferences_java",
-    "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/settings/android:java",
-    "//components/cached_flags:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",

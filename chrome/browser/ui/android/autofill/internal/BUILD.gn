@@ -53,7 +53,6 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/personal_context/first_run:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/settings:factory_java",
     "//chrome/browser/ui/android/ephemeraltab:java",
     "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",

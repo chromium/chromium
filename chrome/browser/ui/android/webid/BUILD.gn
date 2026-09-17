@@ -11,7 +11,6 @@ android_library("public_java") {
     "//base:base_java",
     "//chrome/android:chrome_app_java_resources",
     "//components/browser_ui/bottomsheet/android:java",
-    "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/mojom:mojom_platform_java",

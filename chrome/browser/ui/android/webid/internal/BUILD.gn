@@ -32,7 +32,6 @@ android_library("java") {
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/content_relationship_verification/android:java",
-    "//components/embedder_support/android:simple_factory_key_java",
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
     "//components/image_fetcher:java",

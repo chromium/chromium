@@ -37,7 +37,6 @@ android_library("java") {
     "//chrome/browser/device:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/fullscreen/android:java",
-    "//chrome/browser/language/android:base_module_java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
@@ -131,7 +130,6 @@ android_library("features_java") {
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
-    "//ui/accessibility:accessibility_features_java",
     "//ui/accessibility:accessibility_features_native_map_java",
   ]
   srcjar_deps = [ ":features_jni_headers" ]
@@ -211,9 +209,7 @@ android_library("hooks_java") {
     "//chrome/android/modules/readaloud/public:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
-    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//url:gurl_java",
   ]
 }
 
@@ -347,7 +343,6 @@ android_library("player_java") {
     "//chrome/android/modules/readaloud/public:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
-    "//chrome/browser/device:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",

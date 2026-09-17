@@ -60,7 +60,6 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//components/collaboration/public:java",
-      "//components/data_sharing/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }

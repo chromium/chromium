@@ -10,6 +10,5 @@ android_library("java") {
   deps = [
     "//build/android:build_java",
     "//chrome/android/modules/stack_unwinder/public:java",
-    "//third_party/jni_zero:jni_zero_java",
   ]
 }

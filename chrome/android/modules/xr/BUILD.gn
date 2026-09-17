@@ -90,7 +90,6 @@ android_library("java") {
     "//base:log_java",
     "//base:resetters_java",
     "//base:supplier_java",
-    "//base:task_executor_java",
     "//base:tasks_java",
     "//base:token_java",
     "//base:tristate_java",

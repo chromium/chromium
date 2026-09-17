@@ -64,6 +64,5 @@ android_library("public_java") {
     "//components/facilitated_payments/core/utils:facilitated_payments_enums_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
-    "//url:url_java",
   ]
 }

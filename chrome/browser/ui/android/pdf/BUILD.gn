@@ -82,9 +82,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/pdf/PdfFragmentViewTracker.java",
   ]
   deps = [
-    ":pdf_info_java",
     "//components/module_installer/android:module_installer_java",
-    "//components/module_installer/android:module_interface_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
   ]

@@ -19,7 +19,6 @@ android_library("java") {
   public_deps = [ "//base:base_shared_preferences_java" ]
 
   deps = [
-    "//base:base_cached_flags_java",
     "//base:base_java",
     "//build/android:build_java",
     "//components/browser_ui/share/android:constants_java",
@@ -45,8 +44,6 @@ android_library("pref_service_java") {
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 

@@ -123,7 +123,6 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/device_reauth/android:java",
-    "//chrome/browser/feedback/android:factory_java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/lifetime/android:java",
@@ -143,7 +142,6 @@ android_library("java") {
     "//components/browser_ui/settings/android:managed_prefs_java_resources",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:java_resources",
-    "//components/device_reauth:device_reauth_java_enums",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/prefs/android:java",
     "//components/signin/public/android:java",
@@ -228,7 +226,6 @@ android_library("utils_java") {
     "//base:base_java",
     "//base:resetters_java",
     "//base:tasks_java",
-    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:factory_java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -371,7 +368,6 @@ android_resources("java_resources") {
 
 android_library("settings_interface_java") {
   deps = [
-    ":backend_interface_java",
     "//base:base_java",
     "//base:service_loader_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
@@ -396,7 +392,6 @@ android_library("settings_interface_java") {
 
 android_library("backend_interface_java") {
   deps = [
-    ":android_backend_java_enums",
     "//base:base_java",
     "//base:service_loader_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
@@ -481,7 +476,6 @@ android_library("password_manager_resource_provider_java") {
   deps = [
     "//base:service_loader_java",
     "//chrome/android:chrome_app_java_resources",
-    "//chrome/browser/flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 

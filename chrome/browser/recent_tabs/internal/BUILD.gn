@@ -50,7 +50,6 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/hub:factory_java",
     "//chrome/browser/hub:java",
     "//chrome/browser/hub:pane_base_java",
     "//chrome/browser/profiles/android:java",

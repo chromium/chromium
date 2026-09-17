@@ -29,11 +29,9 @@ android_library("java") {
     ":java_resources",
     "//base:supplier_java",
     "//base:token_java",
-    "//chrome/browser/android/lifecycle:java",
     "//components/bookmarks/common/android:bookmarks_java",
     "//components/browser_ui/util/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]

@@ -99,7 +99,6 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_collection_collection_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]

@@ -12,7 +12,6 @@ android_library("delegate_java") {
   ]
 
   deps = [
-    ":uma_java",
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
     "//components/embedder_support/android:util_java",

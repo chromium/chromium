@@ -63,7 +63,6 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/regional_capabilities/android:java",
     "//chrome/browser/safe_browsing/android:java",
-    "//chrome/browser/segmentation_platform:factory_java",
     "//chrome/browser/settings:factory_java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",

@@ -36,7 +36,6 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/ui/android/edge_to_edge:factory_java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/styles/android:java",
